@@ -196,6 +196,8 @@ public:
   RooAbsData *      GetData( void ){return mpData;};
   const RooArgSet * GetPoiSet( void );
   RooRealVar *      GetFirstPoi( void );
+  Double_t          GetFirstPoiMin( void ){return GetFirstPoi()->getMin();};
+  Double_t          GetFirstPoiMax( void ){return GetFirstPoi()->getMax();};
 
   RooAbsData *            LoadData( std::string datasetName );
   RooStats::ModelConfig * LoadModelConfig( std::string mcName );
@@ -217,6 +219,9 @@ public:
   bool SetFirstPoiValue( double value );
   bool SetFirstPoiMax( double value );
   bool SetFirstPoiMin( double value );
+  void SetTestMode( bool mode ){mTestMode = mode;};
+  void SetRebuildSamplingDist( bool rebuild ){mRebuildSamplingDist = rebuild;};
+  void SetNToysToRebuild( bool nToys ){mNToysToRebuild = nToys;};
 
 private:
 
@@ -241,9 +246,16 @@ private:
   RooStats::HypoTestInverterResult * RunInverter( int nPoints,
 						  double poiMin,
 						  double poiMax, 
-						  int nToys,
+						  int nSbToys,
+						  int nBToys,
 						  bool useCls );
  
+  // get the expected p-values for given quantiles
+  // from hypotestinvresult
+  Double_t GetExpectedPValue( RooStats::HypoTestInverterResult * pResult,
+			      Int_t index,
+			      Double_t nSigma );
+
   RooStats::MCMCInterval * GetMcmcInterval(double confLevel,
 					   int nIter,
 					   int nBurnIn,
@@ -288,7 +300,10 @@ private:
   bool mUseProof;
   bool mOptimize;
   bool mWriteResult;
-  int mNProofWorkers;
+  int  mNProofWorkers;
+  std::string mNuisPriorName;
+  bool mRebuildSamplingDist;
+  int  mNToysToRebuild;
 
   // pointer to class instance
   static LimitCalc * mspInstance;
@@ -310,7 +325,7 @@ LimitCalc::LimitCalc(){
 void LimitCalc::init(UInt_t randomSeed){
 
   // set test mode
-  mTestMode = true;
+  mTestMode = false;
 
   // toy MC settings
   mNEventsPerToy = 0;
@@ -347,6 +362,9 @@ void LimitCalc::init(UInt_t randomSeed){
   mOptimize =  false;
   mWriteResult =  false;
   mNProofWorkers =  1;
+  mNuisPriorName.clear();
+  mRebuildSamplingDist = false;
+  mNToysToRebuild = -1;
 
 }
 
@@ -1132,7 +1150,7 @@ LimitCalc::ComputeInverterLimit( bool useCls,
     r->Add(*r2);
   }
   else{
-    r = RunInverter( nPoints, poiMin, poiMax,  nToys, useCls );    
+    r = RunInverter( nPoints, poiMin, poiMax,  nToys, nToys, useCls );    
     if (!r) { 
       std::cerr << "Error running the HypoTestInverter - Exit " << std::endl;
       return result;
@@ -1214,11 +1232,41 @@ LimitCalc::ComputeInverterLimit( bool useCls,
 }
 
 
+
+Double_t
+LimitCalc::GetExpectedPValue( RooStats::HypoTestInverterResult * pResult,
+			      Int_t index,
+			      Double_t nSigma ){
+  //
+  // Find a p-value in the expected p-value sampling distribution
+  // that corresponds to a specified deviation from median,
+  // for a POI value specified by index
+  // Sampling distributions are taken from the provided result object
+  //
+  
+  double p[1];
+  double q[1];
+  p[0] = ROOT::Math::normal_cdf(nSigma,1);
+  RooStats::SamplingDistribution * s = pResult->GetExpectedPValueDist(index);
+  const std::vector<double> & values = s->GetSamplingDistribution();
+  double * x = const_cast<double *>(&values[0]); // cast for TMath::Quantiles
+  TMath::Quantiles(values.size(), 1, x, q, p, false);
+  delete s;
+
+  return q[0];
+}
+
+
+
 // internal routine to run the inverter
 // uses dataset from the class mpData
 RooStats::HypoTestInverterResult * 
-LimitCalc::RunInverter( int npoints, double poimin, double poimax, 
-			int ntoys, bool useCls ){
+LimitCalc::RunInverter( int    npoints,
+			double poimin,
+			double poimax, 
+			int    nSbToys,
+			int    nBToys,
+			bool   useCls ){
 
   std::string _legend = "[LimitCalc::RunInverter]: ";
 
@@ -1295,11 +1343,19 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
    
    RooStats::ProfileLikelihoodTestStat profll(*mpSbModel->GetPdf());
    if (mTestStatType == 3) profll.SetOneSided(1);
-   if (mOptimize) profll.SetReuseNLL(true);
+   if (mOptimize){ 
+      profll.SetReuseNLL(true);
+      slrts.setReuseNLL(true);
+   }
+
+   RooRealVar * pMu = dynamic_cast<RooRealVar*>(mpSbModel->GetParametersOfInterest()->first());
+   assert(pMu != 0);
+   RooStats::MaxLikelihoodEstimateTestStat maxll(*mpSbModel->GetPdf(),*pMu); 
 
    RooStats::TestStatistic * testStat = &slrts;
    if (mTestStatType == 1) testStat = &ropl;
    if (mTestStatType == 2 || mTestStatType == 3) testStat = &profll;
+   if (mTestStatType == 4) testStat = &maxll;
   
    
    RooStats::HypoTestCalculatorGeneric *  hc = 0;
@@ -1345,32 +1401,46 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
    }
 
    toymcs->SetTestStatistic(testStat);
-   if (mOptimize) toymcs->SetUseMultiGen(true);
+   if (mOptimize){
+     // Lorenzo: works only of b pdf and s+b pdf are the same
+     if (mpBModel->GetPdf() == mpSbModel->GetPdf() ) 
+       toymcs->SetUseMultiGen(true);
+   }
 
 
    if (mInverterCalcType == 1) { 
      RooStats::HybridCalculator *hhc = (RooStats::HybridCalculator*) hc;
-      hhc->SetToys(ntoys,ntoys); 
+      hhc->SetToys(nSbToys,nBToys); 
 
-      // check for nuisance prior pdf 
-      //if (mpBModel->GetPriorPdf() && mpSbModel->GetPriorPdf() ) {
-      //   hhc->ForcePriorNuisanceAlt(*mpBModel->GetPriorPdf());
-      //   hhc->ForcePriorNuisanceNull(*mpSbModel->GetPriorPdf());
-      //}
-      RooAbsPdf * nuis_prior =  mpWs->pdf("nuis_prior");
-      if (nuis_prior ) {
-         hhc->ForcePriorNuisanceAlt(*nuis_prior);
-         hhc->ForcePriorNuisanceNull(*nuis_prior);
-      }
-      else {
-         if (mpBModel->GetNuisanceParameters() || mpSbModel->GetNuisanceParameters() ) {
-            Error("GetClsLimits","Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified");
+      // remove global observables from ModelConfig
+      mpBModel->SetGlobalObservables( RooArgSet() );
+      mpSbModel->SetGlobalObservables( RooArgSet() );
+
+      // check for nuisance prior pdf in case of nuisance parameters 
+      if (mpBModel->GetNuisanceParameters() || mpSbModel->GetNuisanceParameters() ){
+	RooAbsPdf * pNuisPdf = 0; 
+	if (mNuisPriorName.length()!=0) pNuisPdf = mpWs->pdf(mNuisPriorName.c_str());
+	// use prior defined first in bModel (then in SbModel)
+	if (!pNuisPdf)  { 
+            Info("StandardHypoTestInvDemo","No nuisance pdf given for the HybridCalculator - try to use the prior pdf from the model");
+            pNuisPdf = (mpBModel->GetPriorPdf() ) ?  mpBModel->GetPriorPdf() : mpSbModel->GetPriorPdf();
+         }
+         if (!pNuisPdf) { 
+            Error("StandardHypoTestInvDemo","Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified");
             return 0;
          }
+         const RooArgSet * cpNuisParams = (mpBModel->GetNuisanceParameters() ) ? mpBModel->GetNuisanceParameters() : mpSbModel->GetNuisanceParameters();
+         RooArgSet * pNp = pNuisPdf->getObservables(*cpNuisParams);
+         if (pNp->getSize() == 0) { 
+            Warning("StandardHypoTestInvDemo","Prior nuisance does not depend on nuisance parameters. They will be smeared in their full range");
+         }
+         delete pNp;
+         hhc->ForcePriorNuisanceAlt(*pNuisPdf);
+         hhc->ForcePriorNuisanceNull(*pNuisPdf);
       }
    } 
    else 
-     ((RooStats::FrequentistCalculator*) hc)->SetToys(ntoys,ntoys); 
+     ((RooStats::FrequentistCalculator*) hc)->SetToys(nSbToys,nBToys); 
 
    // Get the result
    RooMsgService::instance().getStream(1).removeTopic(RooFit::NumIntegration);
@@ -1418,7 +1488,87 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
      std::cout << "Doing an  automatic scan in interval : " << poi->getMin() << " , " << poi->getMax() << std::endl;
    }
 
-   RooStats::HypoTestInverterResult * r = calc.GetInterval();
+   RooStats::HypoTestInverterResult * r = 0;
+
+   if (mTestMode){
+     // test new functionality here
+     
+     // binary search for expected limit
+     double _p = 0;
+     double _cls = 0.05;
+     double _precision = 0.005;
+     double _sigma = 0.0;
+
+     // establish starting bounds
+     // FIXME: check that low and high cover the interval
+     std::pair<double,double> _high;
+     std::pair<double,double> _low;
+     _high.first = GetFirstPoiMax();
+     _low.first= GetFirstPoiMin();
+     calc.RunOnePoint(_low.first);
+     r = calc.GetInterval();
+     _low.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
+     calc.RunOnePoint(_high.first);
+     r = calc.GetInterval();
+     _high.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
+
+     // begin binary search
+     double _current_poi;
+     while ( fabs(_p - _cls) > _precision ){
+       // predict the next point
+     std::cout << "DEBUG3******" << std::endl;
+       std::cout << _low.first << std::cout;
+       std::cout << _low.second << std::cout;
+       std::cout << _high.first << std::cout;
+       std::cout << _high.second << std::cout;
+       _current_poi = _low.first + (_high.first-_low.first)*(_low.second-_cls)/(_low.second-_high.second);
+       calc.RunOnePoint(_current_poi);
+       r = calc.GetInterval();
+       _p = GetExpectedPValue(r, r->ArraySize()-1, 0.0);
+       if (_p > _cls){
+	 _low.first = _current_poi;
+	 _low.second = _p;
+       }
+       else{
+	 _high.first = _current_poi;
+	 _high.second = _p;
+       }
+     }
+
+     calc.RunOnePoint(0.15);
+     r = calc.GetInterval();
+     std::cout << "ArraySize: " << r->ArraySize() << std::endl;
+     std::cout << "CLsb: " << r->CLsplusb(0) << std::endl;
+     std::cout << "CLb: " << r->CLb(0) << std::endl;
+     std::cout << "CLs: " << r->CLs(0) << std::endl;
+
+     //double _p = GetExpectedPValue(r, 0, nSigma );
+     std::cout << "exp median: " << GetExpectedPValue(r, 0, 2) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, 0, 1) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, 0, 0) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, 0, -1) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, 0, -2) << std::endl;
+
+     // stop here for testing
+     return r;
+   }
+
+   r = calc.GetInterval();
+
+   if (mRebuildSamplingDist) {
+     calc.SetCloseProof(1);
+     RooStats::SamplingDistribution * pLimDist = calc.GetUpperLimitDistribution(true,mNToysToRebuild);
+     if (pLimDist) { 
+       std::cout << "expected up limit " << pLimDist->InverseCDF(0.5) << " +/- " 
+		 << pLimDist->InverseCDF(0.16) << "  " 
+		 << pLimDist->InverseCDF(0.84) << "\n"; 
+     }
+     else 
+       std::cout << "ERROR : failed to re-build distributions " << std::endl; 
+   }
+
+   //update r to a new re-freshed copied
+   r = calc.GetInterval();
 
    return r; 
 }
