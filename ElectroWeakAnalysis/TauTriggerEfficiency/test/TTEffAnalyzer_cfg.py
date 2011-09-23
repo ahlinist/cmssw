@@ -205,10 +205,12 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
         l25PtCutSource      			= cms.InputTag("hltPFTaus"),
         l3IsoSource             		= cms.InputTag("hltL3TauIsolationSelector"), #obsolet: L25/L3 merged?
         l25MatchingCone         		= cms.double(0.3),
+        l3IsoQualityCuts                        = process.hltPFTauLooseIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
         MCMatchingCone         			= cms.double(0.2),
         HLTPFTau                		= cms.bool(True),
         MCTauCollection         		= cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 	GenParticleCollection			= cms.InputTag("genParticles"),
+        PileupSummaryInfoSource                 = cms.InputTag("addPileupInfo"),
         outputFileName          		= cms.string("tteffAnalysis-hltpftau-hpspftau.root")
 )
 
@@ -241,6 +243,7 @@ setHltToCalo(process.TTEffAnalysisHLTCaloTauHPS)
 
 process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
     l25PtCutSource = "hltPFTausTightIso",
+    l3IsoQualityCuts = process.hltPFTauTightIsoIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
     outputFileName = "tteffAnalysis-hltpftautight-hpspftau.root",
 )
 

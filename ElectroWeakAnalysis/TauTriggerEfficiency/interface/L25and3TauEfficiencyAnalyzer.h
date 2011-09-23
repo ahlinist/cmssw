@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.9 2011/07/04 13:26:07 slehti Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.10 2011/08/15 06:44:11 mkortela Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -40,6 +40,14 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       edm::InputTag l25JetSource;
       edm::InputTag l25PtCutSource;
       edm::InputTag l3IsoSource;
+      double filterMinTrackPt;
+      unsigned filterMinPixelHits;
+      unsigned filterMinTrackerHits;
+      double filterMaxIP;
+      double filterMaxChi2;
+      double filterMaxDeltaZ;
+      double filterMinGammaEt;
+
       float l25Et;
       float l25Phi;
       float l25Eta;
@@ -52,12 +60,16 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       float l25IsoPtSum;
       int l25NTrksIso;
       int l25NGammaIso;
+      int l25NTrksIsoAll;
+      int l25NGammaIsoAll;
       float l25IsoTrkChi2;
       float l25IsoTrkPt;
       float l25TrkIsoPtSum;
       float l25EcalIsoEtSum;
       float l25TrkIsoPtMax;
       float l25EcalIsoEtMax;
+      float l25TrkIsoPtMaxAll;
+      float l25EcalIsoEtMaxAll;
       unsigned int l25IsoTrkNHits;
      
       double l25MatchingCone;

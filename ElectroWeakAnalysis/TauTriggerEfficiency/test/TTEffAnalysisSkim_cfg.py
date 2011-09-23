@@ -125,6 +125,7 @@ process.FEVTEventContent.outputCommands.extend([
         'keep *_selectedPatTaus*_*_*',
         'keep *_selectedPatMuons_*_*',
         'keep *_selectedPatJets*_*_*',
+        'keep *_addPileupInfo_*_*',
 ])
 #process.FEVTEventContent.outputCommands.append('keep *')
 

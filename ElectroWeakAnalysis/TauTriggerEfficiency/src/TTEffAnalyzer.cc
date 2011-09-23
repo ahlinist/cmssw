@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.65 2011/09/08 06:43:27 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.66 2011/09/20 10:14:05 mkortela Exp $
 //
 //
 
@@ -28,6 +28,7 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 
 #include "DataFormats/Common/interface/MergeableCounter.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTaus_(iConfig.getParameter<edm::InputTag>("LoopingOver")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
+  pileupSummaryInfoSrc_(iConfig.getParameter<edm::InputTag>("PileupSummaryInfoSource")),
   PFTauIso_(iConfig.getParameter<std::string>("PFTauIsoDiscriminator")),
   PFTauMuonRej_(iConfig.getParameter<std::string>("PFTauMuonRejectionDiscriminator")),
   PFTauElectronRej_(iConfig.getParameter<std::string>("PFTauElectronRejectionDiscriminator")),
@@ -133,6 +135,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("MCTauEta", &MCTauEta);
   _TTEffTree->Branch("MCTauPhi", &MCTauPhi);
 
+  _TTEffTree->Branch("MCNPU", &nPU);
+
   std::vector<std::string> triggerNames = iConfig.getParameter<std::vector<std::string> >("HltPaths");
   hltBits.reserve(triggerNames.size());
   for(size_t i=0; i<triggerNames.size(); ++i)
@@ -179,6 +183,17 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    b_event = iEvent.id().event();
    b_run = iEvent.run();
    b_lumi = iEvent.luminosityBlock();
+
+   nPU = 0;
+   edm::Handle<std::vector<PileupSummaryInfo> > hpileup;
+   iEvent.getByLabel(pileupSummaryInfoSrc_, hpileup);
+   if(hpileup.isValid()) {
+     int npv = 0;
+     for(std::vector<PileupSummaryInfo>::const_iterator iPV = hpileup->begin(); iPV != hpileup->end(); ++iPV) {
+       npv += iPV->getPU_NumInteractions();
+     }
+     nPU = npv/3.;
+   }
 
    edm::Handle<edm::View<reco::Candidate> > genericTaus;
 

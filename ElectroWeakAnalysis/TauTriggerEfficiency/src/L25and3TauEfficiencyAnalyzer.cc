@@ -1,13 +1,15 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.14 2011/07/04 13:26:07 slehti Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.15 2011/08/15 06:44:11 mkortela Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Math/interface/Point3D.h"
 #include "DataFormats/JetReco/interface/JetTracksAssociation.h"
+
+#include "RecoTauTag/TauTagTools/interface/TauTagTools.h"
 
 using namespace edm;
 using namespace reco;
@@ -24,6 +26,16 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l3IsoSource  = iConfig.getParameter<InputTag>("l3IsoSource");
   l25MatchingCone = iConfig.getParameter<double>("l25MatchingCone");
   HLTPFTau = iConfig.getParameter<bool>("HLTPFTau");
+
+  edm::ParameterSet qualityCuts = iConfig.getParameter<edm::ParameterSet>("l3IsoQualityCuts");
+  filterMinTrackPt = qualityCuts.getParameter<double>("minTrackPt");
+  filterMinPixelHits = qualityCuts.getParameter<unsigned>("minTrackPixelHits");
+  filterMinTrackerHits = qualityCuts.getParameter<unsigned>("minTrackHits");
+  filterMaxIP = qualityCuts.getParameter<double>("maxTransverseImpactParameter");
+  filterMaxChi2 = qualityCuts.getParameter<double>("maxTrackChi2");
+  filterMaxDeltaZ = qualityCuts.getParameter<double>("maxDeltaZ");
+  filterMinGammaEt = qualityCuts.getParameter<double>("minGammaEt");
+
   l25tree->Branch("l25Eta", &l25Eta,"l25Eta/F" );
   l25tree->Branch("l25Phi", &l25Phi,"l25Phi/F" );
   l25tree->Branch("l25Et", &l25Et,"l25Et/F" );
@@ -55,8 +67,12 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l25tree->Branch("l25EcalIsoEtSum",&l25EcalIsoEtSum,"l25EcalIsoEtSum/F");
   l25tree->Branch("l25TrkIsoPtMax",&l25TrkIsoPtMax,"l25TrkIsoPtMax/F");
   l25tree->Branch("l25EcalIsoEtMax",&l25EcalIsoEtMax,"l25EcalIsoEtMax/F");
+  l25tree->Branch("l25TrkIsoPtMaxAll",&l25TrkIsoPtMaxAll,"l25TrkIsoPtMaxAll/F");
+  l25tree->Branch("l25EcalIsoEtMaxAll",&l25EcalIsoEtMaxAll,"l25EcalIsoEtMaxAll/F");
   l25tree->Branch("l25NTrksIso",&l25NTrksIso,"l25NTrksIso/I");
   l25tree->Branch("l25NGammaIso",&l25NGammaIso,"l25NGammaIso/I"); 
+  l25tree->Branch("l25NTrksIsoAll",&l25NTrksIsoAll,"l25NTrksIsoAll/I");
+  l25tree->Branch("l25NGammaIsoAll",&l25NGammaIsoAll,"l25NGammaIsoAll/I"); 
   NMatchedToL2 = 0;
   NJetsWithTracks = 0;
 }
@@ -95,8 +111,12 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
   l25EcalIsoEtSum = 0;
   l25TrkIsoPtMax = 0;
   l25EcalIsoEtMax = 0;
+  l25TrkIsoPtMaxAll = 0;
+  l25EcalIsoEtMaxAll = 0;
   l25NTrksIso = 0;
   l25NGammaIso = 0;
+  l25NTrksIsoAll = 0;
+  l25NGammaIsoAll = 0;
   matchedToL2Jet = false;
   foundTracksInJet = false;
   matchedToHLTPFTau = false;
@@ -179,16 +199,51 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
         l25InvPt = 1./l25Pt ;								
         l25IsoPtSum = theMatchedHLTPFtau.isolationPFChargedHadrCandsPtSum();
         l25EcalIsoEtSum = theMatchedHLTPFtau.isolationPFGammaCandsEtSum();
-	l25NTrksIso = theMatchedHLTPFtau.isolationPFChargedHadrCands().size();
-        l25NGammaIso = theMatchedHLTPFtau.isolationPFGammaCands().size();
+	l25NTrksIsoAll = theMatchedHLTPFtau.isolationPFChargedHadrCands().size();
+        l25NGammaIsoAll = theMatchedHLTPFtau.isolationPFGammaCands().size();
 
         for(size_t i=0; i<theMatchedHLTPFtau.isolationPFChargedHadrCands().size(); ++i) {
-          l25TrkIsoPtMax = std::max(l25TrkIsoPtMax, static_cast<float>(theMatchedHLTPFtau.isolationPFChargedHadrCands()[i]->pt()));
+          l25TrkIsoPtMaxAll = std::max(l25TrkIsoPtMaxAll, static_cast<float>(theMatchedHLTPFtau.isolationPFChargedHadrCands()[i]->pt()));
         }
         for(size_t i=0; i<theMatchedHLTPFtau.isolationPFGammaCands().size(); ++i) {
-          l25EcalIsoEtMax = std::max(l25EcalIsoEtMax, static_cast<float>(theMatchedHLTPFtau.isolationPFGammaCands()[i]->et()));
+          l25EcalIsoEtMaxAll = std::max(l25EcalIsoEtMaxAll, static_cast<float>(theMatchedHLTPFtau.isolationPFGammaCands()[i]->et()));
         }
 
+        // the number of candidates after quality filtering
+        reco::PFCandidateRefVector cands;
+        cands = TauTagTools::filteredPFChargedHadrCands(theMatchedHLTPFtau.isolationPFChargedHadrCands(),
+                                                        filterMinTrackPt,
+                                                        filterMinPixelHits,
+                                                        filterMinTrackerHits,
+                                                        filterMaxIP,
+                                                        filterMaxChi2,
+                                                        filterMaxDeltaZ,
+                                                        theHltPrimaryVertex,
+                                                        theHltPrimaryVertex.position().z());
+        l25NTrksIsoAll = cands.size();
+        
+        cands = TauTagTools::filteredPFGammaCands(theMatchedHLTPFtau.isolationPFGammaCands(),
+                                                  filterMinGammaEt);
+        l25NGammaIsoAll = cands.size();
+
+        // Maximum pt/et of candidates after quality filtering
+        cands = TauTagTools::filteredPFChargedHadrCands(theMatchedHLTPFtau.isolationPFChargedHadrCands(),
+                                                        0,
+                                                        filterMinPixelHits,
+                                                        filterMinTrackerHits,
+                                                        filterMaxIP,
+                                                        filterMaxChi2,
+                                                        filterMaxDeltaZ,
+                                                        theHltPrimaryVertex,
+                                                        theHltPrimaryVertex.position().z());
+        for(size_t i=0; i<cands.size(); ++i) {
+          l25TrkIsoPtMax = std::max(l25TrkIsoPtMax, static_cast<float>(cands[i]->pt()));
+        }
+
+        cands = TauTagTools::filteredPFGammaCands(theMatchedHLTPFtau.isolationPFGammaCands(), 0);
+        for(size_t i=0; i<cands.size(); ++i) {
+          l25EcalIsoEtMax = std::max(l25EcalIsoEtMax, static_cast<float>(cands[i]->pt()));
+        }
       }
       
       else{
