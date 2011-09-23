@@ -24,6 +24,7 @@
 <use   name="DataFormats/TrackReco"/>
 <use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/VertexReco"/>
+<use   name="SimDataFormats/PileupSummaryInfo"/>
 <use   name="CondFormats/L1TObjects"/>
 <use   name="CondFormats/DataRecord"/>
 <use   name="FWCore/Framework"/>
