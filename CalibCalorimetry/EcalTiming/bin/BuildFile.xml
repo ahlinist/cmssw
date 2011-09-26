@@ -66,3 +66,6 @@
   <use   name="rootinteractive"/>
   <use   name="rootgraphics"/>
 </bin>
+<bin   file="CompareEcalFETimingDQM.cpp">
+  <use   name="rootgraphics"/>
+</bin>
