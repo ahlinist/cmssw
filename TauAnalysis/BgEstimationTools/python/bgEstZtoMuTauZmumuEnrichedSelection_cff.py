@@ -400,7 +400,7 @@ selectEventsBgEstZmumuEnriched = evtSelConfiguratorBgEstZmumuEnriched.configure(
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 #from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
-from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
+#from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 
 muonHistManagerBgEstZmumuEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstZmumuEnriched.pluginName = cms.string('muonHistManagerBgEstZmumuEnriched')
@@ -433,12 +433,12 @@ pfMEtHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('pfMEtHistMan
 pfMEtHistManagerBgEstZmumuJetMisIdEnriched.leg1Source = muonHistManagerBgEstZmumuEnriched.muonSource
 pfMEtHistManagerBgEstZmumuJetMisIdEnriched.leg2Source = tauHistManagerBgEstZmumuJetMisIdEnriched.tauSource
 
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuJetMisIdEnriched')
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.tauSource = tauHistManagerBgEstZmumuJetMisIdEnriched.tauSource
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource = diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource
+#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
+#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuJetMisIdEnriched')
+#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
+#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.tauSource = tauHistManagerBgEstZmumuJetMisIdEnriched.tauSource
+#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource = diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource
+#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource
 
 analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
   
@@ -519,9 +519,9 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstZmumuEnriched,
         tauHistManagerBgEstZmumuJetMisIdEnriched,
         diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched,
-		#diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched,
-		caloMEtHistManagerBgEstZmumuJetMisIdEnriched,
-		pfMEtHistManagerBgEstZmumuJetMisIdEnriched,
+	#diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched,
+	caloMEtHistManagerBgEstZmumuJetMisIdEnriched,
+        pfMEtHistManagerBgEstZmumuJetMisIdEnriched,
     	#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
@@ -645,9 +645,9 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstZmumuEnriched',
                 'tauHistManagerBgEstZmumuJetMisIdEnriched',
                 'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched',
-				#'diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched',
+		#'diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched',
                 'caloMEtHistManagerBgEstZmumuJetMisIdEnriched',
-	        	'pfMEtHistManagerBgEstZmumuJetMisIdEnriched',
+	        'pfMEtHistManagerBgEstZmumuJetMisIdEnriched',
             	#'tauIdEffHistManagerBgEstZmumuJetMisIdEnriched',
                 'dataBinnerBgEstZmumuEnriched'
             )
@@ -681,12 +681,12 @@ pfMEtHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('pfMEtHistMa
 pfMEtHistManagerBgEstZmumuMuonMisIdEnriched.leg1Source = muonHistManagerBgEstZmumuEnriched.muonSource
 pfMEtHistManagerBgEstZmumuMuonMisIdEnriched.leg2Source = tauHistManagerBgEstZmumuMuonMisIdEnriched.tauSource
 
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched')
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.tauSource = tauHistManagerBgEstZmumuMuonMisIdEnriched.tauSource
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource = diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource
+#tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
+#tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched')
+#tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
+#tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.tauSource = tauHistManagerBgEstZmumuMuonMisIdEnriched.tauSource
+#tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource = diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource
+#tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource
 
 analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
   
@@ -782,9 +782,9 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstZmumuEnriched,
         tauHistManagerBgEstZmumuMuonMisIdEnriched,
         diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched,
-		#diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched,
+	#diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched,
         caloMEtHistManagerBgEstZmumuMuonMisIdEnriched,
-		pfMEtHistManagerBgEstZmumuMuonMisIdEnriched,
+	pfMEtHistManagerBgEstZmumuMuonMisIdEnriched,
         #tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
@@ -897,9 +897,9 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstZmumuEnriched',
                 'tauHistManagerBgEstZmumuMuonMisIdEnriched',
                 'diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched',
-				#'diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched',
+		#'diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched',
                 'caloMEtHistManagerBgEstZmumuMuonMisIdEnriched',
-	            'pfMEtHistManagerBgEstZmumuMuonMisIdEnriched',
+	        'pfMEtHistManagerBgEstZmumuMuonMisIdEnriched',
                 #'tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched',
                 'dataBinnerBgEstZmumuEnriched'
             )
