@@ -248,13 +248,13 @@ jetHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(jetHistManager)
 jetHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('jetHistManagerBgEstTTplusJetsEnriched')
 jetHistManagerBgEstTTplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstTTplusJetsEnrichedEt40')
 
-from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
-tauIdEffHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
-tauIdEffHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstTTplusJetsEnriched')
-tauIdEffHistManagerBgEstTTplusJetsEnriched.muonSource = muonHistManagerBgEstTTplusJetsEnriched.muonSource
-tauIdEffHistManagerBgEstTTplusJetsEnriched.tauSource = tauHistManagerBgEstTTplusJetsEnriched.tauSource
-tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource = diTauCandidateHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource
-tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource
+#from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
+#tauIdEffHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
+#tauIdEffHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstTTplusJetsEnriched')
+#tauIdEffHistManagerBgEstTTplusJetsEnriched.muonSource = muonHistManagerBgEstTTplusJetsEnriched.muonSource
+#tauIdEffHistManagerBgEstTTplusJetsEnriched.tauSource = tauHistManagerBgEstTTplusJetsEnriched.tauSource
+#tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource = diTauCandidateHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource
+#tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource
 
 dataBinnerBgEstTTplusJetsEnriched = copy.deepcopy(dataBinner)
 dataBinnerBgEstTTplusJetsEnriched.pluginName = cms.string('dataBinnerBgEstTTplusJetsEnriched')
@@ -335,7 +335,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstTTplusJetsEnriched,
         tauHistManagerBgEstTTplusJetsEnriched,
         diTauCandidateHistManagerBgEstTTplusJetsEnriched,
-		#diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched,
+	#diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched,
         caloMEtHistManagerBgEstTTplusJetsEnriched,
 	pfMEtHistManagerBgEstTTplusJetsEnriched,
         jetHistManagerBgEstTTplusJetsEnriched,
@@ -458,9 +458,9 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstTTplusJetsEnriched',
                 'tauHistManagerBgEstTTplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstTTplusJetsEnriched',
-				#'diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched',
+		#'diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched',
                 'caloMEtHistManagerBgEstTTplusJetsEnriched',
-				'pfMEtHistManagerBgEstTTplusJetsEnriched',
+		'pfMEtHistManagerBgEstTTplusJetsEnriched',
                 'jetHistManagerBgEstTTplusJetsEnriched',
                 #'tauIdEffHistManagerBgEstTTplusJetsEnriched',
                 'dataBinnerBgEstTTplusJetsEnriched'

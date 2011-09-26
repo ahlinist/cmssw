@@ -281,7 +281,7 @@ plotZtoMuTauStacked_template = plots_ZtoMuTau.clone(
     stack = cms.vstring(
         'TTplusJets',
         'diBoson',
-	    'Zmumu',
+	'Zmumu',
         'WplusJets',
         'QCD',
         'Ztautau'
@@ -437,8 +437,8 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
         ),
         WplusJets = cms.PSet(
             dqmDirectory = cms.string(''),
-            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph']['legendEntry']),
-            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph']['type'])
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph_pat']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph_pat']['type'])
         ),
         #TTplusJets = cms.PSet(
         #    dqmDirectory = cms.string(''),
@@ -493,7 +493,7 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
         default = cms.PSet(
             Ztautau = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['ZtautauSum']['drawOption'],
             Zee = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['ZeeSum']['drawOption'],
-            WplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph']['drawOption'],
+            WplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph_pat']['drawOption'],
             PhotonPlusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['drawOption'],
             QCD = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['drawOption'],
             Data = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['drawOption'],

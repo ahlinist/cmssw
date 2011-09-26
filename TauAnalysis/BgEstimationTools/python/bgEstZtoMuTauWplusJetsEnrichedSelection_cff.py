@@ -281,13 +281,13 @@ jetHistManagerBgEstWplusJetsEnriched = copy.deepcopy(jetHistManager)
 jetHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('jetHistManagerBgEstWplusJetsEnriched')
 jetHistManagerBgEstWplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstWplusJetsEnrichedAntiOverlapWithLeptonsVeto')
 
-from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
-tauIdEffHistManagerBgEstWplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
-tauIdEffHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstWplusJetsEnriched')
-tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = muTauPairsBgEstWplusJetsEnriched.srcLeg1
-tauIdEffHistManagerBgEstWplusJetsEnriched.tauSource = muTauPairsBgEstWplusJetsEnriched.srcLeg2
-tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource = diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource
-tauIdEffHistManagerBgEstWplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource
+#from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
+#tauIdEffHistManagerBgEstWplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
+#tauIdEffHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstWplusJetsEnriched')
+#tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = muTauPairsBgEstWplusJetsEnriched.srcLeg1
+#tauIdEffHistManagerBgEstWplusJetsEnriched.tauSource = muTauPairsBgEstWplusJetsEnriched.srcLeg2
+#tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource = diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource
+#tauIdEffHistManagerBgEstWplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource
 
 dataBinnerBgEstWplusJetsEnriched = copy.deepcopy(dataBinner)
 dataBinnerBgEstWplusJetsEnriched.pluginName = cms.string('dataBinnerBgEstWplusJetsEnriched')
@@ -373,7 +373,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstWplusJetsEnriched,
         tauHistManagerBgEstWplusJetsEnriched,
         diTauCandidateHistManagerBgEstWplusJetsEnriched,
-		#diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched,
+	#diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched,
         caloMEtHistManagerBgEstWplusJetsEnriched,
 	pfMEtHistManagerBgEstWplusJetsEnriched,
         jetHistManagerBgEstWplusJetsEnriched,
@@ -511,7 +511,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstWplusJetsEnriched',
                 'tauHistManagerBgEstWplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstWplusJetsEnriched',
-				#'diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched',
+		#'diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched',
                 'pfMEtHistManagerBgEstWplusJetsEnriched',
                 'caloMEtHistManagerBgEstWplusJetsEnriched',
                 'jetHistManagerBgEstWplusJetsEnriched',
