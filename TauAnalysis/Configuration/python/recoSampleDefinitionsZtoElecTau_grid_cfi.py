@@ -44,7 +44,7 @@ SAMPLES_TO_ANALYZE_PAT = [
 ] 
 
 # set final analysis samples here
-SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_PAT
+SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_SKIM
 
 
 # List of samples to include in the final level plots.  May include selections
@@ -95,8 +95,8 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-# May10ReReco + PR_v4 + 05AugReReco
-TARGET_LUMI = (1490)/_picobarns 
+# May10ReReco + PR_v4 + 05AugReReco + PR_v6 (-172802): Lepton-Photon dataset
+TARGET_LUMI = (1610)/_picobarns 
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -185,9 +185,9 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2'     : '170826:MIN-173198:MAX'
         }
     },    
-    'data_TauPlusX_Run2011A_PR_v4_skim' : {
+    'data_TauPlusX_Run2011A_PR_v4_skim' : { # 887/pb 165071-167913 5942864 --> current lumi_mask restricts analysis to Lepton-Photon dataset
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_424_v1-982c87f3521a6471fb16318d08f703d0/USER', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173244_7TeV_PromptReco_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 300,
@@ -205,9 +205,9 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX'
         }
     },
-    'data_TauPlusX_Run2011A_PR_v4_pat' : {# contains v4 and v6 files!!! (use run 1-168437 to just get v4)
+    'data_TauPlusX_Run2011A_PR_v4_pat' : {# contains v4 and v6 files!!! (use run 1-168437 to just get v4) --> current lumi_mask restricts analysis to Lepton-Photon dataset
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v1-29084cbe8cc714ba398f31eea7600eda/USER', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173244_7TeV_PromptReco_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 200,
@@ -224,9 +224,9 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX'
         }
     },    
-    'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events
+    'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events --> current lumi_mask restricts analysis to Lepton-Photon dataset: 120/pb
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-PromptReco-v6_skimElecTau_v3-982c87f3521a6471fb16318d08f703d0/USER', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 300,
