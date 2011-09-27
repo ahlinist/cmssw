@@ -87,8 +87,8 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   
-  fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.DATAv2.dat");
-  fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATAv2.dat");
+  fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.DATAv3.dat");
+  fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATAv3.dat");
     
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
@@ -1893,61 +1893,58 @@ void xsReader::calculateWeights(int mode){
     
     //////////// For Syst. Unc.
     
-    /*par2 -= fPidTableMuidFit->errD(2, pl1->fPlab.Eta(), 0.);
-    if ( par2 < 0.1 )  {
-      par2 = fPidTableMuidFit->effD(2, pl1->fPlab.Eta(), 0.);
-      par1 -= fPidTableMuidFit->errD(1, pl1->fPlab.Eta(), 0.);
-    }
-    */
+    //par2 += fPidTableMuidFit->errD(2, pl1->fPlab.Eta(), 0.);
+    
     //////
+    
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
-    effID1 = par1 + par2*((TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))+1));
+    effID1 = par1 + par2*((TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))+1));
     
     par1 = fPidTableMuidFit->effD(1, pl2->fPlab.Eta(), 0.); par2 = fPidTableMuidFit->effD(2, pl2->fPlab.Eta(), 0.);
     par3 = fPidTableMuidFit->effD(3, pl2->fPlab.Eta(), 0.); par4 = fPidTableMuidFit->effD(4, pl2->fPlab.Eta(), 0.);
     
     //////////  For Syst. Unc
-    /*
-    par2 -= fPidTableMuidFit->errD(2, pl2->fPlab.Eta(), 0.);
-    if ( par2 < 0.1 ) {
-      par2 = fPidTableMuidFit->effD(2, pl2->fPlab.Eta(), 0.);
-      par1 -= fPidTableMuidFit->errD(1, pl2->fPlab.Eta(), 0.);
-    }
-    */
+    
+    //par2 += fPidTableMuidFit->errD(2, pl2->fPlab.Eta(), 0.);
+    
     ////////
+    
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
-    effID2 = par1 + par2*((TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))+1));
+    effID2 = par1 + par2*((TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))+1));
     
     //cout << " eta1 = " << pl1->fPlab.Eta()  << " eta2 = " << pl2->fPlab.Eta() << endl;
     //cout << " pt1 = " << pl1->fPlab.Perp()  << " pt2 = " << pl2->fPlab.Perp() << " effID1 = "<< effID1 <<" effID2 = "<< effID2 << endl;
     
-        
+    if ( effID1 > 1. ) effID1 = 0.999; if ( effID2 > 1. ) effID2 = 0.999;
+    
     par1 = fPidTableTrigFit->effD(1, pl1->fPlab.Eta(), 0.); par2 = fPidTableTrigFit->effD(2, pl1->fPlab.Eta(), 0.);
     par3 = fPidTableTrigFit->effD(3, pl1->fPlab.Eta(), 0.); par4 = fPidTableTrigFit->effD(4, pl1->fPlab.Eta(), 0.);
     
     ////////// For Syst. Unc
-    par2 += fPidTableTrigFit->errD(2, pl1->fPlab.Eta(), 0.);
+    //par2 += fPidTableTrigFit->errD(2, pl1->fPlab.Eta(), 0.);
     /////
     
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
     
-    effTR1 = par1 + par2*((TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))+1));
+    effTR1 = par1 + par2*((TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))+1));
     
     par1 = fPidTableTrigFit->effD(1, pl2->fPlab.Eta(), 0.); par2 = fPidTableTrigFit->effD(2, pl2->fPlab.Eta(), 0.);
     par3 = fPidTableTrigFit->effD(3, pl2->fPlab.Eta(), 0.); par4 = fPidTableTrigFit->effD(4, pl2->fPlab.Eta(), 0.);
     
     ///////// For Syst. Unc
-    par2 += fPidTableTrigFit->errD(2, pl2->fPlab.Eta(), 0.);
+    //par2 += fPidTableTrigFit->errD(2, pl2->fPlab.Eta(), 0.);
     //////
     
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
     
-    effTR2 = par1 + par2*((TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))+1));
+    effTR2 = par1 + par2*((TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))+1));
     
     //cout << " eta1 = " << pl1->fPlab.Eta()  << " eta2 = " << pl2->fPlab.Eta() << endl;
     //cout << " pt1 = " << pl1->fPlab.Perp()  << " pt2 = " << pl2->fPlab.Perp() << " effTR1 = "<< effTR1 <<" effTR2 = "<< effTR2 << endl;
     
-    if ( effTR1 > 1. ) effTR1 = 0.999; if ( effTR2 > 1. ) effTR2 = 0.999;
+    ///////// For Syst. Unc
+    //if ( effTR1 > 1. ) effTR1 = 0.999; if ( effTR2 > 1. ) effTR2 = 0.999;
+    //////    
     
     fWeight = 1;
     
