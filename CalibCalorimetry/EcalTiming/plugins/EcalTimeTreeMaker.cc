@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.10 2011/07/21 14:15:10 franzoni Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.11 2011/09/10 11:03:44 franzoni Exp $
 //
 //
 
@@ -757,26 +757,24 @@ EcalTimeTreeMaker::dumpVertexInfo(const reco::VertexCollection* recVtxs, EcalTim
 
   int thisVertex=0;
   myTreeVariables_.nVertices= recVtxs->size();
-
+  
+  // make sure you don't exceed with number of vertices the available slots in the ntuple format (thisVertex) 
   for(reco::VertexCollection::const_iterator v=recVtxs->begin(); 
       v!=recVtxs->end() && thisVertex<MAXVTX; 
       ++v){
-
-    for(int i=0; i<MAXVTX; i++) {
-      myTreeVariables_.vtxNTracks[i]=v->tracksSize();
-      myTreeVariables_.vtxIsFake[i]= v->isFake();
-      myTreeVariables_.vtxChi2[i]=   v->chi2();
-      myTreeVariables_.vtxNdof[i]=   v->ndof();
-      myTreeVariables_.vtxX[i]=      v->x();
-      myTreeVariables_.vtxDx[i]=     v->xError();
-      myTreeVariables_.vtxY[i]=      v->y();
-      myTreeVariables_.vtxDy[i]=     v->yError();
-      myTreeVariables_.vtxZ[i]=      v->z();
-      myTreeVariables_.vtxDz[i]=     v->zError();
-  }
-
-  }
-
+    myTreeVariables_.vtxNTracks[thisVertex]=v->tracksSize();
+    myTreeVariables_.vtxIsFake[thisVertex]= v->isFake();
+    myTreeVariables_.vtxChi2[thisVertex]=   v->chi2();
+    myTreeVariables_.vtxNdof[thisVertex]=   v->ndof();
+    myTreeVariables_.vtxX[thisVertex]=      v->x();
+    myTreeVariables_.vtxDx[thisVertex]=     v->xError();
+    myTreeVariables_.vtxY[thisVertex]=      v->y();
+    myTreeVariables_.vtxDy[thisVertex]=     v->yError();
+    myTreeVariables_.vtxZ[thisVertex]=      v->z();
+    myTreeVariables_.vtxDz[thisVertex]=     v->zError();
+    thisVertex++;
+  }// end loop on vertices
+  
 }
 
 
