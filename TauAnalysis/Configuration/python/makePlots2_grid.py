@@ -182,6 +182,8 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     if not os.path.exists(outputFilePath):
         os.mkdir(outputFilePath)
 
+    plotsDirectory = plotsDirectory.replace('./',os.getcwd() + '/')
+    
     sample_mapper = lambda sample : "harvested_%s_%s_%s.root" % (channel, sample, jobId)
 
     process.DQMStore = cms.Service("DQMStore")
@@ -238,7 +240,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             inputFileNames = cms.vstring(sample_mapper(sample)),
             dqmDirectory_store = cms.string('/harvested/%s' % sample),
         )
-
+        
         # Apply autoscaling
         apply_auto_scale(sample_info, sample_pset, samples['TARGET_LUMI'],
                          dqmDirectoryFilterStatistics)
@@ -345,14 +347,18 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         # Add module label if desired
         dqmHistPlotterModuleName += moduleLabel
         print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
+        outputPlotsPath = plotsDirectory + '/' + jobId + '/' + analyzer
         dqmHistPlotterModule = dqmHistPlotter_template.clone(
             processes = cms.PSet(**processesForPlots),
             drawOptionSets = cms.PSet(
                 default = cms.PSet(**dict((sampleName, samples['ALL_SAMPLES'][sampleName]['drawOption'])
                                           for sampleName in samples['SAMPLES_TO_PLOT']))
             ),
-            outputFilePath = cms.string(plotsDirectory),
+            outputFilePath = cms.string(outputPlotsPath),
         )
+        # ensure that all subdirectories exist
+        if not os.path.exists(outputPlotsPath):
+            os.makedirs(outputPlotsPath)
 
         dqmHistPlotterModule.labels.mcNormScale.text = cms.vstring(
             '%0.1fpb^{-1}' % samples['TARGET_LUMI'],
