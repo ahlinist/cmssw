@@ -96,6 +96,10 @@ void anaXS::init(const char *dir, int i) {
   f13 = new TF1("f13", f_p1a3cb, 0., 12., 11);
   f13->SetParNames("Mean1", "Sigma1", "Alpha1", "n1", "N1", "Mean2", "Sigma2", "N2", "N3", "Offset", "Slope");
   
+  f14 = new TF1("f14", f_p2a3cb, 0., 12., 12);
+  f14->SetParNames("Mean1", "Sigma1", "Alpha1", "n1", "N1", "Mean2", "Sigma2", "N2", "N3", "Offset", "Slope");  
+  f14->SetParName(11,"QuadTerm");
+  
   fDirectory = string(dir); 
   fPtDirectory = fDirectory + string(Form("/pt-%02d", i)); 
 
@@ -998,7 +1002,7 @@ void anaXS::makeAllMC(int channel) {
     
     //Pull(1);
     
-    FITUpsilon(0); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
+    FITUpsilon(7); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
     GetAnaEff();
     GetPreSelEff();
     GetMuIDEff(1);
@@ -1042,7 +1046,7 @@ void anaXS::makeAllDATA(int channel) {
     //plot_RapInt();
     //plot_PtInt();
     
-    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    FITUpsilon(8); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     GetAnaEff();
     GetPreSelEff();
     GetTrackEff();
@@ -4945,6 +4949,258 @@ void anaXS::Pull(int mode){
 
 void anaXS::FITUpsilon(int mode){
   
+  if ( mode == 8 ){
+    
+    int PRINT(1); 
+    double PRINTX(0.5);
+        
+    TH1D *h; 
+    
+    //  string fopt("LLIEMQ"); 
+    string fopt("LLE"); 
+    
+    double pt, eta; 
+    
+    double yield_1S(0.), yieldE_1S(0.);
+    double yield_2S(0.), yieldE_2S(0.);
+    double yield_3S(0.), yieldE_3S(0.);
+    double alpha(0.), n(0.);
+    double scale(1.033);
+    double YieldTot(0.), YieldTot2S(0.), YieldTot3S(0.);
+    double YieldTotE(0.), YieldTot2SE(0.), YieldTot3SE(0.);
+    double mean1(0.), meanE1(0.), mean2(0.), meanE2(0.);
+    double sig1(0.), sigE1(0.), sig2(0.), sigE2(0.);
+    
+    int    nbin;
+    int fitted(0);
+    int status(0);
+    const char* Status;
+    
+    gStyle->SetOptStat(0000000000000); 
+    gStyle->SetOptFit(00000000000000);
+    //gStyle->SetOptStat(111111111);
+    gStyle->SetOptFit(111111111);
+    makeCanvas(1); 
+    c1->Clear();
+    
+    TH2D *hSigma1S = new TH2D("hSigma1S","hSigma1S", fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());
+    TH2D *hSigma2S = new TH2D("hSigma2S","hSigma2S", fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());
+    TH2D *hMean1S = new TH2D("hMean1S","hMean1S", fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()); 
+    TH2D *hMean2S = new TH2D("hMean2S","hMean2S", fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());  
+    TH2D *hEntries = new TH2D("hEntries","hEntries", fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()); 
+    
+    for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
+      
+      // -- positive charge
+      c1->cd(1); shrinkPad(0.15, 0.26); 
+      h = &(fS1Vector[i]);
+      h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
+      if (h->GetSumOfWeights() > 50.) {
+	setFunctionParameters(h, f14, 7, 3);
+	h->Fit(f14, fopt.c_str());
+	status = 0;
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	cout << status << endl;
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f14->SetParameters( f14->GetParameter(0), f14->GetParameter(1), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(4) , f14->GetParameter(5), f14->GetParameter(6), f14->GetParameter(7), f14->GetParameter(8), f14->GetParameter(9), f14->GetParameter(10));
+	  f14->SetParameter(11, f14->GetParameter(11));
+	  //f14->FixParameter(5, f14->GetParameter(0)*(10.02/9.46) );
+	  //f14->FixParameter(6, f14->GetParameter(1)*(10.02/9.46) );
+	  h->Fit(f14, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;
+	
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f14->SetParameters( f14->GetParameter(0), f14->GetParameter(1), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(4) , f14->GetParameter(5), f14->GetParameter(6), f14->GetParameter(7), f14->GetParameter(8), f14->GetParameter(9), f14->GetParameter(10));
+	  f14->SetParameter(11, f14->GetParameter(11));
+	  h->Fit(f14, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;	
+		
+	if ( status == -1 || status == 0 ){
+	  f14->SetParameters( f14->GetParameter(0), f14->GetParameter(1), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(4) , f14->GetParameter(5), f14->GetParameter(6), f14->GetParameter(7), f14->GetParameter(8), f14->GetParameter(9), f14->GetParameter(10));
+	  f14->SetParameter(11, f14->GetParameter(11));
+	  h->Fit(f14, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}	
+	///////////////
+	cout << status << endl;	
+	
+	// Ups 1S
+	f10->SetParameters( f14->GetParameter(0), f14->GetParameter(1), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(4) );
+	yield_1S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f14->GetParameter(0), f14->GetParameter(1), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(4)+f14->GetParError(4) );
+	double yield_1S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_1S = yield_1S - yield_1S_e;
+	if ( f14->GetParameter(4) > f14->GetParError(4) ) yieldE_1S = TMath::Abs(yieldE_1S);
+	if ( f14->GetParameter(4) < f14->GetParError(4) ) yieldE_1S = TMath::Sqrt(yield_1S);
+	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
+	alpha = f14->GetParameter(2);
+	n = f14->GetParameter(3);
+	mean1 = f14->GetParameter(0);
+	meanE1 = f14->GetParError(0);	
+	sig1 = f14->GetParameter(1);
+	sigE1 = f14->GetParError(1);
+	YieldTot += yield_1S;
+	YieldTotE += (yieldE_1S*yieldE_1S);
+	
+	// Ups 2S
+	f10->SetParameters( f14->GetParameter(5), f14->GetParameter(6), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(7) );
+	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f14->GetParameter(5), f14->GetParameter(6), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(7)+f14->GetParError(7) );
+	double yield_2S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_2S = yield_2S - yield_2S_e;
+	if ( f14->GetParameter(7) > f14->GetParError(7) ) yieldE_2S = TMath::Abs(yieldE_2S);
+	if ( f14->GetParameter(7) < f14->GetParError(7) ) yieldE_2S = TMath::Sqrt(yield_2S);
+	cout << " Ups(2S) yield =  " << yield_2S << "+/-" << yieldE_2S  << endl;
+	YieldTot2S += yield_2S;
+	YieldTot2SE += (yieldE_2S*yieldE_2S);
+	mean2 = f14->GetParameter(5);
+	meanE2 = f14->GetParError(5);		
+	sig2 = f14->GetParameter(6);
+	sigE2 = f14->GetParError(6);
+	
+	// Ups 3S
+	f10->SetParameters( scale*f14->GetParameter(5), scale*f14->GetParameter(6), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(8) );
+	yield_3S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f14->GetParameter(5), f14->GetParameter(6), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(8)+f14->GetParError(8) );
+	double yield_3S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_3S = yield_3S - yield_3S_e;
+	if ( f14->GetParameter(8) > f14->GetParError(8) ) yieldE_3S = TMath::Abs(yieldE_3S);
+	if ( f14->GetParameter(8) < f14->GetParError(8) ) yieldE_3S = TMath::Sqrt(yield_3S);
+	cout << " Ups(3S) yield =  " << yield_3S << "+/-" << yieldE_3S  << endl;
+	YieldTot3S += yield_3S;
+	YieldTot3SE += (yieldE_3S*yieldE_3S);
+		
+	///
+	fitted = 1;
+      } else {
+	h->Draw();
+	cout << "h->GetSumOfWeights() = "<< h->GetSumOfWeights() << endl;
+	cout << "h->Integral() = "<< h->Integral() << endl;
+	cout << "h->GetBinLowEdge(11) = " << h->GetBinLowEdge(11) << "h->GetBinLowEdge(23) = " << h->GetBinLowEdge(23) << "h->GetBinLowEdge(32) = " << h->GetBinLowEdge(32)  << endl;
+	cout << "h->GetBinLowEdge(1) = " << h->GetBinLowEdge(1) << "h->GetBinLowEdge(7) = " << h->GetBinLowEdge(7) << "h->GetBinLowEdge(54) = " << h->GetBinLowEdge(54)  << "h->GetBinLowEdge(60) = " << h->GetBinLowEdge(60) << endl;
+	cout << "(h->Integral(1,7) + h->Integral(54,60)) = "<< (h->Integral(1,7) + h->Integral(54,60)) << endl;
+	yield_1S  = h->Integral(11,21) - 0.83*(h->Integral(1,7) + h->Integral(54,60));
+	if ( yield_1S < 0 ) yield_1S = 1.;
+	yieldE_1S = TMath::Sqrt(h->Integral(11,21));
+	yield_2S  = h->Integral(23,31) - 0.66*(h->Integral(1,7) + h->Integral(54,60));
+	if ( yield_2S < 0 ) yield_2S = 1.;
+	yieldE_2S = TMath::Sqrt(h->Integral(23,31));
+	yield_3S  = h->Integral(32,38) - 0.5*(h->Integral(1,7) + h->Integral(54,60));
+	if ( yield_3S < 0 ) yield_3S = 1.;
+	yieldE_3S = TMath::Sqrt(h->Integral(32,38));
+	YieldTot += yield_1S;
+	YieldTotE += (yieldE_1S*yieldE_1S);
+	YieldTot2S += yield_2S;
+	YieldTot2SE += (yieldE_2S*yieldE_2S);
+	YieldTot3S += yield_3S;
+	YieldTot3SE += (yieldE_3S*yieldE_3S);
+	fitted = 0;
+      }
+      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("Ups(1S) Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
+      if (PRINT) tl->DrawLatex(PRINTX, 0.33, Form("Ups(2S) Yield = %4.1f +/- %4.1f", yield_2S,yieldE_2S));
+      if (PRINT) tl->DrawLatex(PRINTX, 0.26, Form("Ups(3S) Yield = %4.1f +/- %4.1f", yield_3S,yieldE_3S));
+      cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
+      cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
+      cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
+      GetBinCenters(h->GetName(), eta, pt); 
+      cout << "/////" << endl;
+      cout << eta << "  " << pt << endl;
+      nbin = fS1Yield->FindBin(eta, pt); 
+      cout << nbin  << endl;
+      fS1Yield->SetBinContent(nbin, yield_1S); 
+      fS1Yield->SetBinError(nbin, yieldE_1S);
+      fS2Yield->SetBinContent(nbin, yield_2S); 
+      fS2Yield->SetBinError(nbin, yieldE_2S);
+      fS3Yield->SetBinContent(nbin, yield_3S); 
+      fS3Yield->SetBinError(nbin, yieldE_3S);
+      hSigma1S->SetBinContent(nbin, sig1);
+      hSigma1S->SetBinError(nbin, sigE1);
+      hSigma2S->SetBinContent(nbin, sig2);
+      hSigma2S->SetBinError(nbin, sigE2);
+      hMean1S->SetBinContent(nbin, mean1);
+      hMean1S->SetBinError(nbin, meanE1);
+      hMean2S->SetBinContent(nbin, mean2);
+      hMean2S->SetBinError(nbin, meanE2); 
+      hEntries->SetBinContent(nbin, h->GetSumOfWeights());
+      
+      
+      falpha->SetBinContent(nbin, alpha);
+      fn->SetBinContent(nbin, n);
+      cout << "/////" << endl;
+      c1->Modified();
+      c1->Update();
+      
+      
+      TString frag(h->GetName()); 
+      frag.ReplaceAll("s3:mmbar,", ""); 
+      frag.ReplaceAll(",Q1", ""); 
+      frag.ReplaceAll(".", "_");
+      frag.ReplaceAll(",", "_");
+      frag.ReplaceAll(":", "_");
+      
+      c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
+    }
+    
+    TFile *f = new TFile("Yield.root", "RECREATE");
+    fS1Yield->Write();
+    fS2Yield->Write();
+    fS3Yield->Write();
+    falpha->Write();
+    fn->Write();
+    hSigma1S->Write();
+    hSigma2S->Write();
+    hMean1S->Write();
+    hMean2S->Write();
+    hEntries->Write();
+    c1->Clear();
+    cout << "YieldTot1S = " << YieldTot << "+/-" << TMath::Sqrt(YieldTotE) << endl;
+    cout << "YieldTot2S = " << YieldTot2S << "+/-" << TMath::Sqrt(YieldTot2SE) << endl;
+    cout << "YieldTot3S = " << YieldTot3S << "+/-" << TMath::Sqrt(YieldTot3SE) << endl;
+    
+  }
+  
   if ( mode == 0  ){
     
     int PRINT(1); 
@@ -5008,8 +5264,6 @@ void anaXS::FITUpsilon(int mode){
 	if ( status == -1 || status == 0 ){
 	  f2->SetParameters( f2->GetParameter(0), f2->GetParameter(1), f2->GetParameter(2), f2->GetParameter(3), f2->GetParameter(4) , f2->GetParameter(5), f2->GetParameter(6), f2->GetParameter(7), f2->GetParameter(8));
 	  
-	  //f13->FixParameter(5, f13->GetParameter(0)*(10.02/9.46) );
-	  //f13->FixParameter(6, f13->GetParameter(1)*(10.02/9.46) );
 	  h->Fit(f2, fopt.c_str());
 	}
 	
@@ -6867,7 +7121,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
   const int EDG(4), NB(EDG+1); 
   double p0(0.), p1(0.), g0(0.), g1(0.), g2(0.), g3(0.), g4(0.), g5(0.), g6(0.);
   double c0(0.), c1(0.), c2(0.), c3(0.), c4(0.), c5(0.), c6(0.), c7(0.), c8(0.), c9(0.), c10(0.); 
-  double lo(0.), hi(0.), dx(0.);
+  double lo(0.), hi(0.), dx(0.); double p2(0.);
   double lo_2(0.), hi_2(0.);
   double p0E(0.), p1E(0.); 
   double alpha1(-99.), n1(-99);
@@ -6882,7 +7136,8 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
   p0E = TMath::Sqrt(lo)/lo; 
   p1E = TMath::Sqrt(hi)/hi; 
   p1E = TMath::Sqrt(p1E*p1E + p0E*p0E); 
-
+  p2 = 0.;
+  
   // -- pol1
   if (0 == mode) {
     f->SetParameters(p0, p1); 
@@ -7212,6 +7467,184 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
      
   }
   
+    // -- pol2 + CB for All Upsilons
+  if (7 == mode) {
+    c0 = 9.46;
+    c1 = 0.08; // 0.06 -> 0.08
+    c2 = 1.5;
+    c3 = 5.;
+    alpha1 = 1.16; n1 = 12.72;
+    lo = h->GetMaximumBin()-2.*c1/h->GetBinWidth(1); 
+    hi = h->GetMaximumBin()+2.*c1/h->GetBinWidth(1);
+    c4 = (h->Integral(lo, hi) - f0->Integral(lo, hi))/h->GetBinWidth(1);    //  * -> /
+    if (c4 < 0) c4 = h->Integral(lo, hi)*h->GetBinWidth(1);
+    c5 = 10.02;
+    c6 = 0.10;
+    h->GetXaxis()->SetRangeUser(9.8,10.2);
+    lo_2 = h->GetMaximumBin()-2.*c6/h->GetBinWidth(1); 
+    hi_2 = h->GetMaximumBin()+2.*c6/h->GetBinWidth(1);
+    c7 = (h->Integral(lo_2, hi_2) - f0->Integral(lo_2, hi_2))/h->GetBinWidth(1);
+    h->GetXaxis()->SetRangeUser(8.7,11.2);
+    c8 = c7;  
+    f->ReleaseParameter(0); 
+    f->ReleaseParameter(1); 
+    f->ReleaseParameter(2); 
+    f->ReleaseParameter(3); 
+    f->ReleaseParameter(4);
+    f->ReleaseParameter(5); 
+    f->ReleaseParameter(6);
+    f->ReleaseParameter(7); 
+    f->ReleaseParameter(8);
+    f->ReleaseParameter(9); 
+    f->ReleaseParameter(10);    
+    f->ReleaseParameter(11);    
+    
+    bool fix=false;
+    
+    if ( par == 1 ){
+      TFile *f1 = new TFile("FitParametersMC_1D_PtInt_1SBin.root");
+      TH1D *falpha_1D_ptInt;
+      falpha_1D_ptInt = (TH1D*)gFile->Get("falpha_1D_ptInt");
+      TH1D *fn_1D_ptInt;
+      fn_1D_ptInt = (TH1D*)gFile->Get("fn_1D_ptInt");      
+      float etamin, etamax, ptmin, ptmax; 
+      int  n; int bin; 
+      char searchString12[2000];
+      char sp[] = "%"; 
+      char sf[] = "f";
+      sprintf(searchString12, "%s,rapidity%s%s_%s%s", "s12:Pt_IntegratedMass", sp, sf, sp, sf); 
+      cout << "searchString12: " << searchString12 << endl;
+      cout << h->GetName() << endl;
+      n = sscanf(h->GetName(), searchString12, &etamin, &etamax);
+      if (n > 0) {
+	cout << "etamin = "<< etamin << "etamax = " << etamax << endl;
+	bin = falpha_1D_ptInt->FindBin((etamax+etamin)/2);
+	cout << "bin = " << bin << endl;
+	alpha1 = falpha_1D_ptInt->GetBinContent(bin);
+	n1 = fn_1D_ptInt->GetBinContent(bin);
+	cout << " n1 = " << n1 << endl;
+      } 
+    }
+    
+    if ( par == 2 ){
+      TFile *f1 = new TFile("FitParametersMC_1D_RapInt_1SBin.root");
+      TH1D *falpha_1D_RapInt;
+      falpha_1D_RapInt = (TH1D*)gFile->Get("falpha_1D_RapInt");
+      TH1D *fn_1D_RapInt;
+      fn_1D_RapInt = (TH1D*)gFile->Get("fn_1D_RapInt");      
+      float etamin, etamax, ptmin, ptmax; 
+      int  n; int bin; 
+      char searchString12[2000];
+      char sp[] = "%"; 
+      char sf[] = "f";
+      sprintf(searchString12, "%s,pt%s%s_%s%s", "s13:Rapidity_IntegratedMass", sp, sf, sp, sf); 
+      cout << "searchString12: " << searchString12 << endl;
+      cout << h->GetName() << endl;
+      n = sscanf(h->GetName(), searchString12, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "ptmin = "<< ptmin << "ptmax = " << ptmax << endl;
+	bin = falpha_1D_RapInt->FindBin((ptmax+ptmin)/2);
+	cout << "bin = " << bin << endl;
+	alpha1 = falpha_1D_RapInt->GetBinContent(bin);
+	n1 = fn_1D_RapInt->GetBinContent(bin);
+	cout << " n1 = " << n1 << endl;
+      } 
+    }    
+    
+    if ( par == 3 ){
+      TFile *f1 = new TFile("FitParametersMC_3SBin.root");
+      TH1D *falpha;
+      falpha = (TH1D*)gFile->Get("falpha");
+      TH1D *fn;
+      fn = (TH1D*)gFile->Get("fn");      
+      float etamin, etamax, ptmin, ptmax; 
+      double eta, pt; 
+      double sig1, sig2;
+      double mean1, mean2;
+      int  n; int bin; 
+      char searchString12[2000];
+      char sp[] = "%"; 
+      char sf[] = "f";
+      sprintf(searchString12, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", "s1:UpsilonMass", sp, sf, sp, sf, sp, sf, sp, sf);
+      cout << "searchString12: " << searchString12 << endl;
+      cout << h->GetName() << endl;
+      n = sscanf(h->GetName(), searchString12, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "ptmin = "<< ptmin << "ptmax = " << ptmax << endl;
+	cout << "etamin = "<< etamin << "etamax = " << etamax << endl;
+	GetBinCenters(h->GetName(), eta, pt); 
+	bin = falpha->FindBin(eta, pt);
+	cout << "bin = " << bin << endl;
+	alpha1 = falpha->GetBinContent(bin);
+	n1 = fn->GetBinContent(bin);
+	if ( (bin == 21) || (bin == 43) || (bin == 53) || (bin == 20) || (bin == 22)) {
+	  fix =true;
+	}
+	//////
+	//alpha1 += falpha->GetBinError(bin)/4;
+	//if ( bin == 11 ) alpha1 = falpha->GetBinContent(bin);	
+	//if ( bin == 22 ) alpha1 = falpha->GetBinContent(bin);
+	//if ( bin == 70 ) alpha1 = falpha->GetBinContent(bin);
+	//n1 -= fn->GetBinError(bin)/4;
+	//if ( n1 < 1  ) n1 = 1.;
+	//if ( bin == 21 ) n1 = fn->GetBinContent(bin); 
+	//if ( bin == 53 ) n1 = fn->GetBinContent(bin); 
+	//if ( bin == 54 ) n1 = fn->GetBinContent(bin); 
+	//if ( bin == 22 ) n1 = fn->GetBinContent(bin);
+	/////
+	cout << " alpha1 = " << alpha1 << endl;
+	cout << " n1 = " << n1 << endl;
+      }
+      
+      TFile *f2 = new TFile("SigmaDATA_PtInt.root");
+      TH1D *hSigma1S;
+      hSigma1S = (TH1D*)gFile->Get("hSigma1S");
+      TH1D *hSigma2S;
+      hSigma2S = (TH1D*)gFile->Get("hSigma2S");
+      TH1D *hMean1S;
+      hMean1S = (TH1D*)gFile->Get("hMean1S");
+      TH1D *hMean2S;
+      hMean2S = (TH1D*)gFile->Get("hMean2S");      
+      if (n > 0) {
+	bin = hSigma1S->FindBin(eta);
+	cout << "bin = " << bin << endl;
+	sig1 = hSigma1S->GetBinContent(bin);
+	sig2 = hSigma2S->GetBinContent(bin);
+	cout << " sig1 = " << sig1 << " sig2 = " << sig2 << endl;
+	c1 = sig1; c6 = sig2;
+	
+	//mean1 = hMean1S->GetBinContent(bin);
+	//mean2 = hMean2S->GetBinContent(bin);
+	//cout << " mean1 = " << mean1 << " mean2 = " << mean2 << endl;
+	//c0 = mean1; c5 = mean2;	
+	
+      }
+    }    
+    
+    
+    f->SetParameters(c0, c1, c2, c3, c4, c5, c6, c7, c8, p0, p1);
+    f->SetParameter(11, p2);
+    f->SetParLimits(0, 9.410, 9.510); 
+    f->SetParLimits(1, 0.06, 0.14); // 0.14 ->0.18
+    f->SetParLimits(2, 1., 2.8);
+    f->SetParLimits(3, 1., 200.);
+    //f->FixParameter(2, 1.9);
+    //f->FixParameter(3, 1.6);    
+    if ( par > 0 ) {
+      f->FixParameter(2, alpha1);
+      f->FixParameter(3, n1);
+    } 
+    f->SetParLimits(4, 3, 10000000);
+    //f->FixParameter(5, f->GetParameter(0) + 0.56);
+    f->SetParLimits(5, 9.9, 10.1);
+    f->SetParLimits(6, 0.07, 0.18); // 0.18-> 0.22
+    f->SetParLimits(7, 3, 10000000);
+    f->SetParLimits(8, 3, 10000000);
+    //f->FixParameter(9, 0.);
+    //f->FixParameter(11, -0.03);
+    f->SetParLimits(11, -0.01, 0.01);
+    if ( fix ) f->FixParameter(11, 0.);
+  }
   
   
 }
