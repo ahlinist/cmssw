@@ -1411,6 +1411,8 @@ LimitCalc::RunInverter( int    npoints,
    if (mInverterCalcType == 1) { 
      RooStats::HybridCalculator *hhc = (RooStats::HybridCalculator*) hc;
       hhc->SetToys(nSbToys,nBToys); 
+      // FIXME: trying adaptive sampling
+      hhc->SetNToysInTails(0,0); 
 
       // remove global observables from ModelConfig
       mpBModel->SetGlobalObservables( RooArgSet() );
@@ -1439,8 +1441,12 @@ LimitCalc::RunInverter( int    npoints,
          hhc->ForcePriorNuisanceNull(*pNuisPdf);
       }
    } 
-   else 
+   else {
      ((RooStats::FrequentistCalculator*) hc)->SetToys(nSbToys,nBToys); 
+     
+     // FIXME: trying out adaptive sampling
+     ((RooStats::FrequentistCalculator*) hc)->SetNToysInTails(0,0); 
+   }
 
    // Get the result
    RooMsgService::instance().getStream(1).removeTopic(RooFit::NumIntegration);
@@ -1497,7 +1503,7 @@ LimitCalc::RunInverter( int    npoints,
      double _p = 0;
      double _cls = 0.05;
      double _precision = 0.005;
-     double _sigma = 0.0;
+     double _sigma = 2.0;
 
      // establish starting bounds
      // FIXME: check that low and high cover the interval
@@ -1505,26 +1511,58 @@ LimitCalc::RunInverter( int    npoints,
      std::pair<double,double> _low;
      _high.first = GetFirstPoiMax();
      _low.first= GetFirstPoiMin();
-     calc.RunOnePoint(_low.first);
-     r = calc.GetInterval();
-     _low.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
-     calc.RunOnePoint(_high.first);
-     r = calc.GetInterval();
-     _high.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
+     //calc.RunOnePoint(_low.first);
+     //r = calc.GetInterval();
+     //_low.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
+     _low.second = 1.0;
+     //calc.RunOnePoint(_high.first);
+     //r = calc.GetInterval();
+     //_high.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
+     _high.second = 0.0;
 
      // begin binary search
      double _current_poi;
-     while ( fabs(_p - _cls) > _precision ){
+     bool _adaptive_sampling = false;
+     int _points_checked = 0;
+     while ( fabs(_p - _cls) > _precision || !_adaptive_sampling ){
+
        // predict the next point
-     std::cout << "DEBUG3******" << std::endl;
-       std::cout << _low.first << std::cout;
-       std::cout << _low.second << std::cout;
-       std::cout << _high.first << std::cout;
-       std::cout << _high.second << std::cout;
-       _current_poi = _low.first + (_high.first-_low.first)*(_low.second-_cls)/(_low.second-_high.second);
+       std::cout << _low.first << std::endl;
+       std::cout << _low.second << std::endl;
+       std::cout << _high.first << std::endl;
+       std::cout << _high.second << std::endl;
+
+       // turn on adaptive sampling if close
+       // FIXME: hardcoded constants
+       if ( fabs(_p - _cls) < 0.04 ){
+	 ((RooStats::FrequentistCalculator*) calc.GetHypoTestCalculator())->SetNToysInTails(100,0);
+	 if (!_adaptive_sampling){
+	   _adaptive_sampling = true;
+	 }
+       }
+       else{
+	 ((RooStats::FrequentistCalculator*) calc.GetHypoTestCalculator())->SetNToysInTails(0,0);
+       }
+
+       // guess the current step
+       //
+       // FIXME:
+       // 1. save all points and fit with exp
+       // 2. track if we're getting closer, stop if not
+       // 3. estimate uncertainty on the limit
+       //
+       if (_adaptive_sampling && _points_checked > 1){
+	 //_current_poi = _low.first + (_high.first-_low.first)*(_low.second-_cls)/(_low.second-_high.second);
+	 _current_poi = (_low.first*(_cls-_high.second)+_high.first*(_low.second-_cls))/(_low.second-_high.second);
+       }
+       else{
+	 _current_poi = (_low.first + _high.first)/2.0;
+       }
+
        calc.RunOnePoint(_current_poi);
        r = calc.GetInterval();
-       _p = GetExpectedPValue(r, r->ArraySize()-1, 0.0);
+       _p = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
+
        if (_p > _cls){
 	 _low.first = _current_poi;
 	 _low.second = _p;
@@ -1533,21 +1571,30 @@ LimitCalc::RunInverter( int    npoints,
 	 _high.first = _current_poi;
 	 _high.second = _p;
        }
+       
+       
+       
+       std::cout << "_p = " << _p 
+		 << ", _cls = " << _cls << std::endl;
      }
 
-     calc.RunOnePoint(0.15);
-     r = calc.GetInterval();
+     std::cout << "fabs(_p - _cls) = " << fabs(_p - _cls) << std::endl;
+     std::cout << "_precision      = " << _precision << std::endl;
+
+     //calc.RunOnePoint(0.15);
+     //r = calc.GetInterval();
      std::cout << "ArraySize: " << r->ArraySize() << std::endl;
-     std::cout << "CLsb: " << r->CLsplusb(0) << std::endl;
-     std::cout << "CLb: " << r->CLb(0) << std::endl;
-     std::cout << "CLs: " << r->CLs(0) << std::endl;
+     std::cout << "CLsb: " << r->CLsplusb(r->ArraySize()-1) << std::endl;
+     std::cout << "CLb: " << r->CLb(r->ArraySize()-1) << std::endl;
+     std::cout << "CLs: " << r->CLs(r->ArraySize()-1) << std::endl;
 
      //double _p = GetExpectedPValue(r, 0, nSigma );
-     std::cout << "exp median: " << GetExpectedPValue(r, 0, 2) << std::endl;
-     std::cout << "exp median: " << GetExpectedPValue(r, 0, 1) << std::endl;
-     std::cout << "exp median: " << GetExpectedPValue(r, 0, 0) << std::endl;
-     std::cout << "exp median: " << GetExpectedPValue(r, 0, -1) << std::endl;
-     std::cout << "exp median: " << GetExpectedPValue(r, 0, -2) << std::endl;
+     std::cout << "POI = " << _current_poi << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, r->ArraySize()-1, 2) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, r->ArraySize()-1, 1) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, r->ArraySize()-1, 0) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, r->ArraySize()-1, -1) << std::endl;
+     std::cout << "exp median: " << GetExpectedPValue(r, r->ArraySize()-1, -2) << std::endl;
 
      // stop here for testing
      return r;
