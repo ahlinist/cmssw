@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.10 2011/08/15 06:44:11 mkortela Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.11 2011/09/23 14:14:25 mkortela Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -85,6 +85,7 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       bool matchedToHLTPFTau;
       bool tauTagHasTracks;
       bool l25PFTauLeadTrkIsValid;
+      bool primaryVertexIsValid;
       
       bool l25DefDisc_Trk5_IsoPtMin1_Ntrk0;
       bool l25DefDisc_Trk5_IsoPtMin1_Ntrk1;
