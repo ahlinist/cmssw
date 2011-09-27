@@ -67,3 +67,117 @@ void XSrho(){
   
 }
 
+void ClosureTest1S(){
+
+  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1S.10ptbins_ClosureTest.root");
+  TH2D *S1;
+  S1 = (TH2D*)gFile->Get("UpsilonYield");
+  TFile *f = new TFile("ClosureTest_10ptbins.root");
+  TH2D *S2;
+  S2 = (TH2D*)gFile->Get("fS1Yield");
+  TH2D *S3 = (TH2D*)S2->Clone();
+  TH2D *S4 = (TH2D*)S2->Clone();
+  TH2D *S5 = (TH2D*)S2->Clone();
+  TH1D *S6;
+  S6 = new TH1D("s","s", 50, -0.2,0.2);
+  
+  double s1(0.), s2(0.), s3(0.);
+  double e2(0.), e3(0.); 
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    for (int j = 1; j <= S1->GetNbinsY(); ++j) {
+    
+      s1 = S1->GetCellContent(i,j);
+      s2 = S2->GetCellContent(i,j);
+      s3 = (s2 - s1)/s1;
+      S3->SetCellContent(i,j,s3);
+      e2 = S2->GetCellError(i,j);
+      e3 = e2/s1;
+      S4->SetCellContent(i,j,e3);
+      S5->SetCellContent(i,j,s3/e3);
+      S6->Fill(s3);
+       
+    }
+  }
+  
+  TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
+  c1->Divide(3,1);
+  c1->cd(1);
+  S1->Draw("colz");
+  c1->cd(2);
+  S2->Draw("colz");
+  c1->cd(3);
+  //S3->SetMinimum(-0.03);
+  //S3->SetMaximum(0.3);
+  S3->Draw("colz");
+  TCanvas *c2 = new TCanvas("c2","c2",1200,600);
+  //c2->Divide(3,1);
+  //c2->cd(1);
+  //S3->SetMinimum(-0.10);
+  //S3->Draw("colz");
+  //c2->cd(2);
+  //S4->SetMaximum(0.07);
+  //S4->Draw("colz");
+  //c2->cd(3);
+  //S5->SetMaximum(4.); 
+  //S5->SetMinimum(-4.);
+  //S5->Draw("colz");
+  S6->Draw(); 
+}
+
+void ClosureTest2S(){
+
+  TFile *f = new TFile("101201.fl10.mm.ups2s.xsReader_2S.10ptbins_ClosureTest.root");
+  TH2D *S1;
+  S1 = (TH2D*)gFile->Get("UpsilonYield");
+  TFile *f = new TFile("ClosureTest_10ptbins.root");
+  TH2D *S2;
+  S2 = (TH2D*)gFile->Get("fS2Yield");
+  TH2D *S3 = (TH2D*)S2->Clone();
+  TH2D *S4 = (TH2D*)S2->Clone();
+  TH2D *S5 = (TH2D*)S2->Clone();
+  TH1D *S6;
+  S6 = new TH1D("s","s", 50, -0.2,0.2);
+  
+  double s1(0.), s2(0.), s3(0.);
+  double e2(0.), e3(0.); 
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    for (int j = 1; j <= S1->GetNbinsY(); ++j) {
+    
+      s1 = S1->GetCellContent(i,j);
+      s2 = S2->GetCellContent(i,j);
+      s3 = ((s2*1.17) - s1)/s1;
+      S3->SetCellContent(i,j,s3);
+      e2 = S2->GetCellError(i,j);
+      e3 = e2/s1;
+      S4->SetCellContent(i,j,e3);
+      S5->SetCellContent(i,j,s3/e3);
+      S6->Fill(s3);
+      
+    }
+  }
+  
+  TCanvas *c3 = new TCanvas("c3","c3",1200,600); 
+  c3->Divide(3,1);
+  c3->cd(1);
+  S1->Draw("colz");
+  c3->cd(2);
+  S2->Draw("colz");
+  c3->cd(3);
+  //S3->SetMinimum(-0.03);
+  S3->SetMaximum(0.10);
+  S3->Draw("colz");
+  TCanvas *c4 = new TCanvas("c4","c4",1200,600);
+  //c4->Divide(3,1);
+  //c4->cd(1);
+  //S3->Draw("colz");
+  //c4->cd(2);
+  //S4->Draw("colz");
+  //c4->cd(3);
+  //S5->SetMaximum(4.); 
+  //S5->SetMinimum(-4.); 
+  //S5->Draw("colz"); 
+  S6->Draw(); 
+  
+  
+}
+  
