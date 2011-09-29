@@ -63,8 +63,8 @@ Processor::Processor(xdaq::ApplicationStub *s)
   , log_(getApplicationLogger())
   , fwepWrapper_(log_)
   , runNumber_(0)
-  , runKey_("")
-  , runKeyAuto_(true)
+  , runType_("")
+  , runTypeAuto_(true)
   , autoRestartSlaves_(false)
   , slaveRestartDelaySecs_(10)
   , hasShMem_(true)
@@ -144,8 +144,8 @@ Processor::Processor(xdaq::ApplicationStub *s)
 
   ispace->fireItemAvailable("stateName",             fsm_.stateName()             );
   ispace->fireItemAvailable("runNumber",            &runNumber_                   );
-  ispace->fireItemAvailable("runKey",               &runKey_                      );
-  ispace->fireItemAvailable("runKeyAuto",           &runKeyAuto_                  );
+  ispace->fireItemAvailable("runType",               &runType_                    );
+  ispace->fireItemAvailable("runTypeAuto",           &runTypeAuto_                );
 
   //todo: autodetect dqm shm output service
   ispace->fireItemAvailable("hasSharedMemory",      &hasShMem_                    );
@@ -284,10 +284,10 @@ bool Processor::initEDMConfiguration() {
 
     PyLineSimpleModifier * modRef = 0;
 
-    if (runKeyAuto_.value_) {//change run key at script load time
-      LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_KEY="<<runKey_.value_);
-      if (runKey_.value_!="") {
-        PyLineSimpleModifier modifier("runtype",runKey_.value_);
+    if (runTypeAuto_.value_) {//change run key at script load time
+      LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_TYPE="<<runType_.value_);
+      if (runType_.value_!="") {
+        PyLineSimpleModifier modifier("runtype",runType_.value_);
         modRef = &modifier;
       }
     }
