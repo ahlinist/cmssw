@@ -188,6 +188,7 @@ namespace dqmevf
         
     xdata::UnsignedInteger32         runNumber_;
     xdata::String                    runType_;
+    xdata::String                    runKey_;
     xdata::Boolean                   runTypeAuto_;
     xdata::Boolean                   autoRestartSlaves_;
     xdata::UnsignedInteger32         slaveRestartDelaySecs_;
