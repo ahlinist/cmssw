@@ -187,8 +187,8 @@ namespace dqmevf
     WrapperConfig                    wCfg_;
         
     xdata::UnsignedInteger32         runNumber_;
-    xdata::String                    runKey_;
-    xdata::Boolean                   runKeyAuto_;
+    xdata::String                    runType_;
+    xdata::Boolean                   runTypeAuto_;
     xdata::Boolean                   autoRestartSlaves_;
     xdata::UnsignedInteger32         slaveRestartDelaySecs_;
     xdata::Boolean                   hasShMem_;
