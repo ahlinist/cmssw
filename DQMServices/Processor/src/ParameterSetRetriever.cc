@@ -35,7 +35,7 @@ namespace dqmevf{
   const std::string ParameterSetRetriever::dbheading  ="db:";  
   const std::string ParameterSetRetriever::webheading ="http://";  
 
-  ParameterSetRetriever::ParameterSetRetriever(const std::string& in)
+  ParameterSetRetriever::ParameterSetRetriever(const std::string& in, PyLineSimpleModifier * modifier)
   {
     using std::string;
     using std::ostringstream; 
@@ -51,6 +51,7 @@ namespace dqmevf{
 	string   line;
 	ifstream configFile(filename.c_str());
 	while(std::getline(configFile,line)) {
+	  if (modifier) modifier->modifyRunType(&line);
 	  pset+=line;
 	  pset+="\n";
 	}
