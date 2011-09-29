@@ -42,7 +42,7 @@ process.muMatchF.maxDPtRel = 0.2
 
 
 process.muonMatchByPt = cms.EDProducer("MCMatcherByPt", # cut on deltaR, deltaPt/Pt; pick best by deltaPt
-    src     = cms.InputTag("muons"), # RECO objects to match  
+    src     = cms.InputTag("muons"), # RECO objects to match
     matched = cms.InputTag("genParticles"),   # mc-truth particle collection
     mcPdgId     = cms.vint32(13), # one or more PDG ID (13 = muon); absolute values (see below)
     checkCharge = cms.bool(True), # True = require RECO and MC objects to have the same charge
@@ -86,10 +86,10 @@ process.MessageLogger = cms.Service("MessageLogger")
 #----------------------------------------------------------------------
 
 process.analyzePatMCMatching = cms.EDAnalyzer("PatMCMatchingExtended",
-  muonSrc     = cms.untracked.InputTag("cleanPatMuons")                                             
+  muonSrc     = cms.untracked.InputTag("cleanPatMuons")
 )
 
-process.out.outputCommands = cms.untracked.vstring('keep *') 
+process.out.outputCommands = cms.untracked.vstring('keep *')
 process.outpath.remove(process.out)
 
 
@@ -105,10 +105,10 @@ process.maxEvents.input = -1
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-     pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
+     pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_8'
                         #, relVal        =  'RelValZMM'
-                        ,relVal        =  'RelValJpsiMM'
-                        , globalTag     = 'START42_V7'
+                        , relVal        =  'RelValJpsiMM'
+                        , globalTag     = 'START42_V12'
                         , numberOfFiles = 1
                         )
     )

@@ -14,8 +14,8 @@ process.GlobalTag.globaltag = cms.string('START42_V12::All')
 
 process.load('PhysicsTools.PatAlgos.patSequences_cff')
 
-process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(-1)
 )
 
 process.source = cms.Source("PoolSource",
@@ -25,16 +25,16 @@ process.source = cms.Source("PoolSource",
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
+    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_8'
                         , relVal        = 'RelValTTbar'
-                        , globalTag     = 'START42_V7'
+                        , globalTag     = 'START42_V12'
                         , numberOfFiles = 1
                         )
     )
 )
 
-process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(-1)
 )
 
 # switch to HPS + TaNC combined tau id. algorithm
@@ -53,7 +53,7 @@ process.analyzePatTau = cms.EDAnalyzer("PatTauAnalyzer",
 # (neccessary in order to make efficiency plots)
 process.cleanPatTaus.preselection = cms.string('')
 
-process.TFileService = cms.Service("TFileService", 
+process.TFileService = cms.Service("TFileService",
     fileName = cms.string('patTau_Histograms.root')
 )
 
