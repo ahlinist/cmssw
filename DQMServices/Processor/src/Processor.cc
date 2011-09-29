@@ -63,6 +63,8 @@ Processor::Processor(xdaq::ApplicationStub *s)
   , log_(getApplicationLogger())
   , fwepWrapper_(log_)
   , runNumber_(0)
+  , runKey_("")
+  , runKeyAuto_(true)
   , autoRestartSlaves_(false)
   , slaveRestartDelaySecs_(10)
   , hasShMem_(true)
@@ -142,6 +144,8 @@ Processor::Processor(xdaq::ApplicationStub *s)
 
   ispace->fireItemAvailable("stateName",             fsm_.stateName()             );
   ispace->fireItemAvailable("runNumber",            &runNumber_                   );
+  ispace->fireItemAvailable("runKey",               &runKey_                      );
+  ispace->fireItemAvailable("runKeyAuto",           &runKeyAuto_                  );
 
   //todo: autodetect dqm shm output service
   ispace->fireItemAvailable("hasSharedMemory",      &hasShMem_                    );
@@ -277,7 +281,19 @@ bool Processor::initEDMConfiguration() {
   configStringCopy_=std::string();
 
   try {
-    ParameterSetRetriever pr(configString_);
+
+    PyLineSimpleModifier * modRef = 0;
+
+    if (runKeyAuto_.value_) {//change run key at script load time
+      LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_KEY="<<runKey_.value_);
+      if (runKey_.value_!="") {
+        PyLineSimpleModifier modifier("runtype",runKey_.value_);
+        modRef = &modifier;
+      }
+    }
+
+    ParameterSetRetriever pr(configString_,modRef);
+
     friendlyPythonCfg_ = pr.getAsString();
     wCfg_.configPathTable = pr.getPathTableAsString();
     PythonProcessDesc ppdesc = PythonProcessDesc(friendlyPythonCfg_);
