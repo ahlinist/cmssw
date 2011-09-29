@@ -289,6 +289,7 @@ bool Processor::initEDMConfiguration() {
     if (runTypeAuto_.value_) {//change run key at script load time
       LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_KEY="<<runKey_.value_);
       LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_TYPE="<<runType_.value_);
+      //cout << "RUN_TYPE="<<runType_.value_ << endl;
 
       //using run type (modify to use run key var instead)
       if (runType_.value_!="") {
@@ -300,6 +301,7 @@ bool Processor::initEDMConfiguration() {
     ParameterSetRetriever pr(configString_,modRef);
 
     friendlyPythonCfg_ = pr.getAsString();
+    //std::cout << friendlyPythonCfg_ << std::endl;
     wCfg_.configPathTable = pr.getPathTableAsString();
     PythonProcessDesc ppdesc = PythonProcessDesc(friendlyPythonCfg_);
     wCfg_.pdesc = ppdesc.processDesc();

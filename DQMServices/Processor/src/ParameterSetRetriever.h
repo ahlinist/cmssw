@@ -48,6 +48,7 @@ namespace dqmevf {
       if (repbegin==std::string::npos || repend==std::string::npos) return false;
       std::string ret = line->substr(0,repbegin+1) + value_ + line->substr(repend);
       *line = ret;
+      applied=true;
       return true;
     }
   };
