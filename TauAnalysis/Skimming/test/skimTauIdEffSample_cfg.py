@@ -88,6 +88,7 @@ process.hltMu = cms.EDFilter("EventSelPluginFilter",
             'HLT_IsoMu17_v6',
             'HLT_IsoMu17_v8',
             'HLT_IsoMu17_v9',
+            'HLT_IsoMu17_v10',        
             'HLT_IsoMu17_v11'
         )
     )
