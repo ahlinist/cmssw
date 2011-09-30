@@ -141,3 +141,5 @@ for fileName_base, fileNameAndProperties_entry in fileNamesAndProperties_dict.it
                 outputFile.write("%s\n" % fileNameAndProperties_entry[index]['fileName'])
 
 outputFile.close()
+
+print("execute 'cat duplicatefiles.list | xargs -n 1 rfrm' to delete duplicated files.")
