@@ -3,6 +3,8 @@
 
 #include <string>
 #include <iostream>
+#include <boost/algorithm/string.hpp>
+
 
 namespace dqmevf {
 
@@ -25,6 +27,7 @@ namespace dqmevf {
 
   };
 
+  using namespace boost;
   class PyLineSimpleModifier {
   private:
     std::string varName_;
@@ -38,20 +41,9 @@ namespace dqmevf {
       value_=value;
       applyOnce=once;
     }
-    bool modifyRunType(std::string * line) {
-      if (applied && applyOnce) return true;
-      //size_t pos=line->find(varName_);
-      size_t pos=line->find("runtype");
-      if (pos==std::string::npos) return false;
-      size_t repbegin = line->find("'");
-      size_t repend   = line->rfind("'");
-      if (repbegin==std::string::npos || repend==std::string::npos) return false;
-      std::string ret = line->substr(0,repbegin+1) + value_ + line->substr(repend);
-      *line = ret;
-      applied=true;
-      return true;
-    }
+    bool modifyRunType(std::string * line); 
   };
 } // dqmevf
+
 
 #endif
