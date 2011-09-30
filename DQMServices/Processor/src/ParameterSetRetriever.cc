@@ -54,7 +54,7 @@ namespace dqmevf{
 	string   line;
 	ifstream configFile(filename.c_str());
 	while(std::getline(configFile,line)) {
-	  if (modifier) modifier->modifyRunType(&line);
+	  //if (modifier) modifier->modifyRunType(&line);
 	  pset+=line;
 	  pset+="\n";
 	}
