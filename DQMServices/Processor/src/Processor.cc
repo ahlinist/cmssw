@@ -283,8 +283,8 @@ bool Processor::initEDMConfiguration() {
   configStringCopy_=std::string();
 
   try {
+    /*
     PyLineSimpleModifier * modRef = 0;
-
     if (runTypeAuto_.value_) {//change run key at script load time
       LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_KEY="<<runKey_.value_);
       LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_TYPE="<<runType_.value_);
@@ -296,13 +296,19 @@ bool Processor::initEDMConfiguration() {
         modRef = &modifier;
       }
     }
-
-    ParameterSetRetriever pr(configString_,modRef);
+    */
+    //ParameterSetRetriever pr(configString_,modRef);
+    ParameterSetRetriever pr(configString_,0);
 
     friendlyPythonCfg_ = pr.getAsString();
     //std::cout << friendlyPythonCfg_ << std::endl;
     wCfg_.configPathTable = pr.getPathTableAsString();
-    PythonProcessDesc ppdesc = PythonProcessDesc(friendlyPythonCfg_);
+
+    string argv1="runtype="+runType_.value_;
+    string argv2="runkey="+runKey_.value_;
+    const char* argvArray[2]={argv1.c_str(), argv2.c_str()};
+    PythonProcessDesc ppdesc = PythonProcessDesc(friendlyPythonCfg_,3,(char**)argvArray);
+
     wCfg_.pdesc = ppdesc.processDesc();
     configStringCopy_ = wCfg_.pdesc->dump();
     configurationInitialized_=true;
