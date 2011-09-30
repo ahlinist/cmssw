@@ -283,7 +283,6 @@ bool Processor::initEDMConfiguration() {
   configStringCopy_=std::string();
 
   try {
-
     PyLineSimpleModifier * modRef = 0;
 
     if (runTypeAuto_.value_) {//change run key at script load time
