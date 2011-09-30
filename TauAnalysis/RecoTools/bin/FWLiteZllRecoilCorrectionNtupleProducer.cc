@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.5 2011/08/18 17:51:30 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.6 2011/09/09 10:25:36 veelken Exp $
  *
  */
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
   vInputTag srcWeights = cfgZllRecoilCorrectionNtupleProducer.getParameter<vInputTag>("srcWeights");
 
   edm::InputTag srcVertices = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcVertices");
-  edm::InputTag srcPFNeutralRho = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcPFNeutralRho");
+  edm::InputTag srcRhoNeutral = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcRhoNeutral");
 
   TFile* addPUreweightFile = 0;
   TH1* addPUreweightHistogram = 0;  
@@ -177,16 +177,16 @@ int main(int argc, char* argv[])
 	evtWeight *= (*weight);
       }
 
-      if ( srcPFNeutralRho.label() != "" && srcVertices.label() != "" && addPUreweightHistogram ) {
+      if ( srcRhoNeutral.label() != "" && srcVertices.label() != "" && addPUreweightHistogram ) {
 	edm::Handle<reco::VertexCollection> vertices;
 	evt.getByLabel(srcVertices, vertices);
 	size_t vtxMultiplicity = vertices->size();
   
-	edm::Handle<double> pfNeutralRho_handle;
-	evt.getByLabel(srcPFNeutralRho, pfNeutralRho_handle);
-	double pfNeutralRho = (*pfNeutralRho_handle);
+	edm::Handle<double> rhoNeutral_handle;
+	evt.getByLabel(srcRhoNeutral, rhoNeutral_handle);
+	double rhoNeutral = (*rhoNeutral_handle);
 
-	int bin = addPUreweightHistogram->FindBin(vtxMultiplicity, pfNeutralRho);
+	int bin = addPUreweightHistogram->FindBin(vtxMultiplicity, rhoNeutral);
 	double addPUreweight = addPUreweightHistogram->GetBinContent(bin);
 	if ( addPUreweight < minPUreweight ) addPUreweight = minPUreweight;
 	if ( addPUreweight > maxPUreweight ) addPUreweight = maxPUreweight;
@@ -221,6 +221,10 @@ int main(int argc, char* argv[])
   
       const pat::MET& theEventMEt = (*met->begin());
 
+      // CV: fit Z-recoil correction parameters for events with MEt < 60 GeV only,
+      //     as di-boson and TTbar backgrounds dominate in high MEt tail
+      if ( theEventMEt.pt() > 60. ) continue;
+
       qT = bestZllCandidate->pt();
 
       int errorFlag = 0;
@@ -246,10 +250,10 @@ int main(int argc, char* argv[])
       for ( reco::PFCandidateCollection::const_iterator unclPFCand = unclPFCands->begin();
 	    unclPFCand != unclPFCands->end(); ++unclPFCand ) {
 	assert(bestZllCandidate->numberOfDaughters() == 2);
-	if ( reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(0)->p4()) < 0.3 ||
-	     reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(1)->p4()) < 0.3 ) {
-	  std::cout << "Warning: unclustered PFCandidate close to Muon, pt = " << unclPFCand->pt() << std::endl;
-	}
+	//if ( reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(0)->p4()) < 0.3 ||
+	//     reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(1)->p4()) < 0.3 ) {
+	//  std::cout << "Warning: unclustered PFCandidate close to Muon, pt = " << unclPFCand->pt() << std::endl;
+	//}
 	v_ii += unclPFCand->p4();
       }
 

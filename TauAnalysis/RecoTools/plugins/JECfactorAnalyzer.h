@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.1 $
  *
- * $Id: JECfactorAnalyzer.cc,v 1.6 2011/09/09 10:25:36 veelken Exp $
+ * $Id: JECfactorAnalyzer.h,v 1.1 2011/09/27 09:14:25 veelken Exp $
  *
  */
 
@@ -18,8 +18,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 
 class JECfactorAnalyzer : public edm::EDAnalyzer
 {

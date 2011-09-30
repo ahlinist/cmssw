@@ -26,7 +26,7 @@ selectedPrimaryVertexForMuTau = cms.EDFilter("VertexByParticleMatchSelector",
 
 selectedPrimaryVertexQualityForMuTau = cms.EDFilter("VertexSelector",
     src = cms.InputTag('selectedPrimaryVertexForMuTau'),
-    cut = cms.string("isValid & ndof >= 4"),
+    cut = cms.string("isValid & ndof >= 7"),
     filter = cms.bool(False)                                          
 )
 

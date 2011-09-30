@@ -89,11 +89,13 @@ pat::MET ZllRecoilCorrectionAlgorithm::buildZllCorrectedMEt(
     double u1rec_corrected = (u1rec - u1gen)*u1sigmaCorr + u1gen;         
     double u2rec_corrected = (u2rec - u2gen)*u2sigmaCorr + u2gen;
     
+    //std::cout << "--> rec(resolution corrected): u1 = " << u1rec_corrected << ", u2 = " << u2rec_corrected << std::endl;
+
     double dDiff = corrParameterData_->d() - corrParameterMC_->d();
     double kDiff = corrParameterData_->k() - corrParameterMC_->k();
     u1rec_corrected += dDiff + kDiff*qT;
     
-    //std::cout << "--> rec(corrected): u1 = " << u1rec_corrected << ", u2 = " << u2rec_corrected << std::endl;
+    //std::cout << "--> rec(resolution + response corrected): u1 = " << u1rec_corrected << ", u2 = " << u2rec_corrected << std::endl;
     
     if ( shiftByUncertainty_ != 0. ) {
       //std::cout << " shiftByUncertainty = " << shiftByUncertainty_ << std::endl;

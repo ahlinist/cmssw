@@ -15,14 +15,14 @@ process.source = cms.Source("PoolSource",
 isMC = False
 
 if isMC:
-    process.GlobalTag.globaltag = 'GR_R_42_V20::All'
-    process.source.fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/skim_data_SingleMu_Run2011A_PromptReco_v4_chunk_93_5651.root'
-    )
-else:
     process.GlobalTag.globaltag = 'START42_V13::All'
     process.source.fileNames = cms.untracked.vstring(
         'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_9_1_T1A.root'
+    )
+else:    
+    process.GlobalTag.globaltag = 'GR_R_42_V20::All'
+    process.source.fileNames = cms.untracked.vstring(
+        'file:/data1/veelken/CMSSW_4_2_x/skims/skim_data_SingleMu_Run2011A_PromptReco_v4_chunk_93_5651.root'
     )
 
 #--------------------------------------------------------------------------------

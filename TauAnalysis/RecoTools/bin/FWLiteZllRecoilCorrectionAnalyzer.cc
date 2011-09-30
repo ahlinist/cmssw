@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.4 2011/08/18 17:51:30 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.5 2011/09/09 10:25:36 veelken Exp $
  *
  */
 
@@ -45,6 +45,7 @@
 #include <TSystem.h>
 #include <TROOT.h>
 #include <TBenchmark.h>
+#include <TMath.h>
 
 #include <vector>
 #include <string>
@@ -86,7 +87,9 @@ int main(int argc, char* argv[])
   vInputTag srcWeights = cfgZllRecoilCorrectionAnalyzer.getParameter<vInputTag>("srcWeights");
 
   edm::InputTag srcVertices = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcVertices");
-  edm::InputTag srcPFNeutralRho = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFNeutralRho");
+  edm::InputTag srcRhoNeutral = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFNeutralRho");
+  edm::InputTag srcRhoChargedHadronNoPileUp = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFNeutralRho");
+  edm::InputTag srcRhoPFNoPileUp = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcRhoPFNoPileUp");
 
   edm::InputTag srcEventCounter = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcEventCounter");
 
@@ -125,14 +128,25 @@ int main(int argc, char* argv[])
   std::string processType = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("type");
   std::cout << " type = " << processType << std::endl;
   bool isData = (processType == "Data");
+  bool isMC_background = (processType == "MC_background");
+  bool isMC_signal = !(isData || isMC_background);
 
   ZllRecoilCorrectionAlgorithm* corrAlgorithm = 0;
-  if ( !isData ) {
+  if ( isMC_signal ) {
     edm::ParameterSet cfgZllRecoilCorrectionAlgorithm = 
       cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("algorithm");
     corrAlgorithm = new ZllRecoilCorrectionAlgorithm(cfgZllRecoilCorrectionAlgorithm);
   }
-
+  
+  ZllRecoilCorrectionParameterSet* ZllRecoilCorrParameter_data = 0;
+  if ( cfgZllRecoilCorrectionAnalyzer.exists("algorithm") ) {
+    edm::ParameterSet cfgZllRecoilCorrectionAlgorithm = 
+      cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("algorithm");
+    edm::ParameterSet cfgZllRecoilCorrParameters = cfgZllRecoilCorrectionAlgorithm.getParameter<edm::ParameterSet>("parameter");
+    edm::ParameterSet cfgZllRecoilCorrParameters_data = cfgZllRecoilCorrParameters.getParameter<edm::ParameterSet>("data");
+    ZllRecoilCorrParameter_data = new ZllRecoilCorrectionParameterSet(cfgZllRecoilCorrParameters_data);
+  }
+  
 //--- book "dummy" histogram counting number of processed events
   TH1* histogramEventCounter = fs.make<TH1F>("numEventsProcessed", "Number of processed Events", 3, -0.5, +2.5);
   histogramEventCounter->GetXaxis()->SetBinLabel(1, "all Events (DBS)");      // CV: bin numbers start at 1 (not 0) !!
@@ -152,18 +166,26 @@ int main(int argc, char* argv[])
 //--- create control plots
   TFileDirectory dir = ( directory != "" ) ? fs.mkdir(directory) : fs;
   edm::ParameterSet cfgZllRecoilCorrectionHistManager;
-  ZllRecoilCorrectionHistManager* histogramsBeforeGenPUreweight = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  ZllRecoilCorrectionHistManager* histogramsBeforeGenPUreweight 
+    = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
   TFileDirectory subdirBeforeGenPUreweight = dir.mkdir("beforeGenPUreweight");
   histogramsBeforeGenPUreweight->bookHistograms(subdirBeforeGenPUreweight);
-  ZllRecoilCorrectionHistManager* histogramsBeforeAddPUreweight = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  ZllRecoilCorrectionHistManager* histogramsBeforeAddPUreweight 
+    = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
   TFileDirectory subdirBeforeAddPUreweight = dir.mkdir("beforeAddPUreweight");
   histogramsBeforeAddPUreweight->bookHistograms(subdirBeforeAddPUreweight);
-  ZllRecoilCorrectionHistManager* histogramsBeforeZllRecoilCorr = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  ZllRecoilCorrectionHistManager* histogramsBeforeZllRecoilCorr 
+    = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
   TFileDirectory subdirBeforeZllRecoilCorr = dir.mkdir("beforeZllRecoilCorr");
   histogramsBeforeZllRecoilCorr->bookHistograms(subdirBeforeZllRecoilCorr);
-  ZllRecoilCorrectionHistManager* histogramsAfterZllRecoilCorr  = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
-  TFileDirectory subdirAfterZllRecoilCorr  = dir.mkdir("afterZllRecoilCorr");
-  histogramsAfterZllRecoilCorr->bookHistograms(subdirAfterZllRecoilCorr);
+  ZllRecoilCorrectionHistManager* histogramsAfterZllRecoilMCtoDataCorr  
+    = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  TFileDirectory subdirAfterZllRecoilMCtoDataCorr = dir.mkdir("afterZllRecoilMCtoDataCorr");
+  histogramsAfterZllRecoilMCtoDataCorr->bookHistograms(subdirAfterZllRecoilMCtoDataCorr);
+  ZllRecoilCorrectionHistManager* histogramsAfterZllRecoilAbsCalib
+    = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  TFileDirectory subdirAfterZllRecoilAbsCalib  = dir.mkdir("afterZllRecoilAbsCalib");
+  histogramsAfterZllRecoilAbsCalib->bookHistograms(subdirAfterZllRecoilAbsCalib);
   
   std::ofstream* selEventsFile = new std::ofstream(selEventsFileName.data(), std::ios::out);
 
@@ -179,7 +201,7 @@ int main(int argc, char* argv[])
 //--- open input file
     TFile* inputFile = TFile::Open(inputFileName->data());
     if ( !inputFile ) 
-      throw cms::Exception("FWLiteTauFakeRateAnalyzer") 
+      throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
 	<< "Failed to open inputFile = " << (*inputFileName) << " !!\n";
 
     std::cout << "opening inputFile = " << (*inputFileName);
@@ -229,14 +251,24 @@ int main(int argc, char* argv[])
       evt.getByLabel(srcVertices, vertices);
       size_t vtxMultiplicity = vertices->size();
   
-      edm::Handle<double> pfNeutralRho_handle;
-      evt.getByLabel(srcPFNeutralRho, pfNeutralRho_handle);
-      double pfNeutralRho = (*pfNeutralRho_handle);
+      edm::Handle<double> rhoNeutral_handle;
+      evt.getByLabel(srcRhoNeutral, rhoNeutral_handle);
+      double rhoNeutral = (*rhoNeutral_handle);
+
+      edm::Handle<double> rhoChargedHadronNoPileUp_handle;
+      evt.getByLabel(srcRhoChargedHadronNoPileUp, rhoChargedHadronNoPileUp_handle);
+      double rhoChargedHadronNoPileUp = (*rhoChargedHadronNoPileUp_handle);
+
+      edm::Handle<double> rhoPFNoPileUp_handle;
+      evt.getByLabel(srcRhoPFNoPileUp, rhoPFNoPileUp_handle);
+      double rhoPFNoPileUp = (*rhoPFNoPileUp_handle);
 
       double addPUreweight = 1.0;
       if ( addPUreweightHistogram ) {
-	int bin = addPUreweightHistogram->FindBin(vtxMultiplicity, pfNeutralRho);
+	int bin = addPUreweightHistogram->FindBin(vtxMultiplicity, rhoNeutral);
 	addPUreweight = addPUreweightHistogram->GetBinContent(bin);
+	//std::cout << "vtxMultiplicity = " << vtxMultiplicity << ", pfNeutralRho = " << pfNeutralRho << ":"
+	//	    << " addPUreweight = " << addPUreweight << std::endl;
 	if ( addPUreweight < minPUreweight ) addPUreweight = minPUreweight;
 	if ( addPUreweight > maxPUreweight ) addPUreweight = maxPUreweight;
       }
@@ -263,36 +295,54 @@ int main(int argc, char* argv[])
       evt.getByLabel(srcMEt, met);
   
       if ( met->size() != 1 ) 
-	throw cms::Exception("FWLiteTauFakeRateAnalyzer") 
+	throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
 	  << "Failed to find unique MET object !!\n";
   
-      const pat::MET& theEventMEt = (*met->begin());
+      const pat::MET& rawMEt = (*met->begin());
 
       histogramsBeforeGenPUreweight->fillHistograms(
-        *bestZllCandidate, theEventMEt, vtxMultiplicity, pfNeutralRho, 1.0);
+	*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 
+	rhoChargedHadronNoPileUp, rhoPFNoPileUp, 1.0);
       histogramsBeforeAddPUreweight->fillHistograms(
-        *bestZllCandidate, theEventMEt, vtxMultiplicity, pfNeutralRho, genPUreweight);
+        *bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 
+	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight);
       histogramsBeforeZllRecoilCorr->fillHistograms(
-        *bestZllCandidate, theEventMEt, vtxMultiplicity, pfNeutralRho, genPUreweight*addPUreweight);
+        *bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 
+	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight*addPUreweight);
 
-      if ( theEventMEt.pt() > 40. ) {
+      //if ( rawMEt.pt() > 80. && rawMEt.pt() < 100. ) {
+      if ( bestZllCandidate->pt() > 150. ) {
 	std::cout << "run = " << evt.id().run() << "," 
 		  << " ls = " << evt.luminosityBlock() << ", event = " << evt.id().event() << ":" << std::endl;
 	      
 	(*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
       }
 
-      if ( isData ) continue;
+      pat::MET mcToDataCorrMEt(rawMEt);
+      if ( isMC_signal ) {
+	if ( !rawMEt.genMET() )
+	  throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
+	    << "Failed to find generator level MET object !!\n";
 
-      if ( !theEventMEt.genMET() )
-	throw cms::Exception("FWLiteTauFakeRateAnalyzer") 
-	  << "Failed to find generator level MET object !!\n";
+	mcToDataCorrMEt = corrAlgorithm->buildZllCorrectedMEt(rawMEt, rawMEt.genMET()->p4(), bestZllCandidate->p4());
+      }
+      histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
+	*bestZllCandidate, mcToDataCorrMEt, vtxMultiplicity, rhoNeutral, 
+	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight*addPUreweight);
 
-      pat::MET theEventMEt_ZllRecoilCorrected = corrAlgorithm->buildZllCorrectedMEt(
-        theEventMEt, theEventMEt.genMET()->p4(), bestZllCandidate->p4());
-
-      histogramsAfterZllRecoilCorr->fillHistograms(
-	*bestZllCandidate, theEventMEt_ZllRecoilCorrected, vtxMultiplicity, pfNeutralRho, genPUreweight*addPUreweight);
+      pat::MET absCalibMEt(rawMEt);
+      if ( ZllRecoilCorrParameter_data ) {
+	double k = ZllRecoilCorrParameter_data->k();
+	double dHadRecoilPx = ((1. + k)/k)*(mcToDataCorrMEt.px() + bestZllCandidate->px());
+	double dHadRecoilPy = ((1. + k)/k)*(mcToDataCorrMEt.py() + bestZllCandidate->py());
+	double absCalibMEtPx = mcToDataCorrMEt.px() - dHadRecoilPx;
+	double absCalibMEtPy = mcToDataCorrMEt.py() - dHadRecoilPy;
+	double absCalibMEtPt = TMath::Sqrt(absCalibMEtPx*absCalibMEtPx + absCalibMEtPy*absCalibMEtPy);
+	absCalibMEt.setP4(math::XYZTLorentzVector(absCalibMEtPx, absCalibMEtPy, 0., absCalibMEtPt));
+      }
+      histogramsAfterZllRecoilAbsCalib->fillHistograms(
+	*bestZllCandidate, absCalibMEt, vtxMultiplicity, rhoNeutral, 
+	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight*addPUreweight);
     }
 
 //--- close input file
@@ -301,6 +351,7 @@ int main(int argc, char* argv[])
 
   delete addPUreweightFile;
   delete corrAlgorithm;
+  delete ZllRecoilCorrParameter_data;
 
 //--- close ASCII file containing 
 //     run:lumi-section:event 
@@ -334,7 +385,8 @@ int main(int argc, char* argv[])
     histogramsBeforeGenPUreweight->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
     histogramsBeforeAddPUreweight->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
     histogramsBeforeZllRecoilCorr->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
-    histogramsBeforeZllRecoilCorr->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
+    histogramsAfterZllRecoilMCtoDataCorr->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
+    histogramsAfterZllRecoilAbsCalib->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
   }
 
   clock.Show("FWLiteZllRecoilCorrectionAnalyzer");

@@ -10,9 +10,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PUreweightHistogramProducer.h,v 1.1 2011/08/13 07:47:49 veelken Exp $
+ * $Id: PUreweightHistogramProducer.h,v 1.2 2011/09/09 10:25:37 veelken Exp $
  *
  */
 
@@ -42,16 +42,16 @@ class PUreweightHistogramProducer : public edm::EDAnalyzer
   std::string moduleLabel_;
 
   edm::InputTag srcVertices_;
-  edm::InputTag srcPFNeutralRho_;
+  edm::InputTag srcRho_;
 
   double rhoMax_;
 
   edm::InputTag srcWeight_;
 
   MonitorElement* meVtxMultiplicity_;
-  MonitorElement* mePFNeutralRho_;
+  MonitorElement* meRho_;
 
-  MonitorElement* mePFNeutralRhoVsVtxMultiplicity_;
+  MonitorElement* meRhoVsVtxMultiplicity_;
 };
 
 #endif  
