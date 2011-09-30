@@ -11,6 +11,9 @@
 #include <sstream>
 #include <cstring>
 #include <cstdio>
+#include <iostream>
+
+#include <boost/algorithm/string.hpp>
 
 namespace dqmevf{
 
@@ -170,4 +173,27 @@ namespace dqmevf{
     completehost += path;
     return completehost;
   }
+
+  bool PyLineSimpleModifier::modifyRunType(std::string * line) {
+    if (applied && applyOnce) return true;
+    //size_t pos=line->find(varName_);
+    size_t pos=line->find("runtype");
+    if (pos==std::string::npos) return false;
+    if (line->at(pos+7)!=' ') 
+      if (line->at(pos+7)!='=')
+        return false;//some other variable
+    if (pos!=0) {
+      std::string scopy = *line;
+      boost::trim(scopy);
+      if (scopy.find("runtype")!=0) return false;//line must begin with 'runtype'
+    }
+    size_t repbegin = line->find("'");
+    size_t repend   = line->rfind("'");
+    if (repbegin==std::string::npos || repend==std::string::npos) return false;
+    std::string ret = line->substr(0,repbegin+1) + value_ + line->substr(repend);
+    *line = ret;
+    applied=true;
+    return true;
+  }
+
 } //end namespace dqmevf
