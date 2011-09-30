@@ -135,38 +135,6 @@ def applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process):
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analysisSequenceBgEstTTplusJetsEnriched" ])
 
-def applyZrecoilCorrection_runZtoMuTau_tauIdEff(process):
-
-    process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
-
-    _applyZllRecoilCorrection(process,
-                              "produceMuTauPairsAll", 'allMuTauPairs',
-                              "ZllRecoilCorrectionMuTauPair",
-                              [ "analyzeZtoMuTauSequence" ])
-    _applyZllRecoilCorrection(process,
-                              "produceMuTauPairsTauIdEffZtoMuTauTemplateFit", 'muTauPairsTauIdEffZtoMuTauTemplateFit',
-                              "ZllRecoilCorrectionMuTauPair",
-                              [ "analysisSequenceTauIdEffZtoMuTauTemplateFit" ])
-    _applyZllRecoilCorrection(process,
-                              "produceMuTauPairsTauIdEffZtoMuTauCombinedFit", 'muTauPairsTauIdEffZtoMuTauCombinedFit',
-                              "ZllRecoilCorrectionMuTauPair",
-                              [ "analysisSequenceTauIdEffZtoMuTauCombinedFit" ])
-    _applyZllRecoilCorrection(process,
-                              "produceMuTauPairsTauIdEffZtoMuTauCombinedFit", 'muTauPairsTauIdEffZtoMuTauCombinedFitWplusJets',
-                              "ZllRecoilCorrectionMuTauPair",
-                              [ "analysisSequenceTauIdEffZtoMuTauCombinedFitWplusJets" ])
-    _applyZllRecoilCorrection(process,
-                              "produceMuTauPairsTauIdEffZtoMuTauCombinedFit", 'muTauPairsTauIdEffZtoMuTauCombinedFitQCD',
-                              "ZllRecoilCorrectionMuTauPair",
-                              [ "analysisSequenceTauIdEffZtoMuTauCombinedFitQCD" ])
-
-    # disable warnings in MET histogram managers
-    # that num. MET objects != 1
-    if hasattr(process, "caloMEtHistManagerTemplateFit"):
-        process.caloMEtHistManagerTemplateFit.expectUniqueMEt = cms.bool(False)
-    if hasattr(process, "pfMEtHistManagerTemplateFit"):
-        process.pfMEtHistManagerTemplateFit.expectUniqueMEt = cms.bool(False)
-
 def applyZrecoilCorrection_runAHtoMuTau(process):
 
     _applyZllRecoilCorrection(process,
@@ -267,51 +235,6 @@ def applyVertexMultiplicityReweighting_runZtoMuTau_bgEstTemplate(process):
     applyVertexMultiplicityReweighting_runZtoMuTau(process)
 
     _addEventWeightZtoMuTau_bgEstTemplate(process, "vertexMultiplicityReweight")
-
-def _addEventWeightZtoMuTau_tauIdEff(process, srcEventWeight, applyAfterFilterName = "*"):
-
-    _addEventWeight(process,
-                    [ "analyzeEventsTauIdEffZtoMuTauCombinedFit",
-                      "analyzeEventsTauIdEffZtoMuTauGenMatrixFit",
-                      "analyzeEventsTauIdEffZtoMuTauTemplateFit",
-                      "analyzeEventsBgEstQCDenriched",
-                      "analyzeEventsBgEstTTplusJetsEnriched",
-                      "analyzeEventsBgEstWplusJetsEnriched",
-                      "analyzeEventsBgEstZmumuJetMisIdEnriched",
-                      "analyzeEventsBgEstZmumuMuonMisIdEnriched" ],
-                    srcEventWeight, applyAfterFilterName)
-
-def applyMuonTriggerEfficiencyCorrection_runZtoMuTau_tauIdEff(process):
-
-    applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
-
-    _addEventWeightZtoMuTau_tauIdEff(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
-
-def applyMuonIsolationCorrection_runZtoMuTau_tauIdEff(process):
-
-    applyMuonIsolationCorrection_runZtoMuTau(process)
-
-    _addEventWeight(process,
-	            [ "analyzeEventsTauIdEffZtoMuTauCombinedFit" ],
-                    "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonCombRelIsoTightCutTauIdEffZtoMuTauCombinedFit")
-    _addEventWeight(process,
-	            [ "analyzeEventsTauIdEffZtoMuTauGenMatrixFit" ],
-                    "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonCombRelIsoCutTauIdEffZtoMuTauGenMatrixFit")
-    _addEventWeight(process,
-	            [ "analyzeEventsTauIdEffZtoMuTauTemplateFit" ],
-                    "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonPFRelIsoCutTauIdEffZtoMuTauTemplateFit")
-
-def applyVertexMultiplicityReweighting_runZtoMuTau_tauIdEff(process):
-
-    applyVertexMultiplicityReweighting_runZtoMuTau(process)
-
-    _addEventWeightZtoMuTau_tauIdEff(process, "vertexMultiplicityReweight")
-
-def applyRhoNeutralReweighting_runZtoMuTau_tauIdEff(process):
-
-    applyRhoNeutralReweighting_runZtoMuTau(process)
-
-    _addEventWeightZtoMuTau_tauIdEff(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
 def _addEventWeighAHtoMuTau(process, srcEventWeight, applyAfterFilterName = "*"):
 
