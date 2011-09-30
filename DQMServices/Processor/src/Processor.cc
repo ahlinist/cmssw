@@ -308,7 +308,7 @@ bool Processor::initEDMConfiguration() {
     char cmsRunName_[]="cmsRun";
     string argv1="runtype="+runType_.value_;
     string argv2="runkey="+runKey_.value_;
-    const char* argvArray[4]={cmsRunName_, friendlyPythonCfg_.c_str(), argv1.c_str(), argv2.c_str()};
+    const char* argvArray[4]={cmsRunName_, configString_.value_.c_str(), argv1.c_str(), argv2.c_str()};
     size_t argcParam=4;
     if (runType_.value_=="") {argvArray[2]=argv2.c_str();argcParam=3;};
     if (runType_.value_=="" && runKey_.value_=="") argcParam=2;
