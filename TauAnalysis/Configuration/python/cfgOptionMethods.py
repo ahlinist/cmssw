@@ -34,6 +34,7 @@ def _requires(args=[], inputs=[]):
 
 def _setGlobalTag(process, tag, **kwargs):
     " Set conditions global tag "
+
     process.GlobalTag.globaltag = tag
 
 def _setattr_ifexists(obj, attrName, attrValue):
@@ -120,17 +121,25 @@ def _setEnableFactorization(process, enable, **kwargs):
 def _setApplyZrecoilCorrection(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
-        print "Applying Z-recoil correction to MEt"
-        enabler = getattr(mcToDataCorrectionTools, "applyZrecoilCorrection_run%s" % channel)
-        enabler(process)
+        enablerName = "applyZrecoilCorrection_run%s" % channel
+        if hasattr(mcToDataCorrectionTools, enablerName):
+            print "Applying Z-recoil correction to MEt"
+            enabler = getattr(mcToDataCorrectionTools, enablerName)
+            enabler(process)
+        else:
+            print "Warning: No Z-recoil correction handler defined for channel %s" % channel
 
 @_requires(args=['channel'])
 def _setApplyMuonTriggerEfficiencyCorrection(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
-        print "Applying Muon Trigger efficiency correction"
-        enabler = getattr(mcToDataCorrectionTools, "applyMuonTriggerEfficiencyCorrection_run%s" % channel)
-        enabler(process)
+        enablerName = "applyMuonTriggerEfficiencyCorrection_run%s" % channel
+        if hasattr(mcToDataCorrectionTools, enablerName):
+            print "Applying Muon Trigger efficiency correction"
+            enabler = getattr(mcToDataCorrectionTools, enablerName)
+            enabler(process)
+        else:
+            print "Warning: No Muon Trigger efficiency correction handler defined for channel %s" % channel
 
 @_requires(args=['channel'])
 def _setApplyElectronTriggerEfficiencyCorrection(process, enable, **kwargs):
@@ -152,9 +161,13 @@ def _setApplyTauMetTriggerEfficiencyCorrection(process, enable, **kwargs):
 def _setApplyMuonIsolationEfficiencyCorrection(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
-        print "Applying Muon Isolation efficiency correction"
-        enabler = getattr(mcToDataCorrectionTools, "applyMuonIsolationEfficiencyCorrection_run%s" % channel)
-        enabler(process)
+        enablerName = "applyMuonIsolationEfficiencyCorrection_run%s" % channel
+        if hasattr(mcToDataCorrectionTools, enablerName):
+            print "Applying Muon Isolation efficiency correction"
+            enabler = getattr(mcToDataCorrectionTools, enablerName)
+            enabler(process)
+        else:
+            print "Warning: No Muon Isolation efficiency correction handler defined for channel %s" % channel
 
 @_requires(args=['channel'])
 def _setApplyElectronIsolationEfficiencyCorrection(process, enable, **kwargs):
@@ -168,17 +181,25 @@ def _setApplyElectronIsolationEfficiencyCorrection(process, enable, **kwargs):
 def _setApplyVertexMultiplicityReweighting(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
-        print "Applying Vertex multiplicity reweighting"
-        enabler = getattr(mcToDataCorrectionTools, "applyVertexMultiplicityReweighting_run%s" % channel)
-        enabler(process)
+        enablerName = "applyVertexMultiplicityReweighting_run%s" % channel
+        if hasattr(mcToDataCorrectionTools, enablerName):
+            print "Applying Vertex multiplicity reweighting"
+            enabler = getattr(mcToDataCorrectionTools, enablerName)
+            enabler(process)
+        else:
+            print "Warning: No Vertex multiplicity reweighting handler defined for channel %s" % channel
 
 @_requires(args=['channel'])
 def _setApplyRhoNeutralReweighting(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
-        print "Applying rho-Neutral reweighting"
-        enabler = getattr(mcToDataCorrectionTools, "applyRhoNeutralReweighting_run%s" % channel)
-        enabler(process)        
+        enablerName = "applyRhoNeutralReweighting_run%s" % channel
+        if hasattr(mcToDataCorrectionTools, enablerName):
+            print "Applying rho-Neutral reweighting"
+            enabler = getattr(mcToDataCorrectionTools, enablerName)
+            enabler(process)
+        else:
+            print "Warning: No rho-Neutral reweighting handler defined for channel %s" % channel
 
 @_requires(args=['channel'])
 def _setEnableSystematics(process, enable, **kwargs):
