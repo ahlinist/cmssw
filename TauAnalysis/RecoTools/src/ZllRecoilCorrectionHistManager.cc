@@ -32,7 +32,8 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramZllCandPhi_       = book1D(dir, "ZllCandPhi",         "#phi_{Z}",                              36, -TMath::Pi(), +TMath::Pi());
   histogramZllCandMass_      = book1D(dir, "ZllCandMass",        "M(l+ l-)",                              60,         60. ,         120.);
   
-  histogramMEt_              = book1D(dir, "met",                "E_{T}^{miss}",                          50,          0.0,        100.0);
+  histogramMEtS_             = book1D(dir, "metS",               "E_{T}^{miss}",                          30,          0.0,         60.0);
+  histogramMEtL_             = book1D(dir, "metL",               "E_{T}^{miss}",                          75,          0.0,        150.0);
   histogramMEtProjParlZ_     = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",         50,        -50.0,        +50.0);
   histogramMEtProjPerpZ_     = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",            50,        -50.0,        +50.0);
 
@@ -56,11 +57,18 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning, 12, -1));
 
   histogramVtxMultiplicity_  = book1D(dir, "numVertices",        "Num. Vertices",                         20,         -0.5,         19.5);
-  histogramRho_              = book1D(dir, "rho",                "#rho_{neutral}",                        50,          0. ,          20.);
+  histogramRhoNeutral_       = book1D(dir, "rhoNeutral",         "#rho_{neutral}",                        50,          0. ,          12.);
+  histogramRhoChargedHadronNoPileUp_ = 
+    book1D(dir, "rhoChargedHadronNoPileUp",                      "#rho_{h#pm}",                           50,          0. ,          12.);
+  histogramRhoNeutralToChargedHadronNoPileUpRatio_ = 
+    book1D(dir, "rhoNeutralToChargedHadronNoPileUpRatio",        "#rho_{neutral}/#rho_{h#pm}",            51,      -0.025 ,        2.525);
+  histogramRhoPFNoPileUp_ = 
+    book1D(dir, "rhoPFNoPileUp",                                 "#rho_{noPU}",                           50,          0. ,          20.);
 }
 
 void ZllRecoilCorrectionHistManager::fillHistograms(
-       const reco::CompositeCandidate& ZllCand, const pat::MET& met, size_t vtxMultiplicity, double rho, double evtWeight)
+       const reco::CompositeCandidate& ZllCand, const pat::MET& met, size_t vtxMultiplicity, double rhoNeutral, 
+       double rhoChargedHadronNoPileUp, double rhoPFNoPileUp, double evtWeight)
 {
   assert(ZllCand.numberOfDaughters() == 2);
 
@@ -87,7 +95,8 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   histogramZllCandPhi_->Fill(ZllCand.phi(), evtWeight);
   histogramZllCandMass_->Fill(ZllCand.mass(), evtWeight);
   
-  histogramMEt_->Fill(met.pt(), evtWeight);
+  histogramMEtS_->Fill(met.pt(), evtWeight);
+  histogramMEtL_->Fill(met.pt(), evtWeight);
 
   if ( ZllCand.pt() > 0. ) {
     double qT = ZllCand.pt();
@@ -127,7 +136,12 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   }
 
   histogramVtxMultiplicity_->Fill(vtxMultiplicity, evtWeight);
-  histogramRho_->Fill(rho, evtWeight);
+  histogramRhoNeutral_->Fill(rhoNeutral, evtWeight);
+  histogramRhoChargedHadronNoPileUp_->Fill(rhoChargedHadronNoPileUp, evtWeight);
+  double rhoNeutralToChargedHadronNoPileUpRatio = ( rhoChargedHadronNoPileUp >= 0. ) ?
+    (rhoNeutral/rhoChargedHadronNoPileUp) : -1.;
+  histogramRhoNeutralToChargedHadronNoPileUpRatio_->Fill(rhoNeutralToChargedHadronNoPileUpRatio, evtWeight);
+  histogramRhoPFNoPileUp_->Fill(rhoPFNoPileUp, evtWeight);
 }
 
 void ZllRecoilCorrectionHistManager::scaleHistograms(double factor)

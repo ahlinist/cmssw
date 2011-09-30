@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.1 2011/08/15 17:10:32 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.2 2011/09/09 10:25:37 veelken Exp $
  *
  */
 
@@ -35,7 +35,7 @@ class ZllRecoilCorrectionHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory&);
-  void fillHistograms(const reco::CompositeCandidate&, const pat::MET&, size_t, double, double);
+  void fillHistograms(const reco::CompositeCandidate&, const pat::MET&, size_t, double, double, double, double);
   
   /// scale all bin-contents/bin-errors by factor given as function argument
   /// (to account for events lost, due to aborted skimming/crab or PAT-tuple production/lxbatch jobs)
@@ -64,7 +64,8 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramZllCandPhi_;
   TH1* histogramZllCandMass_;
 
-  TH1* histogramMEt_;
+  TH1* histogramMEtS_;
+  TH1* histogramMEtL_;
   TH1* histogramMEtProjParlZ_;
   TH1* histogramMEtProjPerpZ_;
 
@@ -111,7 +112,10 @@ class ZllRecoilCorrectionHistManager
   std::vector<histogramsUvsQtNumVtxType*> histogramsUvsQtNumVtxBinned_;
 
   TH1* histogramVtxMultiplicity_;
-  TH1* histogramRho_;
+  TH1* histogramRhoNeutral_;
+  TH1* histogramRhoChargedHadronNoPileUp_;
+  TH1* histogramRhoNeutralToChargedHadronNoPileUpRatio_;
+  TH1* histogramRhoPFNoPileUp_;
   
   std::vector<TH1*> histograms_;
 };

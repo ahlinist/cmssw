@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v3_1'
+version = 'v3_5'
 
 samples = {
     'Data_runs160329to163869' : {
@@ -27,7 +27,31 @@ samples = {
     },
     'simDYtoMuMu' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/',
-        'numInputFilesPerJob' : 5,
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'simWW' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWW/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'simWZ' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWZ/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'simZZ' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZZ/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'simTTplusJets' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simTTplusJets/',
+        'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     }
@@ -38,14 +62,17 @@ lxbatch_queue = '1nw'
 samplesToAnalyze = [
     'Data_runs160329to163869',
     'Data_runs165071to167913',
-    'simDYtoMuMu'
+    'simDYtoMuMu',
+    'simWW',
+    'simWZ',
+    'simZZ',
+    'simTTplusJets'
 ]
 
 skipExistingPATtuples = True
 
 outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s" % version
 
-executable_bsub = 'bsub'
 executable_bsub = 'bsub'
 executable_waitForLXBatchJobs = 'python %s/src/TauAnalysis/Configuration/python/tools/waitForLXBatchJobs.py' % os.environ['CMSSW_BASE']
 executable_rfrm = '- rfrm' # CV: ignore error code returned by 'rfrm' in case file on castor does not exist

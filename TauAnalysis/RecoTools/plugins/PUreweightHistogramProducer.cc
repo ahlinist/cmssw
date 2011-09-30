@@ -12,7 +12,7 @@ PUreweightHistogramProducer::PUreweightHistogramProducer(const edm::ParameterSet
   : moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
   srcVertices_ = cfg.getParameter<edm::InputTag>("srcVertices");
-  srcPFNeutralRho_ = cfg.getParameter<edm::InputTag>("srcPFNeutralRho");
+  srcRho_ = cfg.getParameter<edm::InputTag>("srcRho");
 
   rhoMax_ = cfg.getParameter<double>("rhoMax");
 
@@ -31,13 +31,13 @@ void PUreweightHistogramProducer::beginJob()
   meVtxMultiplicity_ = 
     dqmStore.book1D("VtxMultiplicity", "VtxMultiplicity", 20, -0.5, +19.5);
   meVtxMultiplicity_->getTH1()->Sumw2();
-  mePFNeutralRho_ = 
-    dqmStore.book1D("PFNeutralRho", "PFNeutralRho", 100, -1.e-3, rhoMax_);
-  mePFNeutralRho_->getTH1()->Sumw2();
+  meRho_ = 
+    dqmStore.book1D("Rho", "PFNeutralRho", 100, -1.e-3, rhoMax_);
+  meRho_->getTH1()->Sumw2();
 
-  mePFNeutralRhoVsVtxMultiplicity_ = 
-    dqmStore.book2D("PFNeutralRhoVsVtxMultiplicity", "PFNeutralRhoVsVtxMultiplicity", 20, -0.5, +19.5, 100, -1.e-3, rhoMax_);
-  mePFNeutralRhoVsVtxMultiplicity_->getTH1()->Sumw2();
+  meRhoVsVtxMultiplicity_ = 
+    dqmStore.book2D("RhoVsVtxMultiplicity", "RhoVsVtxMultiplicity", 20, -0.5, +19.5, 100, -1.e-3, rhoMax_);
+  meRhoVsVtxMultiplicity_->getTH1()->Sumw2();
 }
 
 void PUreweightHistogramProducer::analyze(const edm::Event& evt, const edm::EventSetup& es)
@@ -46,9 +46,9 @@ void PUreweightHistogramProducer::analyze(const edm::Event& evt, const edm::Even
   evt.getByLabel(srcVertices_, vertices);
   size_t vtxMultiplicity = vertices->size();
   
-  edm::Handle<double> pfNeutralRho_handle;
-  evt.getByLabel(srcPFNeutralRho_, pfNeutralRho_handle);
-  double pfNeutralRho = (*pfNeutralRho_handle);
+  edm::Handle<double> rho_handle;
+  evt.getByLabel(srcRho_, rho_handle);
+  double rho = (*rho_handle);
 
   double evtWeight = 1.0;
   if ( srcWeight_.label() != "" ) {
@@ -59,9 +59,9 @@ void PUreweightHistogramProducer::analyze(const edm::Event& evt, const edm::Even
   //std::cout << "evtWeight = " << evtWeight << std::endl;
 
   meVtxMultiplicity_->Fill(vtxMultiplicity, evtWeight);
-  mePFNeutralRho_->Fill(pfNeutralRho, evtWeight);
+  meRho_->Fill(rho, evtWeight);
 
-  mePFNeutralRhoVsVtxMultiplicity_->Fill(vtxMultiplicity, pfNeutralRho, evtWeight);
+  meRhoVsVtxMultiplicity_->Fill(vtxMultiplicity, rho, evtWeight);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

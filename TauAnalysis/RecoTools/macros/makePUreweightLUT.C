@@ -265,20 +265,20 @@ void makePUreweightLUT()
   canvas->SetBorderSize(2);
   canvas->SetLogy();
 
-  TString inputFilePath = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/v3_1/";
+  TString inputFilePath = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/v3_2/";
   //TString inputFilePath = "/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/RecoTools/macros/";
 
-  //TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNeutralJets/PFNeutralRhoVsVtxMultiplicity";
-  TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFJets/PFNeutralRhoVsVtxMultiplicity";
+  //TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNeutralJets/RhoVsVtxMultiplicity";
+  TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNoPileUpJets/RhoVsVtxMultiplicity";
 
   TObjArray inputFileNamesData;
-  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs160329to163869_v3_1_layer_2_job_0_fe7.root"));
-  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs165071to167913_v3_1_layer_2_job_0_4ee.root"));
+  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs160329to163869_v3_2_layer_2_job_0_a9b.root"));
+  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs165071to167913_v3_2_layer_2_job_0_33a.root"));
   TH1* histogramData = getHistogram(histoLUTname, "Data", inputFilePath, inputFileNamesData); 
   std::cout << "histogramData = " << histogramData << std::endl;
 
   TObjArray inputFileNamesMC;
-  inputFileNamesMC.Add(new TObjString("ZllRecoilCorrection_simDYtoMuMu_v3_1_layer_2_job_0_5e8.root"));
+  inputFileNamesMC.Add(new TObjString("ZllRecoilCorrection_simDYtoMuMu_v3_2_layer_2_job_0_294.root"));
   TH1* histogramMC = getHistogram(histoLUTname, "MC", inputFilePath, inputFileNamesMC); 
   std::cout << "histogramMC = " << histogramMC << std::endl;
 

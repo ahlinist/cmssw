@@ -50,83 +50,46 @@ else:
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
-# compute neutral particle density for L1FastJet corrections and out-of-time pile-up reweighting
-process.load("CommonTools/ParticleFlow/pfNoPileUp_cff")
+# compute neutral particle density for out-of-time pile-up reweighting
 
-from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-process.kt6PFJets = kt4PFJets.clone(
-    src = cms.InputTag('pfNoPileUp'),
-    rParam = cms.double(0.6),
-    doRhoFastjet = cms.bool(True),
-    Rho_EtaMax = cms.double(2.5)
+process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
+#process.selectedPrimaryVertexQuality.src = cms.InputTag('offlinePrimaryVertices')
+#process.selectedPrimaryVertexQuality.cut = cms.string("isValid & ndof >= 4")
+
+process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
+
+##process.load("CommonTools/ParticleFlow/pfNoPileUp_cff")
+process.kt6PFNoPileUpJetsForVtxMultReweighting = process.kt6PFNeutralJetsForVtxMultReweighting.clone(
+    src = cms.InputTag('pfNoPileUp')
 )
 
 process.prePatProductionSequence = cms.Sequence()
-process.prePatProductionSequence += process.pfNoPileUpSequence
-process.prePatProductionSequence += process.kt6PFJets
-
-process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
-process.prePatProductionSequence += process.pfNeutralCands
-process.prePatProductionSequence += process.kt6PFNeutralJets
+process.prePatProductionSequence += process.selectedPrimaryVertexQuality
+process.prePatProductionSequence += process.selectedPrimaryVertexPosition
+process.prePatProductionSequence += process.produceVertexMultiplicityVsRhoPFNeutralReweights
+##process.prePatProductionSequence += process.pfNoPileUpSequence
+process.prePatProductionSequence += process.kt6PFNoPileUpJetsForVtxMultReweighting
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # apply type I/type I + II PFMEt corrections
 
-process.load("JetMETCorrections/Configuration/JetCorrectionServices_cff")
 pfMEtCorrectorL2L3 = None
-pfMEtCorrectorL1FastJetL2L3wrtL1FastJet = None
 if isMC:
-    pfMEtCorrectorL2L3 = "ak5PFL2L3"
-    pfMEtCorrectorL1FastJetL2L3wrtL1FastJet = "ak5PFL1FastL2L3"
+    pfMEtCorrectorL2L3 = "ak5PFL1FastL2L3"
 else:
-    pfMEtCorrectorL2L3 = "ak5PFL2L3Residual"
-    pfMEtCorrectorL1FastJetL2L3wrtL1FastJet = "ak5PFL1FastL2L3Residual"
+    pfMEtCorrectorL2L3 = "ak5PFL1FastL2L3Residual"
 
-from CommonTools.ParticleFlow.TopProjectors.pfNoJet_cfi import pfNoJet
-process.pfCandsNotInJet = pfNoJet.clone(
-    topCollection = cms.InputTag('ak5PFJets'),
-    bottomCollection = cms.InputTag('particleFlow')
-)    
+process.load("JetMETCorrections/Type1MET/pfMETCorrections_cff")
+process.pfJetMETcorr.offsetCorrLabel = cms.string("ak5PFL1Fastjet")
+process.pfJetMETcorr.jetCorrLabel = cms.string(pfMEtCorrectorL2L3)
+process.prePatProductionSequence += process.producePFMETCorrections
+#--------------------------------------------------------------------------------
 
-# produce collection of "unclustered" PFCandidates
-# (particles not included in jets)
-from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
-process.pfMETtypeIcorrectedL2L3 = metJESCorAK5PFJet.clone(
-    inputUncorJetsLabel = cms.string('ak5PFJets'),
-    jetPTthreshold = cms.double(10.0),
-    useTypeII = cms.bool(False),
-    inputUncorUnlusteredLabel = cms.untracked.InputTag('pfCandsNotInJet'),
-    corrector = cms.string(pfMEtCorrectorL2L3)
-)
+#--------------------------------------------------------------------------------
+# configure Jet Energy Corrections
 
-process.pfMETtypeIpIIcorrectedL2L3 = process.pfMETtypeIcorrectedL2L3.clone(
-    useTypeII = cms.bool(True)
-)
-
-if isMC:
-    process.pfMETtypeIpIIcorrectedL2L3.UscaleA = cms.double(1.5)
-    process.pfMETtypeIpIIcorrectedL2L3.UscaleB = cms.double(0.)
-    process.pfMETtypeIpIIcorrectedL2L3.UscaleC = cms.double(0.)
-else:
-    process.pfMETtypeIpIIcorrectedL2L3.UscaleA = cms.double(1.4)
-    process.pfMETtypeIpIIcorrectedL2L3.UscaleB = cms.double(0.)
-    process.pfMETtypeIpIIcorrectedL2L3.UscaleC = cms.double(0.)
-
-process.pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet = process.pfMETtypeIcorrectedL2L3.clone(
-    corrector = cms.string(pfMEtCorrectorL1FastJetL2L3wrtL1FastJet),
-    subtractL1Fast = cms.bool(True)
-)
-
-process.pfMETtypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet = process.pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet.clone(
-    useTypeII = cms.bool(True)
-)
-
-process.prePatProductionSequence += process.pfCandsNotInJet
-process.prePatProductionSequence += process.pfMETtypeIcorrectedL2L3
-process.prePatProductionSequence += process.pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet
-process.prePatProductionSequence += process.pfMETtypeIpIIcorrectedL2L3
-process.prePatProductionSequence += process.pfMETtypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet
+process.load("TauAnalysis.Configuration.jetCorrectionParameters_cfi")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -196,34 +159,53 @@ process.patPFMETs = process.patMETs.clone(
     addGenMET = cms.bool(True)
 )
 
-process.patPFMETsTypeIcorrectedL2L3 = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfMETtypeIcorrectedL2L3')
+process.patPFMETsTypeIcorrected = process.patPFMETs.clone(
+    metSource = cms.InputTag('pfType1CorrectedMet')
 )
 
-process.patPFMETsTypeIpIIcorrectedL2L3 = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfMETtypeIpIIcorrectedL2L3'),
-)
-
-process.patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet')
-)
-
-process.patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfMETtypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet'),
+process.patPFMETsTypeIpIIcorrected = process.patPFMETs.clone(
+    metSource = cms.InputTag('pfType1p2CorrectedMet')
 )
 
 if not isMC:
     process.patPFMETs.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIcorrectedL2L3.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIpIIcorrectedL2L3.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIcorrected.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIpIIcorrected.addGenMET = cms.bool(False)
 
 process.patTupleProductionSequence += process.patPFMETs
-process.patTupleProductionSequence += process.patPFMETsTypeIcorrectedL2L3
-process.patTupleProductionSequence += process.patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet
-process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrectedL2L3
-process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet
+process.patTupleProductionSequence += process.patPFMETsTypeIcorrected
+process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrected
+
+# compute MET "smearing" correction to take into account
+# Data/MC differences in jet energy resolution
+process.patPFJetMETsmear = cms.EDProducer("PATJetMETsmearInputProducer",
+    src = cms.InputTag('selectedPatJetsAntiOverlapWithMuonsVeto'),
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/pfJetResolutionMCtoDataCorrLUT.root"),
+    lutName = cms.string('pfJetResolutionMCtoDataCorrLUT')
+)
+
+# configure production of smeared pat::MET collections
+process.smearedPatPFMETs = cms.EDProducer("CorrectedPATMETProducer",
+    src = cms.InputTag('patPFMETs'),
+    applyType1Corrections = cms.bool(True),
+    srcType1Corrections = cms.VInputTag(
+        cms.InputTag('patPFJetMETsmear')
+    ),
+    applyType2Corrections = cms.bool(False)
+)   
+
+process.smearedPatPFMETsTypeIcorrected = process.smearedPatPFMETs.clone(
+    src = cms.InputTag('patPFMETsTypeIcorrected')
+)    
+
+process.smearedPatPFMETsTypeIpIIcorrected = process.smearedPatPFMETs.clone(
+    src = cms.InputTag('patPFMETsTypeIpIIcorrected')
+)
+
+process.patTupleProductionSequence += process.patPFJetMETsmear
+process.patTupleProductionSequence += process.smearedPatPFMETs
+process.patTupleProductionSequence += process.smearedPatPFMETsTypeIcorrected
+process.patTupleProductionSequence += process.smearedPatPFMETsTypeIpIIcorrected
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
@@ -255,15 +237,18 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_selectedPrimaryVerticesTrackPtSumGt10_*_*',                                            
             'keep *_patJets_*_*',
             'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',
-            'keep *_pfCandsNotInJet_*_*',                              
+            'keep *_pfCandsNotInJet_*_*',
+            'keep *_pfType2Cands_*_*',                                
             'keep *_ak5PFJets_*_*',                             
             'keep *_patPFMETs_*_*',
-            'keep *_patPFMETsTypeIcorrectedL2L3_*_*',
-            'keep *_patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet_*_*',             
-            'keep *_patPFMETsTypeIpIIcorrectedL2L3_*_*',
-            'keep *_patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet_*_*',                                            
-            'keep *_kt6PFJets_rho_*',
-            'keep *_kt6PFNeutralJets_rho_*'                                     
+            'keep *_smearedPatPFMETs_*_*',                                            
+            'keep *_patPFMETsTypeIcorrected_*_*',
+            'keep *_smearedPatPFMETsTypeIcorrected_*_*',                                            
+            'keep *_patPFMETsTypeIpIIcorrected_*_*',
+            'keep *_smearedPatPFMETsTypeIpIIcorrected_*_*',                                            
+            'keep *_kt6PFNoPileUpJetsForVtxMultReweighting_rho_*',
+            'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
+            'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*'                            
         )
     ),
     fileName = cms.untracked.string("ZllRecoilCorrectionPATtuple.root")
@@ -284,21 +269,21 @@ if isMC:
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.producePUreweightHistogramsKt6PFJets = cms.EDAnalyzer("PUreweightHistogramProducer",
+process.producePUreweightHistogramsKt6PFNoPileUpJets = cms.EDAnalyzer("PUreweightHistogramProducer",
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),                                                 
-    srcPFNeutralRho = cms.InputTag('kt6PFJets', 'rho'),
+    srcRho = cms.InputTag('kt6PFNoPileUpJetsForVtxMultReweighting', 'rho'),
     rhoMax = cms.double(20.)                                                                
 )
-process.producePUreweightHistogramsTrackPtSumGt5Kt6PFJets = process.producePUreweightHistogramsKt6PFJets.clone(
+process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNoPileUpJets = process.producePUreweightHistogramsKt6PFNoPileUpJets.clone(
     srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt5')
 )
-process.producePUreweightHistogramsTrackPtSumGt10Kt6PFJets = process.producePUreweightHistogramsKt6PFJets.clone(
+process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNoPileUpJets = process.producePUreweightHistogramsKt6PFNoPileUpJets.clone(
     srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt10')
 )
 
 process.producePUreweightHistogramsKt6PFNeutralJets = cms.EDAnalyzer("PUreweightHistogramProducer",
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),                                                 
-    srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho'),
+    srcRho = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
     rhoMax = cms.double(10.)                            
 )
 process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
@@ -309,17 +294,17 @@ process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets = process.prod
 )
 
 if isMC:
-    setattr(process.producePUreweightHistogramsKt6PFJets,                      "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFJets,         "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFJets,        "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsKt6PFNeutralJets,               "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets, "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsKt6PFNoPileUpJets,               "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNoPileUpJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNoPileUpJets, "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsKt6PFNeutralJets,                "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets,   "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
 
 process.produceAndSavePUreweightHistograms = cms.Sequence()
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFJets
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFJets     
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFJets
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNoPileUpJets
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNoPileUpJets     
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNoPileUpJets
 process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets
 process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets     
 process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets

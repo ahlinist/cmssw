@@ -17,6 +17,7 @@
 #include <TDirectory.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <THStack.h>
 #include <TGraphErrors.h>
 #include <TCanvas.h>
 #include <TLegend.h>
@@ -60,40 +61,109 @@ TH1* loadHistogram(TFile* inputFile, const std::string& directory, const std::st
   return me;
 }
 
-void drawHistogram1d(TFile* inputFile, TCanvas* canvas, const variableEntryType& variable, 
-		     const std::string& directoryData, const std::string& directoryMC, const std::string& outputFileName)
+double square(double x)
 {
+  return x*x;
+}
+
+void drawHistogram1d(TFile* inputFile, const variableEntryType& variable, 
+		     const std::string& directoryData, const std::string& directoryMC_signal, const vstring& directoryMCs_background, 
+		     bool scaleMCtoData,
+		     const std::string& outputFileName)
+{
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 900);
+  canvas->SetFillColor(10);
+  canvas->SetBorderSize(2);
+
+  canvas->SetLeftMargin(0.12);
+  canvas->SetBottomMargin(0.12);
+
   TH1* meData = loadHistogram(inputFile, directoryData, variable.meName_);
+  if ( !meData->GetSumw2N() ) meData->Sumw2();
   meData->SetLineColor(1);
   meData->SetMarkerColor(1);
   meData->SetMarkerStyle(20);
   
-  TH1* meMC = loadHistogram(inputFile, directoryMC, variable.meName_);
-  meMC->SetLineColor(2);
-  meMC->SetLineWidth(2);
+  TH1* meMC_signal = loadHistogram(inputFile, directoryMC_signal, variable.meName_);
+  TH1* meMC_signal_cloned = ( scaleMCtoData ) ?
+    (TH1*)meMC_signal->Clone(std::string(meMC_signal->GetName()).append("_cloned").data()) : meMC_signal;
+  if ( !meMC_signal_cloned->GetSumw2N() ) meMC_signal_cloned->Sumw2();
+  meMC_signal_cloned->SetLineColor(2);
+  meMC_signal_cloned->SetLineWidth(2);
+  meMC_signal_cloned->SetFillColor(10);
 
-  canvas->Clear();
+  TH1* meMC_bgrSum = 0;
+  for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
+	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
+    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, variable.meName_);
+    if ( !meMC_bgr->GetSumw2N() ) meMC_bgr->Sumw2();
+    if ( !meMC_bgrSum ) meMC_bgrSum = (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data());
+    else meMC_bgrSum->Add(meMC_bgr);
+  }
+  if ( meMC_bgrSum ) meMC_bgrSum->SetFillColor(46);
 
-  meMC->SetStats(false);
-  meMC->SetMaximum(3.e1*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
-  meMC->SetMinimum(5.e-1);
+  TH1* meMC_smSum = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smSum").data());
+  if ( meMC_bgrSum ) meMC_smSum->Add(meMC_bgrSum);
 
-  meMC->GetXaxis()->SetTitle(variable.xAxisTitle_.data());
-  meMC->GetXaxis()->SetTitleOffset(1.2);
-  meMC->GetYaxis()->SetTitle("Events");
-  meMC->GetYaxis()->SetTitleOffset(1.4);
-    
-  meMC->Draw("hist");
+  if ( scaleMCtoData ) {
+    double mcScaleFactor = meData->Integral()/meMC_smSum->Integral();
+    std::cout << "mcScaleFactor = " << mcScaleFactor << std::endl;
+    meMC_signal_cloned->Scale(mcScaleFactor);
+    meMC_bgrSum->Scale(mcScaleFactor);
+    meMC_smSum->Scale(mcScaleFactor);
+  }
+
+  THStack stack_smSum("smSum", "smSum");
+  stack_smSum.Add(meMC_signal_cloned);
+  if ( meMC_bgrSum ) stack_smSum.Add(meMC_bgrSum);
+
+  TPad* topPad = new TPad("topPad", "topPad", 0.00, 0.35, 1.00, 1.00);
+  topPad->SetFillColor(10);
+  topPad->SetTopMargin(0.04);
+  topPad->SetLeftMargin(0.15);
+  topPad->SetBottomMargin(0.03);
+  topPad->SetRightMargin(0.05);
+
+  TPad* bottomPad = new TPad("bottomPad", "bottomPad", 0.00, 0.00, 1.00, 0.35);
+  bottomPad->SetFillColor(10);
+  bottomPad->SetTopMargin(0.02);
+  bottomPad->SetLeftMargin(0.15);
+  bottomPad->SetBottomMargin(0.20);
+  bottomPad->SetRightMargin(0.05);
+
+  canvas->cd();
+  topPad->Draw();
+  topPad->cd();
+  topPad->SetLogy(true);
+
+  stack_smSum.SetMaximum(5.e1*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
+  stack_smSum.SetMinimum(5.e-1);
+  stack_smSum.SetTitle("");
+
+  stack_smSum.Draw("hist");
+  // CV: x-axis and y-axis of THStack do not exist until THStack::Draw is called,
+  //     so need to postpone initialization of axes titles !!
+  TAxis* xAxis_top = stack_smSum.GetXaxis();
+  xAxis_top->SetTitle(variable.xAxisTitle_.data());
+  xAxis_top->SetTitleOffset(1.2);
+  xAxis_top->SetLabelColor(10);
+  xAxis_top->SetTitleColor(10);
+
+  TAxis* yAxis_top = stack_smSum.GetYaxis();
+  yAxis_top->SetTitle("Events");
+  yAxis_top->SetTitleOffset(1.4);
+
   meData->Draw("e1psame");
   
-  TLegend legend(0.14, 0.74, 0.49, 0.89, "", "brNDC"); 
+  TLegend legend(0.185, 0.77, 0.52, 0.95, "", "brNDC"); 
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
-  legend.AddEntry(meData, "Data",       "p");
-  legend.AddEntry(meMC,   "Simulation", "l");
+  legend.AddEntry(meData, "Data", "p");
+  legend.AddEntry(meMC_signal, "exp. Signal", "l");
+  if ( meMC_bgrSum ) legend.AddEntry(meMC_bgrSum, "exp. Background", "f");
   legend.Draw();
 
-  TPaveText statsData(0.64, 0.79, 0.89, 0.89, "brNDC"); 
+  TPaveText statsData(0.70, 0.84, 0.95, 0.94, "brNDC"); 
   statsData.SetBorderSize(0);
   statsData.SetFillColor(0);
   statsData.AddText(Form("Mean = %2.2f", meData->GetMean()));
@@ -102,51 +172,93 @@ void drawHistogram1d(TFile* inputFile, TCanvas* canvas, const variableEntryType&
   statsData.SetTextSize(0.045);
   statsData.Draw();
   
-  TPaveText statsMC(0.64, 0.69, 0.89, 0.79, "brNDC"); 
+  TPaveText statsMC(0.70, 0.74, 0.95, 0.84, "brNDC"); 
   statsMC.SetBorderSize(0);
   statsMC.SetFillColor(0);
-  statsMC.AddText(Form("Mean = %2.2f", meMC->GetMean()));
-  statsMC.AddText(Form("RMS  = %2.2f", meMC->GetRMS()));
+  statsMC.AddText(Form("Mean = %2.2f", meMC_smSum->GetMean()));
+  statsMC.AddText(Form("RMS  = %2.2f", meMC_smSum->GetRMS()));
   statsMC.SetTextColor(2);
   statsMC.SetTextSize(0.045);
   statsMC.Draw();
+
+  canvas->cd();
+  bottomPad->Draw();
+  bottomPad->cd();
+  bottomPad->SetLogy(false);
+
+  assert(meMC_smSum->GetNbinsX() == meData->GetNbinsX());
+  int numBins = meMC_smSum->GetNbinsX();
+  TGraphErrors* graphDataToMCdiff = new TGraphErrors(numBins);
+  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    double x = meMC_smSum->GetBinCenter(iBin);
+
+    double y_data = meData->GetBinContent(iBin);
+    double yErr_data = meData->GetBinError(iBin);
+
+    double y_smSum = meMC_smSum->GetBinContent(iBin);
+    double yErr_smSum = meMC_smSum->GetBinError(iBin);
+
+    double diff = (y_data - y_smSum)/y_smSum;
+    double diffErr2 = 0.;
+    if ( y_data  > 0. ) diffErr2 += square(yErr_data/y_data);
+    if ( y_smSum > 0. ) diffErr2 += square(yErr_smSum/y_smSum);
+    diffErr2 *= square(diff);
+
+    int iPoint = iBin - 1;
+    graphDataToMCdiff->SetPoint(iPoint, x, diff);
+    graphDataToMCdiff->SetPointError(iPoint, 0., TMath::Sqrt(diffErr2));
+  }
+
+  TAxis* xAxis_bottom = graphDataToMCdiff->GetXaxis();
+  xAxis_bottom->SetTitle(variable.xAxisTitle_.data());
+  xAxis_bottom->SetTitleOffset(1.20);
+  xAxis_bottom->SetNdivisions(505);
+  xAxis_bottom->SetTitleOffset(1.1);
+  xAxis_bottom->SetTitleSize(0.08);
+  xAxis_bottom->SetLabelOffset(0.02);
+  xAxis_bottom->SetLabelSize(0.08);
+  xAxis_bottom->SetTickLength(0.055);
+    
+  TAxis* yAxis_bottom = graphDataToMCdiff->GetYaxis();
+  yAxis_bottom->SetTitle("#frac{Data - Simulation}{Simulation}");
+  yAxis_bottom->SetTitleOffset(1.10);
+  yAxis_bottom->CenterTitle();
+  yAxis_bottom->SetTitleOffset(0.9);
+  yAxis_bottom->SetTitleSize(0.08);
+  yAxis_bottom->SetLabelSize(0.08);
+  yAxis_bottom->SetTickLength(0.04);
+    
+  graphDataToMCdiff->SetTitle("");
+  double maxDiff = 0.;    
+  for ( int iPoint = 0; iPoint < numBins; ++iPoint ) {
+    double x, diff;
+    graphDataToMCdiff->GetPoint(iPoint, x, diff);
+    double err = graphDataToMCdiff->GetErrorY(iPoint);
+    diff = TMath::Max(TMath::Abs(diff + err), TMath::Abs(diff - err));
+    if ( diff > maxDiff ) maxDiff = diff;
+  }
+  double maxDiff01 = 0.1*TMath::Ceil(1.2*maxDiff*10.);
+  graphDataToMCdiff->SetMaximum(+maxDiff01);
+  graphDataToMCdiff->SetMinimum(-maxDiff01);
+  
+  graphDataToMCdiff->SetMarkerStyle(meData->GetMarkerStyle());
+  graphDataToMCdiff->SetMarkerColor(meData->GetMarkerColor());
+  graphDataToMCdiff->SetLineColor(meData->GetLineColor());
+  graphDataToMCdiff->Draw("AP");   
 
   canvas->Update();
 
   size_t idx = outputFileName.find_last_of('.');
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   outputFileName_plot.append("_").append(variable.meName_);
+  if ( scaleMCtoData ) outputFileName_plot.append("_scaled");
   if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
   else                            outputFileName_plot.append(".png");
   canvas->Print(outputFileName_plot.data());
-
-  canvas->Clear();
   
-  if ( !meData->GetSumw2N() ) meData->Sumw2();
-  meData->Scale(1./meData->Integral());
-  if ( !meMC->GetSumw2N()   ) meMC->Sumw2();
-  meMC->Scale(1./meMC->Integral());
-  
-  meMC->SetMaximum(3.e1*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
-  meMC->SetMinimum(1.e-5);
-  
-  meMC->GetYaxis()->SetTitle("a.u.");
-  
-  meMC->Draw("hist");
-  meData->Draw("e1psame");
-  
-  legend.Draw();
-    
-  statsData.Draw();
-  statsMC.Draw();
-  
-  canvas->Update();
-  
-  std::string outputFileName_plot_scaled = std::string(outputFileName, 0, idx);
-  outputFileName_plot_scaled.append("_").append(variable.meName_).append("_scaled");
-  if ( idx != std::string::npos ) outputFileName_plot_scaled.append(std::string(outputFileName, idx));
-  else                            outputFileName_plot_scaled.append(".png");
-  canvas->Print(outputFileName_plot_scaled.data());
+  if ( meMC_signal_cloned != meMC_signal ) delete meMC_signal_cloned;
+  delete graphDataToMCdiff;
+  delete canvas;
 }	     
 
 double getMaximum(TGraphErrors* graph)
@@ -166,7 +278,7 @@ double getMaximum(TGraphErrors* graph)
   return retVal;
 }
 
-void drawGraphs(TCanvas* canvas, const std::string& yAxisTitle, const std::string& outputFileName, const std::string& outputFileLabel,
+void drawGraphs(const std::string& yAxisTitle, const std::string& outputFileName, const std::string& outputFileLabel,
 		TGraphErrors* graphData1, const std::string& legendEntryData1, 
 		TGraphErrors* graphMC1, const std::string& legendEntryMC1, 
 		TGraphErrors* graphData2 = 0, const std::string& legendEntryData2 = "", 
@@ -178,10 +290,15 @@ void drawGraphs(TCanvas* canvas, const std::string& yAxisTitle, const std::strin
 		TGraphErrors* graphData5 = 0, const std::string& legendEntryData5 = "", 
 		TGraphErrors* graphMC5 = 0, const std::string& legendEntryMC5 = "")
 {
-  canvas->Clear();
-
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
+  canvas->SetFillColor(10);
+  canvas->SetBorderSize(2);
+  
+  canvas->SetLeftMargin(0.12);
+  canvas->SetBottomMargin(0.12);
+  
   canvas->SetLogy(false);
-
+  
   double yMax = getMaximum(graphData1);
   yMax = TMath::Max(yMax, getMaximum(graphMC1));
   unsigned numGraphs = 2;
@@ -452,8 +569,9 @@ int main(int argc, const char* argv[])
 
   edm::ParameterSet cfgMakeZllRecoilCorrectionPlots = cfg.getParameter<edm::ParameterSet>("makeZllRecoilCorrectionFinalPlots");
 
-  std::string directoryData = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("directoryData");
-  std::string directoryMC   = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("directoryMC");
+  std::string directoryData           = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("directoryData");
+  std::string directoryMC_signal      = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("directoryMC_signal");
+  vstring     directoryMCs_background = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("directoryMCs_background");
 
   vParameterSet cfgVariables = cfgMakeZllRecoilCorrectionPlots.getParameter<vParameterSet>("variables");
   std::vector<variableEntryType> variables;
@@ -476,54 +594,46 @@ int main(int argc, const char* argv[])
     throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
       << "Failed to open inputFile = " << inputFileName << " !!\n";
 
-  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
-  canvas->SetFillColor(10);
-  canvas->SetBorderSize(2);
-
-  canvas->SetLeftMargin(0.12);
-  canvas->SetBottomMargin(0.12);
-
-  canvas->SetLogy();
-
 //--- make control plots of different variable distributions
   for ( std::vector<variableEntryType>::const_iterator variable = variables.begin();
 	variable != variables.end(); ++variable ) {
-    drawHistogram1d(inputFile, canvas, *variable, directoryData, directoryMC, outputFileName);
+    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, false, outputFileName);
+    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, true,  outputFileName);
   }
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
-  TH2* meUparlDivQtVsQt_data = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData, "uParlDivQtVsQt"));
-  TH2* meUparlVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData, "uParlVsQt"));
-  TH2* meUperpVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData, "uPerpVsQt"));
+  TH2* meUparlDivQtVsQt_data = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      "uParlDivQtVsQt"));
+  TH2* meUparlVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      "uParlVsQt"));
+  TH2* meUperpVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      "uPerpVsQt"));
 
   TGraphErrors* graphUparlResponse_data   = makeGraph_mean(meUparlDivQtVsQt_data);
   TGraphErrors* graphUparlResolution_data = makeGraph_rms(meUparlVsQt_data);
   TGraphErrors* graphUperpResolution_data = makeGraph_rms(meUperpVsQt_data);
 
-  TH2* meUparlDivQtVsQt_mc   = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC,   "uParlDivQtVsQt"));
-  TH2* meUparlVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC,   "uParlVsQt"));
-  TH2* meUperpVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC,   "uPerpVsQt"));
+  TH2* meUparlDivQtVsQt_mc   = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, "uParlDivQtVsQt"));
+  TH2* meUparlVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, "uParlVsQt"));
+  TH2* meUperpVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, "uPerpVsQt"));
 
   TGraphErrors* graphUparlResponse_mc     = makeGraph_mean(meUparlDivQtVsQt_mc);
   TGraphErrors* graphUparlResolution_mc   = makeGraph_rms(meUparlVsQt_mc);
   TGraphErrors* graphUperpResolution_mc   = makeGraph_rms(meUperpVsQt_mc);
 
-  drawGraphs(canvas, "<u_{parl}>/q_{T}", outputFileName, "uParlResponse",
+  drawGraphs("<u_{parl}>/q_{T}", outputFileName, "uParlResponse",
 	     graphUparlResponse_data, "Data", graphUparlResponse_mc, "Simulation");
-  drawGraphs(canvas, "RMS(u_{parl})", outputFileName, "uParlResolution",
+  drawGraphs("RMS(u_{parl})", outputFileName, "uParlResolution",
 	     graphUparlResolution_data, "Data", graphUparlResolution_mc, "Simulation");
-  drawGraphs(canvas, "RMS(u_{perp})", outputFileName, "uPerpResolution",
+  drawGraphs("RMS(u_{perp})", outputFileName, "uPerpResolution",
 	     graphUperpResolution_data, "Data", graphUperpResolution_mc, "Simulation");
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
 //    in different bins of reconstructed vertex multiplicity
-  plotUvsQtNumVtxType* plotUvsQtNumVtxLe2   = new plotUvsQtNumVtxType(inputFile, -1,  2, directoryData, directoryMC);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx3to5  = new plotUvsQtNumVtxType(inputFile,  3,  5, directoryData, directoryMC);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx6to8  = new plotUvsQtNumVtxType(inputFile,  6,  8, directoryData, directoryMC);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx9to11 = new plotUvsQtNumVtxType(inputFile,  9, 11, directoryData, directoryMC);
-  plotUvsQtNumVtxType* plotUvsQtNumVtxGe12  = new plotUvsQtNumVtxType(inputFile, 12, -1, directoryData, directoryMC);
+  plotUvsQtNumVtxType* plotUvsQtNumVtxLe2   = new plotUvsQtNumVtxType(inputFile, -1,  2, directoryData, directoryMC_signal);
+  plotUvsQtNumVtxType* plotUvsQtNumVtx3to5  = new plotUvsQtNumVtxType(inputFile,  3,  5, directoryData, directoryMC_signal);
+  plotUvsQtNumVtxType* plotUvsQtNumVtx6to8  = new plotUvsQtNumVtxType(inputFile,  6,  8, directoryData, directoryMC_signal);
+  plotUvsQtNumVtxType* plotUvsQtNumVtx9to11 = new plotUvsQtNumVtxType(inputFile,  9, 11, directoryData, directoryMC_signal);
+  plotUvsQtNumVtxType* plotUvsQtNumVtxGe12  = new plotUvsQtNumVtxType(inputFile, 12, -1, directoryData, directoryMC_signal);
   
-  drawGraphs(canvas, "<u_{parl}>/q_{T}", outputFileName, "uParlResponse_binnedVtxMultiplicity",
+  drawGraphs("<u_{parl}>/q_{T}", outputFileName, "uParlResponse_binnedVtxMultiplicity",
 	     plotUvsQtNumVtxLe2->graphUparlResponseData_, plotUvsQtNumVtxLe2->legendEntryData_,
 	     plotUvsQtNumVtxLe2->graphUparlResponseMC_, plotUvsQtNumVtxLe2->legendEntryMC_,
 	     plotUvsQtNumVtx3to5->graphUparlResponseData_, plotUvsQtNumVtx3to5->legendEntryData_,
@@ -534,7 +644,7 @@ int main(int argc, const char* argv[])
 	     plotUvsQtNumVtx9to11->graphUparlResponseMC_, plotUvsQtNumVtx9to11->legendEntryMC_,
 	     plotUvsQtNumVtxGe12->graphUparlResponseData_, plotUvsQtNumVtxGe12->legendEntryData_,
 	     plotUvsQtNumVtxGe12->graphUparlResponseMC_, plotUvsQtNumVtxGe12->legendEntryMC_);
-  drawGraphs(canvas, "RMS(u_{parl})", outputFileName, "uParlResolution_binnedVtxMultiplicity",
+  drawGraphs("RMS(u_{parl})", outputFileName, "uParlResolution_binnedVtxMultiplicity",
 	     plotUvsQtNumVtxLe2->graphUparlResolutionData_, plotUvsQtNumVtxLe2->legendEntryData_,
 	     plotUvsQtNumVtxLe2->graphUparlResolutionMC_, plotUvsQtNumVtxLe2->legendEntryMC_,
 	     plotUvsQtNumVtx3to5->graphUparlResolutionData_, plotUvsQtNumVtx3to5->legendEntryData_,
@@ -545,7 +655,7 @@ int main(int argc, const char* argv[])
 	     plotUvsQtNumVtx9to11->graphUparlResolutionMC_, plotUvsQtNumVtx9to11->legendEntryMC_,
 	     plotUvsQtNumVtxGe12->graphUparlResolutionData_, plotUvsQtNumVtxGe12->legendEntryData_,
 	     plotUvsQtNumVtxGe12->graphUparlResolutionMC_, plotUvsQtNumVtxGe12->legendEntryMC_);
-  drawGraphs(canvas, "RMS(u_{perp})", outputFileName, "uPerpResolution_binnedVtxMultiplicity",
+  drawGraphs("RMS(u_{perp})", outputFileName, "uPerpResolution_binnedVtxMultiplicity",
 	     plotUvsQtNumVtxLe2->graphUperpResolutionData_, plotUvsQtNumVtxLe2->legendEntryData_,
 	     plotUvsQtNumVtxLe2->graphUperpResolutionMC_, plotUvsQtNumVtxLe2->legendEntryMC_,
 	     plotUvsQtNumVtx3to5->graphUperpResolutionData_, plotUvsQtNumVtx3to5->legendEntryData_,
@@ -557,8 +667,6 @@ int main(int argc, const char* argv[])
 	     plotUvsQtNumVtxGe12->graphUperpResolutionData_, plotUvsQtNumVtxGe12->legendEntryData_,
 	     plotUvsQtNumVtxGe12->graphUperpResolutionMC_, plotUvsQtNumVtxGe12->legendEntryMC_);
   
-  delete canvas;
-
   delete inputFile;
 
 //--print time that it took macro to run
