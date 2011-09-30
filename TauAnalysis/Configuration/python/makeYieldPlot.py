@@ -51,35 +51,40 @@ def _runCommand(commandLine):
     retval = subprocess.Popen(args, stdout = subprocess.PIPE)
     retval.wait()
 
-def makeYieldPlot(inputFileName = None, dqmDirectory = None, outputFileName = None):
+def makeYieldPlot(selEventsFileName = None, jsonFileName = None, outputFileName = None,
+                  inputFileName = None, dqmDirectory = None):
 
-    # check that inputFileName, dqmDirectory and outputFileName parameters are defined and non-empty
-    if inputFileName is None:
-        raise ValueError("Undefined inputFileName Parameter !!")
-    if dqmDirectory is None:
-        raise ValueError("Undefined dqmDirectory Parameter !!")
+    # check that either selEventFileName or inputFileName plus dqmDirectory are defined and non-empty
+    if selEventsFileName is None and (inputFileName is None or dqmDirectory is None):
+        raise ValueError("Must defined either 'selEventFileName' or 'inputFileName' plus 'dqmDirectory' parameters !!")
+    # check that outputFileName parameter is defined and non-empty
     if outputFileName is None:
         raise ValueError("Undefined outputFileName Parameter !!")
 
-    selEventsFileName = "selEvents_tmp.txt"
+    tmpFiles = []
 
-    cfgFileName = "makeYieldPlot_cfg.py"
-    cfgFile = open(cfgFileName, "w")
-    cfgFile.write(cfg)
-    cfgFile.write("process.loadFilterStatistics.all.inputFileNames = cms.vstring('%s')\n" % inputFileName)
-    cfgFile.write("process.dumpRunLumiSectionEventNumbers.dqmDirectories = cms.vstring('%s')\n" % dqmDirectory)
-    cfgFile.write("process.dumpRunLumiSectionEventNumbers.runLumiSectionEventNumberFileName = cms.string('%s')\n" % selEventsFileName)
-    cfgFile.close()
+    if selEventsFileName is None: 
+        selEventsFileName = "selEvents_tmp.txt"
+        #tmpFiles.append(selEventsFileName)
 
-    commandLine = 'cmsRun %s' % cfgFileName
-    _runCommand(commandLine)
+        cfgFileName = "makeYieldPlot_cfg.py"
+        cfgFile = open(cfgFileName, "w")
+        cfgFile.write(cfg)
+        cfgFile.write("process.loadFilterStatistics.all.inputFileNames = cms.vstring('%s')\n" % inputFileName)
+        cfgFile.write("process.dumpRunLumiSectionEventNumbers.dqmDirectories = cms.vstring('%s')\n" % dqmDirectory)
+        cfgFile.write("process.dumpRunLumiSectionEventNumbers.runLumiSectionEventNumberFileName = cms.string('%s')\n" % selEventsFileName)
+        cfgFile.close()
+        tmpFiles.append(cfgFileName)
 
-    jsonFileName = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/goodrunlist_json.txt"
+        commandLine = 'cmsRun %s' % cfgFileName
+        _runCommand(commandLine)
+
     lumiCalcFileName = "lumiCalc_goodrunlist.csv"
+    #tmpFiles.append(lumiCalcFileName)
 
     #commandLine = 'lumiCalc.py -i %s -o %s lumibylsXing' % (jsonFileName, lumiCalcFileName)
     commandLine = 'lumiCalc.py -i %s -o %s lumibyls' % (jsonFileName, lumiCalcFileName)
-    _runCommand(commandLine)
+    #_runCommand(commandLine)
 
     httpAddress = "http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/FWCore/PythonUtilities/scripts/generateEDF.py?revision=1.9"
     commandLine = 'wget "%s" -O generateEDF.py' % httpAddress
@@ -90,6 +95,5 @@ def makeYieldPlot(inputFileName = None, dqmDirectory = None, outputFileName = No
     commandLine = './generateEDF.py %s %s %s --ignoreNoLumiEvents' % (lumiCalcFileName, selEventsFileName, outputFileName)
     _runCommand(commandLine)
 
-    #subprocess.call("rm %s" % lumiCalcFileName, shell = True)
-    #subprocess.call("rm %s" % selEventsFileName, shell = True)
-    subprocess.call("rm %s" % cfgFileName, shell = True)
+    for tmpFileName in tmpFiles:
+        subprocess.call("rm %s" % tmpFileName, shell = True)
