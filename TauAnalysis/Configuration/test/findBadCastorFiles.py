@@ -9,6 +9,7 @@ import time
 
 import TauAnalysis.Configuration.userRegistry as reg
 
+#--------------------------------------------------------------------------------
 # Find all files on castor which have zero size or
 # cause an error when opened by ROOT
 #
@@ -16,20 +17,34 @@ import TauAnalysis.Configuration.userRegistry as reg
 # 
 # Examples:
 # 
-# ./findBadCastorFiles.py channel | xargs -n 1 rfrm
-#
-# Safer:
 # ./findBadCastorFiles.py channel badfiles.list
-# after checking badfiles.list is okay,
+#
+#   after checking badfiles.list is okay,
+#
 # cat badfiles.list | xargs -n 1 rfrm
+#--------------------------------------------------------------------------------
 
 print("<findBadCastorFiles>:")
 
-if len(sys.argv) != 3:
-    raise ValueError("Usage: findBadCastorFiles.py channel badfiles.list")
+options = {
+    'executable_ls' : {
+        'castor' : 'nsls',
+        'local'  : 'ls'
+    },
+    'fileName_prefix' : {
+        'castor' : 'rfio:',
+        'local'  : 'file:'
+    }
+}
+
+if not (len(sys.argv) >= 3 and len(sys.argv) <= 4):
+    raise ValueError("Usage: findBadCastorFiles.py channel jobId badfiles.list")
 
 channel = sys.argv[1]
-outputFileName = sys.argv[2]
+jobId = None
+if len(sys.argv) >= 4:
+    jobId = sys.argv[2]
+outputFileName = sys.argv[len(sys.argv) - 1]
 
 numThreads = 100
 
@@ -44,10 +59,11 @@ def write_fileNames(results_queue, outputFile):
 
 class Worker(threading.Thread):
 
-    def __init__(self, work_queue, results_queue):
+    def __init__(self, work_queue, results_queue, mode):
         super(Worker, self).__init__()
         self.work_queue = work_queue
         self.results_queue = results_queue
+        self.mode = mode
 
     def run(self):
         while True:
@@ -58,7 +74,7 @@ class Worker(threading.Thread):
                 self.work_queue.task_done()
 
     def process(self, fileName):
-        commandLine = 'nsls -l %s' % fileName
+        commandLine = '%s -l %s' % (options['executable_ls'][mode], fileName)
         args = shlex.split(commandLine)
         retval = subprocess.Popen(args, stdout = subprocess.PIPE)
 
@@ -75,7 +91,7 @@ class Worker(threading.Thread):
 
         time.sleep(1)            
 
-        commandLine = 'edmFileUtil rfio:%s' % fileName
+        commandLine = 'edmFileUtil %s%s' % (options['fileName_prefix'][mode], fileName)
         print("calling %s..." % commandLine)
         args = shlex.split(commandLine)
         retval = subprocess.Popen(args, stdout = subprocess.PIPE)
@@ -86,11 +102,32 @@ class Worker(threading.Thread):
         if status.find("FatalRootError") != -1:
             self.results_queue.put(fileName)
 
+castorFilePath = None
+if channel.find('/castor/') == 0:
+    # 'channel' points to files on castor
+    castorFilePath = channel
+elif channel.find('/') == 0:
+    # 'channel' points to files on local disk
+    castorFilePath = channel
+else:
+    # 'channel' really corresponds to analysis channel,
+    # get file path from TauAnalysis/Configuration/python/userRegistry.py
+    castorFilePath = '/castor/cern.ch/' + reg.getAnalysisFilePath(channel)
+    castorFilePath = castorFilePath.replace('//', '/')
+    castorFilePath = castorFilePath.replace('/castor/cern.ch/castor/cern.ch/', '/castor/cern.ch/')
+print(" castorFilePath = %s" % castorFilePath)
+
+mode = None
+if castorFilePath.find('/castor/') == 0: 
+    mode = 'castor'
+else:
+    mode = 'local'
+
 work_queue = Queue.Queue()
 results_queue = Queue.Queue()
 
 for iThread in range(numThreads):
-    worker = Worker(work_queue, results_queue)
+    worker = Worker(work_queue, results_queue, mode)
     worker.daemon = True
     worker.start()
 
@@ -100,16 +137,12 @@ results_thread = threading.Thread(target = lambda: write_fileNames(results_queue
 results_thread.daemon = True
 results_thread.start()
 
-castorFilePath = '/castor/cern.ch/' + reg.getAnalysisFilePath(channel)
-castorFilePath = castorFilePath.replace('//', '/')
-castorFilePath = castorFilePath.replace('/castor/cern.ch/castor/cern.ch/', '/castor/cern.ch/')
-print(" castorFilePath = %s" % castorFilePath)
-
-reg.overrideJobId(channel, '2011Jul06') # CV: need to overwrite this in order to match Mauro's filenames
-jobId = reg.getJobId(channel)
+if jobId is None:
+    reg.overrideJobId(channel, '2011Jul06') # CV: need to overwrite this in order to match Mauro's filenames
+    jobId = reg.getJobId(channel)
 print(" jobId = %s" % jobId)
 
-commandLine = 'nsls %s' % castorFilePath
+commandLine = '%s %s' % (options['executable_ls'][mode], castorFilePath)
 args = shlex.split(commandLine)
 retval = subprocess.Popen(args, stdout = subprocess.PIPE)
 #retval.wait()
@@ -132,3 +165,5 @@ work_queue.join()
 results_queue.join()
 
 outputFile.close()
+
+print("execute 'cat badfiles.list | xargs -n 1 rfrm' to delete bad files.")
