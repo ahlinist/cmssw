@@ -4,7 +4,7 @@ import FWCore.ParameterSet.Config as cms
 # skim Z --> mu+ mu- candidate events passing "golden" VTBF selection
 #--------------------------------------------------------------------------------
 
-process = cms.Process("skimGoldenZmumu")
+process = cms.Process("skimGoldenZmumu2")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
@@ -13,11 +13,12 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START42_V12::All')
+process.GlobalTag.globaltag = cms.string('START42_V13::All')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/skimGenZtoMuTauWithinAcc_Ztautau_2011Jun30v2_AOD.root'
+        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_data_runs160329to163869_selZmumuCands_met80to100_AOD.root',
+        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_data_runs165071to167913_selZmumuCands_met80to100_AOD.root'
     )
 )
 
@@ -65,7 +66,7 @@ process.goldenZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('goldenZmumuSkimPath')
     ),
-    fileName = cms.untracked.string('goldenZmumuEvents_runs165071to167913_RECO.root')
+    fileName = cms.untracked.string('goldenZmumuEvents_data_runs160329to167913_selZmumuCands_met80to100_AOD.root')
 )
 
 process.options = cms.untracked.PSet(
