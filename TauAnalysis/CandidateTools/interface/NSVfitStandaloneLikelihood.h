@@ -35,8 +35,8 @@ namespace NSVfitStandalone{
      \brief   enumeration of all parameters used by the NSVfitAlgorithm to reconstruct the di-tau system
   */
   enum kFitParams {
-    kMNuNu,          /* < invariant mass of the neutrino system                                            */
     kXFrac,          /* < relative fraction of the visible energy on the total energy of the tau lepton    */
+    kMNuNu,          /* < invariant mass of the neutrino system                                            */
     kPhi,            /* < phi angle of the tau lepton (this is parameter is not constraint by measurement) */
     kMaxFitParams    /* < maximum number of fit parameters per resonance decay branch                      */
   };
@@ -69,35 +69,36 @@ namespace NSVfitStandalone{
   {
   public:
     /// constructor from the measured quantities per decay branch
-    MeasuredTauLepton(kDecayType type, double energy, Vector& momentum) : decayType_(type), energy_(energy), momentum_(momentum) {};
+    MeasuredTauLepton(kDecayType type, LorentzVector p4) : decayType_(type), p4_(p4) {};
     /// default destructor
     ~MeasuredTauLepton(){};
 
     /// return px of the measured tau lepton in labframe
-    double px() const { return momentum_.x(); };
+    double px() const { return p4_.px(); };
     /// return py of the measured tau lepton in labframe
-    double py() const { return momentum_.y(); };
+    double py() const { return p4_.py(); };
     /// return visible mass in labframe
-    double mass() const { return TMath::Sqrt(energy_*energy_-momentum_.mag2()); };
+    double mass() const { return p4_.mass(); };
     /// return visible energy in labframe
-    double energy() const { return energy_; };
+    double energy() const { return p4_.energy(); };
     /// return visible momenumt in labframe
-    double momentum() const { return TMath::Sqrt(momentum_.mag2()); };
+    double momentum() const { return p4_.P(); };
     /// return decay type of the reconstructed tau lepton
     unsigned int decayType() const { return decayType_; };
     /// return the spacial momentum vector in the labframe
-    Vector p() const { return momentum_; };
+    Vector p() const { return p4_.Vect(); };
+    /// return the lorentz vector in the labframe
+    LorentzVector p4() const { return p4_; };
     /// return the direction of the visible 
-    Vector direction() const { return momentum_.unit(); };
+    Vector direction() const { return p4_.Vect().unit(); };
     
   private:
     /// decay type
     kDecayType decayType_;
-    /// visible energy in labframe 
-    double energy_;
     /// visible momentum in labframe 
-    Vector momentum_;
+    LorentzVector p4_;
   };
+
   /**
      \class   NSVfitStandaloneLikelihood NSVfitStandaloneLikelihood.h "TauAnalysis/CandidateTools/interface/NSVfitStandaloneLikelihood.h"
      
@@ -107,8 +108,8 @@ namespace NSVfitStandalone{
      Depending on the configuration during object creation it will be a combination of MET, TauToHad, TauToLep and an additional
      penalty term to suppress tails in m(tau,tau) (logM). Configurables during creation time are:
      
-     \var measuredTauLeptons : a vector of the two reconstructed tau leptons
-     \var measuredMET : a spacial vector of the measured MET
+     \var measuredTauLeptons : the vector of the two reconstructed tau leptons
+     \var measuredMET : the spacial vector of the measured MET
      \var covMET : the covariance matrix of the MET (as determined from the MEt significance for instance)
      \verbose : indicating the verbosity level
 
@@ -121,9 +122,9 @@ namespace NSVfitStandalone{
      A typical way to obtain the covariance matrix of the MET is to follow the MET significance algorithm as provided by RecoMET.
      The NSVfitStandaloneLikelihood class is for internal use only. It is interfaced from the NSVfitStandaloneAlgorithm class as 
      defined in interface/NSVfitStandaloneAlgorithm.h in the same package. It keeps all necessary information to calculate the 
-     combined likelihood but does not perform any fit. It is interface to the ROOT minuit minimization package via the global
+     combined likelihood but does not perform any fit. It is interfaced to the ROOT minuit minimization package via the global
      function pointer gNSVfitStandaloneLikelihood as defined in src/NSVfitStandaloneLikelihood.cc in the same package and 
-     initialized oin the function NSVfitStandaloneLikelihood::fnc(const double*). Per default the LogM term is added.
+     initialized in the function NSVfitStandaloneLikelihood::fnc(const double*). Per default the LogM term is added.
   */
   class NSVfitStandaloneLikelihood {
   public:
@@ -138,24 +139,26 @@ namespace NSVfitStandalone{
     void addLogM(bool value) { addLogM_=value; };
     /// modify the MET term in the nll by an additional power (default is 1.)
     void metPower(double value) { metPower_=value; };    
+
     /// return vector of measured MET
     Vector measuredMET() const { return measuredMET_; };
     /// return vector of measured tau leptons
     std::vector<MeasuredTauLepton> measuredTauLeptons() const { return measuredTauLeptons_; };
-    /// fit function to be called from outside (has to be const to be usable by minuit). This function will call the actual 
-    /// functions transform and nll internally 
-    double nll(const double* x) const;    
     /// return vector of fitted tau leptons, which will be the actual fit result. This function is a subset of transform.
     /// It needs to be factored out though as transform has to be const to be usable by minuit and therefore is not allowed 
     /// changfe the class memebers.  
     void results(std::vector<LorentzVector>& fittedTauLeptons, const double* x) const;
+    /// fit function to be called from outside (has to be const to be usable by minuit). This function will call the actual 
+    /// functions transform and nll internally 
+    double nll(const double* x) const;    
 
   private:
     /// transformation from x to xPrime, x are the actual fit parameters, xPrime are the transformed parameters that go into 
     /// the nll (has to be const to be usable by minuit)
     const double* transform(double* xPrime, const double* x) const;
-    /// combined likelihood function (has to be const to be usable by minuit)
-    double nllPrime(const double* xPrime) const;
+    /// combined likelihood function (has to be const to be usable by minuit). The additional boolean phiPenalty is added to 
+    /// prevent singularities at the +/-pi boundaries of kPhi within the fit parameters (kFitParams) 
+    double nll(const double* xPrime, double phiPenalty) const;
 
   private:
     /// additional power to enhance MET term in the nll (default is 1.)
@@ -167,7 +170,7 @@ namespace NSVfitStandalone{
     /// monitor the number of function calls
     mutable unsigned int idxObjFunctionCall_;
 
-    /// types of tau lepton decays
+    /// measured tau leptons
     std::vector<MeasuredTauLepton> measuredTauLeptons_;
     /// measured MET
     Vector measuredMET_;
