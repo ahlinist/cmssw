@@ -1,6 +1,6 @@
 <export>
 </export>
-<library   name="TauAnalysisCandidateTools_plugins" file="*.cc">
+<library name="TauAnalysisCandidateTools_plugins" file="*.cc">
   <use   name="CommonTools/UtilAlgos"/>
   <use   name="CommonTools/Utils"/>
   <use   name="DataFormats/Candidate"/>

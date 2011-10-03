@@ -3,6 +3,11 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneLikelihood.h"
 
+using NSVfitStandalone::Vector;
+using NSVfitStandalone::LorentzVector;
+using NSVfitStandalone::MeasuredTauLepton;
+
+
 /**
    \class   ObjectFunctionAdapter NSVfitStandaloneAlgorithm.h "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
    
@@ -39,34 +44,35 @@ namespace NSVfitStandalone{
    This class is a standalone version of the NSVfitAlgorithm to perform the full reconstruction of a di-tau resonance system. 
    The implementation is supposed to deal with any combination of leptonic or hadronic tau decays. It exploits likelihood 
    functions as defined in interface/LikelihoodFunctions.h of this package, which are combined into a single likelihood 
-   function as defined interface/NSVfitStandaloneLikelihood.h of this package. The combined likelihood function depends on 
+   function as defined interface/NSVfitStandaloneLikelihood.h in this package. The combined likelihood function depends on 
    the following variables: 
 
    \var nunuMass : the invariant mass of the neutrino system for each decay branch (two parameters)
    \var decayAngle : the decay angle in the restframe of each decay branch (two parameters)
-   \var visMass : the difference between the sum of the neutrino px and py and the measured MET (two parameters)
+   \var visMass : the mass of the visible component of the di-tau system (two parameters)
 
    The actual fit parameters are:
 
    \var nunuMass : the invariant mass of the neutrino system for each decay branch (two parameters)
-   \var xFrac : the fraction of the visible energy on the energy of the tau lepton on the labframe (two parameters)
+   \var xFrac : the fraction of the visible energy on the energy of the tau lepton in the labframe (two parameters)
    \var phi : the azimuthal angle of the tau lepton (two parameters)
 
    The azimuthal angle of each tau lepton is not constraint by measurement. It is limited to the physical values from -Math::Phi 
-   to Math::Phi in the setup fuinction of this class. The invariant mass of the neutrino system can be fixed and zero for 
-   hadronic tau lepton decays as only one (tau-) neutrino is involved in the decay. The original number of free parameters of 6 
-   is therefore reduced by one for each hadronic tau decay within the resonance. All information about the negative log likelihood 
-   is stored in the NSVfitStandaloneLikelihood class as defined in the same package. this class will interface the combined 
-   likelihood to the ROOT;Math::Minuit minimization program. It will setup/initialize the fit parameters as defined in 
-   interface/NSVfitStandaloneLikelihood.h in this package, initialize the minimization procedure, execute the fit algorithm and 
-   return the fit result. The fit result will be the fully reconstructed di-tau system from which also the invariant mass can be 
-   derived.
+   to Math::Phi in the likelihood function nll of the combined likelihood class. The parameter nunuMass is constraint to the tau
+   lepton mass minus the mass of the visible part of the decay (which is itself constraint to values below the tau lepton mass) 
+   in the setup functioh of this class. The parameter xFrac is constraint to values between 0. and 1. in the setup function of 
+   this class. The invariant mass of the neutrino system is fixed to be zero for hadronic tau lepton decays as only one (tau-) 
+   neutrino is involved in the decay then. The original number of free parameters of 6 is therefore reduced by one for each hadronic 
+   tau decay within the resonance. All information about the negative log likelihood is stored in the NSVfitStandaloneLikelihood 
+   class as defined in the same package. This class interfaces the combined likelihood to the ROOT::Math::Minuit minimization program. 
+   It does setup/initialize the fit parameters as defined in interface/NSVfitStandaloneLikelihood.h in this package, initializes the 
+   minimization procedure, executes the fit algorithm and returns the fit result. The fit result consists of the fully reconstructed 
+   di-tau system from which also the invariant mass can be derived.
 
    The following optional parameters can be applied after initialization but before running the fit: 
 
    \var metPower : indicating an additional power to enhance the MET likelihood (default is 1.)
    \var addLogM : specifying whether to use the LogM penalty term or not (default is true)     
-   \var verbosity : indicating the verbosity level (default is 0)
    \var maxObjFunctionCalls : the maximum of function calls before the minimization procedure is terminated (default is 5000)
 
    Common usage is: 
@@ -74,23 +80,21 @@ namespace NSVfitStandalone{
    // construct the class object from the minimal necesarry information
    NSVfitStandaloneAlgorithm algo(measuredTauLeptons, measuredMET, covMET);
    // apply customized configurations if wanted (examples are given below)
-   algo.maxObjFunctionCalls(10000);
-   algo.addLogM(false);
-   algo.metPower(0.5)
-   algo.verbose(3);
+   //algo.maxObjFunctionCalls(10000);
+   //algo.addLogM(false);
+   //algo.metPower(0.5)
    // run the fit
    algo.fit();
    // retrieve the results upon success
    if(algo.isValidSolution()){
-   std::cout << algo.fittedDiTauSystem().mass();
+   std::cout << algo.mass();
    }
 */
-
 class NSVfitStandaloneAlgorithm
 {
  public:
   /// constructor from a minimal set of configurables
-  NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons, NSVfitStandalone::Vector measuredMET, TMatrixD& covMET, unsigned int verbosity);
+  NSVfitStandaloneAlgorithm(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, TMatrixD& covMET, unsigned int verbosity);
   /// destructor
   ~NSVfitStandaloneAlgorithm();
 
@@ -100,33 +104,47 @@ class NSVfitStandaloneAlgorithm
   void metPower(double value) { nll_->metPower(value); };
   /// maximum function calls after which to stop the minimization procedure (default is 5000)
   void maxObjFunctionCalls(double value) {maxObjFunctionCalls_=value; };
+
   /// actual fit function to be called from outside
   void fit();
+
+  /// return status of minuit fit
+  int fitStatus() { return fitStatus_; };
   /// return whether this is a valid solution or not
-  bool isValidSolution() { return isValidSolution_; };
-  /// return relative uncertainty of the fitted di-tau mass from fit parameters (first value is up second is down) 
+  bool isValidSolution() { return (fitStatus_ == 2 || fitStatus_ == 3); };
+  /// return mass of the fitted di-tau system 
+  double mass() const { return fittedDiTauSystem().mass(); };
+  /// return uncertainty on the mass of the fitted di-tau system
   double massUncert() const { return massUncert_; };
   /// return 4-vectors of the fitted tau leptons
-  std::vector<NSVfitStandalone::LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; };
+  std::vector<LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; };
+  /// return 4-vectors of measured tau leptons
+  std::vector<LorentzVector> measuredTauLeptons() const; 
   /// return 4-vector of the fitted di-tau system
-  NSVfitStandalone::LorentzVector fittedDiTauSystem() const { return fittedTauLeptons_[0]+fittedTauLeptons_[1]; };
+  LorentzVector fittedDiTauSystem() const { return fittedTauLeptons_[0]+fittedTauLeptons_[1]; };
+  /// return 4-vector of the measured di-tau system
+  LorentzVector measuredDiTauSystem() const { return measuredTauLeptons()[0]+measuredTauLeptons()[1]; }
+  /// return spacial vector of the fitted MET
+  Vector fittedMET() const {return (fittedDiTauSystem().Vect()-measuredDiTauSystem().Vect()); };
+  // return spacial vector of the measured MET
+  Vector measuredMET() const {return nll_->measuredMET(); };
 
  private:
   /// setup the starting values for the minimization (default values for the fit parameters are taken from src/SVFitParameters.cc in the same package)
   void setup();
 
  private:
+  /// return whether this is a valid solution or not
+  int fitStatus_;
   /// verbosity level
   unsigned int verbosity_;
-  /// return whether this is a valid solution or not
-  bool isValidSolution_;
   /// stop minimization after a maximal number of function calls
   unsigned int maxObjFunctionCalls_;
 
-  /// standalone combined likelihood
-  NSVfitStandalone::NSVfitStandaloneLikelihood* nll_;
   /// minuit instance 
   ROOT::Math::Minimizer* minimizer_;
+  /// standalone combined likelihood
+  NSVfitStandalone::NSVfitStandaloneLikelihood* nll_;
   /// needed to make the fit function callable from within minuit
   NSVfitStandalone::ObjectiveFunctionAdapter standaloneObjectiveFunctionAdapter_;
 
@@ -135,5 +153,15 @@ class NSVfitStandaloneAlgorithm
   /// fit result for each of the decay branches 
   std::vector<NSVfitStandalone::LorentzVector> fittedTauLeptons_;
 };
+
+inline
+std::vector<NSVfitStandalone::LorentzVector> 
+NSVfitStandaloneAlgorithm::measuredTauLeptons() const 
+{ 
+  std::vector<NSVfitStandalone::LorentzVector> measuredTauLeptons;
+  measuredTauLeptons.push_back(nll_->measuredTauLeptons()[0].p4());
+  measuredTauLeptons.push_back(nll_->measuredTauLeptons()[1].p4());
+  return measuredTauLeptons; 
+}
 
 #endif

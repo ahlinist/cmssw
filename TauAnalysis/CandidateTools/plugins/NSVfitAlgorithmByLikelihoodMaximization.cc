@@ -115,7 +115,6 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 //    4: Reached maximum number of function calls before reaching convergence
 //    5: Any other failure
 //
-
   int fitStatus = minimizer_->Status();
   //std::cout << " fitStatus = " << fitStatus << std::endl;
 
@@ -174,8 +173,9 @@ void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypo
   resonance.massErrUp_   = resonance.mass_*TMath::Sqrt(massRelErrUp2);
   resonance.massErrDown_ = resonance.mass_*TMath::Sqrt(massRelErrDown2);
 
-  //std::cout << "--> setting mass = " << resonance.mass_ 
-  //	      << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ << std::endl;
+  std::cout << "--> setting mass = " << resonance.mass_ 
+	    << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ 
+	    << std::endl;
 }
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const
@@ -205,6 +205,11 @@ double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const doubl
 
 //--- build event, resonance and particle hypotheses
   eventModel_->builder_->applyFitParameter(currentEventHypothesis_, x);
+
+  if ( verbosity_ ) {
+    std::cout << " penalty term = " << penalty << std::endl;
+    std::cout << " combied nll  = " << penalty + eventModel_->nll(currentEventHypothesis_) << std::endl;
+  }
 
 //--- compute likelihood
   return penalty + eventModel_->nll(currentEventHypothesis_);
