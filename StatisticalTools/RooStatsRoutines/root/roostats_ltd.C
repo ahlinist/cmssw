@@ -55,6 +55,10 @@ static const char* desc =
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
 #include "TLine.h"
+#include "TF1.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
+#include "TBox.h"
 
 #include "RooPlot.h"
 #include "RooRealVar.h"
@@ -188,6 +192,9 @@ public:
     return mspInstance;
   }
 
+  LimitResult       GetClsLimit( int nToys,
+				 bool printResult = true );
+
   LimitResult       GetClsLimit( int nPoiScanPoints,
 				 int nToys,
 				 bool printResult = true );
@@ -204,6 +211,11 @@ public:
   RooWorkspace *          LoadWorkspace( std::string wsFileName,
 					 std::string wsName );
 
+  Double_t GuessNextPoiStep( std::vector<double> & vPoi,
+			     std::vector<double> & vCls,
+			     std::vector<double> & vClsErr,
+			     double cls );
+    
   void SetSeed(UInt_t seed);
   void SetInverterCalcType(int type){mInverterCalcType=type;};
   void SetTestStatType(int type){mTestStatType=type;};
@@ -222,6 +234,8 @@ public:
   void SetTestMode( bool mode ){mTestMode = mode;};
   void SetRebuildSamplingDist( bool rebuild ){mRebuildSamplingDist = rebuild;};
   void SetNToysToRebuild( bool nToys ){mNToysToRebuild = nToys;};
+  void SetNPoiScanPoints( bool nPoiScanPoints ){mNPoiScanPoints = nPoiScanPoints;};
+  
 
 private:
 
@@ -256,6 +270,21 @@ private:
 			      Int_t index,
 			      Double_t nSigma );
 
+  // get the uncertainty for a given expected p-value
+  // from hypotestinvresult
+  Double_t GetExpectedPValueErr( RooStats::HypoTestInverterResult * pResult,
+				 Int_t index,
+				 Double_t pValue );
+
+  // run single point in the cls scan, with a given precision
+  std::pair<double, double>
+  GetClsSinglePoint( RooStats::HypoTestInverter & calc,
+		     double poi,
+		     double precision,
+		     bool observed,
+		     double bgSigma,
+		     int maxNToys );
+  
   RooStats::MCMCInterval * GetMcmcInterval(double confLevel,
 					   int nIter,
 					   int nBurnIn,
@@ -304,6 +333,7 @@ private:
   std::string mNuisPriorName;
   bool mRebuildSamplingDist;
   int  mNToysToRebuild;
+  int mNPoiScanPoints;
 
   // pointer to class instance
   static LimitCalc * mspInstance;
@@ -365,6 +395,7 @@ void LimitCalc::init(UInt_t randomSeed){
   mNuisPriorName.clear();
   mRebuildSamplingDist = false;
   mNToysToRebuild = -1;
+  mNPoiScanPoints = 0;
 
 }
 
@@ -494,6 +525,18 @@ bool LimitCalc::SetFirstPoiMin( double value ){
   poi->setMin(value);
 
   return true;
+}
+
+
+
+LimitResult LimitCalc::GetClsLimit( int nToys,
+				    bool printResult ){
+  //
+  // Compute CLs limit
+  //
+
+  return GetClsLimit(mNPoiScanPoints, nToys, printResult);
+
 }
 
 
@@ -1252,14 +1295,331 @@ LimitCalc::GetExpectedPValue( RooStats::HypoTestInverterResult * pResult,
   double * x = const_cast<double *>(&values[0]); // cast for TMath::Quantiles
   TMath::Quantiles(values.size(), 1, x, q, p, false);
   delete s;
-
+  
   return q[0];
 }
 
 
 
-// internal routine to run the inverter
-// uses dataset from the class mpData
+Double_t
+LimitCalc::GetExpectedPValueErr( RooStats::HypoTestInverterResult * pResult,
+				 Int_t index, 
+				 Double_t pValue ){
+  //
+  // Find the uncertainty for a specified p-value from the expected distribution.
+  // index - index of a scan point in *pResult
+  // Sampling distributions are taken from the provided result object
+  //
+  // try to estimate the corresponding p-value uncertainty
+
+  RooStats::SamplingDistribution * bDistribution = pResult->GetBackgroundTestStatDist(index);
+  RooStats::SamplingDistribution * sbDistribution = pResult->GetSignalAndBackgroundTestStatDist(index);
+  if (!bDistribution || !sbDistribution) return -1.0;
+
+  RooStats::HypoTestResult * result = pResult->GetResult(index);
+
+  // create a new HypoTestResult
+  RooStats::HypoTestResult tempResult; 
+  tempResult.SetPValueIsRightTail( result->GetPValueIsRightTail() );
+  tempResult.SetBackgroundAsAlt( true );
+  tempResult.SetNullDistribution( sbDistribution );
+  tempResult.SetAltDistribution( bDistribution );
+
+  std::vector<double> p_values(bDistribution->GetSize()); 
+  std::vector<double> p_value_errors(bDistribution->GetSize()); 
+  for (int i = 0; i < bDistribution->GetSize(); ++i) { 
+    tempResult.SetTestStatisticData( bDistribution->GetSamplingDistribution()[i] );
+    p_values[i] = tempResult.CLs();
+    p_value_errors[i] = tempResult.CLsError();
+  }
+
+  // get index array of sorted p_values vector
+  std::vector<int> v_sorted_index( p_values.size() );
+  TMath::Sort((int)(v_sorted_index.size()),
+	      &((const std::vector<double>)p_values)[0],
+	      &v_sorted_index[0]);
+
+  double p_value_error = 1.0;
+  bool first_entry = true;
+  int previous_index = -1;
+  for (std::vector<int>::const_iterator i = v_sorted_index.begin(); 
+       i != v_sorted_index.end();
+       ++i){
+
+    // test
+    //std::cout << *i << ": p = "
+    //	      << p_values[*i] << ", error = "
+    //	      << p_value_errors[*i] << std::endl;
+
+    // find two p-values that contain pValue between them,
+    // take as error their average errors
+    if (p_values[*i]<pValue){
+
+      if (first_entry){
+	// special case when pValue > all p-values
+	p_value_error = p_value_errors[0];
+      }
+      else{
+	p_value_error = 0.5*(p_value_errors[*i]+p_value_errors[previous_index]);
+      }
+
+      // found error, no need to loop further
+      break;
+    }
+    
+    previous_index = *i;
+    first_entry = false;
+  }
+
+  return p_value_error;
+}
+
+
+
+std::pair<double,double>
+LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
+			      double poi,
+			      double precision,
+			      bool observed,
+			      double bgSigma,
+			      int maxNToys ){
+  //
+  // Run single HypoTestInverter calculationt 
+  // with adaptive number of toys for precision
+  // and speed
+  //
+  //   precision - realtive (fraction)
+
+  std::pair<double,double> result;
+  result.first = -1.0;
+  result.second = -1.0;
+
+  int max_ntoys_zero = 1000;
+
+  // result and its current precision
+  double _clsb = -1.0;
+  double _clsb_err = -1.0;
+  double _clb = -1.0;
+  double _clb_err = -1.0;
+  double _cls = -1.0;
+  double _cls_err = -1.0;
+
+  // initial number of toys
+  double p_value_bg = ROOT::Math::normal_cdf(bgSigma,1);
+  int add_toys_sb = (int)(1.5/p_value_bg/p_value_bg + 1.0);
+  int add_toys_b = add_toys_sb;
+
+  // keep adding toys until precision is reached or something
+  // is hopelessly zero, and max_toys_zero are reached, or
+  // maxNToys is reached
+  while(1){
+    
+    if (mTestMode){
+      std::cout << "[DEBUG]: add S+B toys: " << add_toys_sb << std::endl;
+      std::cout << "[DEBUG]: add B toys: " << add_toys_b << std::endl;
+    }
+
+    // check if too many toys requested
+    if ( add_toys_sb > maxNToys ) add_toys_sb = maxNToys;
+    if ( add_toys_b > maxNToys )  add_toys_b = maxNToys;
+
+    if (mInverterCalcType == 0){
+      ((RooStats::FrequentistCalculator *)(calc.GetHypoTestCalculator()))->SetToys(add_toys_sb,add_toys_b);
+    }
+    else{
+      ((RooStats::HybridCalculator *)(calc.GetHypoTestCalculator()))->SetToys(add_toys_sb,add_toys_b);
+    }
+
+    // reset
+    add_toys_sb = 0;
+    add_toys_b = 0;
+
+    // run first iteration to get an idea
+    calc.RunOnePoint(poi);
+    RooStats::HypoTestInverterResult * pResult = calc.GetInterval();
+    
+    // get the index of the current point
+    int poi_index = pResult->FindIndex(poi);
+    if (poi_index < 0) poi_index = pResult->ArraySize()-1;
+
+    if (mTestMode){
+      std::cout << "[DEBUG]: ArraySize(): " << pResult->ArraySize() << std::endl;
+    }
+    
+    // sampling distributions
+    // (we do not own these)
+    RooStats::SamplingDistribution * pBDist = pResult->GetBackgroundTestStatDist(poi_index);
+    RooStats::SamplingDistribution * pSbDist = pResult->GetSignalAndBackgroundTestStatDist(poi_index);
+    if (!pBDist || !pSbDist) return result;
+    
+    // 
+    RooStats::HypoTestResult * result = pResult->GetResult(poi_index);
+    
+    // create a new HypoTestResult
+    RooStats::HypoTestResult temp_result; 
+    temp_result.SetPValueIsRightTail( result->GetPValueIsRightTail() );
+    temp_result.SetBackgroundAsAlt( true );
+    temp_result.SetNullDistribution( pSbDist );
+    temp_result.SetAltDistribution( pBDist );
+    
+    // get test statistic value for CLs calculation
+    double test_stat;
+    if (observed){
+      test_stat = result->GetTestStatisticData();
+    }
+    else{
+      // expected limits requested
+      // get test statistic from quantile of the b-only sampling dist
+      double p[1];
+      double q[1];
+      p[0] = p_value_bg;
+      const std::vector<double> & values = pBDist->GetSamplingDistribution();
+      double * x = const_cast<double *>(&values[0]); // cast for TMath::Quantiles
+      TMath::Quantiles(values.size(), 1, x, q, p, false);
+      test_stat = q[0];
+    }
+    
+    int n_b_toys = pBDist->GetSamplingDistribution().size();
+    int n_sb_toys = pSbDist->GetSamplingDistribution().size();
+
+    temp_result.SetTestStatisticData( test_stat );
+    _clsb = temp_result.CLsplusb();
+    _clsb_err = temp_result.CLsplusbError();
+    _clb = temp_result.CLb();
+    _clb_err = temp_result.CLbError();
+
+    if (mTestMode){
+      std::cout << "[DEBUG]: N of B toys: " << n_b_toys  << std::endl;
+      std::cout << "[DEBUG]: N of S+B toys: " << n_sb_toys  << std::endl;
+      std::cout << "[DEBUG]: CLsb: " << _clsb << " +/- " << _clsb_err  << std::endl;
+      std::cout << "[DEBUG]: CLb: " << _clb << " +/- " << _clb_err  << std::endl;
+    }
+
+    if (_clb < 0.1/(double)n_b_toys){
+      // BG p-value iz zero
+      _cls = 1.0;
+      _cls_err = -1.0;
+
+      if (mTestMode){
+	std::cout << "[DEBUG]: CLb is zero..." << std::endl;
+      }
+
+      if (n_b_toys >= max_ntoys_zero){
+	// too many toys and still zero
+	break;
+      }
+
+      add_toys_b = (int)(((double)n_b_toys)/precision/precision);
+      if ( (add_toys_b + n_b_toys) > max_ntoys_zero ){
+	// too many toys
+	add_toys_b = max_ntoys_zero - n_b_toys;
+      }
+
+      add_toys_sb = 1;
+      continue;
+    }
+
+    if (_clsb < 0.1/(double)n_sb_toys){
+      // S+B p-value is zero
+      _cls = 0.0;
+      _cls_err = -1.0;
+
+      if (mTestMode){
+	std::cout << "[DEBUG]: CLsb is zero..." << std::endl;
+      }
+
+      if (n_sb_toys >= max_ntoys_zero){
+	// too many toys and still zero
+	break;
+      }
+
+      add_toys_b = 1;
+      add_toys_sb = (int)(((double)n_sb_toys)/precision/precision);
+
+      if ( (add_toys_sb + n_sb_toys) > max_ntoys_zero ){
+	// too many toys
+	add_toys_sb = max_ntoys_zero - n_sb_toys;
+      }
+      
+      continue;
+    }
+
+    if ( _clsb_err/_clsb > precision ){
+      add_toys_sb = (int)(1.0
+			  + ((double)n_sb_toys)
+			  * _clsb_err*_clsb_err/_clsb/_clsb/precision/precision
+			  - (double)n_sb_toys);
+
+      if ( (double)add_toys_sb < 0.1*((double)n_sb_toys)){
+	// protection against too small increments
+	add_toys_sb = (int)(0.1*((double)n_sb_toys)+1.0);
+      }
+    }
+
+    if ( _clb_err/_clb > precision ){
+      add_toys_b = (int)(1.0
+			 + ((double)n_b_toys)
+			 * _clb_err*_clb_err/_clb/_clb/precision/precision
+			 - (double)n_b_toys);
+
+      if ( (double)add_toys_b < 0.1*((double)n_b_toys)){
+	// protection against too small increments
+	add_toys_b = (int)(0.1*((double)n_b_toys)+1.0);
+      }
+    }
+
+    
+    _cls = temp_result.CLs();
+    _cls_err = temp_result.CLsError();
+
+    if (mTestMode){
+      std::cout << "[DEBUG]: CLs: " << _cls << " +/- " << _cls_err  << std::endl;
+    }
+
+    // precision achieved or far away from goal
+    if ( _cls_err/_cls < precision || fabs(_cls-0.05)>5.0*_cls_err) break;
+
+    // how much over the desired precision?
+    double extra = _cls_err*_cls_err/_cls/_cls/precision/precision - 1.0;
+    
+    // more toys only if both cls and clb reached the precision
+    if (_clb_err/_clb < precision && _clsb_err/_clsb < precision){
+      add_toys_b = (int)(extra*((double)n_b_toys) + 1.0);
+      add_toys_sb = (int)(extra*((double)n_sb_toys) + 1.0);
+    }
+
+    // protection against too small increments
+    if ( (double)add_toys_sb < 0.1*((double)n_sb_toys)){
+      add_toys_sb = (int)(0.1*((double)n_sb_toys)+1.0);
+    }
+    if ( (double)add_toys_b < 0.1*((double)n_b_toys)){
+      add_toys_b = (int)(0.1*((double)n_b_toys)+1.0);
+    }
+
+    // max toys reached, exit
+    if (n_sb_toys >= maxNToys || n_b_toys >= maxNToys){
+      break;
+    }
+
+    // check if too many toys requested
+    if ( (add_toys_sb + n_sb_toys) > maxNToys ){
+      add_toys_sb = maxNToys - n_sb_toys;
+    }
+    if ( (add_toys_b + n_b_toys) > maxNToys ){
+      add_toys_b = maxNToys - n_b_toys;
+    }
+
+  }
+  
+  //std::pair<double,double> result;
+  result.first = _cls;
+  result.second = _cls_err;
+
+  return result;
+}
+
+
+
 RooStats::HypoTestInverterResult * 
 LimitCalc::RunInverter( int    npoints,
 			double poimin,
@@ -1267,6 +1627,8 @@ LimitCalc::RunInverter( int    npoints,
 			int    nSbToys,
 			int    nBToys,
 			bool   useCls ){
+  // internal routine to run the inverter
+  // uses dataset from the class mpData
 
   std::string _legend = "[LimitCalc::RunInverter]: ";
 
@@ -1500,10 +1862,11 @@ LimitCalc::RunInverter( int    npoints,
      // test new functionality here
      
      // binary search for expected limit
-     double _p = 0;
+     double _p = 0.0;
+     double _p_err = 0.0;
      double _cls = 0.05;
-     double _precision = 0.005;
-     double _sigma = 2.0;
+     double _precision = 0.01;
+     double _sigma = 0.0;
 
      // establish starting bounds
      // FIXME: check that low and high cover the interval
@@ -1511,19 +1874,15 @@ LimitCalc::RunInverter( int    npoints,
      std::pair<double,double> _low;
      _high.first = GetFirstPoiMax();
      _low.first= GetFirstPoiMin();
-     //calc.RunOnePoint(_low.first);
-     //r = calc.GetInterval();
-     //_low.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
      _low.second = 1.0;
-     //calc.RunOnePoint(_high.first);
-     //r = calc.GetInterval();
-     //_high.second = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
      _high.second = 0.0;
 
      // begin binary search
      double _current_poi;
      bool _adaptive_sampling = false;
-     int _points_checked = 0;
+     std::vector<double> v_poi;
+     std::vector<double> v_cls;
+     std::vector<double> v_cls_err;
      while ( fabs(_p - _cls) > _precision || !_adaptive_sampling ){
 
        // predict the next point
@@ -1535,7 +1894,7 @@ LimitCalc::RunInverter( int    npoints,
        // turn on adaptive sampling if close
        // FIXME: hardcoded constants
        if ( fabs(_p - _cls) < 0.04 ){
-	 ((RooStats::FrequentistCalculator*) calc.GetHypoTestCalculator())->SetNToysInTails(100,0);
+	 //((RooStats::FrequentistCalculator*) calc.GetHypoTestCalculator())->SetNToysInTails(400,400);
 	 if (!_adaptive_sampling){
 	   _adaptive_sampling = true;
 	 }
@@ -1551,35 +1910,75 @@ LimitCalc::RunInverter( int    npoints,
        // 2. track if we're getting closer, stop if not
        // 3. estimate uncertainty on the limit
        //
-       if (_adaptive_sampling && _points_checked > 1){
+       if (_adaptive_sampling){
 	 //_current_poi = _low.first + (_high.first-_low.first)*(_low.second-_cls)/(_low.second-_high.second);
-	 _current_poi = (_low.first*(_cls-_high.second)+_high.first*(_low.second-_cls))/(_low.second-_high.second);
+	 //_current_poi = (_low.first*(_cls-_high.second)+_high.first*(_low.second-_cls))/(_low.second-_high.second);
+	 //_current_poi = GuessNextPoiStep(v_poi, v_cls, v_cls_err, _cls);
+	 _current_poi = (_low.first + _high.first)/2.0;
        }
        else{
 	 _current_poi = (_low.first + _high.first)/2.0;
        }
-
-       calc.RunOnePoint(_current_poi);
+       
+       // FIXME: adaptinve
+       //calc.RunOnePoint(_current_poi);
+       std::pair<double,double> point = GetClsSinglePoint(calc, _current_poi, _precision/_cls,
+							  false, _sigma, 10000);
+       _p = point.first;
+       _p_err = point.second;
        r = calc.GetInterval();
-       _p = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
-
+       //_p = GetExpectedPValue(r, r->ArraySize()-1, _sigma);
+       //_p_err = GetExpectedPValueErr(r, r->ArraySize()-1, _p);
+       
+       // turn off adaptive sampling if far away
+       // FIXME: hardcoded constants
+       if ( fabs(_p - _cls) > 0.04 ) _adaptive_sampling = false;
+       
+       // cash the point
+       // FIXME: which points to save - useful for prediction?
+       //if (_adaptive_sampling){
+       if ( _p > 0.0001 ){
+	 v_poi.push_back(_current_poi);
+	 v_cls.push_back(_p);
+	 v_cls_err.push_back(_p_err);
+       }
+       
+       // adjust the estimate of the POI interval that covers cls=0.05
+       // FIXME: this is a pretty rough estimate
+       //        if this is useful at all, should be done with uncertainty
+       //        i.e. using some sort of a normalized residual
        if (_p > _cls){
 	 _low.first = _current_poi;
 	 _low.second = _p;
        }
        else{
-	 _high.first = _current_poi;
-	 _high.second = _p;
+	 if (_high.first > _current_poi){
+	   _high.first = _current_poi;
+	   _high.second = _p;
+	 }
        }
        
-       
-       
-       std::cout << "_p = " << _p 
-		 << ", _cls = " << _cls << std::endl;
+       std::cout << "POI = " << _current_poi
+		 << ", CLs = " << _p 
+		 << " +/- " << _p_err
+		 << std::endl;
      }
+     
+     // FIXME: debug: plot points that supposed to search for cls=0.05
+     std::cout << "******************************" << std::endl << std::endl;
+     std::vector<double> v_index;
+     for (int i=0; i!=v_poi.size(); ++i){
+       v_index.push_back((double)i);
+       std::cout << i << ": cls = "
+		 << v_cls[i] << " +/- "
+		 << v_cls_err[i] << ", relative: "
+		 << v_cls_err[i]/v_cls[i]
+		 << std::endl;
+     }
+     std::cout << "******************************" << std::endl << std::endl;
 
-     std::cout << "fabs(_p - _cls) = " << fabs(_p - _cls) << std::endl;
-     std::cout << "_precision      = " << _precision << std::endl;
+     //std::cout << "fabs(_p - _cls) = " << fabs(_p - _cls) << std::endl;
+     //std::cout << "_precision      = " << _precision << std::endl;
 
      //calc.RunOnePoint(0.15);
      //r = calc.GetInterval();
@@ -1622,6 +2021,95 @@ LimitCalc::RunInverter( int    npoints,
 
 
 
+Double_t
+LimitCalc::GuessNextPoiStep( std::vector<double> & vPoi,
+			     std::vector<double> & vCls,
+			     std::vector<double> & vClsErr,
+			     double cls ){
+  //
+  // Use points in a POI CLs scan to predict the most likely
+  // POI value that would correspond to the given cls value
+  //
+
+  // default value
+  Double_t next_poi = 0.5*( GetFirstPoiMax()+GetFirstPoiMin() );
+
+  // only use the last 4 points at most
+  int input_size = vPoi.size();
+  int n_points = vPoi.size();
+  if (n_points > 4) n_points = 4;
+
+  std::vector<double> _poi;
+  std::vector<double> _cls;
+  std::vector<double> _poi_err;
+  std::vector<double> _cls_err;
+  for (int i = n_points; i != 0; --i){
+    _poi.push_back(vPoi[input_size-i]);
+    _cls.push_back(vCls[input_size-i]);
+    _poi_err.push_back(0.0);
+    _cls_err.push_back(vClsErr[input_size-i]);
+
+    // test
+    std::cout << vPoi[input_size-n_points] << std::endl;
+    std::cout << _poi[n_points-i]
+	      << ": poi = " << _poi[n_points-i]
+	      << " /- "  << _poi_err[n_points-i]
+	      << ", cls = " << _cls[n_points-i]
+	      << " /- "  << _cls_err[n_points-i]
+	      << std::endl;
+  }
+  
+  double poi_max = TMath::MaxElement(n_points, &_poi[0]);
+  double poi_min = TMath::MinElement(n_points, &_poi[0]);
+
+  TGraphErrors graph(n_points,
+		     &_poi[0], &_cls[0],
+		     &_poi_err[0], &_cls_err[0]);
+
+  TF1 f1("f1", "[0]+[1]*exp([2]*x+[3])", poi_min, poi_max);
+  TF1 f2("f2", "[0]+[1]*x", poi_min, poi_max);
+
+  
+  TFitResultPtr fit_result;
+  if (n_points < 2){
+    // safety: step 10% down if not enough points to fit
+    double _poi = 0.9 * vPoi[n_points-1];
+    if (_poi > GetFirstPoiMin()) next_poi = _poi;
+  }
+  else if (n_points < 40){
+    // linear fit
+    fit_result = graph.Fit("f2", "MEWS", "", poi_min, poi_max);
+    double p0 = fit_result->Value(0);
+    double p1 = fit_result->Value(1);
+    next_poi = (cls-p0)/p1;
+
+    // DEBUG: draw a plot with the last few points
+    /*
+    TCanvas c("c","c");
+    c.DrawFrame(0.0, 0.0, 0.1, 0.2);
+    //TBox f(poi_min, 0.0, poi_max, 0.2);
+    //f.Draw("l");
+    graph.Draw("P");
+    char buf[256];
+    sprintf(buf, "plot_%i.png", input_size);
+    c.SaveAs(buf);
+    */
+  }
+  else{
+    // exponential fit
+    fit_result = graph.Fit("f1", "MEWS", "", poi_min, poi_max);
+    double p0 = fit_result->Value(0);
+    double p1 = fit_result->Value(1);
+    double p2 = fit_result->Value(2);
+    double p3 = fit_result->Value(3);
+    next_poi = (TMath::Log((cls-p0)/p1)-p3)/p2;
+  }
+
+  return next_poi;
+}
+
+
+
 //--------> global functions --------------------------------------
 //
 LimitResult limit( const char * method,
@@ -1654,6 +2142,7 @@ LimitResult limit( const char * method,
   }
   else if (std::string(method).find("cls") != std::string::npos){
     limitResult = pCalc->GetClsLimit(0, 1000, true);
+    //limitResult = pCalc->GetClsLimit(1000, true);
   }
   else if (std::string(method).find("plr") != std::string::npos){
     //limitResult = pCalc->GetPlrLimit(0, 1000, true);
