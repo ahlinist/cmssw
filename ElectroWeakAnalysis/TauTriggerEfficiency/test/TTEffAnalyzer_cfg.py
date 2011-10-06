@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 isData = False
-#pftau = 0
+runL1Emulator = True
 hltType = "HLT"
 #hltType = "REDIGI38X"
 
@@ -289,6 +289,60 @@ process.runTTEffAnaHighPurity = cms.Path(
     process.TTEffAnalysisHLTPFTauTightHPSHighPurity
 )
 
+# L1 emulator
+process.L1simulation_step = cms.Path()
+if runL1Emulator:
+    if isData:
+        process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
+    else:
+        process.load('Configuration.StandardSequences.RawToDigi_cff')
+    process.L1simulation_step = cms.Path(
+        process.RawToDigi *
+        process.SimL1Emulator
+    )
+    import L1Trigger.Configuration.customise_l1EmulatorFromRaw as l1emulator
+    l1emulator.customise(process)
+
+    process.l1emuL1extraParticles = process.hltL1extraParticles.clone(
+        muonSource = cms.InputTag( 'simGmtDigis' ),
+        isolatedEmSource = cms.InputTag( 'simGctDigis','isoEm' ),
+        nonIsolatedEmSource = cms.InputTag( 'simGctDigis','nonIsoEm' ),
+        centralJetSource = cms.InputTag( 'simGctDigis','cenJets' ),
+        forwardJetSource = cms.InputTag( 'simGctDigis','forJets' ),
+        tauJetSource = cms.InputTag( 'simGctDigis','tauJets' ),
+        etTotalSource = cms.InputTag( 'simGctDigis' ),
+        etHadSource = cms.InputTag( 'simGctDigis' ),
+        etMissSource = cms.InputTag( 'simGctDigis' )
+    )
+    process.l1emuL1GtObjectMap = process.hltL1GtObjectMap.clone(
+        GmtInputTag = "simGmtDigis",
+        GctInputTag = "simGctDigis"
+    )
+    process.L1simulation_step *= (process.l1emuL1extraParticles *
+                                  process.l1emuL1GtObjectMap)
+
+
+    def setL1Emu(module):
+        module.L1extraTauJetSource = cms.InputTag("l1emuL1extraParticles", "Tau")
+        module.L1extraCentralJetSource = cms.InputTag("l1emuL1extraParticles", "Central")
+        module.L1extraMETSource = cms.InputTag("l1emuL1extraParticles", "MET")
+        module.L1extraMHTSource = cms.InputTag("l1emuL1extraParticles", "MHT")
+        module.L1CaloRegionSource = "simRctDigis"
+        module.L1GtReadoutRecord = "simGtDigis"
+        module.L1GtObjectMapRecord = "l1emuL1GtObjectMap"
+
+    process.TEffAnalysisHLTPFTauTightHPSL1Emu = process.TTEffAnalysisHLTPFTauTightHPS.clone(
+        outputFileName = "tteffAnalysis-hltpftautight-hpspftau-l1emu.root"
+    )
+    setL1Emu(process.TEffAnalysisHLTPFTauTightHPSL1Emu)
+    process.runTTEffAna += process.TEffAnalysisHLTPFTauTightHPSL1Emu
+
+    process.TTEffAnalysisHLTPFTauTightHPSHighPurityL1Emu = process.TTEffAnalysisHLTPFTauTightHPSHighPurity.clone(
+        outputFileName = "tteffAnalysis-hltpftautight-hpspftau-l1emu-highpurity.root"
+    )
+    setL1Emu(process.TTEffAnalysisHLTPFTauTightHPSHighPurityL1Emu)
+    process.runTTEffAnaHighPurity *= process.TTEffAnalysisHLTPFTauTightHPSHighPurityL1Emu
+
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),
 #    fileName = cms.untracked.string('cmssw.root')
@@ -303,12 +357,13 @@ process.schedule = cms.Schedule(process.DoHLTJets,
 				process.DoHLTTau,
 				process.DoHLTMinBiasPixelTracks,
 				process.runMETCleaning,
+                                process.L1simulation_step,
 				process.runTTEffAna,
                                 process.runTTEffAnaHighPurity
 #				,process.outpath
 )
 
-if (isData):  # replace all instances of "rawDataCollector" with "source" in In$
+if isData:  # replace all instances of "rawDataCollector" with "source" in In$
     from FWCore.ParameterSet import Mixins
     for module in process.__dict__.itervalues():
         if isinstance(module, Mixins._Parameterizable):
