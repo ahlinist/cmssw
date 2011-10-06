@@ -69,6 +69,7 @@ class L1TauEfficiencyAnalyzer {
         TTree *l1tree;
 
         float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi, jetMinDR;
+        unsigned jetRank;
         int jetsInMatchCone;
         bool hasL1Jet, hasL1TauJet, hasL1CenJet;
         bool hasTauVeto;

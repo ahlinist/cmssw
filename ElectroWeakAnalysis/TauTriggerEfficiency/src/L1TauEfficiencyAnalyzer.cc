@@ -149,6 +149,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   // Setup branches
   l1tree->Branch("L1JetPt", &jetPt);
   l1tree->Branch("L1JetEt", &jetEt);
+  l1tree->Branch("L1JetRank", &jetRank);
   l1tree->Branch("L1JetEta", &jetEta);
   l1tree->Branch("L1JetPhi", &jetPhi);
   l1tree->Branch("L1JetMatchDR", &jetMinDR);
@@ -187,6 +188,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   // Reset variables
   jetPt = 0.0;
   jetEt = 0.0;
+  jetRank = 0;
   jetUncorrEt = 0.0;
   jetEta = 0.0;
   jetPhi = -999.0;
@@ -253,30 +255,25 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
 
    // Count the number of offline primary vertices
    edm::Handle<reco::VertexCollection> offlinePVHandle; // Handle to the actual vertex collection
-
-   try {
- 	  iEvent.getByLabel(OfflinePVSource, offlinePVHandle); // Try to get collection
-   } catch (...) {
-	  edm::LogWarning("TTEffAnalyzer") << "No offlinePV found with label " << OfflinePVSource << std::endl;
-   }
+   iEvent.getByLabel(OfflinePVSource, offlinePVHandle);
  
    if ( offlinePVHandle.isValid() ) {
- 	  numOfflinePV = offlinePVHandle->size();
+     numOfflinePV = offlinePVHandle->size();
+     // Loop over each offline PV and count only those considered "good"
+     for (vector<Vertex>::const_iterator iOfflinePV = offlinePVHandle->begin(); iOfflinePV != offlinePVHandle->end(); iOfflinePV++) {
+       if ( (iOfflinePV->isValid() == true) 	&&
+            (iOfflinePV->isFake() == false) 	&&
+            (iOfflinePV->ndof() >= 4) 		&&
+            (fabs(iOfflinePV->z()) < 24.0)	&&
+            (iOfflinePV->position().rho() < 2.0) ){
+         numGoodOfflinePV++;
+       }
+     }
+   }
+   else {
+     edm::LogWarning("TTEffAnalyzer") << "No offlinePV found with label " << OfflinePVSource << std::endl;
    }
  
-   // Loop over each offline PV and count only those considered "good"
-   for (vector<Vertex>::const_iterator iOfflinePV = offlinePVHandle->begin(); iOfflinePV != offlinePVHandle->end(); iOfflinePV++) {
- 	  if ( (iOfflinePV->isValid() == true) 	&&
-           (iOfflinePV->isFake() == false) 	&&
- 		   (iOfflinePV->ndof() >= 4) 		&&
- 		   (fabs(iOfflinePV->z()) < 24.0)	&&
- 		   (iOfflinePV->position().rho() < 2.0) ){
- 		   numGoodOfflinePV++;	   
- 	  }
-   }
-
-
-
   // Process L1 triggered taus
   const L1JetParticleCollection & l1Taus = *(l1TauHandle.product());
   L1JetParticleCollection::const_iterator iJet;
@@ -296,6 +293,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
         jetMinDR = DR;
         jetPt = iJet->pt();
         jetEt = iJet->et();
+        jetRank = iJet->gctJetCand()->rank();
         jetUncorrEt = L1JetEtUncorr(jetEt);
         jetEta = iJet->eta();
         jetPhi = iJet->phi();
