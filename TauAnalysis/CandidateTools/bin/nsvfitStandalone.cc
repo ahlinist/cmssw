@@ -3,6 +3,13 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
+/**
+   \class nsvfitStandalone nsvfitStandalone.cc "TauAnalysis/CandidateTools/bin/nsvfitStandalone.cc"
+   \brief Basic example of the use of the standalone version of NSVfit
+
+   This is an example executable to show the use of the standalone version of NSVfit form a flat 
+   n-tuple.
+*/
 
 int main(int argc, char* argv[]) 
 {
@@ -22,8 +29,7 @@ int main(int argc, char* argv[])
   float covMet21, covMet22;
   float l1M, l1Px, l1Py, l1Pz;
   float l2M, l2Px, l2Py, l2Pz;
-  float mTrue, mSVfit;
-  float mSVfitUp, mSVfitDown;
+  float mTrue;
 
   // branch adresses
   tree->SetBranchAddress("met"          , &met        );
@@ -41,9 +47,6 @@ int main(int argc, char* argv[])
   tree->SetBranchAddress("l2_Py"        , &l2Py       );
   tree->SetBranchAddress("l2_Pz"        , &l2Pz       );
   tree->SetBranchAddress("m_true"       , &mTrue      );
-  tree->SetBranchAddress("m_svfit"      , &mSVfit     );
-  tree->SetBranchAddress("m_svfit_up"   , &mSVfitUp   );
-  tree->SetBranchAddress("m_svfi_tdown" , &mSVfitDown );
 
   int nevent = tree->GetEntries();
   for(int i=0; i<nevent; ++i){
@@ -77,15 +80,13 @@ int main(int argc, char* argv[])
     // run the fit
     algo.fit();
     // retrieve the results upon success
-    //if(algo.isValidSolution()){
     std::cout << "... m truth : " << mTrue  << std::endl;
-    std::cout << "... m svfit : " << mSVfit << std::endl;
-    std::cout << "... m mit   : " << algo.fittedDiTauSystem().mass() << std::endl;
-    //}
-    //else{
-    //std::cout << "... and the result is                   : ---" << std::endl;
-    //}
-    //if(i+1 == 1) break;
+    if(algo.isValidSolution()){
+      std::cout << "... m svfit : " << algo.mass() << "+/-" << algo.massUncert() << std::endl;
+    }
+    else{
+      std::cout << "... m svfit : ---" << std::endl;
+    }
   }
   return 0;
 }
