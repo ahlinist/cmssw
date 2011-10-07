@@ -43,6 +43,8 @@ process.nSVfitProducerByLikelihoodMaximization.algorithm.verbosity = 0
 process.load("TauAnalysis.CandidateTools.nSVfitEventAnalyzer_cfi")
 process.nSVfitEventAnalyzer.leps1 = "cleanPatMuons"
 process.nSVfitEventAnalyzer.leps2 = "cleanPatTaus"
+process.nSVfitEventAnalyzer.type1 = "lep"
+process.nSVfitEventAnalyzer.type2 = "had"
 
 ## check the event content
 process.content = cms.EDAnalyzer("EventContentAnalyzer")
