@@ -1,11 +1,11 @@
-// $Id: EcalCalibRenderPlugin.cc,v 1.4 2011/09/02 20:27:19 yiiyama Exp $
+// $Id: EcalCalibRenderPlugin.cc,v 1.5 2011/09/19 19:28:41 yiiyama Exp $
 
 /*!
   \file EcalCalibRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author Y. Iiyama
-  \version $Revision: 1.4 $
-  \date $Date: 2011/09/02 20:27:19 $
+  \version $Revision: 1.5 $
+  \date $Date: 2011/09/19 19:28:41 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -449,7 +449,7 @@ private:
       l1.SetLineStyle(1), l2.SetLineStyle(1), l3.SetLineStyle(1);
       l1.SetLineColor(kRed), l2.SetLineColor(kOrange), l3.SetLineColor(kGreen);
 
-      if( name.find("L1 amplitude trend") != std::string::npos ){
+      if( name.find("amplitude trend") != std::string::npos && name.find("prepulse") == std::string::npos ){
 	l1.DrawLine(xmin,100,xmax,100);
 	l2.DrawLine(xmin,200,xmax,200);
       }else if( name.find("amplitude RMS trend") != std::string::npos ){
