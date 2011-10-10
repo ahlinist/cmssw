@@ -17,7 +17,12 @@ branches = """phoPt            pt
     phoIsEB          isEB
     phoHoE           hadronicOverEm
     scEt             superCluster.energy*sin(superCluster.position.theta)
-    phoDeltaRToTrack  userFloat('conversionTools:deltaRToTrack')
+    scE              superCluster.energy
+    scRawE           superCluster.rawEnergy
+    scEta            superCluster.eta
+    scEtaWidth       superCluster.etaWidth
+    scPhiWidth       superCluster.phiWidth
+    phoDeltaRToTrack userFloat('conversionTools:deltaRToTrack')
     phoPassElectronVeto userInt('conversionTools:passElectronVeto')
     phoHasMatchedConversion userInt('conversionTools:hasMatchedConversion')
     phoHasPixelMatch hasPixelSeed
