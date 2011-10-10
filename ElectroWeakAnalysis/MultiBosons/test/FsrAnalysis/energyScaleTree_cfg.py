@@ -129,15 +129,18 @@ process.selectedDiMuons = cms.EDFilter("VGammaDiLeptonFilter",
     filter = cms.bool(True),
     verbosity = cms.untracked.uint32(2)
 )
+process.selectedDiMuons.filterParams.maxMass = 120
 
-process.load("ElectroWeakAnalysis.MultiBosons.FsrAnalysis.defaultPhotons_cfi")
+# process.load("ElectroWeakAnalysis.MultiBosons.FsrAnalysis.defaultPhotons_cfi")
 
 process.selectedPhotons = cms.EDFilter("VGammaPhotonFilter",
     filterParams = photonSelection,
-    src = cms.InputTag("defaultPhotons"),
+#     src = cms.InputTag("defaultPhotons"),
+    src = cms.InputTag('cleanPatPhotonsTriggerMatch', '', 'PAT'),
     filter = cms.bool(True),
     verbosity = cms.untracked.uint32(2)
 )
+process.selectedPhotons.filterParams.cutsToIgnore.append('minPt')
 
 #process.vertexedDiMuons = cms.EDProducer("KalmanVertexFitCompositeCandProducer",
     #src = cms.InputTag("selectedDiMuons")
@@ -156,6 +159,8 @@ process.selectedZMuMuGammas = cms.EDFilter("ZMuMuGammaFilter",
     filter = cms.bool(True),
     verbosity = cms.untracked.uint32(2)
 )
+process.selectedZMuMuGammas.filterParams.minMass = 50
+process.selectedZMuMuGammas.filterParams.maxMass = 130
 
 process.combinatoricFilter = cms.EDFilter("CandViewCountRangeFilter",
     src = cms.InputTag("selectedZMuMuGammas"),
@@ -168,7 +173,7 @@ process.selectionSequence = cms.Sequence(
     process.selectedMuons *
     process.goodDiMuons *
     process.selectedDiMuons *
-    process.defaultPhotons *
+#     process.defaultPhotons *
     process.selectedPhotons *
     #process.vertexedDiMuons *
     process.goodZMuMuGammas *
@@ -234,14 +239,36 @@ if options.isMC:
 #             123331, 52841.1, 22026.7
 
             ## from estimatePileupD.py for golden JSON up to run 173244
-            2.66037e+07, 6.20837e+07, 1.28931e+08, 2.00545e+08, 2.5334e+08, 2.73133e+08,
-            2.5988e+08, 2.23527e+08, 1.76897e+08, 1.30515e+08, 9.06582e+07, 5.972e+07,
-            3.75081e+07, 2.2549e+07, 1.30131e+07, 7.2248e+06, 3.86533e+06, 1.99552e+06,
-            995277, 480084, 224189, 101452, 44532.8, 18979.4,
-            7860.96, 3167.1, 1242.31, 474.86, 177.025, 64.4158,
-            22.8974, 7.95686, 2.70506, 0.900305, 0.293541, 0.0938176,
-            0.02941, 0.0090478, 0.00273311, 0.000811054, 0.000236549, 6.78354e-05,
+#             2.66037e+07, 6.20837e+07, 1.28931e+08, 2.00545e+08, 2.5334e+08, 2.73133e+08,
+#             2.5988e+08, 2.23527e+08, 1.76897e+08, 1.30515e+08, 9.06582e+07, 5.972e+07,
+#             3.75081e+07, 2.2549e+07, 1.30131e+07, 7.2248e+06, 3.86533e+06, 1.99552e+06,
+#             995277, 480084, 224189, 101452, 44532.8, 18979.4,
+#             7860.96, 3167.1, 1242.31, 474.86, 177.025, 64.4158,
+#             22.8974, 7.95686, 2.70506, 0.900305, 0.293541, 0.0938176,
+#             0.02941, 0.0090478, 0.00273311, 0.000811054, 0.000236549, 6.78354e-05,
 
+            ## from Poter's pudist_160431to166967_Poter.root for 0.875/fb Vg analysis
+            1.10793e+07, 2.31206e+07, 5.42952e+07, 9.04771e+07, 1.18068e+08, 1.28036e+08,
+            1.19846e+08, 9.94131e+07, 7.45008e+07, 5.11836e+07, 3.26078e+07, 1.94407e+07,
+            1.09285e+07, 5.8289e+06, 2.96543e+06, 1.44558e+06, 677890, 306859,
+            134492, 57224.5, 23693.1, 9565.65, 3772.73, 1455.95,
+            550.55, 204.24, 74.4102, 26.6473, 9.38663, 3.2542,
+            1.11079, 0.373414, 0.123646, 0.0403285, 0.012956, 0.00409919,
+            0.0012771, 0.000391712, 0.000118258, 3.51339e-05, 1.02699e-05, 2.9531e-06,
+#             8.35198e-07, 2.32299e-07, 6.35345e-08, 1.70863e-08, 4.518e-09, 1.17463e-09,
+#             3.00277e-10, 2.3274e-07, 0,
+
+
+            ## from Poter's pudist_160431to173692_Poter.root for 2.15/fb Vg analysis
+#             2.1911e+07, 5.4998e+07, 1.25265e+08, 2.03756e+08, 2.63771e+08, 2.89181e+08,
+#             2.79196e+08, 2.43752e+08, 1.96063e+08, 1.47256e+08, 1.04271e+08, 7.00899e+07,
+#             4.49454e+07, 2.75913e+07, 1.62566e+07, 9.21086e+06, 5.02652e+06, 2.64559e+06,
+#             1.34465e+06, 660766, 314306, 144888, 64802.3, 28153.3,
+#             11894.4, 4892.33, 1961.18, 767.018, 292.964, 109.386,
+#             39.9615, 14.2963, 5.01243, 1.72359, 0.581655, 0.192754,
+#             0.0627596, 0.0200861, 0.00632161, 0.00195716, 0.000596234, 0.000178775,
+# #             5.27696e-05, 1.53362e-05, 4.38902e-06, 1.23703e-06, 3.43391e-07, 9.38925e-08,
+# #             2.5289e-08, 6.90399e-07, 0,
         )
     )
 

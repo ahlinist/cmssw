@@ -28,14 +28,31 @@ VERSION=8
 VERSION=9
 ## Added full gen level kinematics
 
-# ##################### DATA #########################
-# # DATASET=Run2010B-ZMu-Apr21ReReco-v1
-# # DATASET=ZMu-May10ReReco-42X-v3
-# # DATASET=ZMu-PromptSkim-v4_42X-v5
-# # DATASET=PromptReco-v4_FNAL_42X-v3
+VERSION=10
+## 0.875/fb dataset for Summer 11 Wgamma analysis: runs 160431-166967
+## Corresponding PU reweighting
+## Real data:
+##   o May10ReReco (160431-163869)
+##   o PromptReco-v4  (AOD:  165071-166967,
+##                     RECO: 165071-166967,
+##                     RAW:  165358-166967)
+## Removed the photon pt cut
+## Relaxed the mmgMass mass cut [50,130] GeV
+## Relaxed the max dimuon mass cut to 85 GeV
+
+VERSION=11
+## Relaxed the max dimuon mass cut to 85 GeV
+
+##################### DATA #########################
+# DATASET=Run2010B-ZMu-Apr21ReReco-v1
+# DATASET=ZMu-May10ReReco-42X-v3
+# DATASET=ZMu-PromptSkim-v4_42X-v5
+# DATASET=PromptReco-v4_FNAL_42X-v3
 # DATASET=05Jul2011ReReco-ECAL-v1_condor_Dimuon_RECO-42X-v9
-# # DATASET=DoubleMu_Dimuon_AOD_Aug5rereco
-# # DATASET=DoubleMu_Dimuon_AOD_Prompt_v6
+# DATASET=DoubleMu_Dimuon_AOD_Aug5rereco
+# DATASET=DoubleMu_Dimuon_AOD_Prompt_v6
+# DATASET=DoubleMu_Run2011A-May10ReReco-v1_glite_Dimuon_RECO-42X-v9
+# DATASET=DoubleMu_Run2011A-PromptReco-v4_glite_Dimuon_RECO-42X-v9
 # TOTAL_SECTIONS=8
 # # for SECTION in 7; do
 # for SECTION in `seq $TOTAL_SECTIONS`; do
@@ -94,8 +111,8 @@ VERSION=9
 ############### VERY LARGE MC ##################
 # DATASET=DYToMuMu_M-20-powheg-pythia_Winter10-v2
 DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_S4-v1_condor_Dimuon_AOD-42X-v9
-# TOTAL_SECTIONS=40
-TOTAL_SECTIONS=8
+TOTAL_SECTIONS=40
+# TOTAL_SECTIONS=8
 BATCH=${1:-1}
 JOBS_PER_BATCH=8
 # for SECTION in 1; do
@@ -105,7 +122,7 @@ for SECTION in `seq $((JOBS_PER_BATCH*(BATCH-1)+1)) $((JOBS_PER_BATCH*BATCH))`; 
         inputFiles_clear \
         inputFiles_load=files_${DATASET}.dat \
         isMC=True \
-        maxEvents=1000 \
+        maxEvents=-1 \
         outputFile=/wntmp/veverka/esTree_V${VERSION}_${DATASET} \
         globalTag=START42_V11::All \
         totalSections=$TOTAL_SECTIONS \
