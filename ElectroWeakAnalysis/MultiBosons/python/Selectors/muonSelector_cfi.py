@@ -81,3 +81,20 @@ muonSelection_FsrApr082011_PixelMatchVeto = cms.PSet(
     cutsToIgnore = cms.vstring("maxTrackIso"),
 )
 
+muonSelection_Fsr2011Jun24_photonId = cms.PSet(
+    version = cms.string("FsrApr082011"),
+    isGlobalMuon = cms.bool(True),
+    maxNormChi2 = cms.double(10),
+    minMuonHits = cms.uint32(1),
+    isTrackerMuon = cms.bool(True),
+    minMatches = cms.uint32(2),
+    minTkHits = cms.uint32(11),
+    minPixelHits = cms.uint32(1),
+    maxAbsTrackDxyBS = cms.double(0.2),
+    maxTrackIso = cms.double(3), ## off
+    minPt = cms.double(10),
+    maxAbsEta = cms.double(2.4), ## off
+    cutsToIgnore = cms.vstring( "maxTrackIso",
+                                "maxAbsEta" ),
+)
+

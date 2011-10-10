@@ -60,9 +60,36 @@ ZMuMuGammaSelection_Fsr2011Jun8_energyScale = cms.PSet(
     ## 6. minimum far muon transverse momentum
     minFarMuonPt = cms.double(30),
     ## 7. minimum invariant mass
-    minMass = cms.double(50),
+    minMass = cms.double(70),
+    ## 8. maximum invariant mass
+    maxMass = cms.double(110),
+    cutsToIgnore = cms.vstring("maxFarMuonTrackIso", "photonTrackIso")
+)
+
+ZMuMuGammaSelection_Fsr2011Jun24_photonId = cms.PSet(
+    version = cms.string("Fsr2011Apr11"),
+    ## 1. maximum near muon HCAL isolation
+    maxNearMuonHcalIso = cms.double(1), ## off
+    ## 2. maximum far muon ECAL isolation
+    maxFarMuonTrackIso = cms.double(3), ## off
+    ## 3. maximum far muon ECAL isolation
+    maxFarMuonEcalIso = cms.double(1),  ## off
+    ## 4. maximum photon tracker isolation (near muon removed) = const + slope * pt
+    photonTrackIsoConst = cms.double(2), ## off
+    photonTrackIsoSlope = cms.double(0.001), ## off
+    ## 5. maximum Delta R distance between the photon and the near muon
+    maxDeltaRNear = cms.double(0.8),  ## off
+    ## 6. minimum far muon transverse momentum
+    minFarMuonPt = cms.double(20),
+    ## 7. minimum invariant mass
+    minMass = cms.double(30),
     ## 8. maximum invariant mass
     maxMass = cms.double(130),
-    cutsToIgnore = cms.vstring("maxFarMuonTrackIso", "photonTrackIso")
+    cutsToIgnore = cms.vstring( "maxNearMuonHcalIso",
+                                "maxFarMuonTrackIso",
+                                "maxFarMuonEcalIso",
+                                "photonTrackIso",
+                                "maxDeltaRNear",
+                                "maxMass" )
 )
 

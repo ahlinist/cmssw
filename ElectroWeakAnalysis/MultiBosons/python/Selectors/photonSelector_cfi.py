@@ -381,3 +381,27 @@ for cut in """BarrelJurrasicECALIsoConst
              cut,
              1.5 * default.value() )
 
+
+photonSelection_Fsr2011June24_photonId = cms.PSet(
+    version = cms.string("Fsr2011Apr11"),
+    ## 1. maximum super cluster pseudo-rapidity absolute value
+    maxAbsEtaSC = cms.double(2.5),
+    ## 2. exclude EB EE transition region SC |eta| in [1.4442, 1.566]
+    excludeEBEEGap = cms.bool(True),
+    ## 3. super cluster seed reco flag != EcalRecHit::kOutOfTime=2
+    excludeOutOfTimeReco = cms.bool(True),
+    ## 4. super cluster seed severity level != EcalSeverityLevelAlgo::kWeird=4
+    excludeWeirdSeverity = cms.bool(True),
+    ## 5. super cluster seed severity level != EcalSeverityLevelAlgo::kBad=5
+    excludeBadSeverity = cms.bool(True),
+    ## 6. maximum ECAL isolation
+    ecalIsoConst = cms.double(4.2),
+    ecalIsoSlope = cms.double(0.006),
+    ## 7. minimum transverse momentum
+    minPt = cms.double(5),
+    cutsToIgnore = cms.vstring( "maxAbsEtaSC",
+                                "excludeEBEEGap",
+                                "ecalIsolation" )
+)
+
+
