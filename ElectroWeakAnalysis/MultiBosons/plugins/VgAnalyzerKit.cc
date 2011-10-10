@@ -99,7 +99,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_ = fs->make<TTree>("EventTree", "Event data");
 
   tree_->Branch("run", &run_, "run/I");
-  tree_->Branch("event", &event_, "event/I");
+  tree_->Branch("event", &event_, "event/L");
   tree_->Branch("orbit", &orbit_, "orbit/I");
   tree_->Branch("bx", &bx_, "bx/I");
   tree_->Branch("lumis", &lumis_, "lumis/I");
@@ -185,7 +185,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][30]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][31]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
   tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
@@ -906,6 +906,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     }
   }
 
+  cout<<" Ele27_WP80; Ele32_WP70; Ele17_Ele8_CaloIdL_CaloIsoVL; HLT_Ele17_Ele8_Mass30; HLT_Ele17_SC8_Mass30; Ele17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL; Ele32_Ele17; Ele32_SC17"<<endl;
+  cout<<" HLT: "<<HLT_[HLTIndex_[78]]<<"     "<<HLT_[HLTIndex_[79]]<<"      "<<HLT_[HLTIndex_[83]]<<"     "<<HLT_[HLTIndex_[84]]<<"     "<<HLT_[HLTIndex_[85]]<<"     "<<HLT_[HLTIndex_[86]]<<"      "<<HLT_[HLTIndex_[87]]<<"     "<<HLT_[HLTIndex_[88]]<<endl;
+
   // Gen & PAT MET (caloMET)
   // cout << "VgAnalyzerKit: produce: Gen & PAT MET (caloMET) ..." << endl;
   if( METHandle_.isValid() )
@@ -992,19 +995,20 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch15(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdLCaloIsoVL"));
   const TriggerObjectMatch *eleTriggerMatch16(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVL"));
   const TriggerObjectMatch *eleTriggerMatch17(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch18(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch19(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch20(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch21(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch22(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17"));
-  const TriggerObjectMatch *eleTriggerMatch23(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17"));
-  const TriggerObjectMatch *eleTriggerMatch24(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70"));
-  const TriggerObjectMatch *eleTriggerMatch25(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
-  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT"));
-  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC17"));
-  const TriggerObjectMatch *eleTriggerMatch30(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17"));
+  const TriggerObjectMatch *eleTriggerMatch18(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch19(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch20(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch21(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch22(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch23(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17"));
+  const TriggerObjectMatch *eleTriggerMatch24(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17"));
+  const TriggerObjectMatch *eleTriggerMatch25(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70"));
+  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
+  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT"));
+  const TriggerObjectMatch *eleTriggerMatch30(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC17"));
+  const TriggerObjectMatch *eleTriggerMatch31(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -1046,6 +1050,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef28( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch28, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef29( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch29, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef30( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch30, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef31( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch31, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -1076,6 +1081,12 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][27]  = (eleTrigRef28.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][28]  = (eleTrigRef29.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][29]  = (eleTrigRef30.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][30]  = (eleTrigRef31.isAvailable()) ? 1 : -99;
+
+      cout<<" Ele Trg1  : Ele27WP80; Ele32WP70; Ele17Ele8; Ele17Ele8Mass30; Ele17SC8Mass30; Ele17Ele8; Ele32TEle17; Ele32SC17"<<endl;
+      cout<<" Ele Trg2  : Ele32WP70; Ele17; Ele8; Ele17; Ele8Mass30; SC8Mass30; Ele17; Ele8; Ele32; SC17; Ele17"<<endl;
+      cout<<" Ele Trg1 : "<<nEle_<<"     "<<eleTrg_[nEle_][12]<<"     "<<eleTrg_[nEle_][13]<<"     "<<eleTrg_[nEle_][18]<<"      "<<eleTrg_[nEle_][19]<<"     "<<eleTrg_[nEle_][20]<<"     "<<eleTrg_[nEle_][21]<<"     "<<eleTrg_[nEle_][22]<<"     "<<eleTrg_[nEle_][23]<<endl;
+      cout<<" Ele Trg2 : "<<nEle_<<"     "<<eleTrg_[nEle_][24]<<"     "<<eleTrg_[nEle_][15]<<"     "<<eleTrg_[nEle_][14]<<"      "<<eleTrg_[nEle_][25]<<"     "<<eleTrg_[nEle_][26]<<"     "<<eleTrg_[nEle_][27]<<"     "<<eleTrg_[nEle_][17]<<"     "<<eleTrg_[nEle_][16]<<"     "<<eleTrg_[nEle_][28]<<"     "<<eleTrg_[nEle_][29]<<"     "<<eleTrg_[nEle_][30]<<endl;
 
       //        new eID with correct isolations and conversion rejection
       //	https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
