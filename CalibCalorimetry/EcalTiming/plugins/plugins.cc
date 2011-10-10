@@ -5,6 +5,7 @@
 #include "CalibCalorimetry/EcalTiming/plugins/EcalTimeEleTreeMaker.h"
 #include "CalibCalorimetry/EcalTiming/plugins/EcalTimeCalibrationValidator.h"
 #include "CalibCalorimetry/EcalTiming/plugins/EcalCreateTimeCalibrations.h"
+#include "CalibCalorimetry/EcalTiming/plugins/EcalAdjustFETimingDQM.h"
 
 
 DEFINE_FWK_MODULE(EcalTimingCorrection);
@@ -14,3 +15,4 @@ DEFINE_FWK_MODULE(EcalTimeTreeMaker);
 DEFINE_FWK_MODULE(EcalTimeEleTreeMaker);
 DEFINE_FWK_MODULE(EcalTimeCalibrationValidator);
 DEFINE_FWK_MODULE(EcalCreateTimeCalibrations);
+DEFINE_FWK_MODULE(EcalAdjustFETimingDQM);
