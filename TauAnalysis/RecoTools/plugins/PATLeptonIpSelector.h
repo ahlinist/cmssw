@@ -10,9 +10,9 @@
  * \author Konstantinos A. Petridis, Imperial College;
  *  modified by Christian Veelken
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: PATLeptonIpSelector.h,v 1.4 2009/04/09 14:51:21 veelken Exp $
+ * $Id: PATLeptonIpSelector.h,v 1.5 2010/09/28 11:23:36 jkolb Exp $
  *
  */
 
@@ -47,9 +47,8 @@ class PATLeptonIpSelector
     edm::InputTag vertexSrc_;
 
     double ipMin_;
-    bool applyIpMin_;
     double ipMax_;
-    bool applyIpMax_;
+    double ipZmax_;
 
 //--- "helper" class for accessing the track
 //    of pat::Electrons and pat::Muons 

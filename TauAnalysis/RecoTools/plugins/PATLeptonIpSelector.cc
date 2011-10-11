@@ -7,23 +7,21 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 template <typename T>
-PATLeptonIpSelector<T>::PATLeptonIpSelector(const edm::ParameterSet& cfg) 
+PATLeptonIpSelector<T>::PATLeptonIpSelector(const edm::ParameterSet& cfg):
+    ipMin_(0),
+    ipMax_(1000),
+    ipZmax_(1000)
 {
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
 
-  if ( cfg.exists("IpMin") ) {
+  if ( cfg.exists("IpMin") ) 
     ipMin_ = cfg.getParameter<double>("IpMin");
-    applyIpMin_ = true;
-  } else {
-    applyIpMin_ = false;
-  }
 
-  if ( cfg.exists("IpMax") ) {
+  if ( cfg.exists("IpMax") ) 
     ipMax_ = cfg.getParameter<double>("IpMax");
-    applyIpMax_ = true;
-  } else {
-    applyIpMax_ = false;
-  }
+  
+  if ( cfg.exists("IpzMax") ) 
+    ipZmax_ = cfg.getParameter<double>("IpzMax");
 }
 
 template <typename T>
@@ -52,10 +50,10 @@ void PATLeptonIpSelector<T>::select(const edm::Handle<collection>& patLeptonColl
     const reco::Track* track = trackExtractor_(*patLepton);
     if ( track ) {
       double ip = track->dxy(thePrimaryEventVertex.position());
+      double ipz = track->dz(thePrimaryEventVertex.position());
 
-      if ( (!applyIpMin_ || ip > ipMin_) &&
-	   (!applyIpMax_ || ip < ipMax_) ) {
-	selected_.push_back(&(*patLepton));
+      if ( ip > ipMin_ && ip < ipMax_ && ipz < ipZmax_ ) {
+	    selected_.push_back(&(*patLepton));
       }
     }
   }
