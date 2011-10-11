@@ -253,7 +253,7 @@ protected:
   Float_t  elePVDz_[maxP];
   // Photon
   Int_t    nPho_;
-  Int_t    phoTrg_[maxP][43];
+  Int_t    phoTrg_[maxP][14];
   Bool_t   phoIsPhoton_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];
