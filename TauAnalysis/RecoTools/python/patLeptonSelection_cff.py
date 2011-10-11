@@ -73,18 +73,18 @@ selectPatElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.conf
 #
 
 # VBTF WP80 electron ID for pt > 20; WP70 for pt < 20
-selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))')
+selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))')
 selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.566')
-selectedPatElectronsForElecTauEta.cut = cms.string('abs(eta) < 2.1')
-selectedPatElectronsForElecTauPt.cut = cms.string('pt > 15.')
-selectedPatElectronsForElecTauIso.sumPtMaxEB = cms.double(0.01)
-selectedPatElectronsForElecTauIso.sumPtMaxEE = cms.double(0.01)
+selectedPatElectronsForElecTauEta.cut = cms.string('abs(eta) < 2.5')
+selectedPatElectronsForElecTauPt.cut = cms.string('pt > 20.')
+selectedPatElectronsForElecTauIso.sumPtMaxEB = cms.double(0.13)
+selectedPatElectronsForElecTauIso.sumPtMaxEE = cms.double(0.09)
 selectedPatElectronsForElecTauIso.sumPtMethod = cms.string("relative")
 selectedPatElectronsForElecTauConversionVeto.maxMissingInnerHits = cms.int32(0)
 selectedPatElectronsForElecTauConversionVeto.invertConversionVeto = cms.bool(False)
 selectedPatElectronsForElecTauTrkIP.vertexSource = selectedPatElectronsTrkIP.vertexSource
 selectedPatElectronsForElecTauTrkIP.IpMax = cms.double(0.02)
-#selectedPatElectronsForElecTauTrkIP.IpZMax = cms.double(0.2)
+selectedPatElectronsForElecTauTrkIP.IpzMax = cms.double(0.2)
 
 patElectronSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedPatElectronsForElecTauId,
