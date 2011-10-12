@@ -202,12 +202,12 @@ void anaXS::init(const char *dir, int i) {
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_1S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_2S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_3S.tma.dat");  
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_1S.tma.dat");
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_1S.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_2S.tma.dat");
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_3S.tma.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_1S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_3S.tma.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_1S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_2S.tma.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_3S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_3S.tma.dat");
   
 }
 
@@ -999,19 +999,21 @@ void anaXS::makeAllMC(int channel) {
     ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "Pt_IntegratedMass", "Rapidity_IntegratedMass", "mt,pt-eta");
     
     // -- add backgrounds
-    addBackground(fS1Vector, 0.3);
-    //addBackground_PtInt(fS12Vector, 0.3);
+    //addBackground(fS1Vector, 0.3);
+    addBackground_PtInt(fS12Vector, 0.3);
     //addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
-    FITUpsilon(7); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
-    GetAnaEff();
-    GetPreSelEff();
-    GetMuIDEff(1);
-    GetTrigEff(1);
-    CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
-    PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
+    ///plot_PtInt_MC();
+    
+    FITUpsilon(5); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
+    //GetAnaEff();
+    //GetPreSelEff();
+    //GetMuIDEff(1);
+    //GetTrigEff(1);
+    //CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
+    //PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
         
   }
 
@@ -1049,14 +1051,14 @@ void anaXS::makeAllDATA(int channel) {
     //plot_RapInt();
     //plot_PtInt();
     
-    FITUpsilon(8); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    GetAnaEff(); 
-    GetPreSelEff();
-    GetTrackEff();
-    GetMuIDEff(2);
-    GetTrigEff(2);
-    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    FITUpsilon(4); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    //GetAnaEff(); 
+    //GetPreSelEff();
+    //GetTrackEff();
+    //GetMuIDEff(2);
+    ///GetTrigEff(2);
+    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -1246,10 +1248,11 @@ void anaXS::plot_RapInt(){
   float ptmin, ptmax;
   gStyle->SetOptStat(0000000000000); 
   gStyle->SetOptFit(00000000000000);
-  TCanvas *c100 = new TCanvas("c100", "c100", 600, 800);
-  c100->Divide(4,6);
+  TCanvas *c100 = new TCanvas("c100", "c100", 750, 800);
+  c100->Divide(3,4);
   for (unsigned int i = 1; i < fS13Vector.size(); ++i) {
     c100->cd(i);
+    if ( i ==10 ) c100->cd(11);
     h = &(fS13Vector[i]);
     n = sscanf(h->GetName(), "s13:Rapidity_IntegratedMass,pt%f_%f", &ptmin, &ptmax);
     h->SetMinimum(0.);
@@ -1258,7 +1261,7 @@ void anaXS::plot_RapInt(){
     h->GetXaxis()->SetTitleOffset(0.65);
     h->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
     h->GetYaxis()->SetTitleSize(0.05);
-    h->GetYaxis()->SetTitleOffset(1.);
+    h->GetYaxis()->SetTitleOffset(1.1);
     h->SetTitle("");
     //if( n > 0 )  h->SetTitle(Form("|y^{#Upsilon}| < 2.4,  %.1f < p_{T}^{#Upsilon} < %.1f",ptmin , ptmax));
     setFunctionParameters(h, f13, 6, 2);
@@ -1317,6 +1320,56 @@ void anaXS::plot_PtInt(){
   c102->SaveAs("0_0.4_MassFit.pdf");  
   
 }
+
+void anaXS::plot_PtInt_MC(){
+  
+  TH1D *h, *h1;
+  int   n; 
+  char searchString12[2000];
+  float etamin, etamax;
+  gStyle->SetOptStat(00000000); 
+  gStyle->SetOptFit(00000000);
+  TCanvas *c101 = new TCanvas("c101", "c101", 800, 600);
+  h = &(fS12Vector[4]);
+  h->SetMinimum(0.);
+  h->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+  h->GetXaxis()->SetTitleSize(0.04);
+  h->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
+  h->GetYaxis()->SetTitleSize(0.04);
+  h->GetYaxis()->SetTitleOffset(1.375);
+  h->SetTitle("");
+  setFunctionParameters(h, f13, 6, 0);
+  h->Fit(f13);
+  legg = new TLegend(0.5,0.6,0.6,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
+  legg->SetHeader("1.2 < |y^{#Upsilon}| < 1.6");
+  legge = legg->AddEntry(h1,"#alpha = 1.52 #pm 0.02","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(h1,"n = 10.57 #pm 0.13","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c101->SaveAs("1.2_1.6_MassFit_MC.pdf");
+  
+  TCanvas *c102 = new TCanvas("c102", "c102", 800, 600);
+  h1 = &(fS12Vector[2]);
+  h1->SetMinimum(0.);
+  h1->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+  h1->GetXaxis()->SetTitleSize(0.04);
+  h1->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
+  h1->GetYaxis()->SetTitleSize(0.04);
+  h1->GetYaxis()->SetTitleOffset(1.35);
+  h1->SetTitle("");
+  setFunctionParameters(h, f13, 6, 0);
+  h1->Fit(f13);
+  legg = new TLegend(0.5,0.6,0.6,0.8);
+  legge = new TLegendEntry();
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
+  legg->SetHeader("0.4 < |y^{#Upsilon}| < 0.8");
+  legge = legg->AddEntry(h1,"#alpha = 1.56 #pm 0.03","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(h1,"n = 3.65 #pm 0.48","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c102->SaveAs("0.4_0.8_MassFit_MC.pdf");  
+  
+}
+
 
 
 

@@ -15,7 +15,7 @@ void Sigma(){
   TCanvas *c1 = new TCanvas("c1","c1",800,600);
   hSigma1S->SetTitle("");
   hSigma1S->GetYaxis()->SetTitleOffset(1.2);
-  hSigma1S->GetYaxis()->SetTitle("Mass Resolution [MeV/c^{2}]");
+  hSigma1S->GetYaxis()->SetTitle("Mass Resolution [GeV/c^{2}]");
   hSigma1S->GetXaxis()->SetTitle("|y^{#Upsilon}|");
   hSigma1S->SetMinimum(0.);
   hSigma1S->SetMarkerStyle(8);
@@ -25,12 +25,42 @@ void Sigma(){
   TCanvas *c2 = new TCanvas("c2","c2",800,600); 
   hSigma2S->SetTitle("");
   hSigma2S->GetYaxis()->SetTitleOffset(1.2);
-  hSigma2S->GetYaxis()->SetTitle("Mass Resolution [MeV/c^{2}]");
+  hSigma2S->GetYaxis()->SetTitle("Mass Resolution [GeV/c^{2}]");
   hSigma2S->GetXaxis()->SetTitle("|y^{#Upsilon}|");
   hSigma2S->SetMinimum(0.);
   hSigma2S->SetMarkerStyle(8);  
   hSigma2S->Draw("e");
   c2->SaveAs("sigma2S.pdf");
+  
+}
+
+void Mean(){
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("SigmaDATA_PtInt.root");
+  TH1D *hSigma1S;
+  hSigma1S = (TH1D*)gFile->Get("hMean1S");
+  TH1D *hSigma2S;
+  hSigma2S = (TH1D*)gFile->Get("hMean2S");
+     
+  TCanvas *c1 = new TCanvas("c1","c1",800,600);
+  hSigma1S->SetTitle("");
+  hSigma1S->GetYaxis()->SetTitleOffset(1.2);
+  hSigma1S->GetYaxis()->SetTitle("Mass Mean [GeV/c^{2}]");
+  hSigma1S->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  //hSigma1S->SetMinimum(0.);
+  hSigma1S->SetMarkerStyle(8);
+  hSigma1S->Draw("e");
+  c1->SaveAs("mean1S.pdf");
+  
+  TCanvas *c2 = new TCanvas("c2","c2",800,600); 
+  hSigma2S->SetTitle("");
+  hSigma2S->GetYaxis()->SetTitleOffset(1.2);
+  hSigma2S->GetYaxis()->SetTitle("Mass Mean [GeV/c^{2}]");
+  hSigma2S->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  //hSigma2S->SetMinimum(0.);
+  hSigma2S->SetMarkerStyle(8);  
+  hSigma2S->Draw("e");
+  c2->SaveAs("mean2S.pdf");
   
 }
 
@@ -68,7 +98,7 @@ void SigmaDATAvsMC(){
 
 void SigmaPt(){
   gStyle->SetOptStat(00000000000);
-  TFile *f = new TFile("SigmaDATA_RapInt_1SBin.root");
+  TFile *f = new TFile("SigmaDATA_RapInt_3SBin.root");
   TH1D *hSigma1S;
   hSigma1S = (TH1D*)gFile->Get("hSigma1S");
   TH1D *hSigma2S;
@@ -77,8 +107,8 @@ void SigmaPt(){
   TCanvas *c3 = new TCanvas("c3","c3",800,600);
   hSigma1S->SetTitle("");
   hSigma1S->GetYaxis()->SetTitleOffset(1.2);
-  hSigma1S->GetYaxis()->SetTitle("Mass Resolution [MeV/c^{2}]");
-  hSigma1S->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  hSigma1S->GetYaxis()->SetTitle("Mass Resolution [GeV/c^{2}]");
+  hSigma1S->GetXaxis()->SetTitle("p_{T}^{#Upsilon}[GeV/c]");
   hSigma1S->SetMinimum(0.);
   hSigma1S->SetMarkerStyle(8);
   hSigma1S->Draw("e");
@@ -87,12 +117,42 @@ void SigmaPt(){
   TCanvas *c4 = new TCanvas("c4","c4",800,600); 
   hSigma2S->SetTitle("");
   hSigma2S->GetYaxis()->SetTitleOffset(1.2);
-  hSigma2S->GetYaxis()->SetTitle("Mass Resolution [MeV/c^{2}]");
-  hSigma2S->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  hSigma2S->GetYaxis()->SetTitle("Mass Resolution [GeV/c^{2}]");
+  hSigma2S->GetXaxis()->SetTitle("p_{T}^{#Upsilon}[GeV/c]");
   hSigma2S->SetMinimum(0.);
   hSigma2S->SetMarkerStyle(8);  
   hSigma2S->Draw("e");
   c4->SaveAs("sigma2S_pt.pdf");
+  
+}
+
+void MeanPt(){
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("SigmaDATA_RapInt_3SBin.root");
+  TH1D *hSigma1S;
+  hSigma1S = (TH1D*)gFile->Get("hMean1S");
+  TH1D *hSigma2S;
+  hSigma2S = (TH1D*)gFile->Get("hMean2S");
+     
+  TCanvas *c3 = new TCanvas("c3","c3",800,600);
+  hSigma1S->SetTitle("");
+  hSigma1S->GetYaxis()->SetTitleOffset(1.2);
+  hSigma1S->GetYaxis()->SetTitle("Mass Mean [GeV/c^{2}]");
+  hSigma1S->GetXaxis()->SetTitle("p_{T}^{#Upsilon}[GeV/c]");
+  //hSigma1S->SetMinimum(0.);
+  hSigma1S->SetMarkerStyle(8);
+  hSigma1S->Draw("e");
+  c3->SaveAs("mean1S_pt.pdf");
+  
+  TCanvas *c4 = new TCanvas("c4","c4",800,600); 
+  hSigma2S->SetTitle("");
+  hSigma2S->GetYaxis()->SetTitleOffset(1.2);
+  hSigma2S->GetYaxis()->SetTitle("Mass Mean [GeV/c^{2}]");
+  hSigma2S->GetXaxis()->SetTitle("p_{T}^{#Upsilon}[GeV/c]");
+  //hSigma2S->SetMinimum(0.);
+  hSigma2S->SetMarkerStyle(8);  
+  hSigma2S->Draw("e");
+  c4->SaveAs("mean2S_pt.pdf");
   
 }
 
