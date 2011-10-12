@@ -413,6 +413,8 @@ protected:
   Int_t    jetChargedHadronMultiplicity_[maxP];
   Float_t  jetChargedMuEnergy_[maxP];
   Float_t  jetChargedMuEnergyFraction_[maxP];
+  Double_t jetJVAlpha_[maxP];
+  Double_t jetJVBeta_[maxP];
   Float_t  jetmaxEInEmTowers_[maxP];
   Float_t  jetmaxEInHadTowers_[maxP];
   Float_t  jetenergyFractionHadronic_[maxP];

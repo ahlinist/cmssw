@@ -420,6 +420,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("jetChargedHadronMultiplicity", jetChargedHadronMultiplicity_, "jetChargedHadronMultiplicity[nJet]/I");
     tree_->Branch("jetChargedMuEnergy", jetChargedMuEnergy_, "jetChargedMuEnergy[nJet]/F");
     tree_->Branch("jetChargedMuEnergyFraction", jetChargedMuEnergyFraction_, "jetChargedMuEnergyFraction[nJet]/F");
+    tree_->Branch("jetJVAlpha", jetJVAlpha_, "jetJVAlpha[nJet]/D");
+    tree_->Branch("jetJVBeta", jetJVBeta_, "jetJVBeta[nJet]/D");
     if (doGenParticles_) {
       tree_->Branch("jetGenJetIndex", jetGenJetIndex_, "jetGenJetIndex[nJet]/I");
       tree_->Branch("jetGenJetEn", jetGenJetEn_, "jetGenJetEn[nJet]/F");
@@ -2098,11 +2100,29 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetChargedMuEnergy_[nJet_]	   = iJet->chargedMuEnergy();
 	jetChargedMuEnergyFraction_[nJet_] = iJet->chargedMuEnergyFraction();
 	
-	//jetfHPD_[nJet_] = iJet->jetID().fHPD;
-	//jetN60_[nJet_]  = iJet->n60();
-	//jetN90_[nJet_]  = iJet->n90();
-	//jetenergyFractionHadronic_[nJet_] = iJet->energyFractionHadronic();
-	//jetemEnergyFraction_[nJet_] = iJet->emEnergyFraction();
+	// jet-vertex association
+	double tracks_x = 0.;
+	double tracks_y = 0.;
+	double tracks_x_tot = 0.;
+	double tracks_y_tot = 0.;
+	for (unsigned i = 0;  i <  iJet->numberOfDaughters (); i++) {	     
+ 	  const reco::PFCandidatePtr pfcand = iJet->getPFConstituent(i);
+	  reco::TrackRef trackref = pfcand->trackRef();
+	  if ( trackref.isNonnull()) {
+ 	    tracks_x_tot += (trackref)->px();
+	    tracks_y_tot += (trackref)->py();	  
+	    if (fabs((trackref)->vz() - vtx_[0][2]) < 0.1) {        	  
+	      tracks_x += (trackref)->px();
+	      tracks_y += (trackref)->py();		
+	    }
+	  }
+	}
+
+	jetJVAlpha_[nJet_] = sqrt(tracks_x*tracks_x+tracks_y*tracks_y)/iJet->pt();
+	if (tracks_x_tot!=0. || tracks_y_tot!=0.)
+ 	  jetJVBeta_[nJet_] = sqrt(tracks_x*tracks_x+tracks_y*tracks_y)/sqrt(tracks_x_tot*tracks_x_tot+tracks_y_tot*tracks_y_tot);
+	else
+	  jetJVBeta_[nJet_] = -1;
 
 	jetGenJetIndex_[nJet_] = -1;
 	jetGenJetEn_[nJet_] = -1.0;
