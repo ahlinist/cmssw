@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+import os, sys, FWCore.ParameterSet.Config as cms
+from bins import make_bins
+from runs import get_run_list
+
+########################################################################################
+
+wide_all_for_stalone = False # True
+dt_or_csc = 'dt'
+cosmics_or_collisions = 'cosmics'
+require_pixels = True
+require_rpc_good = False
+require_tt25 = False
+require_not_tt25 = False
+min_pixel_layers = 1
+min_eta = None
+max_eta = None
+min_phi = None
+max_phi = None
+min_run = 0
+
+try:
+    fn = [x for x in sys.argv if '.root' in x][0]
+except IndexError:
+    raise ValueError('must supply root filename!')
+
+output_file = os.path.basename(fn).replace('.root', '.histos.root')
+
+if require_tt25 and require_not_tt25:
+    raise ValueError('cannot require_tt25 and require_not_tt25')
+if require_tt25 and not require_rpc_good:
+    print 'warning: require_tt25 and not require_rpc_good!'
+
+cfg = cms.PSet(
+    directory               = cms.string('UTpickedTracks'),
+    is_mc                   = cms.bool(False),
+    filename                = cms.string(fn),
+    min_muon_hits           = cms.int32(0),
+    min_pixel_layers        = cms.int32(min_pixel_layers if require_pixels else 0),
+    min_strip_layers        = cms.int32(8),
+    max_tpfms_station       = cms.int32(-1),
+    no_dt_allowed           = cms.bool(False),
+    no_csc_allowed          = cms.bool(dt_or_csc == 'dt'),
+    check_tksta_dphi        = cms.bool(False),
+    use_unpropagated_values = cms.bool(True),
+    pp_reco_mode            = cms.bool(False),
+    force_run_list          = cms.vuint32(get_run_list(cosmics_or_collisions, dt_or_csc, require_pixels, require_rpc_good, min_run)),
+    require_tt25            = cms.bool(require_tt25),
+    require_not_tt25        = cms.bool(require_not_tt25),
+    copy_selected_events    = cms.bool(True),
+    )
+
+bins = make_bins('pt', wide_all_for_stalone=wide_all_for_stalone, min_eta=min_eta, max_eta=max_eta, min_phi=min_phi, max_phi=max_phi)
+
+print 'configuring config:'
+for k,v in cfg.parameters_().items() + [('number of bins', len(bins)),
+                                        ('bin names', [b.name for b in bins]),
+                                        ('wide_all_for_stalone', wide_all_for_stalone),
+                                        ('cosmics_or_collisions', cosmics_or_collisions),
+                                        ('require_rpc_good', require_rpc_good),
+                                        ('min_eta', min_eta),
+                                        ('max_eta', max_eta),
+                                        ('min_phi', min_phi),
+                                        ('max_phi', max_phi),
+                                        ('output_file', output_file),
+                                        ]:
+    print '%25s: %s' % (k, repr(v))
+
+########################################################################################
+
+process = cms.Process('CosmicSplittingResolutionHistos')
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1))
+process.source = cms.Source('EmptySource')
+process.TFileService = cms.Service('TFileService', fileName=cms.string(output_file))
+process.histos = cms.EDAnalyzer('CosmicSplittingResolutionHistos', cfg, bins = cms.VPSet(*[b.pset() for b in bins]))
+process.p = cms.Path(process.histos)
