@@ -18,15 +18,15 @@ run_events = None
 max_events = -1
 no_edm_output = True
 #run_events = [(148952, 21812326)]
-files = ['/store/data/Run2010B/Cosmics/RECO/Nov4ReReco_v1/0131/C0DFB543-F4EA-DF11-9BD1-003048678B7E.root']
+#files = ['/store/data/Run2010B/Cosmics/RECO/Nov4ReReco_v1/0131/C0DFB543-F4EA-DF11-9BD1-003048678B7E.root']
 run_events = [(128899, 74158848)]
 files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RAW-RECO/399_fromv3_CosmicTP-v1/0000/62816537-0A3E-E011-8CC3-0030487E54B7.root']
 no_refits = False
 use_dt_meantimer = False
 
 # Reset these before submitting jobs.
-#dumps = debugdump = False
-#run_events = None
+dumps = debugdump = False
+run_events = None
 
 from_38x = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'TrackerAlignmentRcd': 'TrackerAlignment_GR10_v1_offline', 'TrackerAlignmentErrorRcd': 'TrackerAlignmentErrors_GR10_v1_offline', 'GlobalPositionRcd': 'GlobalAlignment_v2_offline', 'CSCAlignmentRcd': 'CSCAlignment_2009_v4_offline', 'DTAlignmentRcd': 'DTAlignment_2009_v4_offline'})
 nominal_muons = ('sqlite_file:Design.db', {'DTAlignmentRcd': 'DTAlignmentRcd', 'CSCAlignmentRcd': 'CSCAlignmentRcd'})
@@ -34,23 +34,10 @@ new_tk = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'TrackerAlignmentRc
 new_tk_def = ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_v1_offline'})
 new_muons = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'DTAlignmentRcd': 'DTAlignment_2009_v5_offline', 'CSCAlignmentRcd': 'CSCAlignment_2009_v6_offline'})
 
-#jobname, extra_alca = 'globaltag', []
+jobname, extra_alca = 'globaltag', []
 #jobname, extra_alca = 'asMUO10004', [from_38x]
 #jobname, extra_alca = 'newtknominalmu', [new_tk, new_tk_def, nominal_muons]
-jobname, extra_alca = 'newtknewmu', [new_tk, new_tk_def, new_muons]
-
-duh = {
-'globaltag': [],
-'asMUO10004': [from_38x],
-'newtknominalmu': [new_tk, new_tk_def, nominal_muons],
-'newtknewmu': [new_tk, new_tk_def, new_muons],
-}
-
-for k,v in duh.iteritems():
-    if k in sys.argv:
-        jobname = k
-        extra_alca = v
-        break
+#jobname, extra_alca = 'newtknewmu', [new_tk, new_tk_def, new_muons]
 
 #is_mc = True
 #global_tag = 'COSMC_42_PEAK::All'
@@ -95,10 +82,10 @@ return_data = 1
         ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'),
         ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'),
         ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'),
-#        ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'),
-#        ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
-#        ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
-#        ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
+        ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'),
+        ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
+        ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
+        ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
         ]
         
     for working, datasetpath in datasets:
@@ -137,7 +124,7 @@ if run_events:
 process.TFileService = cms.Service('TFileService', fileName=cms.string('resolution_ntuple.root'))
 
 # Slick way to attach a bunch of different alignment records.
-from MuonAnalysis.CosmicSplitting.CMSSWTools import set_preferred_alignment
+from MuonAnalysis.Cosmics.CMSSWTools import set_preferred_alignment
 for i, (connect, rcds) in enumerate(extra_alca):
     set_preferred_alignment(process, 'extraAlignment%i' % i, connect, **rcds)
 
@@ -489,14 +476,3 @@ if hasattr(process, 'out'):
         process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
 
 # Done!
-
-process.aaa = cms.EDAnalyzer('DumpAlignments',
-                             dump_tk = cms.untracked.bool(True),
-                             #dump_tk_apes = cms.untracked.bool(True),
-                             dump_dt = cms.untracked.bool(True),
-                             #dump_dt_apes = cms.untracked.bool(True),
-                             dump_csc = cms.untracked.bool(True),
-                             #dump_csc_apes = cms.untracked.bool(True),
-                             dump_gpr = cms.untracked.bool(True),
-                             )
-process.ppp = cms.Path(process.aaa)
