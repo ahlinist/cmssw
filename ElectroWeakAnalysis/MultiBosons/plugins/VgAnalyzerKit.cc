@@ -52,9 +52,13 @@
 #include "RecoEgamma/EgammaIsolationAlgos/plugins/EgammaTowerIsolationProducer.h"
 #include "RecoEgamma/EgammaIsolationAlgos/interface/PhotonTkIsolation.h"
 
+// Conversion photon
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
-//#include "DataFormats/EgammaCandidates/interface/Photon.h"
+
+// PF candidates
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
 using namespace std;
 using namespace pat;
@@ -78,9 +82,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tracklabel_     = ps.getParameter<InputTag>("TrackLabel");
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
+  TypeIpfMETlabel_  = ps.getParameter<InputTag>("TypeIpfMETLabel");
+  TypeIpIIpfMETlabel_ = ps.getParameter<InputTag>("TypeIpIIpfMETLabel");
+  PFCandLabel_    = ps.getParameter<InputTag>("PFCandLabel");
   puInfoLabel_    = ps.getParameter<InputTag>("puInfoLabel");
   rhoLabel_       = ps.getParameter<InputTag>("rhoLabel");
   sigmaLabel_     = ps.getParameter<InputTag>("sigmaLabel");
+  rhoNeutralLabel_  = ps.getParameter<InputTag>("rhoNeutralLabel");
 
   leadingElePtCut_ = ps.getParameter<double>("LeadingElePtCut");
   leadingMuPtCut_  = ps.getParameter<double>("LeadingMuPtCut");
@@ -123,6 +131,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
   tree_->Branch("rho", &rho_, "rho/F");
   tree_->Branch("sigma", &sigma_, "sigma/F");
+  tree_->Branch("rhoNeutral", &rhoNeutral_, "rhoNeutral/F");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
@@ -183,6 +192,35 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETsumEt", &pfMETsumEt_, "pfMETsumEt/F");
   tree_->Branch("pfMETmEtSig", &pfMETmEtSig_, "pfMETmEtSig/F");
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
+  // TypeI pfMET
+  tree_->Branch("TypeIpfMET", &TypeIpfMET_, "TypeIpfMET/F");
+  tree_->Branch("TypeIpfMETx", &TypeIpfMETx_, "TypeIpfMETx/F");
+  tree_->Branch("TypeIpfMETy", &TypeIpfMETy_, "TypeIpfMETy/F");
+  tree_->Branch("TypeIpfMETPhi", &TypeIpfMETPhi_, "TypeIpfMETPhi/F");
+  tree_->Branch("TypeIpfMETsumEt", &TypeIpfMETsumEt_, "TypeIpfMETsumEt/F");
+  tree_->Branch("TypeIpfMETmEtSig", &TypeIpfMETmEtSig_, "TypeIpfMETmEtSig/F");
+  tree_->Branch("TypeIpfMETSig", &TypeIpfMETSig_, "TypeIpfMETSig/F");
+  // TypeI + TypeII pfMET 
+  tree_->Branch("TypeIpIIpfMET", &TypeIpIIpfMET_, "TypeIpIIpfMET/F");
+  tree_->Branch("TypeIpIIpfMETx", &TypeIpIIpfMETx_, "TypeIpIIpfMETx/F");
+  tree_->Branch("TypeIpIIpfMETy", &TypeIpIIpfMETy_, "TypeIpIIpfMETy/F");
+  tree_->Branch("TypeIpIIpfMETPhi", &TypeIpIIpfMETPhi_, "TypeIpIIpfMETPhi/F");
+  tree_->Branch("TypeIpIIpfMETsumEt", &TypeIpIIpfMETsumEt_, "TypeIpIIpfMETsumEt/F");
+  tree_->Branch("TypeIpIIpfMETmEtSig", &TypeIpIIpfMETmEtSig_, "TypeIpIIpfMETmEtSig/F");
+  tree_->Branch("TypeIpIIpfMETSig", &TypeIpIIpfMETSig_, "TypeIpIIpfMETSig/F");
+  // pfCharged and pfNeutral particles
+  tree_->Branch("npfCharged", &npfCharged_, "npfCharged/I");
+  tree_->Branch("pfChargedSumPt", &pfChargedSumPt_, "pfChargedSumPt/F");
+  tree_->Branch("npfChargedHadron", &npfChargedHadron_, "npfChargedHadron/I");
+  tree_->Branch("pfChargedHadronSumPt", &pfChargedHadronSumPt_, "pfChargedHadronSumPt/F");
+  tree_->Branch("npfLepton", &npfLepton_, "npfLepton/I");
+  tree_->Branch("pfLeptonSumPt", &pfLeptonSumPt_, "pfLeptonSumPt/F");
+  tree_->Branch("npfNeutral", &npfNeutral_, "npfNeutral/I");
+  tree_->Branch("pfNeutralSumPt", &pfNeutralSumPt_, "pfNeutralSumPt/F");
+  tree_->Branch("npfNeutralHadron", &npfNeutralHadron_, "npfNeutralHadron/I");
+  tree_->Branch("pfNeutralHadronSumPt", &pfNeutralHadronSumPt_, "pfNeutralHadronSumPt/F");
+  tree_->Branch("npfPhoton", &npfPhoton_, "npfPhoton/I");
+  tree_->Branch("pfPhotonSumPt", &pfPhotonSumPt_, "pfPhotonSumPt/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
   tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][31]/I");
@@ -675,6 +713,10 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   e.getByLabel(sigmaLabel_, sigmaHandle);
   sigma_ = *(sigmaHandle.product());
 
+  edm::Handle<double> rhoNeutralHandle;
+  e.getByLabel(rhoNeutralLabel_, rhoNeutralHandle);
+  rhoNeutral_ = *(rhoNeutralHandle.product());
+
   // GenParticle
   // cout << "VgAnalyzerKit: produce: GenParticle... " << endl;
   edm::Handle<reco::GenParticleCollection> genParticles;
@@ -965,6 +1007,81 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       pfMETsumEt_  = iPFMET->sumEt();
       pfMETmEtSig_ = iPFMET->mEtSig();
       pfMETSig_    = iPFMET->significance();
+  }
+
+  // TypeI pfMET
+  Handle<View<pat::MET> > TypeIpfMETHandle_;
+  e.getByLabel(TypeIpfMETlabel_, TypeIpfMETHandle_);
+  for (View<pat::MET>::const_iterator iTypeIPFMET = TypeIpfMETHandle_->begin(); iTypeIPFMET != TypeIpfMETHandle_->end(); ++iTypeIPFMET) {
+
+      TypeIpfMET_       = iTypeIPFMET->pt();
+      TypeIpfMETx_      = iTypeIPFMET->px();
+      TypeIpfMETy_      = iTypeIPFMET->py();
+      TypeIpfMETPhi_    = iTypeIPFMET->phi();
+      TypeIpfMETsumEt_  = iTypeIPFMET->sumEt();
+      TypeIpfMETmEtSig_ = iTypeIPFMET->mEtSig();
+      TypeIpfMETSig_    = iTypeIPFMET->significance();
+  }
+
+  // Type I + TypeII pfMET
+  Handle<View<pat::MET> > TypeIpIIpfMETHandle_;
+  e.getByLabel(TypeIpIIpfMETlabel_, TypeIpIIpfMETHandle_);
+  for (View<pat::MET>::const_iterator iTypeIpIIPFMET = TypeIpIIpfMETHandle_->begin(); iTypeIpIIPFMET != TypeIpIIpfMETHandle_->end(); ++iTypeIpIIPFMET) {
+
+      TypeIpIIpfMET_       = iTypeIpIIPFMET->pt();
+      TypeIpIIpfMETx_      = iTypeIpIIPFMET->px();
+      TypeIpIIpfMETy_      = iTypeIpIIPFMET->py();
+      TypeIpIIpfMETPhi_    = iTypeIpIIPFMET->phi();
+      TypeIpIIpfMETsumEt_  = iTypeIpIIPFMET->sumEt();
+      TypeIpIIpfMETmEtSig_ = iTypeIpIIPFMET->mEtSig();
+      TypeIpIIpfMETSig_    = iTypeIpIIPFMET->significance();
+  }
+
+  // PF Candidates
+  npfCharged_ = 0;
+  pfChargedSumPt_ = 0;
+  npfChargedHadron_ = 0;
+  pfChargedHadronSumPt_ = 0;
+  npfLepton_ = 0;
+  pfLeptonSumPt_ = 0;
+  npfNeutral_ = 0;
+  pfNeutralSumPt_ = 0;
+  npfNeutralHadron_ = 0;
+  pfNeutralHadronSumPt_ = 0;
+  npfPhoton_ = 0;
+  pfPhotonSumPt_ = 0;
+
+  Handle<reco::PFCandidateCollection> pfCandidatesHandle;
+  e.getByLabel(PFCandLabel_, pfCandidatesHandle);
+  for (PFCandidateCollection::const_iterator iPF = pfCandidatesHandle->begin(); iPF != pfCandidatesHandle->end(); iPF++) {
+
+    const PFCandidate *particle = &(*iPF);
+
+    if (particle->pdgId() == 22) {
+       npfPhoton_ += 1;
+       pfPhotonSumPt_ += particle->pt();
+    }
+    if (particle->pdgId() == 111 || particle->pdgId() == 130 || particle->pdgId() == 310 || particle->pdgId() == 2112) {
+       npfNeutralHadron_ += 1;
+       pfNeutralHadronSumPt_ += particle->pt();
+    }
+    if (fabs(particle->pdgId()) == 211 || fabs(particle->pdgId()) == 321 || fabs(particle->pdgId()) == 999211 || fabs(particle->pdgId()) == 2212) {
+       npfChargedHadron_ += 1;
+       pfChargedHadronSumPt_ += particle->pt();
+    }
+    if (fabs(particle->pdgId()) == 11 || fabs(particle->pdgId()) == 13) {
+       npfLepton_ += 1;
+       pfLeptonSumPt_ += particle->pt();
+    }
+
+    if (particle->charge() == 0) {
+       npfNeutral_ += 1;
+       pfNeutralSumPt_ += particle->pt();
+    }
+    if (particle->charge() != 0) {
+       npfCharged_ += 1;
+       pfChargedSumPt_ += particle->pt();
+    }
   }
 
   // Get the hcal hits
@@ -2083,8 +2200,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetMass_[nJet_]   = iJet->mass();
 	jetCharge_[nJet_] = iJet->jetCharge();
 	jetEt_[nJet_]     = iJet->et();
-	jetRawPt_[nJet_]  = (*iJet).correctedJet("Uncorrected").pt();
 	jetRawEn_[nJet_]  = (*iJet).correctedJet("Uncorrected").energy();
+	jetRawPt_[nJet_]  = (*iJet).correctedJet("Uncorrected").pt();
 	jetpartonFlavour_[nJet_] = iJet->partonFlavour();
 
 	// Jet Id related
