@@ -80,9 +80,13 @@ protected:
   InputTag caloTowerlabel_;
   InputTag tcMETlabel_;
   InputTag pfMETlabel_;
+  InputTag TypeIpfMETlabel_;
+  InputTag TypeIpIIpfMETlabel_;
+  InputTag PFCandLabel_;
   InputTag puInfoLabel_;
   InputTag rhoLabel_;
   InputTag sigmaLabel_;
+  InputTag rhoNeutralLabel_;
   InputTag ebReducedRecHitCollection_;
   InputTag eeReducedRecHitCollection_;
   InputTag beamSpotCollection_;
@@ -112,6 +116,7 @@ protected:
   Int_t    BXPU_[maxP];
   Float_t  rho_;
   Float_t  sigma_;
+  Float_t  rhoNeutral_;
   Int_t    nHLT_;
   Int_t    HLT_[maxP];
   Int_t    HLTprescale_[maxP];
@@ -179,6 +184,35 @@ protected:
   Float_t  pfMETsumEt_;
   Float_t  pfMETmEtSig_;
   Float_t  pfMETSig_;
+  // TypeI pfMET
+  Float_t  TypeIpfMET_;
+  Float_t  TypeIpfMETx_;
+  Float_t  TypeIpfMETy_;
+  Float_t  TypeIpfMETPhi_;
+  Float_t  TypeIpfMETsumEt_;
+  Float_t  TypeIpfMETmEtSig_;
+  Float_t  TypeIpfMETSig_;
+  // TypeII pfMET
+  Float_t  TypeIpIIpfMET_;
+  Float_t  TypeIpIIpfMETx_;
+  Float_t  TypeIpIIpfMETy_;
+  Float_t  TypeIpIIpfMETPhi_;
+  Float_t  TypeIpIIpfMETsumEt_;
+  Float_t  TypeIpIIpfMETmEtSig_;
+  Float_t  TypeIpIIpfMETSig_;
+  // pfCharged and pf Neutral Sum Pt
+  Int_t    npfCharged_;
+  Float_t  pfChargedSumPt_;
+  Int_t    npfChargedHadron_;
+  Float_t  pfChargedHadronSumPt_;
+  Int_t    npfLepton_;
+  Float_t  pfLeptonSumPt_;
+  Int_t    npfNeutral_;
+  Float_t  pfNeutralSumPt_;
+  Int_t    npfNeutralHadron_;
+  Float_t  pfNeutralHadronSumPt_;
+  Int_t    npfPhoton_;
+  Float_t  pfPhotonSumPt_;
   // Electron
   Int_t    nEle_;
   Int_t    eleTrg_[maxP][31];
