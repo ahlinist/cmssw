@@ -7,7 +7,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 template <typename T>
-PATLeptonIpSelector<T>::PATLeptonIpSelector(const edm::ParameterSet& cfg):
+PATLeptonIpSelector<T>::PATLeptonIpSelector(const edm::ParameterSet& cfg);
     ipMin_(0),
     ipMax_(1000),
     ipZmax_(1000)
@@ -49,8 +49,8 @@ void PATLeptonIpSelector<T>::select(const edm::Handle<collection>& patLeptonColl
 
     const reco::Track* track = trackExtractor_(*patLepton);
     if ( track ) {
-      double ip = track->dxy(thePrimaryEventVertex.position());
-      double ipz = track->dz(thePrimaryEventVertex.position());
+      double ip = fabs(track->dxy(thePrimaryEventVertex.position()));
+      double ipz = fabs(track->dz(thePrimaryEventVertex.position()));
 
       if ( ip > ipMin_ && ip < ipMax_ && ipz < ipZmax_ ) {
 	    selected_.push_back(&(*patLepton));
