@@ -20,7 +20,7 @@ static const char* desc =
 "                ROOT version 5.30.00 or higher                       \n"
 "                                                                     \n"
 "                                                                     \n"
-"                                                                     \n"
+"                                                                    \n"
 "The code should be compiled in ROOT:                                 \n"
 "                                                                     \n"
 "root -l                                                              \n"
@@ -199,6 +199,15 @@ public:
 				 int nToys,
 				 bool printResult = true );
 
+  // run single point in the cls scan, with a given precision
+  std::pair<double, double>
+  GetClsSinglePoint( RooStats::HypoTestInverter & calc,
+		     double poi,
+		     double precision,
+		     bool observed,
+		     double bgSigma,
+		     int maxNToys );
+
   RooWorkspace *    GetWorkspace(){ return mpWs;}
   RooAbsData *      GetData( void ){return mpData;};
   const RooArgSet * GetPoiSet( void );
@@ -263,6 +272,8 @@ private:
 						  int nSbToys,
 						  int nBToys,
 						  bool useCls );
+
+  RooStats::HypoTestInverter * GetHypoTestInverter( void );
  
   // get the expected p-values for given quantiles
   // from hypotestinvresult
@@ -276,14 +287,6 @@ private:
 				 Int_t index,
 				 Double_t pValue );
 
-  // run single point in the cls scan, with a given precision
-  std::pair<double, double>
-  GetClsSinglePoint( RooStats::HypoTestInverter & calc,
-		     double poi,
-		     double precision,
-		     bool observed,
-		     double bgSigma,
-		     int maxNToys );
   
   RooStats::MCMCInterval * GetMcmcInterval(double confLevel,
 					   int nIter,
@@ -324,7 +327,15 @@ private:
   // random numbers
   TRandom3 mRandom;
 
-  // HypoTestInverter attributes (CLs, FC...)
+  // HypoTestInverter attr and objects (CLs, FC...)
+  RooStats::HypoTestInverter * mpHypoTestInvCalc; // own it
+  RooStats::HypoTestCalculatorGeneric *  mpHypoTestCalc;
+  RooStats::FrequentistCalculator * mpFreqCalc;
+  RooStats::HybridCalculator * mpHybridCalc;
+  RooStats::SimpleLikelihoodRatioTestStat * slrts;
+  RooStats::RatioOfProfiledLikelihoodsTestStat * ropl;
+  RooStats::ProfileLikelihoodTestStat * profll;
+  RooStats::MaxLikelihoodEstimateTestStat * maxll;
   bool mDoPlotHypoTestResult;
   bool mUseProof;
   bool mOptimize;
@@ -387,6 +398,14 @@ void LimitCalc::init(UInt_t randomSeed){
   SetSeed(randomSeed);
 
   // HypoTestInverter attributes (CLs, FC...)
+  mpHypoTestInvCalc = 0;
+  mpHypoTestCalc = 0;
+  mpFreqCalc = 0;
+  mpHybridCalc = 0;
+  slrts = 0;
+  ropl = 0;
+  profll = 0;
+  maxll = 0;
   mDoPlotHypoTestResult =  false; 
   mUseProof =  false;
   mOptimize =  false;
@@ -407,6 +426,14 @@ LimitCalc::~LimitCalc(){
   delete mpSimpleInterval;
   delete mpMcmcInterval;
   delete mpFcCalc;
+  delete mpHypoTestInvCalc;
+  delete mpHypoTestCalc;
+  delete mpFreqCalc;
+  delete mpHybridCalc;
+  delete slrts;
+  delete ropl;
+  delete profll;
+  delete maxll;
 }
 
 
@@ -1408,6 +1435,8 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
   double p_value_bg = ROOT::Math::normal_cdf(bgSigma,1);
   int add_toys_sb = (int)(1.5/p_value_bg/p_value_bg + 1.0);
   int add_toys_b = add_toys_sb;
+  // FIXME: trying to understand poor precision
+  //add_toys_b = 1000;
 
   // keep adding toys until precision is reached or something
   // is hopelessly zero, and max_toys_zero are reached, or
@@ -1434,7 +1463,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     add_toys_sb = 0;
     add_toys_b = 0;
 
-    // run first iteration to get an idea
+    // run hypo test inverter
     calc.RunOnePoint(poi);
     RooStats::HypoTestInverterResult * pResult = calc.GetInterval();
     
@@ -1464,6 +1493,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     
     // get test statistic value for CLs calculation
     double test_stat;
+    double test_stat_err;
     if (observed){
       test_stat = result->GetTestStatisticData();
     }
@@ -1479,8 +1509,45 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       test_stat = q[0];
     }
     
-    int n_b_toys = pBDist->GetSamplingDistribution().size();
-    int n_sb_toys = pSbDist->GetSamplingDistribution().size();
+    std::vector<double> vBSorted(pBDist->GetSamplingDistribution());
+    std::vector<double> vSbSorted(pSbDist->GetSamplingDistribution());
+    int n_b_toys = vBSorted.size();
+    int n_sb_toys = vSbSorted.size();
+    //int n_b_toys = pBDist->GetSamplingDistribution().size();
+    //int n_sb_toys = pSbDist->GetSamplingDistribution().size();
+
+    // evaluate tails and their errors
+    test_stat_err = test_stat / sqrt((double)n_b_toys);
+    std::sort(vBSorted.begin(), vBSorted.end());
+    std::sort(vSbSorted.begin(), vSbSorted.end());
+    //int indexB = TMath::BinarySearch(n_b_toys, &vBSorted[0], test_stat);
+    int indexSb = TMath::BinarySearch(n_sb_toys, &vSbSorted[0], test_stat);
+    int indexSbDown = TMath::BinarySearch(n_sb_toys, &vSbSorted[0], test_stat-test_stat_err);
+    //double _alt_clb = ((double)indexB+1.0)/((double)n_b_toys);
+    double _alt_clb = ROOT::Math::normal_cdf(bgSigma,1);
+    double _alt_clsb = 1.0 - ((double)indexSb+1.0)/((double)n_sb_toys);
+    double _alt_clsb_up = 1.0 - ((double)indexSbDown+1.0)/((double)n_sb_toys);
+    //double _alt_clb_err = std::max(_alt_clb, 1.0);
+    double _alt_clb_err = 0.0;
+    double _alt_clsb_err1 = std::max(_alt_clsb, 1.0); // two components: from Poisson
+    double _alt_clsb_err2; // and from test stat value fluctuation
+    double _alt_clsb_err = std::max(_alt_clsb, 1.0);
+    //double _alt_clsb_err2 = std::max(_alt_clsb, 1.0);
+    double _alt_cls = 0.0;
+    double _alt_cls_err = 1.0;
+    //if ( indexB+1 > 0) _alt_clb_err = _alt_clb/sqrt((double)(indexB+1));
+    //if ( n_sb_toys-indexSb-1 > 0) _alt_clsb_err = _alt_clsb/sqrt((double)(n_sb_toys-indexSb-1));
+
+    if ( n_sb_toys-indexSb-1 > 0){
+      _alt_clsb_err1 = _alt_clsb/sqrt((double)(n_sb_toys-indexSb-1));
+    }
+    _alt_clsb_err2 = _alt_clsb_up - _alt_clsb;
+    _alt_clsb_err = _alt_clsb_err1 + _alt_clsb_err2;
+
+    if (_alt_clb > 0){
+      _alt_cls = _alt_clsb/_alt_clb;
+      _alt_cls_err = _alt_cls * sqrt(_alt_clsb_err*_alt_clsb_err/_alt_clsb/_alt_clsb + _alt_clb_err*_alt_clb_err/_alt_clb/_alt_clb);
+    }
 
     temp_result.SetTestStatisticData( test_stat );
     _clsb = temp_result.CLsplusb();
@@ -1493,6 +1560,13 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       std::cout << "[DEBUG]: N of S+B toys: " << n_sb_toys  << std::endl;
       std::cout << "[DEBUG]: CLsb: " << _clsb << " +/- " << _clsb_err  << std::endl;
       std::cout << "[DEBUG]: CLb: " << _clb << " +/- " << _clb_err  << std::endl;
+      //std::cout << "[DEBUG]: alt CLsb: " << _alt_clsb << " +/- " << _alt_clsb_err  << std::endl;
+      std::cout << "[DEBUG]: test stat: " << test_stat << " +/- " << test_stat_err  << std::endl;
+      std::cout << "[DEBUG]: alt CLsb: " << _alt_clsb << " +/- " << _alt_clsb_err1 << " +/- " << _alt_clsb_err2  << std::endl;
+      std::cout << "[DEBUG]: alt CLsb: " << _alt_clsb << " +/- " << _alt_clsb_err  << std::endl;
+      //std::cout << "[DEBUG]: alt CLsb_up: " << _alt_clsb_up << std::endl;
+      std::cout << "[DEBUG]: alt CLb: " << _alt_clb << " +/- " << _alt_clb_err  << std::endl;
+      std::cout << "[DEBUG]: alt CLs: " << _alt_cls << " +/- " << _alt_cls_err  << std::endl;
     }
 
     if (_clb < 0.1/(double)n_b_toys){
@@ -1544,10 +1618,11 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       continue;
     }
 
-    if ( _clsb_err/_clsb > precision ){
+    //if ( _clsb_err/_clsb > precision ){
+    if ( _alt_clsb_err1/_clsb > precision ){
       add_toys_sb = (int)(1.0
 			  + ((double)n_sb_toys)
-			  * _clsb_err*_clsb_err/_clsb/_clsb/precision/precision
+			  * _alt_clsb_err1*_alt_clsb_err1/_alt_clsb/_alt_clsb/precision/precision
 			  - (double)n_sb_toys);
 
       if ( (double)add_toys_sb < 0.1*((double)n_sb_toys)){
@@ -1556,6 +1631,20 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       }
     }
 
+    // how well we know test statistic cut depends on b-only
+    if ( _alt_clsb_err2/_clsb > precision ){
+      add_toys_b = (int)(1.0
+			 + ((double)n_b_toys)
+			 * _alt_clsb_err2*_alt_clsb_err2/_alt_clsb/_alt_clsb/precision/precision
+			 - (double)n_b_toys);
+
+      if ( (double)add_toys_b < 0.1*((double)n_b_toys)){
+	// protection against too small increments
+	add_toys_b = (int)(0.1*((double)n_b_toys)+1.0);
+      }
+    }
+
+    // FIXME: this is not needed for expected
     if ( _clb_err/_clb > precision ){
       add_toys_b = (int)(1.0
 			 + ((double)n_b_toys)
@@ -1568,16 +1657,20 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       }
     }
 
-    
-    _cls = temp_result.CLs();
-    _cls_err = temp_result.CLsError();
+    // FIXME: alternative version of cls calculation
+    //_cls = temp_result.CLs();
+    //_cls_err = temp_result.CLsError();
+    _cls = _alt_cls;
+    _cls_err = _alt_cls_err;
 
     if (mTestMode){
       std::cout << "[DEBUG]: CLs: " << _cls << " +/- " << _cls_err  << std::endl;
+      std::cout << "[DEBUG]: alt CLs: " << _alt_cls << " +/- " << _alt_cls_err  << std::endl;
     }
 
     // precision achieved or far away from goal
-    if ( _cls_err/_cls < precision || fabs(_cls-0.05)>5.0*_cls_err) break;
+    //if ( _cls_err/_cls < precision || fabs(_cls-0.05)>5.0*_cls_err) break;
+    if ( _cls_err/_cls < precision ) break;
 
     // how much over the desired precision?
     double extra = _cls_err*_cls_err/_cls/_cls/precision/precision - 1.0;
@@ -1618,6 +1711,213 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
   return result;
 }
 
+
+
+RooStats::HypoTestInverter * 
+LimitCalc::GetHypoTestInverter( void ){
+  // 
+  // Configure, create and return a pointer to a HypoTestInverter object
+  // The object is owned by the class
+  // 
+
+  std::string _legend = "[LimitCalc::GetHypoTestInverter]: ";
+
+  // check data
+   if (!mpData) { 
+     Error(_legend.c_str(),"dataset not found");
+     return 0;
+   }
+   
+   // check model config
+   if (!mpSbModel) {
+     Error(_legend.c_str(),"S+B ModelConfig does not exist...");
+     return 0;
+   }
+
+   // check model pdf
+   if (!mpSbModel->GetPdf()) { 
+     Error(_legend.c_str(),"S+B model has no pdf...");
+     return 0;
+   }
+
+   // check POI
+   if (!mpSbModel->GetParametersOfInterest()) {
+     Error(_legend.c_str(),"S+B model has no POI...");
+     return 0;
+   }
+
+   // check S+B snapshot
+   if (!mpSbModel->GetSnapshot() ) { 
+      Info(_legend.c_str(),"S+B model has no snapshot  - make one using model POI");
+      mpSbModel->SetSnapshot( *mpSbModel->GetParametersOfInterest() );
+   }
+
+   // check B-only model config
+   if (!mpBModel || mpBModel == mpSbModel) {
+      Info(_legend.c_str(),"The background model does not exist...");
+      Info(_legend.c_str(),"Copy it from S+B ModelConfig and set POI to zero");
+      mpBModel = (RooStats::ModelConfig*) mpSbModel->Clone();
+      mpBModel->SetName(TString("SbModel")+TString("_with_poi_0"));      
+      RooRealVar * var = dynamic_cast<RooRealVar*>(mpBModel->GetParametersOfInterest()->first());
+      if (!var) return 0;
+      double oldval = var->getVal();
+      var->setVal(0);
+      mpBModel->SetSnapshot( RooArgSet(*var)  );
+      var->setVal(oldval);
+   }
+   else { 
+     // check B-only snapshot
+     if (!mpBModel->GetSnapshot() ) { 
+       Info(_legend.c_str(),"B-only model has no snapshot  - make one using model poi and 0 values ");
+       RooRealVar * var = dynamic_cast<RooRealVar*>(mpBModel->GetParametersOfInterest()->first());
+       if (var) { 
+	 double oldval = var->getVal();
+	 var->setVal(0);
+	 mpBModel->SetSnapshot( RooArgSet(*var)  );
+	 var->setVal(oldval);
+       }
+       else { 
+	 Error(_legend.c_str(),"B-only model has no valid poi...");
+	 return 0;
+       }         
+     }
+   }
+
+   delete slrts;
+   slrts = new RooStats::SimpleLikelihoodRatioTestStat(*mpSbModel->GetPdf(),*mpBModel->GetPdf());
+   if (mpSbModel->GetSnapshot()) slrts->SetNullParameters(*mpSbModel->GetSnapshot());
+   if (mpBModel->GetSnapshot()) slrts->SetAltParameters(*mpBModel->GetSnapshot());
+
+   // ratio of profile likelihood - need to pass snapshot for the alt
+   delete ropl;
+   ropl = new RooStats::RatioOfProfiledLikelihoodsTestStat(*mpSbModel->GetPdf(), *mpBModel->GetPdf(), mpBModel->GetSnapshot());
+   ropl->SetSubtractMLE(false);
+   
+   delete profll;
+   profll = new RooStats::ProfileLikelihoodTestStat(*mpSbModel->GetPdf());
+   if (mTestStatType == 3) profll->SetOneSided(1);
+   if (mOptimize){ 
+      profll->SetReuseNLL(true);
+      slrts->setReuseNLL(true);
+   }
+
+   RooRealVar * pMu = dynamic_cast<RooRealVar*>(mpSbModel->GetParametersOfInterest()->first());
+   assert(pMu != 0);
+   delete maxll;
+   maxll = new RooStats::MaxLikelihoodEstimateTestStat(*mpSbModel->GetPdf(),*pMu); 
+
+   RooStats::TestStatistic * testStat = slrts;
+   if (mTestStatType == 1) testStat = ropl;
+   if (mTestStatType == 2 || mTestStatType == 3) testStat = profll;
+   if (mTestStatType == 4) testStat = maxll;
+  
+   
+   delete mpHypoTestCalc;
+   if (mInverterCalcType == 0) mpHypoTestCalc = new RooStats::FrequentistCalculator(*mpData, *mpBModel, *mpSbModel);
+   else mpHypoTestCalc = new RooStats::HybridCalculator(*mpData, *mpBModel, *mpSbModel);
+
+   RooStats::ToyMCSampler * toymcs = (RooStats::ToyMCSampler*)mpHypoTestCalc->GetTestStatSampler();
+   if(mpSbModel->GetPdf()->canBeExtended()){
+     // if the PDF is extended, number of events per toy
+     // will be taken from the PDF normalization
+     std::cout << _legend
+	       << "will take number of entries per toy from S+B model PDF"
+	       << std::endl;
+   }
+   else{
+     // PDF is not extended
+
+     if(mNEventsPerToy > 0){
+       // number of event per toy was specified
+       toymcs->SetNEventsPerToy(mNEventsPerToy);
+       std::cout << _legend
+		 << "number of entries per toy explicitely set to "
+		 << mNEventsPerToy
+		 << std::endl;
+     }
+     else if(mpData->numEntries()==1){
+       toymcs->SetNEventsPerToy(1);
+       std::cout << _legend
+		 << "guessing that this must be a counting experiment, "
+		 << std::endl
+		 << _legend
+		 << "number of entries per toy explicitely set to 1"
+		 << std::endl
+		 << _legend
+		 << "if you wish otherwise, set it with SetNEventsPerToy()"
+		 << std::endl;
+     }
+     else{
+       std::cout << _legend
+		 << "number of entries per toy is undefined"
+		 << std::endl;
+     }
+   }
+
+   toymcs->SetTestStatistic(testStat);
+   if (mOptimize){
+     // Lorenzo: works only of b pdf and s+b pdf are the same
+     // (perhaps this is not the case anymore)
+     if (mpBModel->GetPdf() == mpSbModel->GetPdf() ) 
+       toymcs->SetUseMultiGen(true);
+   }
+
+
+   if (mInverterCalcType == 1) { 
+     RooStats::HybridCalculator *hhc = (RooStats::HybridCalculator*) mpHypoTestCalc;
+
+      // remove global observables from ModelConfig
+      mpBModel->SetGlobalObservables( RooArgSet() );
+      mpSbModel->SetGlobalObservables( RooArgSet() );
+
+      // check for nuisance prior pdf in case of nuisance parameters 
+      if (mpBModel->GetNuisanceParameters() || mpSbModel->GetNuisanceParameters() ){
+	RooAbsPdf * pNuisPdf = 0; 
+	if (mNuisPriorName.length()!=0) pNuisPdf = mpWs->pdf(mNuisPriorName.c_str());
+	// use prior defined first in bModel (then in SbModel)
+	if (!pNuisPdf)  { 
+            Info(_legend.c_str(),"No nuisance pdf given for the HybridCalculator - try to use the prior pdf from the model");
+            pNuisPdf = (mpBModel->GetPriorPdf() ) ?  mpBModel->GetPriorPdf() : mpSbModel->GetPriorPdf();
+         }
+         if (!pNuisPdf) { 
+            Error(_legend.c_str(),"Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified");
+            return 0;
+         }
+         const RooArgSet * cpNuisParams = (mpBModel->GetNuisanceParameters() ) ? mpBModel->GetNuisanceParameters() : mpSbModel->GetNuisanceParameters();
+         RooArgSet * pNp = pNuisPdf->getObservables(*cpNuisParams);
+         if (pNp->getSize() == 0) { 
+            Warning(_legend.c_str(),"Prior nuisance does not depend on nuisance parameters. They will be smeared in their full range");
+         }
+         delete pNp;
+         hhc->ForcePriorNuisanceAlt(*pNuisPdf);
+         hhc->ForcePriorNuisanceNull(*pNuisPdf);
+      }
+   } 
+   else {
+     // just small default ntoys numbers
+     ((RooStats::FrequentistCalculator*) mpHypoTestCalc)->SetToys(100,100); 
+   }
+
+   // Get the result
+   // FIXME: verbosity?
+   //RooMsgService::instance().getStream(1).removeTopic(RooFit::NumIntegration);
+
+   // fit the data first
+   mpSbModel->GetPdf()->fitTo(*mpData, 
+			      RooFit::Verbose(0),
+			      RooFit::PrintLevel(-1),
+			      RooFit::Warnings(0),
+			      RooFit::PrintEvalErrors(-1));
+
+   delete mpHypoTestInvCalc;
+   mpHypoTestInvCalc = new RooStats::HypoTestInverter(*mpHypoTestCalc);
+
+   mpHypoTestInvCalc->SetConfidenceLevel(0.95);
+   mpHypoTestInvCalc->UseCLs(true);
+   mpHypoTestInvCalc->SetVerbose(true);
+
+   return mpHypoTestInvCalc;
+}
 
 
 RooStats::HypoTestInverterResult * 
@@ -2112,6 +2412,67 @@ LimitCalc::GuessNextPoiStep( std::vector<double> & vPoi,
 
 //--------> global functions --------------------------------------
 //
+std::pair<double,double> 
+get_cls_value( double poi,
+	       double precision,
+	       double sigma,
+	       int nToys){
+  //
+  // Computes the CLs VALUE (not limit!) with a requested
+  // precision or until the max number of pseudoexperiments
+  // is reached.
+  // 
+  // Returns the pair: value-uncertainty
+  //
+  
+  // instantiate calculator
+  LimitCalc * pCalc = LimitCalc::GetInstance();
+
+  RooStats::HypoTestInverter * calc = pCalc->GetHypoTestInverter();
+  
+  std::pair<double,double> result;
+  result = pCalc->GetClsSinglePoint(*calc, poi, precision,
+				    false, sigma, nToys);
+
+  return result;
+}
+
+
+
+int load( const char * inFileName,
+	  const char * workspaceName,
+	  const char * datasetName ){
+  //
+  // Load workspace and data from a file
+  // Returns a bitset: 
+  //   - the youngest bit is workspace loaded
+  //   - the second bit is dataset loaded
+  //
+
+  std::string _legend = "[load]: ";
+
+  int result = 0;
+
+  // instantiate calculator
+  LimitCalc * pCalc = LimitCalc::GetInstance();
+
+  // load workspace
+  if (inFileName && workspaceName){
+    pCalc->LoadWorkspace(inFileName, workspaceName);
+    ++result;
+  }
+
+  // load dataset
+  if (datasetName){
+    pCalc->LoadData(datasetName);
+    result += 2;
+  }
+
+  return result;
+}
+
+
+
 LimitResult limit( const char * method,
 		   const char * inFileName,
 		   const char * workspaceName,
@@ -2131,7 +2492,7 @@ LimitResult limit( const char * method,
 
   // load dataset
   if (datasetName){
-    pCalc->LoadData("observed_data");
+    pCalc->LoadData(datasetName);
   }
 
   LimitResult limitResult;
