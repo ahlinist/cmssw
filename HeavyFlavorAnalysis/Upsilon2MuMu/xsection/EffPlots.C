@@ -2433,25 +2433,26 @@ void Trig_Neg(){
   
 }
 
-void TrigCompare_Pos(){
+void TrigCompare(){
   gStyle->SetOptStat(00000000000);
   int Npt(5); int Neta(5);
   double effData(-99); double effMC(-99); double effDataErr(-99); double effMCErr(-99); 
-  fPidTableData = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");
-  fPidTableMC = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");
-    
-  double pt[6] = {3., 4., 5., 6., 8., 50.};
+  //fPidTableData = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");
+  //fPidTableMC = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");
+  fPidTableData = new PidTable("PtMmbTrigBothv2-jpsi.8ptbin.DATA.dat");
+  fPidTableMC = new PidTable("PtMmbTrigBoth-jpsi.Run2010p1.8ptbins.dat");
+  double pt[9] = {3., 4., 5., 6., 8., 10., 14., 20., 50.};
   double eta[6] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
 
   TH1D *EffData1; TH1D *EffMC1; TH1D *EffData2; TH1D *EffMC2; TH1D *EffData3; TH1D *EffMC3; 
   TH1D *EffData4; TH1D *EffMC4; TH1D *EffData5; TH1D *EffMC5;
-  EffData1 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); EffMC1 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); 
-  EffData2 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); EffMC2 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); 
-  EffData3 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); EffMC3 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt);
-  EffData4 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); EffMC4 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); 
-  EffData5 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt); EffMC5 = new TH1D("Trig Efficiency", "Trig Efficiency", 5, pt);  
+  EffData1 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); EffMC1 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); 
+  EffData2 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); EffMC2 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); 
+  EffData3 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); EffMC3 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt);
+  EffData4 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); EffMC4 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); 
+  EffData5 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt); EffMC5 = new TH1D("Trig Efficiency", "Trig Efficiency", 7, pt);  
   
-  for ( int i = 0; i < 5 ; i++){
+  for ( int i = 0; i < 7 ; i++){
     for ( int j = 0; j < 5 ; j++){
       
       effData = fPidTableData->effD(pt[i]+0.1, eta[j]+0.1, 0.);
@@ -2513,14 +2514,14 @@ void TrigCompare_Pos(){
   EffData1->SetLineColor(2);
   EffData1->Draw("pe");
   EffMC1->SetMarkerStyle(23);
-  EffMC1->SetMarkerColor(4);
-  EffMC1->SetLineColor(4);
+  EffMC1->SetMarkerColor(1);
+  EffMC1->SetLineColor(1);
   EffMC1->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   c5->cd(2);
   EffData2->SetMinimum(0.2);
@@ -2530,14 +2531,14 @@ void TrigCompare_Pos(){
   EffData2->SetLineColor(2);
   EffData2->Draw("pe");
   EffMC2->SetMarkerStyle(23);
-  EffMC2->SetMarkerColor(4);
-  EffMC2->SetLineColor(4);
+  EffMC2->SetMarkerColor(1);
+  EffMC2->SetLineColor(1);
   EffMC2->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC2,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC2,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();  
   c5->cd(3);
   EffData3->SetMinimum(0.2);
@@ -2547,14 +2548,14 @@ void TrigCompare_Pos(){
   EffData3->SetLineColor(2);
   EffData3->Draw("pe");
   EffMC3->SetMarkerStyle(23);
-  EffMC3->SetMarkerColor(4);
-  EffMC3->SetLineColor(4);
+  EffMC3->SetMarkerColor(1);
+  EffMC3->SetLineColor(1);
   EffMC3->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC3,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC3,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();   
   c5->cd(4);
   EffData4->SetMinimum(0.2);
@@ -2564,14 +2565,14 @@ void TrigCompare_Pos(){
   EffData4->SetLineColor(2);
   EffData4->Draw("pe");
   EffMC4->SetMarkerStyle(23);
-  EffMC4->SetMarkerColor(4);
-  EffMC4->SetLineColor(4);
+  EffMC4->SetMarkerColor(1);
+  EffMC4->SetLineColor(1);
   EffMC4->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC4,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC4,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();   
   c5->cd(5);
   EffData5->SetMinimum(0.2);
@@ -2581,14 +2582,14 @@ void TrigCompare_Pos(){
   EffData5->SetLineColor(2);
   EffData5->Draw("pe");
   EffMC5->SetMarkerStyle(23);
-  EffMC5->SetMarkerColor(4);
-  EffMC5->SetLineColor(4);
+  EffMC5->SetMarkerColor(1);
+  EffMC5->SetLineColor(1);
   EffMC5->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC5,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC5,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();     
   
   
@@ -2603,16 +2604,16 @@ void TrigCompare_Pos(){
   EffData1->SetLineColor(2);
   EffData1->Draw("pe");
   EffMC1->SetMarkerStyle(23);
-  EffMC1->SetMarkerColor(4);
-  EffMC1->SetLineColor(4);
+  EffMC1->SetMarkerColor(1);
+  EffMC1->SetLineColor(1);
   EffMC1->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();
-  c501->SaveAs("TrigComPos1.pdf");
+  c501->SaveAs("TrigCom1.pdf");
   
   TCanvas *c502 = new TCanvas("c502","c502",800,600); 
   EffData2->SetTitle("");
@@ -2625,16 +2626,16 @@ void TrigCompare_Pos(){
   EffData2->SetLineColor(2);
   EffData2->Draw("pe");
   EffMC2->SetMarkerStyle(23);
-  EffMC2->SetMarkerColor(4);
-  EffMC2->SetLineColor(4);
+  EffMC2->SetMarkerColor(1);
+  EffMC2->SetLineColor(1);
   EffMC2->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();
-  c502->SaveAs("TrigComPos2.pdf");
+  c502->SaveAs("TrigCom2.pdf");
   
   TCanvas *c503 = new TCanvas("c503","c503",800,600); 
   EffData3->SetTitle("");
@@ -2647,16 +2648,16 @@ void TrigCompare_Pos(){
   EffData3->SetLineColor(2);
   EffData3->Draw("pe");
   EffMC3->SetMarkerStyle(23);
-  EffMC3->SetMarkerColor(4);
-  EffMC3->SetLineColor(4);
+  EffMC3->SetMarkerColor(1);
+  EffMC3->SetLineColor(1);
   EffMC3->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();
-  c503->SaveAs("TrigComPos3.pdf");
+  c503->SaveAs("TrigCom3.pdf");
   
   TCanvas *c504 = new TCanvas("c504","c504",800,600); 
   EffData4->SetTitle("");
@@ -2669,16 +2670,16 @@ void TrigCompare_Pos(){
   EffData4->SetLineColor(2);
   EffData4->Draw("pe");
   EffMC4->SetMarkerStyle(23);
-  EffMC4->SetMarkerColor(4);
-  EffMC4->SetLineColor(4);
+  EffMC4->SetMarkerColor(1);
+  EffMC4->SetLineColor(1);
   EffMC4->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();
-  c504->SaveAs("TrigComPos4.pdf");
+  c504->SaveAs("TrigCom4.pdf");
   
   TCanvas *c505 = new TCanvas("c505","c505",800,600); 
   EffData5->SetTitle("");
@@ -2691,16 +2692,16 @@ void TrigCompare_Pos(){
   EffData5->SetLineColor(2);
   EffData5->Draw("pe");
   EffMC5->SetMarkerStyle(23);
-  EffMC5->SetMarkerColor(4);
-  EffMC5->SetLineColor(4);
+  EffMC5->SetMarkerColor(1);
+  EffMC5->SetLineColor(1);
   EffMC5->Draw("pesame");  
   legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(EffMC1,  "J/#psi->#mu#mu HLT_DoubleMu0","p"); legge->SetTextColor(kBlack);
   legg->Draw();
-  c505->SaveAs("TrigComPos5.pdf");
+  c505->SaveAs("TrigCom5.pdf");
   
   
 }
