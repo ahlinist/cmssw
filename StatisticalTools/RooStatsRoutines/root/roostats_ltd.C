@@ -1432,7 +1432,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
   double _cls_err = -1.0;
 
   // initial number of toys
-  double p_value_bg = ROOT::Math::normal_cdf(bgSigma,1);
+  double p_value_bg = ROOT::Math::normal_cdf(-bgSigma,1);
   int add_toys_sb = (int)(1.5/p_value_bg/p_value_bg + 1.0);
   int add_toys_b = add_toys_sb;
   // FIXME: trying to understand poor precision
@@ -1441,6 +1441,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
   // keep adding toys until precision is reached or something
   // is hopelessly zero, and max_toys_zero are reached, or
   // maxNToys is reached
+  if (mTestMode) std::cout << "[DEBUG]: starting loop with adding toys until precision is reached" << std::endl;
   while(1){
     
     if (mTestMode){
@@ -1471,9 +1472,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     int poi_index = pResult->FindIndex(poi);
     if (poi_index < 0) poi_index = pResult->ArraySize()-1;
 
-    if (mTestMode){
-      std::cout << "[DEBUG]: ArraySize(): " << pResult->ArraySize() << std::endl;
-    }
+    if (mTestMode) std::cout << "[DEBUG]: ArraySize(): " << pResult->ArraySize() << std::endl;
     
     // sampling distributions
     // (we do not own these)
@@ -1493,6 +1492,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     
     // get test statistic value for CLs calculation
     double test_stat;
+    double test_stat_rms;
     double test_stat_err;
     if (observed){
       test_stat = result->GetTestStatisticData();
@@ -1507,6 +1507,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       double * x = const_cast<double *>(&values[0]); // cast for TMath::Quantiles
       TMath::Quantiles(values.size(), 1, x, q, p, false);
       test_stat = q[0];
+      test_stat_rms = TMath::RMS(values.size(), &values[0]);
     }
     
     std::vector<double> vBSorted(pBDist->GetSamplingDistribution());
@@ -1517,14 +1518,14 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     //int n_sb_toys = pSbDist->GetSamplingDistribution().size();
 
     // evaluate tails and their errors
-    test_stat_err = test_stat / sqrt((double)n_b_toys);
+    test_stat_err = test_stat_rms / sqrt((double)n_b_toys);
     std::sort(vBSorted.begin(), vBSorted.end());
     std::sort(vSbSorted.begin(), vSbSorted.end());
     //int indexB = TMath::BinarySearch(n_b_toys, &vBSorted[0], test_stat);
     int indexSb = TMath::BinarySearch(n_sb_toys, &vSbSorted[0], test_stat);
     int indexSbDown = TMath::BinarySearch(n_sb_toys, &vSbSorted[0], test_stat-test_stat_err);
     //double _alt_clb = ((double)indexB+1.0)/((double)n_b_toys);
-    double _alt_clb = ROOT::Math::normal_cdf(bgSigma,1);
+    double _alt_clb = 1.0 - ROOT::Math::normal_cdf(-bgSigma,1);
     double _alt_clsb = 1.0 - ((double)indexSb+1.0)/((double)n_sb_toys);
     double _alt_clsb_up = 1.0 - ((double)indexSbDown+1.0)/((double)n_sb_toys);
     //double _alt_clb_err = std::max(_alt_clb, 1.0);
