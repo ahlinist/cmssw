@@ -309,7 +309,6 @@ protected:
   Float_t  phoEcalIsoDR04_[maxP];
   Float_t  phoHcalIsoDR04_[maxP];
   Float_t  phoHcalIsoSolidDR04_[maxP];
-  Float_t  phoEVtx_[maxP][100];
   Float_t  phoEtVtx_[maxP][100];
   Float_t  phoPzVtx_[maxP][100];
   Float_t  phoEtaVtx_[maxP][100];
@@ -325,6 +324,7 @@ protected:
   Float_t  phoSigmaIPhiIPhi_[maxP];
   Float_t  phoE2overE9_[maxP];
   Float_t  phoE3x3_[maxP];
+  Float_t  phoE5x5_[maxP];
   Float_t  phoSeedTime_[maxP];
   Float_t  phoSeedEnergy_[maxP];
   Int_t    phoRecoFlag_[maxP];
@@ -335,6 +335,7 @@ protected:
   Int_t    phoGenMomPID[maxP];
   Float_t  phoGenMomPt[maxP];
   Float_t  phoSCE_[maxP];
+  Float_t  phoESE_[maxP];
   Float_t  phoSCEt_[maxP];
   Float_t  phoSCEta_[maxP];
   Float_t  phoSCPhi_[maxP];

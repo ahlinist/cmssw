@@ -315,7 +315,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoSolidDR04", phoHcalIsoSolidDR04_, "phoHcalIsoSolidDR04[nPho]/F");
-  tree_->Branch("phoEVtx", phoEVtx_, "phoEVtx[nPho][100]/F");
   tree_->Branch("phoEtVtx", phoEtVtx_, "phoEtVtx[nPho][100]/F");
   tree_->Branch("phoPzVtx", phoPzVtx_, "phoPzVtx[nPho][100]/F");
   tree_->Branch("phoEtaVtx", phoEtaVtx_, "phoEtaVtx[nPho][100]/F");
@@ -330,6 +329,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoSigmaIEtaIPhi", phoSigmaIEtaIPhi_, "phoSigmaIEtaIPhi[nPho]/F");
   tree_->Branch("phoSigmaIPhiIPhi", phoSigmaIPhiIPhi_, "phoSigmaIPhiIPhi[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
+  tree_->Branch("phoE5x5", phoE5x5_, "phoE5x5[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
   tree_->Branch("phoSeedEnergy", phoSeedEnergy_, "phoSeedEnergy[nPho]/F");
   // If Flag == 2, it means that rechit is out of time
@@ -344,6 +344,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("phoGenMomPt", phoGenMomPt, "phoGenMomPt[nPho]/F");
   }
   tree_->Branch("phoSCE", phoSCE_, "phoSCE[nPho]/F");
+  tree_->Branch("phoESE", phoESE_, "phoESE[nPho]/F");
   tree_->Branch("phoSCEt", phoSCEt_, "phoSCEt[nPho]/F");
   tree_->Branch("phoSCEta", phoSCEta_, "phoSCEta[nPho]/F");
   tree_->Branch("phoSCPhi", phoSCPhi_, "phoSCPhi[nPho]/F");
@@ -1484,7 +1485,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoHcalIsoSolidDR04_[nPho_] = myHcalIsoDR04.getTowerEtSum(phoSC);
 
       for (int i=0; i<100; i++) {
-        phoEVtx_[nPho_][i]   = -999.;
         phoEtVtx_[nPho_][i]  = -999.;
         phoPzVtx_[nPho_][i]  = -999.;
         phoEtaVtx_[nPho_][i] = -999.;
@@ -1499,11 +1499,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if (!((*recVtxs)[i].isFake())) {
 
           math::XYZPoint VTX = math::XYZPoint((*recVtxs)[i].x(), (*recVtxs)[i].y(), (*recVtxs)[i].z());
-          math::XYZVector direction = (*iPho).superCluster()->position() - VTX;
-          math::XYZVector momentum = direction.unit() * (*iPho).superCluster()->energy();
-	  const reco::Particle::LorentzVector newPho(momentum.x(), momentum.y(), momentum.z(), (*iPho).superCluster()->energy());
+          math::XYZVector direction = math::XYZVector(iPho->caloPosition().x() - (*recVtxs)[i].x(), iPho->caloPosition().y() - (*recVtxs)[i].y(), iPho->caloPosition().z() - (*recVtxs)[i].z());
+          math::XYZVector momentum = direction.unit() * iPho->energy();
+	  const reco::Particle::LorentzVector newPho(momentum.x(), momentum.y(), momentum.z(), iPho->energy());
 
-	  phoEVtx_[nPho_][i]   = newPho.E();
 	  phoEtVtx_[nPho_][i]  = newPho.Pt();
 	  phoPzVtx_[nPho_][i]  = newPho.Pz();
 	  phoEtaVtx_[nPho_][i] = newPho.Eta();
@@ -1562,6 +1561,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       }
 
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
+      phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
 
       // Gen Particle
       // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " gen match ..." << endl;
@@ -1595,6 +1595,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       // Super Cluster
       phoSCE_[nPho_]   = (*iPho).superCluster()->energy();
+      phoESE_[nPho_]   = (*iPho).superCluster()->preshowerEnergy();
       phoSCEta_[nPho_] = (*iPho).superCluster()->eta();
       phoSCPhi_[nPho_] = (*iPho).superCluster()->phi();
       phoSCEt_[nPho_]  = (*iPho).superCluster()->energy()/cosh(phoSCEta_[nPho_]);
