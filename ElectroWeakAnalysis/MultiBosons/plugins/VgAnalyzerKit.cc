@@ -499,6 +499,12 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("WenuMassTPfMET", WenuMassTPfMET_, "WenuMassTPfMET[nWenu]/F");
   tree_->Branch("WenuEtPfMET", WenuEtPfMET_, "WenuEtPfMET[nWenu]/F");
   tree_->Branch("WenuACopPfMET", WenuACopPfMET_, "WenuACopPfMET[nWenu]/F");
+  tree_->Branch("WenuMassTTypeIPfMET", WenuMassTTypeIPfMET_, "WenuMassTTypeIPfMET[nWenu]/F");
+  tree_->Branch("WenuEtTypeIPfMET", WenuEtTypeIPfMET_, "WenuEtTypeIPfMET[nWenu]/F");
+  tree_->Branch("WenuACopTypeIPfMET", WenuACopTypeIPfMET_, "WenuACopTypeIPfMET[nWenu]/F");
+  tree_->Branch("WenuMassTTypeIpIIPfMET", WenuMassTTypeIpIIPfMET_, "WenuMassTTypeIpIIPfMET[nWenu]/F");
+  tree_->Branch("WenuEtTypeIpIIPfMET", WenuEtTypeIpIIPfMET_, "WenuEtTypeIpIIPfMET[nWenu]/F");
+  tree_->Branch("WenuACopTypeIpIIPfMET", WenuACopTypeIpIIPfMET_, "WenuACopTypeIpIIPfMET[nWenu]/F");
   tree_->Branch("WenuEleIndex", WenuEleIndex_, "WenuEleIndex[nWenu]/I");
   // Wmunu candidate
   tree_->Branch("nWmunu", &nWmunu_, "nWmunu/I");
@@ -511,6 +517,12 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("WmunuMassTPfMET", WmunuMassTPfMET_, "WmunuMassTPfMET[nWmunu]/F");
   tree_->Branch("WmunuEtPfMET", WmunuEtPfMET_, "WmunuEtPfMET[nWmunu]/F");
   tree_->Branch("WmunuACopPfMET", WmunuACopPfMET_, "WmunuACopPfMET[nWmunu]/F");
+  tree_->Branch("WmunuMassTTypeIPfMET", WmunuMassTTypeIPfMET_, "WmunuMassTTypeIPfMET[nWmunu]/F");
+  tree_->Branch("WmunuEtTypeIPfMET", WmunuEtTypeIPfMET_, "WmunuEtTypeIPfMET[nWmunu]/F");
+  tree_->Branch("WmunuACopTypeIPfMET", WmunuACopTypeIPfMET_, "WmunuACopTypeIPfMET[nWmunu]/F");
+  tree_->Branch("WmunuMassTTypeIpIIPfMET", WmunuMassTTypeIpIIPfMET_, "WmunuMassTTypeIpIIPfMET[nWmunu]/F");
+  tree_->Branch("WmunuEtTypeIpIIPfMET", WmunuEtTypeIpIIPfMET_, "WmunuEtTypeIpIIPfMET[nWmunu]/F");
+  tree_->Branch("WmunuACopTypeIpIIPfMET", WmunuACopTypeIpIIPfMET_, "WmunuACopTypeIpIIPfMET[nWmunu]/F");
   tree_->Branch("WmunuMuIndex", WmunuMuIndex_, "WmunuMuIndex[nWmunu]/I");
 
 }
@@ -2048,6 +2060,32 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), iPFMET->phi());
       }
 
+      for (View<pat::MET>::const_iterator iTypeIPFMET = TypeIpfMETHandle_->begin(); iTypeIPFMET != TypeIpfMETHandle_->end(); ++iTypeIPFMET) {
+
+        pat::CompositeCandidate WenuTypeIPfMET;
+        WenuTypeIPfMET.addDaughter(*iEle, "ele");
+        WenuTypeIPfMET.addDaughter(*iTypeIPFMET, "met");
+
+        AddFourMomenta addWenuTypeIPfMET;
+        addWenuTypeIPfMET.set(WenuTypeIPfMET);
+        WenuMassTTypeIPfMET_[nWenu_] = massT(iEle->pt(), iTypeIPFMET->pt(), WenuTypeIPfMET.px(), WenuTypeIPfMET.py());
+        WenuEtTypeIPfMET_[nWenu_]    = eT(iEle->pt(), iTypeIPFMET->pt());
+        WenuACopTypeIPfMET_[nWenu_]  = acop(iEle->phi(), iTypeIPFMET->phi());
+      }
+
+      for (View<pat::MET>::const_iterator iTypeIpIIPFMET = TypeIpIIpfMETHandle_->begin(); iTypeIpIIPFMET != TypeIpIIpfMETHandle_->end(); ++iTypeIpIIPFMET) {
+
+        pat::CompositeCandidate WenuTypeIpIIPfMET;
+        WenuTypeIpIIPfMET.addDaughter(*iEle, "ele");
+        WenuTypeIpIIPfMET.addDaughter(*iTypeIpIIPFMET, "met");
+
+        AddFourMomenta addWenuTypeIpIIPfMET;
+        addWenuTypeIpIIPfMET.set(WenuTypeIpIIPfMET);
+        WenuMassTTypeIpIIPfMET_[nWenu_] = massT(iEle->pt(), iTypeIpIIPFMET->pt(), WenuTypeIpIIPfMET.px(), WenuTypeIpIIPfMET.py());
+        WenuEtTypeIpIIPfMET_[nWenu_]    = eT(iEle->pt(), iTypeIpIIPFMET->pt());
+        WenuACopTypeIpIIPfMET_[nWenu_]  = acop(iEle->phi(), iTypeIpIIPFMET->phi());
+      }
+
       WenuEleIndex_[nWenu_]   = leg1Index;
       leg1Index++;
       nWenu_++;
@@ -2101,6 +2139,32 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), iPFMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
 	WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), iPFMET->pt());
 	WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), iPFMET->phi());
+      }
+
+      for (View<pat::MET>::const_iterator iTypeIPFMET = TypeIpfMETHandle_->begin(); iTypeIPFMET != TypeIpfMETHandle_->end(); ++iTypeIPFMET) {
+
+        pat::CompositeCandidate WmunuTypeIPfMET;
+        WmunuTypeIPfMET.addDaughter(*iMu, "mu");
+        WmunuTypeIPfMET.addDaughter(*iTypeIPFMET, "met");
+
+        AddFourMomenta addWmunuTypeIPfMET;
+        addWmunuTypeIPfMET.set(WmunuTypeIPfMET);
+        WmunuMassTTypeIPfMET_[nWmunu_] = massT(iMu->pt(), iTypeIPFMET->pt(), WmunuTypeIPfMET.px(), WmunuTypeIPfMET.py());
+        WmunuEtTypeIPfMET_[nWmunu_]    = eT(iMu->pt(), iTypeIPFMET->pt());
+        WmunuACopTypeIPfMET_[nWmunu_]  = acop(iMu->phi(), iTypeIPFMET->phi());
+      }
+
+      for (View<pat::MET>::const_iterator iTypeIpIIPFMET = TypeIpIIpfMETHandle_->begin(); iTypeIpIIPFMET != TypeIpIIpfMETHandle_->end(); ++iTypeIpIIPFMET) {
+
+        pat::CompositeCandidate WmunuTypeIpIIPfMET;
+        WmunuTypeIpIIPfMET.addDaughter(*iMu, "mu");
+        WmunuTypeIpIIPfMET.addDaughter(*iTypeIpIIPFMET, "met");
+
+        AddFourMomenta addWmunuTypeIpIIPfMET;
+        addWmunuTypeIpIIPfMET.set(WmunuTypeIpIIPfMET);
+        WmunuMassTTypeIpIIPfMET_[nWmunu_] = massT(iMu->pt(), iTypeIpIIPFMET->pt(), WmunuTypeIpIIPfMET.px(), WmunuTypeIpIIPfMET.py());
+        WmunuEtTypeIpIIPfMET_[nWmunu_]    = eT(iMu->pt(), iTypeIpIIPFMET->pt());
+        WmunuACopTypeIpIIPfMET_[nWmunu_]  = acop(iMu->phi(), iTypeIpIIPFMET->phi());
       }
 
       leg1Index = iMu-(muonHandle_->begin());

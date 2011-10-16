@@ -495,6 +495,12 @@ protected:
   Float_t  WenuMassTPfMET_[maxP];
   Float_t  WenuEtPfMET_[maxP];
   Float_t  WenuACopPfMET_[maxP];
+  Float_t  WenuMassTTypeIPfMET_[maxP];
+  Float_t  WenuEtTypeIPfMET_[maxP];
+  Float_t  WenuACopTypeIPfMET_[maxP];
+  Float_t  WenuMassTTypeIpIIPfMET_[maxP];
+  Float_t  WenuEtTypeIpIIPfMET_[maxP];
+  Float_t  WenuACopTypeIpIIPfMET_[maxP];
   Int_t    WenuEleIndex_[maxP];
 
   // Wmunu candidate
@@ -508,6 +514,12 @@ protected:
   Float_t  WmunuMassTPfMET_[maxP];
   Float_t  WmunuEtPfMET_[maxP];
   Float_t  WmunuACopPfMET_[maxP];
+  Float_t  WmunuMassTTypeIPfMET_[maxP];
+  Float_t  WmunuEtTypeIPfMET_[maxP];
+  Float_t  WmunuACopTypeIPfMET_[maxP];
+  Float_t  WmunuMassTTypeIpIIPfMET_[maxP];
+  Float_t  WmunuEtTypeIpIIPfMET_[maxP];
+  Float_t  WmunuACopTypeIpIIPfMET_[maxP];
   Int_t    WmunuMuIndex_[maxP];
 
   // Physics objects handles
