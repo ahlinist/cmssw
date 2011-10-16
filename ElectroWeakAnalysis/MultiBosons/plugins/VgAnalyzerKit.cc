@@ -315,14 +315,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoSolidDR04", phoHcalIsoSolidDR04_, "phoHcalIsoSolidDR04[nPho]/F");
-  tree_->Branch("phoEtVtx", phoEtVtx_, "phoEtVtx[nPho][100]/F");
-  tree_->Branch("phoPzVtx", phoPzVtx_, "phoPzVtx[nPho][100]/F");
-  tree_->Branch("phoEtaVtx", phoEtaVtx_, "phoEtaVtx[nPho][100]/F");
-  tree_->Branch("phoPhiVtx", phoPhiVtx_, "phoPhiVtx[nPho][100]/F");
-  tree_->Branch("phoTrkIsoSolidDR03Vtx", phoTrkIsoSolidDR03Vtx_, "phoTrkIsoSolidDR03Vtx[nPho][100]/F");
-  tree_->Branch("phoTrkIsoHollowDR03Vtx", phoTrkIsoHollowDR03Vtx_, "phoTrkIsoHollowDR03Vtx[nPho][100]/F");
-  tree_->Branch("phoTrkIsoSolidDR04Vtx", phoTrkIsoSolidDR04Vtx_, "phoTrkIsoSolidDR04Vtx[nPho][100]/F");
-  tree_->Branch("phoTrkIsoHollowDR04Vtx", phoTrkIsoHollowDR04Vtx_, "phoTrkIsoHollowDR04Vtx[nPho][100]/F");
+  tree_->Branch("phoEtVtx", phoEtVtx_, "phoEtVtx[nPho][150]/F");
+  tree_->Branch("phoEtaVtx", phoEtaVtx_, "phoEtaVtx[nPho][150]/F");
+  tree_->Branch("phoPhiVtx", phoPhiVtx_, "phoPhiVtx[nPho][150]/F");
+  tree_->Branch("phoTrkIsoSolidDR03Vtx", phoTrkIsoSolidDR03Vtx_, "phoTrkIsoSolidDR03Vtx[nPho][150]/F");
+  tree_->Branch("phoTrkIsoHollowDR03Vtx", phoTrkIsoHollowDR03Vtx_, "phoTrkIsoHollowDR03Vtx[nPho][150]/F");
+  tree_->Branch("phoTrkIsoSolidDR04Vtx", phoTrkIsoSolidDR04Vtx_, "phoTrkIsoSolidDR04Vtx[nPho][150]/F");
+  tree_->Branch("phoTrkIsoHollowDR04Vtx", phoTrkIsoHollowDR04Vtx_, "phoTrkIsoHollowDR04Vtx[nPho][150]/F");
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
@@ -1496,9 +1495,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
       phoHcalIsoSolidDR04_[nPho_] = myHcalIsoDR04.getTowerEtSum(phoSC);
 
-      for (int i=0; i<100; i++) {
+      for (int i=0; i<150; i++) {
         phoEtVtx_[nPho_][i]  = -999.;
-        phoPzVtx_[nPho_][i]  = -999.;
         phoEtaVtx_[nPho_][i] = -999.;
         phoPhiVtx_[nPho_][i] = -999.;
         phoTrkIsoSolidDR03Vtx_[nPho_][i]  = -999.;
@@ -1516,7 +1514,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  const reco::Particle::LorentzVector newPho(momentum.x(), momentum.y(), momentum.z(), iPho->energy());
 
 	  phoEtVtx_[nPho_][i]  = newPho.Pt();
-	  phoPzVtx_[nPho_][i]  = newPho.Pz();
 	  phoEtaVtx_[nPho_][i] = newPho.Eta();
 	  phoPhiVtx_[nPho_][i] = newPho.Phi();
           phoTrkIsoSolidDR03Vtx_[nPho_][i]  = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.3, 0., 0.015, 0.2, 0.1, 0, 0);
