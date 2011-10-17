@@ -82,6 +82,8 @@ protected:
   InputTag pfMETlabel_;
   InputTag TypeIpfMETlabel_;
   InputTag TypeIpIIpfMETlabel_;
+  InputTag SmearedpfMETlabel_;
+  InputTag SmearedTypeIpfMETlabel_;
   InputTag PFCandLabel_;
   InputTag puInfoLabel_;
   InputTag rhoLabel_;
@@ -192,7 +194,7 @@ protected:
   Float_t  TypeIpfMETsumEt_;
   Float_t  TypeIpfMETmEtSig_;
   Float_t  TypeIpfMETSig_;
-  // TypeII pfMET
+  // TypeI + TypeII pfMET
   Float_t  TypeIpIIpfMET_;
   Float_t  TypeIpIIpfMETx_;
   Float_t  TypeIpIIpfMETy_;
@@ -200,6 +202,22 @@ protected:
   Float_t  TypeIpIIpfMETsumEt_;
   Float_t  TypeIpIIpfMETmEtSig_;
   Float_t  TypeIpIIpfMETSig_;
+  // Smeared pfMET
+  Float_t  SmearedpfMET_;
+  Float_t  SmearedpfMETx_;
+  Float_t  SmearedpfMETy_;
+  Float_t  SmearedpfMETPhi_;
+  Float_t  SmearedpfMETsumEt_;
+  Float_t  SmearedpfMETmEtSig_;
+  Float_t  SmearedpfMETSig_;
+  // Smeared TypeI pfMET
+  Float_t  SmearedTypeIpfMET_;
+  Float_t  SmearedTypeIpfMETx_;
+  Float_t  SmearedTypeIpfMETy_;
+  Float_t  SmearedTypeIpfMETPhi_;
+  Float_t  SmearedTypeIpfMETsumEt_;
+  Float_t  SmearedTypeIpfMETmEtSig_;
+  Float_t  SmearedTypeIpfMETSig_;
   // pfCharged and pf Neutral Sum Pt
   Int_t    npfCharged_;
   Float_t  pfChargedSumPt_;

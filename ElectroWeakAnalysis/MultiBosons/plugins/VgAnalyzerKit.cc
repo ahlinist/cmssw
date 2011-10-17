@@ -84,6 +84,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
   TypeIpfMETlabel_  = ps.getParameter<InputTag>("TypeIpfMETLabel");
   TypeIpIIpfMETlabel_ = ps.getParameter<InputTag>("TypeIpIIpfMETLabel");
+  SmearedpfMETlabel_     = ps.getParameter<InputTag>("SmearedpfMETLabel");
+  SmearedTypeIpfMETlabel_  = ps.getParameter<InputTag>("SmearedTypeIpfMETLabel");
   PFCandLabel_    = ps.getParameter<InputTag>("PFCandLabel");
   puInfoLabel_    = ps.getParameter<InputTag>("puInfoLabel");
   rhoLabel_       = ps.getParameter<InputTag>("rhoLabel");
@@ -208,6 +210,24 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("TypeIpIIpfMETsumEt", &TypeIpIIpfMETsumEt_, "TypeIpIIpfMETsumEt/F");
   tree_->Branch("TypeIpIIpfMETmEtSig", &TypeIpIIpfMETmEtSig_, "TypeIpIIpfMETmEtSig/F");
   tree_->Branch("TypeIpIIpfMETSig", &TypeIpIIpfMETSig_, "TypeIpIIpfMETSig/F");
+  if (doGenParticles_) {
+    // Smeared pfMET
+    tree_->Branch("SmearedpfMET", &SmearedpfMET_, "SmearedpfMET/F");
+    tree_->Branch("SmearedpfMETx", &SmearedpfMETx_, "SmearedpfMETx/F");
+    tree_->Branch("SmearedpfMETy", &SmearedpfMETy_, "SmearedpfMETy/F");
+    tree_->Branch("SmearedpfMETPhi", &SmearedpfMETPhi_, "SmearedpfMETPhi/F");
+    tree_->Branch("SmearedpfMETsumEt", &SmearedpfMETsumEt_, "SmearedpfMETsumEt/F");
+    tree_->Branch("SmearedpfMETmEtSig", &SmearedpfMETmEtSig_, "SmearedpfMETmEtSig/F");
+    tree_->Branch("SmearedpfMETSig", &SmearedpfMETSig_, "SmearedpfMETSig/F");
+    // Smeared TypeI pfMET
+    tree_->Branch("SmearedTypeIpfMET", &SmearedTypeIpfMET_, "SmearedTypeIpfMET/F");
+    tree_->Branch("SmearedTypeIpfMETx", &SmearedTypeIpfMETx_, "SmearedTypeIpfMETx/F");
+    tree_->Branch("SmearedTypeIpfMETy", &SmearedTypeIpfMETy_, "SmearedTypeIpfMETy/F");
+    tree_->Branch("SmearedTypeIpfMETPhi", &SmearedTypeIpfMETPhi_, "SmearedTypeIpfMETPhi/F");
+    tree_->Branch("SmearedTypeIpfMETsumEt", &SmearedTypeIpfMETsumEt_, "SmearedTypeIpfMETsumEt/F");
+    tree_->Branch("SmearedTypeIpfMETmEtSig", &SmearedTypeIpfMETmEtSig_, "SmearedTypeIpfMETmEtSig/F");
+    tree_->Branch("SmearedTypeIpfMETSig", &SmearedTypeIpfMETSig_, "SmearedTypeIpfMETSig/F");
+  }
   // pfCharged and pfNeutral particles
   tree_->Branch("npfCharged", &npfCharged_, "npfCharged/I");
   tree_->Branch("pfChargedSumPt", &pfChargedSumPt_, "pfChargedSumPt/F");
@@ -1054,6 +1074,34 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       TypeIpIIpfMETsumEt_  = iTypeIpIIPFMET->sumEt();
       TypeIpIIpfMETmEtSig_ = iTypeIpIIPFMET->mEtSig();
       TypeIpIIpfMETSig_    = iTypeIpIIPFMET->significance();
+  }
+
+  // Smeared pfMET
+  Handle<View<pat::MET> > SmearedpfMETHandle_;  
+  e.getByLabel(SmearedpfMETlabel_, SmearedpfMETHandle_);
+  for (View<pat::MET>::const_iterator iSmearedPFMET = SmearedpfMETHandle_->begin(); iSmearedPFMET != SmearedpfMETHandle_->end(); ++iSmearedPFMET) {
+
+      SmearedpfMET_       = iSmearedPFMET->pt();
+      SmearedpfMETx_      = iSmearedPFMET->px();
+      SmearedpfMETy_      = iSmearedPFMET->py();
+      SmearedpfMETPhi_    = iSmearedPFMET->phi();
+      SmearedpfMETsumEt_  = iSmearedPFMET->sumEt();
+      SmearedpfMETmEtSig_ = iSmearedPFMET->mEtSig();
+      SmearedpfMETSig_    = iSmearedPFMET->significance();
+  }
+
+  // Smeared TypeI pfMET
+  Handle<View<pat::MET> > SmearedTypeIpfMETHandle_;
+  e.getByLabel(SmearedTypeIpfMETlabel_, SmearedTypeIpfMETHandle_);
+  for (View<pat::MET>::const_iterator iSmearedTypeIPFMET = SmearedTypeIpfMETHandle_->begin(); iSmearedTypeIPFMET != SmearedTypeIpfMETHandle_->end(); ++iSmearedTypeIPFMET) {
+
+      SmearedTypeIpfMET_       = iSmearedTypeIPFMET->pt();
+      SmearedTypeIpfMETx_      = iSmearedTypeIPFMET->px();
+      SmearedTypeIpfMETy_      = iSmearedTypeIPFMET->py();
+      SmearedTypeIpfMETPhi_    = iSmearedTypeIPFMET->phi();
+      SmearedTypeIpfMETsumEt_  = iSmearedTypeIPFMET->sumEt();
+      SmearedTypeIpfMETmEtSig_ = iSmearedTypeIPFMET->mEtSig();
+      SmearedTypeIpfMETSig_    = iSmearedTypeIPFMET->significance();
   }
 
   // PF Candidates
