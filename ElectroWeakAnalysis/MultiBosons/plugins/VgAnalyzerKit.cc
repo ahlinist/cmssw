@@ -388,6 +388,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoXtalY", phoXtalY_, "phoXtalY[nPho][200]/I");
   tree_->Branch("phoXtalEta", phoXtalEta_, "phoXtalEta[nPho][200]/I");
   tree_->Branch("phoXtalPhi", phoXtalPhi_, "phoXtalPhi[nPho][200]/I");
+  tree_->Branch("pho5x5Time", pho5x5Time_, "pho5x5Time_[nPho][25]/F");
+  tree_->Branch("pho5x5Energy", pho5x5Energy_, "pho5x5Energy[nPho][25]/F");
+  tree_->Branch("pho5x5Z", pho5x5Z_, "pho5x5Z[nPho][25]/I");
+  tree_->Branch("pho5x5X", pho5x5X_, "pho5x5X[nPho][25]/I");
+  tree_->Branch("pho5x5Y", pho5x5Y_, "pho5x5Y[nPho][25]/I");
+  tree_->Branch("pho5x5Eta", pho5x5Eta_, "pho5x5Eta[nPho][25]/I");
+  tree_->Branch("pho5x5Phi", pho5x5Phi_, "pho5x5Phi[nPho][25]/I");
 
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
@@ -1568,10 +1575,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
            phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EEReducedRecHits) );
 	}
       }
-
+      
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
       phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
-
+ 
       // Gen Particle
       // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " gen match ..." << endl;
       phoGenIndex_[nPho_]  = -999;
@@ -1664,6 +1671,48 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	phoXtalY_[nPho_][a]      = -999;
 	phoXtalEta_[nPho_][a]    = -999;
 	phoXtalPhi_[nPho_][a]    = -999;
+ 
+        if (a >= 25) continue;
+        pho5x5Time_[nPho_][a]   = -999;
+        pho5x5Energy_[nPho_][a] = -999;
+        pho5x5Z_[nPho_][a]      = -999;
+        pho5x5X_[nPho_][a]      = -999;
+        pho5x5Y_[nPho_][a]      = -999;
+        pho5x5Eta_[nPho_][a]    = -999;
+        pho5x5Phi_[nPho_][a]    = -999;
+      }
+
+      int phoN5x5 = 0;
+      std::vector<DetId> pho5x5DetId = lazyTool.matrixDetId( phoSeedDetId, -2, 2, -2, 2);
+      for ( std::vector<DetId>::const_iterator it_5x5 = pho5x5DetId.begin(); it_5x5 != pho5x5DetId.end(); ++it_5x5 ) {
+        if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
+          EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(*it_5x5);
+          EBDetId phoSCEBid = EBDetId(*it_5x5);
+
+	  if ( ebrhit != EBReducedRecHits->end() ) { 
+	    pho5x5Time_[nPho_][phoN5x5]   = ebrhit->time();
+	    pho5x5Energy_[nPho_][phoN5x5] = ebrhit->energy();
+	    pho5x5Z_[nPho_][phoN5x5]      = phoSCEBid.zside();
+	    pho5x5Eta_[nPho_][phoN5x5]    = phoSCEBid.ieta();
+	    pho5x5Phi_[nPho_][phoN5x5]    = phoSCEBid.iphi();
+
+	    phoN5x5 += 1;
+	  }
+        }
+	if ( iPho->isEE() && EEReducedRecHits.isValid() ) {
+          EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(*it_5x5);
+          EEDetId phoSCEEid = EEDetId(*it_5x5);
+
+          if ( eerhit != EEReducedRecHits->end() ) {
+            pho5x5Time_[nPho_][phoN5x5]   = eerhit->time();
+            pho5x5Energy_[nPho_][phoN5x5] = eerhit->energy();
+            pho5x5Z_[nPho_][phoN5x5]      = phoSCEEid.zside();
+            pho5x5X_[nPho_][phoN5x5]      = phoSCEEid.ix();
+            pho5x5Y_[nPho_][phoN5x5]      = phoSCEEid.iy();
+
+	    phoN5x5 += 1;
+          }
+        }
       }
 
       for (vector< pair<DetId, float> >::const_iterator phoRHIt = (*iPho).superCluster()->hitsAndFractions().begin(); phoRHIt != (*iPho).superCluster()->hitsAndFractions().end(); ++phoRHIt) {
