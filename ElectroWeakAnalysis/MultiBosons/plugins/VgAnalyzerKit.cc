@@ -1076,34 +1076,35 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       TypeIpIIpfMETSig_    = iTypeIpIIPFMET->significance();
   }
 
-  // Smeared pfMET
-  Handle<View<pat::MET> > SmearedpfMETHandle_;  
-  e.getByLabel(SmearedpfMETlabel_, SmearedpfMETHandle_);
-  for (View<pat::MET>::const_iterator iSmearedPFMET = SmearedpfMETHandle_->begin(); iSmearedPFMET != SmearedpfMETHandle_->end(); ++iSmearedPFMET) {
+  if (doGenParticles_) {
+    // Smeared pfMET
+    Handle<View<pat::MET> > SmearedpfMETHandle_;  
+    e.getByLabel(SmearedpfMETlabel_, SmearedpfMETHandle_);
+    for (View<pat::MET>::const_iterator iSmearedPFMET = SmearedpfMETHandle_->begin(); iSmearedPFMET != SmearedpfMETHandle_->end(); ++iSmearedPFMET) {
 
-      SmearedpfMET_       = iSmearedPFMET->pt();
-      SmearedpfMETx_      = iSmearedPFMET->px();
-      SmearedpfMETy_      = iSmearedPFMET->py();
-      SmearedpfMETPhi_    = iSmearedPFMET->phi();
-      SmearedpfMETsumEt_  = iSmearedPFMET->sumEt();
-      SmearedpfMETmEtSig_ = iSmearedPFMET->mEtSig();
-      SmearedpfMETSig_    = iSmearedPFMET->significance();
+        SmearedpfMET_       = iSmearedPFMET->pt();
+        SmearedpfMETx_      = iSmearedPFMET->px();
+        SmearedpfMETy_      = iSmearedPFMET->py();
+        SmearedpfMETPhi_    = iSmearedPFMET->phi();
+        SmearedpfMETsumEt_  = iSmearedPFMET->sumEt();
+        SmearedpfMETmEtSig_ = iSmearedPFMET->mEtSig();
+        SmearedpfMETSig_    = iSmearedPFMET->significance();
+    }
+
+    // Smeared TypeI pfMET
+    Handle<View<pat::MET> > SmearedTypeIpfMETHandle_;
+    e.getByLabel(SmearedTypeIpfMETlabel_, SmearedTypeIpfMETHandle_);
+    for (View<pat::MET>::const_iterator iSmearedTypeIPFMET = SmearedTypeIpfMETHandle_->begin(); iSmearedTypeIPFMET != SmearedTypeIpfMETHandle_->end(); ++iSmearedTypeIPFMET) {
+
+        SmearedTypeIpfMET_       = iSmearedTypeIPFMET->pt();
+        SmearedTypeIpfMETx_      = iSmearedTypeIPFMET->px();
+        SmearedTypeIpfMETy_      = iSmearedTypeIPFMET->py();
+        SmearedTypeIpfMETPhi_    = iSmearedTypeIPFMET->phi();
+        SmearedTypeIpfMETsumEt_  = iSmearedTypeIPFMET->sumEt();
+        SmearedTypeIpfMETmEtSig_ = iSmearedTypeIPFMET->mEtSig();
+        SmearedTypeIpfMETSig_    = iSmearedTypeIPFMET->significance();
+    }
   }
-
-  // Smeared TypeI pfMET
-  Handle<View<pat::MET> > SmearedTypeIpfMETHandle_;
-  e.getByLabel(SmearedTypeIpfMETlabel_, SmearedTypeIpfMETHandle_);
-  for (View<pat::MET>::const_iterator iSmearedTypeIPFMET = SmearedTypeIpfMETHandle_->begin(); iSmearedTypeIPFMET != SmearedTypeIpfMETHandle_->end(); ++iSmearedTypeIPFMET) {
-
-      SmearedTypeIpfMET_       = iSmearedTypeIPFMET->pt();
-      SmearedTypeIpfMETx_      = iSmearedTypeIPFMET->px();
-      SmearedTypeIpfMETy_      = iSmearedTypeIPFMET->py();
-      SmearedTypeIpfMETPhi_    = iSmearedTypeIPFMET->phi();
-      SmearedTypeIpfMETsumEt_  = iSmearedTypeIPFMET->sumEt();
-      SmearedTypeIpfMETmEtSig_ = iSmearedTypeIPFMET->mEtSig();
-      SmearedTypeIpfMETSig_    = iSmearedTypeIPFMET->significance();
-  }
-
   // PF Candidates
   npfCharged_ = 0;
   pfChargedSumPt_ = 0;
