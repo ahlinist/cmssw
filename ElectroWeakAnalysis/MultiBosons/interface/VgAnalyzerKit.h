@@ -379,6 +379,13 @@ protected:
   Int_t    phoXtalY_[maxP][200];
   Int_t    phoXtalEta_[maxP][200];
   Int_t    phoXtalPhi_[maxP][200];
+  Float_t  pho5x5Time_[maxP][25];
+  Float_t  pho5x5Energy_[maxP][25];
+  Int_t    pho5x5Z_[maxP][25];
+  Int_t    pho5x5X_[maxP][25];
+  Int_t    pho5x5Y_[maxP][25];
+  Int_t    pho5x5Eta_[maxP][25];
+  Int_t    pho5x5Phi_[maxP][25];
 
   // Muon
   Int_t    nMu_;
