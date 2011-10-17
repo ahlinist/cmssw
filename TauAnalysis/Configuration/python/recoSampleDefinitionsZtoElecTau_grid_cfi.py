@@ -6,20 +6,20 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE_SKIM = [
-        'data_TauPlusX_Run2011A_May10ReReco_skim',
-        'data_TauPlusX_Run2011A_PR_v4_skim',
+        #'data_TauPlusX_Run2011A_May10ReReco_skim',
+        #'data_TauPlusX_Run2011A_PR_v4_skim',
         'data_TauPlusX_Run2011A_05AugReReco_skim',
-        'data_TauPlusX_Run2011A_PR_v6_skim',
-        'Ztautau_powheg_skim',
-        'DYtautauM10to20_powheg_skim',
+        #'data_TauPlusX_Run2011A_PR_v6_skim',
+        #'Ztautau_powheg_skim',
+        #'DYtautauM10to20_powheg_skim',
         #'qqZll',  ## no Summer11 sample
-        'Zee_powheg_skim',
-        'DYeeM10to20_pythia_skim',
+        #'Zee_pythia_skim',
+        #'DYeeM10to20_pythia_skim',
         #'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
         #'QCD_BCtoE_Pt20to30_skim','QCD_BCtoE_Pt30to80_skim','QCD_BCtoE_Pt80to170_skim',
         #'QCD_EM_Pt20to30_skim','QCD_EM_Pt30to80_skim','QCD_EM_Pt80to170_skim',
-        'TTplusJets_madgraph_skim',
-        'WplusJets_madgraph_skim',
+        #'TTplusJets_madgraph_skim',
+        #'WplusJets_madgraph_skim',
         #'WW_skim','WZ_skim',
         #'ZZ_skim', # no Summer11 sample
 ] 
@@ -30,7 +30,7 @@ SAMPLES_TO_ANALYZE_PAT = [
         #'data_TauPlusX_Run2011A_05AugReReco_pat',
         #'Ztautau_powheg_pat',
         'DYtautauM10to20_powheg_pat',
-        #'Zee_powheg_pat',
+        #'Zee_pythia_pat',
         'DYeeM10to20_pythia_pat',
         'PhotonPlusJets_Pt15to30_pat','PhotonPlusJets_Pt30to50_pat','PhotonPlusJets_Pt50to80_pat',
         'QCD_BCtoE_Pt20to30_pat','QCD_BCtoE_Pt30to80_pat','QCD_BCtoE_Pt80to170_pat',
@@ -84,7 +84,8 @@ SAMPLE_DEFAULTS = {
     'applyMuonTriggerEfficiencyCorrection' : False,
     'applyVertexMultiplicityReweighting' : True,
     'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
-    'noRunLumiEventSave' : True
+    'noRunLumiEventSave' : True,
+    'absoluteNormalization' : -1
 }
 
 # Conversions to pico barns
@@ -149,7 +150,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_05AugReReco_skim' : {  #400.3/pb, runs 170249-172619, 728380 events
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-05Aug2011-v1_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v2.txt',
         #'skim_eff' : 728380./3727491,
         'conditions' : 'GR_R_42_V20::All',
         'number_of_jobs' : 300,
@@ -224,7 +225,7 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX'
         }
     },    
-    'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events --> current lumi_mask restricts analysis to Lepton-Photon dataset: 120/pb
+    'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events 
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-PromptReco-v6_skimElecTau_v3-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -240,7 +241,25 @@ RECO_SAMPLES = {
         'noRunLumiEventSave' : False,
         'hlt_paths' : {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2'     : '170826:MIN-173198:MAX',
-            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '173236:MIN-999999:MAX'
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '173236:MIN-173692:MAX'
+        }
+    },
+    'data_TauPlusX_Run2011B_PR_v1_skim' : {  # xxx/pb, 175860-177053 runs, 1270686 events 
+        'datasetpath' : '/TauPlusX/jkolb-Run2011B-PromptReco-v1_skimElecTau_v4-982c87f3521a6471fb16318d08f703d0/USER', 
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-177053_7TeV_PromptReco_Collisions11_JSON.txt',
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'conditions' : 'GR_P_V25::All',
+        'number_of_jobs' : 300,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'noRunLumiEventSave' : False,
+        'hlt_paths' : {
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '175860:MIN-999999:MAX'
         }
     },
     'DYtautauM10to20_powheg_skim' : {
@@ -266,16 +285,17 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Ztautau,
     },    
     'Ztautau_powheg_skim' : {
-        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/jkolb-skimElecTau_423_v2-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/jkolb-skimElecTau_v4_Summer11-982c87f3521a6471fb16318d08f703d0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 150,
-        'applyZrecoilCorrection' : False,
+        'number_of_jobs' : 300,
+        #'applyZrecoilCorrection' : False,
         'events_processed' : 19937479,
-        'skim_eff' : 734741./19937479,
+        'skim_eff' : 1012582./19937479,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
+        #'absoluteNormalization' : 5294./29702
     },
     'Ztautau_powheg_pat' : {
         'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
@@ -322,18 +342,19 @@ RECO_SAMPLES = {
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
     },    
-    'Zee_powheg_skim' : { ## all skim jobs complete
-        'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
+    'Zee_pythia_skim' : { 
+        'datasetpath' : "/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/jkolb-skimElecTau_v3_Summer11-982c87f3521a6471fb16318d08f703d0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 200,
-        'events_processed' : 2262653,
-        'skim_eff' : 1109012./2262653,
+        'number_of_jobs' : 900,
+        'events_processed' : 29497207,
+        'skim_eff' : 13672814./29497207,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
+        #'absoluteNormalization' : 2308./2551
     },
-    'Zee_powheg_pat' : {
+    'Zee_pythia_pat' : {
         'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 200,
@@ -345,22 +366,23 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Zee,
     },    
     'WplusJets_madgraph_skim' : {
-        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/jkolb-skimElecTau_424_v5-982c87f3521a6471fb16318d08f703d0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 500,
-        'events_processed' : 54895290,
-        'skim_eff' : 1537734./54895290,
+        'number_of_jobs' : 800,
+        'events_processed' : 81352581,
+        'skim_eff' : 8165915./81352581,
         'x_sec' : 31314*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
+        'absoluteNormalization' : 2155./538
     },
     'WplusJets_madgraph_pat' : {
         'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 500,
-        'events_processed' : 54895290,
-        'skim_eff' : 1537734./54895290,
+        'events_processed' : 15285882,
+        'skim_eff' : 1537734./15285882,
         'x_sec' : 31314*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
@@ -684,7 +706,7 @@ MERGE_SAMPLES = {
     'ZeeSum' : {
         'samples' : [
             'DYeeM10to20_pythia_skim',
-            'Zee_powheg_skim'
+            'Zee_pythia_skim'
         ],
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'smMC', 
@@ -733,7 +755,7 @@ MERGE_SAMPLES = {
     'smBgSum' : {
         'samples' : [
             'DYeeM10to20_pythia_skim',
-            'Zee_powheg_skim',
+            'Zee_pythia_skim',
             'QCD_BCtoE_Pt20to30_skim',
             'QCD_BCtoE_Pt30to80_skim',
             'QCD_BCtoE_Pt80to170_skim',
@@ -754,7 +776,7 @@ MERGE_SAMPLES = {
             'DYtautauM10to20_powheg_skim',
             'Ztautau_powheg_skim',    
             'DYeeM10to20_pythia_skim',
-            'Zee_powheg_skim',
+            'Zee_pythia_skim',
             'QCD_BCtoE_Pt20to30_skim',
             'QCD_BCtoE_Pt30to80_skim',
             'QCD_BCtoE_Pt80to170_skim',
