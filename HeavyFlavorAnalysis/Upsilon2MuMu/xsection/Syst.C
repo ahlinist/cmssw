@@ -476,7 +476,7 @@ void XSSigPDF_1S(){
 
 void XSBgPDF_1S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_BgPDF_ref.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldPt");
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_BgPDF.root");
@@ -1091,7 +1091,7 @@ void XSSigPDF_2S(){
 
 void XSBgPDF_2S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_BgPDF_ref.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S2YieldPt");
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_BgPDF.root");
@@ -1707,7 +1707,7 @@ void XSSigPDF_3S(){
 
 void XSBgPDF_3S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_BgPDF_ref.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S3YieldPt");
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_BgPDF.root");
