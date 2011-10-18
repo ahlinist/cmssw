@@ -17,7 +17,7 @@ static const char* desc =
 "=====================================================================\n"
 "                                                                     \n"
 "Prerequisites:                                                       \n"
-"                ROOT version 5.30.00 or higher                       \n"
+"                ROOT version 5.30.02 or higher                       \n"
 "                                                                     \n"
 "                                                                     \n"
 "                                                                    \n"
@@ -228,6 +228,8 @@ public:
   void SetSeed(UInt_t seed);
   void SetInverterCalcType(int type){mInverterCalcType=type;};
   void SetTestStatType(int type){mTestStatType=type;};
+  void SetSbModelConfig( std::string modelConfigName );
+  void SetBModelConfig( std::string modelConfigName );
   void SetSbModelConfig( RooStats::ModelConfig * pSbModelConfig );
   void SetBModelConfig( RooStats::ModelConfig * pBModelConfig );
   void SetData( RooAbsData * data );
@@ -244,7 +246,7 @@ public:
   void SetRebuildSamplingDist( bool rebuild ){mRebuildSamplingDist = rebuild;};
   void SetNToysToRebuild( bool nToys ){mNToysToRebuild = nToys;};
   void SetNPoiScanPoints( bool nPoiScanPoints ){mNPoiScanPoints = nPoiScanPoints;};
-  
+  void SetMaxZeroToys( int ntoys ){mMaxZeroToys = ntoys;};
 
 private:
 
@@ -345,6 +347,7 @@ private:
   bool mRebuildSamplingDist;
   int  mNToysToRebuild;
   int mNPoiScanPoints;
+  int mMaxZeroToys; // max toys to throw when tail has zero
 
   // pointer to class instance
   static LimitCalc * mspInstance;
@@ -415,7 +418,7 @@ void LimitCalc::init(UInt_t randomSeed){
   mRebuildSamplingDist = false;
   mNToysToRebuild = -1;
   mNPoiScanPoints = 0;
-
+  mMaxZeroToys = 10000;
 }
 
 
@@ -772,6 +775,32 @@ LimitCalc::LoadModelConfig( std::string mcName ){
 
 
 void
+LimitCalc::SetSbModelConfig( std::string ModelConfigName ){
+  // 
+  // Set class member mpSbModelConfig
+  // to point to a model config from the workspace
+  //
+  SetSbModelConfig( LoadModelConfig(ModelConfigName) );
+
+  return;
+}
+
+
+
+void
+LimitCalc::SetBModelConfig( std::string ModelConfigName ){
+  // 
+  // Set class member mpBModelConfig
+  // to point to a model config from the workspace
+  //
+  SetBModelConfig( LoadModelConfig(ModelConfigName) );
+
+  return;
+}
+
+
+
+void
 LimitCalc::SetSbModelConfig( RooStats::ModelConfig * pSbModel ){
   // 
   // Set class member mpSbModelConfig - the signal plus background model
@@ -858,8 +887,10 @@ LimitCalc::LoadWorkspace( std::string wsFileName,
   delete p_infile;
 
   // try to load S+B and B-only model configs and their snapshots
-  SetSbModelConfig( LoadModelConfig("SbModel") );
-  SetBModelConfig( LoadModelConfig("BModel") );
+  RooStats::ModelConfig * pMc = LoadModelConfig("SbModel");
+  if (pMc) SetSbModelConfig( pMc );
+  pMc = LoadModelConfig("BModel");
+  if (pMc) SetBModelConfig( pMc );
   
   return mpWs;
 }
@@ -1421,7 +1452,8 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
   result.first = -1.0;
   result.second = -1.0;
 
-  int max_ntoys_zero = 1000;
+  //int max_ntoys_zero = 1000;
+  int max_ntoys_zero = mMaxZeroToys;
 
   // result and its current precision
   double _clsb = -1.0;
@@ -1435,8 +1467,6 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
   double p_value_bg = ROOT::Math::normal_cdf(-bgSigma,1);
   int add_toys_sb = (int)(1.5/p_value_bg/p_value_bg + 1.0);
   int add_toys_b = add_toys_sb;
-  // FIXME: trying to understand poor precision
-  //add_toys_b = 1000;
 
   // keep adding toys until precision is reached or something
   // is hopelessly zero, and max_toys_zero are reached, or
@@ -1492,7 +1522,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     
     // get test statistic value for CLs calculation
     double test_stat;
-    double test_stat_rms;
+    double test_stat_rms = 0.0;
     double test_stat_err;
     if (observed){
       test_stat = result->GetTestStatisticData();
@@ -1518,16 +1548,25 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     //int n_sb_toys = pSbDist->GetSamplingDistribution().size();
 
     // evaluate tails and their errors
-    test_stat_err = test_stat_rms / sqrt((double)n_b_toys);
+    if (observed) test_stat_err = 0.0; // test stat known from data
+    else test_stat_err = test_stat_rms / sqrt((double)n_b_toys);
+
+    // sort sampling dist vectors
     std::sort(vBSorted.begin(), vBSorted.end());
     std::sort(vSbSorted.begin(), vSbSorted.end());
+
+    // find index of sampling dist element <= test_stat
+    // and of +/- uncertainty deviations from test_stat
     //int indexB = TMath::BinarySearch(n_b_toys, &vBSorted[0], test_stat);
     int indexSb = TMath::BinarySearch(n_sb_toys, &vSbSorted[0], test_stat);
     int indexSbDown = TMath::BinarySearch(n_sb_toys, &vSbSorted[0], test_stat-test_stat_err);
+    int indexSbUp = TMath::BinarySearch(n_sb_toys, &vSbSorted[0], test_stat+test_stat_err);
+
     //double _alt_clb = ((double)indexB+1.0)/((double)n_b_toys);
     double _alt_clb = 1.0 - ROOT::Math::normal_cdf(-bgSigma,1);
     double _alt_clsb = 1.0 - ((double)indexSb+1.0)/((double)n_sb_toys);
     double _alt_clsb_up = 1.0 - ((double)indexSbDown+1.0)/((double)n_sb_toys);
+    double _alt_clsb_down = 1.0 - ((double)indexSbUp+1.0)/((double)n_sb_toys);
     //double _alt_clb_err = std::max(_alt_clb, 1.0);
     double _alt_clb_err = 0.0;
     double _alt_clsb_err1 = std::max(_alt_clsb, 1.0); // two components: from Poisson
@@ -1542,7 +1581,8 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     if ( n_sb_toys-indexSb-1 > 0){
       _alt_clsb_err1 = _alt_clsb/sqrt((double)(n_sb_toys-indexSb-1));
     }
-    _alt_clsb_err2 = _alt_clsb_up - _alt_clsb;
+    //_alt_clsb_err2 = _alt_clsb_up - _alt_clsb;
+    _alt_clsb_err2 = std::max( fabs(_alt_clsb_up-_alt_clsb), fabs(_alt_clsb-_alt_clsb_down) );
     _alt_clsb_err = _alt_clsb_err1 + _alt_clsb_err2;
 
     if (_alt_clb > 0){
@@ -1570,10 +1610,10 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       std::cout << "[DEBUG]: alt CLs: " << _alt_cls << " +/- " << _alt_cls_err  << std::endl;
     }
 
-    if (_clb < 0.1/(double)n_b_toys){
+    if (_alt_clb < 0.1/(double)n_b_toys){
       // BG p-value iz zero
-      _cls = 1.0;
-      _cls_err = -1.0;
+      _alt_cls = 1.0;
+      _alt_cls_err = -1.0;
 
       if (mTestMode){
 	std::cout << "[DEBUG]: CLb is zero..." << std::endl;
@@ -1594,10 +1634,10 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       continue;
     }
 
-    if (_clsb < 0.1/(double)n_sb_toys){
+    if (_alt_clsb < 0.1/(double)n_sb_toys){
       // S+B p-value is zero
-      _cls = 0.0;
-      _cls_err = -1.0;
+      _alt_cls = 0.0;
+      _alt_cls_err = -1.0;
 
       if (mTestMode){
 	std::cout << "[DEBUG]: CLsb is zero..." << std::endl;
@@ -1619,8 +1659,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       continue;
     }
 
-    //if ( _clsb_err/_clsb > precision ){
-    if ( _alt_clsb_err1/_clsb > precision ){
+    if ( _alt_clsb_err1/_alt_clsb > precision ){
       add_toys_sb = (int)(1.0
 			  + ((double)n_sb_toys)
 			  * _alt_clsb_err1*_alt_clsb_err1/_alt_clsb/_alt_clsb/precision/precision
@@ -1633,7 +1672,7 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     }
 
     // how well we know test statistic cut depends on b-only
-    if ( _alt_clsb_err2/_clsb > precision ){
+    if ( _alt_clsb_err2/_alt_clsb > precision ){
       add_toys_b = (int)(1.0
 			 + ((double)n_b_toys)
 			 * _alt_clsb_err2*_alt_clsb_err2/_alt_clsb/_alt_clsb/precision/precision
@@ -1645,11 +1684,11 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
       }
     }
 
-    // FIXME: this is not needed for expected
-    if ( _clb_err/_clb > precision ){
+    // this is not needed for expected limits
+    if ( observed && _alt_clb_err/_alt_clb > precision ){
       add_toys_b = (int)(1.0
 			 + ((double)n_b_toys)
-			 * _clb_err*_clb_err/_clb/_clb/precision/precision
+			 * _alt_clb_err*_alt_clb_err/_alt_clb/_alt_clb/precision/precision
 			 - (double)n_b_toys);
 
       if ( (double)add_toys_b < 0.1*((double)n_b_toys)){
@@ -1670,14 +1709,13 @@ LimitCalc::GetClsSinglePoint( RooStats::HypoTestInverter & calc,
     }
 
     // precision achieved or far away from goal
-    //if ( _cls_err/_cls < precision || fabs(_cls-0.05)>5.0*_cls_err) break;
-    if ( _cls_err/_cls < precision ) break;
+    if ( _alt_cls_err/_alt_cls < precision ) break;
 
     // how much over the desired precision?
-    double extra = _cls_err*_cls_err/_cls/_cls/precision/precision - 1.0;
+    double extra = _alt_cls_err*_alt_cls_err/_alt_cls/_alt_cls/precision/precision - 1.0;
     
     // more toys only if both cls and clb reached the precision
-    if (_clb_err/_clb < precision && _clsb_err/_clsb < precision){
+    if (_alt_clb_err/_alt_clb < precision && _alt_clsb_err/_alt_clsb < precision){
       add_toys_b = (int)(extra*((double)n_b_toys) + 1.0);
       add_toys_sb = (int)(extra*((double)n_sb_toys) + 1.0);
     }
@@ -2268,7 +2306,7 @@ LimitCalc::RunInverter( int    npoints,
      // FIXME: debug: plot points that supposed to search for cls=0.05
      std::cout << "******************************" << std::endl << std::endl;
      std::vector<double> v_index;
-     for (int i=0; i!=v_poi.size(); ++i){
+     for (unsigned int i=0; i!=v_poi.size(); ++i){
        v_index.push_back((double)i);
        std::cout << i << ": cls = "
 		 << v_cls[i] << " +/- "
@@ -2414,7 +2452,8 @@ LimitCalc::GuessNextPoiStep( std::vector<double> & vPoi,
 //--------> global functions --------------------------------------
 //
 std::pair<double,double> 
-get_cls_value( double poi,
+get_cls_value( bool isObserved,
+	       double poi,
 	       double precision,
 	       double sigma,
 	       int nToys){
@@ -2433,7 +2472,7 @@ get_cls_value( double poi,
   
   std::pair<double,double> result;
   result = pCalc->GetClsSinglePoint(*calc, poi, precision,
-				    false, sigma, nToys);
+				    isObserved, sigma, nToys);
 
   return result;
 }
