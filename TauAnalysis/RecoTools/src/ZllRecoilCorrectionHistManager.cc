@@ -58,17 +58,10 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 
   histogramVtxMultiplicity_  = book1D(dir, "numVertices",        "Num. Vertices",                         20,         -0.5,         19.5);
   histogramRhoNeutral_       = book1D(dir, "rhoNeutral",         "#rho_{neutral}",                        50,          0. ,          12.);
-  histogramRhoChargedHadronNoPileUp_ = 
-    book1D(dir, "rhoChargedHadronNoPileUp",                      "#rho_{h#pm}",                           50,          0. ,          12.);
-  histogramRhoNeutralToChargedHadronNoPileUpRatio_ = 
-    book1D(dir, "rhoNeutralToChargedHadronNoPileUpRatio",        "#rho_{neutral}/#rho_{h#pm}",            51,      -0.025 ,        2.525);
-  histogramRhoPFNoPileUp_ = 
-    book1D(dir, "rhoPFNoPileUp",                                 "#rho_{noPU}",                           50,          0. ,          20.);
 }
 
 void ZllRecoilCorrectionHistManager::fillHistograms(
-       const reco::CompositeCandidate& ZllCand, const pat::MET& met, size_t vtxMultiplicity, double rhoNeutral, 
-       double rhoChargedHadronNoPileUp, double rhoPFNoPileUp, double evtWeight)
+       const reco::CompositeCandidate& ZllCand, const pat::MET& met, size_t vtxMultiplicity, double rhoNeutral, double evtWeight)
 {
   assert(ZllCand.numberOfDaughters() == 2);
 
@@ -98,7 +91,8 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   histogramMEtS_->Fill(met.pt(), evtWeight);
   histogramMEtL_->Fill(met.pt(), evtWeight);
 
-  if ( ZllCand.pt() > 0. ) {
+  if ( ZllCand.pt() > 0. && met.pt() < 60. ) { // CV: fit Z-recoil correction parameters for events with MEt < 60 GeV only,
+                                               //     as di-boson and TTbar backgrounds dominate in high MEt tail
     double qT = ZllCand.pt();
     double qX = ZllCand.px();
     double qY = ZllCand.py();
@@ -137,11 +131,6 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 
   histogramVtxMultiplicity_->Fill(vtxMultiplicity, evtWeight);
   histogramRhoNeutral_->Fill(rhoNeutral, evtWeight);
-  histogramRhoChargedHadronNoPileUp_->Fill(rhoChargedHadronNoPileUp, evtWeight);
-  double rhoNeutralToChargedHadronNoPileUpRatio = ( rhoChargedHadronNoPileUp >= 0. ) ?
-    (rhoNeutral/rhoChargedHadronNoPileUp) : -1.;
-  histogramRhoNeutralToChargedHadronNoPileUpRatio_->Fill(rhoNeutralToChargedHadronNoPileUpRatio, evtWeight);
-  histogramRhoPFNoPileUp_->Fill(rhoPFNoPileUp, evtWeight);
 }
 
 void ZllRecoilCorrectionHistManager::scaleHistograms(double factor)

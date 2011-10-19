@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.6 2011/09/09 10:25:36 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.7 2011/09/30 12:30:41 veelken Exp $
  *
  */
 
@@ -55,7 +55,7 @@ void showControlPlot(TCanvas* canvas,
 		     TH1* dummyHistogram, 
 		     TGraphAsymmErrors* graph, const std::string& legendEntry, double legendX0, double legendY0,
 		     TGraph* graph_fit, TGraphErrors* graph_fitErr, 
-		     bool showIdGraph, const std::string& yAxisLabel, double yMin, double yMax, double yDiffMax, 
+		     bool showIdLine, bool showConstLine, const std::string& yAxisLabel, double yMin, double yMax, double yDiffMax, 
 		     const std::string& outputFileName, const std::string& outputFileLabel)
 {
   canvas->SetLogy(false);
@@ -98,8 +98,8 @@ void showControlPlot(TCanvas* canvas,
   dummyHistogram->SetMarkerStyle(20);
   dummyHistogram->Draw("axis");
 
-  graph_fitErr->SetLineColor(46);
-  graph_fitErr->SetLineWidth(1);
+  graph_fitErr->SetLineColor(2);
+  graph_fitErr->SetLineWidth(0);
   graph_fitErr->SetFillColor(46);
   graph_fitErr->SetFillStyle(3002);
   graph_fitErr->Draw("3");
@@ -108,17 +108,19 @@ void showControlPlot(TCanvas* canvas,
   graph_fit->SetLineWidth(2);
   graph_fit->Draw("L");
 
-  if ( showIdGraph ) {
+  if ( showIdLine || showConstLine ) {
     int numPoints = graph_fit->GetN();
-    TGraph* graph_id = new TGraph(numPoints);
+    TGraph* graph_line = new TGraph(numPoints);
     for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
       Double_t x, y;
       graph_fit->GetPoint(iPoint, x, y);
-      graph_id->SetPoint(iPoint, x, -x);
+      if      ( showIdLine    ) graph_line->SetPoint(iPoint, x,  -x);
+      else if ( showConstLine ) graph_line->SetPoint(iPoint, x, 1.0);
+      else assert(0);
     }
-    graph_id->SetLineColor(8);
-    graph_id->SetLineWidth(1);
-    graph_id->Draw("L");
+    graph_line->SetLineColor(8);
+    graph_line->SetLineWidth(1);
+    graph_line->Draw("L");
   }
 
   graph->SetMarkerStyle(20);
@@ -209,8 +211,10 @@ void showControlPlot(TCanvas* canvas,
 }
 
 void makeControlPlots(TH1* dummyHistogram,
-                      TGraphAsymmErrors* graph_uParl_mean, TGraphAsymmErrors* graph_uParl_rms, 
-		      TGraphAsymmErrors* graph_uPerp_mean, TGraphAsymmErrors* graph_uPerp_rms, 
+		      TGraphAsymmErrors* graph_uParl_mean, TGraphAsymmErrors* graph_uParl_div_qT_mean, 
+		      TGraphAsymmErrors* graph_uParl_rms, 
+		      TGraphAsymmErrors* graph_uPerp_mean, 
+		      TGraphAsymmErrors* graph_uPerp_rms, 
 		      const ZllRecoilCorrectionParameterSet& fitResultsfitResults, bool isData, const std::string& outputFileName)
 {
   TAxis* xAxis = dummyHistogram->GetXaxis();
@@ -221,15 +225,17 @@ void makeControlPlots(TH1* dummyHistogram,
 
   int numPoints = TMath::FloorNint((xMax - xMin)/xStepSize);
 
-  TGraph*       graph_uParlFit        = new TGraph(numPoints);
-  TGraphErrors* graph_uParlFitErr     = new TGraphErrors(numPoints);
-  TGraph*       graph_uParl_rmsFit    = new TGraph(numPoints);
-  TGraphErrors* graph_uParl_rmsFitErr = new TGraphErrors(numPoints);
+  TGraph*       graph_uParlFit           = new TGraph(numPoints);
+  TGraphErrors* graph_uParlFitErr        = new TGraphErrors(numPoints);
+  TGraph*       graph_uParl_div_qTfit    = new TGraph(numPoints);
+  TGraphErrors* graph_uParl_div_qTfitErr = new TGraphErrors(numPoints);
+  TGraph*       graph_uParl_rmsFit       = new TGraph(numPoints);
+  TGraphErrors* graph_uParl_rmsFitErr    = new TGraphErrors(numPoints);
 
-  TGraph*       graph_uPerpFit        = new TGraph(numPoints);
-  TGraphErrors* graph_uPerpFitErr     = new TGraphErrors(numPoints);
-  TGraph*       graph_uPerp_rmsFit    = new TGraph(numPoints);
-  TGraphErrors* graph_uPerp_rmsFitErr = new TGraphErrors(numPoints);
+  TGraph*       graph_uPerpFit           = new TGraph(numPoints);
+  TGraphErrors* graph_uPerpFitErr        = new TGraphErrors(numPoints);
+  TGraph*       graph_uPerp_rmsFit       = new TGraph(numPoints);
+  TGraphErrors* graph_uPerp_rmsFitErr    = new TGraphErrors(numPoints);
 
   for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
     double x = xMin + iPoint*xStepSize;
@@ -246,6 +252,10 @@ void makeControlPlots(TH1* dummyHistogram,
     graph_uParlFit->SetPoint(iPoint, x, uParl_av);
     graph_uParlFitErr->SetPoint(iPoint, x, 0.5*(uParlErrUp + uParlErrDown));
     graph_uParlFitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(uParlErrUp - uParlErrDown));
+    
+    graph_uParl_div_qTfit->SetPoint(iPoint, x, -uParl_av/x);
+    graph_uParl_div_qTfitErr->SetPoint(iPoint, x, -0.5*(uParlErrUp + uParlErrDown)/x);
+    graph_uParl_div_qTfitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(uParlErrUp - uParlErrDown)/x);
 
     double uParl_rms_av         = fitResultsfitResults.sigma1()*(1. + fitResultsfitResults.b1()*x + fitResultsfitResults.c1()*x*x);
     double uParl_rms_sigma1Up   = (fitResultsfitResults.sigma1() + fitResultsfitResults.sigma1Err())
@@ -313,19 +323,23 @@ void makeControlPlots(TH1* dummyHistogram,
 
   showControlPlot(canvas, 
 		  dummyHistogram, graph_uParl_mean, legendEntry, 0.64, 0.68, graph_uParlFit, graph_uParlFitErr,     
-		  true, "u_{parl} / GeV", -600., +100., 10.,
+		  true, false, "u_{parl} / GeV", -600., +100., 10.,
 		  outputFileName, "uParl_mean");
   showControlPlot(canvas, 
+		  dummyHistogram, graph_uParl_div_qT_mean, legendEntry, 0.64, 0.68, graph_uParl_div_qTfit, graph_uParl_div_qTfitErr,     
+		  false, true, "u_{parl}/q_{T}", 0., 1.5, 0.25,
+		  outputFileName, "uParl_div_qT_mean");
+  showControlPlot(canvas, 
 		  dummyHistogram, graph_uParl_rms, legendEntry,  0.21, 0.64, graph_uParl_rmsFit, graph_uParl_rmsFitErr, 
-		  false, "rms(u_{parl}) / GeV", 0., 50., 10., 
+		  false, false, "rms(u_{parl}) / GeV", 0., 50., 10., 
 		  outputFileName, "uParl_rms");
   showControlPlot(canvas, 
 		  dummyHistogram, graph_uPerp_mean, legendEntry, 0.64, 0.68, graph_uPerpFit, graph_uPerpFitErr,     
-		  false, "u_{perp} / GeV", -25., +25., 2.5,
+		  false, false, "u_{perp} / GeV", -25., +25., 2.5,
 		  outputFileName, "uPerp_mean");
   showControlPlot(canvas, 
 		  dummyHistogram, graph_uPerp_rms, legendEntry, 0.21, 0.64, graph_uPerp_rmsFit, graph_uPerp_rmsFitErr, 
-		  false, "rms(u_{perp}) / GeV", 0., 50., 10.,
+		  false, false, "rms(u_{perp}) / GeV", 0., 50., 10.,
 		  outputFileName, "uPerp_rms");
   
   delete canvas;
@@ -410,7 +424,10 @@ int main(int argc, char* argv[])
 
   TGraphAsymmErrors* graph_uParl_mean = new TGraphAsymmErrors(numBins);
   graph_uParl_mean->SetName("graph_uParl_mean");
-  graph_uParl_mean->SetTitle("<u_{parl}> as function of q_{T}");
+  graph_uParl_mean->SetTitle("<u_{parl}> as function of q_{T}");  
+  TGraphAsymmErrors* graph_uParl_div_qT_mean = new TGraphAsymmErrors(numBins);
+  graph_uParl_div_qT_mean->SetName("graph_uParl_div_qT_mean");
+  graph_uParl_div_qT_mean->SetTitle("<u_{parl}>/q_{T} as function of q_{T}");
   TGraphAsymmErrors* graph_uParl_rms  = new TGraphAsymmErrors(numBins);
   graph_uParl_rms->SetName("graph_uParl_rms");
   graph_uParl_rms->SetTitle("rms(u_{perp} - d + k*q_{T}) as function of q_{T}");
@@ -439,6 +456,10 @@ int main(int argc, char* argv[])
     double yErr_uParl_mean = histogram_uParl_proj->GetMeanError();
     graph_uParl_mean->SetPoint(iBin - 1, x, y_uParl_mean);
     graph_uParl_mean->SetPointError(iBin - 1, xErrDown, xErrUp, yErr_uParl_mean, yErr_uParl_mean);
+    if ( x > 0. ) {
+      graph_uParl_div_qT_mean->SetPoint(iBin - 1, x, -y_uParl_mean/x);
+      graph_uParl_div_qT_mean->SetPointError(iBin - 1, xErrDown, xErrUp, yErr_uParl_mean/x, yErr_uParl_mean/x);
+    }
     double y_uParl_rms = histogram_uParl_proj->GetRMS();
     double yErr_uParl_rms = histogram_uParl_proj->GetRMSError();
     graph_uParl_rms->SetPoint(iBin - 1, x, y_uParl_rms);
@@ -499,7 +520,7 @@ int main(int argc, char* argv[])
 
   TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", 50, 0., 500.);
   makeControlPlots(dummyHistogram,
-		   graph_uParl_mean, graph_uParl_rms, graph_uPerp_mean, graph_uPerp_rms, 
+		   graph_uParl_mean, graph_uParl_div_qT_mean, graph_uParl_rms, graph_uPerp_mean, graph_uPerp_rms, 
 		   fitResults, isData, outputFileName);
 
   int numEvents_processed = tree->GetEntries();

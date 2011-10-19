@@ -13,9 +13,9 @@
  *
  * \authors Christian Veelken
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: VertexMultiplicityReweightExtractor.h,v 1.1 2011/04/13 17:05:13 veelken Exp $
+ * $Id: VertexMultiplicityReweightExtractor.h,v 1.2 2011/05/14 10:54:30 veelken Exp $
  *
  */
 
@@ -24,6 +24,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"
 
@@ -42,9 +43,13 @@ class VertexMultiplicityReweightExtractor : public ObjValExtractorBase
   edm::InputTag src_;
   
   TFile* inputFile_;
-  TH1* lut_;
+  TH1* puDist_data_;
 
-  enum { kUndefined, kGenLevel, kRecLevel };
+  edm::LumiReWeighting* genLumiReweight_;
+
+  TH1* recVtxMultiplicityReweight_;
+
+  enum { kUndefined, kGenLevel, kGenLevel3d, kRecLevel };
   int type_;
 };
 

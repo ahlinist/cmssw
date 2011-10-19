@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v3_5'
+version = 'v3_8'
 
 samples = {
     'Data_runs160329to163869' : {
@@ -54,6 +54,12 @@ samples = {
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
+    },
+    'simQCD' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simQCD/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True 
     }
 }
 
@@ -66,7 +72,8 @@ samplesToAnalyze = [
     'simWW',
     'simWZ',
     'simZZ',
-    'simTTplusJets'
+    'simTTplusJets',
+    'simQCD'
 ]
 
 skipExistingPATtuples = True
