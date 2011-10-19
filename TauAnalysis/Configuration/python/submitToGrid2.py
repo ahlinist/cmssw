@@ -30,12 +30,14 @@ copy_data = $copy_data
 storage_element = $storage_element
 storage_path = $storage_path
 user_remote_dir = $user_remote_dir
-publish_data = $publish_data
 
 [GRID]
 $SE_white_list
 $SE_black_list
 ''')
+##publish_data = $publish_data
+##publish_data_name = $publish_data_name
+##dbs_url_for_publication = $dbs_url_for_publication
 
 _CRAB_DEFAULTS = {
     'number_of_jobs' : 150,
@@ -44,9 +46,19 @@ _CRAB_DEFAULTS = {
     'copy_data' : 1,
     'use_server' : 0,
     'scheduler' : 'glite', 
+    #------------------------------------
+    # for storing output of crab job on castor @ CERN
     'storage_element' : 'srm-cms.cern.ch',
     'storage_path' : '/srm/managerv2?SFN=/castor/cern.ch',
     'publish_data' : 0,
+    #------------------------------------
+    #------------------------------------
+    # for publishing output in DBS
+    ##'storage_element' : 'T2_FR_GRIF_LLR',
+    ##'publish_data' : 1,
+    ##'publish_data_name' : 'ElecMuStream',
+    ##'dbs_url_for_publication' : 'https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet', 
+    #------------------------------------
     'lumi_mask' : '',
     'runselection' : ''
 }
