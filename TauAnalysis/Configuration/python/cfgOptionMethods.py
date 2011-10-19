@@ -467,7 +467,7 @@ def applyProcessOptions(process, jobInfo, options):
             option, value, extra_options)
         _METHOD_MAP[option](process, value, **optionsForMethod)
 
-def copyCfgFileAndApplyOptions(inputFile, outputFile, jobInfo, jobOptions, customizations = []):
+def copyCfgFileAndApplyOptions(inputFile, outputFile, jobInfo, jobOptions, customizations = [], doApplyOptions = True):
     # Convert the option objects to pickle strings
     substitutions = {
         'jobInfoPickle' : pickle.dumps(jobInfo),
@@ -489,7 +489,8 @@ applyProcessOptions(process, _JOB_INFO, _JOB_OPTIONS)
     output.write(input.read())
 
     # Add our modifiers at the end
-    output.write(appendage)
+    if doApplyOptions:
+        output.write(appendage)
     output.write("\n")
 
     # Add customization options (if any)
