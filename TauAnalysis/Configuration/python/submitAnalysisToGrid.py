@@ -35,7 +35,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          processName = None,
                          saveFinalEvents = False,
                          outsideCERN = False,
-                         useCastor = True     
+                         useCastor = True,
+			 doApplyCfgOptions = True     
                          ):
     """
     Submit analysis job (event selection, filling of histogram)
@@ -103,11 +104,17 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         jobCustomizations = []
         jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
         jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % output_file)
+        jobCustomizations.append("if hasattr(process, 'patTupleOutputModule'):")
+        jobCustomizations.append("    process.patTupleOutputModule.fileName = '%s'" % output_file)
         jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
         jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
         jobCustomizations.append("if hasattr(process, 'saveZtoMuTau_tauIdEffPlots'):")
         jobCustomizations.append("    process.saveZtoMuTau_tauIdEffPlots.outputFileName = '%s'" % \
                                  ("plots_ZtoMuTau_tauIdEff_%s_%s.root" % (sample, jobId)))
+        jobCustomizations.append("if hasattr(process, 'out'):")
+        jobCustomizations.append("    process.out.fileName = '%s'" % output_file)
+        jobCustomizations.append("if hasattr(process, 'TFileService'):")
+        jobCustomizations.append("    process.TFileService.fileName = 'plots_HiggsToElecMu_%s_%s.root'" % (sample, jobId))
         HLTprocessName = 'HLT'
         if 'hlt' in sample_info.keys():
             HLTprocessName = sample_info['hlt'].getProcessName()
@@ -139,7 +146,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
           enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
           processName = processName,
           saveFinalEvents = saveFinalEvents,
-          customizations = jobCustomizations)
+          customizations = jobCustomizations,
+          doApplyOptions = doApplyCfgOptions)
 
         output_files = []
         if output_file is not None:
@@ -182,6 +190,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             crabOptions['return_data'] = 1
             crabOptions['copy_data'] = 0        
 
-        ##submitToGrid(newConfigFile, jobInfo, crabOptions,
-        ##             create=create, submit=submit, cfgdir=cfgdir)
-        submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
+        submitToGrid(newConfigFile, jobInfo, crabOptions,
+                     create=create, submit=submit, cfgdir=cfgdir)
+        ##submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
