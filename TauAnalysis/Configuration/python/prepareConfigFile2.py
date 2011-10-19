@@ -65,7 +65,7 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
                       # Add optional suffix to end of skim file name
                       saveFinalEventsFileName = None,
                       changeTauId = None,
-                      customizations = []):
+                      customizations = [], doApplyOptions = True):
     """
     Create cfg.py file used as input for cmsRun analysis job
     """
@@ -198,5 +198,5 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     configFilePath = os.path.join(workingDirectory, configFile)
     if not os.path.exists(configFilePath):
         raise ValueError("Failed to find config file %s in current directory !!" % configFile)
-    copyCfgFileAndApplyOptions(configFilePath, newConfigFile, jobInfo, jobOptions, customizations)
+    copyCfgFileAndApplyOptions(configFilePath, newConfigFile, jobInfo, jobOptions, customizations, doApplyOptions)
 
