@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.2 2011/09/09 10:25:37 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.3 2011/09/30 12:30:41 veelken Exp $
  *
  */
 
@@ -35,7 +35,7 @@ class ZllRecoilCorrectionHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory&);
-  void fillHistograms(const reco::CompositeCandidate&, const pat::MET&, size_t, double, double, double, double);
+  void fillHistograms(const reco::CompositeCandidate&, const pat::MET&, size_t, double, double);
   
   /// scale all bin-contents/bin-errors by factor given as function argument
   /// (to account for events lost, due to aborted skimming/crab or PAT-tuple production/lxbatch jobs)
@@ -113,9 +113,6 @@ class ZllRecoilCorrectionHistManager
 
   TH1* histogramVtxMultiplicity_;
   TH1* histogramRhoNeutral_;
-  TH1* histogramRhoChargedHadronNoPileUp_;
-  TH1* histogramRhoNeutralToChargedHadronNoPileUpRatio_;
-  TH1* histogramRhoPFNoPileUp_;
   
   std::vector<TH1*> histograms_;
 };

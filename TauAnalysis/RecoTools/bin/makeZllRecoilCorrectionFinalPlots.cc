@@ -334,6 +334,8 @@ void drawGraphs(const std::string& yAxisTitle, const std::string& outputFileName
     yMax = TMath::Max(yMax, getMaximum(graphMC5));
     ++numGraphs;
   }
+
+  graphData1->SetTitle("");
   
   graphData1->SetMaximum(1.2*yMax);
   graphData1->SetMinimum(0.);
@@ -345,13 +347,13 @@ void drawGraphs(const std::string& yAxisTitle, const std::string& outputFileName
 
   graphData1->SetLineColor(1);
   graphData1->SetMarkerColor(1);
-  graphData1->SetMarkerStyle(24);
+  graphData1->SetMarkerStyle(20);
   graphData1->Draw("ap");
 
   graphMC1->SetLineColor(1);
   graphMC1->SetMarkerColor(1);
   graphMC1->SetMarkerStyle(24);
-  graphMC1->Draw("ap");
+  graphMC1->Draw("p");
 
   double textSize = ( numGraphs <= 8 ) ? 0.045 : 0.035;
   TLegend legend(0.64, 0.89 - textSize*numGraphs, 0.89, 0.89, "", "brNDC"); 
@@ -451,8 +453,8 @@ std::pair<TGraphErrors*, TGraphErrors*> makeGraphs_mean_and_rms(TH2* histogram)
 
     double x = xAxis->GetBinCenter(iBin);
 
-    double mean = histogram_proj->GetMean();
-    double meanErr = histogram_proj->GetMeanError();
+    double mean = TMath::Abs(histogram_proj->GetMean());
+    double meanErr = TMath::Abs(histogram_proj->GetMeanError());
     
     double rms = histogram_proj->GetRMS();
     double rmsErr = histogram_proj->GetRMSError();

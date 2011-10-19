@@ -6,7 +6,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 
 import os
 
-version = 'v3_4'
+version = 'v3_6'
 
 inputFilePath = '/data2/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
@@ -27,7 +27,8 @@ samplesToAnalyze = {
         'allEvents_DBS' : RECO_SAMPLES['Zmumu_powheg']['events_processed'],
         'xSection' : RECO_SAMPLES['Zmumu_powheg']['x_sec'],
         'isMC' : True,
-        'Type' : 'Signal'
+        'Type' : 'Signal',
+        'applyRhoNeutralReweighting' : True
     },
     'simWW' : {
        'samples' : [
@@ -36,7 +37,8 @@ samplesToAnalyze = {
        'allEvents_DBS' : RECO_SAMPLES['WW']['events_processed'],
        'xSection' : RECO_SAMPLES['WW']['x_sec'],
        'isMC' : True,
-       'Type' : 'Background'
+       'Type' : 'Background',
+       'applyRhoNeutralReweighting' : False
     },
     'simWZ' : {
        'samples' : [
@@ -45,7 +47,8 @@ samplesToAnalyze = {
        'allEvents_DBS' : RECO_SAMPLES['WZ']['events_processed'],
        'xSection' : RECO_SAMPLES['WZ']['x_sec'],
        'isMC' : True,
-       'Type' : 'Background'
+       'Type' : 'Background',
+       'applyRhoNeutralReweighting' : False
     },
     'simZZ' : {
        'samples' : [
@@ -54,7 +57,8 @@ samplesToAnalyze = {
        'allEvents_DBS' : RECO_SAMPLES['ZZ']['events_processed'],
        'xSection' : RECO_SAMPLES['ZZ']['x_sec'],
        'isMC' : True,
-       'Type' : 'Background'
+       'Type' : 'Background',
+       'applyRhoNeutralReweighting' : False
     },
     'simTTplusJets' : {
         'samples' : [
@@ -63,7 +67,18 @@ samplesToAnalyze = {
         'allEvents_DBS' : RECO_SAMPLES['TTplusJets_madgraph']['events_processed'],
         'xSection' : RECO_SAMPLES['TTplusJets_madgraph']['x_sec'],
         'isMC' : True,
-        'Type' : 'Background'
+        'Type' : 'Background',
+        'applyRhoNeutralReweighting' : False
+    },
+    'simQCD' : {
+        'samples' : [
+            'simQCD'
+        ],
+        'allEvents_DBS' : RECO_SAMPLES['PPmuXptGt20Mu15']['events_processed'],
+        'xSection' : RECO_SAMPLES['PPmuXptGt20Mu15']['x_sec'],
+        'isMC' : True,
+        'Type' : 'Background',
+        'applyRhoNeutralReweighting' : False
     }
 }
 

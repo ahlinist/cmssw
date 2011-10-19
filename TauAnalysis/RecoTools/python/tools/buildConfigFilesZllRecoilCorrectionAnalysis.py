@@ -62,20 +62,19 @@ def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFile
         srcWeights.extend([ 'vertexMultiplicityReweight' ])
 
     addPUreweight_string = ""
-##    
-## CV: do not use rho_neutral reweighting until difference in rho_neutral distribution
-##     between Zmummu, TTbar and WW/WZ/ZZ is understood and corrected for
-##    
-##    if samplesToAnalyze[sampleName]['isMC']:
-##        addPUreweight_string = \
-##"""
-##    addPUreweight = cms.PSet(
-##        inputFileName = cms.FileInPath('TauAnalysis/RecoTools/data/vertexMultiplicityVsRhoPFNeutralReweight.root'),
-##        meName = cms.string('histoReweight_fitted'),
-##        minPUreweight = cms.double(1.e-1),
-##        maxPUreweight = cms.double(1.e+1)
-##    )
-##"""
+# CV: do not apply rho_neutral reweighting to Monte Carlo samples other than Zmumu 
+#     until difference in rho_neutral distribution between Zmummu, 
+#     TTbar and WW/WZ/ZZ is understood and corrected for
+    if samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['applyRhoNeutralReweighting']:
+        addPUreweight_string = \
+"""
+    addPUreweight = cms.PSet(
+        inputFileName = cms.FileInPath('TauAnalysis/RecoTools/data/vertexMultiplicityVsRhoPFNeutralReweight.root'),
+        meName = cms.string('histoReweight_fitted'),
+        minPUreweight = cms.double(1.e-1),
+        maxPUreweight = cms.double(1.e+1)
+    )
+"""
 
     config = \
 """
@@ -260,20 +259,19 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName,
         xSection = samplesToAnalyze[sampleName]['xSection']
 
     addPUreweight_string = ""
-##    
-## CV: do not use rho_neutral reweighting until difference in rho_neutral distribution
-##     between Zmummu, TTbar and WW/WZ/ZZ is understood and corrected for
-##       
-##    if samplesToAnalyze[sampleName]['isMC']:
-##        addPUreweight_string = \
-##"""
-##    addPUreweight = cms.PSet(
-##        inputFileName = cms.FileInPath('TauAnalysis/RecoTools/data/vertexMultiplicityVsRhoPFNeutralReweight.root'),
-##        meName = cms.string('histoReweight_fitted'),
-##        minPUreweight = cms.double(1.e-1),
-##        maxPUreweight = cms.double(1.e+1)
-##    ),
-##"""
+# CV: do not apply rho_neutral reweighting to Monte Carlo samples other than Zmumu
+#     until difference in rho_neutral distribution between Zmummu,
+#     TTbar and WW/WZ/ZZ is understood and corrected for
+    if samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['applyRhoNeutralReweighting']:
+        addPUreweight_string = \
+"""
+    addPUreweight = cms.PSet(
+        inputFileName = cms.FileInPath('TauAnalysis/RecoTools/data/vertexMultiplicityVsRhoPFNeutralReweight.root'),
+        meName = cms.string('histoReweight_fitted'),
+        minPUreweight = cms.double(1.e-1),
+        maxPUreweight = cms.double(1.e+1)
+    ),
+"""
 
     selEventsFileName = 'selEvents_%s_%s.txt' % (sampleName, metOptionName)
         
@@ -310,8 +308,6 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
     srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
-    srcRhoChargedHadronNoPileUp = cms.InputTag('kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting', 'rho'),
-    srcRhoPFNoPileUp = cms.InputTag('kt6PFNoPileUpJetsForVtxMultReweighting', 'rho')
 %s
 
     selEventsFileName = cms.string('%s'),
@@ -422,8 +418,20 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
             xAxisTitle = cms.string('rec. Vertex Multiplicity')
         ),
         cms.PSet(
-            meName = cms.string('rho'),
-            xAxisTitle = cms.string('#rho / GeV')
+            meName = cms.string('rhoNeutral'),
+            xAxisTitle = cms.string('#rho_{h0} / GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('rhoChargedHadronNoPileUp'),
+            xAxisTitle = cms.string('#rho_{h#pm} / GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('rhoNeutralToChargedHadronNoPileUpRatio'),
+            xAxisTitle = cms.string('#rho_{neutral}/#rho_{h#pm}')
+        ),
+        cms.PSet(
+            meName = cms.string('rhoPFNoPileUp'),
+            xAxisTitle = cms.string('#rho_{noPU} / GeV')
         )
     ),
 

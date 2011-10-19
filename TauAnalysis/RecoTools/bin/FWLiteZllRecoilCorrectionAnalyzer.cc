@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.5 2011/09/09 10:25:36 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.6 2011/09/30 12:30:41 veelken Exp $
  *
  */
 
@@ -87,9 +87,7 @@ int main(int argc, char* argv[])
   vInputTag srcWeights = cfgZllRecoilCorrectionAnalyzer.getParameter<vInputTag>("srcWeights");
 
   edm::InputTag srcVertices = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcVertices");
-  edm::InputTag srcRhoNeutral = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFNeutralRho");
-  edm::InputTag srcRhoChargedHadronNoPileUp = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFNeutralRho");
-  edm::InputTag srcRhoPFNoPileUp = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcRhoPFNoPileUp");
+  edm::InputTag srcRhoNeutral = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcRhoNeutral");
 
   edm::InputTag srcEventCounter = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcEventCounter");
 
@@ -255,14 +253,6 @@ int main(int argc, char* argv[])
       evt.getByLabel(srcRhoNeutral, rhoNeutral_handle);
       double rhoNeutral = (*rhoNeutral_handle);
 
-      edm::Handle<double> rhoChargedHadronNoPileUp_handle;
-      evt.getByLabel(srcRhoChargedHadronNoPileUp, rhoChargedHadronNoPileUp_handle);
-      double rhoChargedHadronNoPileUp = (*rhoChargedHadronNoPileUp_handle);
-
-      edm::Handle<double> rhoPFNoPileUp_handle;
-      evt.getByLabel(srcRhoPFNoPileUp, rhoPFNoPileUp_handle);
-      double rhoPFNoPileUp = (*rhoPFNoPileUp_handle);
-
       double addPUreweight = 1.0;
       if ( addPUreweightHistogram ) {
 	int bin = addPUreweightHistogram->FindBin(vtxMultiplicity, rhoNeutral);
@@ -300,15 +290,9 @@ int main(int argc, char* argv[])
   
       const pat::MET& rawMEt = (*met->begin());
 
-      histogramsBeforeGenPUreweight->fillHistograms(
-	*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 
-	rhoChargedHadronNoPileUp, rhoPFNoPileUp, 1.0);
-      histogramsBeforeAddPUreweight->fillHistograms(
-        *bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 
-	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight);
-      histogramsBeforeZllRecoilCorr->fillHistograms(
-        *bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 
-	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight*addPUreweight);
+      histogramsBeforeGenPUreweight->fillHistograms(*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 1.0);
+      histogramsBeforeAddPUreweight->fillHistograms(*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight);
+      histogramsBeforeZllRecoilCorr->fillHistograms(*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
 
       //if ( rawMEt.pt() > 80. && rawMEt.pt() < 100. ) {
       if ( bestZllCandidate->pt() > 150. ) {
@@ -326,9 +310,7 @@ int main(int argc, char* argv[])
 
 	mcToDataCorrMEt = corrAlgorithm->buildZllCorrectedMEt(rawMEt, rawMEt.genMET()->p4(), bestZllCandidate->p4());
       }
-      histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
-	*bestZllCandidate, mcToDataCorrMEt, vtxMultiplicity, rhoNeutral, 
-	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight*addPUreweight);
+      histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(*bestZllCandidate, mcToDataCorrMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
 
       pat::MET absCalibMEt(rawMEt);
       if ( ZllRecoilCorrParameter_data ) {
@@ -340,9 +322,7 @@ int main(int argc, char* argv[])
 	double absCalibMEtPt = TMath::Sqrt(absCalibMEtPx*absCalibMEtPx + absCalibMEtPy*absCalibMEtPy);
 	absCalibMEt.setP4(math::XYZTLorentzVector(absCalibMEtPx, absCalibMEtPy, 0., absCalibMEtPt));
       }
-      histogramsAfterZllRecoilAbsCalib->fillHistograms(
-	*bestZllCandidate, absCalibMEt, vtxMultiplicity, rhoNeutral, 
-	rhoChargedHadronNoPileUp, rhoPFNoPileUp, genPUreweight*addPUreweight);
+      histogramsAfterZllRecoilAbsCalib->fillHistograms(*bestZllCandidate, absCalibMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
     }
 
 //--- close input file

@@ -15,12 +15,12 @@
 enum { kInnerTrack, kGlobalTrack };
 enum { kBeamSpot, kVertex };
 
-//--- define default muon selection criteria used by WW cross-section analysis,
-//    as documented in CMS AN-10/344
+//--- define default muon selection criteria used by Higgs --> tau+ tau- analysis,
+//    as documented in CMS AN-11/390
 //   (to be used in case selection criteria are not specified explicitely)
-bool     defaultApplyGlobalMuonPromptTight_ = true;
-bool     defaultApplyAllArbitrated_         = true;
-double   defaultMaxIPxy_                    =  0.02; // cm
+bool     defaultApplyGlobalMuonPromptTight_ = false;
+bool     defaultApplyAllArbitrated_         = false;
+double   defaultMaxIPxy_                    =  0.045; // cm
 double   defaultMaxIPz_                     =  1.e+3;
 int      defaultIPtrackType_                = kInnerTrack;
 int      defaultIPrefType_                  = kVertex;
@@ -28,8 +28,8 @@ double   defaultMaxChi2red_                 = 10.;   // chi^2/nDoF
 double   defaultMaxDptOverPt_               =  0.10;
 unsigned defaultMinTrackerHits_             = 10;
 unsigned defaultMinPixelHits_               =  1; 
-unsigned defaultMinMuonStations_            =  2;
-unsigned defaultMinMatchedSegments_         =  1;
+unsigned defaultMinMuonStations_            =  1;
+unsigned defaultMinMatchedSegments_         =  2;
 
 template<typename T>
 T getConfigurationParameter(const edm::ParameterSet& cfg, const std::string& cfgParName, T* cfgParDefaultValue = 0)

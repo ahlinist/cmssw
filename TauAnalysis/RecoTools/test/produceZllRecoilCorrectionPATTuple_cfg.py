@@ -53,22 +53,23 @@ else:
 # compute neutral particle density for out-of-time pile-up reweighting
 
 process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
-#process.selectedPrimaryVertexQuality.src = cms.InputTag('offlinePrimaryVertices')
-#process.selectedPrimaryVertexQuality.cut = cms.string("isValid & ndof >= 4")
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
 
-##process.load("CommonTools/ParticleFlow/pfNoPileUp_cff")
-process.kt6PFNoPileUpJetsForVtxMultReweighting = process.kt6PFNeutralJetsForVtxMultReweighting.clone(
-    src = cms.InputTag('pfNoPileUp')
+process.pfChargedHadronPileUpCands = process.pfChargedHadronNoPileUpCands.clone(
+    src = cms.InputTag('pfPileUp')
 )
+
+process.kt6PFChargedHadronPileUpJetsForVtxMultReweighting = process.kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting.clone(
+    src = cms.InputTag('pfChargedHadronPileUpCands')
+)    
 
 process.prePatProductionSequence = cms.Sequence()
 process.prePatProductionSequence += process.selectedPrimaryVertexQuality
 process.prePatProductionSequence += process.selectedPrimaryVertexPosition
 process.prePatProductionSequence += process.produceVertexMultiplicityVsRhoPFNeutralReweights
-##process.prePatProductionSequence += process.pfNoPileUpSequence
-process.prePatProductionSequence += process.kt6PFNoPileUpJetsForVtxMultReweighting
+process.prePatProductionSequence += process.pfChargedHadronPileUpCands
+process.prePatProductionSequence += process.kt6PFChargedHadronPileUpJetsForVtxMultReweighting
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -81,8 +82,10 @@ else:
     pfMEtCorrectorL2L3 = "ak5PFL1FastL2L3Residual"
 
 process.load("JetMETCorrections/Type1MET/pfMETCorrections_cff")
+process.pfJetMETcorr.type1JetPtThreshold = cms.double(15.0)
 process.pfJetMETcorr.offsetCorrLabel = cms.string("ak5PFL1Fastjet")
 process.pfJetMETcorr.jetCorrLabel = cms.string(pfMEtCorrectorL2L3)
+process.pfType1p2CorrectedMet.type2CorrParameter.A = cms.double(0.8)
 process.prePatProductionSequence += process.producePFMETCorrections
 #--------------------------------------------------------------------------------
 
@@ -246,9 +249,9 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_smearedPatPFMETsTypeIcorrected_*_*',                                            
             'keep *_patPFMETsTypeIpIIcorrected_*_*',
             'keep *_smearedPatPFMETsTypeIpIIcorrected_*_*',                                            
-            'keep *_kt6PFNoPileUpJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
-            'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*'                            
+            'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*',
+            'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*'                                            
         )
     ),
     fileName = cms.untracked.string("ZllRecoilCorrectionPATtuple.root")
@@ -269,18 +272,6 @@ if isMC:
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.producePUreweightHistogramsKt6PFNoPileUpJets = cms.EDAnalyzer("PUreweightHistogramProducer",
-    srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),                                                 
-    srcRho = cms.InputTag('kt6PFNoPileUpJetsForVtxMultReweighting', 'rho'),
-    rhoMax = cms.double(20.)                                                                
-)
-process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNoPileUpJets = process.producePUreweightHistogramsKt6PFNoPileUpJets.clone(
-    srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt5')
-)
-process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNoPileUpJets = process.producePUreweightHistogramsKt6PFNoPileUpJets.clone(
-    srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt10')
-)
-
 process.producePUreweightHistogramsKt6PFNeutralJets = cms.EDAnalyzer("PUreweightHistogramProducer",
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),                                                 
     srcRho = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
@@ -293,21 +284,37 @@ process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets = process.prod
     srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt10')
 )
 
-if isMC:
-    setattr(process.producePUreweightHistogramsKt6PFNoPileUpJets,               "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNoPileUpJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNoPileUpJets, "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsKt6PFNeutralJets,                "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets,   "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+process.rhoNeutralAnalyzer = cms.EDAnalyzer("RhoNeutralCorrAnalyzer",
+    srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
+    srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),                             
+    srcRhoChargedHadronsNoPileUp = cms.InputTag('kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting', 'rho'),
+    srcRhoChargedHadronsPileUp = cms.InputTag('kt6PFChargedHadronPileUpJetsForVtxMultReweighting', 'rho'),
+    srcWeights = cms.VInputTag()
+)
 
 process.produceAndSavePUreweightHistograms = cms.Sequence()
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNoPileUpJets
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNoPileUpJets     
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNoPileUpJets
 process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets
 process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets     
 process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets
+process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer
+
+if isMC:
+    setattr(process.producePUreweightHistogramsKt6PFNeutralJets,               "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets, "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    
+    setattr(process.rhoNeutralAnalyzer, "srcGenPileUp", cms.InputTag('addPileupInfo'))
+    setattr(process.rhoNeutralAnalyzer, "srcWeights", cms.VInputTag('vertexMultiplicityReweight'))
+
+    process.vertexMultiplicityReweight3d = process.vertexMultiplicityReweight.clone(
+        type = cms.string("gen3d")
+    )
+    process.produceAndSavePUreweightHistograms += process.vertexMultiplicityReweight3d
+    
+    process.rhoNeutralAnalyzer3d = process.rhoNeutralAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d')
+    )
+    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer3d
 
 process.savePUreweightHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('ZllRecoilCorrectionPUreweightHistograms.root')

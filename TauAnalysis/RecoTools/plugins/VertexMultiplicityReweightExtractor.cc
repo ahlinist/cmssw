@@ -15,37 +15,44 @@
 // CV: code to computed genPileUp reweights
 //     copied & pasted from SimGeneral/MixingModule/python/mix_E7TeV_FlatDist10_2011EarlyData_inTimeOnly_cfi.py
 //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupReweighting
-std::vector<double> generate_flat10_weights(TH1D* data_npu_estimated)
+//    (extended up to 36 pile-up interactions by just adding zeros at the end)
+namespace 
 {
-  const double npu_probs[25] = {
-    0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584,
-    0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584 /* <-- 10*/,
-    0.0630151648, 0.0526654164, 0.0402754482, 0.0292988928, 0.0194384503, 0.0122016783, 0.007207042, 0.004003637, 0.0020278322,
-    0.0010739954, 0.0004595759, 0.0002229748, 0.0001028162, 4.58337152809607E-05 /* <-- 24 */
-  };
-
-  std::vector<double> result(25);
-  double s = 0.0;
-  for ( int npu = 0; npu < 25; ++npu ) {
-    double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));                              
-    result[npu] = npu_estimated / npu_probs[npu];
-    s += npu_estimated;
+  std::vector<float> gen_pileup_flat10_summer11mc()
+  {
+    const int gen_pu_max = 36;
+    const double npu_probs[gen_pu_max] = {
+      0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584,
+      0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584, 0.0698146584 /* <-- 10*/,
+      0.0630151648, 0.0526654164, 0.0402754482, 0.0292988928, 0.0194384503, 0.0122016783, 0.007207042, 0.004003637, 0.0020278322,
+      0.0010739954, 0.0004595759, 0.0002229748, 0.0001028162, 4.58337152809607E-05, /* <-- 24 */
+      0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000, 
+      0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000,
+      0.0000000000
+    };
+    std::vector<float> retVal(gen_pu_max);
+    for ( int i = 0; i < gen_pu_max; ++i ) {
+      retVal[i] = npu_probs[i];
+    }
+    return retVal;
   }
 
-  // normalize weights such that the total sum of weights over thw whole sample is 1.0, 
-  // i.e. sum_i  result[i] * npu_probs[i] should be 1.0 (!)
-  for ( int npu = 0; npu < 25; ++npu ) {
-    result[npu] /= s;
+  int getBin(TAxis* axis, double x)
+  {
+    int bin = axis->FindFixBin(x);
+    int nBins = axis->GetNbins();
+    if ( bin < 1     ) bin = 1;
+    if ( bin > nBins ) bin = nBins;
+    return bin;
   }
-  
-  return result;
 }
 //-------------------------------------------------------------------------------
 
 VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const edm::ParameterSet& cfg)
   : src_(cfg.getParameter<edm::InputTag>("src")),
     inputFile_(0),
-    lut_(0),
+    genLumiReweight_(0),
+    recVtxMultiplicityReweight_(0),
     type_(kUndefined)
 {
   edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileName");
@@ -54,72 +61,80 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     << " Failed to find File = " << inputFileName << " !!\n";
 
   std::string type_string = cfg.getParameter<std::string>("type");
-  if      ( type_string == "gen" ) type_ = kGenLevel;
-  else if ( type_string == "rec" ) type_ = kRecLevel;
+  if      ( type_string == "gen"   ) type_ = kGenLevel;
+  else if ( type_string == "gen3d" ) type_ = kGenLevel3d;
+  else if ( type_string == "rec"   ) type_ = kRecLevel;
   else throw cms::Exception("VertexMultiplicityReweightExtractor") 
     << " Invalid Configuration Parameter 'type' = " << type_string << " !!\n";
 
-  if ( type_ == kGenLevel ) {
+  if ( type_ == kGenLevel || type_ == kGenLevel3d ) {
     inputFile_ = new TFile(inputFileName.fullPath().data());
-    TH1D* data_npu_estimated = dynamic_cast<TH1D*>(inputFile_->Get(lutName.data()));
-    if ( !data_npu_estimated ) throw cms::Exception("VertexMultiplicityReweightExtractor") 
-      << " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
-    std::vector<double> flat10_weights = generate_flat10_weights(data_npu_estimated);
-    //std::cout << "flat10_weights = " << format_vdouble(flat10_weights) << std::endl;
-    lut_ = dynamic_cast<TH1*>(data_npu_estimated->Clone(TString(lutName.data()).Append("_flat10_weights").Data()));
-    lut_->Reset();
-    size_t maxGenPileUp = flat10_weights.size();
-    for ( size_t iGenPileUp = 0; iGenPileUp < maxGenPileUp; ++iGenPileUp ) {
-      int binIndex = lut_->FindBin(iGenPileUp);
-      lut_->SetBinContent(binIndex, flat10_weights[iGenPileUp]);
+    puDist_data_ = dynamic_cast<TH1*>(inputFile_->Get(lutName.data()));
+    if ( !puDist_data_ ) 
+      throw cms::Exception("VertexMultiplicityReweightExtractor") 
+	<< " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
+    int exp_pu_max = puDist_data_->GetNbinsX();
+    std::vector<float> exp_pileup_data(exp_pu_max);
+    for ( int i = 0; i < exp_pu_max; ++i ) {
+      exp_pileup_data[i] = puDist_data_->GetBinContent(i + 1);
     }
+    
+    std::vector<float> gen_pileup_mc = gen_pileup_flat10_summer11mc();
+    if ( exp_pileup_data.size() != gen_pileup_mc.size() ) 
+      throw cms::Exception("VertexMultiplicityReweightExtractor") 
+	<< " LUTs for data = " << exp_pileup_data.size() << " and MC = " << gen_pileup_mc.size() << " are not compatible !!\n";
+    genLumiReweight_ = new edm::LumiReWeighting(gen_pileup_mc, exp_pileup_data);
+
+    if ( type_ == kGenLevel3d ) genLumiReweight_->weight3D_init();
   } else {
     inputFile_ = new TFile(inputFileName.fullPath().data());
-    lut_ = dynamic_cast<TH1*>(inputFile_->Get(lutName.data()));
-    if ( !lut_ ) throw cms::Exception("VertexMultiplicityReweightExtractor") 
-      << " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
+    recVtxMultiplicityReweight_ = dynamic_cast<TH1*>(inputFile_->Get(lutName.data()));
+    if ( !recVtxMultiplicityReweight_ ) 
+      throw cms::Exception("VertexMultiplicityReweightExtractor") 
+	<< " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
   }
 }
 
 VertexMultiplicityReweightExtractor::~VertexMultiplicityReweightExtractor() 
 {
   delete inputFile_;
-}
-
-int getBin(TAxis* axis, double x)
-{
-  int bin = axis->FindFixBin(x);
-  int nBins = axis->GetNbins();
-  if ( bin < 1     ) bin = 1;
-  if ( bin > nBins ) bin = nBins;
-  return bin;
+  delete genLumiReweight_;
+  delete recVtxMultiplicityReweight_;
 }
 
 double VertexMultiplicityReweightExtractor::operator()(const edm::Event& evt) const
 {
-  //std::cout << "<VertexMultiplicityReweightExtractor::operator()>:" << std::endl;
-
-  double numPileUp = -1.;
-  if ( type_ == kGenLevel ) {
+  double weight = 1.;
+  
+  if ( type_ == kGenLevel || type_ == kGenLevel3d ) {
     typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
     edm::Handle<PileupSummaryInfoCollection> genPileUpInfos;
     evt.getByLabel(src_, genPileUpInfos);
+
+    int numPileUp_inTime     = -1.;
+    int numPileUp_bxPrevious = -1.;
+    int numPileUp_bxNext     = -1.;
     for ( PileupSummaryInfoCollection::const_iterator genPileUpInfo = genPileUpInfos->begin();
 	  genPileUpInfo != genPileUpInfos->end(); ++genPileUpInfo ) {
       // CV: in-time PU is stored in getBunchCrossing = 0, 
       //    cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupInformation
-      if ( genPileUpInfo->getBunchCrossing() == 0 ) numPileUp = genPileUpInfo->getPU_NumInteractions();
+      int bx = genPileUpInfo->getBunchCrossing();
+      if      ( bx ==  0 ) numPileUp_inTime     = genPileUpInfo->getPU_NumInteractions();
+      else if ( bx == -1 ) numPileUp_bxPrevious = genPileUpInfo->getPU_NumInteractions();
+      else if ( bx == +1 ) numPileUp_bxNext     = genPileUpInfo->getPU_NumInteractions();
     }
-    if ( numPileUp == -1. ) throw cms::Exception("VertexMultiplicityReweightExtractor") 
-      << " Failed to find PileupSummaryInfo object for in-time Pile-up !!\n";
+    if ( numPileUp_bxPrevious == -1 || numPileUp_inTime == -1 || numPileUp_bxNext == -1 ) 
+      throw cms::Exception("VertexMultiplicityReweightExtractor") 
+	<< " Failed to find PileupSummaryInfo object for in-time Pile-up !!\n";
+    if      ( type_ == kGenLevel   ) weight = genLumiReweight_->weight(numPileUp_inTime);
+    else if ( type_ == kGenLevel3d ) weight = genLumiReweight_->weight3D(numPileUp_bxPrevious, numPileUp_inTime, numPileUp_bxNext);
+    else assert(0);
   } else if ( type_ == kRecLevel ) {
     edm::Handle<reco::VertexCollection> vertices;
     evt.getByLabel(src_, vertices);
-    numPileUp = vertices->size();
-  } else assert(0);
-  
-  int bin = getBin(lut_->GetXaxis(), numPileUp);
-  double weight = lut_->GetBinContent(bin);
+    int binIdx = getBin(recVtxMultiplicityReweight_->GetXaxis(), vertices->size());
+    weight = recVtxMultiplicityReweight_->GetBinContent(binIdx);
+  }
 
   //std::cout << " numPileUp = " << numPileUp << ": weight = " << weight << std::endl;
 
