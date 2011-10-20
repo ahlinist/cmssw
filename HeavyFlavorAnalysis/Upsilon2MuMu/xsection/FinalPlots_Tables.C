@@ -447,6 +447,120 @@ void XSSystTotPos_3S(){
   
 }
 
+void XSSystPol_1S(){
+
+  TFile *f = new TFile("XSection_1Srho_CSMi.root");
+  TH1D *S1;
+  S1 = (TH1D*)gFile->Get("S1YieldPt");
+  TFile *f = new TFile("XSection_1Srho_CSPl.root");
+  TH1D *S2;
+  S2 = (TH1D*)gFile->Get("S1YieldPt");
+  TFile *f = new TFile("XSection_1Srho_HelMi.root");
+  TH1D *S3;
+  S3 = (TH1D*)gFile->Get("S1YieldPt");
+  TFile *f = new TFile("XSection_1Srho_HelPl.root");
+  TH1D *S4;
+  S4 = (TH1D*)gFile->Get("S1YieldPt");  
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TH1D *S5;
+  S5 = (TH1D*)gFile->Get("S1YieldPt");    
+    
+  // Table for Systmetical Uncertainty from Polarization
+  double csmi(0.), cspl(0.), helmi(0.), helpl(0.);
+  ofstream OUT("Pol1S.tex");
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- Polarization" << endl;
+  for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
+    csmi = (S1->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    cspl = (S2->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    helmi = (S3->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    helpl = (S4->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);    
+    OUT << Form("\\vdef{%iS_csmi%i} {\\ensuremath{ {%.3f } } }",1, x, csmi ) << endl;
+    OUT << Form("\\vdef{%iS_cspl%i} {\\ensuremath{ {%.3f } } }",1, x, cspl ) << endl;
+    OUT << Form("\\vdef{%iS_helmi%i} {\\ensuremath{ {%.3f } } }",1, x, helmi ) << endl;
+    OUT << Form("\\vdef{%iS_helpl%i} {\\ensuremath{ {%.3f } } }",1, x, helpl ) << endl;
+  }
+  
+  OUT.close();
+  
+}
+
+void XSSystPol_2S(){
+
+  TFile *f = new TFile("XSection_2Srho_CSMi.root");
+  TH1D *S1;
+  S1 = (TH1D*)gFile->Get("S2YieldPt");
+  TFile *f = new TFile("XSection_2Srho_CSPl.root");
+  TH1D *S2;
+  S2 = (TH1D*)gFile->Get("S2YieldPt");
+  TFile *f = new TFile("XSection_2Srho_HelMi.root");
+  TH1D *S3;
+  S3 = (TH1D*)gFile->Get("S2YieldPt");
+  TFile *f = new TFile("XSection_2Srho_HelPl.root");
+  TH1D *S4;
+  S4 = (TH1D*)gFile->Get("S2YieldPt");  
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  TH1D *S5;
+  S5 = (TH1D*)gFile->Get("S2YieldPt");    
+    
+  // Table for Systmetical Uncertainty from Polarization
+  double csmi(0.), cspl(0.), helmi(0.), helpl(0.);
+  ofstream OUT("Pol2S.tex");
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- Polarization" << endl;
+  for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
+    csmi = (S1->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    cspl = (S2->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    helmi = (S3->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    helpl = (S4->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);    
+    OUT << Form("\\vdef{%iS_csmi%i} {\\ensuremath{ {%.3f } } }",2, x, csmi ) << endl;
+    OUT << Form("\\vdef{%iS_cspl%i} {\\ensuremath{ {%.3f } } }",2, x, cspl ) << endl;
+    OUT << Form("\\vdef{%iS_helmi%i} {\\ensuremath{ {%.3f } } }",2, x, helmi ) << endl;
+    OUT << Form("\\vdef{%iS_helpl%i} {\\ensuremath{ {%.3f } } }",2, x, helpl ) << endl;
+  }
+  
+  OUT.close();
+  
+}
+
+void XSSystPol_3S(){
+
+  TFile *f = new TFile("XSection_3Srho_CSMi.root");
+  TH1D *S1;
+  S1 = (TH1D*)gFile->Get("S3YieldPt");
+  TFile *f = new TFile("XSection_3Srho_CSPl.root");
+  TH1D *S2;
+  S2 = (TH1D*)gFile->Get("S3YieldPt");
+  TFile *f = new TFile("XSection_3Srho_HelMi.root");
+  TH1D *S3;
+  S3 = (TH1D*)gFile->Get("S3YieldPt");
+  TFile *f = new TFile("XSection_3Srho_HelPl.root");
+  TH1D *S4;
+  S4 = (TH1D*)gFile->Get("S3YieldPt");  
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  TH1D *S5;
+  S5 = (TH1D*)gFile->Get("S3YieldPt");    
+    
+  // Table for Systmetical Uncertainty from Polarization
+  double csmi(0.), cspl(0.), helmi(0.), helpl(0.);
+  ofstream OUT("Pol3S.tex");
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- Polarization" << endl;
+  for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
+    csmi = (S1->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    cspl = (S2->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    helmi = (S3->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);
+    helpl = (S4->GetBinContent(x) - S5->GetBinContent(x))/S5->GetBinContent(x);    
+    OUT << Form("\\vdef{%iS_csmi%i} {\\ensuremath{ {%.3f } } }",3, x, csmi ) << endl;
+    OUT << Form("\\vdef{%iS_cspl%i} {\\ensuremath{ {%.3f } } }",3, x, cspl ) << endl;
+    OUT << Form("\\vdef{%iS_helmi%i} {\\ensuremath{ {%.3f } } }",3, x, helmi ) << endl;
+    OUT << Form("\\vdef{%iS_helpl%i} {\\ensuremath{ {%.3f } } }",3, x, helpl ) << endl;
+  }
+  
+  OUT.close();
+  
+}
+
 void Overlay(){
   
   gStyle->SetOptStat(00000000000);
