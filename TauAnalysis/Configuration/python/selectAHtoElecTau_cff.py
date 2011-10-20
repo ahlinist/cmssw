@@ -55,25 +55,25 @@ cfgDiTauCandidateForAHtoElecTauNonZeroChargeCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-# central jet veto/b-jet candidate selection
-cfgCentralJetEt20bTagVeto = cms.PSet(
-    pluginName = cms.string('centralJetEt20bTagVeto'),
+# jet veto/b-jet candidate selection
+cfgJetEtCut = cms.PSet(
+    pluginName = cms.string('jetEtCut'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoElecTauJetTagCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoElecTauJetTagIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    maxNumber = cms.uint32(1)
+)
+cfgBtagVeto = cms.PSet(
+    pluginName = cms.string('jetBtagVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
     src_cumulative = cms.InputTag('selectedPatJetsForAHtoElecTauBtagCumulative'),
     src_individual = cms.InputTag('selectedPatJetsForAHtoElecTauBtagIndividual'),
     systematics = cms.vstring(jetSystematics.keys()),
     maxNumber = cms.uint32(0)
 )
-cfgCentralJetEt20Cut = cms.PSet(
-    pluginName = cms.string('centralJetEt20Cut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative'),
-    src_individual = cms.InputTag('selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoIndividual'),
-    systematics = cms.vstring(jetSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
-cfgCentralJetEt20bTagCut = cms.PSet(
-    pluginName = cms.string('centralJetEt20bTagCut'),
+cfgBtagCut = cms.PSet(
+    pluginName = cms.string('jetBtagCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatJetsForAHtoElecTauBtagCumulative'),
     src_individual = cms.InputTag('selectedPatJetsForAHtoElecTauBtagIndividual'),
@@ -107,9 +107,9 @@ ahToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertexQualityForElecTau,
       cfgPrimaryEventVertexPositionForElecTau,
 	  cfgDiElecPairZeeHypothesisVetoByLooseIsolation,
-	  cfgCentralJetEt20bTagVeto,
-	  cfgCentralJetEt20Cut,
-	  cfgCentralJetEt20bTagCut,
+	  cfgJetEtCut,
+	  cfgBtagVeto,
+	  cfgBtagCut,
       cfgDiTauCandidateForAHtoElecTauZeroChargeCut ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
@@ -141,8 +141,8 @@ isRecAHtoElecTau = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
-isRecAHtoElecTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
-    pluginName = cms.string('isRecAHtoElecTauCentralJetBtag'),
+isRecAHtoElecTauBtag = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoElecTauBtag'),
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
@@ -151,12 +151,12 @@ isRecAHtoElecTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoElecTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolation'),
-        cms.InputTag('centralJetEt20bTagCut', 'cumulative')
+        cms.InputTag('jetBtagCut', 'cumulative')
     )
 )
 
-isRecAHtoElecTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
-    pluginName = cms.string('isRecAHtoElecTauCentralJetVeto'),
+isRecAHtoElecTauBtagVeto = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoElecTauBtagVeto'),
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
@@ -165,13 +165,13 @@ isRecAHtoElecTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoElecTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolation'),
-        cms.InputTag('centralJetEt20bTagVeto', 'cumulative')
+        cms.InputTag('jetBtagVeto', 'cumulative')
     )
 )
 
 selectAHtoElecTauEvents = cms.Sequence(
 	produceEventSelFlagsAHtoElecTau
-	* isRecAHtoElecTauCentralJetVeto
-	* isRecAHtoElecTauCentralJetBtag
+	* isRecAHtoElecTauBtagVeto
+	* isRecAHtoElecTauBtag
 	* isRecAHtoElecTau
 )
