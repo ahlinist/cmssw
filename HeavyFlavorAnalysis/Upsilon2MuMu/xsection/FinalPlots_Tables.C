@@ -31,23 +31,31 @@ void XSSystTot_1S(){
   S8 = (TH1D*)gFile->Get("S1YieldPt");
   
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
+  double s1_(0.), s2_(0.), e5_(0.);
   double Stat[10];
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
-    s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Trig
-    s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Muid
+    s1 += S1->GetBinContent(i)*S1->GetBinContent(i); ///Muid
+    s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
-    cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << endl;
+    s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
+    s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //sig
+    s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
+    s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
+    s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
+    cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
+    e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     Stat[i]=S5->GetBinError(i);
     s5 += S5->GetBinContent(i)*S5->GetBinWidth(i);
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
+    s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
-    S5->SetBinError(i,err5);
-    s1=0;					   
+    S5->SetBinError(i,err5); // only one side -- needs to be edited
+    s1=0; s1_=0;					   
   }
     
-  cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" <<  endl;
+  cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
   TFile *f = new TFile("Final1S.root", "RECREATE");
   S5->Write();
   
@@ -116,24 +124,32 @@ void XSSystTot_2S(){
   S9 = (TH1D*)gFile->Get("S2YieldPt");  
   
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
+  double s1_(0.), s2_(0.), e5_(0.);
   double Stat[10];
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
-    s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Trig
-    s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Muid
+    s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Muid
+    s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1 += S9->GetBinContent(i)*S9->GetBinContent(i); //rho
-    cout << " dSigma(Y(2S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << endl;
+    s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
+    s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
+    s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig    
+    s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho  
+    cout << " dSigma(Y(2S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) <<  " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
+    e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     Stat[i]=S5->GetBinError(i);
     s5 += S5->GetBinContent(i)*S5->GetBinWidth(i);
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
+    s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     S5->SetBinError(i,err5);
-    s1=0;					   
+    s1=0;s1_=0;					   
   }
     
-  cout << " Y(2S) 2Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" <<  endl;
+  cout << " Y(2S) 2Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")" <<  endl;
   TFile *f = new TFile("Final2S.root", "RECREATE");
   S5->Write();
   
@@ -203,24 +219,32 @@ void XSSystTot_3S(){
   S8 = (TH1D*)gFile->Get("S3YieldPt");
   
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
+  double s1_(0.), s2_(0.), e5_(0.);
   double Stat[10];
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
-    s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Trig
-    s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Muid
+    s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Muid
+    s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1 += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << endl;
+    s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
+    s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
+    s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
+    s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
+    s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho    
+    cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
+    e5_ += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     Stat[i]=S5->GetBinError(i);
     s5 += S5->GetBinContent(i)*S5->GetBinWidth(i);
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
+    s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     S5->SetBinError(i,err5);
-    s1=0;					   
+    s1=0;s1_=0;					   
   }
     
-  cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" <<  endl;
+  cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
   TFile *f = new TFile("Final3S.root", "RECREATE");
   S5->Write();
   
