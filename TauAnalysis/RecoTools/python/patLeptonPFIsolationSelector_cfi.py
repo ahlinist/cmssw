@@ -51,7 +51,7 @@ patMuonPFIsolationSelector = cms.PSet(
 
 patElectronPFIsolationSelector = cms.PSet(
     
-    pfCandidateSource = cms.InputTag('particleFlow'),
+    pfCandidateSource = cms.InputTag('pfNoPileUp'),
 
     vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
     beamSpotSource = cms.InputTag('offlineBeamSpot'),
@@ -62,13 +62,13 @@ patElectronPFIsolationSelector = cms.PSet(
         
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(0.),        
-        dRvetoCone = cms.double(0.001),  # "sanity" check, to match Wisconsin's selection
+        dRvetoCone = cms.double(0.015), 
         dRisoCone = cms.double(0.4),
     ),
 
     neutralHadronIso = cms.PSet(
         ptMin = cms.double(0.5),        
-        dRvetoCone = cms.double(0.01),        
+        dRvetoCone = cms.double(0.),        
         dRisoCone = cms.double(0.4)
     ),
 
@@ -76,19 +76,19 @@ patElectronPFIsolationSelector = cms.PSet(
         ptMin = cms.double(0.5),        
         dPhiVeto = cms.double(-1.),  # asymmetric Eta x Phi veto region 
         dEtaVeto = cms.double(-1.),  # to account for photon conversions in electron isolation case        
-        dRvetoCone = cms.double(0.01),
+        dRvetoCone = cms.double(0.08),
         dRisoCone = cms.double(0.4)
     ),
 
     direction = cms.string('p4'),
 
-    sumPtMaxEB = cms.double(0.13),
-    sumPtMaxEE = cms.double(0.09),
+    sumPtMaxEB = cms.double(0.1),
+    sumPtMaxEE = cms.double(0.1),
     sumPtMethod = cms.string("relative"), # either "relative" or "absolute"
     
     pileUpCorr = cms.PSet(
         method = cms.string("deltaBeta"),
         deltaZ = cms.double(0.2),
-        chargedToNeutralFactor = cms.double(0.38) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
+        chargedToNeutralFactor = cms.double(0.5) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
     )
 )
