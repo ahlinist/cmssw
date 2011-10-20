@@ -1051,14 +1051,14 @@ void anaXS::makeAllDATA(int channel) {
     //plot_RapInt();
     //plot_PtInt();
     
-    FITUpsilon(4); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    //GetAnaEff(); 
-    //GetPreSelEff();
-    //GetTrackEff();
-    //GetMuIDEff(2);
-    ///GetTrigEff(2);
-    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    GetAnaEff(); 
+    GetPreSelEff();
+    GetTrackEff();
+    GetMuIDEff(2);
+    GetTrigEff(2);
+    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -3394,32 +3394,80 @@ void anaXS::ReadHistogramsDATA2(TFile *f,  const char *binning) {
     if (obj->InheritsFrom(TH2D::Class())) {
       h3 = (TH2D*)f->Get(obj->GetName());
       if ( !strcmp(h3->GetName(),"UG_AllGenRes_1S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_CSMi_1S")) {	
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_CSPl_1S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_HelMi_1S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_HelPl_1S")) {
 	fAllGenRes = (TH2D*)h3->Clone("UG_AllGenRes_1S");
+	//fAllGenRes = (TH2D*)h3->Clone("UG_AllGenRes_CSMi_1S");
+	//fAllGenRes = (TH2D*)h3->Clone("UG_AllGenRes_CSPl_1S");
+	//fAllGenRes = (TH2D*)h3->Clone("UG_AllGenRes_HelMi_1S");
+	//fAllGenRes = (TH2D*)h3->Clone("UG_AllGenRes_HelPl_1S");
 	cout << "--> : " << fAllGenRes->GetName() << ", # entries = " << fAllGenRes->GetSumOfWeights() << endl;
       }
       
       if ( !strcmp(h3->GetName(),"UG_RecoGenRes_1S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_CSMi_1S")) {	
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_CSPl_1S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_HelMi_1S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_HelPl_1S")) {
 	fRecoGenRes = (TH2D*)h3->Clone("UG_RecoGenRes_1S");
+	//fRecoGenRes = (TH2D*)h3->Clone("UG_RecoGenRes_CSMi_1S");
+	//fRecoGenRes = (TH2D*)h3->Clone("UG_RecoGenRes_CSPl_1S");
+	//fRecoGenRes = (TH2D*)h3->Clone("UG_RecoGenRes_HelMi_1S");
+	//fRecoGenRes = (TH2D*)h3->Clone("UG_RecoGenRes_HelPl_1S");
 	cout << "--> : " << fRecoGenRes->GetName() << ", # entries = " << fRecoGenRes->GetSumOfWeights() << endl;
       }	
       
       if ( !strcmp(h3->GetName(),"UG_AllGenRes_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_CSMi_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_CSPl_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_HelMi_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_HelPl_2S")) {	
 	fAllGenRes_2S = (TH2D*)h3->Clone("UG_AllGenRes_2S");
+	//fAllGenRes_2S = (TH2D*)h3->Clone("UG_AllGenRes_CSMi_2S");
+	//fAllGenRes_2S = (TH2D*)h3->Clone("UG_AllGenRes_CSPl_2S");
+	//fAllGenRes_2S = (TH2D*)h3->Clone("UG_AllGenRes_HelMi_2S");
+	//fAllGenRes_2S = (TH2D*)h3->Clone("UG_AllGenRes_HelPl_2S");
 	cout << "--> : " << fAllGenRes_2S->GetName() << ", # entries = " << fAllGenRes_2S->GetSumOfWeights() << endl;
       }
       
       if ( !strcmp(h3->GetName(),"UG_RecoGenRes_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_CSMi_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_CSPl_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_HelMi_2S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_HelPl_2S")) {
 	fRecoGenRes_2S = (TH2D*)h3->Clone("UG_RecoGenRes_2S");
+	//fRecoGenRes_2S = (TH2D*)h3->Clone("UG_RecoGenRes_CSMi_2S");
+	//fRecoGenRes_2S = (TH2D*)h3->Clone("UG_RecoGenRes_CSPl_2S");
+	//fRecoGenRes_2S = (TH2D*)h3->Clone("UG_RecoGenRes_HelMi_2S");
+	//fRecoGenRes_2S = (TH2D*)h3->Clone("UG_RecoGenRes_HelPl_2S");
 	cout << "--> : " << fRecoGenRes_2S->GetName() << ", # entries = " << fRecoGenRes_2S->GetSumOfWeights() << endl;
       }
       
       if ( !strcmp(h3->GetName(),"UG_AllGenRes_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_CSMi_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_CSPl_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_HelMi_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_AllGenRes_HelPl_3S")) {
 	fAllGenRes_3S = (TH2D*)h3->Clone("UG_AllGenRes_3S");
+	//fAllGenRes_3S = (TH2D*)h3->Clone("UG_AllGenRes_CSMi_3S");
+	//fAllGenRes_3S = (TH2D*)h3->Clone("UG_AllGenRes_CSPl_3S");
+	//fAllGenRes_3S = (TH2D*)h3->Clone("UG_AllGenRes_HelMi_3S");
+	//fAllGenRes_3S = (TH2D*)h3->Clone("UG_AllGenRes_HelPl_3S");
 	cout << "--> : " << fAllGenRes_3S->GetName() << ", # entries = " << fAllGenRes_3S->GetSumOfWeights() << endl;
       }
       
       if ( !strcmp(h3->GetName(),"UG_RecoGenRes_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_CSMi_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_CSPl_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_HelMi_3S")) {
+      //if ( !strcmp(h3->GetName(),"UG_RecoGenRes_HelPl_3S")) {
 	fRecoGenRes_3S = (TH2D*)h3->Clone("UG_RecoGenRes_3S");
+	//fRecoGenRes_3S = (TH2D*)h3->Clone("UG_RecoGenRes_CSMi_3S");
+	//fRecoGenRes_3S = (TH2D*)h3->Clone("UG_RecoGenRes_CSPl_3S");
+	//fRecoGenRes_3S = (TH2D*)h3->Clone("UG_RecoGenRes_HelMi_3S");
+	//fRecoGenRes_3S = (TH2D*)h3->Clone("UG_RecoGenRes_HelPl_3S");
 	cout << "--> : " << fRecoGenRes_3S->GetName() << ", # entries = " << fRecoGenRes_3S->GetSumOfWeights() << endl;
       }
       
@@ -4310,7 +4358,7 @@ void anaXS::GetTrackEff(){
 void anaXS::GetMuIDEff(int mode){
   
   /////////////////
-  //TFile *f = new TFile("MuID.root", "RECREATE");
+  TFile *f = new TFile("MuID.root", "RECREATE");
   /////////////////
   
   TH1D *h;
@@ -4403,14 +4451,14 @@ void anaXS::GetMuIDEff(int mode){
   
   
   ////////////
-  //fMuIDEff->Write();
+  fMuIDEff->Write();
   ////////////
 }
 
 void anaXS::GetTrigEff(int mode){
   
   ////////////////
-  //TFile *f = new TFile("Trig.root", "RECREATE");
+  TFile *f = new TFile("Trig.root", "RECREATE");
   ////////////////
   TH1D *h;
   double pt, eta; 
@@ -4506,7 +4554,7 @@ void anaXS::GetTrigEff(int mode){
   }
   
   ///////////
-  //fTrigEff->Write();
+  fTrigEff->Write();
   ////////////
 }
 
@@ -7962,6 +8010,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     //f->FixParameter(11, -0.03);
     f->SetParLimits(11, -0.01, 0.01);
     if ( fix ) f->FixParameter(11, 0.);
+    //f->FixParameter(11, 0.);
   }
   
   
