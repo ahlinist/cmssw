@@ -11,13 +11,13 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 # on how to use the cut-string parser
 
 # select central jets
-selectedPatJetsForAHtoElecTauEta21 = cms.EDFilter("PATJetSelector",
-    cut = cms.string('abs(eta) < 2.4'),
+selectedPatJetsForAHtoElecTauEta = cms.EDFilter("PATJetSelector",
+    cut = cms.string('abs(eta) < 4.5'),
     filter = cms.bool(False)
 )
 
 # select jets with Et > 20 GeV
-selectedPatJetsForAHtoElecTauEt20 = cms.EDFilter("PATJetSelector",
+selectedPatJetsForAHtoElecTauEt = cms.EDFilter("PATJetSelector",
     cut = cms.string('et > 20.'), 
     filter = cms.bool(False)
 )
@@ -29,20 +29,26 @@ selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAn
         "selectedPatMuonsTrkIPcumulative",
         "selectedPatTausForElecTauMuonVetoCumulative"
     ),                                                           
-    dRmin = cms.double(0.7),
+    dRmin = cms.double(0.5),
     filter = cms.bool(False)                                           
+)
+
+# select jets with Et > 30 GeV
+selectedPatJetsForAHtoElecTauJetTag = cms.EDFilter("PATJetSelector",
+    cut = cms.string('et > 30.'), 
+    filter = cms.bool(False)
 )
 
 # select jets passing b-tagging discriminator
 # (>= 3 tracks with impact parameter significance > 2.0)
 selectedPatJetsForAHtoElecTauBtag = cms.EDFilter("PATJetSelector",
-    cut = cms.string('bDiscriminator("trackCountingHighEffBJetTags") > 2.5'), 
+    cut = cms.string('bDiscriminator("trackCountingHighEffBJetTags") > 3.3'), 
     filter = cms.bool(False)
 )
 
-patJetSelConfiguratorForAHtoElecTau = objSelConfigurator(
-    [ selectedPatJetsForAHtoElecTauEta21,
-      selectedPatJetsForAHtoElecTauEt20,
+patJetSelConfiguratorForAHtoElecTauBtag = objSelConfigurator(
+    [ selectedPatJetsForAHtoElecTauEta,
+      selectedPatJetsForAHtoElecTauEt,
       selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto,
       selectedPatJetsForAHtoElecTauBtag ],
     src = "cleanPatJets",
@@ -50,7 +56,18 @@ patJetSelConfiguratorForAHtoElecTau = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectPatJetsForAHtoElecTau = patJetSelConfiguratorForAHtoElecTau.configure(pyNameSpace = locals())
+selectPatJetsForAHtoElecTauBtag = patJetSelConfiguratorForAHtoElecTauBtag.configure(pyNameSpace = locals())
+
+patJetSelConfiguratorForAHtoElecTauJetTag = objSelConfigurator(
+    [ selectedPatJetsForAHtoElecTauJetTag ],
+    src = 'selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectPatJetsForAHtoElecTauJetTag = patJetSelConfiguratorForAHtoElecTauJetTag.configure(pyNameSpace = locals())
+
+selectPatJetsForAHtoElecTau = cms.Sequence(selectPatJetsForAHtoElecTauBtag + selectPatJetsForAHtoElecTauJetTag)
 
 # define additional collections of jets
 # not overlapping with "loosely" isolated electrons
@@ -68,9 +85,9 @@ selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoLooseElectronIsolation = 
 
 selectedPatJetsForAHtoElecTauBtagLooseElectronIsolation = copy.deepcopy(selectedPatJetsForAHtoElecTauBtag)
 
-patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation = objSelConfigurator(
-    [ selectedPatJetsForAHtoElecTauEta21,
-      selectedPatJetsForAHtoElecTauEt20,
+patJetSelConfiguratorForAHtoElecTauBtagLooseElectronIsolation = objSelConfigurator(
+    [ selectedPatJetsForAHtoElecTauEta,
+      selectedPatJetsForAHtoElecTauEt,
       selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoLooseElectronIsolation,
       selectedPatJetsForAHtoElecTauBtagLooseElectronIsolation ],
     src = "cleanPatJets",
@@ -78,4 +95,17 @@ patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectPatJetsForAHtoElecTauLooseElectronIsolation = patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation.configure(pyNameSpace = locals())
+selectPatJetsForAHtoElecTauBtagLooseElectronIsolation = patJetSelConfiguratorForAHtoElecTauBtagLooseElectronIsolation.configure(pyNameSpace = locals())
+
+selectedPatJetsForAHtoElecTauJetTagLooseElectronIsolation = copy.deepcopy(selectedPatJetsForAHtoElecTauJetTag)
+
+patJetSelConfiguratorForAHtoElecTauJetTagLooseElectronIsolation = objSelConfigurator(
+    [ selectedPatJetsForAHtoElecTauJetTagLooseElectronIsolation ],
+    src = 'selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoLooseElectronIsolationCumulative',
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectPatJetsForAHtoElecTauJetTagLooseElectronIsolation = patJetSelConfiguratorForAHtoElecTauJetTagLooseElectronIsolation.configure(pyNameSpace = locals())
+
+selectPatJetsForAHtoElecTauLooseElectronIsolation = cms.Sequence(selectPatJetsForAHtoElecTauBtagLooseElectronIsolation + selectPatJetsForAHtoElecTauJetTagLooseElectronIsolation)

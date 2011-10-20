@@ -24,13 +24,13 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
 			"sysZllRecoilCorrection*", "",
 			"sysJet*", ""
 		),
-		isRecAHtoElecTauCentralJetVeto = cms.vstring(
+		isRecAHtoElecTauBtag = cms.vstring(
 			"sysElectron*", "",
             "sysTau*", "",
 			"sysZllRecoilCorrection*", "",
 			"sysJet*", ""
 		),
-		isRecAHtoElecTauCentralJetBtag = cms.vstring(
+		isRecAHtoElecTauBtagVeto = cms.vstring(
 			"sysElectron*", "",
             "sysTau*", "",
 			"sysZllRecoilCorrection*", "",
@@ -69,8 +69,6 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauDecayModeFinding,
         evtSelTauLeadTrkPt,
 		evtSelTauIso,
-        #evtSelTauProng,
-        #evtSelTauCharge,
         evtSelTauElectronVeto,
         evtSelTauEcalCrackVeto,
         evtSelTauMuonVeto,
@@ -91,10 +89,10 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
 		# (based on the precense of an opposite-sign, loosely isolated electron	 
 		evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
         
-		# central jet veto/b-jet candidate selection
-		evtSelNonCentralJetEt20bTag,
-		evtSelCentralJetEt20,
-		evtSelCentralJetEt20bTag
+		# jet veto/b-jet candidate selection
+		evtSelJetEtCut,
+		evtSelBtagVeto,
+		evtSelBtagCut
     ),
   
     analyzers = cms.VPSet(
