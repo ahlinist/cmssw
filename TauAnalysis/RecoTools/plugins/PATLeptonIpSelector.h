@@ -10,9 +10,9 @@
  * \author Konstantinos A. Petridis, Imperial College;
  *  modified by Christian Veelken
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: PATLeptonIpSelector.h,v 1.5 2010/09/28 11:23:36 jkolb Exp $
+ * $Id: PATLeptonIpSelector.h,v 1.6 2011/10/11 17:18:54 jkolb Exp $
  *
  */
 
@@ -49,6 +49,12 @@ class PATLeptonIpSelector
     double ipMin_;
     double ipMax_;
     double ipZmax_;
+    double ipMinEB_;
+    double ipMaxEB_;
+    double ipZmaxEB_;
+    double ipMinEE_;
+    double ipMaxEE_;
+    double ipZmaxEE_;
 
 //--- "helper" class for accessing the track
 //    of pat::Electrons and pat::Muons 
