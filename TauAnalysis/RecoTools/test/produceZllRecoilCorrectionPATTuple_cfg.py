@@ -62,7 +62,15 @@ process.pfChargedHadronPileUpCands = process.pfChargedHadronNoPileUpCands.clone(
 
 process.kt6PFChargedHadronPileUpJetsForVtxMultReweighting = process.kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting.clone(
     src = cms.InputTag('pfChargedHadronPileUpCands')
-)    
+)
+
+process.pfChargedHadronCands = process.pfChargedHadronNoPileUpCands.clone(
+    src = cms.InputTag('particleFlow')
+)
+
+process.kt6PFChargedHadronJetsForVtxMultReweighting = process.kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting.clone(
+    src = cms.InputTag('pfChargedHadronCands')
+)
 
 process.prePatProductionSequence = cms.Sequence()
 process.prePatProductionSequence += process.selectedPrimaryVertexQuality
@@ -70,6 +78,8 @@ process.prePatProductionSequence += process.selectedPrimaryVertexPosition
 process.prePatProductionSequence += process.produceVertexMultiplicityVsRhoPFNeutralReweights
 process.prePatProductionSequence += process.pfChargedHadronPileUpCands
 process.prePatProductionSequence += process.kt6PFChargedHadronPileUpJetsForVtxMultReweighting
+process.prePatProductionSequence += process.pfChargedHadronCands
+process.prePatProductionSequence += process.kt6PFChargedHadronJetsForVtxMultReweighting
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -251,7 +261,8 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_smearedPatPFMETsTypeIpIIcorrected_*_*',                                            
             'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*',
-            'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*'                                            
+            'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*',
+            'keep *_kt6PFChargedHadronJetsForVtxMultReweighting_rho_*'                                            
         )
     ),
     fileName = cms.untracked.string("ZllRecoilCorrectionPATtuple.root")
@@ -289,6 +300,7 @@ process.rhoNeutralAnalyzer = cms.EDAnalyzer("RhoNeutralCorrAnalyzer",
     srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),                             
     srcRhoChargedHadronsNoPileUp = cms.InputTag('kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting', 'rho'),
     srcRhoChargedHadronsPileUp = cms.InputTag('kt6PFChargedHadronPileUpJetsForVtxMultReweighting', 'rho'),
+    srcRhoChargedHadrons = cms.InputTag('kt6PFChargedHadronJetsForVtxMultReweighting', 'rho'),
     srcWeights = cms.VInputTag()
 )
 
@@ -307,6 +319,7 @@ if isMC:
     setattr(process.rhoNeutralAnalyzer, "srcWeights", cms.VInputTag('vertexMultiplicityReweight'))
 
     process.vertexMultiplicityReweight3d = process.vertexMultiplicityReweight.clone(
+        inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to167913.root"),
         type = cms.string("gen3d")
     )
     process.produceAndSavePUreweightHistograms += process.vertexMultiplicityReweight3d
