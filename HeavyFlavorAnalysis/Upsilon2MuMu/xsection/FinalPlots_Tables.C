@@ -33,6 +33,7 @@ void XSSystTot_1S(){
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
   double s1_(0.), s2_(0.), e5_(0.);
   double Stat[10];
+  
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); ///Muid
@@ -46,16 +47,18 @@ void XSSystTot_1S(){
     cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
-    Stat[i]=S5->GetBinError(i);
+    Stat[i-1]=S5->GetBinError(i);
     s5 += S5->GetBinContent(i)*S5->GetBinWidth(i);
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     S5->SetBinError(i,err5); // only one side -- needs to be edited
-    s1=0; s1_=0;					   
+    s1=0; s1_=0;
+    
   }
     
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
+  
   TFile *f = new TFile("Final1S.root", "RECREATE");
   S5->Write();
   
@@ -65,7 +68,7 @@ void XSSystTot_1S(){
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 1S" << endl;
   for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
-    stat = Stat[x]/S5->GetBinContent(x);
+    stat = Stat[x-1]/S5->GetBinContent(x);
     muid_h = TMath::Sqrt(S1->GetBinContent(x)*S1->GetBinContent(x))/S5->GetBinContent(x); 
     trig_h = TMath::Sqrt(S2->GetBinContent(x)*S2->GetBinContent(x))/S5->GetBinContent(x);
     sig = TMath::Sqrt(S3->GetBinContent(x)*S3->GetBinContent(x))/S5->GetBinContent(x);
@@ -140,7 +143,7 @@ void XSSystTot_2S(){
     cout << " dSigma(Y(2S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) <<  " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
-    Stat[i]=S5->GetBinError(i);
+    Stat[i-1]=S5->GetBinError(i);
     s5 += S5->GetBinContent(i)*S5->GetBinWidth(i);
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
@@ -159,8 +162,7 @@ void XSSystTot_2S(){
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 2S" << endl;
   for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
-    cout << x  <<  endl;
-    stat = Stat[x]/S5->GetBinContent(x);
+    stat = Stat[x-1]/S5->GetBinContent(x);
     muid_h = TMath::Sqrt(S1->GetBinContent(x)*S1->GetBinContent(x))/S5->GetBinContent(x); 
     trig_h = TMath::Sqrt(S2->GetBinContent(x)*S2->GetBinContent(x))/S5->GetBinContent(x);
     sig = TMath::Sqrt(S3->GetBinContent(x)*S3->GetBinContent(x))/S5->GetBinContent(x);
@@ -184,7 +186,6 @@ void XSSystTot_2S(){
     OUT << Form("\\vdef{%iS_bgoversigma%i} {\\ensuremath{ {%.3f } } }",2, x, bg ) << endl;
     OUT << Form("\\vdef{%iS_rhoLowoversigma%i} {\\ensuremath{ {%.3f } } }",2, x, rho_l ) << endl;
     OUT << Form("\\vdef{%iS_rhoHighoversigma%i} {\\ensuremath{ {%.3f } } }",2, x, rho_h ) << endl;
-    cout << x  <<  endl;
   }
   
   OUT.close();
@@ -235,7 +236,7 @@ void XSSystTot_3S(){
     cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
-    Stat[i]=S5->GetBinError(i);
+    Stat[i-1]=S5->GetBinError(i);
     s5 += S5->GetBinContent(i)*S5->GetBinWidth(i);
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
@@ -254,7 +255,7 @@ void XSSystTot_3S(){
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 3S" << endl;
   for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
-    stat = Stat[x]/S5->GetBinContent(x);
+    stat = Stat[x-1]/S5->GetBinContent(x);
     muid_h = TMath::Sqrt(S1->GetBinContent(x)*S1->GetBinContent(x))/S5->GetBinContent(x); 
     trig_h = TMath::Sqrt(S2->GetBinContent(x)*S2->GetBinContent(x))/S5->GetBinContent(x);
     sig = TMath::Sqrt(S3->GetBinContent(x)*S3->GetBinContent(x))/S5->GetBinContent(x);
@@ -591,7 +592,7 @@ void Overlay(){
   
 }
 
-void Ratio(){
+void Ratio_unpol(){
   
   gStyle->SetOptStat(00000000000);
   TFile *f = new TFile("Final1S.root");
