@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v3_8'
+version = 'v3_10'
 
 samples = {
     'Data_runs160329to163869' : {
