@@ -35,6 +35,7 @@ class RhoNeutralCorrAnalyzer : public edm::EDAnalyzer
   edm::InputTag srcRhoNeutral_;
   edm::InputTag srcRhoChargedHadronsNoPileUp_;
   edm::InputTag srcRhoChargedHadronsPileUp_;
+  edm::InputTag srcRhoChargedHadrons_;
 
   edm::InputTag srcGenPileUp_;
 
@@ -50,11 +51,15 @@ class RhoNeutralCorrAnalyzer : public edm::EDAnalyzer
   MonitorElement* meRhoChargedHadronsNoPileUp_;
   MonitorElement* meRhoChargedHadronsPileUpVsGenPileUp_;
   MonitorElement* meRhoChargedHadronsPileUp_;
+  MonitorElement* meRhoChargedHadronsVsGenPileUp_;
+  MonitorElement* meRhoChargedHadrons_;
 
   MonitorElement* meRhoNeutralDivRhoChargedHadronsNoPileUpVsGenPileUp_;
   MonitorElement* meRhoNeutralDivRhoChargedHadronsNoPileUp_;
   MonitorElement* meRhoNeutralDivRhoChargedHadronsPileUpVsGenPileUp_;
   MonitorElement* meRhoNeutralDivRhoChargedHadronsPileUp_;
+  MonitorElement* meRhoNeutralDivRhoChargedHadronsVsGenPileUp_;
+  MonitorElement* meRhoNeutralDivRhoChargedHadrons_;
 };
 
 #endif   
