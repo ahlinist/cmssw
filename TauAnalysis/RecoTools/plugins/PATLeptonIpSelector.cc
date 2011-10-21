@@ -7,8 +7,9 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 template <typename T>
-PATLeptonIpSelector<T>::PATLeptonIpSelector(const edm::ParameterSet& cfg):
-    ipMin_(0),
+
+PATLeptonIpSelector<T>::PATLeptonIpSelector(const edm::ParameterSet& cfg)
+  : ipMin_(0),
     ipMax_(1000),
     ipZmax_(1000)
 {
