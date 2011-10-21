@@ -32,8 +32,7 @@ void XSSystTot_1S(){
   
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
   double s1_(0.), s2_(0.), e5_(0.);
-  double Stat[10];
-  
+  double Stat[10]; double Errh[10]; double Errl[10]; double y[10];
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); ///Muid
@@ -53,14 +52,26 @@ void XSSystTot_1S(){
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     S5->SetBinError(i,err5); // only one side -- needs to be edited
+    Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
+    Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
+    y[i-1] = S5->GetBinContent(i);
     s1=0; s1_=0;
     
   }
-    
-  cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
   
+  double xbin[10] = {1., 3., 6., 9., 11.5, 14.5, 18., 22.5, 27.5, 40.};
+  double xh[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  double xl[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  
+  gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
+  //gr->SetTitle("Ups1S");
+  gr->SetMarkerColor(1);
+  gr->SetMarkerStyle(21);
+  gr->Draw("AP");
+  
+  cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
   TFile *f = new TFile("Final1S.root", "RECREATE");
-  S5->Write();
+  gr->Write();
   
   // Table for 1S Xsection and Errors
   double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.); 
@@ -128,7 +139,7 @@ void XSSystTot_2S(){
   
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
   double s1_(0.), s2_(0.), e5_(0.);
-  double Stat[10];
+  double Stat[10]; double Errh[10]; double Errl[10]; double y[10]; 
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Muid
@@ -149,12 +160,25 @@ void XSSystTot_2S(){
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     S5->SetBinError(i,err5);
+    Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
+    Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
+    y[i-1] = S5->GetBinContent(i);
     s1=0;s1_=0;					   
   }
-    
+ 
+  double xbin[10] = {1., 3., 6., 9., 11.5, 14.5, 18., 22.5, 27.5, 40.};
+  double xh[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  double xl[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  
+  gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
+  //gr->SetTitle("Ups2S");
+  gr->SetMarkerColor(4);
+  gr->SetMarkerStyle(21);
+  gr->Draw("AP");
+  
   cout << " Y(2S) 2Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")" <<  endl;
   TFile *f = new TFile("Final2S.root", "RECREATE");
-  S5->Write();
+  gr->Write();
   
   // Table for 2S Xsection and Errors
   double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.), rho_h(0.); 
@@ -221,7 +245,7 @@ void XSSystTot_3S(){
   
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
   double s1_(0.), s2_(0.), e5_(0.);
-  double Stat[10];
+  double Stat[10]; double Errh[10]; double Errl[10]; double y[10];
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Muid
@@ -242,14 +266,27 @@ void XSSystTot_3S(){
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     S5->SetBinError(i,err5);
+    Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
+    Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
+    y[i-1] = S5->GetBinContent(i);
     s1=0;s1_=0;					   
   }
     
+  double xbin[10] = {1., 3., 6., 9., 11.5, 14.5, 18., 22.5, 27.5, 40.};
+  double xh[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  double xl[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  
+  gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
+  //gr->SetTitle("Ups3S");
+  gr->SetMarkerColor(2);
+  gr->SetMarkerStyle(21);
+  gr->Draw("AP");
+    
   cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
   TFile *f = new TFile("Final3S.root", "RECREATE");
-  S5->Write();
+  gr->Write();
   
-  // Table for 1S Xsection and Errors
+  // Table for 3S Xsection and Errors
   double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_h(0.), bg(0.); 
   ofstream OUT("3S.tex");
   OUT << "% ----------------------------------------------------------------------" << endl;
