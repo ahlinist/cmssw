@@ -12,13 +12,13 @@ double square(double x)
   return x*x;
 }
 
-void compWtaunuXsectionNumbers()
+void compWtaunuXsectionNumbersMinus()
 {
   //-------------------------------------------------------------------------------
   // define number of observed events
   //-------------------------------------------------------------------------------
 
-  double numEventsObserved = 793;
+  double numEventsObserved = 349;
 
   std::cout << "Nr Events observed in Data = " << numEventsObserved << std::endl;
 
@@ -26,14 +26,14 @@ void compWtaunuXsectionNumbers()
   // Estimate the number of QCD events as an average of ABCD and template methods
   //-------------------------------------------------------------------------------
 
-  double numEventsExpected_qcd_template = 160; //Nr of bg events predicted by the template fit
-  double errEventsExpected_qcd_template =  30; //Error of bg events predicted by the template fit
+  double numEventsExpected_qcd_template = 62.9; //Nr of bg events predicted by the template fit
+  double errEventsExpected_qcd_template =  19; //Error of bg events predicted by the template fit
   // CV: subtract statistical component of uncertainty on QCD background estimate
   //     returned by RooFit/template fit
   errEventsExpected_qcd_template = TMath::Sqrt(square(errEventsExpected_qcd_template) - numEventsExpected_qcd_template);
   cout<<"err events expected QCD template = "<<errEventsExpected_qcd_template<<endl;  
-  double numEventsExpected_qcd_ABCD     = 203; //ABCD method
-  double errEventsExpected_qcd_ABCD     =  26;
+  double numEventsExpected_qcd_ABCD     = 100.2; //ABCD method
+  double errEventsExpected_qcd_ABCD     =  7.5;
 
   double weight_qcd_template            = 1./square(errEventsExpected_qcd_template);
   double weight_qcd_ABCD                = 1./square(errEventsExpected_qcd_ABCD);
@@ -48,50 +48,59 @@ void compWtaunuXsectionNumbers()
   // assign 40% uncertainty on EWK backgrounds
   //----------------------------------------------------------------------------
 
-  double numEventsExpected_Wenu    = 50.1; //update to NNLO
-  double errEventsExpected_Wenu    = 0.24*numEventsExpected_Wenu;
-  double numEventsExpected_Wmunu   =  4.9; //update to NNLO
-  double errEventsExpected_Wmunu   = 0.35*numEventsExpected_Wmunu; //0.75 uncertainty for muons faking taus and 0.2 uncertainty for jets faking taus
-  double numEventsExpected_Ztautau = 54.2; //update to average of D6T and Z2T
-  //  double errEventsExpectedTauJetEn_Ztautau =
+  double numEventsExpected_Wenu    = 20.6; //update to NNLO
+  double errEventsExpected_Wenu    = 0.2*numEventsExpected_Wenu;
+  double numEventsExpected_Wmunu   =  1.9; //update to NNLO
+  double errEventsExpected_Wmunu   = TMath::Sqrt( square(0.75*0.2 + 0.2*0.8) + square(0.12))*numEventsExpected_Wmunu; //0.75 uncertainty for muons faking taus and 0.2 uncertainty for jets faking taus
+  double numEventsExpected_Ztautau = 29.6; //update to average of D6T and Z2T
   double errEventsExpected_Ztautau = 0.3*numEventsExpected_Ztautau; // tau + jet energy scale uncertainty + trigger uncertainty
+  double numEventsExpected_WtaunuPlus = 2.35;
+  double errEventsExpected_WtaunuPlusUp = 2*numEventsExpected_WtaunuPlus;
+  double errEventsExpected_WtaunuPlusDown = numEventsExpected_WtaunuPlus;
 
-
-  double numEventsExpected_ewk     = numEventsExpected_Wenu + numEventsExpected_Wmunu + numEventsExpected_Ztautau;
-  double errEventsExpected_ewk     = TMath::Sqrt(square(errEventsExpected_Wenu) + square(errEventsExpected_Wmunu) + square(errEventsExpected_Ztautau));
-
+  double numEventsExpected_ewk     = numEventsExpected_Wenu + numEventsExpected_Wmunu + numEventsExpected_Ztautau +numEventsExpected_WtaunuPlus;
+  double errEventsExpected_ewkDown     = TMath::Sqrt(square(errEventsExpected_Wenu) + square(errEventsExpected_Wmunu) + square(errEventsExpected_Ztautau) + square(errEventsExpected_WtaunuPlusDown));
+  double errEventsExpected_ewkUp     = TMath::Sqrt(square(errEventsExpected_Wenu) + square(errEventsExpected_Wmunu) + square(errEventsExpected_Ztautau) + square(errEventsExpected_WtaunuPlusUp));
+  
   //----------------------------------------------------------------------------
   // Sum Bgr = ewk + qcd
   //---------------------------------------------------------------------------
 
   double numEventsExpected_Bgr     = numEventsExpected_qcd + numEventsExpected_ewk;
-  double errEventsExpected_Bgr     = TMath::Sqrt(square(errEventsExpected_qcd) + square(errEventsExpected_ewk));
-
+  double errEventsExpected_BgrUp     = TMath::Sqrt(square(errEventsExpected_qcd) + square(errEventsExpected_ewkUp));
+  double errEventsExpected_BgrDown     = TMath::Sqrt(square(errEventsExpected_qcd) + square(errEventsExpected_ewkDown));
+  
   //-----------------------------------------------------------------------------
   // relative uncertainties
   //------------------------------------------------------------------------------
 
-  double errEventsExpectedRel_ewk = errEventsExpected_ewk/numEventsExpected_ewk;
+  double errEventsExpectedRel_ewkUp = errEventsExpected_ewkUp/numEventsExpected_ewk;
+  double errEventsExpectedRel_ewkDown = errEventsExpected_ewkDown/numEventsExpected_ewk;
   double errEventsExpectedRel_qcd = errEventsExpected_qcd/numEventsExpected_qcd;
-  double errEventsExpectedRel_Bgr = errEventsExpected_Bgr/numEventsExpected_Bgr;
+  double errEventsExpectedRel_BgrUp = errEventsExpected_BgrUp/numEventsExpected_Bgr;
+  double errEventsExpectedRel_BgrDown = errEventsExpected_BgrDown/numEventsExpected_Bgr;
   
-  std::cout << "Nr QCD = " << numEventsExpected_qcd 
-	    << " +/- " << errEventsExpected_qcd << " (" << errEventsExpectedRel_qcd << "%)" << std::endl;
-  std::cout << "Nr EWK = " << numEventsExpected_ewk 
-	    << " +/- " << errEventsExpected_ewk << " (" << errEventsExpectedRel_ewk << "%)" << std::endl;
+	std::cout << "Nr QCD = " << numEventsExpected_qcd << " +/- " <<errEventsExpected_qcd <<" ("<< errEventsExpectedRel_qcd << "%)" << std::endl;
+
+  std::cout << "Nr EWK = " << numEventsExpected_ewk
+			<< " +/- "<<errEventsExpected_Wmunu<<"(Wmunu) +/- "<<errEventsExpected_Wenu<<"(Wenu) +- "<<errEventsExpected_Ztautau <<"(Ztautau) = "
+			<<numEventsExpected_ewk<<" + "<<errEventsExpected_ewkUp << " - " <<errEventsExpected_ewkDown<<" ( +" << errEventsExpectedRel_ewkUp<<", - "<<errEventsExpectedRel_ewkDown <<"%)" << std::endl;
+  
   std::cout << "Nr Bgr = "<< numEventsExpected_Bgr 
-	    << " +/- " << errEventsExpected_Bgr << " (" << errEventsExpectedRel_Bgr << "%)" << std::endl;
+			<< " + " << errEventsExpected_BgrUp<<" - " << errEventsExpected_BgrDown << " ( +" << errEventsExpectedRel_BgrUp <<", -"<< errEventsExpectedRel_BgrDown << "%)" << std::endl;
 	
  //----------------------------------------------------------------------------
  // Number of signal events
  //---------------------------------------------------------------------------
 
   double numSignal = numEventsObserved-numEventsExpected_Bgr;
-  double errSignal = errEventsExpected_Bgr;
-  double errSignalRel = errSignal/numSignal;
-
+  double errSignalUp = errEventsExpected_BgrUp;
+  double errSignalDown = errEventsExpected_BgrDown;
+  double errSignalRelUp = errSignalUp/numSignal;
+  double errSignalRelDown = errSignalDown/numSignal;
+  
   std::cout << "Nr Sig = " << numSignal 
-	    << " +/- " << errSignal << " (" << errSignalRel << "%)" << std::endl;
+			<< " + " << errSignalUp << " - " << errSignalDown << " ( +" << errSignalRelUp << "%)" << std::endl;
   
   //-------------------------------------------------------------------------------
   // define signal efficiency and acceptance
@@ -99,8 +108,8 @@ void compWtaunuXsectionNumbers()
 
   double intLumiData       = 32.35; // pb^-1
   
-  double mcAcceptance_Sig  = 0.0790;
-  double mcEfficiency_Sig  = 0.0334;
+  double mcAcceptance_Sig  = 0.0820;
+  double mcEfficiency_Sig  = 0.0331;
   double brToHadTau_Sig    = 0.648;
   
   //-------------------------------------------------------------------------------
@@ -113,10 +122,10 @@ void compWtaunuXsectionNumbers()
 
   double errTauIdEff       = 0.07;
 
-  double errTauEnScaleUp   = 0.160; //powheg
-  double errTauEnScaleDown = 0.148;
-  double errJetEnScaleUp   = 0.101;
-  double errJetEnScaleDown = 0.100;
+  double errTauEnScaleUp   = 0.170;
+  double errTauEnScaleDown = 0.167;
+  double errJetEnScaleUp   = 0.113;
+  double errJetEnScaleDown = 0.093;
 
   double errIntLumiData    = 0.04;
   
@@ -134,7 +143,7 @@ void compWtaunuXsectionNumbers()
   double Xsection = numSignal/denominator;
   std::cout << "measured Xsection = " << Xsection << " nb" << std::endl;
 
-  double expXsection = 10.44; // nb; computed with FEWZ @ NNLO using MSTW 2008 PDF
+  double expXsection = 4.286; // nb; computed with FEWZ @ NNLO using MSTW 2008 PDF
                               // ( cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections )
   std::cout << "Theory prediction = " << expXsection << " nb" << std::endl;
   
@@ -150,10 +159,9 @@ void compWtaunuXsectionNumbers()
    double errEffAccUp2           = errSysJetpTauJetUp2   + square(errTriggerEff) + square(errAcc) + square(errTauIdEff);
    double errEffAccDown2         = errSysJetpTauJetDown2 + square(errTriggerEff) + square(errAcc) + square(errTauIdEff);
 
-   double sysUncertaintyTotUp2   = errEffAccUp2   + square(errSignalRel);
-   double sysUncertaintyTotDown2 = errEffAccDown2 + square(errSignalRel);
-   cout<< "Sys. error total = "<<"+"<<TMath::Sqrt(sysUncertaintyTotUp2)<<"-"<<TMath::Sqrt(sysUncertaintyTotDown2)<<endl;
-   
+   double sysUncertaintyTotUp2   = errEffAccUp2   + square(errSignalRelUp);
+   double sysUncertaintyTotDown2 = errEffAccDown2 + square(errSignalRelDown);
+	 
    //------------------------------------------------------------------------------
    // summarize error estimates
    //----------------------------------------------------------------------------
