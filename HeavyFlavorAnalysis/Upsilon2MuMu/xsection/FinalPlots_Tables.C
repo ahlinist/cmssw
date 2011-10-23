@@ -633,18 +633,138 @@ void Ratio_unpol(){
   legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
   legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
   legg->Draw();
+  c1->SaveAs("Ratio_unpol.pdf");
+  
   
   // Table for Ratios
-  ofstream OUT("Ratios.tex");
+  ofstream OUT("Ratios_unpol.tex");
   OUT << "% ----------------------------------------------------------------------" << endl;
-  OUT << "% -- Ratios" << endl;
+  OUT << "% -- Ratios_unpol" << endl;
   for ( int x = 1; x <= S1h->GetNbinsX(); ++x ){
-    OUT << Form("\\vdef{%iSover%iS__bin%iContent} {\\ensuremath{ {%.2f } } }",2 ,1, x, s21[x-1] ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
-    OUT << Form("\\vdef{%iSover%iS__bin%iContent} {\\ensuremath{ {%.2f } } }",3 ,1, x, s31[x-1] ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol} {\\ensuremath{ {%.2f } } }",2 ,1, x, s21[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol} {\\ensuremath{ {%.2f } } }",3 ,1, x, s31[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
+  }
+  
+  OUT.close();
+  
+}
+
+
+void Ratio_pol(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S.root");
+  TH1D *S1h; TH1D *S1l;
+  S1h = (TH1D*)gFile->Get("Ups1S_ratioh");
+  S1l = (TH1D*)gFile->Get("Ups1S_ratiol");
+  TFile *f = new TFile("Final2S.root");
+  TH1D *S2h; TH1D *S2l;
+  S2h = (TH1D*)gFile->Get("Ups2S_ratioh");
+  S2l = (TH1D*)gFile->Get("Ups2S_ratiol");  
+  TFile *f = new TFile("Final3S.root");
+  TH1D *S3h; TH1D *S3l;
+  S3h = (TH1D*)gFile->Get("Ups3S_ratioh");
+  S3l = (TH1D*)gFile->Get("Ups3S_ratiol");   
+  
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TH1D *S5; S5 = (TH1D*)gFile->Get("S1YieldPt");
+  TFile *f = new TFile("XSection_1Srho_HelMi.root");
+  TH1D *S1HelMi; S1HelMi = (TH1D*)gFile->Get("S1YieldPt");  
+  TFile *f = new TFile("XSection_1Srho_HelPl.root");
+  TH1D *S1HelPl; S1HelPl = (TH1D*)gFile->Get("S1YieldPt");   
+  TFile *f = new TFile("XSection_2Srho_HelMi.root");
+  TH1D *S2HelMi; S2HelMi = (TH1D*)gFile->Get("S2YieldPt");  
+  TFile *f = new TFile("XSection_2Srho_HelPl.root");
+  TH1D *S2HelPl; S2HelPl = (TH1D*)gFile->Get("S2YieldPt");   
+  TFile *f = new TFile("XSection_3Srho_HelMi.root");
+  TH1D *S3HelMi; S3HelMi = (TH1D*)gFile->Get("S3YieldPt");  
+  TFile *f = new TFile("XSection_3Srho_HelPl.root");
+  TH1D *S3HelPl; S3HelPl = (TH1D*)gFile->Get("S3YieldPt"); 
+    
+  
+  double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
+  double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
+  double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  double polterm1_h(0.), polterm2_h(0.), polterm3_h(0.), polterm1_l(0.), polterm2_l(0.), polterm3_l(0.);
+  for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
+    
+   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+   
+   polterm1_h = ((S1h->GetBinContent(i)-S1HelPl->GetBinContent(i))/S1h->GetBinContent(i)) * ((S1h->GetBinContent(i)-S1HelPl->GetBinContent(i))/S1h->GetBinContent(i));
+   polterm2_h = ((S2h->GetBinContent(i)-S2HelPl->GetBinContent(i))/S2h->GetBinContent(i)) * ((S2h->GetBinContent(i)-S2HelPl->GetBinContent(i))/S2h->GetBinContent(i));
+   polterm3_h = ((S3h->GetBinContent(i)-S3HelPl->GetBinContent(i))/S3h->GetBinContent(i)) * ((S3h->GetBinContent(i)-S3HelPl->GetBinContent(i))/S3h->GetBinContent(i));
+   
+   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+   term21_h = term1_h+term2_h+polterm1_h+polterm2_h;
+   term31_h = term1_h+term3_h+polterm1_h+polterm3_h;
+   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+   
+   polterm1_l = ((S1h->GetBinContent(i)-S1HelMi->GetBinContent(i))/S1h->GetBinContent(i)) * ((S1h->GetBinContent(i)-S1HelMi->GetBinContent(i))/S1h->GetBinContent(i));
+   polterm2_l = ((S2h->GetBinContent(i)-S2HelMi->GetBinContent(i))/S2h->GetBinContent(i)) * ((S2h->GetBinContent(i)-S2HelMi->GetBinContent(i))/S2h->GetBinContent(i));
+   polterm3_l = ((S3h->GetBinContent(i)-S3HelMi->GetBinContent(i))/S3h->GetBinContent(i)) * ((S3h->GetBinContent(i)-S3HelMi->GetBinContent(i))/S3h->GetBinContent(i));
+   
+   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+   term21_l = term1_l+term2_l+polterm1_l+polterm2_l;
+   term31_l = term1_l+term3_l+polterm1_l+polterm3_l;
+   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+   
+   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+   cout << endl;
+  }  
+  
+  double xbin[10] = {1., 3., 6., 9., 11.5, 14.5, 18., 22.5, 27.5, 40.};
+  double xh[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  double xl[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  
+  S21 = new TGraphAsymmErrors(10,xbin,s21,xl,xh,e21_l,e21_h);
+  S21->SetName("Ups1S_2S");
+  S21->SetMarkerColor(2);
+  S21->SetMarkerStyle(21);
+    
+  S31 = new TGraphAsymmErrors(10,xbin,s31,xl,xh,e31_l,e31_h);
+  S31->SetName("Ups1S_3S");
+  S31->SetMarkerColor(4);
+  S31->SetMarkerStyle(21);
+    
+  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  S21->GetYaxis()->SetTitle("#sigma#times Br(#mu#mu)");
+  S21->SetTitle("");
+  S21->SetMinimum(0.);
+  S21->SetMaximum(1.);
+  S21->Draw("AP");
+  S31->Draw("P");
+  legg = new TLegend(0.1,0.6,0.5,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  c1->SaveAs("Ratio_pol.pdf");
+  
+  
+  // Table for Ratios
+  ofstream OUT("Ratios_pol.tex");
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- Ratios_pol" << endl;
+  for ( int x = 1; x <= S1h->GetNbinsX(); ++x ){
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol} {\\ensuremath{ {%.2f } } }",2 ,1, x, s21[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol} {\\ensuremath{ {%.2f } } }",3 ,1, x, s31[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
   }
   
   OUT.close();
