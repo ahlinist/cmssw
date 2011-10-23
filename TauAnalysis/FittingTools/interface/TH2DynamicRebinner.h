@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: TH2DynamicRebinner.h,v 1.1 2009/11/27 15:46:32 veelken Exp $
+ * $Id: TH2DynamicRebinner.h,v 1.1 2011/10/23 15:17:47 veelken Exp $
  *
  */
 
@@ -21,22 +21,8 @@
 #include <list>
 #include <iostream>
 
-class TH2DynamicRebinner
+namespace TH2DynamicRebinner_namespace
 {
- public:  
-
-  explicit TH2DynamicRebinner(TH2*, double, TH2*, double);
-  ~TH2DynamicRebinner();
-  
-  TH1* operator()(const TH2*) const;
-
-  void print(std::ostream&) const;
-
- private:
-
-  double minBinContent_sig_;
-  double minBinContent_bgr_;
-
   struct binEntryType
   {
     binEntryType(int id, const TH2* histogram_sig, const TH2* histogram_bgr, int binX, int binY)
@@ -44,7 +30,7 @@ class TH2DynamicRebinner
     {
       binContent_sig_ = histogram_sig->GetBinContent(binX, binY);
       binError2_sig_ = TMath::Power(histogram_sig->GetBinError(binX, binY), 2.);
-
+      
       binContent_bgr_ = histogram_bgr->GetBinContent(binX, binY);
       binError2_bgr_ = TMath::Power(histogram_bgr->GetBinError(binX, binY), 2.);
 
@@ -98,6 +84,11 @@ class TH2DynamicRebinner
       gravCenterY_ = gravCenterY_new;      
     }
 
+    bool operator<(const binEntryType& other) const
+    {
+      return (id_ < other.id_);
+    }
+
     mutable int id_;
 
     double binContent_sig_;
@@ -115,7 +106,25 @@ class TH2DynamicRebinner
     double gravCenterX_;
     double gravCenterY_;
   };
-  std::list<binEntryType*> binMapping_;
+}
+
+class TH2DynamicRebinner
+{
+ public:  
+
+  explicit TH2DynamicRebinner(TH2*, TH2*, double = -1.e0, double = 1.e-1);
+  ~TH2DynamicRebinner();
+  
+  TH1* operator()(const TH2*) const;
+
+  void print(std::ostream&) const;
+
+ private:
+
+  double minBinContent_sig_;
+  double minBinContent_bgr_;
+
+  std::list<TH2DynamicRebinner_namespace::binEntryType> binMapping_;
   int numMappedBins_;
 };
 
