@@ -21,7 +21,7 @@ inputFilePath = getHarvestingFilePath(channel)
 jobId = getJobId(channel)
 #jobId = 1
 
-makePlots(process, channel = channel, samples = recoSampleDefinitionsAHtoElecTau,
+makePlots(process, channel = channel, samples = recoSampleDefinitionsZtoElecTau,
           inputFilePath = inputFilePath, jobId = jobId,
           analyzer_drawJobConfigurator_indOutputFileName_sets = [
 ##                [ 'BgEstTemplateAnalyzer_ZeeJetMisIdEnriched' ],
@@ -48,12 +48,13 @@ makePlots(process, channel = channel, samples = recoSampleDefinitionsAHtoElecTau
 def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFilterStatisticsTable):
     module = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
         dqmDirectories = cms.PSet(),
-        columnsSummaryTable = cms.vstring("Passed"),
-        printSummaryTableOnly = cms.bool(True)                                                    
+        #columnsSummaryTable = cms.vstring("Passed"),
+        #columnsSummaryTable = cms.vstring("Passed","indiv. Efficiency"),
+        printSummaryTableOnly = cms.bool(False)                                                    
     )
 
     for processName, dqmDirectoryProcess in dqmDirectoriesProcess.items():
-        dqmDirectory_full = '/harvested' + '/' + dqmDirectoryProcess + '/' + dqmDirectoryFilterStatisticsTable + '/'
+        dqmDirectory_full = '/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryFilterStatisticsTable + '/'
         setattr(module.dqmDirectories, processName, cms.string(dqmDirectory_full))
 
     return module
@@ -61,22 +62,22 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
 dqmDirectoriesProcess = {
     'Ztautau'        : 'ZtautauSum',
     'Zee'            : 'ZeeSum',
-    'WplusJets'      : 'WplusJets_madgraph_Pat',
+    'WplusJets'      : 'WplusJets_madgraph_pat',
     'QCD'            : 'qcdSum',
-    'PhotonPlusJets' : 'photonPlusJetsSum',
+#    'PhotonPlusJets' : 'photonPlusJetsSum',
     'Data'           : 'data'
 }    
 
 process.dumpZtoElecTau_bgEstZtautauEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
     'BgEstTemplateAnalyzer_ZtautauEnriched/FilterStatistics')
-process.dumpZtoElecTau_bgEstZeeJetMisIdEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
-    'BgEstTemplateAnalyzer_ZeeJetMisIdEnriched/FilterStatistics')
+#process.dumpZtoElecTau_bgEstZeeJetMisIdEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
+#    'BgEstTemplateAnalyzer_ZeeJetMisIdEnriched/FilterStatistics')
 process.dumpZtoElecTau_bgEstZeeElectronMisIdEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
     'BgEstTemplateAnalyzer_ZeeElectronMisIdEnriched/FilterStatistics')
 process.dumpZtoElecTau_bgEstWplusJetsEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
     'BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics')
-process.dumpZtoElecTau_bgEstPhotonPlusJetsEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
-    'BgEstTemplateAnalyzer_PhotonPlusJetsEnriched/FilterStatistics')
+#process.dumpZtoElecTau_bgEstPhotonPlusJetsEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
+#    'BgEstTemplateAnalyzer_PhotonPlusJetsEnriched/FilterStatistics')
 process.dumpZtoElecTau_bgEstQCDenriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
     'BgEstTemplateAnalyzer_QCDenriched/FilterStatistics')
 
