@@ -535,7 +535,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
          vertexHistManagerForElecTauBgEstZtautauEnriched
     ),
 
-    eventDumps = cms.VPSet(),
+    eventDumps = cms.VPSet(elecTauEventDump),
    
     analysisSequence = cms.VPSet(
     
@@ -561,7 +561,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
             title = cms.string('Trigger'),
-            #saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
         ),
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertexQuality'),
@@ -737,8 +736,10 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),  
         cms.PSet(
             filter = cms.string('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched'),
-            title = cms.string('no 2nd OS, loosely-isolated electron')
+            title = cms.string('no 2nd OS, loosely-isolated electron'),
             #title = cms.string('not 85 < Mvis (e+tau) < 100 GeV'),
+            saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+            
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
@@ -776,3 +777,5 @@ bgEstZtautauEnrichedAnalysisSequence = cms.Sequence(
     + analyzeEventsBgEstZtautauEnriched
 
 )
+
+
