@@ -167,6 +167,8 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     # uncertainties
     jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut']))
 
+    jobOptions.append(('genFinalStateFilter', sample_info['genFinalStateFilter']))
+
     # Enable fake rates if desired - this must be done AFTER factorization and
     # any other modification of the event weights of the analyzers
     if 'enableFakeRates' in sample_info and enableFakeRates:
