@@ -272,6 +272,30 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
 					for eventDump in eventDumps:
 						_setattr_ifexists(eventDump, "hltResultsSource", triggerTag)
 
+
+
+@_requires(args=['channel'])
+def _setGenFinalStateFilter(process, enable, **kwargs):
+    #print "!!!!!! entering _setGenFinalStateFilter"
+    channel = kwargs['channel']
+    srcModule = "isGen"+channel
+    tag = cms.InputTag(srcModule)
+    #print "tag: ",tag
+    if enable:
+        print "Applying generator level final state matching"
+        print "Final State filter: ",srcModule
+	for processAttrName in dir(process):
+            processAttr = getattr(process, processAttrName)
+            if isinstance(processAttr, cms.EDAnalyzer):
+                if processAttr.type_() == "GenericAnalyzer":
+                    #print "Analyzer name: ",processAttr.name
+                    if hasattr(processAttr, "filters"):
+                        #print "has filters"
+                        filterPlugins = getattr(processAttr, "filters")
+                        setattr(filterPlugins[0], "src", tag)
+                        
+
+
 def _setTriggerBits(process, triggerSelect, **kwargs):
     if hasattr(process, "Trigger"):
         old_select = process.Trigger.selectors[0].hltAcceptPaths
@@ -401,6 +425,7 @@ def _changeTauId(process, tau_id, **kwargs):
 _METHOD_MAP = {
     'globalTag' : _setGlobalTag,
     'genPhaseSpaceCut' : _setGenPhaseSpaceCut,
+    'genFinalStateFilter' : _setGenFinalStateFilter,    
     'isBatchMode' : _setIsBatchMode,
     'maxEvents' : _setMaxEvents,
     'skipEvents' : _setSkipEvents,
