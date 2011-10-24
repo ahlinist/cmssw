@@ -6,20 +6,22 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE_SKIM = [
-        #'data_TauPlusX_Run2011A_May10ReReco_skim',
-        #'data_TauPlusX_Run2011A_PR_v4_skim',
+        'data_TauPlusX_Run2011A_May10ReReco_skim',
+        'data_TauPlusX_Run2011A_PR_v4_skim',
         'data_TauPlusX_Run2011A_05AugReReco_skim',
-        #'data_TauPlusX_Run2011A_PR_v6_skim',
-        #'Ztautau_powheg_skim',
-        #'DYtautauM10to20_powheg_skim',
+        'data_TauPlusX_Run2011A_PR_v6_skim',
+        'data_TauPlusX_Run2011B_PR_v1_skim',
+        'Ztautau_powheg_skim',
+        'DYtautauM10to20_powheg_skim',
         #'qqZll',  ## no Summer11 sample
         #'Zee_pythia_skim',
-        #'DYeeM10to20_pythia_skim',
+        'Zee_powheg_skim',
+        'DYeeM10to20_pythia_skim',
         #'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
         #'QCD_BCtoE_Pt20to30_skim','QCD_BCtoE_Pt30to80_skim','QCD_BCtoE_Pt80to170_skim',
         #'QCD_EM_Pt20to30_skim','QCD_EM_Pt30to80_skim','QCD_EM_Pt80to170_skim',
-        #'TTplusJets_madgraph_skim',
-        #'WplusJets_madgraph_skim',
+        'TTplusJets_madgraph_skim',
+        'WplusJets_madgraph_skim',
         #'WW_skim','WZ_skim',
         #'ZZ_skim', # no Summer11 sample
 ] 
@@ -106,11 +108,10 @@ TARGET_LUMI = (1610)/_picobarns
 #--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
-    'data_TauPlusX_Run2011A_May10ReReco_skim' : {  #204/pb 160329-163869, 1407306 events
+    'data_TauPlusX_Run2011A_May10ReReco_skim' : {  # 200/pb, 160431-163869, 1407306 events
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_423_May10ReReco_v3-2da1106465614f2b4aae43c293e2ca66/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt',
-        #'skim_eff' : 1407306./12485249.,
         'conditions' : 'GR_R_42_V14::All',
         'number_of_jobs' : 150,
         'type' : 'Data',
@@ -225,7 +226,7 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX'
         }
     },    
-    'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events 
+    'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events --> limited to LP dataset: 120/pb, runs 172620-172802
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-PromptReco-v6_skimElecTau_v3-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -244,9 +245,9 @@ RECO_SAMPLES = {
             'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '173236:MIN-173692:MAX'
         }
     },
-    'data_TauPlusX_Run2011B_PR_v1_skim' : {  # xxx/pb, 175860-177053 runs, 1270686 events 
+    'data_TauPlusX_Run2011B_PR_v1_skim' : {  # xxx/pb, runs 175860-178078, 2322590 events 
         'datasetpath' : '/TauPlusX/jkolb-Run2011B-PromptReco-v1_skimElecTau_v4-982c87f3521a6471fb16318d08f703d0/USER', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-177053_7TeV_PromptReco_Collisions11_JSON.txt',
+        #'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V25::All',
         'number_of_jobs' : 300,
@@ -342,7 +343,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
     },    
-    'Zee_pythia_skim' : { 
+    'Zee_powheg_skim' : { 
         'datasetpath' : "/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/jkolb-skimElecTau_v3_Summer11-982c87f3521a6471fb16318d08f703d0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 900,
