@@ -13,7 +13,7 @@ import copy
 
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 from TauAnalysis.BgEstimationTools.templateHistDefinitions_cfi import \
-  drawJobTemplateHist, drawJobAnalysisHistData, drawJobAnalysisHistMC, \
+  drawJobTemplateHist, drawJobAnalysisHistBias, drawJobAnalysisHistPurity, \
   plotBgEstData, plotBgEstMC_pure, plotBgEstMC_smSum, plotAnalysisMC_pure
 from TauAnalysis.BgEstimationTools.tools.drawTemplateHistConfigurator import drawTemplateHistConfigurator
 from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
@@ -31,8 +31,9 @@ process.source = cms.Source("EmptySource")
 dqmDirectoriesProcess = {
     'Ztautau'        : 'ZtautauSum',
     'Zee'            : 'ZeeSum',
-    'WplusJets'      : 'WplusJets_madgraph_Pat',
+    'WplusJets'      : 'WplusJets_madgraph_pat',
     'QCD'            : 'qcdSum',
+    'TTplusJets'     : 'TTplusJets_madgraph_pat',
 ##     'PhotonPlusJets' : 'photonPlusJetsSum',
 ##     'smSum'          : 'smSum',
     'Data'           : 'data'
@@ -68,12 +69,12 @@ meNames = {
 process.loadAnalysisResultsZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-           'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_2_4_patch1/src/TauAnalysis/BgEstimationTools/test/Run01/bgEstTemplateHistZtoElecTau_VisMass.root'
+           'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_2_8/src/TauAnalysis/BgEstimationTools/test/Run01/bgEstTemplateHistZtoElecTau_VisMass.root'
  
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/')
-#        dqmDirectory_store = cms.string('/analysis/harvested/ZtautauSum' + '/' + dqmDirectories_control['ZtautauEnriched'])
+#        dqmDirectory_store = cms.string('/harvested/ZtautauSum' + '/' + dqmDirectories_control['ZtautauEnriched'])
     )
 )
 
@@ -146,9 +147,9 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
             templates = cms.PSet(
                 visMass = cms.PSet(
                     meName = cms.string(
-                        '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        '/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
 						+ meNames['visMass'] + 'Shape' + '_' + 'ZtautauEnriched'
-##                         '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
 ## 						+ meNames['visMass'] + 'Shape' + '_' + 'ZtautauEnriched'
 
                     ),
@@ -204,19 +205,19 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
                 ),
                 SVfitMassInt = cms.PSet(
                     meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        '/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
                        + meNames['SVfitMassInt'] 
                     )
                 ),
                 SVfitMassFit = cms.PSet(
                     meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        '/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
                        + meNames['SVfitMassFit'] 
                     )
                 ),                
             ),    
             norm = cms.PSet(
-                initial = cms.double(2652)
+                initial = cms.double(4177)
             ),
             drawOptions = copy.deepcopy(drawOption_Ztautau_separate)
         ),
@@ -224,12 +225,16 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
             templates = cms.PSet(
                 visMass = cms.PSet(
                     meName = cms.string(
-##                         '/template/harvested/' + dqmDirectoriesProcess['Zee'] + '/' + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
+                        '/harvested/' + dqmDirectoriesProcess['Zee'] + '/' + dqmDirectoryAnalysis \
+						+ meNames['visMass'] + 'Shape' + '_' + 'ZtautauEnriched'
+    
+##                         '/harvested/' + dqmDirectoriesProcess['Zee'] + '/' + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
 ##                        + meNames['visMass'] + 'Shape' + '_' + 'ZeeElectronMisIdEnriched'
-##                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
+                        
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
 ##                        + meNames['visMass'] + 'Shape' + '_' + 'ZeeElectronMisIdEnriched'
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
-                       + meNames['visMass'] + 'CorrectedShape'
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
+##                        + meNames['visMass'] + 'CorrectedShape'
                     ),
                     fitSimultaneously = cms.bool(False),
 					## smoothing = cms.PSet(
@@ -261,27 +266,40 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
                 ),
                 SVfitMassInt = cms.PSet(
                     meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                        + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
-                        + meNames['SVfitMassInt'] + 'Shape' + '_' + 'ZeeElectronMisIdEnriched'
-##                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+##                         + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
+##                         + meNames['SVfitMassInt'] + 'Shape' + '_' + 'ZeeElectronMisIdEnriched'
+    
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
 ##                         + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
 ##                         + meNames['SVfitMassInt'] + 'CorrectedShape'
+
+                        '/harvested/' + dqmDirectoriesProcess['Zee'] + '/' \
+                        + dqmDirectoryAnalysis \
+                        + meNames['SVfitMassInt'] + 'Shape' + '_' + 'ZtautauEnriched'
+                        
                     )
                 ),
                 SVfitMassFit = cms.PSet(
                     meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                        + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
-                        + meNames['SVfitMassFit'] + 'Shape' + '_' + 'ZeeElectronMisIdEnriched'
-##                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+##                         + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
+##                         + meNames['SVfitMassFit'] + 'Shape' + '_' + 'ZeeElectronMisIdEnriched'
+    
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
 ##                         + dqmDirectoriesBgEnrichedSelections['ZeeElectronMisIdEnriched'] \
 ##                         + meNames['SVfitMassFit'] + 'CorrectedShape'
+    
+                        '/harvested/' + dqmDirectoriesProcess['Zee'] + '/' \
+                        + dqmDirectoryAnalysis \
+                        + meNames['SVfitMassFit'] + 'Shape' + '_' + 'ZtautauEnriched'
+
+                        
                     )
                 ),                
             ),    
             norm = cms.PSet(
-                initial = cms.double(1021)
+                initial = cms.double(2250)
             ),
             drawOptions = copy.deepcopy(drawOption_Zee_separate)
         ),
@@ -289,12 +307,13 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
             templates = cms.PSet(
                 visMass = cms.PSet(
                     meName = cms.string(
-## 						 '/template/harvested/' + dqmDirectoriesProcess['WplusJets'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+## 						 '/harvested/' + dqmDirectoriesProcess['WplusJets'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
 ## 						+ meNames['visMass']  + 'Shape' + '_' + 'WplusJetsEnriched'
-## 						 '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
-## 						+ meNames['visMass']  + 'Shape' + '_' + 'WplusJetsEnriched'
-						 '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
-						+ meNames['visMass']  + 'CorrectedShape'                                                 
+						 '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+						+ meNames['visMass']  + 'Shape' + '_' + 'WplusJetsEnriched'
+## 						 '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+## 						+ meNames['visMass']  + 'CorrectedShape' 
+                                                 
 
                     ),
                     fitSimultaneously = cms.bool(False),                                   
@@ -304,25 +323,25 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
                 ),
                 SVfitMassInt = cms.PSet(
                     meName = cms.string(
-##                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
-##                         + meNames['SVfitMassInt']  + 'Shape' + '_' + 'WplusJetsEnriched'
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
-                        + meNames['SVfitMassInt']  + 'CorrectedShape'
+                        '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+                        + meNames['SVfitMassInt']  + 'Shape' + '_' + 'WplusJetsEnriched'
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+##                         + meNames['SVfitMassInt']  + 'CorrectedShape'
 
                     )
                 ),
                 SVfitMassFit = cms.PSet(
                     meName = cms.string(
-##                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
-##                         + meNames['SVfitMassFit']  + 'Shape' + '_' + 'WplusJetsEnriched'
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
-                        + meNames['SVfitMassFit']  + 'CorrectedShape'
+                        '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+                        + meNames['SVfitMassFit']  + 'Shape' + '_' + 'WplusJetsEnriched'
+##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+##                         + meNames['SVfitMassFit']  + 'CorrectedShape'
                     )
                 ),                 
                 
             ),    
             norm = cms.PSet(
-                initial = cms.double(1301)
+                initial = cms.double(2369)
             ),
             drawOptions = drawOption_WplusJets_separate 
         ),
@@ -330,9 +349,9 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
 ##             templates = cms.PSet(
 ##                 visMass = cms.PSet(
 ##                     meName = cms.string(
-##                         '/template/harvested/' + dqmDirectoriesProcess['PhotonPlusJets'] + '/' + dqmDirectoriesBgEnrichedSelections['PhotonPlusJetsEnriched'] \
+##                         '/harvested/' + dqmDirectoriesProcess['PhotonPlusJets'] + '/' + dqmDirectoriesBgEnrichedSelections['PhotonPlusJetsEnriched'] \
 ##                        + meNames['visMass'] + 'Shape' + '_' + 'PhotonPlusJetsEnriched'
-## ##                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['PhotonPlusJetsEnriched'] \
+## ##                         '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['PhotonPlusJetsEnriched'] \
 ## ##                         + meNames['visMass'] + 'Shape' + '_' + 'PhotonPlusJetsEnriched'
 
 ##                     ),
@@ -343,7 +362,7 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
 ##                 ),
 ## ##                 SVfitMass = cms.PSet(
 ## ##                     meName = cms.string(
-## ##                         '/template/harvested/' + dqmDirectoriesProcess['PhotonPlusJets'] + '/' + dqmDirectoryAnalysis \
+## ##                         '/harvested/' + dqmDirectoriesProcess['PhotonPlusJets'] + '/' + dqmDirectoryAnalysis \
 ## ##                        + meNames['visMass'] 
 ## ##                     )
 ## ##                 )
@@ -357,9 +376,9 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
             templates = cms.PSet(
                 visMass = cms.PSet(
                     meName = cms.string(
-##                         '/template/harvested/' + dqmDirectoriesProcess['QCD'] + '/' + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
+##                         '/harvested/' + dqmDirectoriesProcess['QCD'] + '/' + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
 ##                        + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched'
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
+                        '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
                        + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched'
 
                     ),
@@ -371,24 +390,57 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
                 ),
                 SVfitMassInt = cms.PSet(
                     meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+                        '/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
                         + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
                         + meNames['SVfitMassInt'] + 'Shape' + '_' + 'QCDenriched'
                     )
                 ),
                 SVfitMassFit = cms.PSet(
                     meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+                        '/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
                         + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
                         + meNames['SVfitMassFit'] + 'Shape' + '_' + 'QCDenriched'
                     )
                 ),                
             ),    
             norm = cms.PSet(
-                initial = cms.double(2513)
+                initial = cms.double(5590)
             ),
             drawOptions = copy.deepcopy(drawOption_QCD_separate)
-        )
+        ),
+        TTplusJets = cms.PSet(
+            templates = cms.PSet(
+                visMass = cms.PSet(
+                    meName = cms.string(
+                       '/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
+                       + meNames['visMass'] + 'Shape' + '_' + 'ZtautauEnriched'
+                    ),
+                    fitSimultaneously = cms.bool(False),                                    
+##                     smoothing = visMass_smoothing.clone(
+##                         pluginName = cms.string("visMassSmoothingQCD"),
+##                         xMax = cms.double(150.)
+##                     )
+                ),
+                
+                SVfitMassInt = cms.PSet(
+                    meName = cms.string(
+                       '/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
+                       + meNames['SVfitMassInt'] + 'Shape' + '_' + 'ZtautauEnriched'
+                    )
+                ),
+                SVfitMassFit = cms.PSet(
+                    meName = cms.string(
+                       '/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
+                       + meNames['SVfitMassFit'] + 'Shape' + '_' + 'ZtautauEnriched'
+                    )
+                ),                
+            ),    
+            norm = cms.PSet(
+                initial = cms.double(253)
+            ),
+            drawOptions = copy.deepcopy(drawOption_TTplusJets_separate)
+        )  
+        
     ),
 
     # use "pseudo" data-samples consisting of all Monte Carlo processes for testing                      
@@ -396,19 +448,19 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
         distributions = cms.PSet(
             visMass = cms.PSet(
                 meName = cms.string(
-                    '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
+                    '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
                    + meNames['visMass']
                 )
             ),
             SVfitMassInt = cms.PSet(
                 meName = cms.string(
-                    '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
+                    '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
                    + meNames['SVfitMassInt']
                 )
             ),
             SVfitMassFit = cms.PSet(
                 meName = cms.string(
-                    '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
+                    '/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
                    + meNames['SVfitMassFit']
                 )
             ),            
@@ -445,32 +497,38 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateHistFitter",
         # constrain normalization of W + jets, ttbar + jets and QCD backgrounds
         # to Monte Carlo expectation multiplied by "k-factors" determined
         # in background enriched samples
-        constraints = cms.PSet(
-            Ztautau = cms.PSet(
-                norm = cms.PSet(
-                    value = cms.double(2652),
-                    uncertainty = cms.double(239)
-                )
-            ),    
-            ZeeElectronMisId = cms.PSet(
-                norm = cms.PSet(
-                    value = cms.double(1021),
-                    uncertainty = cms.double(111)
-                )
-            ),
-            WplusJets = cms.PSet(
-                norm = cms.PSet(
-                    value = cms.double(1301),   
-                    uncertainty = cms.double(118) 
-                )
-            ),
-            QCD = cms.PSet(
-                norm = cms.PSet(
-                    value = cms.double(2513), 
-                    uncertainty = cms.double(179)
-                )
-            )
-        ),
+##         constraints = cms.PSet(
+##             Ztautau = cms.PSet(
+##                 norm = cms.PSet(
+##                     value = cms.double(4177),
+##                     uncertainty = cms.double(4177)
+##                 )
+##             ),    
+##             ZeeElectronMisId = cms.PSet(
+##                 norm = cms.PSet(
+##                     value = cms.double(2250),
+##                     uncertainty = cms.double(2250)
+##                 )
+##             ),
+##             WplusJets = cms.PSet(
+##                 norm = cms.PSet(
+##                     value = cms.double(2369),   
+##                     uncertainty = cms.double(0.01*2369) 
+##                 )
+##             ),
+##             QCD = cms.PSet(
+##                 norm = cms.PSet(
+##                     value = cms.double(5590), 
+##                     uncertainty = cms.double(5590)
+##                 )
+##             ),
+##             TTplusJets = cms.PSet(
+##                 norm = cms.PSet(
+##                     value = cms.double(253), 
+##                     uncertainty = cms.double(10)
+##                 )
+##             )    
+##         ),
         cutUnfittedRegion = cms.bool(False),
         #cutUnfittedRegion = cms.bool(True),
         verbosity = cms.PSet(
