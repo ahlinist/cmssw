@@ -153,6 +153,44 @@ drawJobAnalysisHistZmumuEmbedding = cms.PSet(
     legend = cms.string('regular')
 )
 
+
+drawJobTemplateHist2 = cms.PSet(
+    plots = cms.VPSet(
+        plotBgEstData,
+        plotBgEstMC_smSum
+    ),
+    norm = cms.double(1.),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
+    yAxis = cms.string('numEntries_linear'),
+    legend = cms.string('regular')
+)
+
+drawJobAnalysisHistBias = cms.PSet(
+    plots = cms.VPSet(
+        plotAnalysisMC_pure,
+        plotBgEstMC_pure
+    ),
+    norm = cms.double(1.),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
+    yAxis = cms.string('numEntries_linear'),
+    legend = cms.string('regular')
+)
+
+drawJobAnalysisHistPurity = cms.PSet(
+    plots = cms.VPSet(
+        plotBgEstMC_pure,
+        plotBgEstMC_smSum,
+    ),
+    norm = cms.double(1.),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
+    yAxis = cms.string('numEntries_linear'),
+    legend = cms.string('regular')
+)
+
+
 #--------------------------------------------------------------------------------
 # define DQMHistPlotter module for plots comparing template shapes
 #--------------------------------------------------------------------------------
@@ -402,23 +440,23 @@ plotZtoElecTauStacked_template = plots_ZtoElecTau.clone(
 	plots = cms.PSet(
 		dqmMonitorElements = cms.vstring(''),
 		processes = cms.vstring(
-			#'TTplusJets',
-			#'diBoson',
+			'TTplusJets',
+			'diBoson',
 			'Zee',
 			'WplusJets',
-			'PhotonPlusJets',
+			#'PhotonPlusJets',
 			'QCD',
 			'Ztautau',
 			'Data'
 			)
 		),
 	stack = cms.vstring(
-		#'TTplusJets',
-		#'diBoson',
+		'TTplusJets',
+		'diBoson',
 		'Zee',
 		'WplusJets',
 		'QCD',
-		'PhotonPlusJets',
+		#'PhotonPlusJets',
 		'Ztautau'
 		)
 )
@@ -440,26 +478,26 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
             legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph_pat']['legendEntry']),
             type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph_pat']['type'])
         ),
-        #TTplusJets = cms.PSet(
-        #    dqmDirectory = cms.string(''),
-        #    legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph']['legendEntry']),
-        #    type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph']['type'])
-        #),
-        #diBoson = cms.PSet(
-        #    dqmDirectory = cms.string(''),
-        #    legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['legendEntry']),
-        #    type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['type'])
-        #),
+        TTplusJets = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph_pat']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph_pat']['type'])
+        ),
+        diBoson = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['type'])
+        ),
         QCD = cms.PSet(
             dqmDirectory = cms.string(''),
             legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['legendEntry']),
             type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['type'])
         ),
-        PhotonPlusJets = cms.PSet(
-            dqmDirectory = cms.string(''),
-	    legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['legendEntry']),
-	    type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['type'])
-	),
+##         PhotonPlusJets = cms.PSet(
+##             dqmDirectory = cms.string(''),
+## 	    legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['legendEntry']),
+## 	    type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['type'])
+## 	),
         Data = cms.PSet(
             dqmDirectory = cms.string(''),
             legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['legendEntry']),
@@ -484,7 +522,7 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
             textAlign = cms.int32(12),
             text = cms.vstring(
                 'CMS Preliminary', 
-                'L = ' + str(recoSampleDefinitionsZtoMuTau_7TeV['TARGET_LUMI']) + 'pb^{-1}',
+                'L = ' + str(recoSampleDefinitionsZtoElecTau['TARGET_LUMI']) + 'pb^{-1}',
                 '#sqrt{s}=7TeV'
             )
         )
@@ -494,17 +532,18 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
             Ztautau = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['ZtautauSum']['drawOption'],
             Zee = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['ZeeSum']['drawOption'],
             WplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph_pat']['drawOption'],
-            PhotonPlusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['drawOption'],
+            #PhotonPlusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['drawOption'],
             QCD = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['drawOption'],
             Data = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['drawOption'],
-            #TTplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph']['drawOption'],
-            #diBoson = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['drawOption'],
+            TTplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph_pat']['drawOption'],
+            diBoson = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['drawOption'],
         )
     ),
     drawJobs = cms.PSet(),
     outputFilePath = cms.string('./plots/'),
     indOutputFileName = cms.string(''),
 )
+
 
 #----------------------------------------------------------------------------------------------
 # make objects specific to W->tau nu channel
