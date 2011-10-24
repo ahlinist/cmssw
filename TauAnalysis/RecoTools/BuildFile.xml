@@ -9,6 +9,7 @@
 <use   name="DataFormats/VertexReco"/>
 <use   name="TauAnalysis/CandidateTools"/>
 <use   name="root"/>
+<use   name="roottmva"/>
 <export>
   <lib   name="1"/>
 </export>
