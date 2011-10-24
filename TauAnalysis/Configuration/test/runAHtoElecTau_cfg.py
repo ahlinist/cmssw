@@ -74,7 +74,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_423_v2/2453a4eaae124a4a3fe9f365dc31e11f/elecTauSkim_1_1_mhN.root'
+        'file:/store/user/jkolb/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/skimElecTau_423_v1/2453a4eaae124a4a3fe9f365dc31e11f/elecTauSkim_1_2_zBP.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -112,11 +112,11 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 # uncomment to replace caloJets by pfJets
 switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), 
 		doBTagging = True, outputModule = "")
-process.patJetCorrections.remove(process.patJetCorrFactors)
-process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
-process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
-process.producePatTupleAHtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
-process.producePatTupleAHtoElecTauSpecific.remove(process.patPFtype1METs)
+#process.patJetCorrections.remove(process.patJetCorrFactors)
+#process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
+#process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
+#process.producePatTupleAHtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
+#process.producePatTupleAHtoElecTauSpecific.remove(process.patPFtype1METs)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -151,95 +151,12 @@ process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
 #--------------------------------------------------------------------------------
 #  make cut changes
 from TauAnalysis.Configuration.tools.changeCut import changeCut
+changeCut(process,"selectedPatTausLeadTrk",'tauID("decayModeFinding")')
+changeCut(process,"selectedPatTausLeadTrkPt",'leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
+changeCut(process,"selectedPatTausTaNCdiscr",'tauID("byLooseCombinedIsolationDeltaBetaCorr")')
 
-#
-# update vertex sources
-#
-#changeCut(process,"selectedPatMuonsVbTfId",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
-#changeCut(process,"selectedPatMuonsTrkIP",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
-#changeCut(process,"selectedPatElectronsTrkIP",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
-#changeCut(process,"selectedPatElectronsTrkIPlooseIsolation",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
-#changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
-#changeCut(process,"selectedPatElectronsForElecTauTrkIPlooseIsolation",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
-
-#
-# electron selection
-#
-
-#  VBTF WP80 electron ID (pt > 20); WP70 (15 < pt < 20)
-changeCut(process,"selectedPatElectronsForElecTauId",'(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))')
-#  electron anti-crack cut
-changeCut(process,"selectedPatElectronsForElecTauAntiCrackCut","abs(eta) < 1.442 | abs(eta) > 1.566")
-
-#  electron eta range
-changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
-
-#  electron pt
-changeCut(process,"selectedPatElectronsForElecTauPt","pt > 15")
-
-#  PF relative iso
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.1),"sumPtMaxEB")
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.1),"sumPtMaxEE")
-changeCut(process,"selectedPatElectronsForElecTauIsoLooseIsolation",cms.double(0.3),"sumPtMax")
-
-#  electron conversion veto
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.int32(0), attribute = "maxMissingInnerHits")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.int32(2), attribute = "maxMissingInnerHits")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "invertConversionVeto")
-
-#  electron track IP_xy cut
-changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.02),"IpMax")
-changeCut(process, "selectedPatElectronsForElecTauTrkIPlooseIsolation", 0.02, attribute = "IpMax")
-
-#
-# hadronic tau decay selection
-#
-
-#  eta cut for taus
-changeCut(process,"selectedPatTausForElecTauEta","abs(eta) < 2.3")
-
-#  Pt cut for taus
-changeCut(process,"selectedPatTausForElecTauPt","pt > 20")
-
-# decay mode finding
-changeCut(process,"selectedPatTausLeadTrk",'tauID("decayModeFinding") > 0.5')
-changeCut(process,"selectedPatTausForElecTauDecayModeFinding",'tauID("decayModeFinding") > 0.5')
-
-# decay mode finding
-changeCut(process,"selectedPatTausLeadTrkPt",'tauID("decayModeFinding") > 0.5')
-changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("decayModeFinding") > 0.5')
-
-#  put tau ID at HPS loose
-changeCut(process,"selectedPatTausTaNCdiscr",'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
-changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
-
-#  electron veto for taus
-changeCut(process,"selectedPatTausForElecTauElectronVeto",'tauID("againstElectronTight")')
-
-# ECAl crack veto for taus 
-changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
-
-#  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonLoose") > 0.5')
-
-#
-# di-tau pair selection
-#
-
-#  elec/tau overlap cut
-changeCut(process,"selectedElecTauPairsForAHtoElecTauAntiOverlapVeto","dR12 > 0.5")
-changeCut(process,"selectedElecTauPairsForAHtoElecTauAntiOverlapVetoLooseElectronIsolation", "dR12 > 0.5")
-
-#  transverse mass of electron + MET
-changeCut(process,"selectedElecTauPairsForAHtoElecTauMt1MET","mt1MET < 4000.")
-changeCut(process,"selectedElecTauPairsForAHtoElecTauMt1METlooseElectronIsolation", "mt1MET < 4000.")
-
-# enable cut on Pzeta variable
-changeCut(process, "selectedElecTauPairsForAHtoElecTauPzetaDiff", "(pZeta - 1.5*pZetaVis) > -20.")
-changeCut(process, "selectedElecTauPairsForAHtoElecTauPzetaDiffLooseElectronIsolation", "(pZeta - 1.5*pZetaVis) > -20.")
-
-# change isolation treshold for second electron used in di-electron veto to 0.30 * electron Pt
-changeCut(process, "selectedPatElectronsForZeeHypothesesLoosePFRelIso", 0.30, "sumPtMax")
+# turn off di-electron veto
+#process.cfgDiElecPairZeeHypothesisVetoByLooseIsolation.maxNumber = cms.uint32(5)
 
 #--------------------------------------------------------------------------------
 
@@ -350,14 +267,14 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 
 #--------------------------------------------------------------------------------
 #
-process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
+process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoElecTauSpecific + process.producePatTupleAHtoElecTauSpecific)
 #
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-#if not hasattr(process, "isBatchMode"):
-#    process.p.replace(process.producePatTupleAHtoElecTauSpecific, process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
+if not hasattr(process, "isBatchMode"):
+    process.p.replace(process.producePatTupleAHtoElecTauSpecific, process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
