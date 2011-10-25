@@ -129,3 +129,209 @@ void NRQCD(){
   
   c1->SaveAs("COM_NRQCD_0_2.pdf");
 }
+
+float sum_eta20_25[3], sum_eta25_30[3], sum_eta30_35[3], sum_eta35_40[3], sum_eta40_45[3];
+
+void calculateLHCb(){
+  ifstream in; 
+  in.open("LHCb.dat");
+  float eta20_25[15][3], eta25_30[15][3], eta30_35[15][3], eta35_40[15][3], eta40_45[15][3];
+  for (int i=0; i<15; i++){
+    for (int j=0; j<3; j++){
+      in >> eta20_25[i][j];
+    }   
+    for (int j=0; j<3; j++){
+      in >> eta25_30[i][j];
+    }   
+    for (int j=0; j<3; j++){
+      in >> eta30_35[i][j];
+    }   
+    for (int j=0; j<3; j++){
+      in >> eta35_40[i][j];
+    }   
+    for (int j=0; j<3; j++){
+      in >> eta40_45[i][j];
+    }   
+  }   
+  for (int i=0; i<15; i++){
+    for (int j=0; j<3; j++){    
+      cout<< " " << eta20_25[i][j] << " " << eta25_30[i][j] << " " << eta30_35[i][j] << " " << eta35_40[i][j] << " " << eta40_45[i][j] << " " << endl;
+    }   
+  }   
+  for (int i=0; i<15; i++){
+    sum_eta20_25[0] += eta20_25[i][0];
+    sum_eta25_30[0] += eta25_30[i][0];
+    sum_eta30_35[0] += eta30_35[i][0];
+    sum_eta35_40[0] += eta35_40[i][0];
+    sum_eta40_45[0] += eta40_45[i][0];
+    
+    sum_eta20_25[1] += eta20_25[i][1];
+    sum_eta25_30[1] += eta25_30[i][1];
+    sum_eta30_35[1] += eta30_35[i][1];
+    sum_eta35_40[1] += eta35_40[i][1];
+    sum_eta40_45[1] += eta40_45[i][1];
+    
+    sum_eta20_25[2] += eta20_25[i][2];
+    sum_eta25_30[2] += eta25_30[i][2];
+    sum_eta30_35[2] += eta30_35[i][2];
+    sum_eta35_40[2] += eta35_40[i][2];
+    sum_eta40_45[2] += eta40_45[i][2];
+    
+  }   
+  for (int i=0; i<3; i++){
+    cout << endl << " " << sum_eta20_25[i] << " " << sum_eta25_30[i] << " " << sum_eta30_35[i] << " " << sum_eta35_40[i] << " " << sum_eta40_45[i] << " " << endl;
+  }
+}
+
+void DrawLHCb(){
+	
+	TCanvas *c2 = new TCanvas();//"c1","title",800,600);
+	TH1F *frame = gPad->DrawFrame(0,0,4.5,130);
+	frame->SetStats(0);
+	frame->GetXaxis()->SetTitle("|y|^{Y(1S)}");
+	frame->GetYaxis()->SetTitle("d#sigma/dy (nb)");
+	frame->GetYaxis()->SetTitleOffset(1.1);
+	frame->Draw();
+
+	//CMS
+	
+	
+	//LHCb
+
+	calculateLHCb();
+	float eta[5]={2.25,2.75,3.25,3.75,4.25};
+	float eta_err[5]={0.25,0.25,0.25,0.25,0.25};
+	float y[5]={sum_eta20_25[0],sum_eta25_30[0],sum_eta30_35[0],sum_eta35_40[0],sum_eta40_45[0]};
+	float y_err_stat[5]={sum_eta20_25[1],sum_eta25_30[1],sum_eta30_35[1],sum_eta35_40[1],sum_eta40_45[1]};
+	float y_err_syst[5]={sum_eta20_25[2],sum_eta25_30[2],sum_eta30_35[2],sum_eta35_40[2],sum_eta40_45[2]};
+	float y_err[5];
+	for (int i=0; i<3; i++){
+		y_err[i]=y_err_stat[i]+y_err_syst[i];
+	}
+	TGraphErrors *LHCb = new TGraphErrors(5, eta, y, eta_err, y_err_syst);
+	LHCb->SetMarkerColor(kGreen+1);
+	LHCb->SetMarkerStyle(21);
+	LHCb->Draw("samePZ");
+
+	leg = new TLegend(0.35,0.75,0.9,0.9);
+	leg->AddEntry(LHCb, "LHCb 32.4 pb^{-1} (p_{T}<15 GeV/c)", "PLE");
+	leg->Draw();
+	TLatex latex1, latex2;
+	latex1.DrawLatex(0.5,15,"#Upsilon(1S)");
+	latex2.DrawLatex(0.5,30, "#sqrt{s} = 7 TeV");
+	c2->SaveAs("LHCb.pdf");
+}
+
+void Tevatron(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  TFile *f = new TFile("Final2S.root");
+  TGraphAsymmErrors *S2;
+  S2 = (TGraphAsymmErrors*)gFile->Get("Ups2S");  
+  TFile *f = new TFile("Final3S.root");
+  TGraphAsymmErrors *S3;
+  S3 = (TGraphAsymmErrors*)gFile->Get("Ups3S");
+  
+  // Tevatron
+  TFile *f = new TFile("TevatronResults.root");
+  TGraphAsymmErrors *CDF1s;  CDF1s = (TGraphAsymmErrors*)gFile->Get("CDF_Y1S");
+  TGraphAsymmErrors *D01s;  D01s = (TGraphAsymmErrors*)gFile->Get("D0_Y1S");
+  TGraphAsymmErrors *CDF2s;  CDF2s = (TGraphAsymmErrors*)gFile->Get("CDF_Y2S");
+  TGraphAsymmErrors *CDF3s;  CDF3s = (TGraphAsymmErrors*)gFile->Get("CDF_Y3S");
+  
+  double sigma1s(8.339); double sigma2s(2.151); double sigma3s(1.138); 
+  double y1s[10]; double y1s_errh[10]; double y1s_errl[10];
+  double y2s[10]; double y2s_errh[10]; double y2s_errl[10];
+  double y3s[10]; double y3s_errh[10]; double y3s_errl[10];
+  for (int i = 0; i < S1->GetN(); ++i) {
+    y1s[i] = S1->GetY()[i]/sigma1s; 
+    y1s_errh[i] = S1->GetErrorYhigh(i)/sigma1s;
+    y1s_errl[i] = S1->GetErrorYlow(i)/sigma1s;
+    
+    y2s[i] = S2->GetY()[i]/sigma2s; 
+    y2s_errh[i] = S2->GetErrorYhigh(i)/sigma2s;
+    y2s_errl[i] = S2->GetErrorYlow(i)/sigma2s;
+    
+    y3s[i] = S3->GetY()[i]/sigma3s; 
+    y3s_errh[i] = S3->GetErrorYhigh(i)/sigma3s;
+    y3s_errl[i] = S3->GetErrorYlow(i)/sigma3s;
+  }
+  
+  double xbin[10] = {1., 3., 6., 9., 11.5, 14.5, 18., 22.5, 27.5, 40.};
+  double xh[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  double xl[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  S1_norm = new TGraphAsymmErrors(10,xbin,y1s,xl,xh,y1s_errl,y1s_errh);
+  S2_norm = new TGraphAsymmErrors(10,xbin,y2s,xl,xh,y2s_errl,y2s_errh);
+  S3_norm = new TGraphAsymmErrors(10,xbin,y3s,xl,xh,y3s_errl,y3s_errh);
+  
+  TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
+  c1->SetLogy();
+  CDF1s->GetXaxis()->SetTitleOffset(0.85);
+  CDF1s->GetYaxis()->SetTitleOffset(0.95);
+  CDF1s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  CDF1s->GetYaxis()->SetTitle("(d#sigma/dp_{T})/#sigma_{TOT}");
+  CDF1s->SetTitle("");
+  CDF1s->SetMinimum(0.001);
+  CDF1s->SetMaximum(0.2);
+  S1_norm->SetMarkerColor(2); CDF1s->SetMarkerColor(4); D01s->SetMarkerColor(3); 
+  S1_norm->SetMarkerStyle(21); CDF1s->SetMarkerStyle(21); D01s->SetMarkerStyle(21);
+  CDF1s->Draw("AP");
+  D01s->Draw("P");
+  S1_norm->Draw("P");
+  legg = new TLegend(0.5,0.7,0.7,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
+  legg->SetHeader("         #Upsilon(1S)");
+  legge = legg->AddEntry(S1_norm, "CMS, |y| < 2.4, #sqrt{s} = 7 TeV" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(CDF1s,   "CDF, |y| < 0.4, #sqrt{s} = 1.96 TeV" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(D01s,    "D0 , |y| < 1.8, #sqrt{s} = 1.8 TeV" ,"p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c1->SaveAs("Tevatron1S.pdf");
+  
+  TCanvas *c2 = new TCanvas("c2", "c2", 800,600);
+  c2->SetLogy();
+  CDF2s->GetXaxis()->SetTitleOffset(0.85);
+  CDF2s->GetYaxis()->SetTitleOffset(0.95);
+  CDF2s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  CDF2s->GetYaxis()->SetTitle("(d#sigma/dp_{T})/#sigma_{TOT}");
+  CDF2s->SetTitle("");
+  CDF2s->SetMinimum(0.001);
+  CDF2s->SetMaximum(0.2);
+  S2_norm->SetMarkerColor(2); CDF2s->SetMarkerColor(4); 
+  S2_norm->SetMarkerStyle(21); CDF2s->SetMarkerStyle(21);
+  CDF2s->Draw("AP");
+  S2_norm->Draw("P");
+  legg = new TLegend(0.5,0.7,0.7,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
+  legg->SetHeader("         #Upsilon(2S)");
+  legge = legg->AddEntry(S1_norm, "CMS, |y| < 2.4, #sqrt{s} = 7 TeV" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(CDF1s,   "CDF, |y| < 0.4, #sqrt{s} = 1.96 TeV" ,"p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c2->SaveAs("Tevatron2S.pdf");
+  
+  TCanvas *c3 = new TCanvas("c3", "c3", 800,600);
+  c3->SetLogy();
+  CDF3s->GetXaxis()->SetTitleOffset(0.85);
+  CDF3s->GetYaxis()->SetTitleOffset(0.95);
+  CDF3s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  CDF3s->GetYaxis()->SetTitle("(d#sigma/dp_{T})/#sigma_{TOT}");
+  CDF3s->SetTitle("");
+  CDF3s->SetMinimum(0.001);
+  CDF3s->SetMaximum(0.2);
+  S3_norm->SetMarkerColor(2); CDF3s->SetMarkerColor(4); 
+  S3_norm->SetMarkerStyle(21); CDF3s->SetMarkerStyle(21);
+  CDF3s->Draw("AP");
+  S3_norm->Draw("P");
+  legg = new TLegend(0.5,0.7,0.7,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
+  legg->SetHeader("         #Upsilon(3S)");
+  legge = legg->AddEntry(S1_norm, "CMS, |y| < 2.4, #sqrt{s} = 7 TeV" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(CDF1s,   "CDF, |y| < 0.4, #sqrt{s} = 1.96 TeV" ,"p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c2->SaveAs("Tevatron3S.pdf"); 
+  
+  
+}
+
