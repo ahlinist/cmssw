@@ -278,7 +278,7 @@ selectPatTaus = patTauSelConfigurator.configure(pyNameSpace = locals())
 #  in order to avoid double-counting the same particle both as electron and as tau-jet;
 #  apply anti-electron veto only; no need to apply anti-muon veto)
 #
-selectedPatTausForElecTauAntiOverlapWithElectronsVeto.dRmin = cms.double(0.3)
+selectedPatTausForElecTauAntiOverlapWithElectronsVeto.dRmin = cms.double(0.)
 selectedPatTausForElecTauEta.cut = selectedPatTausEta23.cut
 selectedPatTausForElecTauPt.cut = selectedPatTausPt20.cut
 selectedPatTausForElecTauDecayModeFinding.cut = cms.string('tauID("decayModeFinding") > 0.5')
@@ -286,7 +286,7 @@ selectedPatTausForElecTauLeadTrkPt.cut = cms.string('tauID("decayModeFinding") >
 selectedPatTausForElecTauIso.cut = cms.string('tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
 selectedPatTausForElecTauElectronVeto.cut = cms.string('tauID("againstElectronTight") > 0.5')
 selectedPatTausForElecTauEcalCrackVeto.cut =  selectedPatTausEcalCrackVeto.cut
-selectedPatTausForElecTauMuonVeto.cut = selectedPatTausMuonVeto.cut
+selectedPatTausForElecTauMuonVeto.cut = cms.string('tauID("againstMuonLoose") > 0.5')
 
 patTauSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedPatTausForElecTauAntiOverlapWithElectronsVeto,
