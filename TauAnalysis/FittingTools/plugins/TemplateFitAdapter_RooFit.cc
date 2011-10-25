@@ -933,7 +933,8 @@ void TemplateFitAdapter_RooFit::makeControlPlotsImpSpecific()
       smoothPdfWrapper->getPDF()->plotOn(
         frame, RooFit::LineStyle(1), RooFit::LineColor(2), RooFit::LineWidth(2));
 
-      if ( frame->GetMaximum(1.99) ) frame->SetMaximum(1.99);
+      //if ( frame->GetMaximum(1.99) ) frame->SetMaximum(1.99);
+      frame->SetMaximum(1.1*frame->GetMaximum());
       frame->SetMinimum(0.);
 
       frame->Draw();
