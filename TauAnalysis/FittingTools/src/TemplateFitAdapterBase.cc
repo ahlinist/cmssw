@@ -84,7 +84,8 @@ void TemplateFitAdapterBase::data1dType::initialize()
   fittedFraction_ = ( integral_ > 0. ) ? (fittedIntegral_/integral_) : 1.;
   std::cout << " fitted fraction = " << fittedFraction_ << std::endl;
   
-  fluctHistogram_ = (TH1*)histogram_->Clone();
+  //  fluctHistogram_ = (TH1*)histogram_->Clone();
+  fluctHistogram_ = (TH1*)me_->getTH1()->Clone();
 }
 
 void TemplateFitAdapterBase::data1dType::fluctuate(bool, bool, double numEntries)
