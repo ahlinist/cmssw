@@ -24,18 +24,22 @@ public:
 
   // -- Momentum
   TVector3       fPlab;
+  double         fPtE, fPhiE, fEtaE; 
 
   // -- Tracking parameters
   int            fQ;                            // charge
 
-  int            fDof, fValidHits;
+  int            fDof, fValidHits, fValidHitFraction;
   double         fChi2;
   int            fTrackQuality; 
   int            fAlgorithm;                    // see DataFormats/TrackReco/interface/TrackBase.h
   int            fHitPattern[20];               // see DataFormats/TrackReco/interface/HitPattern.h
 
-  double         fdz, fdzE, fd0, fd0E;          // the verbatim track parameters
-  double         fLip, fLipE, fTip, fTipE;      // longitudinal/transverse impact parameters wrt something
+  // verbatim track parameters
+  double         fdz, fdzE, fd0, fd0E, fdsz, fdszE, fdxy, fdxyE;  
+  // longitudinal/transverse impact parameters wrt PV/SV
+  double         fLip, fLipE, fTip, fTipE;
+  double         fBsLip, fBsLipE, fBsTip, fBsTipE;
 
   int            fMuID, fMuIndex; 
 

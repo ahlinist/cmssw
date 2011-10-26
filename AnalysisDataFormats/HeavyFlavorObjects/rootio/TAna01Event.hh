@@ -72,6 +72,9 @@ public:
   TAnaVertex*         getPV(int n);
   virtual TAnaVertex* addPV();
 
+  // -- Beamspot
+  TAnaVertex          fBeamSpot; 
+
   // -- GenJets
   int                 nGenJets() {return fnGenJets;}
   TAnaJet*            getGenJet(int n);
@@ -94,7 +97,7 @@ public:
   int               fEventBits;
   int               fDetectorStatus; 
   int               fEventTag;
-  int               fBestPV;
+  int               fBestPV;   // be careful with this...
 
   // -- MC event/generation information
   int               fProcessID;
@@ -103,8 +106,8 @@ public:
   double            fEventWeight;
   double            fPtHat;
 
-  // -- Lumi??
-  double            fLumi; 
+  // -- Lumi
+  double            fLumi, fLumiInt; 
   int               fLumiSection; 
   int               fOrbit; 
   int               fBx; 
