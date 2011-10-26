@@ -183,7 +183,8 @@ void XSSystTot_2S(){
     s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1 += S9->GetBinContent(i)*S9->GetBinContent(i); //rho
-    s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    if ( i == 5 ) s1  += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    if ( i != 5 ) s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig    
@@ -320,7 +321,8 @@ void XSSystTot_3S(){
     s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1 += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
+    if ( i == 5 ) s1  += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    if ( i != 5 ) s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
