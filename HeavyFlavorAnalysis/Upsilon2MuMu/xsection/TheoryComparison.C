@@ -188,13 +188,16 @@ void DrawLHCb(){
 	TCanvas *c2 = new TCanvas();//"c1","title",800,600);
 	TH1F *frame = gPad->DrawFrame(0,0,4.5,130);
 	frame->SetStats(0);
+	frame->SetMaximum(250.);
 	frame->GetXaxis()->SetTitle("|y|^{Y(1S)}");
 	frame->GetYaxis()->SetTitle("d#sigma/dy (nb)");
 	frame->GetYaxis()->SetTitleOffset(1.1);
 	frame->Draw();
 
 	//CMS
-	
+	TFile *f = new TFile("Final1S_rap.root");
+	TGraphAsymmErrors *S1;
+	S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S_LHCb");
 	
 	//LHCb
 
@@ -212,9 +215,10 @@ void DrawLHCb(){
 	LHCb->SetMarkerColor(kGreen+1);
 	LHCb->SetMarkerStyle(21);
 	LHCb->Draw("samePZ");
-
+	S1->Draw("P");
 	leg = new TLegend(0.35,0.75,0.9,0.9);
 	leg->AddEntry(LHCb, "LHCb 32.4 pb^{-1} (p_{T}<15 GeV/c)", "PLE");
+	leg->AddEntry(S1, "CMS 36.7 pb^{-1} (p_{T}<50 GeV/c)", "PLE");
 	leg->Draw();
 	TLatex latex1, latex2;
 	latex1.DrawLatex(0.5,15,"#Upsilon(1S)");
