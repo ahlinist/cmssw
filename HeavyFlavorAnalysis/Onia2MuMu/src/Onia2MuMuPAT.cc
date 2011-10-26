@@ -332,6 +332,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  myCand.addUserFloat("ppdlTrue",MCinfo.second);
 		}
 	      }
+	    } else {
+	      myCand.addUserInt("momPDGId",0);
+	      myCand.addUserFloat("ppdlTrue",-99.);
 	    }
 	  }
 	} else {
