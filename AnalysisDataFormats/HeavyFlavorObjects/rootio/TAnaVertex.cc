@@ -40,12 +40,12 @@ void TAnaVertex::clear() {
 void TAnaVertex::addTrack(int index) {
   if (fNtracks == TANAVERTEX_MAXTRK-1) {
     cout << "TAnaVertex: Too many tracks in vertex. Not adding track!" << endl;
-    fTracksIndex[fNtracks-1] = -99;
+    fTracksIndex[fNtracks-1] = 255;
     return;
   }
 
   //  cout << "TAnaVertex: Adding track index " << index << " at array position " << fNtracks << endl;
-  fTracksIndex[fNtracks] = index;
+  fTracksIndex[fNtracks] = static_cast<char>(index);
   ++fNtracks;
 }
 

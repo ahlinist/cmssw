@@ -31,6 +31,7 @@ public:
   TAnaVertex  fVtx;
 
   TVector3    fPlab;
+  double      fPtE, fPhiE, fEtaE; 
 
   // -- point of closest approach and related quantities
   double      fMinDoca, fMaxDoca;
@@ -39,7 +40,7 @@ public:
   // -- information on the associated primary vertex
   int         fPvIdx; 
   double      fPvLip, fPvLipE, fPvTip, fPvTipE;
-  double      fPvLip2, fPvLipE2; // Second best PV for pile-up detection
+  double      fPvLip2, fPvLipE2, fPvTip2, fPvTipE2; // Second best PV for pile-up detection
 
   // -- proper lifetime and its error
   double      fTauxy, fTauxyE; // from 2d (r-phi) measurement

@@ -55,7 +55,7 @@ private:
   double fCovXX[9];
 
   int            fNtracks;
-  int            fTracksIndex[TANAVERTEX_MAXTRK];
+  char           fTracksIndex[TANAVERTEX_MAXTRK];
 
   ClassDef(TAnaVertex,1)
 

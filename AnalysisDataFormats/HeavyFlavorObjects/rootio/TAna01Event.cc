@@ -56,9 +56,20 @@ TAna01Event::TAna01Event(Int_t Option) {
 // ----------------------------------------------------------------------
 void TAna01Event::Clear(Option_t *option) {
 
-  fLumi = fLumiSection = fBx = fOrbit = -9999; 
+  fLumi = fLumiInt = fLumiSection = fBx = fOrbit = -9999; 
   fTimeLo = fTimeHi = 0; 
-  
+
+  for (int i = 0; i < NL1T; ++i) {
+    fL1TPrescale[NL1T] = 0;
+    fL1TResult[i] = fL1TMask[i] = fL1TError[i] = false; 
+  }
+
+  for (int i = 0; i < NHLT; ++i) {
+    fHLTPrescale[i] = 0; 
+    fHLTResult[i] = fHLTWasRun[i] = fHLTError[i] = false; 
+  }
+
+
   TAnaTrack *pTrack;
   for (int i = 0; i < fnRecTracks; i++) {
     pTrack = getRecTrack(i);
