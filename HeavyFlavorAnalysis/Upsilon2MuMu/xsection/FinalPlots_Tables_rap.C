@@ -40,6 +40,7 @@ void XSSystTot_1S(){
   
   double s0(0.), s0_(0.);
   double Errh_ratio[6]; double Errl_ratio[6]; double y_ratio[6];
+  double Errh_lhcb[6]; double Errl_lhcb[6]; double y_lhcb[6];
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); ///Muid
@@ -84,6 +85,13 @@ void XSSystTot_1S(){
   double xh[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
   double xl[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
   
+  double br_scale(40.3);
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    Errh_lhcb[i-1] = Errh[i-1]*br_scale;
+    Errl_lhcb[i-1] = Errl[i-1]*br_scale;
+    y_lhcb[i-1] = y[i-1]*br_scale;
+  }
+  
   gr = new TGraphAsymmErrors(6,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups1S");
   gr->SetMarkerColor(1);
@@ -96,10 +104,17 @@ void XSSystTot_1S(){
   gr_ratio->SetMarkerStyle(21);
   gr_ratio->Draw("AP");  
   
+  gr_lhcb = new TGraphAsymmErrors(6,xbin,y_lhcb,xl,xh,Errl_lhcb,Errh_lhcb);
+  gr_lhcb->SetName("Ups1S_LHCb");
+  gr_lhcb->SetMarkerColor(1);
+  gr_lhcb->SetMarkerStyle(21);
+  gr_lhcb->Draw("AP");  
+  
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
   TFile *f = new TFile("Final1S_rap.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
+  gr_lhcb->Write();
   S100->Write();
   S200->Write();
   
