@@ -264,9 +264,10 @@ void Tevatron(){
     y3s_errl[i] = S3->GetErrorYlow(i)/sigma3s;
   }
   
-  double xbin[10] = {1., 3., 6., 9., 11.5, 14.5, 18., 22.5, 27.5, 40.};
-  double xh[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
-  double xl[10] = {1., 1., 2., 1., 1.5, 1.5, 2., 2.5, 2.5, 10.};
+  double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
+  double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
+  double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
+
   S1_norm = new TGraphAsymmErrors(10,xbin,y1s,xl,xh,y1s_errl,y1s_errh);
   S2_norm = new TGraphAsymmErrors(10,xbin,y2s,xl,xh,y2s_errl,y2s_errh);
   S3_norm = new TGraphAsymmErrors(10,xbin,y3s,xl,xh,y3s_errl,y3s_errh);
@@ -334,7 +335,7 @@ void Tevatron(){
   legge = legg->AddEntry(S1_norm, "CMS, |y| < 2.4, #sqrt{s} = 7 TeV" ,"p"); legge->SetTextColor(kBlack);
   legge = legg->AddEntry(CDF1s,   "CDF, |y| < 0.4, #sqrt{s} = 1.96 TeV" ,"p"); legge->SetTextColor(kBlack);
   legg->Draw();
-  c2->SaveAs("Tevatron3S.pdf"); 
+  c3->SaveAs("Tevatron3S.pdf"); 
   
   
 }
