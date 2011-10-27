@@ -81,9 +81,9 @@ void XSSystTot_1S(){
     s0=0;s0_=0;
   }
   
-  double xbin[6] = {0.2, 0.6, 1., 1.4, 1.8, 2.2};
-  double xh[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
-  double xl[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
+  double xbin[6] = {0.208, 0.611, 1.004, 1.395, 1.786, 2.126};
+  double xh[6] = {0.192, 0.189, 0.196, 0.205, 0.214, 0.274};
+  double xl[6] = {0.208, 0.211, 0.204, 0.195, 0.186, 0.126};
   
   double br_scale(40.3);
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
@@ -234,10 +234,10 @@ void XSSystTot_2S(){
     s0=0;s0_=0;
   }
  
-  double xbin[6] = {0.2, 0.6, 1., 1.4, 1.8, 2.2};
-  double xh[6] = {0.2,0.2,0.2,0.2,0.2,0.2};
-  double xl[6] = {0.2,0.2,0.2,0.2,0.2,0.2};
-  
+  double xbin[6] = {0.208, 0.611, 1.004, 1.395, 1.786, 2.126};
+  double xh[6] = {0.192, 0.189, 0.196, 0.205, 0.214, 0.274};
+  double xl[6] = {0.208, 0.211, 0.204, 0.195, 0.186, 0.126};
+ 
   gr = new TGraphAsymmErrors(6,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups2S");
   gr->SetMarkerColor(4);
@@ -373,10 +373,10 @@ void XSSystTot_3S(){
     
   }
     
-  double xbin[6] = {0.2, 0.6, 1., 1.4, 1.8, 2.2};
-  double xh[6] = {0.2,0.2,0.2,0.2,0.2,0.2};
-  double xl[6] = {0.2,0.2,0.2,0.2,0.2,0.2};
-  
+  double xbin[6] = {0.208, 0.611, 1.004, 1.395, 1.786, 2.126};
+  double xh[6] = {0.192, 0.189, 0.196, 0.205, 0.214, 0.274};
+  double xl[6] = {0.208, 0.211, 0.204, 0.195, 0.186, 0.126};
+
   gr = new TGraphAsymmErrors(6,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups3S");
   gr->SetMarkerColor(2);
@@ -623,10 +623,10 @@ void Ratio_unpol(){
    cout << endl;
   }  
   
-  double xbin[6] = {0.2, 0.6, 1., 1.4, 1.8, 2.2};
-  double xh[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
-  double xl[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
-  
+  double xbin[6] = {0.208, 0.611, 1.004, 1.395, 1.786, 2.126};
+  double xh[6] = {0.192, 0.189, 0.196, 0.205, 0.214, 0.274};
+  double xl[6] = {0.208, 0.211, 0.204, 0.195, 0.186, 0.126};
+
   S21 = new TGraphAsymmErrors(6,xbin,s21,xl,xh,e21_l,e21_h);
   S21->SetName("Ups1S_2S");
   S21->SetMarkerColor(2);
@@ -740,10 +740,10 @@ void Ratio_pol(){
    cout << endl;
   }  
   
-  double xbin[6] = {0.2, 0.6, 1., 1.4, 1.8, 2.2};
-  double xh[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
-  double xl[6] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
-  
+  double xbin[6] = {0.208, 0.611, 1.004, 1.395, 1.786, 2.126};
+  double xh[6] = {0.192, 0.189, 0.196, 0.205, 0.214, 0.274};
+  double xl[6] = {0.208, 0.211, 0.204, 0.195, 0.186, 0.126};
+
   S21 = new TGraphAsymmErrors(6,xbin,s21,xl,xh,e21_l,e21_h);
   S21->SetName("Ups1S_2S");
   S21->SetMarkerColor(2);
