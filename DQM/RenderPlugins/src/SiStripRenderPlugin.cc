@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.40 $
-  \date $Date: 2011/09/09 11:53:43 $
+  \version $Revision: 1.41 $
+  \date $Date: 2011/09/10 09:24:55 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -168,6 +168,34 @@ private:
         dqm::utils::reportSummaryMapPalette(obj);
         obj->SetOption("colztext");
         return;
+      }
+
+      if( o.name.find( "StripClusVsPixClus" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        gStyle->SetPalette(1,0);
+        obj->SetOption("colz");
+      }
+
+      if( o.name.find( "SeedPhiVsEta" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        gStyle->SetPalette(1,0);
+        obj->SetOption("colz");
+      }
+
+      if( o.name.find( "SeedsVsClusters" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        gStyle->SetPalette(1,0);
+        obj->SetOption("colz");
+      }
+
+      if( o.name.find( "TracksVsClusters" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        gStyle->SetPalette(1,0);
+        obj->SetOption("colz");
       }
 
       if( o.name.find( "DeltaBx_vs_ApvCycle" )  != std::string::npos)
@@ -413,7 +441,7 @@ private:
     float TIDLimit2 = 300.0;
     float TECLimit2 = 1200.0;
     */
-
+    /*
     float TIBLimit1 = 10000.0;
     float TOBLimit1 = 11000.0;
     float TIDLimit1 = 2000.0;
@@ -423,8 +451,8 @@ private:
     float TOBLimit2 = 2000.0;
     float TIDLimit2 = 600.0;
     float TECLimit2 = 2400.0;
-
-    /* FOR HI
+    */
+    //FOR HI
     float TIBLimit1 = 70000.0;
     float TOBLimit1 = 70000.0;
     float TIDLimit1 = 15000.0;
@@ -434,7 +462,7 @@ private:
     float TOBLimit2 = 15000.0;
     float TIDLimit2 = 4000.0;
     float TECLimit2 = 20000.0;
-    */
+    
     if( name.find( "TotalNumberOfDigiProfile__" ) != std::string::npos )
       {
         if (obj->GetEntries() > 10.0) c->SetLogy(1);
@@ -450,7 +478,7 @@ private:
            tl1.DrawLine(xmin, TOBLimit1,     xmax, TOBLimit1);
            tl2.DrawLine(xmin, TOBLimit1*0.5, xmax, TOBLimit1*0.5);
            tl2.DrawLine(xmin, TOBLimit1*2.0, xmax, TOBLimit1*2.0);
-//          obj->SetMinimum(TOBLimit1*0.1);
+	   //          obj->SetMinimum(TOBLimit1*0.1);
           obj->SetMinimum(1);
 	  obj->SetMaximum(TMath::Max(ymax, TOBLimit1*50));
         } else if (name.find( "TotalNumberOfDigiProfile__TEC" ) != std::string::npos) {
