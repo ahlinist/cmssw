@@ -280,7 +280,7 @@ struct Bin {
 
     // Make a histogram of events/run. Again, just do it for TkOnly as
     // it will be the same for the rest of the tracks.
-    if (ref_ok) {
+    if (ref_ok && run_bin > 0) {
       const size_t n = runs_seen.size();
       edm::Service<TFileService> fs;
       TH1I* h = fs->make<TH1I>(TString(name.c_str()) + "_runs_seen", "", n, 0, n);
