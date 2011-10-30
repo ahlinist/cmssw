@@ -49,11 +49,11 @@ cfg = cms.PSet(
     )
 
 bins = make_bins('pt')
+#bins = make_bins('run', run_list)
 
 print 'configuring config:'
 for k,v in cfg.parameters_().items() + [('number of bins', len(bins)),
                                         ('bin names', [b.name for b in bins]),
-                                        ('wide_all_for_stalone', wide_all_for_stalone),
                                         ('cosmics_or_collisions', cosmics_or_collisions),
                                         ('require_rpc_good', require_rpc_good),
                                         ('output_file', output_file),
