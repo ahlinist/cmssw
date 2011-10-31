@@ -63,25 +63,15 @@ nSVfitTauToHadBuilder = cms.PSet(
 nSVfitResonanceLikelihoodLogM = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodLogM"),
     pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
-    formula = cms.string("TMath::Log(mass)"),
+    nll = cms.string("TMath::Log(mass)"),
     power = cms.double(1.0)
 )
 
-nSVfitResonanceLikelihoodEff_power100 = cms.PSet(
+nSVfitResonanceLikelihoodLogEff = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodEff_power100"),
     pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
-    formula = cms.string("4.21e-2*(2.52e-2 + TMath::Erf((x - 4.40e+1)*6.90e-3))"),
+    nll = cms.string("TMath::Log(TMath::Max(5.00e-3, 4.21e-2*(2.52e-2 + TMath::Erf((x - 4.40e+1)*6.90e-3))))"),
     power = cms.double(1.00)
-)
-
-nSVfitResonanceLikelihoodEff_power050 = nSVfitResonanceLikelihoodEff_power100.clone(
-    pluginName = cms.string("nSVfitResonanceLikelihoodEff_power050"),
-    power = cms.double(0.50)
-)
-
-nSVfitResonanceLikelihoodEff_power025 = nSVfitResonanceLikelihoodEff_power100.clone(
-    pluginName = cms.string("nSVfitResonanceLikelihoodEff_power025"),
-    power = cms.double(0.25)
 )
 
 nSVfitResonanceBuilder = cms.PSet(
@@ -123,7 +113,8 @@ nSVfitConfig_template = cms.PSet(
                         builder = nSVfitTauToHadBuilder
                     )
                 ),
-                likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM),
+                #likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM),
+                likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodEff_power100),
                 builder = nSVfitResonanceBuilder
             )
         ),
