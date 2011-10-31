@@ -562,8 +562,24 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
   file = new TFile(filename.c_str());
   if (file != 0 && file->IsOpen()) {
     TDirectory* dir = (TDirectory*)file->Get(directory.c_str());
-    if (dir != 0)
+    if (dir != 0) {
       tree = (TTree*)dir->Get(tree_name);
+
+      TFileDirectory d = fs->mkdir("copied_histograms");
+      static const char* to_copy[3] = {"track_multiplicity", "muon_multiplicity", "errors"};
+      for (int i = 0; i < 3; ++i) {
+	TH1F* h = (TH1F*)dir->Get(to_copy[i]);
+	// Why can't you just Clone to an existing histogram?  Copy
+	// the bin contents, skip errors for now. If there's labels
+	// (i.e. the errors histogram), copy those too.
+	TH1F* hnew = d.make<TH1F>(h->GetName(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinLowEdge(h->GetNbinsX()+1));
+	for (int j = 0; j <= h->GetNbinsX()+1; ++j)
+	  hnew->SetBinContent(j, h->GetBinContent(j));
+	if (h->GetXaxis()->GetLabels())
+	  for (int j = 1; j <= h->GetNbinsX(); ++j)
+	    hnew->GetXaxis()->SetBinLabel(j, h->GetXaxis()->GetBinLabel(j));
+      }
+    }
   }
   
   if (tree == 0)
