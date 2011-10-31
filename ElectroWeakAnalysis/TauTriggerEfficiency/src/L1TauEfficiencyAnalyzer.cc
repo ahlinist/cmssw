@@ -325,6 +325,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
           jetMinDR = DR;
           jetPt = iJet->pt();
           jetEt = iJet->et();
+          jetRank = iJet->gctJetCand()->rank();
           jetUncorrEt = L1JetEtUncorr(jetEt);
           jetEta = iJet->eta();
           jetPhi = iJet->phi();
