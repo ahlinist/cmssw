@@ -113,8 +113,8 @@ nSVfitConfig_template = cms.PSet(
                         builder = nSVfitTauToHadBuilder
                     )
                 ),
-                #likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM),
-                likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodEff_power100),
+                likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM),
+                #likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogEff),
                 builder = nSVfitResonanceBuilder
             )
         ),
