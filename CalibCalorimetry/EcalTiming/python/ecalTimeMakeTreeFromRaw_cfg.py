@@ -130,21 +130,26 @@ process.multi5x5SuperClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.mu
 process.load("CalibCalorimetry.EcalTiming.ecalTimeTree_cfi")
 process.ecalTimeTree.fileName = 'EcalTimeTree'
 process.ecalTimeTree.muonCollection = cms.InputTag("muons")
-process.ecalTimeTree.runNum = 108645
+process.ecalTimeTree.runNum = 999999
 # gfworks: replathese names
-process.ecalTimeTree.barrelSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Barrel","multi5x5BarrelSuperClusters")
-process.ecalTimeTree.endcapSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Endcap","multi5x5EndcapSuperClusters")
-process.ecalTimeTree.barrelBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelBasicClusters")
-process.ecalTimeTree.endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapBasicClusters")
+#process.ecalTimeTree.barrelSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Barrel","multi5x5BarrelSuperClusters")
+#process.ecalTimeTree.endcapSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Endcap","multi5x5EndcapSuperClusters")
+#process.ecalTimeTree.barrelBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelBasicClusters")
+#process.ecalTimeTree.endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapBasicClusters")
 process.ecalTimeTree.barrelClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelShapeAssoc")
 process.ecalTimeTree.endcapClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapShapeAssoc") 
+# use full rechit collection, while from AOD reducedEcalRecHitsEx collections are assumed
+process.ecalTimeTree.barrelEcalRecHitCollection = cms.InputTag("ecalRecHit","EcalRecHitsEB")
+process.ecalTimeTree.endcapEcalRecHitCollection = cms.InputTag("ecalRecHit","EcalRecHitsEE")
 
 process.load("RecoVertex.Configuration.RecoVertex_cff")
 
 
 process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+
+import RecoEcal.Configuration.RecoEcal_cff
 
 process.p = cms.Path(
     process.ecalDigis *
@@ -159,11 +164,13 @@ process.p = cms.Path(
     process.ckftracks *
     process.ecalPreshowerDigis *
     process.ecalLocalRecoSequence *
-    process.multi5x5BasicClustersTimePi0Barrel *
-    process.multi5x5BasicClustersTimePi0Endcap *
-    process.multi5x5SuperClustersTimePi0Barrel *
-    process.multi5x5SuperClustersTimePi0Endcap *
-    process.dumpEvContent  *
+    # put aside the privately made 3x3, use standard clustering sequence instead
+    #process.multi5x5BasicClustersTimePi0Barrel *
+    #process.multi5x5BasicClustersTimePi0Endcap *
+    #process.multi5x5SuperClustersTimePi0Barrel *
+    #process.multi5x5SuperClustersTimePi0Endcap *
+    #process.dumpEvContent  *
+    process.ecalClusters *
     process.vertexreco *
     process.ecalTimeTree
     )
@@ -187,11 +194,17 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 process.source = cms.Source(
     "PoolSource",
     skipEvents = cms.untracked.uint32(0),
+    
+    fileNames = (cms.untracked.vstring(
+    'file:/data/franzoni/data/423_Run2011A-SingleMu-RAW-RECO-WMu-May10ReReco-v1-0000-02367CF3-DB7B-E011-8E9D-0019BB32F1EE.root'
+    )                ),
+    # drop native rechits and clusters, to be sure only those locally made will be picked up
+    inputCommands = cms.untracked.vstring('keep *'
+                                          ,'drop EcalRecHitsSorted_*_*_RECO' # drop hfRecoEcalCandidate as remade in this process
+                                          , 'drop recoSuperClusters_*_*_RECO' # drop hfRecoEcalCandidate as remade in this process
+                                          )
 
-     fileNames = (cms.untracked.vstring(
-    'rfio:/castor/cern.ch/cms/store/data/Run2011A/MinimumBias/RAW/v1/000/160/410/FC5D32F7-A14D-E011-A73E-0030487CD184.root'
-                                        )
-                  )
+
     )
 
 
