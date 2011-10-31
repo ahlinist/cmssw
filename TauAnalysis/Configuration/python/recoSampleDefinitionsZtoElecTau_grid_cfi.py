@@ -6,22 +6,21 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE_SKIM = [
-        'data_TauPlusX_Run2011A_May10ReReco_skim',
-        'data_TauPlusX_Run2011A_PR_v4_skim',
-        'data_TauPlusX_Run2011A_05AugReReco_skim',
-        'data_TauPlusX_Run2011A_PR_v6_skim',
-        'data_TauPlusX_Run2011B_PR_v1_skim',
-        'Ztautau_powheg_skim',
-        'DYtautauM10to20_powheg_skim',
+        #'data_TauPlusX_Run2011A_May10ReReco_skim',
+        #'data_TauPlusX_Run2011A_PR_v4_skim',
+        #'data_TauPlusX_Run2011A_05AugReReco_skim',
+        #'data_TauPlusX_Run2011A_PR_v6_skim',
+        #'Ztautau_powheg_skim',
+        #'DYtautauM10to20_powheg_skim',
+
         #'qqZll',  ## no Summer11 sample
-        #'Zee_pythia_skim',
         'Zee_powheg_skim',
-        'DYeeM10to20_pythia_skim',
+        #'DYeeM10to20_pythia_skim',
         #'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
         #'QCD_BCtoE_Pt20to30_skim','QCD_BCtoE_Pt30to80_skim','QCD_BCtoE_Pt80to170_skim',
         #'QCD_EM_Pt20to30_skim','QCD_EM_Pt30to80_skim','QCD_EM_Pt80to170_skim',
-        'TTplusJets_madgraph_skim',
-        'WplusJets_madgraph_skim',
+        #'TTplusJets_madgraph_skim',
+        ########'WplusJets_madgraph_skim',
         #'WW_skim','WZ_skim',
         #'ZZ_skim', # no Summer11 sample
 ] 
@@ -39,7 +38,7 @@ SAMPLES_TO_ANALYZE_PAT = [
         'QCD_EM_Pt20to30_pat',
         #'QCD_EM_Pt30to80_pat',
         'QCD_EM_Pt80to170_pat',
-        #'TTplusJets_madgraph_pat',
+        'TTplusJets_madgraph_pat',
         'WplusJets_madgraph_pat',
         #'WW_pat','WZ_pat',
         #'ZZ_pat', # no Summer11 sample
@@ -71,6 +70,7 @@ SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
     'conditions' : 'START42_V11::All',
     'genPhaseSpaceCut' : '',
+    'genFinalStateFilter': True,
     'factorize' : False,
     'enableSysUncertainties' : True,
     'lumi_mask' : '',
@@ -85,6 +85,7 @@ SAMPLE_DEFAULTS = {
     'applyElectronIsolationEfficiencyCorrection' : True,
     'applyMuonTriggerEfficiencyCorrection' : False,
     'applyVertexMultiplicityReweighting' : True,
+    'applyTauMetTriggerEfficiencyCorrection' : False,
     'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
     'noRunLumiEventSave' : True,
     'absoluteNormalization' : -1
@@ -299,12 +300,12 @@ RECO_SAMPLES = {
         #'absoluteNormalization' : 5294./29702
     },
     'Ztautau_powheg_pat' : {
-        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
+        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/lantonel-patSkim_428_v2-3e4953bc8fc6d10809a574919bc42c1c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 150,
         'applyZrecoilCorrection' : False,
         'events_processed' : 19937479,
-        'skim_eff' : 734741./19937479,
+        'skim_eff' : 1012582./19937479,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
@@ -473,6 +474,7 @@ RECO_SAMPLES = {
         'x_sec' : 157.5*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_TTplusJets,
     },     
     'PhotonPlusJets_Pt15to30_skim' : {  ## jobs mostly done
         'datasetpath' : "/G_Pt-15to30_TuneZ2_7TeV_pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
