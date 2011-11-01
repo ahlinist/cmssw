@@ -198,8 +198,8 @@ void XSSystTot_2S(){
     s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1 += S9->GetBinContent(i)*S9->GetBinContent(i); //rho
-    if ( i == 5 ) s1  += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
-    if ( i != 5 ) s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    if ( i >= 5 ) s1  += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    if ( i < 5 ) s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig    
@@ -220,7 +220,9 @@ void XSSystTot_2S(){
     
     /// For Ratio Calculation
     s0 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
-    s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
+    s0 += S9->GetBinContent(i)*S9->GetBinContent(i); //rho
+    if ( i >= 5 ) s0  += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    if ( i < 5) s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s0_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
@@ -272,8 +274,14 @@ void XSSystTot_2S(){
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_l = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x);
     rho_h = TMath::Sqrt(S9->GetBinContent(x)*S9->GetBinContent(x))/S5->GetBinContent(x);
-    tot_h = TMath::Sqrt(((muid_h*muid_h) + (trig_h*trig_h) + (bg*bg) + (rho_h*rho_h)));
-    tot_l = TMath::Sqrt((muid_l*muid_l) + (trig_l*trig_l) + (sig*sig) + (bg*bg) + (rho_l*rho_l));
+    if ( x < 5) {
+      tot_h = TMath::Sqrt(((muid_h*muid_h) + (trig_h*trig_h) + (bg*bg) + (rho_h*rho_h)));
+      tot_l = TMath::Sqrt((muid_l*muid_l) + (trig_l*trig_l) + (sig*sig) + (bg*bg) + (rho_l*rho_l));
+    }
+    if ( x >= 5) {
+      tot_h = TMath::Sqrt(((muid_h*muid_h) + (trig_h*trig_h) + (sig*sig) + (bg*bg) + (rho_h*rho_h)));
+      tot_l = TMath::Sqrt((muid_l*muid_l) + (trig_l*trig_l) + (bg*bg) + (rho_l*rho_l));
+    }    
     OUT << Form("\\vdef{%iS_sigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i_rap} {\\ensuremath{ {%.3f } } }",2, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, stat ) << endl;
@@ -341,10 +349,9 @@ void XSSystTot_3S(){
     s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
-    s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho    
-    cout << " dSigma(Y(1S))/d|y| = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
+    cout << " dSigma(Y(3S))/d|y| = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
-    e5_ += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
+    e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     Stat[i-1]=S5->GetBinError(i);
     s5 += S5->GetBinContent(i)*S5->GetBinWidth(i);
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
@@ -358,9 +365,10 @@ void XSSystTot_3S(){
     
     /// For Ratio Calculation
     s0 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
-    s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
+    s0 += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
+    if ( i == 5 ) s0  += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
+    if ( i != 5 ) s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig    
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
-    s0_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl_ratio[i-1] = TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y_ratio[i-1] = S5->GetBinContent(i);
@@ -389,7 +397,7 @@ void XSSystTot_3S(){
   gr_ratio->SetMarkerStyle(21);
   gr_ratio->Draw("AP");
   
-  cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
+  cout << " Y(3S) 3Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
   TFile *f = new TFile("Final3S_rap.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
@@ -410,8 +418,14 @@ void XSSystTot_3S(){
     muid_l = TMath::Sqrt(S6->GetBinContent(x)*S6->GetBinContent(x))/S5->GetBinContent(x);
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_h = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x); 
-    tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + rho_h*rho_h);
-    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg);
+    if ( x != 5 ){
+      tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + rho_h*rho_h);
+      tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg);
+    }
+    if ( x == 5 ){
+      tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + sig*sig + bg*bg + rho_h*rho_h);
+      tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l  + bg*bg);
+    }
     OUT << Form("\\vdef{%iS_sigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i_rap} {\\ensuremath{ {%.3f } } }",3, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, stat ) << endl;
