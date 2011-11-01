@@ -17,7 +17,8 @@ process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi") # gfwork:
 # Global Tag
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff")
-process.GlobalTag.globaltag = 'GR_R_42_V19::All'
+#process.GlobalTag.globaltag = 'GR_R_42_V19::All'
+process.GlobalTag.globaltag = 'GR_P_V22::All'
 
 
 # Trigger
