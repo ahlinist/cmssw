@@ -70,6 +70,140 @@ void XSNoMSC_1S(){
   
 }
 
+void XSMSCpl_1S(){
+
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TH1D *S1;
+  S1 = (TH1D*)gFile->Get("S1YieldPt");
+  TFile *f = new TFile("XSection_MSCpl_1SRho.root");
+  TH1D *S2;
+  S2 = (TH1D*)gFile->Get("S1YieldPt");
+  TH1D *S12 = (TH1D*)S2->Clone();
+  TH1D *S13 = (TH1D*)S2->Clone();
+  
+  double s1(0.), s2(0.);
+  double e1(0.), e2(0.);
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    
+    s1 += S1->GetBinContent(i)*S1->GetBinWidth(i);
+    e1 += (S1->GetBinError(i)*S1->GetBinWidth(i))*(S1->GetBinError(i)*S1->GetBinWidth(i));
+    s2 += S2->GetBinContent(i)*S2->GetBinWidth(i);
+    e2 += (S2->GetBinError(i)*S2->GetBinWidth(i))*(S2->GetBinError(i)*S2->GetBinWidth(i));
+    S12->SetBinContent(i, S1->GetBinContent(i) - S2->GetBinContent(i) );
+    S12->SetBinError(i,0.); 
+    S13->SetBinContent(i, S12->GetBinContent(i) / S1->GetBinContent(i) );
+    S13->SetBinError(i,0.); 
+		       
+  }
+  
+  cout << " Y(1S) MSC Xsection = "  << s1 << "+/-" << TMath::Sqrt(e1) << endl;
+  cout << " Y(1S) MSCplus Xsection = "  << s2 << "+/-" << TMath::Sqrt(e2) << endl;
+  
+  S1->SetMarkerColor(3); S2->SetMarkerColor(4); 
+  S1->SetLineColor(3); S2->SetLineColor(4); 
+  
+  TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
+  S1->SetMaximum(1.4);
+  S1->Draw("p");
+  S2->Draw("psame");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("XSection Vs P_{T}  For Ups(1S)");
+  legge = legg->AddEntry(S1, "Y(1S) MSC","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Y(1S) MSCplus","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  
+  S12->SetLineColor(3); S12->SetMarkerColor(3); 
+  TCanvas *c2 = new TCanvas("c2","c2",1200,600); 
+  //S12->SetMinimum(0.);
+  //S12->SetMaximum(0.02);
+  S12->Draw("p");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("#Delta XSection Vs P_{T}  For Ups(1S)");
+  legge = legg->AddEntry(S12, "Y(1S) MSC - MSCplus","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  
+  S13->SetLineColor(3); S13->SetMarkerColor(3); 
+  TCanvas *c3 = new TCanvas("c3","c3",1200,600); 
+  //S12->SetMinimum(0.);
+  //S12->SetMaximum(0.02);
+  S13->Draw("p");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("Percentage #Delta XSection Vs P_{T}  For Ups(1S)");
+  legge = legg->AddEntry(S13, "Y(1S) MSC - MSCplus / Y(1S) MSC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  
+  TFile *f = new TFile("MSCpl_10ptbins_1Srho_.root", "RECREATE");
+  S12->Write();
+  
+}
+
+void XSMSCmn_1S(){
+
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TH1D *S1;
+  S1 = (TH1D*)gFile->Get("S1YieldPt");
+  TFile *f = new TFile("XSection_MSCmi_1SRho.root");
+  TH1D *S2;
+  S2 = (TH1D*)gFile->Get("S1YieldPt");
+  TH1D *S12 = (TH1D*)S2->Clone();
+  TH1D *S13 = (TH1D*)S2->Clone();
+  
+  double s1(0.), s2(0.);
+  double e1(0.), e2(0.);
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    
+    s1 += S1->GetBinContent(i)*S1->GetBinWidth(i);
+    e1 += (S1->GetBinError(i)*S1->GetBinWidth(i))*(S1->GetBinError(i)*S1->GetBinWidth(i));
+    s2 += S2->GetBinContent(i)*S2->GetBinWidth(i);
+    e2 += (S2->GetBinError(i)*S2->GetBinWidth(i))*(S2->GetBinError(i)*S2->GetBinWidth(i));
+    S12->SetBinContent(i, S1->GetBinContent(i) - S2->GetBinContent(i) );
+    S12->SetBinError(i,0.); 
+    S13->SetBinContent(i, S12->GetBinContent(i) / S1->GetBinContent(i) );
+    S13->SetBinError(i,0.); 
+		       
+  }
+  
+  cout << " Y(1S) MSC Xsection = "  << s1 << "+/-" << TMath::Sqrt(e1) << endl;
+  cout << " Y(1S) MSCminus Xsection = "  << s2 << "+/-" << TMath::Sqrt(e2) << endl;
+  
+  S1->SetMarkerColor(3); S2->SetMarkerColor(4); 
+  S1->SetLineColor(3); S2->SetLineColor(4); 
+  
+  TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
+  S1->SetMaximum(1.4);
+  S1->Draw("p");
+  S2->Draw("psame");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("XSection Vs P_{T}  For Ups(1S)");
+  legge = legg->AddEntry(S1, "Y(1S) MSC","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Y(1S) MSCminus","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  
+  S12->SetLineColor(3); S12->SetMarkerColor(3); 
+  TCanvas *c2 = new TCanvas("c2","c2",1200,600); 
+  //S12->SetMinimum(0.);
+  //S12->SetMaximum(0.02);
+  S12->Draw("p");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("#Delta XSection Vs P_{T}  For Ups(1S)");
+  legge = legg->AddEntry(S12, "Y(1S) MSC - MSCminus","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  
+  S13->SetLineColor(3); S13->SetMarkerColor(3); 
+  TCanvas *c3 = new TCanvas("c3","c3",1200,600); 
+  //S12->SetMinimum(0.);
+  //S12->SetMaximum(0.02);
+  S13->Draw("p");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("Percentage #Delta XSection Vs P_{T}  For Ups(1S)");
+  legge = legg->AddEntry(S13, "Y(1S) MSC - MSCminus / Y(1S) MSC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  
+  TFile *f = new TFile("MSCmn_10ptbins_1Srho_.root", "RECREATE");
+  S12->Write();
+  
+}
+
 
 void XS2SRho_1S(){
 
