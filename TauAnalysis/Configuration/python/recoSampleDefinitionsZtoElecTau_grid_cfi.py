@@ -6,21 +6,21 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE_SKIM = [
-        #'data_TauPlusX_Run2011A_May10ReReco_skim',
-        #'data_TauPlusX_Run2011A_PR_v4_skim',
-        #'data_TauPlusX_Run2011A_05AugReReco_skim',
-        #'data_TauPlusX_Run2011A_PR_v6_skim',
-        #'Ztautau_powheg_skim',
-        #'DYtautauM10to20_powheg_skim',
-
-        #'qqZll',  ## no Summer11 sample
+        'data_TauPlusX_Run2011A_May10ReReco_skim',
+        'data_TauPlusX_Run2011A_PR_v4_skim',
+        'data_TauPlusX_Run2011A_05AugReReco_skim',
+        'data_TauPlusX_Run2011A_PR_v6_skim',
+        #'data_TauPlusX_Run2011B_PR_v1_skim',
+        'Ztautau_powheg_skim',
+        'DYtautauM10to20_powheg_skim',
+        #'Zee_pythia_skim',
         'Zee_powheg_skim',
-        #'DYeeM10to20_pythia_skim',
+        'DYeeM10to20_pythia_skim',
         #'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
         #'QCD_BCtoE_Pt20to30_skim','QCD_BCtoE_Pt30to80_skim','QCD_BCtoE_Pt80to170_skim',
         #'QCD_EM_Pt20to30_skim','QCD_EM_Pt30to80_skim','QCD_EM_Pt80to170_skim',
-        #'TTplusJets_madgraph_skim',
-        ########'WplusJets_madgraph_skim',
+        'TTplusJets_madgraph_skim',
+        'WplusJets_madgraph_skim',
         #'WW_skim','WZ_skim',
         #'ZZ_skim', # no Summer11 sample
 ] 
@@ -52,7 +52,7 @@ SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_SKIM
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
     'data', 
-    'qcdSum', 
+    #'qcdSum', 
     #'photonPlusJetsSum',
     'WplusJets_madgraph_skim',
     'TTplusJets_madgraph_skim',
@@ -68,7 +68,7 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    'conditions' : 'START42_V11::All',
+    'conditions' : 'START42_V13::All',
     'genPhaseSpaceCut' : '',
     'genFinalStateFilter': True,
     'factorize' : False,
@@ -123,11 +123,11 @@ RECO_SAMPLES = {
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
         'noRunLumiEventSave' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1'     : '160431:MIN-161016:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
-            }
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v1',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4'
+        ]
     },
     'data_TauPlusX_Run2011A_May10ReReco_pat' : { 
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v1-65ea91f557f2259338d2f3d737957920/USER', 
@@ -143,17 +143,16 @@ RECO_SAMPLES = {
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1'     : '160431:MIN-161016:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
-            }
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v1',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4'
+        ]
     },    
     'data_TauPlusX_Run2011A_05AugReReco_skim' : {  #400.3/pb, runs 170249-172619, 728380 events
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-05Aug2011-v1_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v2.txt',
-        #'skim_eff' : 728380./3727491,
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v3.txt',
         'conditions' : 'GR_R_42_V20::All',
         'number_of_jobs' : 300,
         'type' : 'Data',
@@ -164,15 +163,18 @@ RECO_SAMPLES = {
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
         'noRunLumiEventSave' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2'     : '170826:MIN-173198:MAX'
-        }
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
+        ]
     },
     'data_TauPlusX_Run2011A_05AugReReco_pat' : {
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v1-9119371f3a8556cc79a65346e9015829/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON.txt',
         'skim_eff' : 728380./3727491,
         'conditions' : 'GR_R_42_V20::All',
         'number_of_jobs' : 300,
@@ -183,12 +185,16 @@ RECO_SAMPLES = {
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2'     : '170826:MIN-173198:MAX'
-        }
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
+        ]
     },    
-    'data_TauPlusX_Run2011A_PR_v4_skim' : { # 887/pb 165071-167913 5942864 --> current lumi_mask restricts analysis to Lepton-Photon dataset
+    'data_TauPlusX_Run2011A_PR_v4_skim' : { # 887/pb 165071-167913, 5942864 events--> current lumi_mask restricts analysis to Lepton-Photon dataset
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_424_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -202,11 +208,11 @@ RECO_SAMPLES = {
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
         'noRunLumiEventSave' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6'     : '165071:MIN-165633:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8'     : '165970:MIN-166967:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX'
-        }
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'
+        ]
     },
     'data_TauPlusX_Run2011A_PR_v4_pat' : {# contains v4 and v6 files!!! (use run 1-168437 to just get v4) --> current lumi_mask restricts analysis to Lepton-Photon dataset
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v1-29084cbe8cc714ba398f31eea7600eda/USER', 
@@ -221,15 +227,16 @@ RECO_SAMPLES = {
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6'     : '165071:MIN-165633:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8'     : '165970:MIN-166967:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX'
-        }
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'
+        ]
     },    
     'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events --> limited to LP dataset: 120/pb, runs 172620-172802
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-PromptReco-v6_skimElecTau_v3-982c87f3521a6471fb16318d08f703d0/USER', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt', # LP
+        #'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON.txt', # full v6 PR
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 300,
@@ -241,16 +248,16 @@ RECO_SAMPLES = {
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
         'noRunLumiEventSave' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2'     : '170826:MIN-173198:MAX',
-            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '173236:MIN-173692:MAX'
-        }
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
+        ]
     },
-    'data_TauPlusX_Run2011B_PR_v1_skim' : {  # xxx/pb, runs 175860-178078, 2322590 events 
+    'data_TauPlusX_Run2011B_PR_v1_skim' : {  # 2190/pb, runs 175860-179411, 3585094 events 
         'datasetpath' : '/TauPlusX/jkolb-Run2011B-PromptReco-v1_skimElecTau_v4-982c87f3521a6471fb16318d08f703d0/USER', 
-        #'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V25::All',
+        'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 300,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
@@ -260,9 +267,11 @@ RECO_SAMPLES = {
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
         'noRunLumiEventSave' : False,
-        'hlt_paths' : {
-            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '175860:MIN-999999:MAX'
-        }
+        'hlt_paths' : [
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1',
+            'HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v5',
+            'HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau25_v4'
+        ]
     },
     'DYtautauM10to20_powheg_skim' : {
         'datasetpath' : "/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
