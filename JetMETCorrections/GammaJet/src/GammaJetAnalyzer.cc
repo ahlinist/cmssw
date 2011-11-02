@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.60 2011/06/02 17:51:21 meridian Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.61 2011/06/24 14:30:31 meridian Exp $
 //
 //
 
@@ -324,6 +324,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
     h1_etaPhot = new TH1F("etaPhot", "", 50, -5.5, 5.5);
     h2_n_vs_eta = new TH2D("n_vs_eta", "", 10, 0., 2.5, 1000, 0., 1000.);
   _debug = iConfig.getParameter<bool>("debug");
+  outFileName= iConfig.getUntrackedParameter<std::string>("outFileName","output.root");
   puSummaryInfo_ = iConfig.getParameter<edm::InputTag>("PUSummaryInfoCollection");
   MCTruthCollection_ = iConfig.getUntrackedParameter<edm::InputTag>("MCTruthCollection");
   triggerTag_ = iConfig.getUntrackedParameter<edm::InputTag>("TriggerTag");
@@ -2744,7 +2745,7 @@ GammaJetAnalyzer::beginJob()
 {
 
   //m_tree = fs_->make<TTree>("pippo","Analysis tree");
-  outfile = TFile::Open("output.root", "RECREATE");
+  outfile = TFile::Open(outFileName.c_str(), "RECREATE");
   outfile->mkdir("myanalysis");
   outfile->cd("myanalysis");
 
