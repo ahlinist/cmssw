@@ -1,5 +1,10 @@
 #! /bin/bash 
 
+# txt file with file list per dataset should be passed like
+# example file: VBF_HToGG_M-120_TuneZ2_7TeV-pythia6.txt
+# "rfio:///castor/cern.ch/user/f/fabstoec/Summer11Private/VBF_HToGG_M-120_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO/SUM11-HGGPRIV-0080-0440-0006.root"
+# should contain hyphens and protocol to read the file 
+
 if [ ! $CRABDIR ] ; then
    echo "Please set CRAB environment"
    exit

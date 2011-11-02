@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.4 2011/06/24 15:00:31 meridian Exp $
+# $Id: common_dump_config.py,v 1.5 2011/08/10 13:46:26 pandolf Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -105,6 +105,7 @@ process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
 ## dumper module
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
+    outFileName = cms.untracked.string("output.root"),                                    
     dumpBeamHaloInformations = cms.untracked.bool(True),
     dumpAKT5Jets=cms.untracked.bool(True),
     dumpAKT7Jets=cms.untracked.bool(True),
