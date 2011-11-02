@@ -609,5 +609,7 @@ TH2D* h2_n_vs_eta;
       HggVertexFromConversions* vtxAnaFromConv;
       VertexAlgoParameters vtxPar;
       std::vector<std::string> rankVariables;
+
+      std::string outFileName;
 };
 
