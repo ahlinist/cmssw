@@ -543,7 +543,8 @@ void Overlay(){
   TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
   c1->SetLogy();
   S1->SetLineColor(1); S1->SetMarkerColor(1); S2->SetLineColor(2); S2->SetMarkerColor(2); S3->SetLineColor(4); S3->SetMarkerColor(4);
-  S1->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  S1->SetMarkerStyle(20); S2->SetMarkerStyle(21); S3->SetMarkerStyle(22);
+  S1->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
   S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
   S1->SetTitle("");
   S1->SetMinimum(0.0001);
@@ -618,10 +619,10 @@ void Ratio_unpol(){
   S31 = new TGraphAsymmErrors(10,xbin,s31,xl,xh,e31_l,e31_h);
   S31->SetName("Ups1S_3S");
   S31->SetMarkerColor(4);
-  S31->SetMarkerStyle(21);
+  S31->SetMarkerStyle(22);
     
-  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
-  S21->GetYaxis()->SetTitle("#sigma#times Br(#mu#mu)");
+  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S21->GetYaxis()->SetTitle("Ratio");
   S21->SetTitle("");
   S21->SetMinimum(0.);
   S21->SetMaximum(1.);
@@ -630,7 +631,7 @@ void Ratio_unpol(){
   legg = new TLegend(0.1,0.6,0.5,0.8);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("");
-  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c1->SaveAs("Ratio_unpol.pdf");
@@ -736,10 +737,10 @@ void Ratio_pol(){
   S31 = new TGraphAsymmErrors(10,xbin,s31,xl,xh,e31_l,e31_h);
   S31->SetName("Ups1S_3S");
   S31->SetMarkerColor(4);
-  S31->SetMarkerStyle(21);
+  S31->SetMarkerStyle(22);
     
-  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
-  S21->GetYaxis()->SetTitle("#sigma#times Br(#mu#mu)");
+  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S21->GetYaxis()->SetTitle("Ratio");
   S21->SetTitle("");
   S21->SetMinimum(0.);
   S21->SetMaximum(1.);
@@ -748,7 +749,7 @@ void Ratio_pol(){
   legg = new TLegend(0.1,0.6,0.5,0.8);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("");
-  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c1->SaveAs("Ratio_pol.pdf");
