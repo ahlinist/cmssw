@@ -98,7 +98,7 @@ drawJobConfigurator_AHtoElecTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahElecTauAn
 
 drawJobConfigurator_AHtoElecTau_woBtag.add(
     afterCut = evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
-    beforeCut = evtSelNonCentralJetEt20bTag,
+    beforeCut = evtSelJetEtCut,
     plot = drawJobConfigEntry(
     meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
@@ -109,7 +109,26 @@ drawJobConfigurator_AHtoElecTau_woBtag.add(
 )
 
 drawJobConfigurator_AHtoElecTau_woBtag.add(
-    afterCut = evtSelNonCentralJetEt20bTag,
+    afterCut = evtSelJetEtCut,
+    beforeCut = evtSelBtagVeto,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'JetQuantities/BtagDisc_trackCountingHighEffBJetTags',
+            title = "TCHE B-tag discriminant (after jet E_{T} > 30 GeV cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_bTagDiscr_afterJetEtCut"
+        ),
+        drawJobConfigEntry(
+            meName = 'JetQuantities/NumBtags_trackCountingHighEffBJetTags',
+            title = "Num. Jets with b-Tag (after jet E_{T} > 30 GeV cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_numBtagJets_afterJetEtCut"
+        )
+    ]
+)
+
+drawJobConfigurator_AHtoElecTau_woBtag.add(
+    afterCut = evtSelBtagVeto,
     beforeCut = evtSelDiTauCandidateForAHtoElecTauZeroCharge,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
@@ -128,45 +147,38 @@ drawJobConfigurator_AHtoElecTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahElecTauAna
 
 drawJobConfigurator_AHtoElecTau_wBtag.add(
     afterCut = evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
-    beforeCut = evtSelCentralJetEt20,
+    beforeCut = evtSelJetEtCut,
     plot = drawJobConfigEntry(
     meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Jet (after Z #rightarrow #e^{+} #e^{-} hypothesis Veto)",
+        title = "Jet (after Z #rightarrow e^{+} e^{-} hypothesis Veto)",
         xAxis = '#PAR#',
         name = "cutFlowControlPlots_jet_afterZeeHypothesisVeto"
     )
 )
 
 drawJobConfigurator_AHtoElecTau_wBtag.add(
-    afterCut = evtSelCentralJetEt20,
-    beforeCut = evtSelCentralJetEt20bTag,
+    afterCut = evtSelJetEtCut,
+    beforeCut = evtSelBtagCut,
     plots = [
         drawJobConfigEntry(
-            meName = 'JetQuantities/Jet#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Jet (after Jet P_{T} and #eta Cuts)",
-            xAxis = '#PAR#',
-            name = "cutFlowControlPlots_jet_afterJetPtAndEta"
-        ),
-        drawJobConfigEntry(
             meName = 'JetQuantities/BtagDisc_trackCountingHighEffBJetTags',
-            title = "Jet b-Tag Discr. (after Jet P_{T} and #eta Cuts)",
+            title = "TCHE B-tag discriminant (after jet E_{T} > 30 GeV cut)",
             xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_jetBtagDiscr_afterJetPtAndEta"
+            name = "cutFlowControlPlots_bTagDiscr_afterJetEtCut"
         ),
         drawJobConfigEntry(
             meName = 'JetQuantities/NumBtags_trackCountingHighEffBJetTags',
-            title = "Num. Jets with b-Tag (after Jet P_{T} and #eta Cuts)",
+            title = "Num. Jets with b-Tag (after jet E_{T} > 30 GeV cut)",
             xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_numBtagJets_afterJetPtAndEta"
+            name = "cutFlowControlPlots_numBtagJets_afterJetEtCut"
         )
     ]
-
 )
 
+
 drawJobConfigurator_AHtoElecTau_wBtag.add(
-    afterCut = evtSelCentralJetEt20bTag,
+    afterCut = evtSelBtagCut,
     beforeCut = evtSelDiTauCandidateForAHtoElecTauZeroCharge,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
@@ -215,30 +227,30 @@ finalSamplePlots = [
             xAxis = 'Pt',
             name = "finalSamplePlots_electronCombPFIsoRelEndcap"
             ),
-        drawJobConfigEntry( 
-            meName = 'ElectronQuantities/ElectronConversionRadius', 
-            title = "Vertex radius of best conv. pair (final event sample)", 
-            xAxis = 'posX', 
-            name = "finalSamplePlots_electronConvRadius" 
-            ), 
-        drawJobConfigEntry( 
-            meName = 'ElectronQuantities/ElectronConversionDoca', 
-            title = "DOCA of best conv. pair (final event sample)", 
-            xAxis = 'posX', 
-            name = "finalSamplePlots_electronConvDOCA" 
-            ), 
-        drawJobConfigEntry( 
-            meName = 'ElectronQuantities/ElectronConversionDeltaCotTheta', 
-            title = "#DeltaCot(#theta) of best conv. pair (final event sample)", 
-            xAxis = 'unlabeled', 
-            name = "finalSamplePlots_electronConvDeltaCotTheta" 
-            ), 
-        drawJobConfigEntry( 
-            meName = 'ElectronQuantities/ElectronMissingExpInnerHits', 
-            title = "Electron missing inner hits (final event sample)", 
-            xAxis = 'unlabeled', 
-            name = "finalSamplePlots_electronMissingInnerHits" 
-            ), 
+        #drawJobConfigEntry( 
+        #    meName = 'ElectronQuantities/ElectronConversionRadius', 
+        #    title = "Vertex radius of best conv. pair (final event sample)", 
+        #    xAxis = 'posX', 
+        #    name = "finalSamplePlots_electronConvRadius" 
+        #    ), 
+        #drawJobConfigEntry( 
+        #    meName = 'ElectronQuantities/ElectronConversionDoca', 
+        #    title = "DOCA of best conv. pair (final event sample)", 
+        #    xAxis = 'posX', 
+        #    name = "finalSamplePlots_electronConvDOCA" 
+        #    ), 
+        #drawJobConfigEntry( 
+        #    meName = 'ElectronQuantities/ElectronConversionDeltaCotTheta', 
+        #    title = "#DeltaCot(#theta) of best conv. pair (final event sample)", 
+        #    xAxis = 'unlabeled', 
+        #    name = "finalSamplePlots_electronConvDeltaCotTheta" 
+        #    ), 
+        #drawJobConfigEntry( 
+        #    meName = 'ElectronQuantities/ElectronMissingExpInnerHits', 
+        #    title = "Electron missing inner hits (final event sample)", 
+        #    xAxis = 'unlabeled', 
+        #    name = "finalSamplePlots_electronMissingInnerHits" 
+        #    ), 
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
@@ -325,7 +337,7 @@ finalSamplePlots = [
                 name = "finalSamplePlots_mCollApprox"
                 ),
         drawJobConfigEntry(
-                meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+                meName = 'DiTauCandidateNSVfitQuantities/psKine_MEt_logM_fit/Mass',
                 title = "M(Electron + Tau), SVfit method (final Event sample)",
                 xAxis = 'Mass',
                 name = "finalSamplePlots_mSVmethod"
@@ -392,4 +404,90 @@ drawJobConfigurator_AHtoElecTau_wBtagSS.add(
     afterCut = evtSelDiTauCandidateForAHtoElecTauNonZeroCharge,
     plots = finalSamplePlots
 )
+
+def useSSdataForQCD(process, samples, channel, jobId, backgroundYields):
+    
+
+    # import plot configurations
+    plotConfigs = []
+    for job in finalSamplePlots:
+        if getattr(job,"PAR",None) is not None:
+            for var in job.PAR:
+                plotConfigs.append( { 'plotName' : job.name + var ,
+                    'meName' : job.meName[:len(job.meName)-5] + var,
+                    'xAxis' : var,
+                    'title' : job.title} )
+        else:
+            plotConfigs.append( { 'plotName' : job.name ,
+                'meName' : job.meName,
+                'xAxis' : job.xAxis,
+                'title' : job.title} )
+
+    dqmDirectories_input = cms.vstring()
+
+    # get data input samples 
+    for sampleName in samples['FLATTENED_SAMPLES_TO_PLOT']:
+        if 'data' in sampleName:
+            sampleNameFull = sampleName + '_dataForQCD'
+            setattr(process.loadAHtoElecTauSamples,sampleNameFull,cms.PSet() )
+            sampleSet = getattr(process.loadAHtoElecTauSamples,sampleNameFull)
+            sampleSet.inputFileNames = cms.vstring("harvested_%s_%s_%s.root" % (channel, sampleName, jobId))
+            sampleSet.dqmDirectory_store = cms.string('/harvested/' + sampleNameFull)
+            sampleSet.scaleFactor = cms.double(7665./20384*3.37)
+
+            dqmDirectories_input.append('/harvested/' + sampleNameFull)
+   
+    process.mergeSamplesAHtoElecTau.merge_qcdSum = cms.PSet(
+        dqmDirectory_output = cms.string('/harvested/dataQCD'),
+        dqmDirectories_input = dqmDirectories_input
+    )
+    
+    process.plotahElecTauAnalyzerOS_woBtag_linear.processes.qcdSum = cms.PSet(
+        dqmDirectory = cms.string('/harvested/dataQCD'),
+        type = cms.string('smMC'),
+        legendEntry = cms.string('QCD')
+    )
+    
+    #  create new draw job for each element in plot configuration list
+    for plotCfg in plotConfigs:
+        drawJob = cms.PSet( 
+            drawOptionSet = cms.string('default'),
+            yAxis = cms.string('numEntries_linear'),
+            labels = cms.vstring('mcNormScale'),
+            legend = cms.string('regular'),
+            xAxis = cms.string(plotCfg['xAxis']),
+            stack = cms.vstring('qcdSum',
+                'TTplusJets_madgraph_skim',
+                'WplusJets_madgraph_skim',
+                'ZeeSum',
+                'ZtautauSum'),
+            title = cms.string(plotCfg['title']),
+            plots = cms.VPSet()
+        )
+        for sample in samples['SAMPLES_TO_PLOT']:
+            drawJob.plots.append(cms.PSet(
+                dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerOS_woBtag/afterEvtSelDiTauCandidateForAHtoElecTauZeroCharge/' + plotCfg['meName']),
+                drawOptionEntry = cms.string('default#.#' + sample),
+                process = cms.string(sample)
+            ))
+        drawJob.plots.append(cms.PSet(
+            dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerSS_woBtag/afterEvtSelDiTauCandidateForAHtoElecTauNonZeroCharge/' + plotCfg['meName']),
+            drawOptionEntry = cms.string('default#.#qcdSum'),
+            process = cms.string('qcdSum')
+        ))
+        setattr(process.plotahElecTauAnalyzerOS_woBtag_linear.drawJobs, plotCfg['plotName'], drawJob)
+
+        setattr(process.plotahElecTauAnalyzerOS_woBtag_linear.drawOptionSets.default, "qcdSum", cms.PSet(
+                drawOptionLegend = cms.string('f'),
+                fillStyle = cms.int32(1001),
+                fillColor = cms.int32(797),
+                lineColor = cms.int32(797),
+                drawOption = cms.string('hist'),
+                lineWidth = cms.int32(1),
+                lineStyle = cms.int32(1)
+            )
+        )
+
+    process.saveAHtoElecTau.outputCommands.append('keep harvested/dataQCD/*')
+
 
