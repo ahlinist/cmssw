@@ -12,10 +12,11 @@ import copy
 #       in order of decreasing sum of Pt of tracks fitted to each vertex
 #--------------------------------------------------------------------------------
 
+# CV: ndof >= 4 if using 'offlinePrimaryVertices',
+#     ndof >= 7 if using 'offlinePrimaryVerticesWithBS' as input
 selectedPrimaryVertexQuality = cms.EDFilter("VertexSelector",
     src = cms.InputTag('offlinePrimaryVerticesWithBS'),
-    cut = cms.string("isValid & ndof >= 7"), # CV: cut >= 4 if using 'offlinePrimaryVertices',
-                                             #         >= 7 if using 'offlinePrimaryVerticesWithBS' as input
+    cut = cms.string("isValid & ndof >= 7 & chi2 > 0 & tracksSize > 0"), 
     filter = cms.bool(False)                                          
 )
 
