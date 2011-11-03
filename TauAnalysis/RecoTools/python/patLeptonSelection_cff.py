@@ -285,7 +285,7 @@ selectedPatTausForElecTauDecayModeFinding.cut = cms.string('tauID("decayModeFind
 selectedPatTausForElecTauLeadTrkPt.cut = cms.string('tauID("decayModeFinding") > 0.5')
 selectedPatTausForElecTauIso.cut = cms.string('tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
 selectedPatTausForElecTauElectronVeto.cut = cms.string('tauID("againstElectronTight") > 0.5')
-selectedPatTausForElecTauEcalCrackVeto.cut =  selectedPatTausEcalCrackVeto.cut
+selectedPatTausForElecTauEcalCrackVeto.cut =  cms.string('abs(eta) < 10 | abs(eta) > 0') # crack cut is now part of electron discriminant
 selectedPatTausForElecTauMuonVeto.cut = cms.string('tauID("againstMuonLoose") > 0.5')
 
 patTauSelConfiguratorForElecTau = objSelConfigurator(
