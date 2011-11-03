@@ -59,8 +59,8 @@ selectElecMuPairsLooseElectronIsolation = patElecMuPairSelConfiguratorLooseElect
 # (settings made here overwrite values defined in elecTauPairSelection)
 #--------------------------------------------------------------------------------
 
-selectedElecTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
-selectedElecTauPairsMt1MET.cut = cms.string('mt1MET < 50.')
+selectedElecTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.5')
+selectedElecTauPairsMt1MET.cut = cms.string('mt1MET < 5000.')
 selectedElecTauPairsPzetaDiff.cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.')
 selectedElecTauPairsZeroCharge.cut = cms.string('charge = 0')
 selectedElecTauPairsNonZeroCharge.cut = cms.string('charge != 0')
