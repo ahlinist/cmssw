@@ -12,7 +12,8 @@ from TauAnalysis.RecoTools.patJetSelection_cff import patJetSelConfigurator
 from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import \
      patJetSelConfiguratorForAHtoMuTau, patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation
 from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import \
-     patJetSelConfiguratorForAHtoElecTau, patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation
+     patJetSelConfiguratorForAHtoElecTauJetTag, patJetSelConfiguratorForAHtoElecTauJetTagLooseElectronIsolation, \
+     patJetSelConfiguratorForAHtoElecTauBtag, patJetSelConfiguratorForAHtoElecTauBtagLooseElectronIsolation
 #from TauAnalysis.RecoTools.patJetSelectionForVBF_cff import \
 #     patTagJetSelConfiguratorForVBF, patCentralJetSelConfiguratorForVBF
 from TauAnalysis.RecoTools.patJetSelectionForWTauNu_cff import patJetSelConfiguratorForWTauNu, patJetSelConfiguratorForWTauNu2
@@ -1013,17 +1014,27 @@ def enableSysUncertainties_runAHtoElecTau(process):
 
     # do jets for AHtoElecTau
     process.tmp = cms.Sequence()
+    process.tmp2 = cms.Sequence()
     process.producePatTupleAHtoElecTauSpecific.replace(process.selectPatJetsForAHtoElecTau, process.tmp)
-    process.producePatTupleAHtoElecTauSpecific.replace(process.selectPatJetsForAHtoElecTauLooseElectronIsolation, process.tmp)
+    process.producePatTupleAHtoElecTauSpecific.replace(process.selectPatJetsForAHtoElecTauLooseElectronIsolation, process.tmp2)
 
-    setattr(patJetSelConfiguratorForAHtoElecTau, "systematics", jetSystematics)
-    process.selectPatJetsForAHtoElecTauWithSys = patJetSelConfiguratorForAHtoElecTau.configure(process = process)
+    setattr(patJetSelConfiguratorForAHtoElecTauJetTag, "systematics", jetSystematics)
+    process.selectPatJetsForAHtoElecTauJetTagWithSys = patJetSelConfiguratorForAHtoElecTauJetTag.configure(process = process)
 
-    setattr(patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation, "systematics", jetSystematics)
-    process.selectPatJetsForAHtoElecTauLooseElectronIsolationWithSys = \
-            patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation.configure(process = process)
+    setattr(patJetSelConfiguratorForAHtoElecTauJetTagLooseElectronIsolation, "systematics", jetSystematics)
+    process.selectPatJetsForAHtoElecTauJetTagLooseElectronIsolationWithSys = \
+            patJetSelConfiguratorForAHtoElecTauJetTagLooseElectronIsolation.configure(process = process)
     
-    process.producePatTupleAHtoElecTauSpecific.replace(process.tmp, process.selectPatJetsForAHtoElecTauWithSys + process.selectPatJetsForAHtoElecTauLooseElectronIsolationWithSys)
+    setattr(patJetSelConfiguratorForAHtoElecTauBtag, "systematics", jetSystematics)
+    process.selectPatJetsForAHtoElecTauBtagWithSys = patJetSelConfiguratorForAHtoElecTauBtag.configure(process = process)
+
+    setattr(patJetSelConfiguratorForAHtoElecTauBtagLooseElectronIsolation, "systematics", jetSystematics)
+    process.selectPatJetsForAHtoElecTauBtagLooseElectronIsolationWithSys = \
+            patJetSelConfiguratorForAHtoElecTauBtagLooseElectronIsolation.configure(process = process)
+    process.producePatTupleAHtoElecTauSpecific.replace(process.tmp, 
+            process.selectPatJetsForAHtoElecTauBtagWithSys + process.selectPatJetsForAHtoElecTauJetTagWithSys)
+    process.producePatTupleAHtoElecTauSpecific.replace(process.tmp2, 
+            process.selectPatJetsForAHtoElecTauBtagLooseElectronIsolationWithSys + process.selectPatJetsForAHtoElecTauJetTagLooseElectronIsolationWithSys)
 
     expSysUncertainties = getSysUncertaintyNames(
             [ electronSystematics,
