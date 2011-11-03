@@ -177,6 +177,9 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
 
     jobOptions.append(('eventDump', enableEventDumps))
 
+    # Check if we want to turn off saving of final run/lumi/event numbers
+    jobOptions.append(('noRunLumiEventSave', sample_info['noRunLumiEventSave']))
+
     saveFinalEventsOption = ('saveFinalEvents', saveFinalEvents)
     # Optionally specify the final events name.
     if saveFinalEventsFileName is not None:

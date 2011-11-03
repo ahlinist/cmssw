@@ -8,6 +8,7 @@ import TauAnalysis.Configuration.tools.mcToDataCorrectionTools as mcToDataCorrec
 import TauAnalysis.Configuration.tools.sysUncertaintyTools as sysUncertaintyTools
 import TauAnalysis.Configuration.tools.switchToData as switchToData
 import TauAnalysis.Configuration.tools.switchToAOD as switchToAOD
+import TauAnalysis.Configuration.tools.switchToPatTuple as switchToPatTuple
 import TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools as fakeRateAnalysisTools
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
@@ -224,8 +225,6 @@ def _setInputFileType(process, filetype, **kwargs):
             process.p.replace(patTupleProductionSequence, process.producePatTupleAll)
         if filetype == 'AOD':
             switchToAOD.switchToAOD(process)
-    if filetype == 'PATTuple':
-        switchToAOD.switchToAOD(process)
 
 @_requires(inputs=['Data', 'embeddedData', 'smMC', 'smSumMC', 'bsmMC',])
 def _setIsData(process, type, **kwargs):
@@ -340,6 +339,20 @@ def _setTriggerBits(process, triggerSelect, **kwargs):
 					for eventDump in eventDumps:
 						_setattr_ifexists(eventDump, "hltPathsToPrint", cms.vstring(triggerSelect))
 
+def _setNoSaveRunLumiEventNumbers(process, enable, **kwargs):
+    ''' Set whether to turn off the saving of run/lumi/event numbers for events passing all selection '''
+    if enable:
+        for processAttrName in dir(process):
+            processAttr = getattr(process, processAttrName)
+            if isinstance(processAttr, cms.EDAnalyzer):
+                if processAttr.type_() == "GenericAnalyzer":
+                    analysisSequence = getattr(processAttr, "analysisSequence") 
+                    for sequenceElement in analysisSequence:
+                        if hasattr(sequenceElement,"saveRunLumiSectionEventNumbers"):
+                            if getattr(sequenceElement, "saveRunLumiSectionEventNumbers").value() != cms.vstring(''):
+                                print 'Removed run/lumiev save from analyzer ' + getattr(processAttr,"name").value() + ', filter ' + getattr(sequenceElement,"filter").value() 
+                                _setattr_ifexists(sequenceElement, "saveRunLumiSectionEventNumbers", cms.vstring(''))
+
 def _setInputFiles(process, files, **kwargs):
     ''' Set the files used in the input source of the cfg file '''
     print "--> setting input files to:", files
@@ -452,7 +465,8 @@ _METHOD_MAP = {
     'disableDuplicateCheck' : _disableDuplicateEvents,
     'processName' : _changeProcessName,
     'changeTauId' : _changeTauId,
-    'enableFakeRates' : _enableFakeRates
+    'enableFakeRates' : _enableFakeRates,
+    'noRunLumiEventSave' : _setNoSaveRunLumiEventNumbers
 }
 
 def applyProcessOptions(process, jobInfo, options):
