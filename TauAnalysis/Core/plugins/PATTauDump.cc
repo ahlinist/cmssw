@@ -72,6 +72,7 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
 	patTau != patTaus->end(); ++patTau ) {
     *outputStream_ << "Tau(" << iTau << "):" << std::endl;
     *outputStream_ << " Et = " << patTau->et() << std::endl;
+    *outputStream_ << " Pt = " << patTau->pt() << std::endl;
     *outputStream_ << " theta = " << patTau->theta()*180./TMath::Pi()
 		   << " (eta = " << patTau->eta() << ")" << std::endl;
     *outputStream_ << " phi = " << patTau->phi()*180./TMath::Pi() << std::endl;
@@ -92,6 +93,10 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     printTauId(*outputStream_, *patTau, "leadingTrackFinding");
     printTauId(*outputStream_, *patTau, "leadingTrackPtCut");
     printTauId(*outputStream_, *patTau, "leadingPionPtCut");
+    printTauId(*outputStream_, *patTau, "byVLooseCombinedIsolationDeltaBetaCorr");
+    printTauId(*outputStream_, *patTau, "byLooseCombinedIsolationDeltaBetaCorr");
+    printTauId(*outputStream_, *patTau, "byMediumCombinedIsolationDeltaBetaCorr");
+    printTauId(*outputStream_, *patTau, "byTightCombinedIsolationDeltaBetaCorr");
     printTauId(*outputStream_, *patTau, "byTaNCraw");
     printTauId(*outputStream_, *patTau, "byTaNC");
     printTauId(*outputStream_, *patTau, "byTaNCloose");
