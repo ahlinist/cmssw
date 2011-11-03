@@ -14,6 +14,8 @@
 echo ''
 echo 'Setting up python, ROOT and PyROOT'
 echo ''
+echo 'ROOT nightly release is still used, UPDATE TO SOMETHING MORE MODERN!'
+echo ''
 
 # set up compiler
 . /afs/cern.ch/sw/lcg/contrib/gcc/4.3/x86_64-slc5/setup.sh
