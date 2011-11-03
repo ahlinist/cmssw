@@ -1206,7 +1206,7 @@ Double_t CL95Calc::cla( Double_t ilum, Double_t slum,
   Double_t CL95A = 0, precision = 1.e-4;
 
   Int_t i;
-  for (i = bck; i >= 0; i--)
+  for (i = int(bck+0.5); i >= 0; i--)
     {
       makeData( i );
 
@@ -1219,7 +1219,7 @@ Double_t CL95Calc::cla( Double_t ilum, Double_t slum,
     }
   cout << "[roostats_cla]: Lower bound on n has been found at " << i+1 << endl;
 
-  for (i = bck+1; ; i++)
+  for (i = int(bck+0.5)+1; ; i++)
     {
       makeData( i );
       Double_t s95 = cl95( method );
