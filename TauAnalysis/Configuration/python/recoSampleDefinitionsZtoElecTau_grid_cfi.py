@@ -28,16 +28,15 @@ SAMPLES_TO_ANALYZE_SKIM = [
 SAMPLES_TO_ANALYZE_PAT = [
         #'data_TauPlusX_Run2011A_May10ReReco_pat',
         #'data_TauPlusX_Run2011A_PR_v4_pat',
-        #'data_TauPlusX_Run2011A_05AugReReco_pat',
-        #'Ztautau_powheg_pat',
+        'data_TauPlusX_Run2011A_05AugReReco_pat',
+        'Ztautau_powheg_pat',
         'DYtautauM10to20_powheg_pat',
+        'Zee_pythia_pat',
         #'Zee_powheg_pat',
         'DYeeM10to20_pythia_pat',
-        'PhotonPlusJets_Pt15to30_pat','PhotonPlusJets_Pt30to50_pat','PhotonPlusJets_Pt50to80_pat',
-        'QCD_BCtoE_Pt20to30_pat','QCD_BCtoE_Pt30to80_pat','QCD_BCtoE_Pt80to170_pat',
-        'QCD_EM_Pt20to30_pat',
-        #'QCD_EM_Pt30to80_pat',
-        'QCD_EM_Pt80to170_pat',
+        #'PhotonPlusJets_Pt15to30_pat','PhotonPlusJets_Pt30to50_pat','PhotonPlusJets_Pt50to80_pat',
+        #'QCD_BCtoE_Pt20to30_pat','QCD_BCtoE_Pt30to80_pat','QCD_BCtoE_Pt80to170_pat',
+        #'QCD_EM_Pt20to30_pat','QCD_EM_Pt30to80_pat','QCD_EM_Pt80to170_pat',
         'TTplusJets_madgraph_pat',
         'WplusJets_madgraph_pat',
         #'WW_pat','WZ_pat',
@@ -45,7 +44,7 @@ SAMPLES_TO_ANALYZE_PAT = [
 ] 
 
 # set final analysis samples here
-SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_SKIM
+SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_PAT
 
 
 # List of samples to include in the final level plots.  May include selections
@@ -109,11 +108,12 @@ TARGET_LUMI = (1610)/_picobarns
 #--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
-    'data_TauPlusX_Run2011A_May10ReReco_skim' : {  # 200/pb, 160431-163869, 1407306 events
+        'data_TauPlusX_Run2011A_May10ReReco_skim' : {  # 160/pb, 160432-163869, xxxxx events: run =< 163261 have bad triggers
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_423_May10ReReco_v3-2da1106465614f2b4aae43c293e2ca66/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3.txt',
         'conditions' : 'GR_R_42_V14::All',
+        'runselection' : '163262-163869',
         'number_of_jobs' : 150,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
@@ -311,11 +311,12 @@ RECO_SAMPLES = {
     'Ztautau_powheg_pat' : {
         'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/lantonel-patSkim_428_v2-3e4953bc8fc6d10809a574919bc42c1c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 150,
+        'number_of_jobs' : 300,
         'applyZrecoilCorrection' : False,
         'events_processed' : 19937479,
         'skim_eff' : 1012582./19937479,
         'x_sec' : 1666*_picobarns,
+        'inputFileType' : 'PATTuple',
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
