@@ -8,13 +8,13 @@ import copy
 # require electron and tau-jet to be separated in eta-phi,
 # in order to ensure that both do not refer to one and the same physical particle
 selectedElecTauPairsAntiOverlapVeto = cms.EDFilter("PATElecTauPairSelector",
-    cut = cms.string('dR12 > 0.7'),
+    cut = cms.string('dR12 > 0.5'),
     filter = cms.bool(False)
 )
 
 # require low transverse mass of electron and MET
 selectedElecTauPairsMt1MET = cms.EDFilter("PATElecTauPairSelector",
-    cut = cms.string('mt1MET < 50.'),
+    cut = cms.string('mt1MET < 40.'),
     filter = cms.bool(False)
 )
 
