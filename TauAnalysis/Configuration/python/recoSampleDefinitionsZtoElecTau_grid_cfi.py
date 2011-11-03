@@ -31,7 +31,7 @@ SAMPLES_TO_ANALYZE_PAT = [
         #'data_TauPlusX_Run2011A_05AugReReco_pat',
         #'Ztautau_powheg_pat',
         'DYtautauM10to20_powheg_pat',
-        #'Zee_pythia_pat',
+        #'Zee_powheg_pat',
         'DYeeM10to20_pythia_pat',
         'PhotonPlusJets_Pt15to30_pat','PhotonPlusJets_Pt30to50_pat','PhotonPlusJets_Pt50to80_pat',
         'QCD_BCtoE_Pt20to30_pat','QCD_BCtoE_Pt30to80_pat','QCD_BCtoE_Pt80to170_pat',
@@ -118,7 +118,7 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-	    'applyVertexMultiplicityReweighting' : False,
+        'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -365,6 +365,19 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Zee,
         #'absoluteNormalization' : 2308./2551
     },
+    'Zee_powheg_pat' : {
+        'datasetpath' : "/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/lantonel-patSkim_428_v2-3e4953bc8fc6d10809a574919bc42c1c/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 900,
+        'events_processed' : 29497207,
+        'skim_eff' : 13672814./29497207,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zee,
+        #'absoluteNormalization' : 2308./2551
+    },    
+   
     'Zee_pythia_pat' : {
         'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -389,16 +402,16 @@ RECO_SAMPLES = {
         'absoluteNormalization' : 2155./538
     },
     'WplusJets_madgraph_pat' : {
-        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
+        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/lantonel-patSkim_428_v2-3e4953bc8fc6d10809a574919bc42c1c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 500,
-        'events_processed' : 15285882,
-        'skim_eff' : 1537734./15285882,
+        'number_of_jobs' : 800,
+        'events_processed' : 81352581,
+        'skim_eff' : 8165915./81352581,
         'x_sec' : 31314*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
-    },     
+    },    
     'WW_skim' : {
         'datasetpath' : "/WW_TuneZ2_7TeV_pythia6_tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -676,7 +689,81 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_QCD_EMenriched_Pt80to170.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt80to170.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
-    }    
+    },
+
+
+
+    'Ztautau_embedded_May10ReReco_skim' : {
+        'datasetpath' : "/SingleMu/lantonel-May10thRR_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 20,
+        'events_processed' : 107792,
+        'skim_eff' : 81025./107792,
+        'factorize' : True,
+        'enableSysUncertainties' : False,
+        'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,        
+    }, 
+    'Ztautau_embedded_PR_v4_skim' : {
+        'datasetpath' : "/SingleMu/lantonel-PRv4_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 100,
+        'events_processed' : 445094,
+        'skim_eff' : 345082./445094,
+        'factorize' : True,
+        'enableSysUncertainties' : False,
+        'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,        
+    },
+    'Ztautau_embedded_05AugReReco_skim' : {
+        'datasetpath' : "/SingleMu/lantonel-Aug05thRR_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 50,
+        'events_processed' :235926 ,
+        'skim_eff' : 181930./235926,
+        'factorize' : True,
+        'enableSysUncertainties' : False,
+        'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,        
+    },
+    'Ztautau_embedded_PR_v6_skim' : {
+        'datasetpath' : "/SingleMu/lantonel-PRv6_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 50,
+        'events_processed' : 220855,
+        'skim_eff' : 175293./220855,
+        'factorize' : True,
+        'enableSysUncertainties' : False,
+        'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,        
+    },    
+
+
+
+
+
+
+    
 }
 
 # Define samples that get merged together
