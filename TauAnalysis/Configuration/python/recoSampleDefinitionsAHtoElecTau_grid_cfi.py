@@ -13,7 +13,6 @@ TAN_BETA = 30
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoElecTau.SAMPLES_TO_ANALYZE)
 SAMPLES_TO_ANALYZE.extend([
-    #'A90_skim',  'bbA90_skim',
     #'A100_skim', 'bbA100_skim',
     'A120_skim', 'bbA120_skim',
     'A130_skim', 'bbA130_skim',
@@ -33,14 +32,13 @@ SAMPLES_TO_ANALYZE.extend([
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
     'data',
-    #'A90Sum',
     #'A100Sum',
-    #'A120Sum',
-    #'A130Sum',
+    'A120Sum',
+    'A130Sum',
     'A140Sum',
-    #'A160Sum',
-	#'A180Sum',
-    #'A200Sum',
+    'A160Sum',
+	'A180Sum',
+    'A200Sum',
     #'A300Sum',
     #'qcdSum',
     #'VVsum',
@@ -58,12 +56,12 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 #SAMPLES_TO_PRINT.append('qqZtautau')
 #SAMPLES_TO_PRINT.append('A90Sum')
 #SAMPLES_TO_PRINT.append('A100Sum')
-SAMPLES_TO_PRINT.append('A120Sum')
-SAMPLES_TO_PRINT.append('A130Sum')
+#SAMPLES_TO_PRINT.append('A120Sum')
+#SAMPLES_TO_PRINT.append('A130Sum')
 SAMPLES_TO_PRINT.append('A140Sum')
-SAMPLES_TO_PRINT.append('A160Sum')
-SAMPLES_TO_PRINT.append('A180Sum')
-SAMPLES_TO_PRINT.append('A200Sum')
+#SAMPLES_TO_PRINT.append('A160Sum')
+#SAMPLES_TO_PRINT.append('A180Sum')
+#SAMPLES_TO_PRINT.append('A200Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A300Sum')
@@ -97,40 +95,12 @@ _femtobarns = 1.0e-3
 
 RECO_SAMPLES = copy.deepcopy(ZtoElecTau.RECO_SAMPLES)
 AHtoElecTauSpecific_RECO_SAMPLES = {
-    'A90_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-90_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199984,
-        'number_of_jobs' : 10,
-        'skim_eff' : 24138./199984.,
-        'x_sec' : (
-             174296.*_femtobarns*0.120567 # (gg -> h0)*(h0->tautau)
-           + 191745.*_femtobarns*0.119765 # (gg -> A0)*(A0->tautau)
-        ),
-        'legendEntry' : 'ggA(90) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate
-    },
-    'bbA90_skim' : {
-        'datasetpath' : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+    'A100_skim' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
-        'skim_eff' : 26287./220000,
-        'x_sec' : (
-             319247.*_femtobarns*0.120567 # (bb -> h0)*(h0->tautau)
-           + 320295.*_femtobarns*0.119765 # (bb -> A0)*(A0->tautau)
-        ),
-        'legendEntry' : 'bbA(90) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
-    'A100_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-100_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199985,
-        'number_of_jobs' : 10,
-        'skim_eff' : 26667./199985.,
+        'number_of_jobs' : 20,
+        'skim_eff' : 28690./220000,
         'x_sec' : (
              102490.*_femtobarns*0.122705 # (gg -> h0)*(h0->tautau)
            + 113695.*_femtobarns*0.121864 # (gg -> A0)*(A0->tautau)
@@ -143,7 +113,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 29173./220000,
         'x_sec' : (
              234065.*_femtobarns*0.122705 # (bb -> h0)*(h0->tautau)
@@ -153,26 +123,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'A110_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-110_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199988,
-        'number_of_jobs' : 10,
-        'skim_eff' : 29358./199988,
-        'x_sec' : (
-              36542.*_femtobarns*0.126386 # (gg -> h0)*(h0->tautau)
-           +  48111.*_femtobarns*0.125494 # (gg -> A0)*(A0->tautau)
-           +  20248.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)
-        ),
-        'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A120_skim' : {
         'datasetpath' : "/GluGluToHToTauTau_M-120_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199981,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 30,
         'skim_eff' : 31433./199981,
         'x_sec' : (
               36542.*_femtobarns*0.126386 # (gg -> h0)*(h0->tautau)
@@ -182,12 +137,14 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
+        'applyVertexMultiplicityReweighting' : False,  ## for acceptance challenge
+        'noRunLumiEventSave' : False
     },
     'bbA120_skim' : {
         'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 34247./220000.,
         'x_sec' : (
              126929.*_femtobarns*0.126386 # (bb -> h0)*(h0->tautau)
@@ -199,11 +156,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'A130_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-130_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199985,
+        'events_processed' : 220000,
         'number_of_jobs' : 20,
-        'skim_eff' : 33094./199985.,
+        'skim_eff' : 35433./220000,
         'x_sec' : (
                6595.*_femtobarns*0.126317 # (gg -> h0)*(h0->tautau)
            +  32421.*_femtobarns*0.127088 # (gg -> A0)*(A0->tautau)
@@ -217,7 +174,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 36374./220000,
         'x_sec' : (
               37150.*_femtobarns*0.126317 # (bb -> h0)*(h0->tautau)
@@ -229,11 +186,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'A140_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-140_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 191549,
-        'number_of_jobs' : 10,
-        'skim_eff' : 33740./191549.,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 37868./220000,
         'x_sec' : (
                8877.*_femtobarns*0.121431 # (gg -> h0)*(h0->tautau)
            +  22263.*_femtobarns*0.128566 # (gg -> A0)*(A0->tautau)
@@ -247,7 +204,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 38351./220000,
         'x_sec' : (
                4948.*_femtobarns*0.121432 # (bb -> h0)*(h0->tautau)
@@ -259,11 +216,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'A160_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-160_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199983,
-        'number_of_jobs' : 25,
-        'skim_eff' : 38111./199983.,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 40869./220000,
         'x_sec' : (
               11094.*_femtobarns*0.131234 # (gg -> A0)*(A0->tautau)
            +  11977.*_femtobarns*0.131575 # (gg -> H0)*(H0->tautau)
@@ -276,7 +233,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 41816./220000,
         'x_sec' : (
                1118.*_femtobarns*0.131234 # (bb -> A0)*(A0->tautau)
@@ -287,11 +244,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'A180_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-180_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 193230,
-        'number_of_jobs' : 10,
-        'skim_eff' : 39640./193230,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 44086./220000,
         'x_sec' : (
                5907.*_femtobarns*0.133061 # (gg -> A0)*(A0->tautau)
            +   6388.*_femtobarns*0.133826 # (gg -> H0)*(H0->tautau)
@@ -304,7 +261,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 45614./220000,
         'x_sec' : (
               32261.*_femtobarns*0.133061 # (bb -> A0)*(A0->tautau)
@@ -315,11 +272,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'A200_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-200_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 197673,
-        'number_of_jobs' : 10,
-        'skim_eff' : 43015./197673,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 47022./220000,
         'x_sec' : (
                3318.*_femtobarns*0.134295 # (gg -> A0)*(A0->tautau)
            +   3665.*_femtobarns*0.135591 # (gg -> H0)*(H0->tautau)
@@ -332,7 +289,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 47809./220000,
         'x_sec' : (
               21202.*_femtobarns*0.134295 # (bb -> A0)*(A0->tautau)
@@ -343,11 +300,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'A250_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-250_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199987,
-        'number_of_jobs' : 10,
-        'skim_eff' : 47724./199987,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 52141./220000,
         'x_sec' : (
                 923.*_femtobarns*0.135441 # (gg -> A0)*(A0->tautau)
            +   1101.*_femtobarns*0.139024 # (gg -> H0)*(H0->tautau)
@@ -360,7 +317,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 10,
+        'number_of_jobs' : 20,
         'skim_eff' : 53110./220000,
         'x_sec' : (
                8432.*_femtobarns*0.135441 # (bb -> A0)*(A0->tautau)
@@ -515,12 +472,6 @@ RECO_SAMPLES.update(AHtoElecTauSpecific_RECO_SAMPLES)
 
 MERGE_SAMPLES = copy.deepcopy(ZtoElecTau.MERGE_SAMPLES)
 AHtoElecTauSpecific_MERGE_SAMPLES = {
-    'A90Sum' : {
-        'samples' : [ 'A90_skim', 'bbA90_skim' ],
-        'legendEntry' : 'A(90) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A90_skim']['drawOption'],
-    },
     'A100Sum' : {
         'samples' : [ 'A100_skim', 'bbA100_skim' ],
         'legendEntry' : 'A(100) #rightarrow #tau^{+} #tau^{-}',
@@ -671,6 +622,7 @@ for sample in RECO_SAMPLES.keys():
     # for simple access
     ALL_SAMPLES.update(MERGE_SAMPLES)
     ALL_SAMPLES.update(RECO_SAMPLES)
+
 
 recoSampleDefinitionsAHtoElecTau = {
     'SAMPLES_TO_ANALYZE' : SAMPLES_TO_ANALYZE,
