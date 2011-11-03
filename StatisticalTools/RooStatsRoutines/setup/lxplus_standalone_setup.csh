@@ -13,6 +13,8 @@
 echo ''
 echo 'Setting up python, ROOT and PyROOT'
 echo ''
+echo ''
+echo 'ROOT nightly release is still used, UPDATE TO SOMETHING MORE MODERN!'
 
 source /afs/cern.ch/sw/lcg/external/gcc/4.3/x86_64-slc5/setup.csh
 
