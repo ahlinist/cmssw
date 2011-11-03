@@ -249,7 +249,7 @@ elecTauEventDump_woBtag = elecTauEventDump.clone(
 	diTauCandidateSource = cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeCumulative'),
 	elecTauZeeHypothesisSource = cms.InputTag('elecTauPairZeeHypothesesForAHtoElecTau'),
     #pfCandidateSource = cms.InputTag(''),
-	triggerConditions = cms.vstring("genPhaseSpaceCut: passed_cumulative")
+	triggerConditions = cms.vstring("evtSelDiTauCandidateForAHtoElecTauZeroCharge: passed_cumulative")
 )
 
 elecTauEventDump_wBtag = elecTauEventDump.clone(
@@ -332,7 +332,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronEta'),
-        title = cms.string('-2.1 < eta(Electron) < +2.1'),
+        title = cms.string('-2.5 < eta(Electron) < +2.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -370,7 +370,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
-        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        title = cms.string('-2.3 < eta(Tau) < +2.3'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -591,7 +591,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     # selection of electron + tau-jet combinations (continued)
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 4000 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -807,7 +807,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronEta'),
-        title = cms.string('-2.1 < eta(Electron) < +2.1'),
+        title = cms.string('-2.5 < eta(Electron) < +2.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -846,7 +846,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
-        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        title = cms.string('-2.3 < eta(Tau) < +2.3'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1066,7 +1066,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     #selection of electron + tau-jet combinations (continued)
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 4000 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1233,7 +1233,7 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronEta'),
-        title = cms.string('-2.1 < eta(Electron) < +2.1'),
+        title = cms.string('-2.5 < eta(Electron) < +2.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1323,7 +1323,7 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 4000 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1405,7 +1405,7 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronEta'),
-        title = cms.string('-2.1 < eta(Electron) < +2.1'),
+        title = cms.string('-2.5 < eta(Electron) < +2.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1495,7 +1495,7 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 4000 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
