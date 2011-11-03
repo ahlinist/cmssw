@@ -83,8 +83,36 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run33',
+        'current' : 'Run36',
         'jobs' : {
+            'Run36' : {
+               	'AHtoElecTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
+            # acceptance challenge: Aug05 rereco + A120
+            'Run35' : {
+               	'AHtoElecTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
+            # Summer 42X MC + 42X ReReco and PR data: HPS tau ID eff: byMediumCombinedIsolationDeltaBetaCorr --> running at T3
+            'Run34' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/BgEstimationTools/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                },
+               	'ZtoMuTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
             # Summer 42X MC + 42X ReReco and PR data: standard e+tau analysis --> first run at T3
             'Run33' : {
                	'AHtoElecTau' : {
