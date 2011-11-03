@@ -797,21 +797,24 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
           ++index;
         }
       }
-    } else { // display different monitor elements for same process
+    } else { // display different monitor elements for same or different process(es)
       typedef std::vector<edm::ParameterSet> vParameterSet;
       vParameterSet plots = drawJob.getParameter<vParameterSet>("plots");
 
-      std::string process = ( drawJob.exists("process") ) ? drawJob.getParameter<std::string>("process") : "";
-      //std::cout << "process (globally set) = " << process << std::endl;
-
       for ( vParameterSet::const_iterator plot = plots.begin();
            plot != plots.end(); ++plot ) {
+
+        std::string process = ( drawJob.exists("process") ) ? drawJob.getParameter<std::string>("process") : "";
+        //std::cout << "process (globally set) = " << process << std::endl;
 
         if ( process == "" ) {
           process = plot->getParameter<std::string>("process");
           //std::cout << "process (locally set) = " << process << std::endl;
         }
 
+        vstring stack = ( drawJob.exists("stack") ) ? drawJob.getParameter<vstring>("stack") : vstring();
+        //std::cout << "stack = " << format_vstring(stack) << std::endl;
+        
         std::string drawOptionEntry = plot->getParameter<std::string>("drawOptionEntry");
         //std::cout << "drawOptionEntry = " << drawOptionEntry << std::endl;
 
@@ -828,7 +831,8 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
         int index = 0;
         for ( vstring::const_iterator dqmMonitorElement = dqmMonitorElements.begin();
              dqmMonitorElement != dqmMonitorElements.end(); ++dqmMonitorElement ) {
-          plotDefMap[index].push_back(plotDefEntry(*dqmMonitorElement, drawOptionEntry, legendEntry, legendEntryErrorBand, process, false));
+             bool stack_dqmMonitorElement = find_vstring(stack, process);
+          plotDefMap[index].push_back(plotDefEntry(*dqmMonitorElement, drawOptionEntry, legendEntry, legendEntryErrorBand, process, stack_dqmMonitorElement));
           ++index;
         }
       }
