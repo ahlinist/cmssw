@@ -53,7 +53,7 @@ patElectronPFIsolationSelector = cms.PSet(
     
     pfCandidateSource = cms.InputTag('pfNoPileUp'),
 
-    vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
     beamSpotSource = cms.InputTag('offlineBeamSpot'),
     
     # CV: configuration parameters 'rhoFastJetSource' and 'ueRhoOffset'
@@ -82,8 +82,9 @@ patElectronPFIsolationSelector = cms.PSet(
 
     direction = cms.string('p4'),
 
-    sumPtMaxEB = cms.double(0.1),
-    sumPtMaxEE = cms.double(0.1),
+    #sumPtMaxEB = cms.double(0.1),
+    #sumPtMaxEE = cms.double(0.1),
+    sumPtMax = cms.double(0.1),
     sumPtMethod = cms.string("relative"), # either "relative" or "absolute"
     
     pileUpCorr = cms.PSet(
