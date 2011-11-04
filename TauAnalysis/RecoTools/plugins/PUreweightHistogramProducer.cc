@@ -29,14 +29,14 @@ void PUreweightHistogramProducer::beginJob()
   dqmStore.setCurrentFolder(moduleLabel_);
 
   meVtxMultiplicity_ = 
-    dqmStore.book1D("VtxMultiplicity", "VtxMultiplicity", 20, -0.5, +19.5);
+    dqmStore.book1D("VtxMultiplicity", "VtxMultiplicity", 35, -0.5, +34.5);
   meVtxMultiplicity_->getTH1()->Sumw2();
   meRho_ = 
     dqmStore.book1D("Rho", "PFNeutralRho", 100, -1.e-3, rhoMax_);
   meRho_->getTH1()->Sumw2();
 
   meRhoVsVtxMultiplicity_ = 
-    dqmStore.book2D("RhoVsVtxMultiplicity", "RhoVsVtxMultiplicity", 20, -0.5, +19.5, 100, -1.e-3, rhoMax_);
+    dqmStore.book2D("RhoVsVtxMultiplicity", "RhoVsVtxMultiplicity", 35, -0.5, +34.5, 100, -1.e-3, rhoMax_);
   meRhoVsVtxMultiplicity_->getTH1()->Sumw2();
 }
 

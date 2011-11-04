@@ -9,6 +9,8 @@
 
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
+#include <TMath.h>
+
 #include <vector>
 
 //-------------------------------------------------------------------------------
@@ -73,18 +75,25 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     if ( !puDist_data_ ) 
       throw cms::Exception("VertexMultiplicityReweightExtractor") 
 	<< " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
-    int exp_pu_max = puDist_data_->GetNbinsX();
-    std::vector<float> exp_pileup_data(exp_pu_max);
-    for ( int i = 0; i < exp_pu_max; ++i ) {
-      exp_pileup_data[i] = puDist_data_->GetBinContent(i + 1);
-    }
     
     std::vector<float> gen_pileup_mc = gen_pileup_flat10_summer11mc();
-    if ( exp_pileup_data.size() != gen_pileup_mc.size() ) 
-      throw cms::Exception("VertexMultiplicityReweightExtractor") 
-	<< " LUTs for data = " << exp_pileup_data.size() << " and MC = " << gen_pileup_mc.size() << " are not compatible !!\n";
-    genLumiReweight_ = new edm::LumiReWeighting(gen_pileup_mc, exp_pileup_data);
-
+    TH1* puDist_mc = dynamic_cast<TH1*>(puDist_data_->Clone("MC_distr"));
+    int numBins = puDist_mc->GetNbinsX();
+    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+      double binCenter = puDist_mc->GetBinCenter(iBin);
+      int idx = TMath::FloorNint(binCenter);
+      double binContent = ( idx >= 0 && idx < (int)gen_pileup_mc.size() ) ?
+	gen_pileup_mc[idx] : 0.;
+      puDist_mc->SetBinContent(iBin, binContent);
+      puDist_mc->SetBinError(iBin, 0.);
+    }
+    std::string puFileName_mc = "puDist_mc.root";
+    TFile* puFile_mc = new TFile(puFileName_mc.data(), "RECREATE");
+    puDist_mc->Write();
+    delete puFile_mc;
+    
+    genLumiReweight_ = new edm::LumiReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
+    
     if ( type_ == kGenLevel3d ) genLumiReweight_->weight3D_init();
   } else {
     inputFile_ = new TFile(inputFileName.fullPath().data());
@@ -111,9 +120,9 @@ double VertexMultiplicityReweightExtractor::operator()(const edm::Event& evt) co
     edm::Handle<PileupSummaryInfoCollection> genPileUpInfos;
     evt.getByLabel(src_, genPileUpInfos);
 
-    int numPileUp_inTime     = -1.;
-    int numPileUp_bxPrevious = -1.;
-    int numPileUp_bxNext     = -1.;
+    int numPileUp_inTime     = -1;
+    int numPileUp_bxPrevious = -1;
+    int numPileUp_bxNext     = -1;
     for ( PileupSummaryInfoCollection::const_iterator genPileUpInfo = genPileUpInfos->begin();
 	  genPileUpInfo != genPileUpInfos->end(); ++genPileUpInfo ) {
       // CV: in-time PU is stored in getBunchCrossing = 0, 

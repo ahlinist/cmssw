@@ -19,6 +19,8 @@ RhoNeutralCorrAnalyzer::RhoNeutralCorrAnalyzer(const edm::ParameterSet& cfg)
   srcRhoChargedHadronsNoPileUp_ = cfg.getParameter<edm::InputTag>("srcRhoChargedHadronsNoPileUp");
   srcRhoChargedHadronsPileUp_ = cfg.getParameter<edm::InputTag>("srcRhoChargedHadronsPileUp");
   srcRhoChargedHadrons_ = cfg.getParameter<edm::InputTag>("srcRhoChargedHadrons");
+  srcRhoNeutralHadrons_ = cfg.getParameter<edm::InputTag>("srcRhoNeutralHadrons");
+  srcRhoPhotons_ = cfg.getParameter<edm::InputTag>("srcRhoPhotons");
 
   srcGenPileUp_ = ( cfg.exists("srcGenPileUp") ) ?
     cfg.getParameter<edm::InputTag>("srcGenPileUp") : edm::InputTag(); 
@@ -43,7 +45,7 @@ void RhoNeutralCorrAnalyzer::beginJob()
   
   meNumVertices_ = 
     dqmStore.book1D("numVertices", 
-		    "numVertices", 25, 0., 24.5);
+		    "numVertices", 35, 0., 34.5);
 
   meRhoNeutral_ = 
     dqmStore.book1D("rhoNeutral", 
@@ -57,6 +59,12 @@ void RhoNeutralCorrAnalyzer::beginJob()
   meRhoChargedHadrons_ = 
     dqmStore.book1D("RhoChargedHadrons", 
 		    "RhoChargedHadrons", 240, 0., 12.);
+  meRhoNeutralHadrons_ = 
+    dqmStore.book1D("RhoNeutralHadrons", 
+		    "RhoNeutralHadrons", 240, 0., 12.);
+  meRhoPhotons_ = 
+    dqmStore.book1D("RhoPhotons", 
+		    "RhoPhotons", 240, 0., 12.);
   
   meRhoNeutralDivRhoChargedHadronsNoPileUp_ = 
     dqmStore.book1D("RhoNeutralDivRhoChargedHadronsNoPileUp", 
@@ -71,7 +79,7 @@ void RhoNeutralCorrAnalyzer::beginJob()
   if ( srcGenPileUp_.label() != "" ) {
     meNumVerticesVsGenPileUp_ = 
       dqmStore.book2D("numVerticesVsGenPileUp", 
-		      "numVerticesVsGenPileUp", 37, -0.5, 36.5, 25, 0., 24.5);
+		      "numVerticesVsGenPileUp", 37, -0.5, 36.5, 35, 0., 34.5);
   
     meRhoNeutralVsGenPileUp_ = 
       dqmStore.book2D("rhoNeutralVsGenPileUp", 
@@ -108,6 +116,10 @@ void RhoNeutralCorrAnalyzer::analyze(const edm::Event& evt, const edm::EventSetu
   evt.getByLabel(srcRhoChargedHadronsPileUp_, rhoChargedHadronsPileUp);
   edm::Handle<double> rhoChargedHadrons;
   evt.getByLabel(srcRhoChargedHadrons_, rhoChargedHadrons);
+  edm::Handle<double> rhoNeutralHadrons;
+  evt.getByLabel(srcRhoNeutralHadrons_, rhoNeutralHadrons);
+  edm::Handle<double> rhoPhotons;
+  evt.getByLabel(srcRhoPhotons_, rhoPhotons);
 
 //--- compute event weight
 //   (reweighting for in-time and out-of-time pile-up, Data/MC correction factors,...)
@@ -136,6 +148,8 @@ void RhoNeutralCorrAnalyzer::analyze(const edm::Event& evt, const edm::EventSetu
   meRhoChargedHadronsNoPileUp_->Fill(*rhoChargedHadronsNoPileUp, evtWeight);
   meRhoChargedHadronsPileUp_->Fill(*rhoChargedHadronsPileUp, evtWeight);
   meRhoChargedHadrons_->Fill(*rhoChargedHadrons, evtWeight);
+  meRhoNeutralHadrons_->Fill(*rhoNeutralHadrons, evtWeight);
+  meRhoPhotons_->Fill(*rhoPhotons, evtWeight);
   
   meRhoNeutralDivRhoChargedHadronsNoPileUp_->Fill(rhoNeutralDivRhoChargedHadronsNoPileUp, evtWeight);
   meRhoNeutralDivRhoChargedHadronsPileUp_->Fill(rhoNeutralDivRhoChargedHadronsPileUp, evtWeight);

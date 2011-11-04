@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.3 2011/09/30 12:30:41 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.4 2011/10/19 14:41:10 veelken Exp $
  *
  */
 
@@ -18,6 +18,7 @@
 #include "CommonTools/Utils/interface/TFileDirectory.h"
 
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
 #include <TH1.h>
@@ -35,7 +36,7 @@ class ZllRecoilCorrectionHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory&);
-  void fillHistograms(const reco::CompositeCandidate&, const pat::MET&, size_t, double, double);
+  void fillHistograms(const reco::CompositeCandidate&, const std::vector<pat::Jet>&, const pat::MET&, size_t, double, double);
   
   /// scale all bin-contents/bin-errors by factor given as function argument
   /// (to account for events lost, due to aborted skimming/crab or PAT-tuple production/lxbatch jobs)
@@ -63,6 +64,15 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramZllCandEta_;
   TH1* histogramZllCandPhi_;
   TH1* histogramZllCandMass_;
+
+  TH1* histogramJetPtAbsEtaLt11_;
+  TH1* histogramJetResAbsEtaLt11_;
+  TH1* histogramJetPtAbsEta11to17_;
+  TH1* histogramJetResAbsEta11to17_;
+  TH1* histogramJetPtAbsEta17to23_;
+  TH1* histogramJetResAbsEta17to23_;
+  TH1* histogramJetPtAbsEtaGt23_;
+  TH1* histogramJetResAbsEtaGt23_;
 
   TH1* histogramMEtS_;
   TH1* histogramMEtL_;

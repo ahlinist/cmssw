@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.7 2011/09/30 12:30:41 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.8 2011/10/19 14:41:09 veelken Exp $
  *
  */
 
@@ -240,14 +240,36 @@ void makeControlPlots(TH1* dummyHistogram,
   for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
     double x = xMin + iPoint*xStepSize;
 
-    double uParl_av             = fitResultsfitResults.d() + fitResultsfitResults.k()*x;
-    double uParl_dUp            = (fitResultsfitResults.d() + fitResultsfitResults.dErr()) + fitResultsfitResults.k()*x;    
-    double uParl_dDown          = (fitResultsfitResults.d() - fitResultsfitResults.dErr()) + fitResultsfitResults.k()*x;
-    double uParl_kUp            = fitResultsfitResults.d() + (fitResultsfitResults.k() + fitResultsfitResults.kErr())*x;
-    double uParl_kDown          = fitResultsfitResults.d() + (fitResultsfitResults.k() - fitResultsfitResults.kErr())*x;
+    double uParl_av             = fitResultsfitResults.d() 
+                                 + fitResultsfitResults.k1()*x
+                                  *0.5*(1.0 - TMath::Erf(-fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())));
+    double uParl_dUp            = uParl_av + fitResultsfitResults.dErr();
+    double uParl_dDown          = uParl_av - fitResultsfitResults.dErr();
+    double d_uParl_by_k1        = 0.5*(1.0 - TMath::Erf(-fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())))*x;
+    double uParl_k1Up           = uParl_av + TMath::Abs(d_uParl_by_k1)*fitResultsfitResults.k1Err();
+    double uParl_k1Down         = uParl_av - TMath::Abs(d_uParl_by_k1)*fitResultsfitResults.k1Err();
+    double d_uParl_by_k2        = (1./TMath::Sqrt(TMath::Pi()))
+                                 *TMath::Exp(-square(fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())))
+                                 *fitResultsfitResults.k1()*TMath::Power(x, fitResultsfitResults.k3() + 1.);
+    double uParl_k2Up           = uParl_av + TMath::Abs(d_uParl_by_k2)*fitResultsfitResults.k2Err();
+    double uParl_k2Down         = uParl_av - TMath::Abs(d_uParl_by_k2)*fitResultsfitResults.k2Err();
+    double d_uParl_by_k3        = (1./TMath::Sqrt(TMath::Pi()))
+                                 *TMath::Exp(-square(fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())))
+                                 *fitResultsfitResults.k1()*fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3() + 1.)
+                                 *TMath::Log(x);
+    double uParl_k3Up           = uParl_av + TMath::Abs(d_uParl_by_k3)*fitResultsfitResults.k3Err();
+    double uParl_k3Down         = uParl_av - TMath::Abs(d_uParl_by_k3)*fitResultsfitResults.k3Err();
     
-    double uParlErrUp           = uParl_av + TMath::Sqrt(square(uParl_dUp   - uParl_av) + square(uParl_kUp   - uParl_av));
-    double uParlErrDown         = uParl_av - TMath::Sqrt(square(uParl_dDown - uParl_av) + square(uParl_kDown - uParl_av));
+    double uParlErrUp           = uParl_av 
+                                 + TMath::Sqrt(square(uParl_dUp - uParl_av) 
+                                              + square(uParl_k1Up - uParl_av)
+                                              + square(uParl_k2Up - uParl_av)
+                                              + square(uParl_k3Up - uParl_av));
+    double uParlErrDown         = uParl_av 
+                                 - TMath::Sqrt(square(uParl_dDown - uParl_av) 
+                                              + square(uParl_k1Down - uParl_av)
+                                              + square(uParl_k2Down - uParl_av)
+                                              + square(uParl_k3Down - uParl_av));
 
     graph_uParlFit->SetPoint(iPoint, x, uParl_av);
     graph_uParlFitErr->SetPoint(iPoint, x, 0.5*(uParlErrUp + uParlErrDown));
@@ -481,9 +503,11 @@ int main(int argc, char* argv[])
   histogram_qT->GetXaxis()->SetRange(1, 0);
 
   std::cout << "starting uParl fit..." << std::endl;
-  TF1* f_uParl_mean = new TF1("f_uParl_mean", "[0]*x", 0., 500.);
+  TF1* f_uParl_mean = new TF1("f_uParl_mean", "[0]*x*0.5*(1.0 - TMath::Erf(-[1]*TMath::Power(x, [2])))", 0., 500.);
   f_uParl_mean->SetLineWidth(0);
   f_uParl_mean->SetParameter(0, -1.0);
+  f_uParl_mean->SetParameter(1,  5.e-2);
+  f_uParl_mean->SetParameter(2,  1.0);
   graph_uParl_mean->Fit(f_uParl_mean, "E");
   //graph_uParl_mean->Fit(f_uParl_mean, "W");
 
@@ -507,6 +531,8 @@ int main(int argc, char* argv[])
   ZllRecoilCorrectionParameterSet fitResults(
     0., 0., 
     f_uParl_mean->GetParameter(0), f_uParl_mean->GetParError(0), 
+    f_uParl_mean->GetParameter(1), f_uParl_mean->GetParError(1), 
+    f_uParl_mean->GetParameter(2), f_uParl_mean->GetParError(2), 
     f_uParl_rms->GetParameter(0), f_uParl_rms->GetParError(0), 
     f_uParl_rms->GetParameter(1), f_uParl_rms->GetParError(1), 
     f_uParl_rms->GetParameter(2), f_uParl_rms->GetParError(2),

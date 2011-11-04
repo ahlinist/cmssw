@@ -9,9 +9,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.1 $
  *
- * $Id: ZllRecoilCorrectionParameterSet.h,v 1.5 2011/01/19 10:10:33 veelken Exp $
+ * $Id: ZllRecoilCorrectionParameterSet.h,v 1.1 2011/08/15 17:10:32 veelken Exp $
  *
  */
 
@@ -28,14 +28,18 @@ class ZllRecoilCorrectionParameterSet
  public:
 
   ZllRecoilCorrectionParameterSet(const edm::ParameterSet&);
-  ZllRecoilCorrectionParameterSet(double, double, double, double, double, double, double, double,
-				  double, double, double, double, double, double, double, double);
+  ZllRecoilCorrectionParameterSet(double, double, double, double, double, double, double, double, double, double,
+				  double, double, double, double, double, double, double, double, double, double);
   ~ZllRecoilCorrectionParameterSet() {}
 
   double d()         const { return d_.value_;            }
   double dErr()      const { return d_.uncertainty_;      }
-  double k()         const { return k_.value_;            }
-  double kErr()      const { return k_.uncertainty_;      }
+  double k1()        const { return k1_.value_;           }
+  double k1Err()     const { return k1_.uncertainty_;     }
+  double k2()        const { return k2_.value_;           }
+  double k2Err()     const { return k2_.uncertainty_;     }
+  double k3()        const { return k3_.value_;           }
+  double k3Err()     const { return k3_.uncertainty_;     }
   double sigma1()    const { return sigma1_.value_;       }
   double sigma1Err() const { return sigma1_.uncertainty_; }
   double b1()        const { return b1_.value_;           }
@@ -91,7 +95,9 @@ class ZllRecoilCorrectionParameterSet
   };
 
   ZllRecoilCorrectionParameter d_;
-  ZllRecoilCorrectionParameter k_;
+  ZllRecoilCorrectionParameter k1_;
+  ZllRecoilCorrectionParameter k2_;
+  ZllRecoilCorrectionParameter k3_;
   ZllRecoilCorrectionParameter sigma1_;
   ZllRecoilCorrectionParameter b1_;
   ZllRecoilCorrectionParameter c1_;

@@ -6,14 +6,14 @@ import TauAnalysis.TauIdEfficiency.tools.castor_mirror2 as castor_mirror
 import subprocess
 import shlex
 
-version = "v3_8"
+version = "v4_1"
 
 # Get all the skim files from the castor directory
 sourceFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/" % version
 
 source_files = [ file_info['path'] for file_info in castor.nslsl(sourceFilePath) ]
 
-targetFilePath = "/data2/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/" % version
+targetFilePath = "/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/" % version
 
 samplesToCopy = [
     # modify in case you want to submit jobs for some of the samples only...
@@ -40,4 +40,4 @@ for source_file in source_files:
     print("copying %s --> %s" % (source_file, target_file))
     files_to_copy.append(source_file)
 
-castor_mirror.mirror_files(castor_mirror.needs_local_copy(files_to_copy, [ targetFilePath ]), [ targetFilePath ], 50)
+castor_mirror.mirror_files(castor_mirror.needs_local_copy(files_to_copy, [ targetFilePath ]), [ targetFilePath ], 10)

@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.6 2011/09/30 12:30:41 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.7 2011/10/19 14:41:09 veelken Exp $
  *
  */
 
@@ -30,7 +30,10 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidateFwd.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
@@ -82,7 +85,12 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfgZllRecoilCorrectionAnalyzer = cfg.getParameter<edm::ParameterSet>("ZllRecoilCorrectionAnalyzer");
 
   edm::InputTag srcZllCandidates = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcZllCandidates");
+
+  edm::InputTag srcJets = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcJets");
   edm::InputTag srcMEt = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMEt");
+
+  edm::InputTag srcTrigger = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcTrigger");
+  vstring hltPaths = cfgZllRecoilCorrectionAnalyzer.getParameter<vstring>("hltPaths");
 
   vInputTag srcWeights = cfgZllRecoilCorrectionAnalyzer.getParameter<vInputTag>("srcWeights");
 
@@ -245,6 +253,25 @@ int main(int argc, char* argv[])
 	genPUreweight *= (*weight);
       }
 
+      bool isTriggered = false;
+      if ( hltPaths.size() == 0 ) {
+	isTriggered = true;
+      } else {
+	edm::Handle<edm::TriggerResults> hltResults;
+	evt.getByLabel(srcTrigger_, hltResults);
+  
+	const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
+
+	for ( vstring::const_iterator hltPath = hltPaths.begin();
+	      hltPath != hltPaths.end(); ++hltPath ) {
+	  bool isHLTpath_passed = false;
+	  unsigned int idx = triggerNames.triggerIndex(*hltPath);
+	  if ( idx < triggerNames.size() ) isHLTpath_passed = hltResults.accept(idx);
+	}
+      }
+
+      if ( !isTriggered ) continue;
+
       edm::Handle<reco::VertexCollection> vertices;
       evt.getByLabel(srcVertices, vertices);
       size_t vtxMultiplicity = vertices->size();
@@ -281,6 +308,9 @@ int main(int argc, char* argv[])
 	    
       if ( !bestZllCandidate ) continue;
 
+      edm::Handle<std::vector<pat::Jet> > jets;
+      evt.getByLabel(srcJets, jets);
+
       edm::Handle<std::vector<pat::MET> > met;
       evt.getByLabel(srcMEt, met);
   
@@ -290,9 +320,12 @@ int main(int argc, char* argv[])
   
       const pat::MET& rawMEt = (*met->begin());
 
-      histogramsBeforeGenPUreweight->fillHistograms(*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, 1.0);
-      histogramsBeforeAddPUreweight->fillHistograms(*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight);
-      histogramsBeforeZllRecoilCorr->fillHistograms(*bestZllCandidate, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
+      histogramsBeforeGenPUreweight->fillHistograms(
+        *bestZllCandidate, *jets, rawMEt, vtxMultiplicity, rhoNeutral, 1.0);
+      histogramsBeforeAddPUreweight->fillHistograms(
+        *bestZllCandidate, *jets, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight);
+      histogramsBeforeZllRecoilCorr->fillHistograms(
+        *bestZllCandidate, *jets, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
 
       //if ( rawMEt.pt() > 80. && rawMEt.pt() < 100. ) {
       if ( bestZllCandidate->pt() > 150. ) {
@@ -310,11 +343,14 @@ int main(int argc, char* argv[])
 
 	mcToDataCorrMEt = corrAlgorithm->buildZllCorrectedMEt(rawMEt, rawMEt.genMET()->p4(), bestZllCandidate->p4());
       }
-      histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(*bestZllCandidate, mcToDataCorrMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
+      histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
+        *bestZllCandidate, *jets, mcToDataCorrMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
 
       pat::MET absCalibMEt(rawMEt);
       if ( ZllRecoilCorrParameter_data ) {
-	double k = ZllRecoilCorrParameter_data->k();
+	double qT = bestZllCandidate->pt();
+	double k = ZllRecoilCorrParameter_data->k1()
+                  *0.5*(1.0 - TMath::Erf(-ZllRecoilCorrParameter_data->k2()*TMath::Power(qT, ZllRecoilCorrParameter_data->k3())));
 	double dHadRecoilPx = ((1. + k)/k)*(mcToDataCorrMEt.px() + bestZllCandidate->px());
 	double dHadRecoilPy = ((1. + k)/k)*(mcToDataCorrMEt.py() + bestZllCandidate->py());
 	double absCalibMEtPx = mcToDataCorrMEt.px() - dHadRecoilPx;
@@ -322,7 +358,8 @@ int main(int argc, char* argv[])
 	double absCalibMEtPt = TMath::Sqrt(absCalibMEtPx*absCalibMEtPx + absCalibMEtPy*absCalibMEtPy);
 	absCalibMEt.setP4(math::XYZTLorentzVector(absCalibMEtPx, absCalibMEtPy, 0., absCalibMEtPt));
       }
-      histogramsAfterZllRecoilAbsCalib->fillHistograms(*bestZllCandidate, absCalibMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
+      histogramsAfterZllRecoilAbsCalib->fillHistograms(
+        *bestZllCandidate, *jets, absCalibMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
     }
 
 //--- close input file

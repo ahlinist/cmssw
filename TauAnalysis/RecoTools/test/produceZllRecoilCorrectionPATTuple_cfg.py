@@ -14,7 +14,10 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #--------------------------------------------------------------------------------
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_9_1_T1A.root'
+        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_9_1_T1A.root'
+        #'file:/data1/veelken/CMSSW_4_2_x/skims/skimByHLTpath_IsoMu12_run167830_AOD_11_1_lSt.root'
+        'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_77_0_2OV.root'
+        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_runs175832to179431_AOD_99_1_d1y.root'                       
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
@@ -72,31 +75,26 @@ process.kt6PFChargedHadronJetsForVtxMultReweighting = process.kt6PFChargedHadron
     src = cms.InputTag('pfChargedHadronCands')
 )
 
+process.kt6PFNeutralHadronJetsForVtxMultReweighting = process.kt6PFNeutralJetsForVtxMultReweighting.clone(
+    src = cms.InputTag('pfAllNeutralHadrons')
+)
+
+process.kt6PFGammaJetsForVtxMultReweighting = process.kt6PFNeutralJetsForVtxMultReweighting.clone(
+    src = cms.InputTag('pfAllPhotons')
+)
+
 process.prePatProductionSequence = cms.Sequence()
 process.prePatProductionSequence += process.selectedPrimaryVertexQuality
 process.prePatProductionSequence += process.selectedPrimaryVertexPosition
 process.prePatProductionSequence += process.produceVertexMultiplicityVsRhoPFNeutralReweights
+process.prePatProductionSequence += process.pfAllNeutralHadrons
+process.prePatProductionSequence += process.kt6PFNeutralHadronJetsForVtxMultReweighting
+process.prePatProductionSequence += process.pfAllPhotons
+process.prePatProductionSequence += process.kt6PFGammaJetsForVtxMultReweighting
 process.prePatProductionSequence += process.pfChargedHadronPileUpCands
 process.prePatProductionSequence += process.kt6PFChargedHadronPileUpJetsForVtxMultReweighting
 process.prePatProductionSequence += process.pfChargedHadronCands
 process.prePatProductionSequence += process.kt6PFChargedHadronJetsForVtxMultReweighting
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-# apply type I/type I + II PFMEt corrections
-
-pfMEtCorrectorL2L3 = None
-if isMC:
-    pfMEtCorrectorL2L3 = "ak5PFL1FastL2L3"
-else:
-    pfMEtCorrectorL2L3 = "ak5PFL1FastL2L3Residual"
-
-process.load("JetMETCorrections/Type1MET/pfMETCorrections_cff")
-process.pfJetMETcorr.type1JetPtThreshold = cms.double(15.0)
-process.pfJetMETcorr.offsetCorrLabel = cms.string("ak5PFL1Fastjet")
-process.pfJetMETcorr.jetCorrLabel = cms.string(pfMEtCorrectorL2L3)
-process.pfType1p2CorrectedMet.type2CorrParameter.A = cms.double(0.8)
-process.prePatProductionSequence += process.producePFMETCorrections
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -112,6 +110,15 @@ process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
 process.prePatProductionSequence += process.selectPrimaryVertex
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
+process.vertexMultiplicityReweight3dRunA = process.vertexMultiplicityReweight.clone(
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to173692_finebin.root"),
+    type = cms.string("gen3d")
+)
+process.vertexMultiplicityReweight3dRunB = process.vertexMultiplicityReweight.clone(
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs175832to179431_finebin.root"),
+    type = cms.string("gen3d")
+)
+
 process.selectedPrimaryVerticesTrackPtSumGt5 = process.selectedPrimaryVerticesTrackPtSumGt10.clone(
     trackPtSumMin = cms.double(5.)
 )
@@ -120,12 +127,31 @@ process.prePatProductionSequence += process.selectedPrimaryVerticesTrackPtSumGt1
 
 # produce in-time pile-up reweighting factors
 if isMC:
-    process.prePatProductionSequence += process.vertexMultiplicityReweight
+    process.prePatProductionSequence += process.vertexMultiplicityReweight3dRunA
+    process.prePatProductionSequence += process.vertexMultiplicityReweight3dRunB
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # produce PAT objects
 process.load("PhysicsTools/PatAlgos/patSequences_cff")
+
+process.patMuons.muonSource = cms.InputTag('goodMuons')
+
+# disable all pat::Muon embedding
+for objSelAttrName in dir(process.patMuons):
+    objSelAttr = getattr(process.patMuons, objSelAttrName)
+    if isinstance(objSelAttr, cms.bool) and (objSelAttrName.startswith("embed") or objSelAttrName.startswith("add")):
+        setattr(process.patMuons, objSelAttrName, cms.bool(False))
+
+if not isMC:
+    # remove MC matching from standard PAT sequences
+    from PhysicsTools.PatAlgos.tools.coreTools import *
+    removeMCMatching(process, ["All"], outputInProcess = False)
+
+process.patIsoMuons = process.patMuons.clone(
+    muonSource = cms.InputTag('goodIsoMuons')
+)
+process.patDefaultSequence += process.patIsoMuons
 
 # configure pat::Jet production
 # (enable L2L3Residual corrections in case running on Data)
@@ -145,80 +171,63 @@ switchJetCollection(
     jetIdLabel = "ak5",
     outputModule = ''
 )
-process.patTupleProductionSequence = cms.Sequence()
-process.patTupleProductionSequence += process.jetTracksAssociatorAtVertex
-process.patTupleProductionSequence += process.patJetCharge
-process.patTupleProductionSequence += process.patJetCorrFactors
-if isMC:
-    process.patTupleProductionSequence += process.patJetFlavourId
-    process.patTupleProductionSequence += process.patJetPartonMatch
-    process.patTupleProductionSequence += process.patJetGenJetMatch
-process.patTupleProductionSequence += process.patJets
-
-# select pat::Jets not overlapping with muons
-process.selectedPatJetsAntiOverlapWithMuonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
-    src = cms.InputTag('patJets'),                                                       
-    srcNotToBeFiltered = cms.VInputTag('goodMuons'),
-    dRmin = cms.double(0.7)
-)
-
-process.patTupleProductionSequence += process.selectedPatJetsAntiOverlapWithMuonsVeto
 
 # configure pat::MET production
-process.patPFMETs = process.patMETs.clone(
-    metSource = cms.InputTag('pfMet'),
-    addMuonCorrections = cms.bool(False),
-    genMETSource = cms.InputTag('genMetTrue'),
-    addGenMET = cms.bool(True)
+process.load("PhysicsTools.PatUtils.patPFMETCorrections_cff")
+
+process.patTupleProductionSequence = cms.Sequence()
+process.patTupleProductionSequence += process.kt6PFJets
+process.patTupleProductionSequence += process.ak5PFJets
+process.patTupleProductionSequence += process.patDefaultSequence
+
+from PhysicsTools.PatUtils.tools.metUncertaintyTools import runMEtUncertainties
+doSmearJets = None
+if isMC:
+    doSmearJets = True
+else:
+    doSmearJets = False
+runMEtUncertainties(
+    process,
+    electronCollection = '',
+    photonCollection = '',
+    muonCollection = cms.InputTag('patMuons'),
+    tauCollection = '',
+    jetCollection = cms.InputTag('patJets'),
+    doSmearJets = doSmearJets,
+    addToPatDefaultSequence = False
 )
 
-process.patPFMETsTypeIcorrected = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfType1CorrectedMet')
-)
+if isMC:
+    process.patPFMETs.addGenMET = cms.bool(True)
+    process.patPFJetMETtype1p2Corr.jetCorrLabel = cms.string("L3Absolute")
+    
+    process.patTupleProductionSequence += process.metUncertaintySequence
 
-process.patPFMETsTypeIpIIcorrected = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfType1p2CorrectedMet')
-)
-
-if not isMC:
+    # compute MET "smearing" correction to take into account
+    # Data/MC differences in jet energy resolution
+    process.patPFJetMETsmear = cms.EDProducer("PATJetMETsmearInputProducer",
+        src = cms.InputTag('patJetsNotOverlappingWithLeptonsForMEtUncertainty'),
+        inputFileName = cms.FileInPath("PhysicsTools/PatUtils/data/pfJetResolutionMCtoDataCorrLUT.root"),
+        lutName = cms.string('pfJetResolutionMCtoDataCorrLUT')
+    )
+    process.patTupleProductionSequence += process.patPFJetMETsmear
+    
+    # configure production of smeared pat::MET collections
+    process.smearedPatPFMETs = cms.EDProducer("CorrectedPATMETProducer",
+        src = cms.InputTag('patPFMETs'),
+        applyType1Corrections = cms.bool(True),
+        srcType1Corrections = cms.VInputTag(
+            cms.InputTag('patPFJetMETsmear')
+        ),
+        applyType2Corrections = cms.bool(False)
+    )
+    process.patTupleProductionSequence += process.smearedPatPFMETs
+else:
     process.patPFMETs.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIcorrected.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIpIIcorrected.addGenMET = cms.bool(False)
-
-process.patTupleProductionSequence += process.patPFMETs
-process.patTupleProductionSequence += process.patPFMETsTypeIcorrected
-process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrected
-
-# compute MET "smearing" correction to take into account
-# Data/MC differences in jet energy resolution
-process.patPFJetMETsmear = cms.EDProducer("PATJetMETsmearInputProducer",
-    src = cms.InputTag('selectedPatJetsAntiOverlapWithMuonsVeto'),
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/pfJetResolutionMCtoDataCorrLUT.root"),
-    lutName = cms.string('pfJetResolutionMCtoDataCorrLUT')
-)
-
-# configure production of smeared pat::MET collections
-process.smearedPatPFMETs = cms.EDProducer("CorrectedPATMETProducer",
-    src = cms.InputTag('patPFMETs'),
-    applyType1Corrections = cms.bool(True),
-    srcType1Corrections = cms.VInputTag(
-        cms.InputTag('patPFJetMETsmear')
-    ),
-    applyType2Corrections = cms.bool(False)
-)   
-
-process.smearedPatPFMETsTypeIcorrected = process.smearedPatPFMETs.clone(
-    src = cms.InputTag('patPFMETsTypeIcorrected')
-)    
-
-process.smearedPatPFMETsTypeIpIIcorrected = process.smearedPatPFMETs.clone(
-    src = cms.InputTag('patPFMETsTypeIpIIcorrected')
-)
-
-process.patTupleProductionSequence += process.patPFJetMETsmear
-process.patTupleProductionSequence += process.smearedPatPFMETs
-process.patTupleProductionSequence += process.smearedPatPFMETsTypeIcorrected
-process.patTupleProductionSequence += process.smearedPatPFMETsTypeIpIIcorrected
+    process.patPFJetMETtype1p2Corr.jetCorrLabel = cms.string("L2L3Residual")
+    
+    process.patTupleProductionSequence += process.patJetsNotOverlappingWithLeptonsForMEtUncertainty
+    process.patTupleProductionSequence += process.producePatPFMETCorrections
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
@@ -237,6 +246,9 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep EventAux_*_*_*',
             'keep LumiSummary_*_*_*',                       
             'keep edmMergeableCounter_*_*_*',
+            'keep *_gtDigis_*_*',
+            'keep *_hltL1GtObjectMap_*_*',
+            'keep *_TriggerResults_*_*',
             'keep *_goodMuons_*_*',
             'keep *_goodIsoMuons_*_*',                                            
             'keep *_goldenZmumuCandidatesGe0IsoMuons_*_*',
@@ -249,16 +261,15 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_selectedPrimaryVerticesTrackPtSumGt5_*_*',
             'keep *_selectedPrimaryVerticesTrackPtSumGt10_*_*',                                            
             'keep *_patJets_*_*',
+            'keep *_smearedPatJets_*_*',                                            
             'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',
             'keep *_pfCandsNotInJet_*_*',
             'keep *_pfType2Cands_*_*',                                
             'keep *_ak5PFJets_*_*',                             
             'keep *_patPFMETs_*_*',
             'keep *_smearedPatPFMETs_*_*',                                            
-            'keep *_patPFMETsTypeIcorrected_*_*',
-            'keep *_smearedPatPFMETsTypeIcorrected_*_*',                                            
-            'keep *_patPFMETsTypeIpIIcorrected_*_*',
-            'keep *_smearedPatPFMETsTypeIpIIcorrected_*_*',                                            
+            'keep *_patType1CorrectedPFMet*_*_*',
+            'keep *_patType1p2CorrectedPFMet*_*_*',                                            
             'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*',
@@ -272,7 +283,8 @@ if isMC:
     process.patTupleOutputModule.outputCommands.extend(
         cms.untracked.vstring(
             'keep *_addPileupInfo_*_*',
-            'keep *_vertexMultiplicityReweight_*_*',
+            'keep *_vertexMultiplicityReweight3dRunA_*_*',
+            'keep *_vertexMultiplicityReweight3dRunB_*_*',
             'keep *_genParticles_*_*'
         )
     )
@@ -288,12 +300,6 @@ process.producePUreweightHistogramsKt6PFNeutralJets = cms.EDAnalyzer("PUreweight
     srcRho = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
     rhoMax = cms.double(10.)                            
 )
-process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
-    srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt5')
-)
-process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
-    srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt10')
-)
 
 process.rhoNeutralAnalyzer = cms.EDAnalyzer("RhoNeutralCorrAnalyzer",
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
@@ -301,34 +307,108 @@ process.rhoNeutralAnalyzer = cms.EDAnalyzer("RhoNeutralCorrAnalyzer",
     srcRhoChargedHadronsNoPileUp = cms.InputTag('kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting', 'rho'),
     srcRhoChargedHadronsPileUp = cms.InputTag('kt6PFChargedHadronPileUpJetsForVtxMultReweighting', 'rho'),
     srcRhoChargedHadrons = cms.InputTag('kt6PFChargedHadronJetsForVtxMultReweighting', 'rho'),
+    srcRhoNeutralHadrons = cms.InputTag('kt6PFNeutralHadronJetsForVtxMultReweighting', 'rho'),
+    srcRhoPhotons = cms.InputTag('kt6PFGammaJetsForVtxMultReweighting', 'rho'),                                        
     srcWeights = cms.VInputTag()
 )
 
 process.produceAndSavePUreweightHistograms = cms.Sequence()
 process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets     
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets
 process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer
 
+process.pfChargedHadronNoPileUpAnalyzer = cms.EDAnalyzer("PFCandidateAnalyzer",
+    pfCandidateSource = cms.InputTag('pfChargedHadronNoPileUpCands'),
+    dqmDirectory_store = cms.string('pfChargedHadronNoPileUpAnalyzer'),
+    normalization = cms.string('pfCandidates'),
+    srcWeights = cms.VInputTag()                                                       
+)
+
+process.pfChargedHadronPileUpAnalyzer = process.pfChargedHadronNoPileUpAnalyzer.clone(
+    pfCandidateSource = cms.InputTag('pfChargedHadronPileUpCands'),
+    dqmDirectory_store = cms.string('pfChargedHadronPileUpAnalyzer')
+)                                                       
+
+process.pfNeutralHadronAnalyzer = process.pfChargedHadronNoPileUpAnalyzer.clone(
+    pfCandidateSource = cms.InputTag('pfAllNeutralHadrons'),
+    dqmDirectory_store = cms.string('pfNeutralHadronAnalyzer')
+)
+
+process.pfPhotonAnalyzer = process.pfChargedHadronNoPileUpAnalyzer.clone(
+    pfCandidateSource = cms.InputTag('pfAllPhotons'),
+    dqmDirectory_store = cms.string('pfPhotonAnalyzer')
+)
+
+process.produceAndSavePUreweightHistograms += process.pfChargedHadronNoPileUpAnalyzer
+process.produceAndSavePUreweightHistograms += process.pfChargedHadronPileUpAnalyzer
+process.produceAndSavePUreweightHistograms += process.pfNeutralHadronAnalyzer
+process.produceAndSavePUreweightHistograms += process.pfPhotonAnalyzer
+                           
 if isMC:
-    setattr(process.producePUreweightHistogramsKt6PFNeutralJets,               "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets, "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
-    
-    setattr(process.rhoNeutralAnalyzer, "srcGenPileUp", cms.InputTag('addPileupInfo'))
-    setattr(process.rhoNeutralAnalyzer, "srcWeights", cms.VInputTag('vertexMultiplicityReweight'))
-
-    process.vertexMultiplicityReweight3d = process.vertexMultiplicityReweight.clone(
-        inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to167913.root"),
-        type = cms.string("gen3d")
+    process.producePUreweightHistogramsKt6PFNeutralJetsRunA = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
+        srcWeight = cms.InputTag('vertexMultiplicityReweight3dRunA')
     )
-    process.produceAndSavePUreweightHistograms += process.vertexMultiplicityReweight3d
-    
-    process.rhoNeutralAnalyzer3d = process.rhoNeutralAnalyzer.clone(
-        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d')
+    process.producePUreweightHistogramsKt6PFNeutralJetsRunB = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
+        srcWeight = cms.InputTag('vertexMultiplicityReweight3dRunB')
     )
-    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer3d
+    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJetsRunA
+    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJetsRunB
 
+    process.rhoNeutralAnalyzerRunA = process.rhoNeutralAnalyzer.clone(
+        srcGenPileUp = cms.InputTag('addPileupInfo'),
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunA')
+    )
+    process.rhoNeutralAnalyzerRunB = process.rhoNeutralAnalyzer.clone(
+        srcGenPileUp = cms.InputTag('addPileupInfo'),
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunB')
+    )
+    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzerRunA
+    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzerRunB
+
+    process.pfChargedHadronNoPileUpAnalyzerRunA = process.pfChargedHadronNoPileUpAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunA'),
+        dqmDirectory_store = cms.string('pfChargedHadronNoPileUpAnalyzerRunA')
+    )
+    process.pfChargedHadronNoPileUpAnalyzerRunB = process.pfChargedHadronNoPileUpAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunB'),
+        dqmDirectory_store = cms.string('pfChargedHadronNoPileUpAnalyzerRunB')
+    )
+
+    process.pfChargedHadronPileUpAnalyzerRunA = process.pfChargedHadronPileUpAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunA'),
+        dqmDirectory_store = cms.string('pfChargedHadronPileUpAnalyzerRunA')
+    )
+    process.pfChargedHadronPileUpAnalyzerRunB = process.pfChargedHadronPileUpAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunB'),
+        dqmDirectory_store = cms.string('pfChargedHadronPileUpAnalyzerRunB')
+    )
+
+    process.pfNeutralHadronAnalyzerRunA = process.pfNeutralHadronAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunA'),
+        dqmDirectory_store = cms.string('pfNeutralHadronAnalyzerRunA')
+    )
+    process.pfNeutralHadronAnalyzerRunB = process.pfNeutralHadronAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunB'),
+        dqmDirectory_store = cms.string('pfNeutralHadronAnalyzerRunB')
+    )
+
+    process.pfPhotonAnalyzerRunA = process.pfPhotonAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunA'),
+        dqmDirectory_store = cms.string('pfPhotonAnalyzerRunA')
+    )
+    process.pfPhotonAnalyzerRunB = process.pfPhotonAnalyzer.clone(
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3dRunB'),
+        dqmDirectory_store = cms.string('pfPhotonAnalyzerRunB')
+    )
+
+    process.produceAndSavePUreweightHistograms += process.pfChargedHadronNoPileUpAnalyzerRunA
+    process.produceAndSavePUreweightHistograms += process.pfChargedHadronNoPileUpAnalyzerRunB
+    process.produceAndSavePUreweightHistograms += process.pfChargedHadronPileUpAnalyzerRunA
+    process.produceAndSavePUreweightHistograms += process.pfChargedHadronPileUpAnalyzerRunB
+    process.produceAndSavePUreweightHistograms += process.pfNeutralHadronAnalyzerRunA
+    process.produceAndSavePUreweightHistograms += process.pfNeutralHadronAnalyzerRunB
+    process.produceAndSavePUreweightHistograms += process.pfPhotonAnalyzerRunA
+    process.produceAndSavePUreweightHistograms += process.pfPhotonAnalyzerRunB
+    
 process.savePUreweightHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('ZllRecoilCorrectionPUreweightHistograms.root')
 )

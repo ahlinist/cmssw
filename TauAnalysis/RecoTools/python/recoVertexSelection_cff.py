@@ -15,14 +15,15 @@ import copy
 # CV: ndof >= 4 if using 'offlinePrimaryVertices',
 #     ndof >= 7 if using 'offlinePrimaryVerticesWithBS' as input
 selectedPrimaryVertexQuality = cms.EDFilter("VertexSelector",
-    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
-    cut = cms.string("isValid & ndof >= 7 & chi2 > 0 & tracksSize > 0"), 
+    src = cms.InputTag('offlinePrimaryVertices'),
+    cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & tracksSize > 0"), # CV: cut >= 4 if using 'offlinePrimaryVertices',
+                                                                         #         >= 7 if using 'offlinePrimaryVerticesWithBS' as input
     filter = cms.bool(False)                                          
 )
 
 selectedPrimaryVertexPosition = cms.EDFilter("VertexSelector",
     src = cms.InputTag('selectedPrimaryVertexQuality'),
-    cut = cms.string("z > -24 & z < +24 & position.Rho < 2."),
+    cut = cms.string("abs(z) < 24 & abs(position.Rho) < 2."),
     filter = cms.bool(False)                                           
 )
 

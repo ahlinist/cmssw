@@ -12,7 +12,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: PATObjectLUTvalueExtractorFromKNN.h,v 1.1 2011/08/31 12:18:02 veelken Exp $
+ * $Id: PATObjectLUTvalueExtractorFromKNN.h,v 1.1 2011/10/21 16:24:11 veelken Exp $
  *
  */
 
@@ -50,21 +50,21 @@ class PATObjectLUTvalueExtractorFromKNN : public PATObjectLUTvalueExtractorBase<
     
     kNN_ = new TMVA::Reader("!Color:!Silent");   
 
-    for ( typename std::vector<stringFunctionEntryType*>::iterator stringFunction = stringFunctions_.begin();
-	  stringFunction != stringFunctions_.end(); ++stringFunction ) {
-      kNN_->AddVariable((*stringFunction)->varName_, &(*stringFunction)->varValue_);
+    typedef std::vector<edm::ParameterSet> vParameterSet;
+    vParameterSet cfgParametrization = cfg.getParameter<vParameterSet>("parametrization");
+    for ( vParameterSet::const_iterator cfgVar = cfgParametrization.begin();
+	  cfgVar != cfgParametrization.end(); ++cfgVar ) {
+      std::string varName = cfgVar->getParameter<std::string>("name");
+      std::string varExpression = cfgVar->getParameter<std::string>("expression");
+      
+      stringFunctionEntryType* stringFunction = new stringFunctionEntryType(varName, varExpression);
+      stringFunctions_.push_back(stringFunction);
+      
+      std::cout << "--> adding " << varName << " to k-NN tree." << std::endl;
+      kNN_->AddVariable(varName.data(), &stringFunction->varValue_);
     }
-
+    
     kNN_->BookMVA("kNN", inputFileName.fullPath().data());
-
-    edm::ParameterSet cfgParametrization = cfg.getParameter<edm::ParameterSet>("parametrization");
-    typedef std::vector<std::string> vstring;
-    vstring varNames = cfgParametrization.getParameterNamesForType<std::string>();
-    for ( vstring::const_iterator varName = varNames.begin();
-	  varName != varNames.end(); ++varName ) {
-      std::string varExpression = cfgParametrization.getParameter<std::string>(*varName);
-      stringFunctions_.push_back(new stringFunctionEntryType(*varName, varExpression));
-    }
   }
 
   ~PATObjectLUTvalueExtractorFromKNN() 
@@ -77,7 +77,9 @@ class PATObjectLUTvalueExtractorFromKNN : public PATObjectLUTvalueExtractorBase<
     }
   }
 
-  double operator()(const T& obj) const
+ protected:
+
+  double extract_value(const T& obj) const
   {
     for ( typename std::vector<stringFunctionEntryType*>::const_iterator stringFunction = stringFunctions_.begin();
 	  stringFunction != stringFunctions_.end(); ++stringFunction ) {

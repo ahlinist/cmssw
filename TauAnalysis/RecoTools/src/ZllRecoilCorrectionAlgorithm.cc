@@ -92,13 +92,15 @@ pat::MET ZllRecoilCorrectionAlgorithm::buildZllCorrectedMEt(
     //std::cout << "--> rec(resolution corrected): u1 = " << u1rec_corrected << ", u2 = " << u2rec_corrected << std::endl;
 
     double dDiff = corrParameterData_->d() - corrParameterMC_->d();
-    double kDiff = corrParameterData_->k() - corrParameterMC_->k();
+    double kDiff = corrParameterData_->k1()*0.5*(1.0 - TMath::Erf(-corrParameterData_->k2()*TMath::Power(qT, corrParameterData_->k3()))) 
+                  - corrParameterMC_->k1()*0.5*(1.0 - TMath::Erf(-corrParameterMC_->k2()*TMath::Power(qT, corrParameterMC_->k3())));
     u1rec_corrected += dDiff + kDiff*qT;
     
     //std::cout << "--> rec(resolution + response corrected): u1 = " << u1rec_corrected << ", u2 = " << u2rec_corrected << std::endl;
     
     if ( shiftByUncertainty_ != 0. ) {
       //std::cout << " shiftByUncertainty = " << shiftByUncertainty_ << std::endl;
+      // CV: uncertainties on "response turn-on" parameters k2 and k3 neglected for now...
       double u1Err2 = 
   	  square(u1rec - u1gen)*(square(corrParameterData_->sigma1Err()/u1sigmaMC)
 	*(square(corrParameterData_->b1Err()*qT) + square(corrParameterData_->c1Err()*qT*qT))
@@ -108,7 +110,7 @@ pat::MET ZllRecoilCorrectionAlgorithm::buildZllCorrectedMEt(
         *(square(corrParameterData_->sigma1Err()/corrParameterData_->sigma1()) 
        + square(corrParameterMC_->sigma1Err()/corrParameterMC_->sigma1())));
       u1Err2 += square(corrParameterData_->dErr()) + square(corrParameterMC_->dErr())
-       + square(corrParameterData_->kErr()*qT) + square(corrParameterMC_->kErr()*qT);
+       + square(corrParameterData_->k1Err()*qT) + square(corrParameterMC_->k1Err()*qT);
       u1rec_corrected += shiftByUncertainty_*TMath::Sqrt(u1Err2);
       double u2Err2 = 
 	 square(u2rec - u2gen)*(square(corrParameterData_->sigma2()/u2sigmaMC)
