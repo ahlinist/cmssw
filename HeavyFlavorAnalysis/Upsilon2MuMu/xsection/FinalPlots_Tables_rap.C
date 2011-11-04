@@ -18,6 +18,7 @@ void XSSystTot_1S(){
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S1YieldEta");  
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  //TFile *f = new TFile("XSection_lhcb.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldEta");    
   TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_rap.root");
@@ -87,9 +88,9 @@ void XSSystTot_1S(){
   
   double br_scale(40.3);
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
-    Errh_lhcb[i-1] = Errh[i-1]*br_scale;
-    Errl_lhcb[i-1] = Errl[i-1]*br_scale;
-    y_lhcb[i-1] = y[i-1]*br_scale;
+    Errh_lhcb[i-1] = Errh[i-1]*br_scale/2;
+    Errl_lhcb[i-1] = Errl[i-1]*br_scale/2;
+    y_lhcb[i-1] = y[i-1]*br_scale/2;
   }
   
   gr = new TGraphAsymmErrors(6,xbin,y,xl,xh,Errl,Errh);
@@ -111,6 +112,7 @@ void XSSystTot_1S(){
   gr_lhcb->Draw("AP");  
   
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
+  //TFile *f = new TFile("Final1S_rap_lhcb.root", "RECREATE");
   TFile *f = new TFile("Final1S_rap.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
