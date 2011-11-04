@@ -12,7 +12,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: PATObjectLUTvalueExtractorFromTH1.h,v 1.1 2011/08/31 12:18:02 veelken Exp $
+ * $Id: PATObjectLUTvalueExtractorFromTH1.h,v 1.1 2011/10/21 16:24:11 veelken Exp $
  *
  */
 
@@ -83,7 +83,9 @@ class PATObjectLUTvalueExtractorFromTH1 : public PATObjectLUTvalueExtractorBase<
     delete stringFunctionZ_;
   }
 
-  double operator()(const T& obj) const
+ protected:
+
+  double extract_value(const T& obj) const
   {
     double objX, objY, objZ;
     int binX, binY, binZ;

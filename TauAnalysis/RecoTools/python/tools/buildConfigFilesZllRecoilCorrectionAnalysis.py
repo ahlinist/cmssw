@@ -55,11 +55,15 @@ def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFile
     
     directory = sampleName
 
-    srcMEt = metOptions[metOptionName]['srcMEt']
-    
-    srcWeights = []
+    processType = None
     if samplesToAnalyze[sampleName]['isMC']:
-        srcWeights.extend([ 'vertexMultiplicityReweight' ])
+        processType = 'smMC'
+    else:
+        processType = 'Data'
+
+    srcMEt = metOptions[metOptionName][key]
+    hltPaths_string = make_inputFileNames_vstring(hltPaths[processType])
+    srcWeights_string = make_inputFileNames_vstring(srcWeights[processType])
 
     addPUreweight_string = ""
 # CV: do not apply rho_neutral reweighting to Monte Carlo samples other than Zmumu 
@@ -103,14 +107,17 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
     srcJets = cms.InputTag('patJets'),
     srcUnclPFCands = cms.InputTag('pfCandsNotInJet'),
 
+    srcTrigger = cms.InputTag('TriggerResults::HLT'),
+    hltPaths = cms.vstring(%s),
+
     srcWeights = cms.VInputTag(%s),
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
     srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
 %s
 )
-""" % (inputFileNames_string, outputFileName_full,
-       directory, srcMEt, srcWeights, addPUreweight_string)
+""" % (inputFileNames_string, outputFileName_full, directory, 
+       srcMEt, hltPaths_string, srcWeights_string, addPUreweight_string)
 
     configFileName = "produceZllRecoilCorrectionNtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
@@ -177,8 +184,8 @@ process.fitZllRecoilCorrection = cms.PSet(
 
     outputFileName = cms.string('%s')
 )
-""" % (inputFileName,
-       directory, processType, refBranchName, projParlBranchName, projPerpBranchName, outputFileName_full)
+""" % (inputFileName, directory, 
+       processType, refBranchName, projParlBranchName, projPerpBranchName, outputFileName_full)
 
     configFileName = "fitZllRecoilCorrectionNtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, refBranchName)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
@@ -248,13 +255,23 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName,
         recoZllRecoilCorrectionParameters_string += "        )\n"
         recoZllRecoilCorrectionParameters_string += "    ),\n"
 
-    srcMEt = metOptions[metOptionName]['srcMEt']
+    srcJets = metOptions[metOptionName]['srcJets']
+    if processType = 'Data':
+        srcJets = 'patJets'
+
+    processType = None
+    if samplesToAnalyze[sampleName]['isMC']:
+        processType = 'smMC'
+    else:
+        processType = 'Data'
+
+    srcMEt = metOptions[metOptionName][key]
+    hltPaths_string = make_inputFileNames_vstring(hltPaths[processType])
+    srcWeights_string = make_inputFileNames_vstring(srcWeights[processType])
     
-    srcWeights = []
     allEvents_DBS = 0
     xSection = 0.
     if samplesToAnalyze[sampleName]['isMC']:
-        srcWeights.extend([ 'vertexMultiplicityReweight' ])
         allEvents_DBS = samplesToAnalyze[sampleName]['allEvents_DBS']
         xSection = samplesToAnalyze[sampleName]['xSection']
 
@@ -304,6 +321,9 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMEt = cms.InputTag('%s'),
 
+    srcTrigger = cms.InputTag('TriggerResults::HLT'),
+    hltPaths = cms.vstring(%s),
+
     srcWeights = cms.VInputTag(%s),
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
@@ -320,8 +340,9 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     
     intLumiData = cms.double(%f)
 )
-""" % (inputFileNames_string, outputFileName_full,
-       directory, processType, recoZllRecoilCorrectionParameters_string, srcMEt, srcWeights, addPUreweight_string,
+""" % (inputFileNames_string, outputFileName_full, directory,
+       processType, recoZllRecoilCorrectionParameters_string,
+       srcMEt, hltPaths_string, srcWeights_string, addPUreweight_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
 
     configFileName = "analyzeZllRecoilCorrectionPATtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
@@ -420,25 +441,13 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
         cms.PSet(
             meName = cms.string('rhoNeutral'),
             xAxisTitle = cms.string('#rho_{h0} / GeV')
-        ),
-        cms.PSet(
-            meName = cms.string('rhoChargedHadronNoPileUp'),
-            xAxisTitle = cms.string('#rho_{h#pm} / GeV')
-        ),
-        cms.PSet(
-            meName = cms.string('rhoNeutralToChargedHadronNoPileUpRatio'),
-            xAxisTitle = cms.string('#rho_{neutral}/#rho_{h#pm}')
-        ),
-        cms.PSet(
-            meName = cms.string('rhoPFNoPileUp'),
-            xAxisTitle = cms.string('#rho_{noPU} / GeV')
         )
     ),
 
     outputFileName = cms.string('%s')
 )
-""" % (inputFileName,
-       directoryData, directoryMC_signal, make_inputFileNames_vstring(directoryMCs_background), outputFileName_full)
+""" % (inputFileName, directoryData, directoryMC_signal, 
+       make_inputFileNames_vstring(directoryMCs_background), outputFileName_full)
 
     configFileName = "makeZllRecoilCorrectionFinalPlots_%s_%s_cfg.py" % (metOptionName, corrLevelMC)
     configFileName_full = os.path.join(outputFilePath, configFileName)    

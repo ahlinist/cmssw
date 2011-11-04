@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.6 2011/09/09 10:25:36 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.7 2011/09/30 12:30:41 veelken Exp $
  *
  */
 
@@ -86,6 +86,9 @@ int main(int argc, char* argv[])
   edm::InputTag srcMEt = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcMEt");
   edm::InputTag srcJets = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcJets");
   edm::InputTag srcUnclPFCands = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcUnclPFCands");
+
+  edm::InputTag srcTrigger = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcTrigger");
+  vstring hltPaths = cfgZllRecoilCorrectionAnalyzer.getParameter<vstring>("hltPaths");
 
   vInputTag srcWeights = cfgZllRecoilCorrectionNtupleProducer.getParameter<vInputTag>("srcWeights");
 
@@ -193,6 +196,25 @@ int main(int argc, char* argv[])
 
 	evtWeight *= addPUreweight;
       }
+
+      bool isTriggered = false;
+      if ( hltPaths.size() == 0 ) {
+	isTriggered = true;
+      } else {
+	edm::Handle<edm::TriggerResults> hltResults;
+	evt.getByLabel(srcTrigger_, hltResults);
+  
+	const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
+
+	for ( vstring::const_iterator hltPath = hltPaths.begin();
+	      hltPath != hltPaths.end(); ++hltPath ) {
+	  bool isHLTpath_passed = false;
+	  unsigned int idx = triggerNames.triggerIndex(*hltPath);
+	  if ( idx < triggerNames.size() ) isHLTpath_passed = hltResults.accept(idx);
+	}
+      }
+
+      if ( !isTriggered ) continue;
 
 //--- find Z --> mu+ mu- candidate closest to nominal Z0 mass
       edm::Handle<reco::CompositeCandidateCollection> ZllCandidates;

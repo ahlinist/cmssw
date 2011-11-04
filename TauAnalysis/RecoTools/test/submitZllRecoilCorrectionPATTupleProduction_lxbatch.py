@@ -10,53 +10,71 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v3_10'
+version = 'v4_1'
 
 samples = {
     'Data_runs160329to163869' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs160329to163869/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs160329to163869/DoubleMu/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'Data_runs165071to167913' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs165071to167913/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs165071to167913/DoubleMu/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'Data_runs170053to172619' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs170053to172619/DoubleMu/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'Data_runs172620to175770' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs172620to175770/DoubleMu/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'Data_runs175832to179431' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs175832to179431/DoubleMu/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'simDYtoMuMu' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simWW' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWW/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWW/DoubleMu/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simWZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWZ/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWZ/DoubleMu/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simZZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZZ/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZZ/DoubleMu/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simTTplusJets' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simTTplusJets/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simTTplusJets/DoubleMu/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simQCD' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simQCD/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simQCD/DoubleMu/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True 
@@ -68,6 +86,9 @@ lxbatch_queue = '1nw'
 samplesToAnalyze = [
     'Data_runs160329to163869',
     'Data_runs165071to167913',
+    'Data_runs170053to172619',
+    ##'Data_runs172620to175770',
+    'Data_runs175832to179431',
     'simDYtoMuMu',
     'simWW',
     'simWZ',

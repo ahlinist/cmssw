@@ -19,23 +19,32 @@ ZllRecoilCorrectionHistManager::~ZllRecoilCorrectionHistManager()
 
 void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 {
-  histogramLepPlusPt_        = book1D(dir, "lPlusPt",            "P_{T}^{l+}",                            40,          0. ,         100.);
-  histogramLepPlusEta_       = book1D(dir, "lPlusEta",           "#eta_{l+}",                             50,         -2.5,         +2.5);
-  histogramLepPlusPhi_       = book1D(dir, "lPlusPhi",           "#phi_{l+}",                             36, -TMath::Pi(), +TMath::Pi());
+  histogramLepPlusPt_          = book1D(dir, "lPlusPt",            "P_{T}^{l+}",                              40,          0. ,         100.);
+  histogramLepPlusEta_         = book1D(dir, "lPlusEta",           "#eta_{l+}",                               50,         -2.5,         +2.5);
+  histogramLepPlusPhi_         = book1D(dir, "lPlusPhi",           "#phi_{l+}",                               36, -TMath::Pi(), +TMath::Pi());
 
-  histogramLepMinusPt_       = book1D(dir, "lMinusPt",           "P_{T}^{l-}",                            40,          0. ,         100.);
-  histogramLepMinusEta_      = book1D(dir, "lMinusEta",          "#eta_{l-}",                             50,         -2.5,         +2.5);
-  histogramLepMinusPhi_      = book1D(dir, "lMinusPhi",          "#phi_{l-}",                             36, -TMath::Pi(), +TMath::Pi());
+  histogramLepMinusPt_         = book1D(dir, "lMinusPt",           "P_{T}^{l-}",                              40,          0. ,         100.);
+  histogramLepMinusEta_        = book1D(dir, "lMinusEta",          "#eta_{l-}",                               50,         -2.5,         +2.5);
+  histogramLepMinusPhi_        = book1D(dir, "lMinusPhi",          "#phi_{l-}",                               36, -TMath::Pi(), +TMath::Pi());
 
-  histogramZllCandPt_        = book1D(dir, "ZllCandPt",          "P_{T}^{Z}",                             40,          0. ,         100.);
-  histogramZllCandEta_       = book1D(dir, "ZllCandEta",         "#eta_{Z}",                              50,         -2.5,         +2.5);
-  histogramZllCandPhi_       = book1D(dir, "ZllCandPhi",         "#phi_{Z}",                              36, -TMath::Pi(), +TMath::Pi());
-  histogramZllCandMass_      = book1D(dir, "ZllCandMass",        "M(l+ l-)",                              60,         60. ,         120.);
+  histogramZllCandPt_          = book1D(dir, "ZllCandPt",          "P_{T}^{Z}",                               40,          0. ,         100.);
+  histogramZllCandEta_         = book1D(dir, "ZllCandEta",         "#eta_{Z}",                                50,         -2.5,         +2.5);
+  histogramZllCandPhi_         = book1D(dir, "ZllCandPhi",         "#phi_{Z}",                                36, -TMath::Pi(), +TMath::Pi());
+  histogramZllCandMass_        = book1D(dir, "ZllCandMass",        "M(l+ l-)",                                60,         60. ,         120.);
   
-  histogramMEtS_             = book1D(dir, "metS",               "E_{T}^{miss}",                          30,          0.0,         60.0);
-  histogramMEtL_             = book1D(dir, "metL",               "E_{T}^{miss}",                          75,          0.0,        150.0);
-  histogramMEtProjParlZ_     = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",         50,        -50.0,        +50.0);
-  histogramMEtProjPerpZ_     = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",            50,        -50.0,        +50.0);
+  histogramJetPtAbsEtaLt11_    = book1D(dir, "jetPtAbsEtaLt11",    "P_{T}^{jet} (|#eta_{jet}| < 1.1)",       100,          0. ,         250.);
+  histogramJetResAbsEtaLt11_   = book1D(dir, "jetResAbsEtaLt11",   "Jet res. (|#eta_{jet}| < 1.1)",           40,         -1. ,         +1.);
+  histogramJetPtAbsEta11to17_  = book1D(dir, "jetPtAbsEta11to17",  "P_{T}^{jet} (1.1 < |#eta_{jet}| < 1.7)", 100,          0. ,         250.);
+  histogramJetResAbsEta11to17_ = book1D(dir, "jetResAbsEta11to17", "Jet res. (1.1 < |#eta_{jet}| < 1.7)",     40,         -1. ,         +1.);
+  histogramJetPtAbsEta17to23_  = book1D(dir, "jetPtAbsEta17to23",  "P_{T}^{jet} (1.7 < |#eta_{jet}| < 2.3)", 100,          0. ,         250.);
+  histogramJetResAbsEta17to23_ = book1D(dir, "jetResAbsEta17to23", "Jet res. (1.7 < |#eta_{jet}| < 2.3)",     40,         -1. ,         +1.);
+  histogramJetPtAbsEtaGt23_    = book1D(dir, "jetPtAbsEtaGt23",    "P_{T}^{jet} (|#eta_{jet}| > 2.3)",       100,          0. ,         250.);
+  histogramJetResAbsEtaGt23_   = book1D(dir, "jetResAbsEtaGt23",   "Jet res. (|#eta_{jet}| > 2.3)",           40,         -1. ,         +1.);
+
+  histogramMEtS_               = book1D(dir, "metS",               "E_{T}^{miss}",                            30,          0.0,         60.0);
+  histogramMEtL_               = book1D(dir, "metL",               "E_{T}^{miss}",                            75,          0.0,        150.0);
+  histogramMEtProjParlZ_       = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",           50,        -50.0,        +50.0);
+  histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              50,        -50.0,        +50.0);
 
   const int qTnumBins = 22;
   double qTbinning[qTnumBins + 1] = { 
@@ -61,7 +70,8 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 }
 
 void ZllRecoilCorrectionHistManager::fillHistograms(
-       const reco::CompositeCandidate& ZllCand, const pat::MET& met, size_t vtxMultiplicity, double rhoNeutral, double evtWeight)
+       const reco::CompositeCandidate& ZllCand, 
+       const std::vector<pat::Jet>& jets, const pat::MET& met, size_t vtxMultiplicity, double rhoNeutral, double evtWeight)
 {
   assert(ZllCand.numberOfDaughters() == 2);
 
@@ -88,6 +98,22 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   histogramZllCandPhi_->Fill(ZllCand.phi(), evtWeight);
   histogramZllCandMass_->Fill(ZllCand.mass(), evtWeight);
   
+  for ( std::vector<pat::Jet>::const_iterator jet = jets.begin();
+	jet != jets.end(); ++jet ) {
+    if      ( TMath::Abs(jet->eta()) < 1.1 ) histogramJetPtAbsEtaLt11_->Fill(jet->pt(), evtWeight);
+    else if ( TMath::Abs(jet->eta()) < 1.7 ) histogramJetPtAbsEta11to17_->Fill(jet->pt(), evtWeight);
+    else if ( TMath::Abs(jet->eta()) < 2.3 ) histogramJetPtAbsEta17to23_->Fill(jet->pt(), evtWeight);
+    else                                     histogramJetPtAbsEtaGt23_->Fill(jet->pt(), evtWeight);
+
+    if ( jet->genJet() && jet->genJet()->pt() > 0. ) {
+      double jetRes = (jet->pt() - jet->genJet()->pt())/jet->genJet()->pt();
+      if      ( TMath::Abs(jet->eta()) < 1.1 ) histogramJetResAbsEtaLt11_->Fill(jetRes, evtWeight);
+      else if ( TMath::Abs(jet->eta()) < 1.7 ) histogramJetResAbsEta11to17_->Fill(jetRes, evtWeight);
+      else if ( TMath::Abs(jet->eta()) < 2.3 ) histogramJetResAbsEta17to23_->Fill(jetRes, evtWeight);
+      else                                     histogramJetResAbsEtaGt23_->Fill(jetRes, evtWeight);
+    }
+  }
+
   histogramMEtS_->Fill(met.pt(), evtWeight);
   histogramMEtL_->Fill(met.pt(), evtWeight);
 

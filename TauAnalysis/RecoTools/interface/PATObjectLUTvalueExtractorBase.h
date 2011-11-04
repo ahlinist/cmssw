@@ -10,27 +10,47 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: PATObjectLUTvalueExtractorBase.h,v 1.1 2011/08/31 12:18:02 veelken Exp $
+ * $Id: PATObjectLUTvalueExtractorBase.h,v 1.1 2011/10/21 16:24:11 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
 
 template<typename T>
 class PATObjectLUTvalueExtractorBase
 {
  public:
 
-  explicit PATObjectLUTvalueExtractorBase(const edm::ParameterSet&) {}
-  ~PATObjectLUTvalueExtractorBase() {}
+  explicit PATObjectLUTvalueExtractorBase(const edm::ParameterSet& cfg)
+    : objectSelector_(0)
+  {
+    if ( cfg.exists("selection") ) {
+      std::string selection = cfg.getParameter<std::string>("selection");
+      objectSelector_ = new StringCutObjectSelector<T>(selection);
+    }
+  }
+  ~PATObjectLUTvalueExtractorBase() 
+  {
+    delete objectSelector_;
+  }
 
-  virtual double operator()(const T&) const = 0;
+  virtual double operator()(const T& object) const 
+  {
+    if ( !objectSelector_ || (*objectSelector_)(object) ) return extract_value(object);
+    else return 0.;
+  }
+
+ protected:
+
+  virtual double extract_value(const T&) const = 0;
+
+  StringCutObjectSelector<T>* objectSelector_;
 };
 
 typedef PATObjectLUTvalueExtractorBase<pat::Electron> PATElectronLUTvalueExtractorBase;
 typedef PATObjectLUTvalueExtractorBase<pat::Muon> PATMuonLUTvalueExtractorBase;
 typedef PATObjectLUTvalueExtractorBase<pat::Tau> PATTauLUTvalueExtractorBase;
 
-
 #endif
-

@@ -66,18 +66,14 @@ prodSmearedMuons = cms.Sequence(patMuonsMuScleFitCorrectedMomentumShiftUp * patM
 # shift/smear tau-jet collection
 #--------------------------------------------------------------------------------
 
-patTausJECshiftUp = cms.EDProducer("SmearedTauProducer",
-    src                         = cms.InputTag('cleanPatTaus'),
-    ##jecUncertaintyInputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/START38_V13_AK5PF_Uncertainty.txt"),
-    jetCorrPayloadName          = cms.string('AK5PF'),
-    jetCorrUncertaintyTag       = cms.string('Uncertainty'),
-    ##jecFlavorUncertainty        = cms.double(2.),
-    jecFlavorUncertainty        = cms.double(0.),
-    shiftByJECuncertainty       = cms.double(+1.)
+patTausJECshiftUp = cms.EDProducer("ShiftedPATTauProducer",
+    src = cms.InputTag('cleanPatTaus'),
+    uncertainty = cms.double(0.03),                      
+    shiftBy = cms.double(+1.)
 )
 
 patTausJECshiftDown = patTausJECshiftUp.clone(
-    shiftByJECuncertainty = cms.double(-1.)
+    shiftBy = cms.double(-1.)
 )
 
 prodSmearedTaus = cms.Sequence(patTausJECshiftUp * patTausJECshiftDown)

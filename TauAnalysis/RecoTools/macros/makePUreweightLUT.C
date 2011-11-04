@@ -1,3 +1,18 @@
+
+#include <TFile.h>
+#include <TString.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TF1.h>
+#include <TCanvas.h>
+#include <TLegend.h>
+#include <TMath.h>
+#include <TROOT.h>
+
+#include <iostream>
+#include <iomanip>
+#include <assert.h>
+
 TH1* getHistogram(const TString& histogramName, const TString& histogramLabel, const TString& inputFilePath, TObjArray inputFileNames)
 {
   TH1* retVal = 0;
@@ -45,7 +60,7 @@ TH1* makePUreweightHistogram(const TString& histogramReweightName, TH1* histogra
 	 histogramData->GetNbinsX()    == histogramMC->GetNbinsX()    &&
 	 histogramData->GetNbinsY()    == histogramMC->GetNbinsY()    );
 
-  TH1* retVal = histogramData->Clone(histogramReweightName.Data());
+  TH1* retVal = (TH1*)histogramData->Clone(histogramReweightName.Data());
   retVal->Reset();
 
   TAxis* xAxis = histogramData->GetXaxis();
@@ -204,6 +219,7 @@ TH1* makePUreweightHistogram_fitted(TCanvas* canvas, const TString& histogramRew
       fMC->SetLineColor(2);
       histogramMC_rho->Fit(fMC, "RLM");
 
+      histogramData_rho->SetTitle(TString(histogramMC2d->GetTitle()).Append(Form(" (NumVertices = %i)", iBin_vtx)));
       histogramData_rho->SetStats(false);
       histogramData_rho->SetMaximum(5.e-1);
       histogramData_rho->SetMinimum(5.e-4);
@@ -265,31 +281,39 @@ void makePUreweightLUT()
   canvas->SetBorderSize(2);
   canvas->SetLogy();
 
-  TString inputFilePath = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/v3_2/";
+ 33015 Nov 01 19:44 ZllRecoilCorrection_Data_runs160329to163869_v4_1_layer_2_job_0_eca.root
+mrw-r--r--   1 veelken  zh                    35690 Nov 01 21:45 ZllRecoilCorrection_Data_runs165071to167913_v4_1_layer_2_job_0_fc8.root
+mrw-r--r--   1 veelken  zh                    35172 Nov 01 23:09 ZllRecoilCorrection_Data_runs170053to172619_v4_1_layer_2_job_0_fc1.root
+mrw-r--r--   1 veelken  zh                    41767 Nov 01 23:17 ZllRecoilCorrection_Data_runs175832to179431_v4_1_layer_2_job_0_62e.root
+mrw-r--r--   1 veelken  zh                    41818 Nov 02 23:38 ZllRecoilCorrection_Data_runs175832to179431_v4_1_layer_2_job_0_daa.root
+-rw-r--r--   1 veelken  zh                   372119 Nov 03 09:53 ZllRecoilCorrection_simDYtoMuMu_v4_1_layer_2_job_0_d22.root
+mrw-r--r--   1 veelken  zh                   165840 Nov 02 23:45 ZllRecoilCorrection_simQCD_v4_1_layer_2_job_0_01a.root
+
+
+  TString inputFilePath = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/v4_1/';
   //TString inputFilePath = "/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/RecoTools/macros/";
 
-  //TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNeutralJets/RhoVsVtxMultiplicity";
-  TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNoPileUpJets/RhoVsVtxMultiplicity";
+  TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNeutralJets3d/RhoVsVtxMultiplicity";
 
-  TObjArray inputFileNamesData;
-  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs160329to163869_v3_2_layer_2_job_0_a9b.root"));
-  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs165071to167913_v3_2_layer_2_job_0_33a.root"));
-  TH1* histogramData = getHistogram(histoLUTname, "Data", inputFilePath, inputFileNamesData); 
-  std::cout << "histogramData = " << histogramData << std::endl;
+  TObjArray inputFileNames_data;
+  inputFileNames_data.Add(new TObjString("ZllRecoilCorrection_Data_runs160329to163869_v3_15_layer_2_job_0_2bf.root"));
+  inputFileNames_data.Add(new TObjString("ZllRecoilCorrection_Data_runs165071to167913_v3_15_layer_2_job_0_4af.root"));
+  TH1* histogram_data = getHistogram(histoLUTname, "Data", inputFilePath, inputFileNames_data); 
+  std::cout << "histogram_data = " << histogram_data << std::endl;
 
-  TObjArray inputFileNamesMC;
-  inputFileNamesMC.Add(new TObjString("ZllRecoilCorrection_simDYtoMuMu_v3_2_layer_2_job_0_294.root"));
-  TH1* histogramMC = getHistogram(histoLUTname, "MC", inputFilePath, inputFileNamesMC); 
-  std::cout << "histogramMC = " << histogramMC << std::endl;
+  TObjArray inputFileNames_mc;
+  inputFileNames_mc.Add(new TObjString("ZllRecoilCorrection_simDYtoMuMu_v3_15_layer_3_job_0_89a.root"));
+  TH1* histogram_mc = getHistogram(histoLUTname, "MC", inputFilePath, inputFileNames_mc); 
+  std::cout << "histogram_mc = " << histogram_mc << std::endl;
 
   TH1* histogramPUreweight = 
-    makePUreweightHistogram("histoReweight", histogramData, histogramMC, 1.e-1, 1.e+1);
+    makePUreweightHistogram("histoReweight", histogram_data, histogram_mc, 1.e-1, 1.e+1);
   TH1* histogramPUreweight_fitted = 
-    makePUreweightHistogram_fitted(canvas, "histoReweight_fitted", histogramData, histogramMC, 1.e-1, 1.e+1);
+    makePUreweightHistogram_fitted(canvas, "histoReweight_fitted", histogram_data, histogram_mc, 1.e-1, 1.e+1);
 
   TFile* outputFile = new TFile("../data/vertexMultiplicityVsRhoPFNeutralReweight.root", "RECREATE");
-  histogramData->Write();
-  histogramMC->Write();
+  histogram_data->Write();
+  histogram_mc->Write();
   histogramPUreweight->Write();
   histogramPUreweight_fitted->Write();
   delete outputFile;

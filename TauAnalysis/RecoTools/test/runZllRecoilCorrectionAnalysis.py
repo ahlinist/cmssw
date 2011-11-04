@@ -6,9 +6,9 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 
 import os
 
-version = 'v3_6'
+version = 'v4_1'
 
-inputFilePath = '/data2/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
+inputFilePath = '/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
 outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 
@@ -82,28 +82,112 @@ samplesToAnalyze = {
     }
 }
 
+runPeriod = '2011RunA'
+#runPeriod = '2011RunB'
+
+intLumiData = None
+hltPaths = None
+srcWeights = None
+if runPeriod == '2011RunA':
+    intLumiData = 1522.7, # runs 160431-173198
+    hltPaths = {
+        'Data' : [
+            'HLT_IsoMu17_v5',
+            'HLT_IsoMu17_v6',
+            'HLT_IsoMu17_v8',
+            'HLT_IsoMu17_v9',
+            'HLT_IsoMu17_v10',
+            'HLT_IsoMu17_v11',
+            'HLT_IsoMu17_v13'
+        ],
+        'smMC' : [
+            'HLT_IsoMu17_v5'
+        ]
+    }
+    srcWeights = {
+        'Data' : [],
+        'smMC' : [ 'vertexMultiplicityReweight3dRunA' ]
+    }
+elif runPeriod == '2011RunB':
+    intLumiData = 2027.9, # runs 175860-179411 
+    hltPaths = {
+        'Data' : [
+            'HLT_Mu13_Mu8_v7',
+            'HLT_Mu13_Mu8_v10',
+        ],
+        'smMC' : [
+            'HLT_DoubleMu7_v1'
+        ]
+    }
+    srcWeights = {
+        'Data' : [],
+        'smMC' : [ 'vertexMultiplicityReweight3dRunB' ]
+    }
+else:
+    raise ValueError("Invalid runPeriod = %s !!" % runPeriod)
+
 metOptions = {
     'pfMEt' : {
-        'srcMEt' : 'patPFMETs'
+        'srcJets' : {
+            'Data' : 'patJets',
+            'smMC' : 'patJets'
+        },
+        'srcMEt' : {
+            'Data' : 'patPFMETs',
+            'smMC' : 'patPFMETs'
+        }
     },
     'pfMEtTypeIcorrected' : {
-        'srcMEt' : 'patPFMETsTypeIcorrected'
+        'srcJets' : {
+            'Data' : 'patJets',
+            'smMC' : 'patJets'
+        },
+        'srcMEt' : {
+            'Data' : 'patType1CorrectedPFMet',
+            'smMC' : 'patType1CorrectedPFMet'
+        }
     },
     'pfMEtTypeIpIIcorrected' : {
-        'srcMEt' : 'patPFMETsTypeIpIIcorrected'
+        'srcJets' : {
+            'Data' : 'patJets',
+            'smMC' : 'patJets'
+        },
+        'srcMEt'  : {
+            'Data' : 'patType1p2CorrectedPFMet',
+            'smMC' : 'patType1p2CorrectedPFMet'
+        }
     },
     'pfMEtSmeared' : {
-        'srcMEt' : 'smearedPatPFMETs'
+        'srcJets' : {
+            'Data' : 'patJets',
+            'smMC' : 'smearedPatJets'
+        },
+        'srcMEt' : {
+            'Data' : 'patPFMETs',
+            'smMC' : 'smearedPatPFMETs'
+        }
     },
     'pfMEtTypeIcorrectedSmeared' : {
-        'srcMEt' : 'smearedPatPFMETsTypeIcorrected'
+        'srcJets' : {
+            'Data' : 'patJets',    
+            'smMC' : 'smearedPatJets'
+        },
+        'srcMEt' : {
+            'Data' : 'patType1CorrectedPFMet',
+            'smMC' : 'patType1CorrectedPFMet'
+        }
     },
     'pfMEtTypeIpIIcorrectedSmeared' : {
-        'srcMEt' : 'smearedPatPFMETsTypeIpIIcorrected'
+        'srcJets' : {
+            'Data' : 'patJets',    
+            'smMC' : 'smearedPatJets'
+        },    
+        'srcMEt' : {
+            'Data' : 'patType1p2CorrectedPFMet',
+            'smMC' : 'patType1p2CorrectedPFMet'
+        }
     }
 }
-
-intLumiData = 1130 # pb^-1 for runs 160404 - 167913 ("golden" quality EPS dataset)
 
 execDir = "%s/bin/%s/" % (os.environ['CMSSW_BASE'], os.environ['SCRAM_ARCH'])
 
