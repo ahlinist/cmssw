@@ -188,13 +188,14 @@ void DrawLHCb(){
 	TCanvas *c2 = new TCanvas();//"c1","title",800,600);
 	TH1F *frame = gPad->DrawFrame(0,0,4.5,130);
 	frame->SetStats(0);
-	frame->SetMaximum(250.);
-	frame->GetXaxis()->SetTitle("|y|^{Y(1S)}");
+	frame->SetMaximum(120.);
+	frame->GetXaxis()->SetTitle("y^{Y(1S)}");
 	frame->GetYaxis()->SetTitle("d#sigma/dy (nb)");
 	frame->GetYaxis()->SetTitleOffset(1.1);
 	frame->Draw();
 
 	//CMS
+	//TFile *f = new TFile("Final1S_rap_lhcb.root");
 	TFile *f = new TFile("Final1S_rap.root");
 	TGraphAsymmErrors *S1;
 	S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S_LHCb");
@@ -276,7 +277,7 @@ void Tevatron(){
   c1->SetLogy();
   CDF1s->GetXaxis()->SetTitleOffset(0.85);
   CDF1s->GetYaxis()->SetTitleOffset(0.95);
-  CDF1s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  CDF1s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
   CDF1s->GetYaxis()->SetTitle("(d#sigma/dp_{T})/#sigma_{TOT}");
   CDF1s->SetTitle("");
   CDF1s->SetMinimum(0.001);
@@ -299,7 +300,7 @@ void Tevatron(){
   c2->SetLogy();
   CDF2s->GetXaxis()->SetTitleOffset(0.85);
   CDF2s->GetYaxis()->SetTitleOffset(0.95);
-  CDF2s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  CDF2s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
   CDF2s->GetYaxis()->SetTitle("(d#sigma/dp_{T})/#sigma_{TOT}");
   CDF2s->SetTitle("");
   CDF2s->SetMinimum(0.001);
@@ -320,7 +321,7 @@ void Tevatron(){
   c3->SetLogy();
   CDF3s->GetXaxis()->SetTitleOffset(0.85);
   CDF3s->GetYaxis()->SetTitleOffset(0.95);
-  CDF3s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  CDF3s->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
   CDF3s->GetYaxis()->SetTitle("(d#sigma/dp_{T})/#sigma_{TOT}");
   CDF3s->SetTitle("");
   CDF3s->SetMinimum(0.001);
