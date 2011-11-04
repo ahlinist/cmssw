@@ -553,7 +553,7 @@ def applyVertexMultiplicityReweighting_runZtoElecTau_bgEstTemplate(process):
 
     applyVertexMultiplicityReweighting_runZtoElecTau(process)
 
-    _addEventWeightZtoElecTau_bgEstTemplate(process, "vertexMultiplicityVsRhoPFNeutralReweight")
+    _addEventWeightZtoElecTau_bgEstTemplate(process, "vertexMultiplicityReweight")
 
 def _addEventWeighAHtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
 
