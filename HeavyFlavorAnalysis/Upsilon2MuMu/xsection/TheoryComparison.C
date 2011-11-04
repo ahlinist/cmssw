@@ -6,7 +6,8 @@
 void CSM(){
   
   gStyle->SetOptStat(00000000000);
-  TFile *f = new TFile("Final1S.root");
+  //TFile *f = new TFile("Final1S.root");
+  TFile *f = new TFile("Final1S_0_2_0_30.root");
   TGraphAsymmErrors *S1;
   S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
   
@@ -82,7 +83,8 @@ void CSM(){
 void NRQCD(){
   
   gStyle->SetOptStat(00000000000);
-  TFile *f = new TFile("Final1S.root");
+  //TFile *f = new TFile("Final1S.root");
+  TFile *f = new TFile("Final1S_0_2_0_30.root");
   TGraphAsymmErrors *S1;
   S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
   
@@ -125,8 +127,7 @@ void NRQCD(){
 
   leg->AddEntry(Nrqcd, "NRQCD prediction", "FL");
   leg->Draw();
-
-  
+    
   c1->SaveAs("COM_NRQCD_0_2.pdf");
 }
 
@@ -195,8 +196,8 @@ void DrawLHCb(){
 	frame->Draw();
 
 	//CMS
-	//TFile *f = new TFile("Final1S_rap_lhcb.root");
-	TFile *f = new TFile("Final1S_rap.root");
+	TFile *f = new TFile("Final1S_rap_lhcb.root");
+	//TFile *f = new TFile("Final1S_rap.root");
 	TGraphAsymmErrors *S1;
 	S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S_LHCb");
 	
@@ -219,12 +220,125 @@ void DrawLHCb(){
 	S1->Draw("P");
 	leg = new TLegend(0.35,0.75,0.9,0.9);
 	leg->AddEntry(LHCb, "LHCb 32.4 pb^{-1} (p_{T}<15 GeV/c)", "PLE");
-	leg->AddEntry(S1, "CMS 36.7 pb^{-1} (p_{T}<50 GeV/c)", "PLE");
+	leg->AddEntry(S1, "CMS 36.7 pb^{-1} (p_{T}<16 GeV/c)", "PLE");
 	leg->Draw();
 	TLatex latex1, latex2;
 	latex1.DrawLatex(0.5,15,"#Upsilon(1S)");
 	latex2.DrawLatex(0.5,30, "#sqrt{s} = 7 TeV");
 	c2->SaveAs("LHCb.pdf");
+}
+
+void DrawCMS1S(){
+	
+  gStyle->SetOptStat(00000000000);
+  TCanvas *c2 = new TCanvas();//"c1","title",800,600);
+  TH1F *frame = gPad->DrawFrame(0.001,0.001,30.,10);
+  frame->SetStats(0);
+  frame->SetMaximum(1.4);
+  frame->GetXaxis()->SetTitle("p_{T}^{Y(1S)}(GeV/c)");
+  frame->GetYaxis()->SetTitle("d#sigma/dp_{T} * BR (nb/(GeV/c))");
+  frame->GetYaxis()->SetTitleOffset(1.1);
+  frame->Draw();
+  
+  //CMS
+  TFile *f = new TFile("Final1S_0_2_0_30.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  
+  //CMS first paper
+  float eta[15]={0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,11.,13,15.5,18.5,25.};
+  float eta_err[15]={0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,1.,1.,1.5,1.5,5.};
+  float y[15]={0.3,0.9,1.04,0.88,0.9,0.82,0.64,0.51,0.33,0.25,0.18,0.09,0.046,0.02,0.006};
+  float y_err_syst[15]={0.05,0.15,0.17,0.15,0.15,0.14,0.11,0.09,0.05,0.04,0.03,0.015,0.007,0.003,0.001};
+  
+  TGraphErrors *LHCb = new TGraphErrors(15, eta, y, eta_err, y_err_syst);
+  LHCb->SetMarkerColor(kBlue+1);
+  LHCb->SetMarkerStyle(22);
+  c2->SetLogy();
+  LHCb->Draw("samePZ");
+  S1->Draw("P");
+  leg = new TLegend(0.5,0.75,0.9,0.9);
+  leg->SetHeader("         #Upsilon(1S)");
+  leg->AddEntry(LHCb, "CMS 3.1 pb^{-1} (|y| < 2)", "PLE");
+  leg->AddEntry(S1, "CMS 36.7 pb^{-1} (|y| < 2)", "PLE");
+  leg->Draw();
+  c2->SaveAs("CMS1S.pdf");
+}
+
+void DrawCMS2S(){
+	
+  gStyle->SetOptStat(00000000000);
+  TCanvas *c2 = new TCanvas();//"c1","title",800,600);
+  TH1F *frame = gPad->DrawFrame(0.001,0.001,30.,10);
+  frame->SetStats(0);
+  frame->SetMaximum(1.4);
+  frame->GetXaxis()->SetTitle("p_{T}^{Y(2S)}(GeV/c)");
+  frame->GetYaxis()->SetTitle("d#sigma/dp_{T} * BR (nb/(GeV/c))");
+  frame->GetYaxis()->SetTitleOffset(1.1);
+  frame->Draw();
+  
+  //CMS
+  TFile *f = new TFile("Final2S_0_2_0_30.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups2S");
+  S1->SetMarkerColor(kBlack);
+  
+  //CMS first paper
+  float eta[8]={1.,3.,5.,7.5,10.5,14.,18.,25.};
+  float eta_err[8]={1.,1.,1.,1.5,1.5,2.,2.,5.};
+  float y[8]={0.125,0.24,0.205,0.137,0.07,0.023,0.01,0.002};
+  float y_err_syst[8]={0.025,0.048,0.027,0.014,0.0046,0.002,0.0004};
+  
+  TGraphErrors *LHCb = new TGraphErrors(8, eta, y, eta_err, y_err_syst);
+  LHCb->SetMarkerColor(kBlue+1);
+  LHCb->SetMarkerStyle(22);
+  c2->SetLogy();
+  LHCb->Draw("samePZ");
+  S1->Draw("P");
+  leg = new TLegend(0.5,0.75,0.9,0.9);
+  leg->SetHeader("         #Upsilon(2S)");
+  leg->AddEntry(LHCb, "CMS 3.1 pb^{-1} (|y| < 2)", "PLE");
+  leg->AddEntry(S1, "CMS 36.7 pb^{-1} (|y| < 2)", "PLE");
+  leg->Draw();
+  c2->SaveAs("CMS2S.pdf");
+}
+
+void DrawCMS3S(){
+	
+  gStyle->SetOptStat(00000000000);
+  TCanvas *c2 = new TCanvas();//"c1","title",800,600);
+  TH1F *frame = gPad->DrawFrame(0.001,0.001,30.,10);
+  frame->SetStats(0);
+  frame->SetMaximum(0.4);
+  frame->GetXaxis()->SetTitle("p_{T}^{Y(3S)}(GeV/c)");
+  frame->GetYaxis()->SetTitle("d#sigma/dp_{T} * BR (nb/(GeV/c))");
+  frame->GetYaxis()->SetTitleOffset(1.1);
+  frame->Draw();
+  
+  //CMS
+  TFile *f = new TFile("Final3S_0_2_0_30.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups3S");
+  S1->SetMarkerColor(kBlack);
+  
+  //CMS first paper
+  float eta[6]={1.5,4.5,7.5,11.5,17.,25.};
+  float eta_err[6]={1.5,1.5,1.5,2.5,3.,5.};
+  float y[6]={0.087,0.097,0.08,0.032,0.0083,0.003};
+  float y_err_syst[6]={0.02,0.023,0.02,0.008,0.002,0.0007};
+  
+  TGraphErrors *LHCb = new TGraphErrors(6, eta, y, eta_err, y_err_syst);
+  LHCb->SetMarkerColor(kBlue+1);
+  LHCb->SetMarkerStyle(22);
+  c2->SetLogy();
+  LHCb->Draw("samePZ");
+  S1->Draw("P");
+  leg = new TLegend(0.5,0.75,0.9,0.9);
+  leg->SetHeader("         #Upsilon(3S)");
+  leg->AddEntry(LHCb, "CMS 3.1 pb^{-1} (|y| < 2)", "PLE");
+  leg->AddEntry(S1, "CMS 36.7 pb^{-1} (|y| < 2)", "PLE");
+  leg->Draw();
+  c2->SaveAs("CMS3S.pdf");
 }
 
 void Tevatron(){

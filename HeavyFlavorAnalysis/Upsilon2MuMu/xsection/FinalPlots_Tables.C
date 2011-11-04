@@ -18,6 +18,8 @@ void XSSystTot_1S(){
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S1YieldPt");  
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  //TFile *f = new TFile("XSection_Atlas1_2.root");
+  //TFile *f = new TFile("XSection0_2_0_30.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldPt");    
   TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_.root");
@@ -37,10 +39,15 @@ void XSSystTot_1S(){
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
   double s1_(0.), s2_(0.), e5_(0.);
   double Stat[10]; double Errh[10]; double Errl[10]; double y[10];
+  double Stat[9]; double Errh[9]; double Errl[9]; double y[9];
   
   double s0(0.), s0_(0.);
   double Errh_ratio[10]; double Errl_ratio[10]; double y_ratio[10];
-  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+  double Errh_atlas[10]; double Errl_atlas[10]; double y_atlas[10];
+  //double Errh_ratio[9]; double Errl_ratio[9]; double y_ratio[9];
+  //double Errh_atlas[9]; double Errl_atlas[9]; double y_atlas[9];  
+  
+  for (int i = 1; i <= S5->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); ///Muid
     s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
@@ -84,6 +91,17 @@ void XSSystTot_1S(){
   double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
   double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
   
+  //double xbin[9] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16};
+  //double xl[9] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16};
+  //double xh[9] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84};  
+  
+  double br_scale(40.3);
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    Errh_atlas[i-1] = Errh[i-1]/2;
+    Errl_atlas[i-1] = Errl[i-1]/2;
+    y_atlas[i-1] = y[i-1];
+  }
+    
   gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups1S");
   gr->SetMarkerColor(1);
@@ -96,10 +114,19 @@ void XSSystTot_1S(){
   gr_ratio->SetMarkerStyle(21);
   gr_ratio->Draw("AP");  
   
+  gr_atlas = new TGraphAsymmErrors(10,xbin,y_atlas,xl,xh,Errl_atlas,Errh_atlas);
+  gr_atlas->SetName("Ups1S_atlas");
+  gr_atlas->SetMarkerColor(1);
+  gr_atlas->SetMarkerStyle(21);
+  gr_atlas->Draw("AP");   
+  
+  
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
-  TFile *f = new TFile("Final1S.root", "RECREATE");
+  //TFile *f = new TFile("Final1S.root", "RECREATE");
+  TFile *f = new TFile("Final1S_0_2_0_30.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
+  gr_atlas->Write();
   S100->Write();
   S200->Write();
   
@@ -152,6 +179,7 @@ void XSSystTot_2S(){
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S2YieldPt");  
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  //TFile *f = new TFile("XSection0_2_0_30.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S2YieldPt");    
   TFile *f = new TFile("MuIDPlus_10ptbins_2Srho_.root");
@@ -221,7 +249,11 @@ void XSSystTot_2S(){
   double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
   double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
   double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
-
+  
+  //double xbin[9] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16};
+  //double xl[9] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16};
+  //double xh[9] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84};  
+  
   gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups2S");
   gr->SetMarkerColor(4);
@@ -236,6 +268,7 @@ void XSSystTot_2S(){
   
   cout << " Y(2S) 2Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")" <<  endl;
   TFile *f = new TFile("Final2S.root", "RECREATE");
+  //TFile *f = new TFile("Final2S_0_2_0_30.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
   S100->Write();
@@ -292,6 +325,7 @@ void XSSystTot_3S(){
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S3YieldPt");  
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  //TFile *f = new TFile("XSection0_2_0_30.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S3YieldPt");    
   TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_.root");
@@ -325,7 +359,7 @@ void XSSystTot_3S(){
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
     s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho    
-    cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
+    cout << " dSigma(Y(3S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     Stat[i-1]=S5->GetBinError(i);
@@ -360,6 +394,10 @@ void XSSystTot_3S(){
   double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
   double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
   
+  //double xbin[9] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16};
+  //double xl[9] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16};
+  //double xh[9] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84};  
+  
   gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups3S");
   gr->SetMarkerColor(2);
@@ -374,6 +412,7 @@ void XSSystTot_3S(){
   
   cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
   TFile *f = new TFile("Final3S.root", "RECREATE");
+  //TFile *f = new TFile("Final3S_0_2_0_30.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
   S100->Write();
