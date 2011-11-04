@@ -19,6 +19,7 @@ public:
 
   // ----------------------------------------------------------------------
   TVector3  fInnerPlab, fOuterPlab, fGlobalPlab; 
+  TVector3  fPositionAtM1, fPositionAtM2;
 
   // see AN2008_098 "Muon identification in CMS"
   double    fMuonChi2, fMuonZ, fMuonR;

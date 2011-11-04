@@ -43,6 +43,12 @@ void TAnaMuon::dump() {
   cout << Form(" DT=%3d CSC=%3d RPC=%3d t=%4.1f+/-%4.1f (%3d)", fNhitsDT, fNhitsCSC, fNhitsRPC, fTimeInOut, fTimeInOutE, fTimeNdof);
   cout << endl;
 
+  if (fPositionAtM1.Perp() > 0) {
+    cout << " Position at M1: x1=" << fPositionAtM1.X() << " y1=" << fPositionAtM1.Y() << " z1=" << fPositionAtM1.Z() << endl;
+  }
+  if (fPositionAtM2.Perp() > 0) {
+    cout << " Position at M2: x2=" << fPositionAtM2.X() << " y2=" << fPositionAtM2.Y() << " z2=" << fPositionAtM2.Z() << endl;
+  }
   //   if (fMCID != -99999) {
   //     cout << Form(" mcid =%+6d", fMCID);
   //   }
