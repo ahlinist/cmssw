@@ -147,6 +147,13 @@ patTupleEventContent.outputCommands.extend(
 )
 
 #--------------------------------------------------------------------------------
+# required for Z-recoil correction
+#--------------------------------------------------------------------------------
+patTupleEventContent.outputCommands.extend(
+     [ 'keep *_vertexMultiplicityVsRhoPFNeutralReweight_*_*' ]
+)
+
+#--------------------------------------------------------------------------------
 # required by tau recoil energy
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(

@@ -190,8 +190,8 @@ def applyVertexMultiplicityReweighting_runZtoMuTau(process):
 def applyRhoNeutralReweighting_runZtoMuTau(process):
 
     process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
-    if hasattr(process, "producePatTupleZtoMuTauSpecific"):
-        process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
+    if hasattr(process, "produceRecObjects"):
+        process.produceRecObjects._seq = process.produceRecObjects._seq \
           * process.produceVertexMultiplicityVsRhoPFNeutralReweights
 
     _addEventWeightZtoMuTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
@@ -543,9 +543,9 @@ def applyVertexMultiplicityReweighting_runZtoElecTau(process):
 
 def applyRhoNeutralReweighting_runZtoElecTau(process):
     process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
-    if hasattr(process, "producePatTupleZtoElecTauSpecific"):
-        process.producePatTupleZtoElecTauSpecific._seq = process.producePatTupleZtoElecTauSpecific._seq \
-          * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityVsRhoPFNeutralReweight
+    if hasattr(process, "produceRecObjects"):
+        process.produceRecObjects._seq = process.produceRecObjects._seq \
+          * process.produceVertexMultiplicityVsRhoPFNeutralReweights
 
     _addEventWeightZtoElecTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
@@ -602,9 +602,9 @@ def applyVertexMultiplicityReweighting_runAHtoElecTau(process):
 
 def applyRhoNeutralReweighting_runAHtoElecTau(process):
     process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
-    if hasattr(process, "producePatTupleAHtoElecTauSpecific"):
-        process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
-            * process.produceVertexMultiplicityVsRhoPFNeutralReweights
+    if hasattr(process, "produceRecObjects"):
+        process.produceRecObjects._seq = process.produceRecObjects._seq \
+          * process.produceVertexMultiplicityVsRhoPFNeutralReweights
 
     _addEventWeighAHtoElecTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
