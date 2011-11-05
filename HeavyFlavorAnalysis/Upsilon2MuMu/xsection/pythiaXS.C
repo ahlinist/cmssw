@@ -202,3 +202,206 @@ void Overlay_rap(){
   legg->Draw();
   c2->SaveAs("Overlay_pythia_rap.pdf");
 }
+
+void Ratio(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S.root");
+  TH1D *S1h; TH1D *S1l;
+  S1h = (TH1D*)gFile->Get("Ups1S_ratioh");
+  S1l = (TH1D*)gFile->Get("Ups1S_ratiol");
+  TFile *f = new TFile("Final2S.root");
+  TH1D *S2h; TH1D *S2l;
+  S2h = (TH1D*)gFile->Get("Ups2S_ratioh");
+  S2l = (TH1D*)gFile->Get("Ups2S_ratiol");  
+  TFile *f = new TFile("Final3S.root");
+  TH1D *S3h; TH1D *S3l;
+  S3h = (TH1D*)gFile->Get("Ups3S_ratioh");
+  S3l = (TH1D*)gFile->Get("Ups3S_ratiol");   
+  
+  TFile *f = new TFile("Pythia_XS.root");
+  TH1D *h1;
+  h1 = (TH1D*)gFile->Get("Pt_1S");
+  TH1D *h2;
+  h2 = (TH1D*)gFile->Get("Pt_2S");
+  TH1D *h3;
+  h3 = (TH1D*)gFile->Get("Pt_3S"); 
+  TH1D *h21 = (TH1D*)h1->Clone();
+  TH1D *h31 = (TH1D*)h1->Clone();
+  
+  for (int i = 1; i <= h1->GetNbinsX(); ++i) {
+    
+    double bincontent21 = h2->GetBinContent(i)/h1->GetBinContent(i); 
+    h21->SetBinContent(i,bincontent21);
+    double bincontent31 = h3->GetBinContent(i)/h1->GetBinContent(i); 
+    h31->SetBinContent(i,bincontent31);   
+    
+  }
+  
+  double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
+  double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
+  double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
+    
+   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+      
+   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+   term21_h = term1_h+term2_h;
+   term31_h = term1_h+term3_h;
+   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+      
+   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+   term21_l = term1_l+term2_l;
+   term31_l = term1_l+term3_l;
+   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+   
+   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+   cout << endl;
+  }  
+  
+  double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
+  double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
+  double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
+
+  S21 = new TGraphAsymmErrors(10,xbin,s21,xl,xh,e21_l,e21_h);
+  S21->SetName("Ups1S_2S");
+  S21->SetMarkerColor(2);
+  S21->SetMarkerStyle(21);
+    
+  S31 = new TGraphAsymmErrors(10,xbin,s31,xl,xh,e31_l,e31_h);
+  S31->SetName("Ups1S_3S");
+  S31->SetMarkerColor(4);
+  S31->SetMarkerStyle(22);
+    
+  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S21->GetYaxis()->SetTitle("Ratio");
+  S21->SetTitle("");
+  S21->SetMinimum(0.);
+  S21->SetMaximum(1.);
+  h21->SetLineColor(2);
+  h31->SetLineColor(4);
+  S21->Draw("AP");
+  S31->Draw("P");
+  h21->Draw("same");
+  h31->Draw("same");  
+  legg = new TLegend(0.1,0.6,0.5,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S21, "Data #Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S31, "Data #Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(h21, "Pythia #Upsilon(2S)/#Upsilon(1S)" ,"l"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(h31, "Pythia #Upsilon(3S)/#Upsilon(1S)","l"); legge->SetTextColor(kBlue);  
+  legg->Draw();
+  c1->SaveAs("Ratio_pythia.pdf");
+  
+}
+
+
+void Ratio_rap(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S_rap.root");
+  TH1D *S1h; TH1D *S1l;
+  S1h = (TH1D*)gFile->Get("Ups1S_ratioh");
+  S1l = (TH1D*)gFile->Get("Ups1S_ratiol");
+  TFile *f = new TFile("Final2S_rap.root");
+  TH1D *S2h; TH1D *S2l;
+  S2h = (TH1D*)gFile->Get("Ups2S_ratioh");
+  S2l = (TH1D*)gFile->Get("Ups2S_ratiol");  
+  TFile *f = new TFile("Final3S_rap.root");
+  TH1D *S3h; TH1D *S3l;
+  S3h = (TH1D*)gFile->Get("Ups3S_ratioh");
+  S3l = (TH1D*)gFile->Get("Ups3S_ratiol");   
+    
+  TFile *f = new TFile("Pythia_XS.root");
+  TH1D *h1;
+  h1 = (TH1D*)gFile->Get("Y_1S");
+  TH1D *h2;
+  h2 = (TH1D*)gFile->Get("Y_2S");
+  TH1D *h3;
+  h3 = (TH1D*)gFile->Get("Y_3S"); 
+  TH1D *h21 = (TH1D*)h1->Clone();
+  TH1D *h31 = (TH1D*)h1->Clone();
+  
+  for (int i = 1; i <= h1->GetNbinsX(); ++i) {
+    
+    double bincontent21 = h2->GetBinContent(i)/h1->GetBinContent(i); 
+    h21->SetBinContent(i,bincontent21);
+    double bincontent31 = h3->GetBinContent(i)/h1->GetBinContent(i); 
+    h31->SetBinContent(i,bincontent31);   
+    
+  }
+  
+  double s21[6]; double s31[6]; double e21_h[6]; double e31_h[6]; double e21_l[6]; double e31_l[6];
+  double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
+  double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
+    
+   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+      
+   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+   term21_h = term1_h+term2_h;
+   term31_h = term1_h+term3_h;
+   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+      
+   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+   term21_l = term1_l+term2_l;
+   term31_l = term1_l+term3_l;
+   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+   
+   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+   cout << endl;
+  }  
+  
+  double xbin[6] = {0.208, 0.611, 1.004, 1.395, 1.786, 2.126};
+  double xh[6] = {0.192, 0.189, 0.196, 0.205, 0.214, 0.274};
+  double xl[6] = {0.208, 0.211, 0.204, 0.195, 0.186, 0.126};
+
+  S21 = new TGraphAsymmErrors(6,xbin,s21,xl,xh,e21_l,e21_h);
+  S21->SetName("Ups1S_2S");
+  S21->SetMarkerColor(2);
+  S21->SetMarkerStyle(21);
+    
+  S31 = new TGraphAsymmErrors(6,xbin,s31,xl,xh,e31_l,e31_h);
+  S31->SetName("Ups1S_3S");
+  S31->SetMarkerColor(4);
+  S31->SetMarkerStyle(22);
+    
+  S21->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  S21->GetYaxis()->SetTitle("Ratio");
+  S21->SetTitle("");
+  S21->SetMinimum(0.);
+  S21->SetMaximum(0.6);
+  h21->SetLineColor(2);
+  h31->SetLineColor(4);
+  S21->Draw("AP");
+  S31->Draw("P");
+  h21->Draw("same");
+  h31->Draw("same"); 
+  legg = new TLegend(0.1,0.6,0.5,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(h21, "Pythia #Upsilon(2S)/#Upsilon(1S)" ,"l"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(h31, "Pythia #Upsilon(3S)/#Upsilon(1S)","l"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  c1->SaveAs("Ratio_pythia_rap.pdf");
+
+}
