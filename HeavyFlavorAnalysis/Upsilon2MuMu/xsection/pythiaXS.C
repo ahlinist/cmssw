@@ -101,3 +101,104 @@ void XS(){
   S5Y->Write();
   S6Y->Write();
 }
+
+void Overlay(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Pythia_XS.root");
+  TH1D *h1;
+  h1 = (TH1D*)gFile->Get("Pt_1S");
+  TH1D *h2;
+  h2 = (TH1D*)gFile->Get("Pt_2S");
+  TH1D *h3;
+  h3 = (TH1D*)gFile->Get("Pt_3S"); 
+  
+  TFile *f = new TFile("Final1S.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  TFile *f = new TFile("Final2S.root");
+  TGraphAsymmErrors *S2;
+  S2 = (TGraphAsymmErrors*)gFile->Get("Ups2S");
+  TFile *f = new TFile("Final3S.root");
+  TGraphAsymmErrors *S3;
+  S3 = (TGraphAsymmErrors*)gFile->Get("Ups3S");  
+  
+  TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
+  c1->SetLogy();
+  S1->SetLineColor(1); S1->SetMarkerColor(1); S2->SetLineColor(2); S2->SetMarkerColor(2); S3->SetLineColor(4); S3->SetMarkerColor(4);
+  S1->SetMarkerStyle(20); S2->SetMarkerStyle(21); S3->SetMarkerStyle(22);
+  S1->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  S1->SetTitle("");
+  S1->SetMinimum(0.0001);
+  S1->SetMaximum(2.5);
+  S1->Draw("AP");
+  h1->Draw("same");
+  S2->Draw("P");
+  h2->SetLineColor(2);
+  h2->Draw("same");
+  S3->Draw("P");
+  h3->SetLineColor(4);
+  h3->Draw("same");  
+  legg = new TLegend(0.5,0.5,0.7,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S1, "Data #Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(h1, "Pythia #Upsilon(1S)" ,"l"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Data #Upsilon(2S)","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(h2, "Pythia #Upsilon(2S)","l"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S3, "Data #Upsilon(3S)","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(h3, "Pythia #Upsilon(3S)","l"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  c1->SaveAs("Overlay_pythia.pdf");
+}
+
+void Overlay_rap(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Pythia_XS.root");
+  TH1D *h1;
+  h1 = (TH1D*)gFile->Get("Y_1S");
+  TH1D *h2;
+  h2 = (TH1D*)gFile->Get("Y_2S");
+  TH1D *h3;
+  h3 = (TH1D*)gFile->Get("Y_3S"); 
+  
+  TFile *f = new TFile("Final1S_rap.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  TFile *f = new TFile("Final2S_rap.root");
+  TGraphAsymmErrors *S2;
+  S2 = (TGraphAsymmErrors*)gFile->Get("Ups2S");
+  TFile *f = new TFile("Final3S_rap.root");
+  TGraphAsymmErrors *S3;
+  S3 = (TGraphAsymmErrors*)gFile->Get("Ups3S");  
+  
+  TCanvas *c2 = new TCanvas("c2", "c2", 800,600);
+  S1->SetLineColor(1); S1->SetMarkerColor(1); S2->SetLineColor(2); S2->SetMarkerColor(2); S3->SetLineColor(4); S3->SetMarkerColor(4);
+  S1->SetMarkerStyle(20); S2->SetMarkerStyle(21); S3->SetMarkerStyle(22);
+  S1->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  S1->SetTitle("");
+  S1->SetMinimum(0.0001);
+  S1->SetMaximum(9.5);
+  S1->Draw("AP");
+  h1->Draw("same");
+  S2->Draw("P");
+  h2->SetLineColor(2);
+  h2->Draw("same");
+  S3->Draw("P");
+  h3->SetLineColor(4);
+  h3->Draw("same");  
+  legg = new TLegend(0.71,0.62,0.85,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S1, "Data #Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(h1, "Pythia #Upsilon(1S)" ,"l"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Data #Upsilon(2S)","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(h2, "Pythia #Upsilon(2S)","l"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S3, "Data #Upsilon(3S)","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(h3, "Pythia #Upsilon(3S)","l"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  c2->SaveAs("Overlay_pythia_rap.pdf");
+}
