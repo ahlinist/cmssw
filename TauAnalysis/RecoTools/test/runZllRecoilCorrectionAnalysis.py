@@ -6,17 +6,27 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 
 import os
 
-version = 'v4_1'
+version = 'v4_2'
 
 inputFilePath = '/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
 outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 
 samplesToAnalyze = {
-    'Data' : {
+    'Data_2011RunA' : {
         'samples' : [
             'Data_runs160329to163869',
-            'Data_runs165071to167913'
+            'Data_runs165071to167913',
+            'Data_runs160329to163869',
+            'Data_runs165071to167913',
+            'Data_runs170053to172619',
+            'Data_runs172620to175770'
+        ],
+        'isMC' : False
+    },
+    'Data_2011RunB' : {
+        'samples' : [
+            'Data_runs175832to179431'
         ],
         'isMC' : False
     },
@@ -89,7 +99,8 @@ intLumiData = None
 hltPaths = None
 srcWeights = None
 if runPeriod == '2011RunA':
-    intLumiData = 1522.7, # runs 160431-173198
+    samplesToAnalyze['Data'] = samplesToAnalyze['Data_2011RunA']
+    intLumiData = 1522.7 # runs 160431-173198
     hltPaths = {
         'Data' : [
             'HLT_IsoMu17_v5',
@@ -109,7 +120,8 @@ if runPeriod == '2011RunA':
         'smMC' : [ 'vertexMultiplicityReweight3dRunA' ]
     }
 elif runPeriod == '2011RunB':
-    intLumiData = 2027.9, # runs 175860-179411 
+    samplesToAnalyze['Data'] = samplesToAnalyze['Data_2011RunB']
+    intLumiData = 2027.9 # runs 175860-179411 
     hltPaths = {
         'Data' : [
             'HLT_Mu13_Mu8_v7',
@@ -126,65 +138,143 @@ elif runPeriod == '2011RunB':
 else:
     raise ValueError("Invalid runPeriod = %s !!" % runPeriod)
 
+for sampleName in samplesToAnalyze.keys():
+    if not samplesToAnalyze[sampleName]['isMC'] and sampleName != 'Data':
+        samplesToAnalyze.pop(sampleName)
+        
+#print samplesToAnalyze
+
 metOptions = {
     'pfMEt' : {
         'srcJets' : {
-            'Data' : 'patJets',
-            'smMC' : 'patJets'
+            'Data' : {
+                'central'    : 'patJets'
+            },
+            'smMC' : {
+                'central'    : 'patJets'
+            }
         },
         'srcMEt' : {
-            'Data' : 'patPFMETs',
-            'smMC' : 'patPFMETs'
+            'Data' : {
+                'central'    : 'patPFMet'
+            },
+            'smMC' : {
+                'central'    : 'patPFMetNoSmearing'
+            }
         }
     },
     'pfMEtTypeIcorrected' : {
         'srcJets' : {
-            'Data' : 'patJets',
-            'smMC' : 'patJets'
+            'Data' : {
+                'central'    : 'patJets'
+            },
+            'smMC' : {
+                'central'    : 'patJets'
+            }
         },
         'srcMEt' : {
-            'Data' : 'patType1CorrectedPFMet',
-            'smMC' : 'patType1CorrectedPFMet'
+            'Data' : {
+                'central'    : 'patType1CorrectedPFMet'
+            },
+            'smMC' : {
+                'central'    : 'patType1CorrectedPFMetNoSmearing'
+            }
         }
     },
     'pfMEtTypeIpIIcorrected' : {
         'srcJets' : {
-            'Data' : 'patJets',
-            'smMC' : 'patJets'
+            'Data' : {
+                'central'    : 'patJets'
+            },
+            'smMC' : {
+                'central'    : 'patJets'
+            }
         },
         'srcMEt'  : {
-            'Data' : 'patType1p2CorrectedPFMet',
-            'smMC' : 'patType1p2CorrectedPFMet'
+            'Data' : {
+                'central'    : 'patType1p2CorrectedPFMet'
+            },
+            'smMC' : {
+                'central'    : 'patType1p2CorrectedPFMetNoSmearing'
+            }
         }
     },
     'pfMEtSmeared' : {
         'srcJets' : {
-            'Data' : 'patJets',
-            'smMC' : 'smearedPatJets'
+            'Data' : {
+                'central'    : 'patJets'
+            },
+            'smMC' : {
+                'central'    : 'smearedPatJets',
+                'jetEnUp'    : 'smearedPatJets',
+                'jetEnDown'  : 'smearedPatJets',
+                'jetResUp'   : 'smearedPatJets',
+                'jetResDown' : 'smearedPatJets'
+            }
         },
         'srcMEt' : {
-            'Data' : 'patPFMETs',
-            'smMC' : 'smearedPatPFMETs'
+            'Data' : {
+                'central'    : 'patPFMet'
+            },
+            'smMC' : {
+                'central'    : 'patPFMet',
+                'jetEnUp'    : 'patPFMetJetEnUp',
+                'jetEnDown'  : 'patPFMetJetEnDown',
+                'jetResUp'   : 'patPFMetJetResUp',
+                'jetResDown' : 'patPFMetJetResDown'
+            }
         }
     },
     'pfMEtTypeIcorrectedSmeared' : {
         'srcJets' : {
-            'Data' : 'patJets',    
-            'smMC' : 'smearedPatJets'
+            'Data' : {
+                'central'    : 'patJets'
+            },
+            'smMC' : {
+                'central'    : 'smearedPatJets',
+                'jetEnUp'    : 'smearedPatJets',
+                'jetEnDown'  : 'smearedPatJets',
+                'jetResUp'   : 'smearedPatJets',
+                'jetResDown' : 'smearedPatJets'
+            }
         },
         'srcMEt' : {
-            'Data' : 'patType1CorrectedPFMet',
-            'smMC' : 'patType1CorrectedPFMet'
+            'Data' : {
+                'central'    : 'patType1CorrectedPFMet'
+            },
+            'smMC' : {
+                'central'    : 'patType1CorrectedPFMet',
+                'jetEnUp'    : 'patType1CorrectedPFMetJetEnUp',
+                'jetEnDown'  : 'patType1CorrectedPFMetJetEnDown',
+                'jetResUp'   : 'patType1CorrectedPFMetJetResUp',
+                'jetResDown' : 'patType1CorrectedPFMetJetResDown'
+            }
         }
     },
     'pfMEtTypeIpIIcorrectedSmeared' : {
         'srcJets' : {
-            'Data' : 'patJets',    
-            'smMC' : 'smearedPatJets'
+            'Data' : {
+                'central'    : 'patJets'
+            },                
+            'smMC' : {
+                'central'    : 'smearedPatJets',
+                'jetEnUp'    : 'smearedPatJets',
+                'jetEnDown'  : 'smearedPatJets',
+                'jetResUp'   : 'smearedPatJets',
+                'jetResDown' : 'smearedPatJets'
+            }
         },    
         'srcMEt' : {
-            'Data' : 'patType1p2CorrectedPFMet',
-            'smMC' : 'patType1p2CorrectedPFMet'
+            'Data' : {
+                'central'    : 'patType1p2CorrectedPFMet'
+            },
+            'smMC' : {
+                'central'    : 'patType1p2CorrectedPFMet',
+                'jetEnUp'    : 'patType1p2CorrectedPFMetJetEnUp',
+                'jetEnDown'  : 'patType1p2CorrectedPFMetJetEnDown',
+                'jetResUp'   : 'patType1p2CorrectedPFMetJetResUp',
+                'jetResDown' : 'patType1p2CorrectedPFMetJetResDown'
+            }
         }
     }
 }
@@ -199,6 +289,8 @@ executable_makeZllRecoilCorrectionFinalPlots = execDir + 'makeZllRecoilCorrectio
 executable_shell                             = '/bin/csh'
 executable_python                            = 'python'
 
+nice = 'nice '
+
 if not os.path.exists(outputFilePath):
     os.mkdir(outputFilePath)
 
@@ -212,9 +304,17 @@ for metOptionName in metOptions.keys():
     fileNames_produceZllRecoilNtuples[metOptionName] = {}
     for sampleName in samplesToAnalyze.keys():
         if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
+            processType = None
+            if samplesToAnalyze[sampleName]['isMC']:
+                processType = 'smMC'
+            else:
+                processType = 'Data'
+            srcJets_central = metOptions[metOptionName]['srcJets'][processType]['central']
+            srcMEt_central = metOptions[metOptionName]['srcMEt'][processType]['central']
             retVal_produceZllRecoilNtuples = \
               buildConfigFile_produceZllRecoilNtuples(
-                sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, metOptions)
+                sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+                srcMEt_central, srcJets_central, hltPaths[processType], srcWeights[processType])
 
             if retVal_produceZllRecoilNtuples is None:
                 continue
@@ -233,7 +333,7 @@ for metOptionName in metOptions.keys():
         if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
             retVal_fitZllRecoilNtuples = \
               buildConfigFile_fitZllRecoilNtuples(
-               sampleName, metOptionName,
+                sampleName, metOptionName,
                 fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], outputFilePath, samplesToAnalyze,
                 "qT", "uParl", "uPerp")
 
@@ -241,22 +341,6 @@ for metOptionName in metOptions.keys():
                 continue
 
             fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName] = retVal_fitZllRecoilNtuples
-
-fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii = {}
-for metOptionName in metOptions.keys():
-    fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName] = {}
-    for sampleName in samplesToAnalyze.keys():
-        if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
-            retVal_fitZllRecoilNtuples = \
-              buildConfigFile_fitZllRecoilNtuples(
-                sampleName, metOptionName,
-                fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], outputFilePath, samplesToAnalyze,
-                "rT_ii", "vParl_ii", "vPerp_ii")
-
-            if retVal_fitZllRecoilNtuples is None:
-                continue
-
-            fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName] = retVal_fitZllRecoilNtuples
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -267,15 +351,26 @@ fileNames_FWLiteZllRecoilCorrectionAnalyzer = {}
 for metOptionName in metOptions.keys():
     fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName] = {}
     for sampleName in samplesToAnalyze.keys():
-        retVal_FWLiteZllRecoilCorrectionAnalyzer = \
-          buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-            sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, metOptions,
-            None, intLumiData)
+        processType = None
+        if samplesToAnalyze[sampleName]['isMC']:
+            processType = 'smMC'
+        else:
+            processType = 'Data'
+        srcJets = metOptions[metOptionName]['srcJets'][processType]
+        srcMEt = metOptions[metOptionName]['srcMEt'][processType]
+        fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName] = {}
+        for central_or_shift in srcJets.keys():
+            retVal_FWLiteZllRecoilCorrectionAnalyzer = \
+              buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
+                sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+                central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
+                None, intLumiData)
 
-        if retVal_FWLiteZllRecoilCorrectionAnalyzer is None:
-            continue
+            if retVal_FWLiteZllRecoilCorrectionAnalyzer is None:
+                continue
 
-        fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName] = retVal_FWLiteZllRecoilCorrectionAnalyzer
+            fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift] = \
+              retVal_FWLiteZllRecoilCorrectionAnalyzer
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -289,7 +384,10 @@ for metOptionName in metOptions.keys():
     haddInputFileNames = []
     for sampleName in samplesToAnalyze.keys():
         if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName].has_key(sampleName):
-            haddInputFileNames.append(fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'])
+            for central_or_shift in metOptions[metOptionName]['srcJets']['smMC'].keys():
+                if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName].has_key(central_or_shift):
+                    haddInputFileNames.append(
+                      fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'])
     haddOutputFileName = os.path.join(outputFilePath, 'analyzeZllRecoilCorrectionHistograms_all_%s.root' % metOptionName)
 
     retVal_hadd = \
@@ -339,7 +437,8 @@ for metOptionName in metOptions.keys():
         retVal_makeZllRecoilCorrectionFinalPlots = \
           buildConfigFile_makeZllRecoilCorrectionFinalPlots(
             sampleNameData, sampleNameMC_signal, sampleNameMCs_background, metOptionName,
-            fileNames_hadd[metOptionName]['outputFileName'], outputFilePath, corrLevelMC)
+            fileNames_hadd[metOptionName]['outputFileName'], outputFilePath, corrLevelMC,
+            metOptions[metOptionName]['srcJets']['smMC'].keys())
             
         fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC] = retVal_makeZllRecoilCorrectionFinalPlots
 #--------------------------------------------------------------------------------
@@ -371,8 +470,8 @@ for metOptionName in metOptions.keys():
                 makeFile.write("%s: %s\n" %
                   (fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
                    executable_produceZllRecoilNtuples))
-                makeFile.write("\t%s %s &> %s\n" %
-                  (executable_produceZllRecoilNtuples,
+                makeFile.write("\t%s%s %s &> %s\n" %
+                  (nice, executable_produceZllRecoilNtuples,
                    fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['configFileName'],
                    fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['logFileName']))
 makeFile.write("\n")
@@ -385,34 +484,34 @@ for metOptionName in metOptions.keys():
                   (fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['outputFileName'],
                    fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
                    executable_fitZllRecoilNtuples))
-                makeFile.write("\t%s %s &> %s\n" %
-                  (executable_fitZllRecoilNtuples,
+                makeFile.write("\t%s%s %s &> %s\n" %
+                  (nice, executable_fitZllRecoilNtuples,
                    fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['configFileName'],
                    fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['logFileName']))
-            if fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName].has_key(sampleName) and \
-               fileNames_produceZllRecoilNtuples[metOptionName].has_key(sampleName):
-                makeFile.write("%s: %s %s\n" %
-                  (fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['outputFileName'],
-                   fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
-                   executable_fitZllRecoilNtuples))
-                makeFile.write("\t%s %s &> %s\n" %
-                  (executable_fitZllRecoilNtuples,
-                   fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['configFileName'],
-                   fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['logFileName']))
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName) and \
-           fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName) and \
            fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName].has_key(sampleName):
-            makeFile.write("%s: %s %s %s\n" %
-              (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'],
-               fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['outputFileName'],
-               fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal]['outputFileName'],
-               executable_FWLiteZllRecoilCorrectionAnalyzer))
-            # rebuild config file to run FWLiteZllRecoilCorrectionAnalyzer macro
-            # using actual Z-recoil correction parameter values determind by fit
-            tmpConfig = \
+            for central_or_shift in metOptions[metOptionName]['srcJets']['smMC'].keys():
+                if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName].has_key(central_or_shift):
+                    if central_or_shift == 'central':
+                        processType = None
+                        if samplesToAnalyze[sampleName]['isMC']:
+                            processType = 'smMC'
+                        else:
+                            processType = 'Data'
+                        srcJets = metOptions[metOptionName]['srcJets'][processType]
+                        srcMEt = metOptions[metOptionName]['srcMEt'][processType]            
+                        central_or_shift = 'central'
+                        makeFile.write("%s: %s %s %s\n" %
+                         (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'],
+                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['outputFileName'],
+                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal]['outputFileName'],
+                          executable_FWLiteZllRecoilCorrectionAnalyzer))
+                        # rebuild config file to run FWLiteZllRecoilCorrectionAnalyzer macro
+                        # using actual Z-recoil correction parameter values determind by fit
+                        tmpConfig = \
 """
 #!/usr/bin/env python
 
@@ -423,39 +522,51 @@ samplesToAnalyze = %s
 metOptions = %s
 
 buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-  '%s', '%s', '%s', '%s', samplesToAnalyze, metOptions, { 'data' : '%s', 'mc' : '%s' }, %i)
+  '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %i)
 """ % (str(samplesToAnalyze),
        str(metOptions),
        sampleName, metOptionName, inputFilePath, outputFilePath,
+       central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['outputFileName'],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal]['outputFileName'],
        intLumiData)      
-            tmpConfigFileName = "makeTMPconfigFile_%s_%s.py" % (sampleName, metOptionName)
-            tmpConfigFileName_full = os.path.join(outputFilePath, tmpConfigFileName)    
-            tmpConfigFile = open(tmpConfigFileName_full, "w")
-            tmpConfigFile.write(tmpConfig)
-            tmpConfigFile.close()            
-            makeFile.write("\t%s %s\n" % (executable_python, tmpConfigFileName_full))
-            makeFile.write("\t%s %s &> %s\n" %
-              (executable_FWLiteZllRecoilCorrectionAnalyzer,
-               fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'],
-               fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['logFileName']))
+                        tmpConfigFileName = "makeTMPconfigFile_%s_%s.py" % (sampleName, metOptionName)
+                        tmpConfigFileName_full = os.path.join(outputFilePath, tmpConfigFileName)    
+                        tmpConfigFile = open(tmpConfigFileName_full, "w")
+                        tmpConfigFile.write(tmpConfig)
+                        tmpConfigFile.close()            
+                        makeFile.write("\t%s%s %s\n" %
+                          (nice, executable_python, tmpConfigFileName_full))
+                        makeFile.write("\t%s%s %s &> %s\n" %
+                          (nice, executable_FWLiteZllRecoilCorrectionAnalyzer,
+                           fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['configFileName'],
+                           fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['logFileName']))
+                    elif samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Signal':
+                        makeFile.write("%s: %s\n" %
+                          (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'],
+                           executable_FWLiteZllRecoilCorrectionAnalyzer))
+                        makeFile.write("\t%s%s %s &> %s\n" %
+                          (nice, executable_FWLiteZllRecoilCorrectionAnalyzer,
+                           fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['configFileName'],
+                           fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['logFileName']))
         elif samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background':
-             makeFile.write("%s: %s\n" %
-              (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'],
-               executable_FWLiteZllRecoilCorrectionAnalyzer))
-             makeFile.write("\t%s %s &> %s\n" %
-              (executable_FWLiteZllRecoilCorrectionAnalyzer,
-               fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'],
-               fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['logFileName']))
+            for central_or_shift in metOptions[metOptionName]['srcJets']['smMC'].keys():
+                if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName].has_key(central_or_shift):
+                    makeFile.write("%s: %s\n" %
+                      (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'],
+                       executable_FWLiteZllRecoilCorrectionAnalyzer))
+                    makeFile.write("\t%s%s %s &> %s\n" %
+                      (nice, executable_FWLiteZllRecoilCorrectionAnalyzer,
+                       fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['configFileName'],
+                       fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['logFileName']))
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
     if len(fileNames_hadd[metOptionName]['inputFileNames']) > 0:
         makeFile.write("%s: %s\n" %
           (fileNames_hadd[metOptionName]['outputFileName'],
            make_MakeFile_vstring(fileNames_hadd[metOptionName]['inputFileNames'])))
-        makeFile.write("\t%s %s &> %s\n" %
-          (executable_shell,
+        makeFile.write("\t%s%s %s &> %s\n" %
+          (nice, executable_shell,
            fileNames_hadd[metOptionName]['shellFileName'],
            fileNames_hadd[metOptionName]['logFileName']))
 makeFile.write("\n")
@@ -465,8 +576,8 @@ for metOptionName in metOptions.keys():
           (fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['outputFileName'],
            fileNames_hadd[metOptionName]['outputFileName'],
            executable_makeZllRecoilCorrectionFinalPlots))
-        makeFile.write("\t%s %s &> %s\n" %
-          (executable_makeZllRecoilCorrectionFinalPlots,
+        makeFile.write("\t%s%s %s &> %s\n" %
+          (nice, executable_makeZllRecoilCorrectionFinalPlots,
            fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['configFileName'],
            fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['logFileName']))
 makeFile.write("\n")
@@ -487,16 +598,15 @@ for metOptionName in metOptions.keys():
             if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName):
                 outputFileNames_fitZllRecoilNtuples.append(
                   fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['outputFileName'])
-            if fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName].has_key(sampleName):
-                outputFileNames_fitZllRecoilNtuples.append(
-                  fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['outputFileName'])    
 makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_fitZllRecoilNtuples))
 outputFileNames_FWLiteZllRecoilCorrectionAnalyzer = []
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName].has_key(sampleName):
-            outputFileNames_FWLiteZllRecoilCorrectionAnalyzer.append(
-              fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'])
+            for central_or_shift in metOptions[metOptionName]['srcJets']['smMC'].keys():
+                if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName].has_key(central_or_shift):
+                    outputFileNames_FWLiteZllRecoilCorrectionAnalyzer.append(
+                      fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'])
 makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_FWLiteZllRecoilCorrectionAnalyzer))
 outputFileNames_hadd = []
 for metOptionName in metOptions.keys():

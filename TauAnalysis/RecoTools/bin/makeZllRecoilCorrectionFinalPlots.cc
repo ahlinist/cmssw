@@ -44,15 +44,21 @@ struct variableEntryType
   std::string xAxisTitle_;
 };
 
-TH1* loadHistogram(TFile* inputFile, const std::string& directory, const std::string& meName)
+std::string terminate_dqmDirectory(const std::string& dqmDirectory)
 {
-  std::string meName_full = directory;
+  std::string dqmDirectory_terminated = dqmDirectory;
 
 //--- add trailing '/'
-  if ( meName_full != "" && meName_full.find_last_of("/") != (meName_full.length() - 1) ) meName_full.append("/");
+  if ( dqmDirectory_terminated != "" &&
+      dqmDirectory_terminated.find_last_of("/") != (dqmDirectory_terminated.length() - 1) )
+    dqmDirectory_terminated.append("/");
 
-  meName_full.append(meName);
+  return dqmDirectory_terminated;
+}
 
+TH1* loadHistogram(TFile* inputFile, const std::string& directory, const std::string& meName)
+{
+  std::string meName_full = terminate_dqmDirectory(directory).append(meName);
   TH1* me = dynamic_cast<TH1*>(inputFile->Get(meName_full.data()));
   if ( !me ) 
     throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
@@ -66,8 +72,42 @@ double square(double x)
   return x*x;
 }
 
+void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::string& directory,
+	       const TH1* meMC_central, const vstring& sysShiftsUp, const vstring& sysShiftsDown,
+	       double mcScaleFactor,
+	       std::vector<double>& errUp2MC_smSum, std::vector<double>& errDown2MC_smSum)
+{
+  assert(sysShiftsUp.size() == sysShiftsDown.size());
+
+  size_t numSysShifts = sysShiftsUp.size();
+  for ( size_t iSysShift = 0; iSysShift < numSysShifts; ++iSysShift ) {
+    const std::string& sysShiftUp = sysShiftsUp[iSysShift];
+    std::string directory_sysShiftUp = terminate_dqmDirectory(directory).append(sysShiftUp);
+    TH1* meMC_sysShiftUp = loadHistogram(inputFile, directory_sysShiftUp, variable.meName_);
+    meMC_sysShiftUp->Scale(mcScaleFactor);
+    
+    const std::string& sysShiftDown = sysShiftsDown[iSysShift];
+    std::string directory_sysShiftDown = terminate_dqmDirectory(directory).append(sysShiftDown);
+    TH1* meMC_sysShiftDown = loadHistogram(inputFile, directory_sysShiftDown, variable.meName_);
+    meMC_sysShiftDown->Scale(mcScaleFactor);
+    
+    int numBins = meMC_sysShiftUp->GetNbinsX();
+    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+      double value_central      = meMC_central->GetBinContent(iBin);
+      double value_sysShiftUp   = meMC_sysShiftUp->GetBinContent(iBin);
+      double value_sysShiftDown = meMC_sysShiftDown->GetBinContent(iBin);
+
+      double value_max = TMath::Max(value_sysShiftUp, value_sysShiftDown);
+      if ( value_max > value_central ) errUp2MC_smSum[iBin - 1]   += square(value_max - value_central); 
+      double value_min = TMath::Min(value_sysShiftUp, value_sysShiftDown);
+      if ( value_central > value_min ) errDown2MC_smSum[iBin - 1] += square(value_central - value_min); 
+    }
+  }
+}
+
 void drawHistogram1d(TFile* inputFile, const variableEntryType& variable, 
 		     const std::string& directoryData, const std::string& directoryMC_signal, const vstring& directoryMCs_background, 
+		     const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
 		     bool scaleMCtoData,
 		     const std::string& outputFileName)
 {
@@ -91,7 +131,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   meMC_signal_cloned->SetLineColor(2);
   meMC_signal_cloned->SetLineWidth(2);
   meMC_signal_cloned->SetFillColor(10);
-
+  
   TH1* meMC_bgrSum = 0;
   for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
 	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
@@ -105,13 +145,42 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   TH1* meMC_smSum = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smSum").data());
   if ( meMC_bgrSum ) meMC_smSum->Add(meMC_bgrSum);
 
+  double mcScaleFactor = 1.;
   if ( scaleMCtoData ) {
-    double mcScaleFactor = meData->Integral()/meMC_smSum->Integral();
+    mcScaleFactor = meData->Integral()/meMC_smSum->Integral();
     std::cout << "mcScaleFactor = " << mcScaleFactor << std::endl;
     meMC_signal_cloned->Scale(mcScaleFactor);
     meMC_bgrSum->Scale(mcScaleFactor);
     meMC_smSum->Scale(mcScaleFactor);
   }
+
+  std::vector<double> errUp2MC_smSum(meData->GetNbinsX());
+  std::vector<double> errDown2MC_smSum(meData->GetNbinsX());
+  addSysErr(inputFile, variable, directoryMC_signal, 
+	    meMC_signal_cloned, sysShiftsUp, sysShiftsDown, mcScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+  for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
+	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
+    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, variable.meName_);
+    addSysErr(inputFile, variable, *directoryMC_bgr, 
+	      meMC_bgr, sysShiftsUp, sysShiftsDown, mcScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+  }
+
+  TH1* meMC_smErr = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErr").data());
+  int numBins = meMC_smSum->GetNbinsX();
+  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    double value_central = meMC_smSum->GetBinContent(iBin);
+
+    double errUp   = TMath::Sqrt(errUp2MC_smSum[iBin - 1]);
+    double errDown = TMath::Sqrt(errDown2MC_smSum[iBin - 1]);
+
+    // CV: set bin content such that errors in up/down direction become symmetric
+    meMC_smErr->SetBinContent(iBin, value_central + 0.5*(errUp - errDown));
+    meMC_smErr->SetBinError(iBin, 0.5*(errUp + errDown));
+  }
+  meMC_smErr->SetLineColor(17);
+  meMC_smErr->SetLineWidth(0);
+  meMC_smErr->SetFillColor(17);
+  meMC_smErr->SetFillStyle(3001);
 
   THStack stack_smSum("smSum", "smSum");
   stack_smSum.Add(meMC_signal_cloned);
@@ -153,6 +222,8 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   yAxis_top->SetTitle("Events");
   yAxis_top->SetTitleOffset(1.4);
 
+  meMC_smErr->Draw("e2same");
+
   meData->Draw("e1psame");
   
   TLegend legend(0.185, 0.77, 0.52, 0.95, "", "brNDC"); 
@@ -187,7 +258,6 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   bottomPad->SetLogy(false);
 
   assert(meMC_smSum->GetNbinsX() == meData->GetNbinsX());
-  int numBins = meMC_smSum->GetNbinsX();
   TGraphErrors* graphDataToMCdiff = new TGraphErrors(numBins);
   for ( int iBin = 1; iBin <= numBins; ++iBin ) {
     double x = meMC_smSum->GetBinCenter(iBin);
@@ -196,6 +266,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
     double yErr_data = meData->GetBinError(iBin);
 
     double y_smSum = meMC_smSum->GetBinContent(iBin);
+    if ( !(y_smSum > 0.) ) continue;
     double yErr_smSum = meMC_smSum->GetBinError(iBin);
 
     double diff = (y_data - y_smSum)/y_smSum;
@@ -204,9 +275,20 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
     if ( y_smSum > 0. ) diffErr2 += square(yErr_smSum/y_smSum);
     diffErr2 *= square(diff);
 
-    int iPoint = iBin - 1;
-    graphDataToMCdiff->SetPoint(iPoint, x, diff);
-    graphDataToMCdiff->SetPointError(iPoint, 0., TMath::Sqrt(diffErr2));
+    graphDataToMCdiff->SetPoint(iBin - 1, x, diff);
+    graphDataToMCdiff->SetPointError(iBin - 1, 0., TMath::Sqrt(diffErr2));
+  }
+
+  TGraphErrors* graphMCerr = new TGraphErrors(numBins);
+  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    double x = meMC_smSum->GetBinCenter(iBin);
+    
+    if ( !(meMC_smSum->GetBinContent(iBin) > 0.) ) continue;
+    double rel = meMC_smErr->GetBinContent(iBin)/meMC_smSum->GetBinContent(iBin);
+    double relErr = meMC_smErr->GetBinError(iBin)/meMC_smSum->GetBinContent(iBin);
+
+    graphMCerr->SetPoint(iBin - 1, x, rel);
+    graphMCerr->SetPointError(iBin - 1, 0., relErr);
   }
 
   TAxis* xAxis_bottom = graphDataToMCdiff->GetXaxis();
@@ -245,6 +327,13 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   graphDataToMCdiff->SetMarkerColor(meData->GetMarkerColor());
   graphDataToMCdiff->SetLineColor(meData->GetLineColor());
   graphDataToMCdiff->Draw("AP");   
+
+  graphMCerr->SetMarkerSize(0);
+  graphMCerr->SetMarkerStyle(1);
+  graphMCerr->SetLineColor(meMC_smErr->GetLineColor());
+  graphMCerr->SetFillColor(meMC_smErr->GetFillColor());
+  graphMCerr->SetFillStyle(meMC_smErr->GetFillStyle());
+  graphMCerr->Draw("2"); 
 
   canvas->Update();
 
@@ -575,6 +664,12 @@ int main(int argc, const char* argv[])
   std::string directoryMC_signal      = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("directoryMC_signal");
   vstring     directoryMCs_background = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("directoryMCs_background");
 
+  vstring sysShiftsUp   = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("sysShiftsUp");
+  vstring sysShiftsDown = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("sysShiftsDown");
+  if ( sysShiftsUp.size() != sysShiftsDown.size() )
+    throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
+      << "Number of 'up' shifts must match number of 'down' shifts !!\n";
+
   vParameterSet cfgVariables = cfgMakeZllRecoilCorrectionPlots.getParameter<vParameterSet>("variables");
   std::vector<variableEntryType> variables;
   for ( vParameterSet::const_iterator cfgVariable = cfgVariables.begin();
@@ -599,8 +694,10 @@ int main(int argc, const char* argv[])
 //--- make control plots of different variable distributions
   for ( std::vector<variableEntryType>::const_iterator variable = variables.begin();
 	variable != variables.end(); ++variable ) {
-    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, false, outputFileName);
-    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, true,  outputFileName);
+    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, 
+		    sysShiftsUp, sysShiftsDown, false, outputFileName);
+    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, 
+		    sysShiftsUp, sysShiftsDown, true,  outputFileName);
   }
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT

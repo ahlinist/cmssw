@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.7 2011/10/19 14:41:09 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.8 2011/11/04 09:39:19 veelken Exp $
  *
  */
 
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
   bool isMC_signal = !(isData || isMC_background);
 
   ZllRecoilCorrectionAlgorithm* corrAlgorithm = 0;
-  if ( isMC_signal ) {
+  if ( isMC_signal && cfgZllRecoilCorrectionAnalyzer.exists("algorithm") ) {
     edm::ParameterSet cfgZllRecoilCorrectionAlgorithm = 
       cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("algorithm");
     corrAlgorithm = new ZllRecoilCorrectionAlgorithm(cfgZllRecoilCorrectionAlgorithm);
@@ -193,7 +193,8 @@ int main(int argc, char* argv[])
   TFileDirectory subdirAfterZllRecoilAbsCalib  = dir.mkdir("afterZllRecoilAbsCalib");
   histogramsAfterZllRecoilAbsCalib->bookHistograms(subdirAfterZllRecoilAbsCalib);
   
-  std::ofstream* selEventsFile = new std::ofstream(selEventsFileName.data(), std::ios::out);
+  std::ofstream* selEventsFile = ( selEventsFileName != "" ) ?
+    new std::ofstream(selEventsFileName.data(), std::ios::out) : 0;
 
   int numEvents_processed = 0; 
 
@@ -227,10 +228,6 @@ int main(int argc, char* argv[])
 
 //--- check if new luminosity section has started;
 //    if so, retrieve number of events contained in this luminosity section before skimming
-/*
-      CV: EventCounters missing in skimming output/PAT-tuples
-         --> disable Mauro's "self babysitting" technology for now...
-
       if ( !(evt.id().run() == lastLumiBlock_run && evt.luminosityBlock() == lastLumiBlock_ls) ) {
 	const fwlite::LuminosityBlock& ls = evt.getLuminosityBlock();
 	edm::Handle<edm::MergeableCounter> numEvents_skimmed;
@@ -239,7 +236,7 @@ int main(int argc, char* argv[])
 	lastLumiBlock_run = evt.id().run();
 	lastLumiBlock_ls = evt.luminosityBlock();
       }
- */
+ 
 //--- fill "dummy" histogram counting number of processed events
       histogramEventCounter->Fill(2);
 
@@ -258,7 +255,7 @@ int main(int argc, char* argv[])
 	isTriggered = true;
       } else {
 	edm::Handle<edm::TriggerResults> hltResults;
-	evt.getByLabel(srcTrigger_, hltResults);
+	evt.getByLabel(srcTrigger, hltResults);
   
 	const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
 
@@ -266,7 +263,8 @@ int main(int argc, char* argv[])
 	      hltPath != hltPaths.end(); ++hltPath ) {
 	  bool isHLTpath_passed = false;
 	  unsigned int idx = triggerNames.triggerIndex(*hltPath);
-	  if ( idx < triggerNames.size() ) isHLTpath_passed = hltResults.accept(idx);
+	  if ( idx < triggerNames.size() ) isHLTpath_passed = hltResults->accept(idx);
+	  if ( isHLTpath_passed ) isTriggered = true;
 	}
       }
 
@@ -327,16 +325,15 @@ int main(int argc, char* argv[])
       histogramsBeforeZllRecoilCorr->fillHistograms(
         *bestZllCandidate, *jets, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
 
-      //if ( rawMEt.pt() > 80. && rawMEt.pt() < 100. ) {
       if ( bestZllCandidate->pt() > 150. ) {
 	std::cout << "run = " << evt.id().run() << "," 
 		  << " ls = " << evt.luminosityBlock() << ", event = " << evt.id().event() << ":" << std::endl;
-	      
-	(*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
+	
+	if ( selEventsFile ) (*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
       }
-
+      
       pat::MET mcToDataCorrMEt(rawMEt);
-      if ( isMC_signal ) {
+      if ( isMC_signal && corrAlgorithm ) {
 	if ( !rawMEt.genMET() )
 	  throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
 	    << "Failed to find generator level MET object !!\n";

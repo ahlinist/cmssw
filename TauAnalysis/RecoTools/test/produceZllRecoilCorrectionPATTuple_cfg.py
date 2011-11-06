@@ -16,8 +16,8 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_9_1_T1A.root'
         #'file:/data1/veelken/CMSSW_4_2_x/skims/skimByHLTpath_IsoMu12_run167830_AOD_11_1_lSt.root'
-        'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_77_0_2OV.root'
-        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_runs175832to179431_AOD_99_1_d1y.root'                       
+        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_77_0_2OV.root'
+        'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_runs175832to179431_AOD_99_1_d1y.root'                       
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
@@ -29,8 +29,8 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-isMC = True # use for MC
-##isMC = False # use for Data
+##isMC = True # use for MC
+isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2011 Data
 HLTprocessName = "HLT" # use for Summer'11 MC
 #--------------------------------------------------------------------------------
@@ -133,6 +133,7 @@ if isMC:
 
 #--------------------------------------------------------------------------------
 # produce PAT objects
+
 process.load("PhysicsTools/PatAlgos/patSequences_cff")
 
 process.patMuons.muonSource = cms.InputTag('goodMuons')
@@ -174,6 +175,11 @@ switchJetCollection(
 
 # configure pat::MET production
 process.load("PhysicsTools.PatUtils.patPFMETCorrections_cff")
+if isMC:
+    import PhysicsTools.PatAlgos.tools.helpers as configtools
+    configtools.cloneProcessingSnippet(process, process.producePatPFMETCorrections, "NoSmearing")
+    process.selectedPatJetsForMETtype1p2CorrNoSmearing.src = cms.InputTag('patJetsNotOverlappingWithLeptonsForMEtUncertainty')
+    process.selectedPatJetsForMETtype2CorrNoSmearing.src = process.selectedPatJetsForMETtype1p2CorrNoSmearing.src 
 
 process.patTupleProductionSequence = cms.Sequence()
 process.patTupleProductionSequence += process.kt6PFJets
@@ -198,32 +204,15 @@ runMEtUncertainties(
 )
 
 if isMC:
-    process.patPFMETs.addGenMET = cms.bool(True)
+    process.patPFMet.addGenMET = cms.bool(True)
+    process.patPFMetNoSmearing.addGenMET = cms.bool(True)
     process.patPFJetMETtype1p2Corr.jetCorrLabel = cms.string("L3Absolute")
+    process.patPFJetMETtype1p2CorrNoSmearing.jetCorrLabel = cms.string("L3Absolute")
     
     process.patTupleProductionSequence += process.metUncertaintySequence
-
-    # compute MET "smearing" correction to take into account
-    # Data/MC differences in jet energy resolution
-    process.patPFJetMETsmear = cms.EDProducer("PATJetMETsmearInputProducer",
-        src = cms.InputTag('patJetsNotOverlappingWithLeptonsForMEtUncertainty'),
-        inputFileName = cms.FileInPath("PhysicsTools/PatUtils/data/pfJetResolutionMCtoDataCorrLUT.root"),
-        lutName = cms.string('pfJetResolutionMCtoDataCorrLUT')
-    )
-    process.patTupleProductionSequence += process.patPFJetMETsmear
-    
-    # configure production of smeared pat::MET collections
-    process.smearedPatPFMETs = cms.EDProducer("CorrectedPATMETProducer",
-        src = cms.InputTag('patPFMETs'),
-        applyType1Corrections = cms.bool(True),
-        srcType1Corrections = cms.VInputTag(
-            cms.InputTag('patPFJetMETsmear')
-        ),
-        applyType2Corrections = cms.bool(False)
-    )
-    process.patTupleProductionSequence += process.smearedPatPFMETs
+    process.patTupleProductionSequence += process.producePatPFMETCorrectionsNoSmearing
 else:
-    process.patPFMETs.addGenMET = cms.bool(False)
+    process.patPFMet.addGenMET = cms.bool(False)
     process.patPFJetMETtype1p2Corr.jetCorrLabel = cms.string("L2L3Residual")
     
     process.patTupleProductionSequence += process.patJetsNotOverlappingWithLeptonsForMEtUncertainty
@@ -266,8 +255,7 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_pfCandsNotInJet_*_*',
             'keep *_pfType2Cands_*_*',                                
             'keep *_ak5PFJets_*_*',                             
-            'keep *_patPFMETs_*_*',
-            'keep *_smearedPatPFMETs_*_*',                                            
+            'keep *_patPFMet*_*_*',
             'keep *_patType1CorrectedPFMet*_*_*',
             'keep *_patType1p2CorrectedPFMet*_*_*',                                            
             'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',

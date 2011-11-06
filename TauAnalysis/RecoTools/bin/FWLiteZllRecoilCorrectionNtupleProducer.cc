@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.7 2011/09/30 12:30:41 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.8 2011/11/04 09:39:19 veelken Exp $
  *
  */
 
@@ -31,8 +31,10 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidateFwd.h"
-#include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -87,8 +89,8 @@ int main(int argc, char* argv[])
   edm::InputTag srcJets = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcJets");
   edm::InputTag srcUnclPFCands = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcUnclPFCands");
 
-  edm::InputTag srcTrigger = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcTrigger");
-  vstring hltPaths = cfgZllRecoilCorrectionAnalyzer.getParameter<vstring>("hltPaths");
+  edm::InputTag srcTrigger = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcTrigger");
+  vstring hltPaths = cfgZllRecoilCorrectionNtupleProducer.getParameter<vstring>("hltPaths");
 
   vInputTag srcWeights = cfgZllRecoilCorrectionNtupleProducer.getParameter<vInputTag>("srcWeights");
 
@@ -133,11 +135,6 @@ int main(int argc, char* argv[])
   outputTree->Branch("qT",        &qT,        "qT/D",        defaultBranchBufferSize);
   outputTree->Branch("uParl",     &uParl,     "uParl/D",     defaultBranchBufferSize);
   outputTree->Branch("uPerp",     &uPerp,     "uPerp/D",     defaultBranchBufferSize);
-  Double_t rT_ii, vParl_ii, vPerp_ii; // variables for determining type-II MEt corrections/calibrating "unclustered energy"
-                                      // (PFJets of Pt < 10 GeV plus PFCandidates not in jets)
-  outputTree->Branch("rT_ii",     &rT_ii,     "rT_ii/D",     defaultBranchBufferSize);
-  outputTree->Branch("vParl_ii",  &vParl_ii,  "vParl_ii/D",  defaultBranchBufferSize);
-  outputTree->Branch("vPerp_ii",  &vPerp_ii,  "vPerp_ii/D",  defaultBranchBufferSize);
   Double_t evtWeight; 
   outputTree->Branch("evtWeight", &evtWeight, "evtWeight/D", defaultBranchBufferSize);
 
@@ -202,7 +199,7 @@ int main(int argc, char* argv[])
 	isTriggered = true;
       } else {
 	edm::Handle<edm::TriggerResults> hltResults;
-	evt.getByLabel(srcTrigger_, hltResults);
+	evt.getByLabel(srcTrigger, hltResults);
   
 	const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
 
@@ -210,7 +207,7 @@ int main(int argc, char* argv[])
 	      hltPath != hltPaths.end(); ++hltPath ) {
 	  bool isHLTpath_passed = false;
 	  unsigned int idx = triggerNames.triggerIndex(*hltPath);
-	  if ( idx < triggerNames.size() ) isHLTpath_passed = hltResults.accept(idx);
+	  if ( idx < triggerNames.size() ) isHLTpath_passed = hltResults->accept(idx);
 	}
       }
 
@@ -255,36 +252,6 @@ int main(int argc, char* argv[])
       
       uParl = uT.first;
       uPerp = uT.second;
-
-      reco::Candidate::LorentzVector r_ii = bestZllCandidate->p4();
-      reco::Candidate::LorentzVector v_ii;
-
-      edm::Handle<pat::JetCollection> calibJets;
-      evt.getByLabel(srcJets, calibJets);
-      for ( pat::JetCollection::const_iterator calibJet = calibJets->begin();
-	    calibJet != calibJets->end(); ++calibJet ) {
-	if ( calibJet->pt() > 10. ) r_ii += calibJet->p4();
-	else                        v_ii += calibJet->p4();
-      }
-
-      edm::Handle<reco::PFCandidateCollection> unclPFCands;
-      evt.getByLabel(srcUnclPFCands, unclPFCands);
-      for ( reco::PFCandidateCollection::const_iterator unclPFCand = unclPFCands->begin();
-	    unclPFCand != unclPFCands->end(); ++unclPFCand ) {
-	assert(bestZllCandidate->numberOfDaughters() == 2);
-	//if ( reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(0)->p4()) < 0.3 ||
-	//     reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(1)->p4()) < 0.3 ) {
-	//  std::cout << "Warning: unclustered PFCandidate close to Muon, pt = " << unclPFCand->pt() << std::endl;
-	//}
-	v_ii += unclPFCand->p4();
-      }
-
-      int errorFlag_ii = 0;
-      std::pair<double, double> vT_ii = compMEtProjU(r_ii, -(r_ii.px() + v_ii.px()), -(r_ii.py() + v_ii.py()), errorFlag_ii);
-      if ( errorFlag_ii ) continue;
-      
-      vParl_ii = vT_ii.first;
-      vPerp_ii = vT_ii.second;
 
       outputTree->Fill();
     }
