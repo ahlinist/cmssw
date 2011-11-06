@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.21 $
+ * \version $Revision: 1.22 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.21 2011/04/19 08:16:11 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.22 2011/05/27 10:18:30 veelken Exp $
  *
  */
 
@@ -72,6 +72,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       algorithm_(cfg), 
       doSVreco_(false), 
       doPFMEtSign_(false), 
+      doMtautauMin_(false), 
       cfgError_(0)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtProducer::CompositePtrCandidateT1T2MEtProducer>:" << std::endl;
@@ -113,6 +114,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 
     if ( srcMET_.label() != "" ) {
       doPFMEtSign_ = ( cfg.exists("doPFMEtSign") ) ? cfg.getParameter<bool>("doPFMEtSign") : true;
+      doMtautauMin_ = ( cfg.exists("doMtautauMin") ) ? cfg.getParameter<bool>("doMtautauMin") : true;
     }
     
     if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" ) {
@@ -226,7 +228,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 
 	CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
 	  algorithm_.buildCompositePtrCandidate(diTauCandidateRef->leg1(), diTauCandidateRef->leg2(), correctedMEtPtr, genParticles, 
-						pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_);
+						pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_, doMtautauMin_);
 
 	//std::cout << "mass(SVfit) **after** Z-recoil correction = " 
 	//	    << compositePtrCandidate.svFitSolution("psKine_MEt_ptBalance")->mass() << std::endl;
@@ -307,7 +309,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	  
 	  CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
 	    algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr, genParticles, 
-						  pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_);
+						  pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_, doMtautauMin_);
 	  compositePtrCandidateCollection->push_back(compositePtrCandidate);
 	} else {
 	  if ( verbosity_ >= 1 ) {
@@ -338,7 +340,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	  
 	    CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
 	      algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr, genParticles, 
-						    pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_);
+						    pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_, doMtautauMin_);
 	    compositePtrCandidateCollection->push_back(compositePtrCandidate);
 	  }
 	}
@@ -368,6 +370,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
   std::string recoMode_;
   bool doSVreco_;
   bool doPFMEtSign_;
+  bool doMtautauMin_;
   edm::InputTag srcReRecoDiTauObjects_;
   edm::InputTag srcReRecoDiTauToMEtAssociations_;
   int verbosity_;
