@@ -32,6 +32,7 @@ allElecTauPairs = cms.EDProducer("PATElecTauPairProducer",
         dRoverlapPFJet = cms.double(0.3),
         dRoverlapPFCandidate = cms.double(0.1)
     ),
+    doMtautauMin = cms.bool(True),                             
     verbosity = cms.untracked.int32(0)
 )
 

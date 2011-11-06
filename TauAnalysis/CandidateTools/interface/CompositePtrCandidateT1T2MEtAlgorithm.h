@@ -99,14 +99,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       genParticleMatchPdgId_.push_back(-15);
     }
 
-    timerTotal_      = new TStopwatch();
-    timerTotal_->Stop();
-    timerPFMEtSign_  = new TStopwatch();
-    timerPFMEtSign_->Stop();
-    timerNSVFit_     = new TStopwatch();
-    timerNSVFit_->Stop();
-    timerMTauTauMin_ = new TStopwatch();
-    timerMTauTauMin_->Stop();
+    //timerTotal_      = new TStopwatch();
+    //timerTotal_->Stop();
+    //timerPFMEtSign_  = new TStopwatch();
+    //timerPFMEtSign_->Stop();
+    //timerNSVFit_     = new TStopwatch();
+    //timerNSVFit_->Stop();
+    //timerMTauTauMin_ = new TStopwatch();
+    //timerMTauTauMin_->Stop();
   }
 
   ~CompositePtrCandidateT1T2MEtAlgorithm()
@@ -120,17 +120,17 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
     delete scaleFunc_;
 
-    std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::~CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
-    std::cout.precision(2);
-    std::cout << "Total: real/CPU time = " << timerTotal_->RealTime() 
-	      << "/" << timerTotal_->CpuTime() << " seconds" << std::endl;
-    std::cout << " PFMEtSign: real/CPU time = " << timerPFMEtSign_->RealTime() 
-	      << "/" << timerPFMEtSign_->CpuTime() << " seconds" << std::endl;
-    std::cout << " nSVfit: real/CPU time = " << timerNSVFit_->RealTime() 
-	      << "/" << timerNSVFit_->CpuTime() << " seconds" << std::endl;
-    std::cout << " mTauTauMin: real/CPU time = " << timerMTauTauMin_->RealTime() 
-	      << "/" << timerMTauTauMin_->CpuTime() << " seconds" << std::endl;
-    std::cout << std::endl;
+    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::~CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
+    //std::cout.precision(2);
+    //std::cout << "Total: real/CPU time = " << timerTotal_->RealTime() 
+    //	        << "/" << timerTotal_->CpuTime() << " seconds" << std::endl;
+    //std::cout << " PFMEtSign: real/CPU time = " << timerPFMEtSign_->RealTime() 
+    //	        << "/" << timerPFMEtSign_->CpuTime() << " seconds" << std::endl;
+    //std::cout << " nSVfit: real/CPU time = " << timerNSVFit_->RealTime() 
+    //	        << "/" << timerNSVFit_->CpuTime() << " seconds" << std::endl;
+    //std::cout << " mTauTauMin: real/CPU time = " << timerMTauTauMin_->RealTime() 
+    //	        << "/" << timerMTauTauMin_->CpuTime() << " seconds" << std::endl;
+    //std::cout << std::endl;
 
     delete timerTotal_;
     delete timerPFMEtSign_;
@@ -140,40 +140,40 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   void beginJob(bool doSVreco)
   {
-    timerTotal_->Start(false);
+    //timerTotal_->Start(false);
 
     if ( doSVreco ) {
-      timerNSVFit_->Start(false);
+      //timerNSVFit_->Start(false);
       for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
 	    nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
 	nSVfitAlgorithm->second->beginJob();
       }
-      timerNSVFit_->Stop();
+      //timerNSVFit_->Stop();
     }
 
-    timerTotal_->Stop();
+    //timerTotal_->Stop();
   }
 
   void beginEvent(edm::Event& evt, const edm::EventSetup& es, bool doSVreco, bool doPFMEtSign)
   {
-    timerTotal_->Start(false);
+    //timerTotal_->Start(false);
 
     if ( doPFMEtSign && pfMEtSign_ ) {
-      timerPFMEtSign_->Start(false);
+      //timerPFMEtSign_->Start(false);
       pfMEtSign_->beginEvent(evt, es);
-      timerPFMEtSign_->Stop();
+      //timerPFMEtSign_->Stop();
     }
 
     if ( doSVreco ) {
-      timerNSVFit_->Start(false);
+      //timerNSVFit_->Start(false);
       for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
 	    nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
 	nSVfitAlgorithm->second->beginEvent(evt, es);
       }
-      timerNSVFit_->Stop();
+      //timerNSVFit_->Stop();
     }
 
-    timerTotal_->Stop();
+    //timerTotal_->Stop();
   }
 
   CompositePtrCandidateT1T2MEt<T1,T2> buildCompositePtrCandidate(const T1Ptr leg1,
@@ -184,13 +184,13 @@ class CompositePtrCandidateT1T2MEtAlgorithm
                                                                  const reco::BeamSpot* beamSpot,
                                                                  const TransientTrackBuilder* trackBuilder,
 								 const std::string& recoMode,
-								 bool doSVreco, bool doPFMEtSign)
+								 bool doSVreco, bool doPFMEtSign, bool doMtautauMin)
   { 
     //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::buildCompositePtrCandidate>:"<< std::endl;
     //if ( !met.isNull() ) std::cout << " MET: pt = " << met->pt() << std::endl;
     //else                 std::cout << " MET: none." << std::endl;
     
-    timerTotal_->Start(false);
+    //timerTotal_->Start(false);
 
     CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate(leg1, leg2, met);
 
@@ -224,16 +224,21 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 //      "Speedy Higgs boson discovery in decays to tau lepton pairs: h --> tau tau"
 //      by Alan J. Barr, Sky T. French, James A. Frost, Christopher G. Lester,
 //       arXiv: 1106.2322v1 [hep-ph]
-      timerMTauTauMin_->Start(false);
-      double mTauTauMin_value = 
-	mTauTauMin(leg1->energy(), leg1->px(), leg1->py(), leg1->pz(),
-		   leg2->energy(), leg2->px(), leg2->py(), leg2->pz(),
-		   met->px(), met->py(),
-		   SVfit_namespace::tauLeptonMass);
-      timerMTauTauMin_->Stop();
-      if ( mTauTauMin_value > 0. ) {
-	compositePtrCandidate.setTauPairMassMin(mTauTauMin_value);
-	compositePtrCandidate.setTauPairMassMin_isValid(true);
+      if ( doMtautauMin ) {
+	//timerMTauTauMin_->Start(false);
+	double mTauTauMin_value = 
+	  mTauTauMin(leg1->energy(), leg1->px(), leg1->py(), leg1->pz(),
+		     leg2->energy(), leg2->px(), leg2->py(), leg2->pz(),
+		     met->px(), met->py(),
+		     SVfit_namespace::tauLeptonMass);
+	//timerMTauTauMin_->Stop();
+	if ( mTauTauMin_value > 0. ) {
+	  compositePtrCandidate.setTauPairMassMin(mTauTauMin_value);
+	  compositePtrCandidate.setTauPairMassMin_isValid(true);
+	} else {
+	  compositePtrCandidate.setTauPairMassMin(-1.);
+	  compositePtrCandidate.setTauPairMassMin_isValid(false);
+	}
       } else {
 	compositePtrCandidate.setTauPairMassMin(-1.);
 	compositePtrCandidate.setTauPairMassMin_isValid(false);
@@ -241,19 +246,19 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
 //--- compute (PF)MEt significance matrix
       if ( doPFMEtSign && pfMEtSign_ ) {
-	timerPFMEtSign_->Start(false);
+	//timerPFMEtSign_->Start(false);
 	std::list<const reco::Candidate*> daughterHypothesesList;
 	daughterHypothesesList.push_back(leg1.get());
 	daughterHypothesesList.push_back(leg2.get());
 	compositePtrCandidate.setMEtSignMatrix((*pfMEtSign_)(daughterHypothesesList));
-	timerPFMEtSign_->Stop();
+	//timerPFMEtSign_->Stop();
       }
 
       compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
 
 //--- SV method computation (if we have the PV and beamspot)
       if ( doSVreco ) {
-	timerNSVFit_->Start(false);
+	//timerNSVFit_->Start(false);
 	if ( pv ) {
 	  for ( typename std::map<std::string, NSVfitAlgorithmBase*>::const_iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
 		nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
@@ -274,7 +279,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	    //std::cout << " done." << std::endl;
 	  }
 	}
-	timerNSVFit_->Stop();
+	//timerNSVFit_->Stop();
       }
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false, 0);
@@ -321,7 +326,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
     compositePtrCandidate.recoMode_ = recoMode;
 
-    timerTotal_->Stop();
+    //timerTotal_->Stop();
 
     return compositePtrCandidate;
   }
