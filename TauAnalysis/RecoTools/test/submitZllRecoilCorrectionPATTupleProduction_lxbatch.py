@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v4_1'
+version = 'v4_2'
 
 samples = {
     'Data_runs160329to163869' : {
@@ -87,7 +87,7 @@ samplesToAnalyze = [
     'Data_runs160329to163869',
     'Data_runs165071to167913',
     'Data_runs170053to172619',
-    ##'Data_runs172620to175770',
+    'Data_runs172620to175770',
     'Data_runs175832to179431',
     'simDYtoMuMu',
     'simWW',

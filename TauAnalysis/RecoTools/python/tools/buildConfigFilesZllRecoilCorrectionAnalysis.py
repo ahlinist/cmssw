@@ -17,6 +17,7 @@ def getPATtupleFileNames(sampleNames, inputFilePath):
     # check if inputFile is PAT-tuple and
     # matches sample to be analyzed
     inputFileNames_matched = []
+    fwliteInput_fileNames = ""
     for inputFileName in inputFileNames:
         isMatched = False
         for sampleName in sampleNames:
@@ -27,13 +28,15 @@ def getPATtupleFileNames(sampleNames, inputFilePath):
                 isMatched = True
         if isMatched:
             inputFileNames_matched.append(os.path.join(inputFilePath, inputFileName))
+            fwliteInput_fileNames += "process.fwliteInput.fileNames.append('%s')\n" % os.path.join(inputFilePath, inputFileName)
 
     print " found %i input files." % len(inputFileNames_matched)
 
-    return inputFileNames_matched
+    return (inputFileNames_matched, fwliteInput_fileNames) 
 #--------------------------------------------------------------------------------
 
-def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, metOptions):
+def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+                                            srcMEt, srcJets, hltPaths, srcWeights):
 
     """Build cfg.py file to run FWLiteZllRecoilCorrectionNtupleProducer macro on PAT-tuples,
        and produce 'plain' ROOT Ntuple needed for fitting Z-recoil correction parameters"""
@@ -42,11 +45,10 @@ def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFile
     print " processing sample %s" % sampleName
 
     inputFileNames = getPATtupleFileNames(samplesToAnalyze[sampleName]['samples'], inputFilePath)
-    if len(inputFileNames) == 0:
+    if len(inputFileNames[0]) == 0:
         print("Sample %s has no input files --> skipping !!" % sampleName)
         return
-
-    inputFileNames_string = make_inputFileNames_vstring(inputFileNames)
+    fwliteInput_fileNames = inputFileNames[1]
 
     print(" building config file...")
 
@@ -55,15 +57,8 @@ def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFile
     
     directory = sampleName
 
-    processType = None
-    if samplesToAnalyze[sampleName]['isMC']:
-        processType = 'smMC'
-    else:
-        processType = 'Data'
-
-    srcMEt = metOptions[metOptionName][key]
-    hltPaths_string = make_inputFileNames_vstring(hltPaths[processType])
-    srcWeights_string = make_inputFileNames_vstring(srcWeights[processType])
+    hltPaths_string = make_inputFileNames_vstring(hltPaths)
+    srcWeights_string = make_inputFileNames_vstring(srcWeights)
 
     addPUreweight_string = ""
 # CV: do not apply rho_neutral reweighting to Monte Carlo samples other than Zmumu 
@@ -87,12 +82,14 @@ import FWCore.ParameterSet.Config as cms
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring(%s),
+    fileNames = cms.vstring(),
     
     maxEvents = cms.int32(-1),
     
     outputEvery = cms.uint32(1000)
 )
+
+%s
     
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('%s')
@@ -104,7 +101,7 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
 
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMEt = cms.InputTag('%s'),
-    srcJets = cms.InputTag('patJets'),
+    srcJets = cms.InputTag('%s'),
     srcUnclPFCands = cms.InputTag('pfCandsNotInJet'),
 
     srcTrigger = cms.InputTag('TriggerResults::HLT'),
@@ -116,8 +113,8 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
     srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
 %s
 )
-""" % (inputFileNames_string, outputFileName_full, directory, 
-       srcMEt, hltPaths_string, srcWeights_string, addPUreweight_string)
+""" % (fwliteInput_fileNames, outputFileName_full, directory, 
+       srcMEt, srcJets, hltPaths_string, srcWeights_string, addPUreweight_string)
 
     configFileName = "produceZllRecoilCorrectionNtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
@@ -203,8 +200,9 @@ process.fitZllRecoilCorrection = cms.PSet(
 
     return retVal
 
-def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName, inputFilePath, outputFilePath,
-                                                      samplesToAnalyze, metOptions, ZllRecoilCorrectionParameterFileNames, intLumiData):
+def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
+                                                      central_or_shift, srcMEt, srcJets, hltPaths, srcWeights, 
+                                                      ZllRecoilCorrectionParameterFileNames, intLumiData):
 
     """Build cfg.py file to run FWLiteZllRecoilCorrectionAnalyzer macro on PAT-tuples,
        and fill control plots of MET in Data compared to Monte Carlo simulation with Z-recoil corrections applied"""
@@ -213,18 +211,19 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName,
     print " processing sample %s" % sampleName
 
     inputFileNames = getPATtupleFileNames(samplesToAnalyze[sampleName]['samples'], inputFilePath)
-    if len(inputFileNames) == 0:
+    if len(inputFileNames[0]) == 0:
         print("Sample %s has no input files --> skipping !!" % sampleName)
         return
-
-    inputFileNames_string = make_inputFileNames_vstring(inputFileNames)
+    fwliteInput_fileNames = inputFileNames[1]
 
     print(" building config file...")
 
-    outputFileName = 'analyzeZllRecoilCorrectionHistograms_%s_%s.root' % (sampleName, metOptionName)
+    outputFileName = 'analyzeZllRecoilCorrectionHistograms_%s_%s_%s.root' % (sampleName, metOptionName, central_or_shift)
     outputFileName_full = os.path.join(outputFilePath, outputFileName)
     
     directory = sampleName
+    if central_or_shift != 'central':
+        directory += '/%s' % central_or_shift
 
     processType = None
     if samplesToAnalyze[sampleName]['isMC']:
@@ -255,19 +254,8 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName,
         recoZllRecoilCorrectionParameters_string += "        )\n"
         recoZllRecoilCorrectionParameters_string += "    ),\n"
 
-    srcJets = metOptions[metOptionName]['srcJets']
-    if processType = 'Data':
-        srcJets = 'patJets'
-
-    processType = None
-    if samplesToAnalyze[sampleName]['isMC']:
-        processType = 'smMC'
-    else:
-        processType = 'Data'
-
-    srcMEt = metOptions[metOptionName][key]
-    hltPaths_string = make_inputFileNames_vstring(hltPaths[processType])
-    srcWeights_string = make_inputFileNames_vstring(srcWeights[processType])
+    hltPaths_string = make_inputFileNames_vstring(hltPaths)
+    srcWeights_string = make_inputFileNames_vstring(srcWeights)
     
     allEvents_DBS = 0
     xSection = 0.
@@ -290,7 +278,11 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName,
     ),
 """
 
-    selEventsFileName = 'selEvents_%s_%s.txt' % (sampleName, metOptionName)
+    selEventsFileName = None 
+    if central_or_shift == 'central':
+        selEventsFileName = 'selEvents_%s_%s.txt' % (sampleName, metOptionName)
+    else:
+        selEventsFileName = ''
         
     config = \
 """
@@ -299,12 +291,14 @@ import FWCore.ParameterSet.Config as cms
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring(%s),
+    fileNames = cms.vstring(),
     
     maxEvents = cms.int32(-1),
     
     outputEvery = cms.uint32(1000)
 )
+
+%s
     
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('%s')
@@ -320,6 +314,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMEt = cms.InputTag('%s'),
+    srcJets = cms.InputTag('%s'),
 
     srcTrigger = cms.InputTag('TriggerResults::HLT'),
     hltPaths = cms.vstring(%s),
@@ -340,12 +335,12 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     
     intLumiData = cms.double(%f)
 )
-""" % (inputFileNames_string, outputFileName_full, directory,
+""" % (fwliteInput_fileNames, outputFileName_full, directory,
        processType, recoZllRecoilCorrectionParameters_string,
-       srcMEt, hltPaths_string, srcWeights_string, addPUreweight_string,
+       srcMEt, srcJets, hltPaths_string, srcWeights_string, addPUreweight_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
 
-    configFileName = "analyzeZllRecoilCorrectionPATtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
+    configFileName = "analyzeZllRecoilCorrectionPATtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, central_or_shift)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
     configFile = open(configFileName_full, "w")
     configFile.write(config)
@@ -362,7 +357,8 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     return retVal
 
 def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleNameMC_signal, sampleNameMCs_background,
-                                                      metOptionName, inputFileName, outputFilePath, corrLevelMC):
+                                                      metOptionName, inputFileName, outputFilePath, corrLevelMC,
+                                                      central_or_shift):
 
     """Build cfg.py file to run makeZllRecoilCorrectionFinalPlots macro
        and make final control plots of MET in Data compared to Monte Carlo simulation with Z-recoil corrections applied"""
@@ -378,6 +374,13 @@ def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleName
     directoryData           =   "/".join([ sampleNameData,      corrLevelData ])
     directoryMC_signal      =   "/".join([ sampleNameMC_signal, corrLevelMC   ])
     directoryMCs_background = [ "/".join([ sampleNameMC_bgr,    corrLevelData ]) for sampleNameMC_bgr in sampleNameMCs_background ]
+
+    sysShiftsUp   = []
+    sysShiftsDown = []
+    for sysShift in central_or_shift:
+        if sysShift.find('Up') != -1:
+            sysShiftsUp.append(sysShift)
+            sysShiftsDown.append(sysShift.replace("Up", "Down"))
 
     outputFileName = "plotZllRecoilCorrection_%s_%s.png" % (metOptionName, corrLevelMC)
     outputFilePath_plots = os.path.join(outputFilePath, "plots")
@@ -404,6 +407,9 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
     directoryData           = cms.string('%s'),
     directoryMC_signal      = cms.string('%s'),
     directoryMCs_background = cms.vstring(%s),
+
+    sysShiftsUp   = cms.vstring(%s),
+    sysShiftsDown = cms.vstring(%s),
 
     variables = cms.VPSet(
         cms.PSet(
@@ -446,7 +452,8 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
 
     outputFileName = cms.string('%s')
 )
-""" % (inputFileName, directoryData, directoryMC_signal, 
+""" % (inputFileName, directoryData, directoryMC_signal,
+       sysShiftsUp, sysShiftsDown,
        make_inputFileNames_vstring(directoryMCs_background), outputFileName_full)
 
     configFileName = "makeZllRecoilCorrectionFinalPlots_%s_%s_cfg.py" % (metOptionName, corrLevelMC)
