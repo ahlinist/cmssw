@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = False
+isData = True
 runL1Emulator = True
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -57,10 +57,10 @@ else:
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V22::All'
+    process.GlobalTag.globaltag = 'GR_H_V24::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
-    process.GlobalTag.globaltag = 'START42_V13::All'
+    process.GlobalTag.globaltag = 'START42_V15B::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
