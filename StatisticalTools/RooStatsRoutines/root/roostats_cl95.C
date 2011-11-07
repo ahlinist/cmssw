@@ -24,6 +24,7 @@ static const char* desc =
 "                                                                     \n"
 "Prerequisites:                                                       \n"
 "                ROOT version 5.30.00 or higher                       \n"
+"                ROOT version 5.30.03 or higher recommended           \n"
 "                                                                     \n"
 "                                                                     \n"
 "                                                                     \n"
