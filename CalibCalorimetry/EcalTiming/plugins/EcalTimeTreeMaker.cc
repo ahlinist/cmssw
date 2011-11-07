@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.11 2011/09/10 11:03:44 franzoni Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.12 2011/09/27 08:39:09 franzoni Exp $
 //
 //
 
@@ -396,10 +396,13 @@ void EcalTimeTreeMaker::dumpBarrelClusterInfo (const edm::Event& iEvent,
 	   EcalRecHit myhit = (*thishit) ;
 	   
            // SIC Feb 14 2011 -- Add check on RecHit flags (takes care of spike cleaning in 42X)
-           uint32_t rhFlag = myhit.recoFlag();
-           if( !(rhFlag == EcalRecHit::kGood || rhFlag == EcalRecHit::kOutOfTime ||
-                 rhFlag == EcalRecHit::kPoorCalib) )
-             continue;
+             if( !( myhit.checkFlag(EcalRecHit::kGood) ||
+                    myhit.checkFlag(EcalRecHit::kOutOfTime) ||
+                    myhit.checkFlag(EcalRecHit::kPoorCalib) 
+		    ) 
+		 )
+                 continue;
+
 	   
 	   // thisamp is the EB amplitude of the current rechit
 	   double thisamp  = myhit.energy () ;
@@ -630,10 +633,12 @@ void EcalTimeTreeMaker::dumpEndcapClusterInfo (const edm::Event& iEvent,
              EcalRecHit myhit = (*thishit) ;
              
              // SIC Feb 14 2011 -- Add check on RecHit flags (takes care of spike cleaning in 42X)
-             uint32_t rhFlag = myhit.recoFlag();
-             if( !(rhFlag == EcalRecHit::kGood || rhFlag == EcalRecHit::kOutOfTime ||
-                   rhFlag == EcalRecHit::kPoorCalib) )
-               continue;
+             if( !( myhit.checkFlag(EcalRecHit::kGood) ||
+                    myhit.checkFlag(EcalRecHit::kOutOfTime) ||
+                    myhit.checkFlag(EcalRecHit::kPoorCalib)
+		    ) 
+		 )
+	       continue;
 
 	     // thisamp is the EE amplitude of the current rechit
 	     double thisamp  = myhit.energy () ;
