@@ -133,6 +133,9 @@ static const char* desc =
 #include "RooRandom.h"
 
 #include "RooStats/ModelConfig.h"
+#include "RooStats/ProfileLikelihoodCalculator.h"
+#include "RooStats/LikelihoodInterval.h"
+#include "RooStats/LikelihoodIntervalPlot.h"
 #include "RooStats/SimpleInterval.h"
 #include "RooStats/BayesianCalculator.h"
 #include "RooStats/MCMCCalculator.h"
@@ -162,23 +165,51 @@ using namespace std;
 
 class LimitResult;
 
-Double_t roostats_cl95(Double_t ilum, Double_t slum,
-		       Double_t eff, Double_t seff,
-		       Double_t bck, Double_t sbck,
-		       Int_t n,
-		       Bool_t gauss = kFALSE,
-		       Int_t nuisanceModel = 0,
-		       std::string method = "bayesian",
-		       std::string plotFileName = "plot_cl95.pdf",
-		       UInt_t seed = 12345,
-		       LimitResult * pLimitResult = 0);
+Double_t
+roostats_cl95( Double_t ilum, Double_t slum,
+	       Double_t eff, Double_t seff,
+	       Double_t bck, Double_t sbck,
+	       Int_t n,
+	       Bool_t gauss = kFALSE,
+	       Int_t nuisanceModel = 0,
+	       std::string method = "bayesian",
+	       std::string plotFileName = "plot_cl95.pdf",
+	       UInt_t seed = 12345,
+	       LimitResult * pLimitResult = 0);
 
-LimitResult roostats_clm(Double_t ilum, Double_t slum,
-			 Double_t eff, Double_t seff,
-			 Double_t bck, Double_t sbck,
-			 Int_t nit = 200, Int_t nuisanceModel = 0,
-			 std::string method = "bayesian",
-			 UInt_t seed = 12345);
+LimitResult 
+roostats_clm(  Double_t ilum, Double_t slum,
+	       Double_t eff, Double_t seff,
+	       Double_t bck, Double_t sbck,
+	       Int_t nit = 200, Int_t nuisanceModel = 0,
+	       std::string method = "bayesian",
+	       UInt_t seed = 12345);
+
+LimitResult 
+roostats_limit(Double_t ilum, Double_t slum,
+	       Double_t eff, Double_t seff,
+	       Double_t bck, Double_t sbck,
+	       Int_t n,
+	       Bool_t gauss,
+	       Int_t nuisanceModel,
+	       std::string method,
+	       std::string plotFileName,
+	       UInt_t seed);
+
+// below are experimental interfaces
+LimitResult
+roostats_cls(  Double_t ilum, Double_t slum,
+	       Double_t eff, Double_t seff,
+	       Double_t bck, Double_t sbck,
+	       Int_t n,
+	       Bool_t gauss = kFALSE,
+	       Int_t nuisanceModel = 1,
+	       std::string method = "cls",
+	       std::string type = "observed",
+	       Double_t expected_quantile = 0.0,
+	       std::string plotFileName = "plot_cl95.pdf",
+	       UInt_t seed = 12345,
+	       LimitResult * pLimitResult = 0);
 
 // legacy support: use roostats_clm() instead
 Double_t roostats_cla(Double_t ilum, Double_t slum,
@@ -261,7 +292,10 @@ public:
 			       Double_t bck, Double_t sbck,
 			       Bool_t gauss,
 			       Int_t nuisanceModel);
-  RooWorkspace * getWorkspace(){ return ws;}
+
+  RooWorkspace *          getWorkspace(){ return ws;}
+  RooStats::ModelConfig * GetModelConfig( std::string mcName = "SbModel" );
+  LikelihoodInterval *    GetPlrInterval( double conf_level );
 
   RooAbsData * makeData(Int_t n);
 
@@ -323,6 +357,9 @@ private:
   // for Feldman-Cousins Calculator
   FeldmanCousins * fcCalc;
 
+  // for profile likelihood ratio
+  LikelihoodInterval * pPlrInt;
+
   // random numbers
   TRandom3 r;
 
@@ -373,6 +410,7 @@ void CL95Calc::init(UInt_t seed){
   bcalc = 0;
   mcInt = 0;
   fcCalc = 0;
+  pPlrInt = 0;
   SbModel.SetName("SbModel");
   SbModel.SetTitle("ModelConfig for roostats_cl95");
 
@@ -417,6 +455,7 @@ CL95Calc::~CL95Calc(){
   delete bcalc;
   delete mcInt;
   delete fcCalc;
+  delete pPlrInt;
 }
 
 
@@ -836,6 +875,44 @@ RooAbsData * CL95Calc::makeData( Int_t n ){
 }
 
 
+
+RooStats::ModelConfig * CL95Calc::GetModelConfig( std::string mcName ){
+  //
+  // Return a pointer to the ModelConfig or 0 if not found
+  // User does NOT take ownership.
+  //
+
+  if (ws){
+    RooStats::ModelConfig * _mc = (RooStats::ModelConfig *)ws->obj(mcName.c_str());
+    _mc -> SetWorkspace(*ws);
+    //_mc->Print();
+    //_mc->GetWorkspace()->Print();
+    return _mc;
+  }
+  else return 0;
+}
+
+
+
+LikelihoodInterval * CL95Calc::GetPlrInterval( double conf_level ){
+  //
+  // Profile likelihood ratio interval calculation
+  //
+
+  delete pPlrInt;
+  
+  RooStats::ModelConfig * _mc = GetModelConfig();
+  //_mc->Print();
+
+  ProfileLikelihoodCalculator plc(*data, *_mc);
+  plc.SetConfidenceLevel(conf_level);
+  pPlrInt = plc.GetInterval();
+
+  return pPlrInt;
+}
+
+
+
 MCMCInterval * CL95Calc::GetMcmcInterval(double conf_level,
 					int n_iter,
 					int n_burn,
@@ -1025,6 +1102,8 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
   // data and model config are ready
   //
 
+  std::string legend = "[CL95Calc::cl95]: ";
+
   Double_t upper_limit = -1.0;
 
   // make RooFit quiet
@@ -1079,6 +1158,16 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       mcInt = GetMcmcInterval(0.95, 50000, 100, 0.0, 40);
       upper_limit = printMcmcUpperLimit();
     }
+    else if (method.find("plr") != std::string::npos){
+      
+      std::cout << "[roostats_cl95]: Range of allowed cross section values: [" 
+		<< ws->var("xsec")->getMin() << ", " 
+		<< ws->var("xsec")->getMax() << "]" << std::endl;
+
+      //prepare profile likelihood ratio Calulator
+      pPlrInt = GetPlrInterval(0.95);
+      upper_limit = pPlrInt->UpperLimit(*ws->var("xsec"));
+    }
     else if (method.find("cls") != std::string::npos){
       //
       // testing CLs
@@ -1089,7 +1178,6 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       std::cout << "[roostats_cl95]: Range of allowed cross section values: [" 
 		<< ws->var("xsec")->getMin() << ", " 
 		<< ws->var("xsec")->getMax() << "]" << std::endl;
-
       // timer
       TStopwatch t;
       t.Start();
@@ -1101,10 +1189,20 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       Double_t poi_err = pPoi->getErrorHi();
       // get POI upper range boundary
       Double_t poi_upper_range = pPoi->getMax();
+
       // get the upper range boundary for CLs as min of poi range and 5*error
-      Double_t upper_range = std::min(5.0*poi_err,poi_upper_range);
+      //Double_t upper_range = std::min(5.0*poi_err,poi_upper_range);
+
+      // estimate upper range boundary using quick PLR limit
+      GetPlrInterval(0.95);
+      upper_limit = pPlrInt->UpperLimit( *ws->var("xsec") );
+      //Double_t upper_range = ((double)(int)(4.0 * upper_limit*100.0))/100.0; // round to ~1% precision
+      Double_t upper_range = 4.0 * upper_limit;
+
       // debug output
-      //std::cout << "range, error, new range " << poi_upper_range << ", "<< poi_err << ", " << upper_range << std::endl;
+      std::cout << legend
+		<< "CLs scan range: [0, " << upper_range << "]" 
+		<< std::endl;
 
       RooMsgService::instance().setGlobalKillBelow(RooFit::PROGRESS);
 
@@ -1494,6 +1592,9 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
   if (method.find("bayesian") != std::string::npos){
     std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
   }
+  else if (method.find("plr") != std::string::npos){
+    std::cout << "[roostats_cl95]: using profile likelihood ratio calculation with Wilk's theorem" << endl;
+  }
   else if (method.find("mcmc") != std::string::npos){
     std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
   }
@@ -1560,6 +1661,34 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
   }
 
   if (result) *result = limitResult;
+
+  return limit;
+}
+
+
+
+LimitResult
+roostats_cls(  Double_t ilum, Double_t slum,
+	       Double_t eff, Double_t seff,
+	       Double_t bck, Double_t sbck,
+	       Int_t n,
+	       Bool_t gauss,
+	       Int_t nuisanceModel,
+	       std::string method,                   // reserved for asymptotic CLs
+	       std::string type,
+	       Double_t expected_quantile,
+	       std::string plotFileName,
+	       UInt_t seed,
+	       LimitResult * pLimitResult ){
+  //
+  // Compute observed and expected CLs limit
+  // 
+  LimitResult limit;
+
+  std::string legend = "[roostats_cls()]: ";
+
+  std::cout << legend << "not implemented yet, use roostats_limit instead"
+	    << std::endl;
 
   return limit;
 }
