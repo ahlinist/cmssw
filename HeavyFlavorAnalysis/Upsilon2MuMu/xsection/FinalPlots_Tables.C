@@ -18,10 +18,11 @@ void XSSystTot_1S(){
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S1YieldPt");  
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
-  //TFile *f = new TFile("XSection_Atlas1_2.root");
-  //TFile *f = new TFile("XSection0_2_0_30.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldPt");    
+  //TFile *f = new TFile("XSection_1Srho_0_2_0_50.root");
+  //TH1D *S55;
+  //S55 = (TH1D*)gFile->Get("S1YieldPt");  
   TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_.root");
   TH1D *S6;
   S6 = (TH1D*)gFile->Get("S1YieldPt");
@@ -57,7 +58,7 @@ void XSSystTot_1S(){
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
     s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
+    cout << " dSigma(Y(1S))/dp_{T} = "  << S55->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     Stat[i-1]=S5->GetBinError(i);
@@ -69,6 +70,7 @@ void XSSystTot_1S(){
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
+    //y[i-1] = S55->GetBinContent(i); for tcsm comparison
     s1=0; s1_=0;
     
     /// For Ratio Calculation
@@ -122,8 +124,8 @@ void XSSystTot_1S(){
   
   
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
-  //TFile *f = new TFile("Final1S.root", "RECREATE");
-  TFile *f = new TFile("Final1S_0_2_0_30.root", "RECREATE");
+  TFile *f = new TFile("Final1S.root", "RECREATE");
+  //TFile *f = new TFile("Final1S_0_2_0_50.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
   gr_atlas->Write();
@@ -325,9 +327,12 @@ void XSSystTot_3S(){
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S3YieldPt");  
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
-  //TFile *f = new TFile("XSection0_2_0_30.root");
+  //TFile *f = new TFile("XSection_3Srho_0_2_0_50.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S3YieldPt");    
+  //TFile *f = new TFile("XSection_3Srho_0_2_0_50.root");
+  //TH1D *S55;
+  //S55 = (TH1D*)gFile->Get("S3YieldPt");    
   TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_.root");
   TH1D *S6;
   S6 = (TH1D*)gFile->Get("S3YieldPt");
@@ -371,6 +376,7 @@ void XSSystTot_3S(){
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
+    //y[i-1] = S55->GetBinContent(i);
     s1=0;s1_=0;	
     
     /// For Ratio Calculation
@@ -412,7 +418,7 @@ void XSSystTot_3S(){
   
   cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
   TFile *f = new TFile("Final3S.root", "RECREATE");
-  //TFile *f = new TFile("Final3S_0_2_0_30.root", "RECREATE");
+  //TFile *f = new TFile("Final3S_0_2_0_50.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
   S100->Write();
