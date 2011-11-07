@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = False
+isData = True
 doRECO = True
 
 process = cms.Process("TTEffSKIM")
@@ -28,9 +28,9 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_42_V20::All'
+    process.GlobalTag.globaltag = 'GR_R_42_V21::All'
 else:
-    process.GlobalTag.globaltag = 'START42_V13::All'
+    process.GlobalTag.globaltag = 'START42_V15B::All'
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(100)
