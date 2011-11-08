@@ -88,6 +88,7 @@ patTupleEventContent.outputCommands.extend(
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_ak5GenJets_*_*', 
+      'keep *_genParticlesFromAHs_*_*',
       'keep *_genParticlesFromZs_*_*' ]
 )
 
