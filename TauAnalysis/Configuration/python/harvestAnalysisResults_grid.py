@@ -71,7 +71,7 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
             else:
 
                 crab_dir = os.path.join(
-                    'crab', 'crabdir_%s_%s_%s' % (channel, sample, jobId))
+                    'crab', 'crabdir_run%s_%s_%s' % (channel, sample, jobId))
 
                 print "Getting output files from:", crab_dir
                 files_and_times.extend(
