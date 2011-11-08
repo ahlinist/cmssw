@@ -9,11 +9,10 @@ SAMPLES_TO_ANALYZE_SKIM = [
         'data_TauPlusX_Run2011A_May10ReReco_skim',
         'data_TauPlusX_Run2011A_PR_v4_skim',
         'data_TauPlusX_Run2011A_05AugReReco_skim',
-        'data_TauPlusX_Run2011A_PR_v6_skim',
-        #'data_TauPlusX_Run2011B_PR_v1_skim',
+        'data_TauPlusX_Run2011A_03OctReReco_skim',
+        'data_TauPlusX_Run2011B_PR_v1_skim',
         'Ztautau_powheg_skim',
         'DYtautauM10to20_powheg_skim',
-        #'Zee_pythia_skim',
         'Zee_powheg_skim',
         'DYeeM10to20_pythia_skim',
         #'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
@@ -22,7 +21,6 @@ SAMPLES_TO_ANALYZE_SKIM = [
         'TTplusJets_madgraph_skim',
         'WplusJets_madgraph_skim',
         #'WW_skim','WZ_skim',
-        #'ZZ_skim', # no Summer11 sample
 ] 
 
 SAMPLES_TO_ANALYZE_PAT = [
@@ -44,7 +42,8 @@ SAMPLES_TO_ANALYZE_PAT = [
 ] 
 
 # set final analysis samples here
-SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_PAT
+SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_SKIM
+#SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_PAT
 
 
 # List of samples to include in the final level plots.  May include selections
@@ -69,7 +68,7 @@ SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
     'conditions' : 'START42_V13::All',
     'genPhaseSpaceCut' : '',
-    'genFinalStateFilter': True,
+    'genFinalStateFilter': False,
     'factorize' : False,
     'enableSysUncertainties' : True,
     'lumi_mask' : '',
@@ -79,11 +78,12 @@ SAMPLE_DEFAULTS = {
     'SE_white_list' : '',
     'SE_black_list' : '',
     'disableDuplicateCheck' : False,
-    'applyZrecoilCorrection' : True,
+    'applyZrecoilCorrection' : False,
     'applyElectronTriggerEfficiencyCorrection' : True,
     'applyElectronIsolationEfficiencyCorrection' : True,
     'applyMuonTriggerEfficiencyCorrection' : False,
     'applyVertexMultiplicityReweighting' : True,
+    'applyRhoNeutralReweighting' : False,
     'applyTauMetTriggerEfficiencyCorrection' : False,
     'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
     'noRunLumiEventSave' : True,
@@ -194,6 +194,24 @@ RECO_SAMPLES = {
             'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
         ]
     },    
+    'data_TauPlusX_Run2011A_03OctReReco_skim' : { # 705/pb 172620-173692, 1217831 events
+        'datasetpath' : '/TauPlusX/jkolb-Run2011A-03OctReReco_skimElecTau_v1-6aa5d932edddb97c8f87b85a020d9993/USER#b4d77c13-ef9b-4608-9a57-856b540c8ef9', 
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'conditions' : 'GR_P_V22::All',
+        'number_of_jobs' : 500,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'hlt_paths' : [
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2',
+            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
+        ]
+    },
     'data_TauPlusX_Run2011A_PR_v4_skim' : { # 887/pb 165071-167913, 5942864 events--> current lumi_mask restricts analysis to Lepton-Photon dataset
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_424_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
@@ -232,7 +250,8 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8',
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'
         ]
-    },    
+    },   
+    ####   PR_v6 has been replaced by 03Oct rereco  ######
     'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 641.9/pb, runs 172620-173692, 1160206 events --> limited to LP dataset: 120/pb, runs 172620-172802
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-PromptReco-v6_skimElecTau_v3-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt', # LP
@@ -400,6 +419,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
+        'enableSysUncertainties' : False,
         'absoluteNormalization' : 2155./538
     },
     'WplusJets_madgraph_pat' : {
@@ -409,6 +429,7 @@ RECO_SAMPLES = {
         'events_processed' : 81352581,
         'skim_eff' : 8165915./81352581,
         'x_sec' : 31314*_picobarns,
+        'enableSysUncertainties' : False,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
@@ -480,7 +501,7 @@ RECO_SAMPLES = {
     'TTplusJets_madgraph_skim' : {
         'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/jkolb-skimElecTau_423_v2-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 300,
         'events_processed' : 3701947,
         'skim_eff' : 725953./3701947,
         'x_sec' : 157.5*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
