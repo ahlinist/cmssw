@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.1 2011/10/10 13:18:58 scooper Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.2 2011/11/09 10:44:07 scooper Exp $
 //
 //
 // ***************************************************************************************
@@ -116,8 +116,6 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   string runNumstr = intToString(runNum);
   string filename = rootFileNameBeg_;
   filename+=runNumstr;
-  //debug
-  std::cout << "runNumstr: " << runNumstr << std::endl;
   filename+=".root";
   TFile* output = new TFile(filename.c_str(),"recreate");
   output->cd();
@@ -368,10 +366,15 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
   if(readDelaysFromDB_)
   {
-    //FIXME parse the credentials file here
     string sid;
     string user;
     string pass;
+    std::cout << "Please enter sid: ";
+    std::cin >> sid;
+    std::cout << "Please enter user: ";
+    std::cin >> user;
+    std::cout << "Please enter password: ";
+    std::cin >> pass;
     EcalCondDBInterface* econn;
     try {
       try {
