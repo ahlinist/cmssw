@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.h,v 1.1 2011/10/10 13:18:58 scooper Exp $
+// $Id: EcalAdjustFETimingDQM.h,v 1.2 2011/11/09 10:44:07 scooper Exp $
 //
 //
 
@@ -63,4 +63,5 @@ class EcalAdjustFETimingDQM : public edm::EDAnalyzer {
       std::string txtFileName_;
       std::string rootFileNameBeg_;
       bool readDelaysFromDB_;
+      double minTimeChangeToApply_;
 };

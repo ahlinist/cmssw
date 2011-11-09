@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.3 2011/11/09 11:09:11 scooper Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.4 2011/11/09 17:36:52 franzoni Exp $
 //
 //
 // ***************************************************************************************
@@ -51,7 +51,8 @@ EcalAdjustFETimingDQM::EcalAdjustFETimingDQM(const edm::ParameterSet& iConfig) :
   xmlFileNameBeg_ (iConfig.getParameter<std::string>("XMLFileNameBeg")),
   txtFileName_ (iConfig.getParameter<std::string>("TextFileName")),
   rootFileNameBeg_ (iConfig.getParameter<std::string>("RootFileNameBeg")),
-  readDelaysFromDB_ (iConfig.getParameter<bool>("ReadExistingDelaysFromDB"))
+  readDelaysFromDB_ (iConfig.getParameter<bool>("ReadExistingDelaysFromDB")),
+  minTimeChangeToApply_	(iConfig.getParameter<double>("MinTimeChangeToApply"))
 {
 
 }
@@ -206,10 +207,18 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int j=0; j<maxNumCCUinFed; ++j) // add two to account for mem boxes
     {
-      timingTTrunEBHist->Fill(ttAvgTimesEB[i][j]);
-
-      // multiply by -1 so as to add the needed change later
-      ttAvgTimesEB[i][j] = ttNumEntriesEB[i][j] != 0 ? -1*floor(ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j]+0.5) : 0;
+      if(ttNumEntriesEB[i][j]>0) 
+        timingTTrunEBHist->Fill(ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j]);
+      // choice of sign according to:
+      // http://cmsonline.cern.ch/portal/page/portal/CMS%20online%20system/Elog?_piref815_429145_815_429142_429142.strutsAction=%2FviewMessageDetails.do%3FmsgId%3D667090
+      if( fabs( ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j] ) > minTimeChangeToApply_ ) 
+      {
+        ttAvgTimesEB[i][j] = floor(ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j]+0.5);
+      }
+      else
+      {
+        ttAvgTimesEB[i][j] = 0;
+      }
       adjTTrunEBHist->Fill(ttAvgTimesEB[i][j]);
       ////debug
       //if(i==35)
@@ -326,13 +335,21 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      if(i<=8)
-        timingTTrunEEMHist->Fill(ttAvgTimesEE[i][j]);
-      else
-        timingTTrunEEPHist->Fill(ttAvgTimesEE[i][j]);
+      if(i<=8 && ttNumEntriesEE[i][j]>0)
+        timingTTrunEEMHist->Fill(ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j]);
+      else if(ttNumEntriesEE[i][j]>0)
+        timingTTrunEEPHist->Fill(ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j]);
 
-      // multiply by -1 so as to add the needed change later
-      ttAvgTimesEE[i][j] = ttNumEntriesEE[i][j] != 0 ? -1*floor(ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j]+0.5) : 0;
+      // choice of sign according to:
+      // http://cmsonline.cern.ch/portal/page/portal/CMS%20online%20system/Elog?_piref815_429145_815_429142_429142.strutsAction=%2FviewMessageDetails.do%3FmsgId%3D667090
+      if( fabs( ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j] ) > minTimeChangeToApply_ ) 
+      {
+        ttAvgTimesEE[i][j] = floor(ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j]+0.5);
+      }
+      else
+      {
+        ttAvgTimesEE[i][j] = 0;
+      }
       if(i<=8)
         adjTTrunEEMHist->Fill(ttAvgTimesEE[i][j]);
       else
