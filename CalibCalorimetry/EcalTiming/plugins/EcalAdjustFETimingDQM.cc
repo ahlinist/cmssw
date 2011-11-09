@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.2 2011/11/09 10:44:07 scooper Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.3 2011/11/09 11:09:11 scooper Exp $
 //
 //
 // ***************************************************************************************
@@ -38,6 +38,9 @@
 #include <sstream>
 #include <stdlib.h>
 #include <memory>
+
+const int numEEsm     = 18;
+const int maxNumCCUinFed = EcalTrigTowerDetId::kEBTowersPerSM+2;
 
 //
 // constructors and destructor
@@ -146,19 +149,19 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   Numbers::initGeometry(iSetup,true);
   float ttAvgTimesEB[EBDetId::MAX_SM][68];
   int ttNumEntriesEB[EBDetId::MAX_SM][68];
-  float ttAvgTimesEE[18][34];
-  int ttNumEntriesEE[18][34];
+  float ttAvgTimesEE[numEEsm][maxNumCCUinFed];
+  int ttNumEntriesEE[numEEsm][maxNumCCUinFed];
   for(int i=0; i<EBDetId::MAX_SM; ++i)
   {
-    for(int j=0; j<68; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j)
     {
       ttAvgTimesEB[i][j] = 0;
       ttNumEntriesEB[i][j] = 0;
     }
   }
-  for(int i=0; i<18; ++i)
+  for(int i=0; i<numEEsm; ++i)
   {
-    for(int j=0; j<34; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j)
     {
       ttAvgTimesEE[i][j] = 0;
       ttNumEntriesEE[i][j] = 0;
@@ -201,7 +204,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // create avg tower times
   for(int i=0; i<EBDetId::MAX_SM; ++i)
   {
-    for(int j=0; j<EcalTrigTowerDetId::kEBTowersPerSM; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j) // add two to account for mem boxes
     {
       timingTTrunEBHist->Fill(ttAvgTimesEB[i][j]);
 
@@ -319,9 +322,9 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   }
 
   // create avg tower times -- EE
-  for(int i=0; i<18; ++i)
+  for(int i=0; i<numEEsm; ++i)
   {
-    for(int j=0; j<34; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j)
     {
       if(i<=8)
         timingTTrunEEMHist->Fill(ttAvgTimesEE[i][j]);
@@ -347,20 +350,20 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   }
 
   // now read the DB and get the absolute delays
-  int feDelaysFromDBEB[EBDetId::MAX_SM][68];
-  int feDelaysFromDBEE[18][34];
+  int feDelaysFromDBEB[EBDetId::MAX_SM][maxNumCCUinFed];
+  int feDelaysFromDBEE[numEEsm][maxNumCCUinFed];
   for(int i=0; i<EBDetId::MAX_SM; ++i)
   {
-    for(int j=0; j<68; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      feDelaysFromDBEB[i][j] = 0;
+      feDelaysFromDBEB[i][j] = -999999;
     }
   }
-  for(int i=0; i<18; ++i)
+  for(int i=0; i<numEEsm; ++i)
   {
-    for(int j=0; j<34; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      feDelaysFromDBEE[i][j] = 0;
+      feDelaysFromDBEE[i][j] = -999999;
     }
   }
 
@@ -393,26 +396,26 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       {
         int idcc = i->getFedId()-600;
         int ism = 0;
-        if(idcc >= 1 && idcc <= 9)
+        if(idcc >= 1 && idcc <= 9)        // EEM
           ism = idcc;
-        else if(idcc >= 10 && idcc <= 45)
+        else if(idcc >= 10 && idcc <= 45) // EB
           ism = idcc-9;
-        else if(idcc >= 46 && idcc <= 54)
-          ism = idcc=45+9;
+        else if(idcc >= 46 && idcc <= 54) // EEP
+          ism = idcc-45+9;
         else
           std::cout << "warning: strange iDCC read from db: " << idcc << ". " << std::endl;
 
         int ccuId = i->getTTId();
         if(idcc >= 10 && idcc <= 45) // EB
         {
-          if(feDelaysFromDBEB[ism-1][ccuId-1] != 0)
+          if(feDelaysFromDBEB[ism-1][ccuId-1] != -999999)
             std::cout << "warning: duplicate entry in DB found for fed: " << idcc+600
               << " CCU: " << ccuId << "; replacing old entry with this one." << std::endl;
           feDelaysFromDBEB[ism-1][ccuId-1] = i->getTimeOffset();
         }
         else if( (idcc >= 1 && idcc <= 9) || (idcc >= 46 && idcc <= 54)) // EE
         {
-          if(feDelaysFromDBEE[ism-1][ccuId-1] != 0)
+          if(feDelaysFromDBEE[ism-1][ccuId-1] != -999999)
             std::cout << "warning: duplicate entry in DB found for fed: " << idcc+600
               << " CCU: " << ccuId << "; replacing old entry with this one." << std::endl;
           feDelaysFromDBEE[ism-1][ccuId-1] = i->getTimeOffset();
@@ -432,24 +435,27 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // recall that we have -1*avgTT time in the ttAvgTimes arrays (i.e., the needed shift)
   // so here just add that to the DB delays
   // make new arrays for absolute time
-  int newFEDelaysEB[EBDetId::MAX_SM][68];
-  int newFEDelaysEE[18][34];
+  int newFEDelaysEB[EBDetId::MAX_SM][maxNumCCUinFed];
+  int newFEDelaysEE[numEEsm][maxNumCCUinFed];
   for(int i=0; i<EBDetId::MAX_SM; ++i)
   {
-    for(int j=0; j<EcalTrigTowerDetId::kEBTowersPerSM; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j)
     {
       newFEDelaysEB[i][j] = ttAvgTimesEB[i][j] + feDelaysFromDBEB[i][j];
+      //newFEDelaysEB[i][j] = feDelaysFromDBEB[i][j];
     }
   }
   // create avg tower times -- EE
-  for(int i=0; i<18; ++i)
+  for(int i=0; i<numEEsm; ++i)
   {
-    for(int j=0; j<34; ++j)
+    for(int j=0; j<maxNumCCUinFed; ++j)
     {
       newFEDelaysEE[i][j] = ttAvgTimesEE[i][j] + feDelaysFromDBEE[i][j];
+      //newFEDelaysEE[i][j] =  feDelaysFromDBEE[i][j];
     }
   }
 
+  /////////////////////////////////////////////////////////////	
   // write output
   ofstream txt_outfile;
   txt_outfile.open(txtFileName_.c_str(),ios::out);
@@ -460,7 +466,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // EB
   for(int ism=1; ism<=EBDetId::MAX_SM; ++ism)
   {
-    for(int iTT=1;iTT<69;++iTT)
+    for(int iTT=1;iTT<69;++iTT)   // ignoring two mem boxes ONLY for the text file
     {
       txt_outfile << 609+ism << setw(6) << Numbers::sEB(ism) <<setw(4) << iTT << "  " << setw(4)
         << ttAvgTimesEB[ism-1][iTT-1] << "\t" << endl;  
@@ -483,8 +489,18 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     xml_outfile << "             <SUPERMODULE>" << 609+ism << "</SUPERMODULE>\n";
     xml_outfile << "     <TIME_STAMP> 270705 </TIME_STAMP>" << endl;
 
-    for(int j=0; j<EcalTrigTowerDetId::kEBTowersPerSM; ++j)
+    for(int j=68; j<maxNumCCUinFed; ++j)
     {
+      if(feDelaysFromDBEB[ism-1][j] == -999999 ) continue;     // if db did not give this CCU at the start, don't out put it
+      xml_outfile << "   <DELAY_OFFSET>\n";
+      xml_outfile << "             <SUPERMODULE>" << 609+ism <<"</SUPERMODULE>\n";
+      xml_outfile << "             <TRIGGERTOWER>" << j+1 << "</TRIGGERTOWER>\n";
+      xml_outfile << "             <TIME_OFFSET>" << newFEDelaysEB[ism-1][j] << "</TIME_OFFSET>\n";
+      xml_outfile << "    </DELAY_OFFSET>" << endl;
+    }
+    for(int j=0; j<(maxNumCCUinFed-2); ++j)
+    {
+      if(feDelaysFromDBEB[ism-1][j] == -999999 ) continue;     // if db did not give this CCU at the start, don't out put it
       xml_outfile << "   <DELAY_OFFSET>\n";
       xml_outfile << "             <SUPERMODULE>" << 609+ism <<"</SUPERMODULE>\n";
       xml_outfile << "             <TRIGGERTOWER>" << j+1 << "</TRIGGERTOWER>\n";
@@ -497,18 +513,19 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   }
 
   // EE
-  for(int ism=1; ism<=18; ++ism)
+  for(int ism=1; ism<=numEEsm; ++ism)
   {
     int iDCC = ism<=9 ? ism : ism + 45 - 9;
 
-    for(int iSC=1; iSC<=34; ++iSC)
+    for(int iSC=0; iSC<68; ++iSC)   // ignoring two mem boxes ONLY for the text file
     {
-      txt_outfile << 600+iDCC << setw(6) << Numbers::sEE(ism) <<setw(4) << iSC << "  " << setw(4)
-        << ttAvgTimesEE[ism-1][iSC-1] << "\t" << endl;  
-      if(fabs(ttAvgTimesEB[ism-1][iSC-1]) > 1)
+      if(feDelaysFromDBEE[ism-1][iSC] == -999999 ) continue;     // if db did not give this CCU at the start, don't out put it
+      txt_outfile << 600+iDCC << setw(6) << Numbers::sEE(ism) <<setw(4) << (iSC+1) << "  " << setw(4)
+        << ttAvgTimesEE[ism-1][iSC] << "\t" << endl;  
+      if(fabs(ttAvgTimesEB[ism-1][iSC]) > 1)
         cout << "WARNING: Unusually large shift found!  SM=" << 600+iDCC
-          << " " << Numbers::sEE(ism) << " iSC=" << iSC
-          << " shift: " << ttAvgTimesEE[ism-1][iSC-1] << endl;
+          << " " << Numbers::sEE(ism) << " iSC=" << (iSC+1)
+          << " shift: " << ttAvgTimesEE[ism-1][iSC] << endl;
     }
 
     // XMLs
@@ -524,8 +541,18 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     xml_outfile << "             <SUPERMODULE>" << 600+iDCC << "</SUPERMODULE>\n";
     xml_outfile << "     <TIME_STAMP> 270705 </TIME_STAMP>" << endl;
 
-    for(int j=0; j<34; ++j)
+    for(int j=68; j<maxNumCCUinFed; ++j)
     {
+      if(feDelaysFromDBEE[ism-1][j] == -999999 ) continue;     // if db did not give this CCU at the start, don't out put it
+      xml_outfile << "   <DELAY_OFFSET>\n";
+      xml_outfile << "             <SUPERMODULE>" << 600+iDCC <<"</SUPERMODULE>\n";
+      xml_outfile << "             <TRIGGERTOWER>" << j+1 << "</TRIGGERTOWER>\n";
+      xml_outfile << "             <TIME_OFFSET>" << newFEDelaysEE[ism-1][j] << "</TIME_OFFSET>\n";
+      xml_outfile << "    </DELAY_OFFSET>" << endl;
+    }
+    for(int j=0; j<68; ++j)
+    {
+      if(feDelaysFromDBEE[ism-1][j] == -999999 ) continue;     // if db did not give this CCU at the start, don't out put it
       xml_outfile << "   <DELAY_OFFSET>\n";
       xml_outfile << "             <SUPERMODULE>" << 600+iDCC <<"</SUPERMODULE>\n";
       xml_outfile << "             <TRIGGERTOWER>" << j+1 << "</TRIGGERTOWER>\n";
