@@ -46,7 +46,8 @@ process.adjustTiming = cms.EDAnalyzer('EcalAdjustFETimingDQM',
        XMLFileNameBeg = cms.string("sm_"),
        TextFileName = cms.string("adjustmentsToTowers.txt"),
        RootFileNameBeg = cms.string("ecalAdjustFETimingDQM."),
-       ReadExistingDelaysFromDB = cms.bool(True) # True requires running at P5
+       ReadExistingDelaysFromDB = cms.bool(True), # True requires running at P5
+       MinTimeChangeToApply = cms.double(1.)      # minimum  abs(average time TT) required for the hardware settings to be actually changed
 )
 
 
