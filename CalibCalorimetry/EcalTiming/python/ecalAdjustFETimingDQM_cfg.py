@@ -26,7 +26,8 @@ process.adjustTiming = cms.EDAnalyzer('EcalAdjustFETimingDQM',
        EEDQMFileName = cms.string("DQM_V0001_EcalEndcap_R000177140.root"),
        XMLFileNameBeg = cms.string("towerDelaysAdjusted_"),
        TextFileName = cms.string("adjustmentsToTowers.txt"),
-       RootFileNameBeg = cms.string("ecalAdjustFETimingDQM.")
+       RootFileNameBeg = cms.string("ecalAdjustFETimingDQM."),
+       ReadExistingDelaysFromDB = cms.bool(False) # True requires running at P5 (and probably ecalpro access)
 )
 
 
