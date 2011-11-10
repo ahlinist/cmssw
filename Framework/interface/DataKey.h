@@ -16,7 +16,6 @@
 //
 // Author:      Chris Jones
 // Created:     Thu Mar 31 14:31:03 EST 2005
-// $Id$
 //
 
 // system include files
@@ -58,7 +57,7 @@ class DataKey
            makeCopyOfMemory();
          }
       
-      const DataKey& operator=(const DataKey&); // stop default
+      DataKey& operator=(const DataKey&); // stop default
       
       ~DataKey() { releaseMemory(); }
       
