@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.41 $
-  \date $Date: 2011/09/10 09:24:55 $
+  \version $Revision: 1.42 $
+  \date $Date: 2011/10/30 07:54:43 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -199,6 +199,13 @@ private:
       }
 
       if( o.name.find( "DeltaBx_vs_ApvCycle" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        gStyle->SetPalette(1,0);
+        obj->SetOption("colz");
+      }
+
+      if( o.name.find( "ADCvsAPVs" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
         gStyle->SetPalette(1,0);
