@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.4 2011/11/09 17:36:52 franzoni Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.5 2011/11/09 18:19:38 franzoni Exp $
 //
 //
 // ***************************************************************************************
@@ -539,7 +539,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       if(feDelaysFromDBEE[ism-1][iSC] == -999999 ) continue;     // if db did not give this CCU at the start, don't out put it
       txt_outfile << 600+iDCC << setw(6) << Numbers::sEE(ism) <<setw(4) << (iSC+1) << "  " << setw(4)
         << ttAvgTimesEE[ism-1][iSC] << "\t" << endl;  
-      if(fabs(ttAvgTimesEB[ism-1][iSC]) > 1)
+      if(fabs(ttAvgTimesEE[ism-1][iSC]) > 1)
         cout << "WARNING: Unusually large shift found!  SM=" << 600+iDCC
           << " " << Numbers::sEE(ism) << " iSC=" << (iSC+1)
           << " shift: " << ttAvgTimesEE[ism-1][iSC] << endl;
