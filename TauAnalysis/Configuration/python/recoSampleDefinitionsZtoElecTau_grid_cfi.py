@@ -6,6 +6,12 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE_SKIM = [
+
+#'Ztautau_embedded_PR_v6_skim',
+#'Ztautau_embedded_May10ReReco_skim',
+## 'Ztautau_embedded_PR_v4_skim',
+## 'Ztautau_embedded_05AugReReco_skim',
+
         'data_TauPlusX_Run2011A_May10ReReco_skim',
         'data_TauPlusX_Run2011A_PR_v4_skim',
         'data_TauPlusX_Run2011A_05AugReReco_skim',
@@ -15,30 +21,18 @@ SAMPLES_TO_ANALYZE_SKIM = [
         'DYtautauM10to20_powheg_skim',
         'Zee_powheg_skim',
         'DYeeM10to20_pythia_skim',
+        'TTplusJets_madgraph_skim',
+        'WplusJets_madgraph_skim',
+        
         #'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
         #'QCD_BCtoE_Pt20to30_skim','QCD_BCtoE_Pt30to80_skim','QCD_BCtoE_Pt80to170_skim',
         #'QCD_EM_Pt20to30_skim','QCD_EM_Pt30to80_skim','QCD_EM_Pt80to170_skim',
-        'TTplusJets_madgraph_skim',
-        'WplusJets_madgraph_skim',
+
         #'WW_skim','WZ_skim',
 ] 
 
 SAMPLES_TO_ANALYZE_PAT = [
-        #'data_TauPlusX_Run2011A_May10ReReco_pat',
-        #'data_TauPlusX_Run2011A_PR_v4_pat',
-        'data_TauPlusX_Run2011A_05AugReReco_pat',
-        'Ztautau_powheg_pat',
-        'DYtautauM10to20_powheg_pat',
-        'Zee_pythia_pat',
-        #'Zee_powheg_pat',
-        'DYeeM10to20_pythia_pat',
-        #'PhotonPlusJets_Pt15to30_pat','PhotonPlusJets_Pt30to50_pat','PhotonPlusJets_Pt50to80_pat',
-        #'QCD_BCtoE_Pt20to30_pat','QCD_BCtoE_Pt30to80_pat','QCD_BCtoE_Pt80to170_pat',
-        #'QCD_EM_Pt20to30_pat','QCD_EM_Pt30to80_pat','QCD_EM_Pt80to170_pat',
-        'TTplusJets_madgraph_pat',
-        'WplusJets_madgraph_pat',
-        #'WW_pat','WZ_pat',
-        #'ZZ_pat', # no Summer11 sample
+
 ] 
 
 # set final analysis samples here
@@ -82,8 +76,8 @@ SAMPLE_DEFAULTS = {
     'applyElectronTriggerEfficiencyCorrection' : True,
     'applyElectronIsolationEfficiencyCorrection' : True,
     'applyMuonTriggerEfficiencyCorrection' : False,
-    'applyVertexMultiplicityReweighting' : True,
-    'applyRhoNeutralReweighting' : False,
+    'applyVertexMultiplicityReweighting' : False,
+    'applyRhoNeutralReweighting': True,
     'applyTauMetTriggerEfficiencyCorrection' : False,
     'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
     'noRunLumiEventSave' : True,
@@ -130,7 +124,7 @@ RECO_SAMPLES = {
         ]
     },
     'data_TauPlusX_Run2011A_May10ReReco_pat' : { 
-        'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v1-65ea91f557f2259338d2f3d737957920/USER', 
+        'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v3-d9c77f81737e7a088cf162cb68efea10/', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt',
         'skim_eff' : 1407306./12485249.,
@@ -158,7 +152,7 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-	    'applyVertexMultiplicityReweighting' : False,
+	'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -181,7 +175,7 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-	    'applyVertexMultiplicityReweighting' : False,
+	'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -195,14 +189,14 @@ RECO_SAMPLES = {
         ]
     },    
     'data_TauPlusX_Run2011A_03OctReReco_skim' : { # 705/pb 172620-173692, 1217831 events
-        'datasetpath' : '/TauPlusX/jkolb-Run2011A-03OctReReco_skimElecTau_v1-6aa5d932edddb97c8f87b85a020d9993/USER#b4d77c13-ef9b-4608-9a57-856b540c8ef9', 
+        'datasetpath' : '/TauPlusX/jkolb-Run2011A-03OctReReco_skimElecTau_v1-6aa5d932edddb97c8f87b85a020d9993/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 500,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-	    'applyVertexMultiplicityReweighting' : False,
+	'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -221,7 +215,7 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-	    'applyVertexMultiplicityReweighting' : False,
+	'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -241,7 +235,7 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-	    'applyVertexMultiplicityReweighting' : False,
+	'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -325,13 +319,15 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
+        'applyRhoNeutralReweighting' : True,
+        'applyVertexMultiplicityReweighting' : False,
+        
         #'absoluteNormalization' : 5294./29702
     },
     'Ztautau_powheg_pat' : {
-        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/lantonel-patSkim_428_v2-3e4953bc8fc6d10809a574919bc42c1c/USER",
+        'datasetpath' : "/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola/lantonel-patSkim_428_v3-fb0e7ea3046b2efaed62c2520cf554fb/USER/",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 300,
-        'applyZrecoilCorrection' : False,
         'events_processed' : 19937479,
         'skim_eff' : 1012582./19937479,
         'x_sec' : 1666*_picobarns,
@@ -339,6 +335,12 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
+        'enableSysUncertainties' : False,
+        'inputFileType' : 'AOD',
+        'applyZrecoilCorrection' : True,
+        'applyRhoNeutralReweighting' : True,
+        'applyVertexMultiplicityReweighting' : False,        
+        
     },    
     'Ztautau_pythia_skim' : { 
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
@@ -715,12 +717,15 @@ RECO_SAMPLES = {
 
 
 
+
     'Ztautau_embedded_May10ReReco_skim' : {
         'datasetpath' : "/SingleMu/lantonel-May10thRR_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 20,
         'events_processed' : 107792,
         'skim_eff' : 81025./107792,
+        'type' : 'Data',
+        'hlt_paths' : ['*'],         
         'factorize' : True,
         'enableSysUncertainties' : False,
         'applyVertexMultiplicityReweighting' : False,
@@ -737,6 +742,8 @@ RECO_SAMPLES = {
         'number_of_jobs' : 100,
         'events_processed' : 445094,
         'skim_eff' : 345082./445094,
+        'type' : 'Data',
+        'hlt_paths' : ['*'],         
         'factorize' : True,
         'enableSysUncertainties' : False,
         'applyVertexMultiplicityReweighting' : False,
@@ -753,6 +760,8 @@ RECO_SAMPLES = {
         'number_of_jobs' : 50,
         'events_processed' :235926 ,
         'skim_eff' : 181930./235926,
+        'type' : 'Data',
+        'hlt_paths' : ['*'],         
         'factorize' : True,
         'enableSysUncertainties' : False,
         'applyVertexMultiplicityReweighting' : False,
@@ -769,6 +778,8 @@ RECO_SAMPLES = {
         'number_of_jobs' : 50,
         'events_processed' : 220855,
         'skim_eff' : 175293./220855,
+        'type' : 'Data',
+        'hlt_paths' : ['*'],         
         'factorize' : True,
         'enableSysUncertainties' : False,
         'applyVertexMultiplicityReweighting' : False,
