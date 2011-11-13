@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.6 2011/11/12 14:43:49 scooper Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.7 2011/11/13 11:14:17 franzoni Exp $
 //
 //
 // ***************************************************************************************
@@ -211,9 +211,10 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         timingTTrunEBHist->Fill(ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j]);
       // choice of sign according to:
       // http://cmsonline.cern.ch/portal/page/portal/CMS%20online%20system/Elog?_piref815_429145_815_429142_429142.strutsAction=%2FviewMessageDetails.do%3FmsgId%3D667090
+      // 24 hardware counts correspond to 25 ns => rescale averages by 24./25.
       if( fabs( ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j] ) > minTimeChangeToApply_ ) 
       {
-        ttAvgTimesEB[i][j] = floor(ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j]+0.5);
+        ttAvgTimesEB[i][j] = floor(ttAvgTimesEB[i][j]/ttNumEntriesEB[i][j]*24./25+0.5);
       }
       else
       {
@@ -342,9 +343,10 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
       // choice of sign according to:
       // http://cmsonline.cern.ch/portal/page/portal/CMS%20online%20system/Elog?_piref815_429145_815_429142_429142.strutsAction=%2FviewMessageDetails.do%3FmsgId%3D667090
-      if( fabs( ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j] ) > minTimeChangeToApply_ ) 
+      // 24 hardware counts correspond to 25 ns => rescale averages by 24./25.
+      if( fabs( ttAvgTimesEEi][j]/ttNumEntriesEE[i][j] ) > minTimeChangeToApply_ ) 
       {
-        ttAvgTimesEE[i][j] = floor(ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j]+0.5);
+        ttAvgTimesEE[i][j] = floor(ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j]*24./25+0.5);
       }
       else
       {
@@ -459,7 +461,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      newFEDelaysEB[i][j] = ttAvgTimesEB[i][j]*24./25. + feDelaysFromDBEB[i][j];
+      newFEDelaysEB[i][j] = ttAvgTimesEB[i][j] + feDelaysFromDBEB[i][j];
       //newFEDelaysEB[i][j] = feDelaysFromDBEB[i][j];
     }
   }
@@ -468,7 +470,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      newFEDelaysEE[i][j] = ttAvgTimesEE[i][j]*24./25. + feDelaysFromDBEE[i][j];
+      newFEDelaysEE[i][j] = ttAvgTimesEE[i][j] + feDelaysFromDBEE[i][j];
       //newFEDelaysEE[i][j] =  feDelaysFromDBEE[i][j];
     }
   }
