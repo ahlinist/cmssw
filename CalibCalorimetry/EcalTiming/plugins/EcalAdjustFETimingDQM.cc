@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.5 2011/11/09 18:19:38 franzoni Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.6 2011/11/12 14:43:49 scooper Exp $
 //
 //
 // ***************************************************************************************
@@ -449,16 +449,17 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
   // now we should have the filled DB array
   // loop over the old ttAvgTimes arrays and adjust
-  // recall that we have -1*avgTT time in the ttAvgTimes arrays (i.e., the needed shift)
+  // recall that we have +1*avgTT time in the ttAvgTimes arrays (i.e., the needed shift)
   // so here just add that to the DB delays
   // make new arrays for absolute time
+  // one 24 hardware counts correspond to 25 ns => rescale averages by 24./25.
   int newFEDelaysEB[EBDetId::MAX_SM][maxNumCCUinFed];
   int newFEDelaysEE[numEEsm][maxNumCCUinFed];
   for(int i=0; i<EBDetId::MAX_SM; ++i)
   {
     for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      newFEDelaysEB[i][j] = ttAvgTimesEB[i][j] + feDelaysFromDBEB[i][j];
+      newFEDelaysEB[i][j] = ttAvgTimesEB[i][j]*24./25. + feDelaysFromDBEB[i][j];
       //newFEDelaysEB[i][j] = feDelaysFromDBEB[i][j];
     }
   }
@@ -467,7 +468,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      newFEDelaysEE[i][j] = ttAvgTimesEE[i][j] + feDelaysFromDBEE[i][j];
+      newFEDelaysEE[i][j] = ttAvgTimesEE[i][j]*24./25. + feDelaysFromDBEE[i][j];
       //newFEDelaysEE[i][j] =  feDelaysFromDBEE[i][j];
     }
   }
