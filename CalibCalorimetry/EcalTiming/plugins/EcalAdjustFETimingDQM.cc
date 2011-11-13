@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.7 2011/11/13 11:14:17 franzoni Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.8 2011/11/13 11:18:48 franzoni Exp $
 //
 //
 // ***************************************************************************************
@@ -344,7 +344,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       // choice of sign according to:
       // http://cmsonline.cern.ch/portal/page/portal/CMS%20online%20system/Elog?_piref815_429145_815_429142_429142.strutsAction=%2FviewMessageDetails.do%3FmsgId%3D667090
       // 24 hardware counts correspond to 25 ns => rescale averages by 24./25.
-      if( fabs( ttAvgTimesEEi][j]/ttNumEntriesEE[i][j] ) > minTimeChangeToApply_ ) 
+      if( fabs( ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j] ) > minTimeChangeToApply_ ) 
       {
         ttAvgTimesEE[i][j] = floor(ttAvgTimesEE[i][j]/ttNumEntriesEE[i][j]*24./25+0.5);
       }
