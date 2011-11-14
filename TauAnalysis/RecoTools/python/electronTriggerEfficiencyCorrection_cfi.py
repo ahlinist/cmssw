@@ -6,7 +6,7 @@ electronTriggerEfficiencyCorrection = cms.EDProducer("PATElectronEfficiencyCorre
     parametrization = cms.PSet(
         src = cms.VInputTag(
             'selectedPatElectronsForElecTauTrkIPcumulative', # collection to be checked first
-            'selectedPatElectronsForElecTauTrkIPlooseIsolationCumulative',
+            'selectedPatElectronsForElecTauPtCumulative',
 			'cleanPatElectrons'   # ("fall-back") collection to be checked last
 			#'selectedPatElectronsForElecTauPt15Cumulative'   # ("fall-back") collection to be checked last
         ),
