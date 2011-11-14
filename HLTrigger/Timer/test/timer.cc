@@ -104,6 +104,7 @@ double TimerBase<clock_t>::delta(const clock_t & start, const clock_t & stop) {
   return (double) (stop-start) / (double) ticks_per_second;
 }
 
+#ifdef __linux
 // clock_gettime(CLOCK_THREAD_CPUTIME_ID)
 class TimerClockGettimeThread : public TimerBase<timespec> {
 public:
@@ -120,7 +121,9 @@ public:
       clock_gettime(CLOCK_THREAD_CPUTIME_ID, values+i);
   }
 };
+#endif // __linux
 
+#ifdef __linux
 // clock_gettime(CLOCK_PROCESS_CPUTIME_ID)
 class TimerClockGettimeProcess : public TimerBase<timespec> {
 public:
@@ -137,7 +140,9 @@ public:
       clock_gettime(CLOCK_PROCESS_CPUTIME_ID, values+i);
   }
 };
+#endif // __linux
 
+#ifdef __linux
 // clock_gettime(CLOCK_REALTIME)
 class TimerClockGettimeRealtime : public TimerBase<timespec> {
 public:
@@ -154,6 +159,7 @@ public:
       clock_gettime(CLOCK_REALTIME, values+i);
   }
 };
+#endif // __linux
 
 // gettimeofday()
 class TimerGettimeofday : public TimerBase<timeval> {
@@ -241,36 +247,44 @@ public:
 
 
 int main(void) {
+#ifdef __linux
   TimerClockGettimeThread   t1;
   TimerClockGettimeProcess  t2;
   TimerClockGettimeRealtime t3;
+#endif // __linux
   TimerGettimeofday         t4;
   TimerGetrusageSelf        t5;
   TimerOMPGetWtime          t6;
   TimerClock                t7;
   TimerTimes                t8;
 
+#ifdef __linux
   t1.measure();
   t2.measure();
   t3.measure();
+#endif // __linux
   t4.measure();
   t5.measure();
   t6.measure();
   t7.measure();
   t8.measure();
 
+#ifdef __linux
   t1.compute();
   t2.compute();
   t3.compute();
+#endif // __linux
   t4.compute();
   t5.compute();
   t6.compute();
   t7.compute();
   t8.compute();
 
+#ifdef __linux
   t1.report();
   t2.report();
   t3.report();
+#endif // __linux
   t4.report();
   t5.report();
   t6.report();
