@@ -4,10 +4,11 @@ process = cms.Process("EcalAdjustFETimingDQM")
 
 # Global Tag -- for geometry
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+# special connection string, specific to P5 
 process.GlobalTag. connect = cms.string('frontier://(proxyurl=http://localhost:3128)(serverurl=http://localhost:8000/FrontierOnProd)(serverurl=http://localhost:8000/FrontierOnProd)(retrieve-ziplevel=0)(failovertoserver=no)/CMS_COND_31X_GLOBALTAG')
 #process.GlobalTag.globaltag = 'GR_R_43_V3::All'
 #process.GlobalTag.globaltag = 'GR_R_44_V1::All'
-process.GlobalTag.globaltag = 'GR_H_V24::All'  # Gian
+process.GlobalTag.globaltag = 'GR_H_V24::All'  # to be used inside P5, fall 2011
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 
@@ -47,7 +48,8 @@ process.adjustTiming = cms.EDAnalyzer('EcalAdjustFETimingDQM',
        TextFileName = cms.string("adjustmentsToTowers.txt"),
        RootFileNameBeg = cms.string("ecalAdjustFETimingDQM."),
        ReadExistingDelaysFromDB = cms.bool(True), # True requires running at P5
-       MinTimeChangeToApply = cms.double(1.)      # minimum  abs(average time TT) required for the hardware settings to be actually changed
+       MinTimeChangeToApply = cms.double(1.),     # minimum  abs(average time TT) required for the hardware settings to be actually changed
+       OperateInDumpMode = cms.bool(False)        # True will give you hw delays as in db for a given run; false will add in variations from DQM
 )
 
 
