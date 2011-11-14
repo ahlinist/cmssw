@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.8 2011/11/13 11:18:48 franzoni Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.9 2011/11/13 11:25:42 franzoni Exp $
 //
 //
 // ***************************************************************************************
@@ -52,9 +52,11 @@ EcalAdjustFETimingDQM::EcalAdjustFETimingDQM(const edm::ParameterSet& iConfig) :
   txtFileName_ (iConfig.getParameter<std::string>("TextFileName")),
   rootFileNameBeg_ (iConfig.getParameter<std::string>("RootFileNameBeg")),
   readDelaysFromDB_ (iConfig.getParameter<bool>("ReadExistingDelaysFromDB")),
-  minTimeChangeToApply_	(iConfig.getParameter<double>("MinTimeChangeToApply"))
+  minTimeChangeToApply_	(iConfig.getParameter<double>("MinTimeChangeToApply")),
+  operateInDumpMode_	(iConfig.getParameter<bool>("OperateInDumpMode"))
 {
-
+  if(operateInDumpMode_) std::cout << "++ the program EcalAdjustFETimingDQM will operate in dump mode: fill xml files with valus in conf database, w/o modifications" << std::endl;
+  else                   std::cout << "++ the program EcalAdjustFETimingDQM will operate in normal mode: fill xml files with valus in conf database after the modifications from inout DQM file" << std::endl;
 }
 
 
@@ -447,6 +449,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     } catch (...) {
       cout << "Unknown error caught" << endl;
     }
+    std::cout << "ECAL hardware latency settings retrieved from db for run: " << runNum << std::endl; 
   }
 
   // now we should have the filled DB array
@@ -461,8 +464,8 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      newFEDelaysEB[i][j] = ttAvgTimesEB[i][j] + feDelaysFromDBEB[i][j];
-      //newFEDelaysEB[i][j] = feDelaysFromDBEB[i][j];
+      if (!operateInDumpMode_) newFEDelaysEB[i][j] = ttAvgTimesEB[i][j] + feDelaysFromDBEB[i][j];
+      else                     newFEDelaysEB[i][j] = feDelaysFromDBEB[i][j];
     }
   }
   // create avg tower times -- EE
@@ -470,8 +473,8 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int j=0; j<maxNumCCUinFed; ++j)
     {
-      newFEDelaysEE[i][j] = ttAvgTimesEE[i][j] + feDelaysFromDBEE[i][j];
-      //newFEDelaysEE[i][j] =  feDelaysFromDBEE[i][j];
+      if (!operateInDumpMode_) newFEDelaysEE[i][j] = ttAvgTimesEE[i][j] + feDelaysFromDBEE[i][j];
+      else                     newFEDelaysEE[i][j] =  feDelaysFromDBEE[i][j];
     }
   }
 
