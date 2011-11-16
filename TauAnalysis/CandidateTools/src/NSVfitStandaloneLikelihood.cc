@@ -6,7 +6,7 @@ using namespace NSVfitStandalone;
 
 const NSVfitStandaloneLikelihood* NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood = 0;
 
-NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons,  Vector measuredMET, TMatrixD& covMET, bool verbose) : 
+NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons,  Vector measuredMET, const TMatrixD& covMET, bool verbose) : 
   metPower_(1.), addLogM_(true), verbose_(verbose), idxObjFunctionCall_(0), invCovMET_(2, 2)
 {
   if(verbose_){
@@ -19,9 +19,10 @@ NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLe
     assert(0);
   }
   // determine transfer matrix for MET
-  covDet_=covMET.Determinant();
+  invCovMET_= covMET;
+  covDet_   = invCovMET_.Determinant();
   if(covDet_!=0){ 
-    invCovMET_ = covMET.Invert(); 
+    invCovMET_.Invert(); 
   }
   else{
     std::cout << " >> ERROR: cannot invert MET covariance Matrix (det=0)." << std::endl;
