@@ -129,7 +129,7 @@ namespace NSVfitStandalone{
   class NSVfitStandaloneLikelihood {
   public:
     /// constructor with a minimla set of configurables 
-    NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, TMatrixD& covMET, bool verbose);
+    NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, bool verbose);
     /// default destructor
     ~NSVfitStandaloneLikelihood() {};
     /// static pointer to this (needed for the minuit function calls)

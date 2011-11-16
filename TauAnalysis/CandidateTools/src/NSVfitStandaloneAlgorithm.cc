@@ -5,7 +5,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
 
-NSVfitStandaloneAlgorithm::NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons, NSVfitStandalone::Vector measuredMET , TMatrixD& covMET, unsigned int verbosity) :
+NSVfitStandaloneAlgorithm::NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons, NSVfitStandalone::Vector measuredMET , const TMatrixD& covMET, unsigned int verbosity) :
   fitStatus_(-1), verbosity_(verbosity), maxObjFunctionCalls_(5000)
 { 
   // instantiate minuit, the arguments might turn into configurables once

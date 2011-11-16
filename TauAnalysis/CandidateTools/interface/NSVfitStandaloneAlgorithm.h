@@ -94,7 +94,7 @@ class NSVfitStandaloneAlgorithm
 {
  public:
   /// constructor from a minimal set of configurables
-  NSVfitStandaloneAlgorithm(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, TMatrixD& covMET, unsigned int verbosity);
+  NSVfitStandaloneAlgorithm(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, unsigned int verbosity);
   /// destructor
   ~NSVfitStandaloneAlgorithm();
 
