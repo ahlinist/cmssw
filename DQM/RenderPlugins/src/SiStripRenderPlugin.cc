@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.43 $
-  \date $Date: 2011/11/11 09:52:16 $
+  \version $Revision: 1.44 $
+  \date $Date: 2011/11/16 13:37:26 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -40,6 +40,9 @@ public:
         return true;
 
       if( o.name.find( "/TrackParameters/" ) != std::string::npos )
+        return true;
+
+      if( o.name.find( "/BaselineValidator/" ) != std::string::npos )
         return true;
 
       return false;
@@ -211,12 +214,12 @@ private:
       }
 
       if( o.name.find( "ADCvsAPVs" )  != std::string::npos)
-      {
-        obj->SetStats( kFALSE );
-        gStyle->SetPalette(1,0);
-        obj->SetOption("colz");
-      }
-
+	{
+	  obj->SetStats( kFALSE );
+	  gStyle->SetPalette(1,0);
+	  obj->SetOption("colz");
+	}
+      
       return;
     }
 
