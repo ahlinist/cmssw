@@ -221,11 +221,23 @@
   <class pattern="edm::Wrapper<edm::AssociationVector<*> >"/>
 
   <!-- create dictionaries for PATTauNuPair objects -->
+  <class name="CompositePtrCandidateTMEt<pat::Electron>"/>
+  <class name="std::vector<CompositePtrCandidateTMEt<pat::Electron> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateTMEt<pat::Electron> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateTMEt<pat::Electron> > >"/>
+  <class name="edm::Ptr<CompositePtrCandidateTMEt<pat::Electron> >"/>
+
+  <class name="CompositePtrCandidateTMEt<pat::Muon>"/>
+  <class name="std::vector<CompositePtrCandidateTMEt<pat::Muon> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateTMEt<pat::Muon> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateTMEt<pat::Muon> > >"/>
+  <class name="edm::Ptr<CompositePtrCandidateTMEt<pat::Muon> >"/>
+
   <class name="CompositePtrCandidateTMEt<pat::Tau>"/>
   <class name="std::vector<CompositePtrCandidateTMEt<pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateTMEt<pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateTMEt<pat::Tau> > >"/>
-  <class name="edm::Ptr<CompositePtrCandidateTMEt<pat::Tau> >"/>
+  <class name="edm::Ptr<CompositePtrCandidateTMEt<pat::Tau> >"/>  
 
   <!-- create dictionaries for PATLeptonRecoilEnergyFromJets objects -->
   <class name="PATLeptonRecoilEnergy<pat::Tau, reco::Jet>"/>
