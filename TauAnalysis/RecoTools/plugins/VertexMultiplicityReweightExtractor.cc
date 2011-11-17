@@ -54,6 +54,7 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
   : src_(cfg.getParameter<edm::InputTag>("src")),
     inputFile_(0),
     genLumiReweight_(0),
+    genLumiReweight3d_(0),
     recVtxMultiplicityReweight_(0),
     type_(kUndefined)
 {
@@ -77,7 +78,7 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
 	<< " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
     
     std::vector<float> gen_pileup_mc = gen_pileup_flat10_summer11mc();
-    TH1* puDist_mc = dynamic_cast<TH1*>(puDist_data_->Clone("MC_distr"));
+    TH1* puDist_mc = new TH1D("MC_distr", "MC_distr", gen_pileup_mc.size(), 0., gen_pileup_mc.size());
     int numBins = puDist_mc->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
       double binCenter = puDist_mc->GetBinCenter(iBin);
@@ -92,9 +93,14 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     puDist_mc->Write();
     delete puFile_mc;
     
-    genLumiReweight_ = new edm::LumiReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
-    
-    if ( type_ == kGenLevel3d ) genLumiReweight_->weight3D_init();
+    if ( type_ == kGenLevel ) {
+      genLumiReweight_ = new edm::LumiReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
+    } else if ( type_ == kGenLevel3d ) {
+      genLumiReweight3d_ = new edm::Lumi3DReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
+      // CV: use pp inelastic cross-section of 73.5mb measured by TOTEM
+      //     instead of CMS measurement of 68mb (default in Lumi3DReWeighting)
+      genLumiReweight3d_->weight3D_init(73.5/68.);
+    }
   } else {
     inputFile_ = new TFile(inputFileName.fullPath().data());
     recVtxMultiplicityReweight_ = dynamic_cast<TH1*>(inputFile_->Get(lutName.data()));
@@ -108,6 +114,7 @@ VertexMultiplicityReweightExtractor::~VertexMultiplicityReweightExtractor()
 {
   delete inputFile_;
   delete genLumiReweight_;
+  delete genLumiReweight3d_;
   delete recVtxMultiplicityReweight_;
 }
 
@@ -136,7 +143,7 @@ double VertexMultiplicityReweightExtractor::operator()(const edm::Event& evt) co
       throw cms::Exception("VertexMultiplicityReweightExtractor") 
 	<< " Failed to find PileupSummaryInfo object for in-time Pile-up !!\n";
     if      ( type_ == kGenLevel   ) weight = genLumiReweight_->weight(numPileUp_inTime);
-    else if ( type_ == kGenLevel3d ) weight = genLumiReweight_->weight3D(numPileUp_bxPrevious, numPileUp_inTime, numPileUp_bxNext);
+    else if ( type_ == kGenLevel3d ) weight = genLumiReweight3d_->weight3D(numPileUp_bxPrevious, numPileUp_inTime, numPileUp_bxNext);
     else assert(0);
   } else if ( type_ == kRecLevel ) {
     edm::Handle<reco::VertexCollection> vertices;

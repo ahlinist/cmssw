@@ -10,71 +10,71 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v4_2'
+version = 'v4_3'
 
 samples = {
     'Data_runs160329to163869' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs160329to163869/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs160329to163869/DoubleMu_v2/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'Data_runs165071to167913' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs165071to167913/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs165071to167913/DoubleMu_v2/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'Data_runs170053to172619' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs170053to172619/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs170053to172619/DoubleMu_v2/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'Data_runs172620to175770' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs172620to175770/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs172620to175770/DoubleMu_v2/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
-    'Data_runs175832to179431' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs175832to179431/DoubleMu/',
+    'Data_runs175832to180252' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs175832to180252/DoubleMu_v2/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'simDYtoMuMu' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simWW' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWW/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWW/DoubleMu_v2/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simWZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWZ/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWZ/DoubleMu_v2/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simZZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZZ/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZZ/DoubleMu_v2/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simTTplusJets' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simTTplusJets/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simTTplusJets/DoubleMu_v2/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'simQCD' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simQCD/DoubleMu/',
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simQCD/DoubleMu_v2/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True 
@@ -88,7 +88,7 @@ samplesToAnalyze = [
     'Data_runs165071to167913',
     'Data_runs170053to172619',
     'Data_runs172620to175770',
-    'Data_runs175832to179431',
+    'Data_runs175832to180252',
     'simDYtoMuMu',
     'simWW',
     'simWZ',
@@ -206,7 +206,6 @@ for sampleToAnalyze in samplesToAnalyze:
         customizeConfigFile(sampleToAnalyze, jobId, version, inputFileNames_chunk, configFile, configFileName)
 
         outputFileName = output_mapper(sampleToAnalyze, jobId, version)
-        bsubFileNames[sampleToAnalyze][jobId] = [ outputFileName ]
 
         logFileName = os.path.basename(configFileName.replace('_cfg.py', '.log'))
         def log_file_maker(job_hash):
@@ -220,7 +219,7 @@ for sampleToAnalyze in samplesToAnalyze:
             log_file_maker,
             "cmsRun %s" % os.path.join(configFilePath, configFileName),
             add_output_files = [ histogramFileName ])
-        bsubFileNames[sampleToAnalyze][jobId].append(histogramFileName)
+        bsubFileNames[sampleToAnalyze][jobId] = [ outputFileName, histogramFileName ]
                     
         bsubScriptFileName = \
           os.path.join(configFilePath, logFileName.replace(".log", ".sh"))

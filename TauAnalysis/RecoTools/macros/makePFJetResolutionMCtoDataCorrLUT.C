@@ -88,7 +88,9 @@ void makePFJetResolutionMCtoDataCorrLUT()
 	      << " +/- " << ratioErr_dijet2011to2010 << std::endl;
   }
  */
+/*
   TFile* outputFile = new TFile("../data/pfJetResolutionMCtoDataCorrLUT.root", "RECREATE");
   pfJetResolutionMCtoDataCorrLUT->Write();
   delete outputFile;
+ */
 }

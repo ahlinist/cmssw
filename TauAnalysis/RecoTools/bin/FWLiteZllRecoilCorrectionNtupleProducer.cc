@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.8 2011/11/04 09:39:19 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.9 2011/11/06 13:26:44 veelken Exp $
  *
  */
 
@@ -208,6 +208,7 @@ int main(int argc, char* argv[])
 	  bool isHLTpath_passed = false;
 	  unsigned int idx = triggerNames.triggerIndex(*hltPath);
 	  if ( idx < triggerNames.size() ) isHLTpath_passed = hltResults->accept(idx);
+	  if ( isHLTpath_passed ) isTriggered = true;
 	}
       }
 

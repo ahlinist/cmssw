@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.12 2011/06/26 16:46:10 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.13 2011/06/29 18:13:44 veelken Exp $
  *
  */
 
@@ -44,9 +44,9 @@ class ParticlePFIsolationExtractor
   enum { kNone, kBeta, kDeltaBeta, kRho };
   enum { kDirP4, kDirTrack };
   explicit ParticlePFIsolationExtractor(const edm::ParameterSet& cfg):
-    pfChargedHadronIso_(0),
-    addChargedHadronIso_(false),
-    pfChargedHadronIsoConeSize_(0.),
+    pfChargedParticleIso_(0),
+    addChargedParticleIso_(false),
+    pfChargedParticleIsoConeSize_(0.),
     pfNeutralHadronIso_(0),
     addNeutralHadronIso_(false),
     pfNeutralHadronIsoConeSize_(0.),
@@ -58,11 +58,11 @@ class ParticlePFIsolationExtractor
     pfNeutralHadronIsoPUcorr_(0),
     pfPhotonIsoPUcorr_(0)
   {    
-    if( cfg.exists("chargedHadronIso") ) {
-      edm::ParameterSet cfgChargedHadronIso = cfg.getParameter<edm::ParameterSet>("chargedHadronIso");
-      pfChargedHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h, cfgChargedHadronIso);
-      addChargedHadronIso_ = cfgChargedHadronIso.exists("add") ? cfgChargedHadronIso.getParameter<bool>("add") : true;
-      pfChargedHadronIsoConeSize_ = cfgChargedHadronIso.getParameter<double>("dRisoCone");
+    if( cfg.exists("chargedParticleIso") ) {
+      edm::ParameterSet cfgChargedParticleIso = cfg.getParameter<edm::ParameterSet>("chargedParticleIso");
+      pfChargedParticleIso_ = new pfIsoConfigType(reco::PFCandidate::h, cfgChargedParticleIso);
+      addChargedParticleIso_ = cfgChargedParticleIso.exists("add") ? cfgChargedParticleIso.getParameter<bool>("add") : true;
+      pfChargedParticleIsoConeSize_ = cfgChargedParticleIso.getParameter<double>("dRisoCone");
     }
 
     if( cfg.exists("neutralHadronIso") ) {
@@ -87,8 +87,9 @@ class ParticlePFIsolationExtractor
       else if ( method_string == "deltaBeta" ) methodPUcorr_ = kDeltaBeta;
       else if ( method_string == "rho"       ) methodPUcorr_ = kRho;
       else if ( method_string == "none"      ) methodPUcorr_ = kNone;
-      else throw cms::Exception("ParticlePFIsolationExtractor")
-	<< "Invalid Configuration parameter method = " << method_string << "!!\n";
+      else 
+	throw cms::Exception("ParticlePFIsolationExtractor")
+	  << "Invalid Configuration parameter method = " << method_string << "!!\n";
       
       if ( methodPUcorr_ != kNone ) {
 	trackExtractor_ = new PATLeptonTrackVectorExtractor<T>();
@@ -107,24 +108,26 @@ class ParticlePFIsolationExtractor
 	    pfPhotonIsoPUcorr_ = new pfIsoConfigType(reco::PFCandidate::h, cfgPhotonIso);
 	  }
 	  
-	  if ( !pfChargedHadronIso_ ) throw cms::Exception("ParticlePFIsolationExtractor")
-	    << "Pile-up correction requires 'chargedHadronIso' Configuration parameter !!\n";
+	  if ( !pfChargedParticleIso_ ) 
+	    throw cms::Exception("ParticlePFIsolationExtractor")
+	      << "Pile-up correction requires 'chargedParticleIso' Configuration parameter !!\n";
 	}
 
 	if ( methodPUcorr_ == kRho ) {	  
 	  ueRhoOffset_ = cfgPUcorr.getParameter<double>("ueRhoOffset");
 
-	  if ( !(pfChargedHadronIsoConeSize_ == pfNeutralHadronIsoConeSize_ && pfChargedHadronIsoConeSize_ == pfPhotonIsoConeSize_) ) 
+	  if ( !(pfChargedParticleIsoConeSize_ == pfNeutralHadronIsoConeSize_ && 	
+		 pfChargedParticleIsoConeSize_ == pfPhotonIsoConeSize_        ) ) 
 	    throw cms::Exception("ParticlePFIsolationExtractor")
 	      << "Rho FastJet corrections require equal isolation Cone sizes to be used" 
-	      << " for PFChargedHadrons, PFNeutralHadrons and PFGammas !!\n";								 
+	      << " for PFChargedParticles, PFNeutralHadrons and PFGammas !!\n";								 
 	}
       }
     }
   }
   ~ParticlePFIsolationExtractor()
   {
-    delete pfChargedHadronIso_;
+    delete pfChargedParticleIso_;
     delete pfNeutralHadronIso_;
     delete pfPhotonIso_;
 
@@ -149,7 +152,8 @@ class ParticlePFIsolationExtractor
       }
       if ( leadingTrack ) coneAxis = leadingTrack->momentum();
       else                coneAxis = lepton.momentum();
-    } else throw cms::Exception("ParticlePFIsolationExtractor")
+    } else 
+      throw cms::Exception("ParticlePFIsolationExtractor")
 	<< "Invalid function argument 'direction' = " << direction << " !!\n";
 
     return this->operator()(lepton, coneAxis, pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
@@ -159,33 +163,40 @@ class ParticlePFIsolationExtractor
 		    const reco::PFCandidateCollection& pfCandidates,
 		    const reco::VertexCollection* vertices = 0, const reco::BeamSpot* beamSpot = 0, double rhoFastJetCorrection = 0.)
   {
-    std::vector<const reco::PFCandidate*> pfChargedHadrons, pfNeutralHadrons, pfPhotons;
-    if ( addChargedHadronIso_   || 
-	 methodPUcorr_ != kNone ) pfChargedHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h);
-    if ( addNeutralHadronIso_   ) pfNeutralHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h0);
-    if ( addPhotonIso_          ) pfPhotons        = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::gamma);
+    std::vector<const reco::PFCandidate*> pfChargedParticles, pfChargedHadrons, pfNeutralHadrons, pfPhotons;
+    if ( addChargedParticleIso_ || methodPUcorr_ != kNone ) {
+      for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+	    pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+	if ( TMath::Abs(pfCandidate->charge()) > 0.5 ) pfChargedParticles.push_back(&(*pfCandidate));
+      }
+      pfChargedHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h);
+    }
+    if ( addNeutralHadronIso_   ) pfNeutralHadrons   = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h0);
+    if ( addPhotonIso_          ) pfPhotons          = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::gamma);
 
     double sumPt = 0.;
     
     if ( methodPUcorr_ == kNone ) {
-      if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, coneAxis);
-      if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
-      if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
+      if ( addChargedParticleIso_ ) sumPt += pfChargedParticleIso_->compSumPt(pfChargedParticles, coneAxis);
+      if ( addNeutralHadronIso_   ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
+      if ( addPhotonIso_          ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
     } else {
-      if ( vertices == 0 || beamSpot == 0 ) throw cms::Exception("ParticlePFIsolationExtractor")
-	<< "Pile-up correction Method = 'deltaBeta' requires Vertex collection and BeamSpot !!\n";
+      if ( vertices == 0 || beamSpot == 0 ) 
+	throw cms::Exception("ParticlePFIsolationExtractor")
+	  << "Pile-up correction Method = 'deltaBeta' requires Vertex collection and BeamSpot !!\n";
 
       std::vector<const reco::Track*> signalTracks = (*trackExtractor_)(lepton);
-      //std::cout << " #signalTracks = " << signalTracks.size() << std::endl;
 
+      std::vector<const reco::PFCandidate*> pfNoPileUpChargedParticles, pfPileUpChargedParticles;
+      getPileUpPFCandidates(pfChargedParticles, signalTracks, *vertices, deltaZ_, *beamSpot, 
+			    pfNoPileUpChargedParticles, pfPileUpChargedParticles);
       std::vector<const reco::PFCandidate*> pfNoPileUpChargedHadrons, pfPileUpChargedHadrons;
-      getPileUpPFCandidates(pfChargedHadrons, signalTracks, *vertices, deltaZ_, *beamSpot, pfNoPileUpChargedHadrons, pfPileUpChargedHadrons);
-      //std::cout << " #pfNoPileUpChargedHadrons = " << pfNoPileUpChargedHadrons.size() << std::endl;
-      //std::cout << " #pfPileUpChargedHadrons = " << pfPileUpChargedHadrons.size() << std::endl;
-
+      getPileUpPFCandidates(pfChargedHadrons, signalTracks, *vertices, deltaZ_, *beamSpot, 
+			    pfNoPileUpChargedHadrons, pfPileUpChargedHadrons);
+      
       if ( methodPUcorr_ == kBeta ) {
-	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, coneAxis);
-	double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, coneAxis);
+	double pfNoPileUpChargedHadronIsoSumPt = pfChargedParticleIso_->compSumPt(pfNoPileUpChargedHadrons, coneAxis);
+	double pfPileUpChargedHadronIsoSumPt  = pfChargedParticleIso_->compSumPt(pfPileUpChargedHadrons, coneAxis);
 	sumPt = pfNoPileUpChargedHadronIsoSumPt;
 	
 	double pfNeutralIsoCorrFactor = ( pfPileUpChargedHadronIsoSumPt > 0. ) ? 
@@ -194,39 +205,38 @@ class ParticlePFIsolationExtractor
 	if ( pfNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis)*pfNeutralIsoCorrFactor;
 	if ( pfPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis)*pfNeutralIsoCorrFactor;
       } else if ( methodPUcorr_ == kDeltaBeta ) {
-	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, coneAxis);
-	//double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, coneAxis);	
-	sumPt = pfNoPileUpChargedHadronIsoSumPt;
+	double pfNoPileUpChargedParticleIsoSumPt = pfChargedParticleIso_->compSumPt(pfNoPileUpChargedParticles, coneAxis);
+	sumPt = pfNoPileUpChargedParticleIsoSumPt;
 
-	//std::cout << "pfNoPileUpChargedHadrons = " << pfNoPileUpChargedHadronIsoSumPt << std::endl;
-	//std::cout << "pfPileUpChargedHadronIsoSumPt = " << pfPileUpChargedHadronIsoSumPt << std::endl;
+	//std::cout << "pfNoPileUpChargedParticles = " << pfNoPileUpChargedParticleIsoSumPt << std::endl;
 
 	double sumPtNeutralIsoSumPt  = 0.;
 	double sumPtNeutralIsoPUcorr = 0.;
 	
 	if ( pfNeutralHadronIso_ ) {
 	  sumPtNeutralIsoSumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
-	  sumPtNeutralIsoPUcorr += pfNeutralHadronIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, coneAxis);
+	  sumPtNeutralIsoPUcorr += pfNeutralHadronIsoPUcorr_->compSumPt(pfPileUpChargedParticles, coneAxis);
 	}
 	
 	if ( pfPhotonIso_ ) {
 	  sumPtNeutralIsoSumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
-	  sumPtNeutralIsoPUcorr += pfPhotonIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, coneAxis);
+	  sumPtNeutralIsoPUcorr += pfPhotonIsoPUcorr_->compSumPt(pfPileUpChargedParticles, coneAxis);
 	}
 	//std::cout << "sumPtNeutralIsoSumPt = " << sumPtNeutralIsoSumPt << std::endl;
 	//std::cout << "sumPtNeutralIsoPUcorr = " << sumPtNeutralIsoPUcorr << std::endl;
 	sumPt += TMath::Max(sumPtNeutralIsoSumPt - 0.5*chargedToNeutralFactor_*sumPtNeutralIsoPUcorr, 0.); 
       } else if ( methodPUcorr_ == kRho ) {
-	if ( rhoFastJetCorrection == -1. ) throw cms::Exception("ParticlePFIsolationExtractor")
-	  << "Pile-up correction Method = 'rho' requires rhoFastJetCorrection !!\n";
+	if ( rhoFastJetCorrection == -1. ) 
+	  throw cms::Exception("ParticlePFIsolationExtractor")
+	    << "Pile-up correction Method = 'rho' requires rhoFastJetCorrection !!\n";
 
-	if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, coneAxis);
-	if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
-	if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
+	if ( addChargedParticleIso_ ) sumPt += pfChargedParticleIso_->compSumPt(pfChargedParticles, coneAxis);
+	if ( addNeutralHadronIso_   ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
+	if ( addPhotonIso_          ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
 	
 	//std::cout << "before rho FastJet correction: sumPt = " << sumPt << std::endl;
 
-	sumPt -= TMath::Pi()*pfChargedHadronIso_->dRisoCone_*pfChargedHadronIso_->dRisoCone_*(rhoFastJetCorrection - ueRhoOffset_);
+	sumPt -= TMath::Pi()*pfChargedParticleIso_->dRisoCone_*pfChargedParticleIso_->dRisoCone_*(rhoFastJetCorrection - ueRhoOffset_);
 	if ( sumPt < 0. ) sumPt = 0.;
 
 	//std::cout << "after rho FastJet correction: sumPt = " << sumPt << std::endl;
@@ -325,9 +335,9 @@ class ParticlePFIsolationExtractor
     unsigned vetoNumHighestPtObjects_;
   };
 
-  pfIsoConfigType* pfChargedHadronIso_;
-  bool addChargedHadronIso_;
-  double pfChargedHadronIsoConeSize_;
+  pfIsoConfigType* pfChargedParticleIso_;
+  bool addChargedParticleIso_;
+  double pfChargedParticleIsoConeSize_;
   pfIsoConfigType* pfNeutralHadronIso_;
   bool addNeutralHadronIso_;
   double pfNeutralHadronIsoConeSize_;
