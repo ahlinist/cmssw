@@ -13,9 +13,9 @@
  *
  * \authors Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: VertexMultiplicityReweightExtractor.h,v 1.2 2011/05/14 10:54:30 veelken Exp $
+ * $Id: VertexMultiplicityReweightExtractor.h,v 1.3 2011/10/19 14:41:11 veelken Exp $
  *
  */
 
@@ -25,6 +25,7 @@
 
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "PhysicsTools/Utilities/interface/Lumi3DReWeighting.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"
 
@@ -46,6 +47,7 @@ class VertexMultiplicityReweightExtractor : public ObjValExtractorBase
   TH1* puDist_data_;
 
   edm::LumiReWeighting* genLumiReweight_;
+  edm::Lumi3DReWeighting* genLumiReweight3d_;
 
   TH1* recVtxMultiplicityReweight_;
 

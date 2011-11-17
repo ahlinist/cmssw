@@ -43,8 +43,8 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 
   histogramMEtS_               = book1D(dir, "metS",               "E_{T}^{miss}",                            30,          0.0,         60.0);
   histogramMEtL_               = book1D(dir, "metL",               "E_{T}^{miss}",                            75,          0.0,        150.0);
-  histogramMEtProjParlZ_       = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",           50,        -50.0,        +50.0);
-  histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              50,        -50.0,        +50.0);
+  histogramMEtProjParlZ_       = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",           75,        -75.0,        +75.0);
+  histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              75,        -75.0,        +75.0);
 
   const int qTnumBins = 22;
   double qTbinning[qTnumBins + 1] = { 
@@ -53,11 +53,11 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramUparlDivQtVsQt_ = book2D(dir, "uParlDivQtVsQt", "u_{#parallel}/q_{T} vs q_{T}",                           
 				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
   histogramUparlVsQt_      = book2D(dir, "uParlVsQt",      "u_{#parallel} vs q_{T}",                           
-				    qTnumBins, qTbinning, 120, -50.0, +250.0);
+				    qTnumBins, qTbinning, 130, -75.0, +250.0);
   histogramUperpDivQtVsQt_ = book2D(dir, "uPerpDivQtVsQt", "u_{#perp}/q_{T} vs q_{T}",                           
 				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
   histogramUperpVsQt_      = book2D(dir, "uPerpVsQt",      "u_{#perp} vs q_{T}",                           
-				    qTnumBins, qTbinning,  40, -50.0,  +50.0);
+				    qTnumBins, qTbinning,  60, -75.0,  +75.0);
   
   histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning, -1,  2));
   histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning,  3,  5));
@@ -65,8 +65,12 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning,  9, 11));
   histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning, 12, -1));
 
-  histogramVtxMultiplicity_  = book1D(dir, "numVertices",        "Num. Vertices",                         20,         -0.5,         19.5);
-  histogramRhoNeutral_       = book1D(dir, "rhoNeutral",         "#rho_{neutral}",                        50,          0. ,          12.);
+  for ( int iNumVtx = 1; iNumVtx <= 25; ++iNumVtx ) {
+    histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning, iNumVtx, iNumVtx));
+  }
+
+  histogramVtxMultiplicity_  = book1D(dir, "numVertices",        "Num. Vertices",                             25,         -0.5,         24.5);
+  histogramRhoNeutral_       = book1D(dir, "rhoNeutral",         "#rho_{neutral}",                            50,          0. ,          12.);
 }
 
 void ZllRecoilCorrectionHistManager::fillHistograms(

@@ -111,11 +111,11 @@ process.prePatProductionSequence += process.selectPrimaryVertex
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
 process.vertexMultiplicityReweight3dRunA = process.vertexMultiplicityReweight.clone(
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to173692_finebin.root"),
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to173692.root"),
     type = cms.string("gen3d")
 )
 process.vertexMultiplicityReweight3dRunB = process.vertexMultiplicityReweight.clone(
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs175832to179431_finebin.root"),
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs175832to180252.root"),
     type = cms.string("gen3d")
 )
 
@@ -221,8 +221,8 @@ else:
 
 #--------------------------------------------------------------------------------
 # add event counter for Mauro's "self baby-sitting" technology
-process.totalEventsProcessed = cms.EDProducer("EventCountProducer")
-process.eventCounterPath = cms.Path(process.totalEventsProcessed)
+process.processedEventsPATtupleProduction = cms.EDProducer("EventCountProducer")
+process.eventCounterPath = cms.Path(process.processedEventsPATtupleProduction)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

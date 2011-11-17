@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.4 2011/10/19 14:41:10 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.5 2011/11/04 09:39:20 veelken Exp $
  *
  */
 
@@ -92,12 +92,13 @@ class ZllRecoilCorrectionHistManager
 	numVtxMax_(numVtxMax)
     {
       TString label;
-      if      ( numVtxMin_ == -1 ) label = Form("Le%i",   numVtxMax_);
-      else if ( numVtxMax_ == -1 ) label = Form("Ge%i",   numVtxMin_);
-      else                         label = Form("%ito%i", numVtxMin_, numVtxMax_);
+      if      ( numVtxMin_ == -1         ) label = Form("Le%i",   numVtxMax_);
+      else if ( numVtxMax_ == -1         ) label = Form("Ge%i",   numVtxMin_);
+      else if ( numVtxMin_ == numVtxMax_ ) label = Form("Eq%i",   numVtxMin_);
+      else                                 label = Form("%ito%i", numVtxMin_, numVtxMax_);
 
       histogramUparlDivQtVsQt_ = histManager->book2D(
-	dir, TString("uParlDivQtVsQt").Append(label).Data(),   "u_{#parallel}/q_{T} vs q_{T}", 
+	dir, TString("uParlDivQtVsQt").Append(label).Data(), "u_{#parallel}/q_{T} vs q_{T}", 
 	qTnumBins, qTbinning, 400,  -5.0,   +5.0);
       histogramUparlVsQt_ = histManager->book2D(
 	dir, TString("uParlVsQt").Append(label).Data(),      "u_{#parallel} vs q_{T}",   

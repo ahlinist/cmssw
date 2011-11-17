@@ -356,8 +356,8 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
     return retVal
 
-def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleNameMC_signal, sampleNameMCs_background,
-                                                      metOptionName, inputFileName, outputFilePath, corrLevelMC,
+def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleNameMC_signal, sampleNameMCs_background, runPeriod, 
+                                                      metOptionName, inputFileName, outputFilePath, samplesToAnalyze, corrLevelMC,
                                                       central_or_shift):
 
     """Build cfg.py file to run makeZllRecoilCorrectionFinalPlots macro
@@ -375,9 +375,26 @@ def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleName
     directoryMC_signal      =   "/".join([ sampleNameMC_signal, corrLevelMC   ])
     directoryMCs_background = [ "/".join([ sampleNameMC_bgr,    corrLevelData ]) for sampleNameMC_bgr in sampleNameMCs_background ]
 
+    sampleNameMCs = []
+    sampleNameMCs.append(sampleNameMC_signal)
+    sampleNameMCs.extend(sampleNameMCs_background)
+    mcScaleFactors_string = ""
+    mcScaleFactors_string += "    mcScaleFactors = cms.PSet(\n"
+    for sampleNameMC in sampleNameMCs:
+        if 'scaleFactor' in samplesToAnalyze[sampleNameMC].keys():
+            mcScaleFactors_string += "        %s = cms.double(%f),\n" % (sampleNameMC, samplesToAnalyze[sampleNameMC]['scaleFactor'])
+    mcScaleFactors_string += "    ),\n"
+
+    runPeriod_string = ""
+    if runPeriod == "2011RunA":
+        runPeriod_string = "Run A"
+    elif runPeriod == "2011RunB":
+        runPeriod_string = "Run B"
+
     sysShiftsUp   = []
     sysShiftsDown = []
     for sysShift in central_or_shift:
+        print "sysShift = %s" % sysShift
         if sysShift.find('Up') != -1:
             sysShiftsUp.append(sysShift)
             sysShiftsDown.append(sysShift.replace("Up", "Down"))
@@ -404,9 +421,13 @@ process.fwliteInput = cms.PSet(
 
 process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
 
+    runPeriod = cms.string('%s'),
+
     directoryData           = cms.string('%s'),
     directoryMC_signal      = cms.string('%s'),
     directoryMCs_background = cms.vstring(%s),
+
+%s
 
     sysShiftsUp   = cms.vstring(%s),
     sysShiftsDown = cms.vstring(%s),
@@ -452,9 +473,10 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
 
     outputFileName = cms.string('%s')
 )
-""" % (inputFileName, directoryData, directoryMC_signal,
+""" % (inputFileName, runPeriod_string, directoryData, directoryMC_signal, make_inputFileNames_vstring(directoryMCs_background),
+       mcScaleFactors_string,
        sysShiftsUp, sysShiftsDown,
-       make_inputFileNames_vstring(directoryMCs_background), outputFileName_full)
+       outputFileName_full)
 
     configFileName = "makeZllRecoilCorrectionFinalPlots_%s_%s_cfg.py" % (metOptionName, corrLevelMC)
     configFileName_full = os.path.join(outputFilePath, configFileName)    

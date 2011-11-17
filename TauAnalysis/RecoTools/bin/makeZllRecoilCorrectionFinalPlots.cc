@@ -56,15 +56,52 @@ std::string terminate_dqmDirectory(const std::string& dqmDirectory)
   return dqmDirectory_terminated;
 }
 
-TH1* loadHistogram(TFile* inputFile, const std::string& directory, const std::string& meName)
+double getScaleFactor(const std::map<std::string, double>& mcScaleFactors, const std::string& directory, bool& isScaleFactorDefined)
 {
-  std::string meName_full = terminate_dqmDirectory(directory).append(meName);
-  TH1* me = dynamic_cast<TH1*>(inputFile->Get(meName_full.data()));
-  if ( !me ) 
-    throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
-      << "Failed to load histogram = " << meName_full << " from file = " << inputFile->GetName() << " !!\n";
+  double scaleFactor = 1.;
 
-  return me;
+  int numMatches = 0;
+
+  for ( std::map<std::string, double>::const_iterator mcScaleFactor_it = mcScaleFactors.begin();
+	mcScaleFactor_it != mcScaleFactors.end(); ++mcScaleFactor_it ) {
+    if ( directory.find(mcScaleFactor_it->first) != std::string::npos ) {
+      scaleFactor *= mcScaleFactor_it->second;
+      ++numMatches;
+    }
+  }
+  
+  if ( numMatches >  1 )
+    throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
+      << "Definition of scale-factor for directory = " << directory << " is ambiguous !!\n";
+  
+  if ( numMatches == 1 ) isScaleFactorDefined = true;
+  
+  return scaleFactor;
+}
+
+TH1* loadHistogram(TFile* inputFile, const std::string& directory, 
+		   const std::map<std::string, double>& mcScaleFactors, const std::string& meName)
+{
+  static std::map<std::string, TH1*> histograms; // key = inputFileName_meName_full
+
+  std::string meName_full = terminate_dqmDirectory(directory).append(meName);
+
+  std::string key = std::string(inputFile->GetName()).append("_").append(meName_full);
+
+  if ( histograms.find(key) == histograms.end() ) {
+    TH1* me = dynamic_cast<TH1*>(inputFile->Get(meName_full.data()));
+    if ( !me ) 
+      throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
+	<< "Failed to load histogram = " << meName_full << " from file = " << inputFile->GetName() << " !!\n";
+    
+    bool isScaleFactorDefined = false;
+    double scaleFactor = getScaleFactor(mcScaleFactors, directory, isScaleFactorDefined);
+    if ( isScaleFactorDefined ) me->Scale(scaleFactor);
+    
+    histograms[key] = me;
+  }
+  
+  return histograms[key];
 }
 
 double square(double x)
@@ -72,9 +109,20 @@ double square(double x)
   return x*x;
 }
 
+std::string getDirectorySysErr(const std::string& directory, const std::string& sysShift)
+{
+  //std::string directory_sysShift = terminate_dqmDirectory(directory).append(sysShift);
+  size_t idx = directory.find_last_of('/');
+  std::string directory_sysShift = std::string(directory, 0, idx);
+  directory_sysShift = terminate_dqmDirectory(directory_sysShift).append(sysShift);
+  if ( idx != std::string::npos ) directory_sysShift.append(std::string(directory, idx));
+  return directory_sysShift;
+}
+
 void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::string& directory,
+	       const std::map<std::string, double>& mcScaleFactors,
 	       const TH1* meMC_central, const vstring& sysShiftsUp, const vstring& sysShiftsDown,
-	       double mcScaleFactor,
+	       double mcToDataScaleFactor,
 	       std::vector<double>& errUp2MC_smSum, std::vector<double>& errDown2MC_smSum)
 {
   assert(sysShiftsUp.size() == sysShiftsDown.size());
@@ -82,20 +130,22 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
   size_t numSysShifts = sysShiftsUp.size();
   for ( size_t iSysShift = 0; iSysShift < numSysShifts; ++iSysShift ) {
     const std::string& sysShiftUp = sysShiftsUp[iSysShift];
-    std::string directory_sysShiftUp = terminate_dqmDirectory(directory).append(sysShiftUp);
-    TH1* meMC_sysShiftUp = loadHistogram(inputFile, directory_sysShiftUp, variable.meName_);
-    meMC_sysShiftUp->Scale(mcScaleFactor);
+    std::string directory_sysShiftUp = getDirectorySysErr(directory, sysShiftUp);
+    TH1* meMC_sysShiftUp = loadHistogram(inputFile, directory_sysShiftUp, mcScaleFactors, variable.meName_);
+    meMC_sysShiftUp->Scale(mcToDataScaleFactor);
     
     const std::string& sysShiftDown = sysShiftsDown[iSysShift];
-    std::string directory_sysShiftDown = terminate_dqmDirectory(directory).append(sysShiftDown);
-    TH1* meMC_sysShiftDown = loadHistogram(inputFile, directory_sysShiftDown, variable.meName_);
-    meMC_sysShiftDown->Scale(mcScaleFactor);
+    std::string directory_sysShiftDown = getDirectorySysErr(directory, sysShiftDown);
+    TH1* meMC_sysShiftDown = loadHistogram(inputFile, directory_sysShiftDown, mcScaleFactors, variable.meName_);
+    meMC_sysShiftDown->Scale(mcToDataScaleFactor);
     
     int numBins = meMC_sysShiftUp->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
       double value_central      = meMC_central->GetBinContent(iBin);
       double value_sysShiftUp   = meMC_sysShiftUp->GetBinContent(iBin);
       double value_sysShiftDown = meMC_sysShiftDown->GetBinContent(iBin);
+      std::cout << "value_central = " << value_central << "," 
+		<< " value_sysShiftUp = " << value_sysShiftUp << ", value_sysShiftDown = " << value_sysShiftDown << std::endl;
 
       double value_max = TMath::Max(value_sysShiftUp, value_sysShiftDown);
       if ( value_max > value_central ) errUp2MC_smSum[iBin - 1]   += square(value_max - value_central); 
@@ -107,6 +157,7 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
 
 void drawHistogram1d(TFile* inputFile, const variableEntryType& variable, 
 		     const std::string& directoryData, const std::string& directoryMC_signal, const vstring& directoryMCs_background, 
+		     const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
 		     const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
 		     bool scaleMCtoData,
 		     const std::string& outputFileName)
@@ -118,24 +169,24 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   canvas->SetLeftMargin(0.12);
   canvas->SetBottomMargin(0.12);
 
-  TH1* meData = loadHistogram(inputFile, directoryData, variable.meName_);
+  TH1* meData = loadHistogram(inputFile, directoryData, mcScaleFactors, variable.meName_);
   if ( !meData->GetSumw2N() ) meData->Sumw2();
   meData->SetLineColor(1);
   meData->SetMarkerColor(1);
   meData->SetMarkerStyle(20);
-  
-  TH1* meMC_signal = loadHistogram(inputFile, directoryMC_signal, variable.meName_);
+
+  TH1* meMC_signal = loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, variable.meName_);
   TH1* meMC_signal_cloned = ( scaleMCtoData ) ?
     (TH1*)meMC_signal->Clone(std::string(meMC_signal->GetName()).append("_cloned").data()) : meMC_signal;
   if ( !meMC_signal_cloned->GetSumw2N() ) meMC_signal_cloned->Sumw2();
   meMC_signal_cloned->SetLineColor(2);
   meMC_signal_cloned->SetLineWidth(2);
   meMC_signal_cloned->SetFillColor(10);
-  
+
   TH1* meMC_bgrSum = 0;
   for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
 	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
-    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, variable.meName_);
+    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, mcScaleFactors, variable.meName_);
     if ( !meMC_bgr->GetSumw2N() ) meMC_bgr->Sumw2();
     if ( !meMC_bgrSum ) meMC_bgrSum = (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data());
     else meMC_bgrSum->Add(meMC_bgr);
@@ -145,42 +196,56 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   TH1* meMC_smSum = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smSum").data());
   if ( meMC_bgrSum ) meMC_smSum->Add(meMC_bgrSum);
 
-  double mcScaleFactor = 1.;
+  double mcToDataScaleFactor = 1.;
   if ( scaleMCtoData ) {
-    mcScaleFactor = meData->Integral()/meMC_smSum->Integral();
-    std::cout << "mcScaleFactor = " << mcScaleFactor << std::endl;
-    meMC_signal_cloned->Scale(mcScaleFactor);
-    meMC_bgrSum->Scale(mcScaleFactor);
-    meMC_smSum->Scale(mcScaleFactor);
+    mcToDataScaleFactor = meData->Integral()/meMC_smSum->Integral();
+    std::cout << "mcToDataScaleFactor = " << mcToDataScaleFactor << std::endl;
+    meMC_signal_cloned->Scale(mcToDataScaleFactor);
+    meMC_bgrSum->Scale(mcToDataScaleFactor);
+    meMC_smSum->Scale(mcToDataScaleFactor);
   }
 
   std::vector<double> errUp2MC_smSum(meData->GetNbinsX());
   std::vector<double> errDown2MC_smSum(meData->GetNbinsX());
-  addSysErr(inputFile, variable, directoryMC_signal, 
-	    meMC_signal_cloned, sysShiftsUp, sysShiftsDown, mcScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+  addSysErr(inputFile, variable, directoryMC_signal, mcScaleFactors,
+	    meMC_signal_cloned, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
   for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
 	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
-    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, variable.meName_);
-    addSysErr(inputFile, variable, *directoryMC_bgr, 
-	      meMC_bgr, sysShiftsUp, sysShiftsDown, mcScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, mcScaleFactors, variable.meName_);
+    addSysErr(inputFile, variable, *directoryMC_bgr, mcScaleFactors,
+	      meMC_bgr, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
   }
 
-  TH1* meMC_smErr = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErr").data());
-  int numBins = meMC_smSum->GetNbinsX();
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    double value_central = meMC_smSum->GetBinContent(iBin);
+  TH1* meMC_smErr = 0;
+  TH1* meMC_smErrUp = 0;
+  TH1* meMC_smErrDown = 0;
+  if ( sysShiftsUp.size() > 0 ) {
+    meMC_smErr = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErr").data());
+    meMC_smErrUp = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErrUp").data());
+    meMC_smErrDown = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErrDown").data());
+    int numBins = meMC_smSum->GetNbinsX();
+    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+      double value_central = meMC_smSum->GetBinContent(iBin);
+      
+      double errUp   = TMath::Sqrt(errUp2MC_smSum[iBin - 1]);      
+      double errDown = TMath::Sqrt(errDown2MC_smSum[iBin - 1]);
+      std::cout << "variable = " << variable.meName_ << ", bin = " << iBin << ":" 
+		<< " value = " << value_central << " + " << errUp << " - " << errDown << std::endl;
+      
+      // CV: set bin content such that errors in up/down direction become symmetric
+      meMC_smErr->SetBinContent(iBin, value_central + 0.5*(errUp - errDown));
+      meMC_smErr->SetBinError(iBin, 0.5*(errUp + errDown));
 
-    double errUp   = TMath::Sqrt(errUp2MC_smSum[iBin - 1]);
-    double errDown = TMath::Sqrt(errDown2MC_smSum[iBin - 1]);
-
-    // CV: set bin content such that errors in up/down direction become symmetric
-    meMC_smErr->SetBinContent(iBin, value_central + 0.5*(errUp - errDown));
-    meMC_smErr->SetBinError(iBin, 0.5*(errUp + errDown));
+      meMC_smErrUp->SetBinContent(iBin, value_central + errUp);
+      meMC_smErrDown->SetBinContent(iBin, value_central - errUp);
+    }
+    meMC_smErr->SetMarkerStyle(0);
+    meMC_smErr->SetMarkerSize(0);
+    meMC_smErr->SetLineColor(13);
+    meMC_smErr->SetLineWidth(0);
+    meMC_smErr->SetFillColor(13);
+    meMC_smErr->SetFillStyle(3001);
   }
-  meMC_smErr->SetLineColor(17);
-  meMC_smErr->SetLineWidth(0);
-  meMC_smErr->SetFillColor(17);
-  meMC_smErr->SetFillStyle(3001);
 
   THStack stack_smSum("smSum", "smSum");
   stack_smSum.Add(meMC_signal_cloned);
@@ -205,7 +270,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   topPad->cd();
   topPad->SetLogy(true);
 
-  stack_smSum.SetMaximum(5.e1*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
+  stack_smSum.SetMaximum(7.e1*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
   stack_smSum.SetMinimum(5.e-1);
   stack_smSum.SetTitle("");
 
@@ -222,32 +287,46 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   yAxis_top->SetTitle("Events");
   yAxis_top->SetTitleOffset(1.4);
 
-  meMC_smErr->Draw("e2same");
+  if ( meMC_smErr ) meMC_smErr->Draw("e2same");
 
   meData->Draw("e1psame");
   
-  TLegend legend(0.185, 0.77, 0.52, 0.95, "", "brNDC"); 
+  TLegend legend(0.185, 0.715, 0.52, 0.955, "", "brNDC"); 
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
-  legend.AddEntry(meData, "Data", "p");
+  legend.AddEntry(meData, std::string(runPeriod).append(" Data").data(), "p");
   legend.AddEntry(meMC_signal, "exp. Signal", "l");
   if ( meMC_bgrSum ) legend.AddEntry(meMC_bgrSum, "exp. Background", "f");
+  if ( meMC_smErr  ) legend.AddEntry(meMC_smErr, "Uncertainty", "f");
   legend.Draw();
 
-  TPaveText statsData(0.70, 0.84, 0.95, 0.94, "brNDC"); 
+  double stats_x1 = ( meMC_smErrUp && meMC_smErrDown ) ? 0.64 : 0.70;
+  TPaveText statsData(stats_x1, 0.84, 0.95, 0.94, "brNDC"); 
   statsData.SetBorderSize(0);
   statsData.SetFillColor(0);
+   std::cout << "Data: mean = " << meData->GetMean() << std::endl;
   statsData.AddText(Form("Mean = %2.2f", meData->GetMean()));
   statsData.AddText(Form("RMS  = %2.2f", meData->GetRMS()));
   statsData.SetTextColor(1);
   statsData.SetTextSize(0.045);
   statsData.Draw();
-  
-  TPaveText statsMC(0.70, 0.74, 0.95, 0.84, "brNDC"); 
+
+  TPaveText statsMC(stats_x1, 0.73, 0.95, 0.83, "brNDC"); 
   statsMC.SetBorderSize(0);
   statsMC.SetFillColor(0);
-  statsMC.AddText(Form("Mean = %2.2f", meMC_smSum->GetMean()));
-  statsMC.AddText(Form("RMS  = %2.2f", meMC_smSum->GetRMS()));
+  if ( meMC_smErrUp && meMC_smErrDown ) {
+    double mcMeanErr = TMath::Sqrt(square(meMC_smSum->GetMean() - meMC_smErrUp->GetMean()) 
+                                 + square(meMC_smSum->GetMean() - meMC_smErrDown->GetMean()));
+    std::cout << "MC: mean = " << meMC_smSum->GetMean() << " +/- " << mcMeanErr << std::endl;
+    statsMC.AddText(Form("Mean = %2.2f #pm %2.2f", meMC_smSum->GetMean(), mcMeanErr));
+    double mcRMSerr = TMath::Sqrt(square(meMC_smSum->GetRMS() - meMC_smErrUp->GetRMS()) 
+                                + square(meMC_smSum->GetRMS() - meMC_smErrDown->GetRMS()));
+    statsMC.AddText(Form("RMS  = %2.2f #pm %2.2f", meMC_smSum->GetRMS(), mcRMSerr));
+  } else {
+    std::cout << "MC: mean = " << meMC_smSum->GetMean() << std::endl;
+    statsMC.AddText(Form("Mean = %2.2f", meMC_smSum->GetMean()));
+    statsMC.AddText(Form("RMS  = %2.2f", meMC_smSum->GetRMS()));
+  }
   statsMC.SetTextColor(2);
   statsMC.SetTextSize(0.045);
   statsMC.Draw();
@@ -257,7 +336,12 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   bottomPad->cd();
   bottomPad->SetLogy(false);
 
+  TH1* dummyHistogram_bottom = (TH1*)meData->Clone("dummyHistogram_bottom");
+  dummyHistogram_bottom->SetTitle("");
+  dummyHistogram_bottom->SetStats(false);  
+
   assert(meMC_smSum->GetNbinsX() == meData->GetNbinsX());
+  int numBins = meMC_smSum->GetNbinsX();
   TGraphErrors* graphDataToMCdiff = new TGraphErrors(numBins);
   for ( int iBin = 1; iBin <= numBins; ++iBin ) {
     double x = meMC_smSum->GetBinCenter(iBin);
@@ -279,19 +363,24 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
     graphDataToMCdiff->SetPointError(iBin - 1, 0., TMath::Sqrt(diffErr2));
   }
 
-  TGraphErrors* graphMCerr = new TGraphErrors(numBins);
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    double x = meMC_smSum->GetBinCenter(iBin);
-    
-    if ( !(meMC_smSum->GetBinContent(iBin) > 0.) ) continue;
-    double rel = meMC_smErr->GetBinContent(iBin)/meMC_smSum->GetBinContent(iBin);
-    double relErr = meMC_smErr->GetBinError(iBin)/meMC_smSum->GetBinContent(iBin);
-
-    graphMCerr->SetPoint(iBin - 1, x, rel);
-    graphMCerr->SetPointError(iBin - 1, 0., relErr);
+  TGraphErrors* graphMCerr = 0;
+  if ( meMC_smErr ) {
+    graphMCerr = new TGraphErrors(numBins);
+    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+      double x = meMC_smSum->GetBinCenter(iBin);
+      
+      if ( !(meMC_smSum->GetBinContent(iBin) > 0.) ) continue;
+      double rel = (meMC_smErr->GetBinContent(iBin)/meMC_smSum->GetBinContent(iBin)) - 1.;
+      double relErr = meMC_smErr->GetBinError(iBin)/meMC_smSum->GetBinContent(iBin);
+      std::cout << "variable = " << variable.meName_ << ", bin = " << iBin << ":" 
+		<< " rel. = " << rel << " +/- " << relErr << std::endl;
+      
+      graphMCerr->SetPoint(iBin - 1, x, rel);
+      graphMCerr->SetPointError(iBin - 1, 0.5*meMC_smSum->GetBinWidth(iBin), relErr);
+    }
   }
 
-  TAxis* xAxis_bottom = graphDataToMCdiff->GetXaxis();
+  TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
   xAxis_bottom->SetTitle(variable.xAxisTitle_.data());
   xAxis_bottom->SetTitleOffset(1.20);
   xAxis_bottom->SetNdivisions(505);
@@ -301,7 +390,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   xAxis_bottom->SetLabelSize(0.08);
   xAxis_bottom->SetTickLength(0.055);
     
-  TAxis* yAxis_bottom = graphDataToMCdiff->GetYaxis();
+  TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
   yAxis_bottom->SetTitle("#frac{Data - Simulation}{Simulation}");
   yAxis_bottom->SetTitleOffset(1.10);
   yAxis_bottom->CenterTitle();
@@ -310,7 +399,6 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   yAxis_bottom->SetLabelSize(0.08);
   yAxis_bottom->SetTickLength(0.04);
     
-  graphDataToMCdiff->SetTitle("");
   double maxDiff = 0.;    
   for ( int iPoint = 0; iPoint < numBins; ++iPoint ) {
     double x, diff;
@@ -320,20 +408,25 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
     if ( diff > maxDiff ) maxDiff = diff;
   }
   double maxDiff01 = 0.1*TMath::Ceil(1.2*maxDiff*10.);
-  graphDataToMCdiff->SetMaximum(+maxDiff01);
-  graphDataToMCdiff->SetMinimum(-maxDiff01);
+  dummyHistogram_bottom->SetMaximum(+maxDiff01);
+  dummyHistogram_bottom->SetMinimum(-maxDiff01);
   
+  dummyHistogram_bottom->Draw("axis");
+
+  if ( graphMCerr ) {
+    graphMCerr->SetMarkerStyle(meMC_smErr->GetMarkerStyle());
+    graphMCerr->SetMarkerSize(meMC_smErr->GetMarkerSize());
+    graphMCerr->SetLineColor(meMC_smErr->GetLineColor());
+    graphMCerr->SetLineWidth(meMC_smErr->GetLineWidth());
+    graphMCerr->SetFillColor(meMC_smErr->GetFillColor());
+    graphMCerr->SetFillStyle(meMC_smErr->GetFillStyle());
+    graphMCerr->Draw("2"); 
+  }
+
   graphDataToMCdiff->SetMarkerStyle(meData->GetMarkerStyle());
   graphDataToMCdiff->SetMarkerColor(meData->GetMarkerColor());
   graphDataToMCdiff->SetLineColor(meData->GetLineColor());
-  graphDataToMCdiff->Draw("AP");   
-
-  graphMCerr->SetMarkerSize(0);
-  graphMCerr->SetMarkerStyle(1);
-  graphMCerr->SetLineColor(meMC_smErr->GetLineColor());
-  graphMCerr->SetFillColor(meMC_smErr->GetFillColor());
-  graphMCerr->SetFillStyle(meMC_smErr->GetFillStyle());
-  graphMCerr->Draw("2"); 
+  graphDataToMCdiff->Draw("P");   
 
   canvas->Update();
 
@@ -341,12 +434,15 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   outputFileName_plot.append("_").append(variable.meName_);
   if ( scaleMCtoData ) outputFileName_plot.append("_scaled");
-  if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
-  else                            outputFileName_plot.append(".png");
-  canvas->Print(outputFileName_plot.data());
+  if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
+  canvas->Print(std::string(outputFileName_plot).append(".png").data());
+  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
   
   if ( meMC_signal_cloned != meMC_signal ) delete meMC_signal_cloned;
   delete graphDataToMCdiff;
+  delete topPad;
+  delete dummyHistogram_bottom;
+  delete bottomPad;
   delete canvas;
 }	     
 
@@ -522,9 +618,9 @@ void drawGraphs(const std::string& yAxisTitle, const std::string& outputFileName
   size_t idx = outputFileName.find_last_of('.');
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   outputFileName_plot.append("_").append(outputFileLabel);
-  if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
-  else                            outputFileName_plot.append(".png");
-  canvas->Print(outputFileName_plot.data());
+  if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
+  canvas->Print(std::string(outputFileName_plot).append(".png").data());
+  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
 }
 
 std::pair<TGraphErrors*, TGraphErrors*> makeGraphs_mean_and_rms(TH2* histogram)
@@ -573,7 +669,8 @@ TGraphErrors* makeGraph_rms(TH2* histogram)
 struct plotUvsQtNumVtxType
 {
   plotUvsQtNumVtxType(TFile* inputFile, int numVtxMin, int numVtxMax, 
-		      const std::string& directoryData, const std::string& directoryMC)
+		      const std::string& directoryData, const std::string& directoryMC,
+		      const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod)
     : numVtxMin_(numVtxMin),
       numVtxMax_(numVtxMax)
   {
@@ -582,17 +679,23 @@ struct plotUvsQtNumVtxType
     else if ( numVtxMax_ == -1 ) label = Form("Ge%i",   numVtxMin_);
     else                         label = Form("%ito%i", numVtxMin_, numVtxMax_);
 
-    meUparlDivQtVsQtData_ = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData, TString("uParlDivQtVsQt").Append(label).Data()));
-    meUparlVsQtData_      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData, TString("uParlVsQt").Append(label).Data()));
-    meUperpVsQtData_      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData, TString("uPerpVsQt").Append(label).Data()));
+    meUparlDivQtVsQtData_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlDivQtVsQt").Append(label).Data()));
+    meUparlVsQtData_      = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlVsQt").Append(label).Data()));
+    meUperpVsQtData_      = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uPerpVsQt").Append(label).Data()));
 
     graphUparlResponseData_   = makeGraph_mean(meUparlDivQtVsQtData_);
     graphUparlResolutionData_ = makeGraph_rms(meUparlVsQtData_);
     graphUperpResolutionData_ = makeGraph_rms(meUperpVsQtData_);
 
-    meUparlDivQtVsQtMC_   = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC,   TString("uParlDivQtVsQt").Append(label).Data()));
-    meUparlVsQtMC_        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC,   TString("uParlVsQt").Append(label).Data()));
-    meUperpVsQtMC_        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC,   TString("uPerpVsQt").Append(label).Data()));
+    meUparlDivQtVsQtMC_   = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC,   mcScaleFactors, TString("uParlDivQtVsQt").Append(label).Data()));
+    meUparlVsQtMC_        = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC,   mcScaleFactors, TString("uParlVsQt").Append(label).Data()));
+    meUperpVsQtMC_        = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC,   mcScaleFactors, TString("uPerpVsQt").Append(label).Data()));
 
     graphUparlResponseMC_     = makeGraph_mean(meUparlDivQtVsQtMC_);
     graphUparlResolutionMC_   = makeGraph_rms(meUparlVsQtMC_);
@@ -602,7 +705,7 @@ struct plotUvsQtNumVtxType
     else if ( numVtxMax_ == -1 ) label = Form("N_{vtx} > %i",      numVtxMin_);
     else                         label = Form("%i < N_{vtx} < %i", numVtxMin_, numVtxMax_);
 
-    legendEntryData_ = std::string("Data").append(": ").append(label);
+    legendEntryData_ = std::string(runPeriod).append(" Data").append(": ").append(label);
     legendEntryMC_   = std::string("Sim.").append(": ").append(label);
   }
   ~plotUvsQtNumVtxType() {}
@@ -660,9 +763,20 @@ int main(int argc, const char* argv[])
 
   edm::ParameterSet cfgMakeZllRecoilCorrectionPlots = cfg.getParameter<edm::ParameterSet>("makeZllRecoilCorrectionFinalPlots");
 
+  std::string runPeriod = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("runPeriod");
+
   std::string directoryData           = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("directoryData");
   std::string directoryMC_signal      = cfgMakeZllRecoilCorrectionPlots.getParameter<std::string>("directoryMC_signal");
   vstring     directoryMCs_background = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("directoryMCs_background");
+
+  std::map<std::string, double> mcScaleFactors; // key = sample
+  edm::ParameterSet cfgScaleFactors = cfgMakeZllRecoilCorrectionPlots.getParameter<edm::ParameterSet>("mcScaleFactors");
+  vstring sampleNames = cfgScaleFactors.getParameterNamesForType<double>();
+  for ( vstring::const_iterator sampleName = sampleNames.begin();
+	sampleName != sampleNames.end(); ++sampleName ) {
+    double scaleFactor = cfgScaleFactors.getParameter<double>(*sampleName);
+    mcScaleFactors[*sampleName] = scaleFactor;
+  }
 
   vstring sysShiftsUp   = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("sysShiftsUp");
   vstring sysShiftsDown = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("sysShiftsDown");
@@ -694,43 +808,48 @@ int main(int argc, const char* argv[])
 //--- make control plots of different variable distributions
   for ( std::vector<variableEntryType>::const_iterator variable = variables.begin();
 	variable != variables.end(); ++variable ) {
-    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, 
+    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, mcScaleFactors, runPeriod,
 		    sysShiftsUp, sysShiftsDown, false, outputFileName);
-    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, 
+    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, mcScaleFactors, runPeriod,
 		    sysShiftsUp, sysShiftsDown, true,  outputFileName);
   }
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
-  TH2* meUparlDivQtVsQt_data = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      "uParlDivQtVsQt"));
-  TH2* meUparlVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      "uParlVsQt"));
-  TH2* meUperpVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      "uPerpVsQt"));
+  TH2* meUparlDivQtVsQt_data = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      mcScaleFactors, "uParlDivQtVsQt"));
+  TH2* meUparlVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      mcScaleFactors, "uParlVsQt"));
+  TH2* meUperpVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      mcScaleFactors, "uPerpVsQt"));
 
   TGraphErrors* graphUparlResponse_data   = makeGraph_mean(meUparlDivQtVsQt_data);
   TGraphErrors* graphUparlResolution_data = makeGraph_rms(meUparlVsQt_data);
   TGraphErrors* graphUperpResolution_data = makeGraph_rms(meUperpVsQt_data);
 
-  TH2* meUparlDivQtVsQt_mc   = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, "uParlDivQtVsQt"));
-  TH2* meUparlVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, "uParlVsQt"));
-  TH2* meUperpVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, "uPerpVsQt"));
+  TH2* meUparlDivQtVsQt_mc   = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, "uParlDivQtVsQt"));
+  TH2* meUparlVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, "uParlVsQt"));
+  TH2* meUperpVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, "uPerpVsQt"));
 
   TGraphErrors* graphUparlResponse_mc     = makeGraph_mean(meUparlDivQtVsQt_mc);
   TGraphErrors* graphUparlResolution_mc   = makeGraph_rms(meUparlVsQt_mc);
   TGraphErrors* graphUperpResolution_mc   = makeGraph_rms(meUperpVsQt_mc);
 
   drawGraphs("<u_{parl}>/q_{T}", outputFileName, "uParlResponse",
-	     graphUparlResponse_data, "Data", graphUparlResponse_mc, "Simulation");
+	     graphUparlResponse_data, std::string(runPeriod).append(" Data"), graphUparlResponse_mc, "Simulation");
   drawGraphs("RMS(u_{parl})", outputFileName, "uParlResolution",
-	     graphUparlResolution_data, "Data", graphUparlResolution_mc, "Simulation");
+	     graphUparlResolution_data, std::string(runPeriod).append(" Data"), graphUparlResolution_mc, "Simulation");
   drawGraphs("RMS(u_{perp})", outputFileName, "uPerpResolution",
-	     graphUperpResolution_data, "Data", graphUperpResolution_mc, "Simulation");
+	     graphUperpResolution_data, std::string(runPeriod).append(" Data"), graphUperpResolution_mc, "Simulation");
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
 //    in different bins of reconstructed vertex multiplicity
-  plotUvsQtNumVtxType* plotUvsQtNumVtxLe2   = new plotUvsQtNumVtxType(inputFile, -1,  2, directoryData, directoryMC_signal);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx3to5  = new plotUvsQtNumVtxType(inputFile,  3,  5, directoryData, directoryMC_signal);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx6to8  = new plotUvsQtNumVtxType(inputFile,  6,  8, directoryData, directoryMC_signal);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx9to11 = new plotUvsQtNumVtxType(inputFile,  9, 11, directoryData, directoryMC_signal);
-  plotUvsQtNumVtxType* plotUvsQtNumVtxGe12  = new plotUvsQtNumVtxType(inputFile, 12, -1, directoryData, directoryMC_signal);
+  plotUvsQtNumVtxType* plotUvsQtNumVtxLe2   = 
+    new plotUvsQtNumVtxType(inputFile, -1,  2, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
+  plotUvsQtNumVtxType* plotUvsQtNumVtx3to5  = 
+    new plotUvsQtNumVtxType(inputFile,  3,  5, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
+  plotUvsQtNumVtxType* plotUvsQtNumVtx6to8  = 
+    new plotUvsQtNumVtxType(inputFile,  6,  8, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
+  plotUvsQtNumVtxType* plotUvsQtNumVtx9to11 = 
+    new plotUvsQtNumVtxType(inputFile,  9, 11, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
+  plotUvsQtNumVtxType* plotUvsQtNumVtxGe12  = 
+    new plotUvsQtNumVtxType(inputFile, 12, -1, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
   
   drawGraphs("<u_{parl}>/q_{T}", outputFileName, "uParlResponse_binnedVtxMultiplicity",
 	     plotUvsQtNumVtxLe2->graphUparlResponseData_, plotUvsQtNumVtxLe2->legendEntryData_,
