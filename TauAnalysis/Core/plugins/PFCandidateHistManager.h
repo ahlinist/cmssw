@@ -35,9 +35,13 @@ class PFCandidateHistManager : public HistManagerBase
   edm::InputTag pfCandidateSrc_;
 
 //--- histograms
+  MonitorElement* hNumPFCandidates_;
+
   MonitorElement* hPFCandidatePt_;
   MonitorElement* hPFCandidateEta_;
   MonitorElement* hPFCandidatePhi_;
+
+  MonitorElement* hPFCandidateSumEt_;
 };
 
 #endif  
