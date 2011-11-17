@@ -45,32 +45,30 @@ userSettings = {
     },
     'veelken': {
         'current' : {
+            'HiggsToElecMu'     : '2011Oct06ii',
+            'muonIsoPATtuple'   : '2011Oct10v5',
             'ZtoMuTau'          : '2011Sep09', 
-            'ZtoMuTau_tauIdEff' : '2011Aug18'
+            'ZtoMuTau_tauIdEff' : '2011Oct30'
         },
         'jobs' : {
-            '2011Sep09' : {
-                'ZtoMuTau' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/ZtoMuTau/2011Sep09/",
-                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau/",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau/2011Sep09/"
-                }
-            },
-            '2011Aug18' : {
+            '2011Oct30' : {
                 'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Aug18/",
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/",
                     'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Aug18/"
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Oct30/"
                 }
             },
-            '2011Jul23' : {
-                'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/",
-                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Jul23/"
+            '2011Oct10v3' : {
+                'muonIsoPATtuple' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/MuonIsolation/2011Oct10/",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/muonIsoPATtuple/2011Oct10/"
+                }
+            },
+            '2011Oct06' : {   
+                'HiggsToElecMu' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/HiggsToElecMu/2011Oct06/",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/HiggsToElecMu/2011Oct06/"
                 }
             }
         },

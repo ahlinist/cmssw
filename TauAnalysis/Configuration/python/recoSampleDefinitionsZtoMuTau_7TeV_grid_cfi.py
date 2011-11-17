@@ -301,7 +301,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : True,
+        'applyRhoNeutralReweighting' : False,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
         'SE_black_list' : 'T2_BR_SPRACE'
@@ -319,7 +319,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : True,
+        'applyRhoNeutralReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'WZ' : {
@@ -335,7 +335,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : True,
+        'applyRhoNeutralReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'ZZ' : {
@@ -351,7 +351,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : True,
+        'applyRhoNeutralReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'TTplusJets_madgraph' : {
@@ -366,7 +366,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : True,
+        'applyRhoNeutralReweighting' : False,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
         'SE_black_list' : 'T2_BE_UCL'        

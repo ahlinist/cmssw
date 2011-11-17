@@ -91,4 +91,4 @@ for jobInfo in jobs:
     if isJobToKill:
         print("killing job %i, name = %s" % (jobId, jobName))
         commandLine = 'bkill %i' % jobId
-        #subprocess.call(commandLine, shell = True)
+        subprocess.call(commandLine, shell = True)
