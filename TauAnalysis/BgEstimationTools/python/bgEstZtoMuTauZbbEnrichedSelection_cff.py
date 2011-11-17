@@ -15,21 +15,11 @@ goodMuonsBgEstZbbEnriched = goodMuons.clone(
 )
 
 goodIsoMuonsBgEstZbbEnriched = goodIsoMuons.clone(
-    chargedHadronIso = goodIsoMuons.chargedHadronIso.clone(
-        dRisoCone = cms.double(0.4)
-    ),
-    neutralHadronIso = goodIsoMuons.neutralHadronIso.clone(
-        dRisoCone = cms.double(0.4)
-    ),
-    photonIso = goodIsoMuons.photonIso.clone(
-        dRisoCone = cms.double(0.4)
-    ),
-    sumPtMax = cms.double(0.15),
     filter = cms.bool(False)
 )
 
 goodIsoMuPlusBgEstZbbEnriched = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("goodIsoMuons"),
+    src = cms.InputTag("goodIsoMuonsBgEstZbbEnriched"),
     cut = cms.string('charge > +0.5'),
     filter = cms.bool(False)
 )
