@@ -281,6 +281,18 @@ namespace {
     edm::Wrapper<edm::AssociationVector<PATElecMuPairRefProd, std::vector<float> > > dummyZtautauVisMassHypothesesElecMuWrapper;
 
     /// create dictionaries for PATTauNuPair objects
+    PATElecNuPair dummyPATElecNuPair;
+    edm::Wrapper<PATElecNuPair> dummyPATElecNuPairWrapper;
+    PATElecNuPairCollection dummyPATElecNuPairCollection;
+    edm::Wrapper<PATElecNuPairCollection> dummyPATElecNuPairCollectionWrapper;
+    edm::Ptr<PATElecNuPair> dummyPATElecNuPairPtr;
+
+    PATTauNuPair dummyPATMuNuPair;
+    edm::Wrapper<PATMuNuPair> dummyPATMuNuPairWrapper;
+    PATMuNuPairCollection dummyPATMuNuPairCollection;
+    edm::Wrapper<PATMuNuPairCollection> dummyPATMuNuPairCollectionWrapper;
+    edm::Ptr<PATMuNuPair> dummyPATMuNuPairPtr;
+
     PATTauNuPair dummyPATTauNuPair;
     edm::Wrapper<PATTauNuPair> dummyPATTauNuPairWrapper;
     PATTauNuPairCollection dummyPATTauNuPairCollection;

@@ -9,9 +9,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: CompositePtrCandidateTMEt.h,v 1.3 2011/02/21 13:08:23 veelken Exp $
+ * $Id: CompositePtrCandidateTMEt.h,v 1.4 2011/06/08 10:13:09 veelken Exp $
  *
  */
 
@@ -81,8 +81,12 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
   double dPhi_;
 };
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
+typedef CompositePtrCandidateTMEt<pat::Electron> PATElecNuPair;
+typedef CompositePtrCandidateTMEt<pat::Muon> PATMuNuPair;
 typedef CompositePtrCandidateTMEt<pat::Tau> PATTauNuPair;
 
 #endif
