@@ -24,13 +24,6 @@ patMuons.addGenMatch = cms.bool(False)
 patMuons.embedHighLevelSelection = cms.bool(True)
 patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beamspot (not event vertex)
 
-# Trigger requirements
-#import HLTrigger.HLTfilters.hltHighLevel_cfi
-#zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
-#zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_Mu15_v1", "HLT_Mu15_v2", "HLT_IsoMu17_v5", "HLT_IsoMu17_v6", "HLT_IsoMu17_v7", "HLT_IsoMu17_v8", "HLT_IsoMu20_eta2p1_v1", "HLT_IsoMu24_v5", "HLT_IsoMu24_v6", "HLT_IsoMu24_v7", "HLT_DoubleMu7_v1", "HLT_DoubleMu7_v2", "HLT_Mu13_Mu8_v2", "HLT_Mu17_Mu8_v2", "HLT_Mu13_Mu8_v4", "HLT_Mu17_Mu8_v4", "HLT_Mu8_v1", "HLT_Mu8_v2", "HLT_Mu8_v3", "HLT_Mu8_v4" ]
-#zmmHLTFilter.throw = cms.bool(False)
-
 # Vertex selection
 goodVertex = cms.EDFilter("VertexSelector",
     src = cms.InputTag("offlinePrimaryVertices"),
@@ -43,7 +36,7 @@ goodMuons = cms.EDFilter("PATMuonSelector",
   src = cms.InputTag("patMuons"),
      cut = cms.string(
            'pt > 10 & abs(eta) < 2.5 & isGlobalMuon & isTrackerMuon ' \
-                 + ' & innerTrack.hitPattern.numberOfValidTrackerHits > 10 & innerTrack.hitPattern.numberOfValidPixelHits > 0' \
+                 + ' & innerTrack.hitPattern.numberOfValidTrackerHits > 9 & innerTrack.hitPattern.numberOfValidPixelHits > 0' \
                  + ' & abs(dB)<0.2 & globalTrack.normalizedChi2 < 10' \
                  + ' & globalTrack.hitPattern.numberOfValidMuonHits > 0 & numberOfMatches > 1'
   ),
@@ -69,7 +62,7 @@ goldenZmumuCandidatesGe0IsoMuons = cms.EDProducer("CandViewCombiner", # cannot b
 #  o muon+ + iso. muon- || iso. muon+ + muon-
 goldenZmumuCandidatesGe1IsoMuons = goldenZmumuCandidatesGe0IsoMuons.clone(
     # Require one of the muons with pT > 20 and also one of the muons to be isolated:
-    cut = cms.string('charge = 0 & max(daughter(0).pt,daughter(1).pt)>20 & min((daughter(0).isolationR03().sumPt + daughter(0).isolationR03().emEt + daughter(0).isolationR03().hadEt)/daughter(0).pt, (daughter(1).isolationR03().sumPt + daughter(1).isolationR03().emEt + daughter(1).isolationR03().hadEt)/daughter(1).pt) < 0.15'),
+    cut = cms.string('charge = 0 & max(daughter(0).pt,daughter(1).pt) > 20.0 & min((daughter(0).isolationR03().sumPt + daughter(0).isolationR03().emEt + daughter(0).isolationR03().hadEt)/daughter(0).pt, (daughter(1).isolationR03().sumPt + daughter(1).isolationR03().emEt + daughter(1).isolationR03().hadEt)/daughter(1).pt) < 0.15'),
     decay = cms.string("goodMuons@+ goodMuons@-")
 
     # This does not work because it creates duplicate entries:
@@ -95,7 +88,6 @@ goldenZmumuFilter = cms.EDFilter("CandViewCountFilter",
     #src = cms.InputTag("goldenZmumuCandidatesGe1IsoMuons"),  # tight selection                            
     minNumber = cms.uint32(1)
 )
-
 
 goldenZmumuSelectionSequence = cms.Sequence(
     # zmmHLTFilter

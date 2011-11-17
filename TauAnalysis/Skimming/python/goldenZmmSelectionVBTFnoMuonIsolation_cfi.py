@@ -16,8 +16,64 @@ import copy
 from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import TransientTrackBuilderESProducer
 
 from CommonTools.ParticleFlow.pfNoPileUp_cff import *
+pfPileUp.Enable = cms.bool(True)
+pfPileUp.checkClosestZVertex = cms.bool(True)
+
+from CommonTools.ParticleFlow.pfParticleSelection_cff import *
 
 from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import patMuons
+
+# compute muon IsoDeposits and add muon isolation sums to pat::Muon objects
+from RecoMuon.MuonIsolation.muonPFIsolation_cff import *
+import PhysicsTools.PatAlgos.tools.helpers as patutils
+patutils.massSearchReplaceAnyInputTag(muonPFIsolationDepositsSequence, cms.InputTag('muons1stStep'), cms.InputTag('muons'))
+patMuons.isoDeposits = cms.PSet(
+    # CV: strings for IsoDeposits defined in PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc
+    pfChargedHadrons = cms.InputTag("muPFIsoDepositCharged"),
+    pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral"),
+    pfPhotons = cms.InputTag("muPFIsoDepositGamma"),
+    user = cms.VInputTag(
+        cms.InputTag("muPFIsoDepositChargedAll"),
+        cms.InputTag("muPFIsoDepositPU")
+    )
+)
+
+patMuons.userIsolation = cms.PSet(
+    # CV: strings for Isolation values defined in PhysicsTools/PatAlgos/src/MultiIsolator.cc
+    pfChargedHadron = cms.PSet(
+        deltaR = cms.double(0.4),
+        src = patMuons.isoDeposits.pfChargedHadrons,
+        vetos = muPFIsoValueCharged04.deposits[0].vetos,
+        skipDefaultVeto = muPFIsoValueCharged04.deposits[0].skipDefaultVeto
+    ),
+    pfNeutralHadron = cms.PSet(
+        deltaR = cms.double(0.4),
+        src = patMuons.isoDeposits.pfNeutralHadrons,
+        vetos = muPFIsoValueNeutral04.deposits[0].vetos,
+        skipDefaultVeto = muPFIsoValueNeutral04.deposits[0].skipDefaultVeto
+    ),
+    pfGamma = cms.PSet(
+        deltaR = cms.double(0.4),
+        src = patMuons.isoDeposits.pfPhotons,
+        vetos = muPFIsoValueGamma04.deposits[0].vetos,
+        skipDefaultVeto = muPFIsoValueGamma04.deposits[0].skipDefaultVeto
+    ),
+    user = cms.VPSet(
+        cms.PSet(
+            deltaR = cms.double(0.4),
+            src = patMuons.isoDeposits.user[0],
+            vetos = muPFIsoValueChargedAll04.deposits[0].vetos,
+            skipDefaultVeto = muPFIsoValueChargedAll04.deposits[0].skipDefaultVeto
+        ),
+        cms.PSet(
+            deltaR = cms.double(0.4),
+            src = patMuons.isoDeposits.user[1],
+            vetos = muPFIsoValuePU04.deposits[0].vetos,
+            skipDefaultVeto = muPFIsoValuePU04.deposits[0].skipDefaultVeto
+        )
+    )
+)
+
 patMuons.addGenMatch = cms.bool(False)
 patMuons.embedHighLevelSelection = cms.bool(True)
 patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beamspot (not event vertex)
@@ -27,19 +83,50 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
 zmmHLTFilter.HLTPaths = [
-    'HLT_IsoMu17_v5',
-    'HLT_IsoMu17_v6',
-    'HLT_IsoMu17_v8',
-    'HLT_IsoMu17_v9',
-    'HLT_IsoMu17_v10',
-    'HLT_IsoMu17_v11'
+    # single muon triggers (early 2011 Run A and MC)
+    #'HLT_IsoMu17_v5',
+    #'HLT_IsoMu17_v6',
+    #'HLT_IsoMu17_v8',
+    #'HLT_IsoMu17_v9',
+    #'HLT_IsoMu17_v10',
+    #'HLT_IsoMu17_v11',
+    #'HLT_IsoMu17_v13',
+    #'HLT_IsoMu17_v14',
+    # single muon triggers (late 2011 Run A and all of Run B and MC)
+    #'HLT_IsoMu24_v1',
+    #'HLT_IsoMu24_v2',
+    #'HLT_IsoMu24_v4',
+    #'HLT_IsoMu24_v5',
+    #'HLT_IsoMu24_v6',
+    #'HLT_IsoMu24_v7',
+    #'HLT_IsoMu24_v8',
+    #'HLT_IsoMu24_v9',
+    #'HLT_IsoMu24_v12'
+    # double muon triggers (all of 2011 Run A)
+    'HLT_Mu13_Mu8_v1',
+    'HLT_Mu13_Mu8_v2',
+    'HLT_Mu13_Mu8_v3',
+    'HLT_Mu13_Mu8_v4',
+    'HLT_Mu13_Mu8_v6',
+    'HLT_Mu13_Mu8_v7',
+    'HLT_Mu13_Mu8_v10',
+    # double muon triggers (all of 2011 Run B)
+    'HLT_Mu17_Mu8_v1',
+    'HLT_Mu17_Mu8_v2',
+    'HLT_Mu17_Mu8_v3',
+    'HLT_Mu17_Mu8_v4',
+    'HLT_Mu17_Mu8_v6',
+    'HLT_Mu17_Mu8_v7',
+    'HLT_Mu17_Mu8_v10',
+    # double muon triggers (Summer'11 MC)
+    'HLT_DoubleMu7_v1'
 ]
 zmmHLTFilter.throw = cms.bool(False)
 
 # Vertex selection
 goodVertex = cms.EDFilter("VertexSelector",
     src = cms.InputTag("offlinePrimaryVertices"),
-    cut = cms.string("(!isFake) & ndof > 3 & abs(z) < 15 & position.Rho < 2"),
+    cut = cms.string("isValid & ndof >= 4 & abs(z) < 24 & abs(position.Rho) < 2"),
     filter = cms.bool(True)
 )
 
@@ -56,17 +143,15 @@ goodMuons = cms.EDFilter("PATMuonSelector",
 )
 
 # Cuts for muon leg with isolation cut applied
-from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
-goodIsoMuons = cms.EDFilter("PATMuonPFIsolationSelector",
-    patMuonPFIsolationSelector.clone(
-        sumPtMax = cms.double(0.06)
-    ),
-    src = cms.InputTag("goodMuons"),                          
+goodIsoMuons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("goodMuons"),
+    cut = cms.string(
+        '(userIsolation("pat::User1Iso")' + \
+        ' + max(0., userIsolation("pat::PfNeutralHadronIso") + userIsolation("pat::PfGammaIso")' + \
+        '          - 0.5*userIsolation("pat::User2Iso"))) < 0.06*pt'
+    ),                                
     filter = cms.bool(False)
 )
-goodIsoMuons.chargedHadronIso.dRisoCone = cms.double(0.4)
-goodIsoMuons.neutralHadronIso.dRisoCone = cms.double(0.4)
-goodIsoMuons.photonIso.dRisoCone = cms.double(0.4)
 
 # Produce combinations of good
 #  o muon+ + muon-
@@ -114,6 +199,8 @@ goldenZmumuSelectionSequence = cms.Sequence(
      zmmHLTFilter
     * goodVertex
     * pfNoPileUpSequence
+    * pfParticleSelectionSequence
+    * muonPFIsolationDepositsSequence
     * patMuons * goodMuons * goodIsoMuons
     * goldenZmumuCandidatesGe0IsoMuons * goldenZmumuCandidatesGe1IsoMuons * goldenZmumuCandidatesGe2IsoMuons
     * goodMuonFilter * goldenZmumuFilter

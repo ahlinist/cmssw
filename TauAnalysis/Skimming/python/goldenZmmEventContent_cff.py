@@ -41,3 +41,13 @@ keepMuonIsolationTagAndProbeFlags = cms.PSet(
     )
 )
 goldenZmumuEventContent.outputCommands.extend(keepMuonIsolationTagAndProbeFlags.outputCommands)
+
+# keep event counters for Mauro's "self baby-sitting" technology
+keepEventCounters = cms.PSet(
+    outputCommands = cms.untracked.vstring(
+        'keep EventAux_*_*_*',
+        'keep LumiSummary_*_*_*',                       
+        'keep edmMergeableCounter_*_*_*',
+    )
+)
+goldenZmumuEventContent.outputCommands.extend(keepEventCounters.outputCommands)

@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
 #--------------------------------------------------------------------------------
-# skim Z --> mu+ mu- candidate events passing "golden" VTBF selection
+# skim W --> e nu candidate events passing VTBF selection
 #--------------------------------------------------------------------------------
 
-process = cms.Process("skimGoldenZmumu2")
+process = cms.Process("skimTightWenu")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
@@ -28,19 +28,18 @@ else:
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_data_runs160329to163869_selZmumuCands_met80to100_AOD.root',
-        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_data_runs165071to167913_selZmumuCands_met80to100_AOD.root'
+        'file:/data2/veelken/CMSSW_4_2_x/skims/TauTriggerStudy/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/tauIdEffSample_Ztautau_powheg_2011Jul23_RECO_9_1_n5R.root'
     )
 )
 
 # import event content definition:
 # keep full FEVT (RAW + RECO) event content
-# plus collections of goodMuons, goldenZmumuCandidates and "tag" & "probe" flags
-from TauAnalysis.Skimming.goldenZmmEventContent_cff import *
+# plus collections of selectedElectrons and WenuCandidates
+from TauAnalysis.Skimming.tightWenuEventContent_cff import *
 
-# load definition of VBTF Z --> mu+ mu- event selection
-# (with no isolation cuts applied on one of the two muons)
-process.load("TauAnalysis.Skimming.goldenZmmSelectionVBTFnoMuonIsolation_cfi")
+# load definition of VBTF W --> e nu event selection
+from TauAnalysis.Skimming.tightWenuSelectionVBTFrelPFIsolation_cfi import filterTightWenuCandidates
+filterTightWenuCandidates(process, isMC)
 
 # load definitions of data-quality filters
 process.load("TauAnalysis.TauIdEfficiency.filterDataQuality_cfi")
@@ -53,12 +52,12 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 #--------------------------------------------------------------------------------
-# select events passing "golden" VTBF Z --> mu+ mu- selection
+# select events passing VTBF W --> e nu selection
 #--------------------------------------------------------------------------------
 
-process.goldenZmumuSkimPath = cms.Path(
+process.tightWenuSkimPath = cms.Path(
     process.dataQualityFilters 
-   + process.goldenZmumuSelectionSequence
+   + process.tightWenuSelectionSequence
 )
 
 # add event counter for Mauro's "self baby-sitting" technology
@@ -66,23 +65,22 @@ process.processedEventsSkimming = cms.EDProducer("EventCountProducer")
 process.eventCounterPath = cms.Path(process.processedEventsSkimming)
 
 #--------------------------------------------------------------------------------
-# save events passing "golden" VTBF Z --> mu+ mu- selection
+# save events passing VTBF W --> e nu selection
 #--------------------------------------------------------------------------------
 
-process.goldenZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
-    goldenZmumuEventContent,
+process.tightWenuSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
+    tightWenuEventContent,
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('goldenZmumuSkimPath')
+        SelectEvents = cms.vstring('tightWenuSkimPath')
     ),
-    fileName = cms.untracked.string('goldenZmumuEvents_data_runs160329to167913_selZmumuCands_met80to100_AOD.root')
+    fileName = cms.untracked.string('tightWenuEvents_AOD.root')
 )
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.o = cms.EndPath(process.goldenZmumuSkimOutputModule)
+process.o = cms.EndPath(process.tightWenuSkimOutputModule)
 
-rocessDumpFile = open('skimGoldenZmumu.dump' , 'w')
+processDumpFile = open('skimTightWenu.dump' , 'w')
 print >> processDumpFile, process.dumpPython()
-
