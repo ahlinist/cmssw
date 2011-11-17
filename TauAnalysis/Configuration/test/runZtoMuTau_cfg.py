@@ -15,7 +15,7 @@ process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProduce
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START42_V12::All')
+process.GlobalTag.globaltag = cms.string('START42_V13::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -70,8 +70,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         ##'file:/data1/veelken/CMSSW_4_2_x/skims/AHtoMuTau_negSVfitMass_lorenzo.root'
-        ##'file:/data1/veelken/CMSSW_4_2_x/skims/skimGenZtoMuTauWithinAcc_Ztautau_2011Jun30v2_AOD.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/tauIdEffSample_TTplusJets_madgraph_2011Jul23_RECO_86_1_0MB.root'                         
+        'file:/data1/veelken/CMSSW_4_2_x/skims/skimGenZtoMuTauWithinAcc_Ztautau_2011Jun30v2_AOD.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -294,12 +293,16 @@ process.ewkTauId.Prediscriminants.againstElectron.Producer = cms.InputTag('hpsPF
 
 # disable muon momentum scale corrections
 process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)
+
+# restrict input collections to AOD event content
+from TauAnalysis.Configuration.tools.switchToAOD import switchToAOD
+switchToAOD(process)
 #--------------------------------------------------------------------------------
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
 process.producePatTupleAll += process.produceVertexMultiplicityVsRhoPFNeutralReweights
 
-processDumpFile = open('runZtoMuTau.dump' , 'w')
+processDumpFile = open('runZtoMuTau.dump', 'w')
 print >> processDumpFile, process.dumpPython()
 
 
