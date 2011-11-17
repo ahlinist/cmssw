@@ -16,10 +16,7 @@
 PFCandidateHistManager::PFCandidateHistManager(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
 {
-  //std::cout << "<PFCandidateHistManager::PFCandidateHistManager>:" << std::endl;
-
   pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
-  //std::cout << " pfCandidateSrc = " << pfCandidateSrc_ << std::endl;
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "pfCandidates");
@@ -32,35 +29,44 @@ PFCandidateHistManager::~PFCandidateHistManager()
 
 void PFCandidateHistManager::bookHistogramsImp()
 {
-  //std::cout << "<PFCandidateHistManager::bookHistogramsImp>:" << std::endl;
-  
+  hNumPFCandidates_ = book1D("NumPFCandidates", "NumPFCandidates", 200, -0.5, 999.5);
+
   bookPFCandidateHistograms(hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, "PFCandidate");
+ 
+  hPFCandidateSumEt_ = book1D("PFCandidateSumEt", "PFCandidateSumEt", 250, -0.01, 2500.);
 }
 
 void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<PFCandidateHistManager::fillHistogramsImp>:" << std::endl; 
-
   edm::Handle<reco::PFCandidateCollection> pfCandidates;
   evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
+  hNumPFCandidates_->Fill(pfCandidates->size(), evtWeight);
+
   double pfCandidateWeightSum = pfCandidates->size();
+
+  double sumEt = 0.;	
 
   for ( std::vector<reco::PFCandidate>::const_iterator pfCandidate = pfCandidates->begin(); 
 	pfCandidate != pfCandidates->end(); ++pfCandidate ) {
 
     double pfCandidateWeight = 1.;
     double weight = getWeight(evtWeight, pfCandidateWeight, pfCandidateWeightSum);
-  
+
     fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, weight);
+
+    sumEt += pfCandidate->et();
   }
+
+  hPFCandidateSumEt_->Fill(sumEt, evtWeight);
 }
 
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void PFCandidateHistManager::bookPFCandidateHistograms(MonitorElement*& hPFCandidatePt, MonitorElement*& hPFCandidateEta, MonitorElement*& hPFCandidatePhi, const char* histoSetName)
+void PFCandidateHistManager::bookPFCandidateHistograms(
+       MonitorElement*& hPFCandidatePt, MonitorElement*& hPFCandidateEta, MonitorElement*& hPFCandidatePhi, const char* histoSetName)
 {
   std::string hPFCandidatePtName = std::string(histoSetName).append("Pt");
   hPFCandidatePt = book1D(hPFCandidatePtName, hPFCandidatePtName, 75, 0., 150.);
@@ -76,12 +82,11 @@ void PFCandidateHistManager::bookPFCandidateHistograms(MonitorElement*& hPFCandi
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void PFCandidateHistManager::fillPFCandidateHistograms(const reco::PFCandidate& pfCandidate, 
-						       MonitorElement* hPFCandidatePt, MonitorElement* hPFCandidateEta, MonitorElement* hPFCandidatePhi, 
-						       double evtWeight)
+void PFCandidateHistManager::fillPFCandidateHistograms(
+       const reco::PFCandidate& pfCandidate, 
+       MonitorElement* hPFCandidatePt, MonitorElement* hPFCandidateEta, MonitorElement* hPFCandidatePhi, 
+       double evtWeight)
 {
-  //std::cout << "<PFCandidateHistManager::fillPFCandidateHistograms>:" << std::endl;
-
   hPFCandidatePt->Fill(pfCandidate.pt(), evtWeight);
   hPFCandidateEta->Fill(pfCandidate.eta(), evtWeight);
   hPFCandidatePhi->Fill(pfCandidate.phi(), evtWeight);
