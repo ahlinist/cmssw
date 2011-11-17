@@ -22,16 +22,18 @@ public:
   //Px, Py, Pz and E of input Objects 
   //in the event to calculate the event shapes 
   //
+  //by eta_central the central region is chosen (in pseudorapidity)
+  //only objects in the central region are used for the 
+  //calculation of central event shapes (with and without recoil term)
+  //
   //by rapidity the choice between using the rapidity 
   //or the pseudorapidity Eta is given
-  // 0: pseudorapidity eta is used (recommended)
-  // 1: rapidity is used - please note that the central region
-  // is defined in terms of the real rapidity in this case
-  // so you should use it only in the case of 
-  // massless input objects
+  // 0: pseudorapidity eta is used 
+  // 1: rapidity is used - the central region
+  // is still defined in terms of the pseudorapidity in this case
   //the choices are then defined by SetMethod(rapidity);
 
-  EventShape(std::vector<double> Px_vector, std::vector<double> Py_vector, std::vector<double> Pz_vector,std::vector<double> E_vector, double eta_central, int rapidity);
+  EventShape(std::vector<double>& Px_vector, std::vector<double>& Py_vector, std::vector<double>& Pz_vector,std::vector<double>& E_vector, double eta_central, int rapidity);
 
 
   //Destructor
@@ -43,20 +45,24 @@ public:
 //============================================================================
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //============================================================================
-//beware if you have less than three (central) input objects the 
+//1. Beware: if you have less than two input objects the Event Shape values
+//are not very meaningful - in this case the values for ALL Event Shapes are set to
+//-1.0 per default 
+//2. Beware: if you have less than three (central) input objects the 
 //directly global (central) three-jet resolution thresholds will be set 
 //to -1.0 per default
-//in the case of no central input object the central variables will 
+//3: In the case of less than two central input objects all central variables will 
 //be set to -1.0 per default
+//
 //-1.0 is outside of values of all event shape variables so if you have 
-//events which give -1.0 as value for an event shape,they had 
-//less input momenta than needed for the calculations
+//events which give -1.0 as value for an event-shape variable, the number of
+//input objects was less than needed 
 //============================================================================
 
 //===============================================================
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //transverse thrust values are the tau values, tau = 1-thrust
-//in the following order 
+//the event-shape variables are given back in the following order 
 //00. directly global transverse thrust
 //here the value of tau = 1 - thrust is returned
 //01. directly global thrust minor
@@ -79,6 +85,7 @@ public:
 //16. central three-jet resolution threshold with exponentially suppressed forward term
 //17. central three-jet resolution threshold with recoil term
 //18. central total jet broadening 
+//in the case of two central jets the jet broadenings are 0
 //19. central total jet broadening with exponentially suppressed forward term
 //20. central total jet broadening with recoil term
 //21. central wide jet broadening 
@@ -92,12 +99,21 @@ public:
 //29. central heavy transverse jet mass with recoil term
 //=============================================================================
 
- std::vector<double> getThrustAxis(); //returns the global thrust axis Nx, Ny, Nz=0
- std::vector<double> getThrustAxis_C(); //returns the central thrust axis Nx, Ny, Nz=0 
+ std::vector<double> getThrustAxis(); //returns the normalized global thrust axis Nx, Ny, Nz=0
+ std::vector<double> getThrustAxis_C(); //returns the normalized central thrust axis Nx, Ny, Nz=0 
+ //in the case of less than two (central) objects the global (central) thrust axis 
+ //is set to Nx=10,Ny=10,Nz=10 which is outside of range of a normalized vector
+
+ //in the case of less than two (central) objects the global (central) grouping
+ //return as entries "-1"
+
+ std::vector<int> getGrouping(); //returns the grouping of central jets into hemispheres with "1"s and "2"s
+ std::vector<int> getGrouping_C(); //returns the grouping of all jets into hemispheres with "1"s and "2"s, 
+ //returns "-1" if the jet is outside of the central region
 
 
  //eta_c: choice of the central region
- //recommended: the two hardest jets should be within the central region
+ //recommended: the two hardest objects should be within the central region 
 
  void SetEtac(double eta_central){
    eta_c = eta_central;
@@ -116,17 +132,24 @@ public:
  std::vector<double> Object_Px;
  std::vector<double> Object_Py;
  std::vector<double> Object_Pz;
- std::vector<double> Object_P;
  std::vector<double> Object_Pt;
  std::vector<double> Object_E;
  std::vector<double> Object_Phi;
+ //used for the DeltaR calculation
+ //if rap==0 Eta is filled, if rap==1 Rapidity
+ std::vector<double> Object_Eta_Rap;
+ //eta vector for the calculation of the central region
  std::vector<double> Object_Eta;
  std::vector<double> EventShapes;
  std::vector<double> ThrustAxis;
  std::vector<double> ThrustAxis_c;
+ std::vector<int> Grouping;
+ std::vector<int> Grouping_c;
+
  double eta_c;
  int rap;
- int y3_recom;
+
+ // helper methods
 
  //returns the difference in phi between two vectors
  double DeltaPhi(double, double);
