@@ -10,26 +10,30 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011Aug18'
+jobId = '2011Oct30'
 
 #outputFilePath = '/castor/cern.ch/user/m/mverzett/tagprobe/skims/TauIdEffMeas_2011May13/'
-outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Aug18/'
+outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/'
 
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #pfCandidateCollection = "pfNoPileUp"   # pile-up removal enabled
 
 samplesToAnalyze = [
-    'data_SingleMu_Run2011A_May10ReReco_v1',
-    'data_SingleMu_Run2011A_PromptReco_v4',
+    #'data_SingleMu_Run2011A_May10ReReco_v1',
+    #'data_SingleMu_Run2011A_PromptReco_v4',
+    #'data_SingleMu_Run2011A_Aug05ReReco_v1',
+    #'data_SingleMu_Run2011A_PromptReco_v6',
+    #'data_MET_Run2011B_PromptReco_v1',
+    'data_MET_Run2011B_PromptReco_v1a',
     #'Ztautau_pythia',
-    'Ztautau_powheg',
-    'Ztautau_embedded_part1',
-    'Ztautau_embedded_part2',
+    #'Ztautau_powheg',
+    #'Ztautau_embedded_part1',
+    #'Ztautau_embedded_part2',
     #'Zmumu_pythia',
-    'Zmumu_powheg',
-    'PPmuXptGt20Mu15',
-    'WplusJets_madgraph',
-    'TTplusJets_madgraph'
+    #'Zmumu_powheg',
+    #'PPmuXptGt20Mu15',
+    #'WplusJets_madgraph',
+    #'TTplusJets_madgraph'
 ]
 
 # Define what output file name a skimmed sample will have

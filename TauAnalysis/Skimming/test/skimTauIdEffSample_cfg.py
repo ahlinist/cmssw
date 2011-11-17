@@ -72,25 +72,14 @@ else:
 #  HLT single jet trigger passed && either two CaloJets or two PFJets of Pt > 10 GeV within |eta| < 2.5)
 process.load('TauAnalysis.TauIdEfficiency.filterDataQuality_cfi')
 
+import TauAnalysis.TauIdEfficiency.filterTauIdEffSample_cfi as filterTauIdEffSample
+
 process.hltMu = cms.EDFilter("EventSelPluginFilter",
     selector = cms.PSet(
         pluginName = cms.string('hltMu'),             
         pluginType = cms.string('TriggerResultEventSelector'),
         src = cms.InputTag('TriggerResults::%s' % HLTprocessName),
-        triggerPaths = cms.vstring(
-            'HLT_Mu15_v1',
-            'HLT_Mu15_v2',
-            'HLT_Mu15_v3',
-            'HLT_Mu15_v4',
-            'HLT_Mu15_v5',
-            'HLT_Mu15_v6',
-            'HLT_IsoMu17_v5',
-            'HLT_IsoMu17_v6',
-            'HLT_IsoMu17_v8',
-            'HLT_IsoMu17_v9',
-            'HLT_IsoMu17_v10',        
-            'HLT_IsoMu17_v11'
-        )
+        triggerPaths = filterTauIdEffSample.hltMu.selector.triggerPaths
     )
 )
 
@@ -125,41 +114,15 @@ patTupleConfig = configurePatTupleProductionTauIdEffMeasSpecific(
 #--------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------------------------------------------------
-# configure jet energy corrections
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-process.jec = cms.ESSource("PoolDBESSource",
-    DBParameters = cms.PSet(
-        messageLevel = cms.untracked.int32(0)
-    ),
-    timetype = cms.string('runnumber'),
-    toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
-            label  = cms.untracked.string('AK5PF')
-        ),
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5Calo'),
-            label  = cms.untracked.string('AK5Calo')
-        )
-    ),
-    connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11V2.db')
-)
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
-#-------------------------------------------------------------------------------------------------------------------------
-
-#------------------------------------------------------------------------------------------------------------------------
 # reconfigure PAT-tuple production sequence to run only the modules absolutely needed for skimming
 # (in order to reduce processing time)
-#process.load('RecoTauTag.Configuration.RecoPFTauTag_cff')
-process.load('CommonTools.ParticleFlow.pfNoPileUp_cff')
+
 process.commonSkimSequence = cms.Sequence(
     process.hltMu
    + process.dataQualityFilters
    + process.goodMuons
-   + process.pfNoPileUpSequence
-   + process.PFTau
+   + process.prePatProductionSequence
+   + process.muonPFIsolationSequence
    + process.patMuons   
 )
 #
