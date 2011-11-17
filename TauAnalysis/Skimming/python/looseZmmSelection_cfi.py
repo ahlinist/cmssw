@@ -26,16 +26,9 @@ selStandAloneMuons = cms.EDFilter("PATMuonSelector",
     filter = cms.bool(False)
 )
 
-selIsoStandAloneMuons = cms.EDFilter("PATMuonPFIsolationSelector",
+selIsoStandAloneMuons = goodIsoMuons.clone(
     src = cms.InputTag("selStandAloneMuons"),
-    pfCandidateSource = goodIsoMuons.pfCandidateSource,
-    chargedHadronIso = goodIsoMuons.chargedHadronIso.clone(
-        vetoNumHighestPtObjects = cms.uint32(1)
-    ),
-    neutralHadronIso = goodIsoMuons.neutralHadronIso,
-    photonIso = goodIsoMuons.photonIso,
-    sumPtMax = goodIsoMuons.sumPtMax,
-    sumPtMethod = goodIsoMuons.sumPtMethod
+    filter = cms.bool(False)
 )
 
 selGlobalMuons = cms.EDFilter("PATMuonSelector",
@@ -49,14 +42,9 @@ selGlobalMuons = cms.EDFilter("PATMuonSelector",
     filter = cms.bool(False)
 )
 
-selIsoGlobalMuons = cms.EDFilter("PATMuonPFIsolationSelector",
+selIsoGlobalMuons = goodIsoMuons.clone(
     src = cms.InputTag("selGlobalMuons"),
-    pfCandidateSource = goodIsoMuons.pfCandidateSource,
-    chargedHadronIso = goodIsoMuons.chargedHadronIso,
-    neutralHadronIso = goodIsoMuons.neutralHadronIso,
-    photonIso = goodIsoMuons.photonIso,
-    sumPtMax = goodIsoMuons.sumPtMax,
-    sumPtMethod = goodIsoMuons.sumPtMethod
+    filter = cms.bool(False)
 )
 
 selMuonCandidates = cms.Sequence(
@@ -84,14 +72,15 @@ selChargedParticles = cms.EDFilter("ChargedRefCandidateSelector",
     filter = cms.bool(False)
 )
 
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
 selIsoChargedParticles = cms.EDFilter("ChargedRefCandidatePFIsolationSelector",
     src = cms.InputTag("selChargedParticles"),
-    pfCandidateSource = goodIsoMuons.pfCandidateSource,
-    chargedHadronIso = goodIsoMuons.chargedHadronIso,
-    neutralHadronIso = goodIsoMuons.neutralHadronIso,
-    photonIso = goodIsoMuons.photonIso,
-    sumPtMax = goodIsoMuons.sumPtMax,
-    sumPtMethod = goodIsoMuons.sumPtMethod
+    pfCandidateSource = patMuonPFIsolationSelector.pfCandidateSource,
+    chargedHadronIso = patMuonPFIsolationSelector.chargedHadronIso,
+    neutralHadronIso = patMuonPFIsolationSelector.neutralHadronIso,
+    photonIso = patMuonPFIsolationSelector.photonIso,
+    sumPtMax = patMuonPFIsolationSelector.sumPtMax,
+    sumPtMethod = patMuonPFIsolationSelector.sumPtMethod
 )                                   
 
 selChargedParticleCandidates = cms.Sequence(
