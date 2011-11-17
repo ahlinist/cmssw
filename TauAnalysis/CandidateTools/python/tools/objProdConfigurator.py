@@ -21,6 +21,7 @@ class objProdConfigurator(cms._ParameterTypeBase):
         self.objProd = objProd
         self.systematics = systematics
         self.pyModuleName = pyModuleName,
+        self.sequence = cms.Sequence()
 
     def _addModule(self, objProdItem, sysName, sysAttributes, pyNameSpace = None, process = None):
         # create module
@@ -46,6 +47,7 @@ class objProdConfigurator(cms._ParameterTypeBase):
             recursiveSetAttr(module, sysAttrName, sysAttrValue)
                 
         moduleName = composeModuleName([ getInstanceName(objProdItem, pyNameSpace, process), sysName ])
+        #print "moduleName = %s" % moduleName
         module.setLabel(moduleName)
 
         # if process object exists, attach module to process object;
@@ -59,10 +61,7 @@ class objProdConfigurator(cms._ParameterTypeBase):
             setattr(pyModule, moduleName, module)
 
         # add module to sequence
-        if self.sequence == None:
-            self.sequence = module
-        else:
-            self.sequence *= module
+        self.sequence += module
 
     def configure(self, pyNameSpace = None, process = None):
         # configure set of modules
@@ -70,11 +69,12 @@ class objProdConfigurator(cms._ParameterTypeBase):
         # for estimation of systematic uncertainties
 
         # add original module (for production of central value) to sequence
-        self.sequence = self.objProd
+        self.sequence += self.objProd
 
         if self.systematics is not None:
             for sysName, sysAttributes in self.systematics.items():
+                #print "sysName = %s" % sysName
                 self._addModule(self.objProd, sysName = sysName, sysAttributes = sysAttributes,
                                 pyNameSpace = pyNameSpace, process = process)
 
-        return cms.Sequence(self.sequence)
+        return self.sequence

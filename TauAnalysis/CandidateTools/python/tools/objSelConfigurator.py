@@ -24,6 +24,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
         self.pyModuleName = pyModuleName,
         self.doSelCumulative = doSelCumulative
         self.doSelIndividual = doSelIndividual
+        self.sequence = cms.Sequence()
 
     class _getterCumulative:
         # auxiliary class for composing name of module selecting "cumulative" collection
@@ -64,6 +65,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
                 setattr(module, objSelAttrName, objSelAttr)
 
         moduleName = getter.get_moduleName(getInstanceName(objSelItem, pyNameSpace, process), sysName)
+        #print "moduleName = %s" % moduleName
         module.setLabel(moduleName)        
 
         src = None
@@ -88,10 +90,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
         self.lastModuleName = moduleName
 
         # add module to sequence
-        if self.sequence is None:
-            self.sequence = module
-        else:
-            self.sequence *= module
+        self.sequence += module
 
     def configure(self, pyNameSpace = None, process = None):
         # configure modules for "cumulative" and "individual" collections
@@ -100,8 +99,6 @@ class objSelConfigurator(cms._ParameterTypeBase):
         if self.src is None:
             raise ValueError("'src' Parameter must not be empty !!")
 
-        self.sequence = None
-
         if self.doSelCumulative:
             getter = objSelConfigurator._getterCumulative()
             self.lastModuleName = None
@@ -109,6 +106,7 @@ class objSelConfigurator(cms._ParameterTypeBase):
                 self._addModule(objSelItem, getter, pyNameSpace = pyNameSpace, process = process)
             if self.systematics is not None:
                 for sysName, sysInputTag in self.systematics.items():
+                    #print "sysName = %s" % sysName
                     self.lastModuleName = None
                     for objSelItem in self.objSelList:                        
                         self._addModule(objSelItem, getter, sysName = sysName, sysInputTag = sysInputTag,
@@ -119,4 +117,4 @@ class objSelConfigurator(cms._ParameterTypeBase):
             for objSelItem in self.objSelList:
                 self._addModule(objSelItem, getter, pyNameSpace = pyNameSpace, process = process)
 
-        return cms.Sequence(self.sequence)
+        return self.sequence
