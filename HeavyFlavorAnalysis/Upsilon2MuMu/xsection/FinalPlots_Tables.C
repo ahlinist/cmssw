@@ -607,6 +607,57 @@ void Overlay(){
   c1->SaveAs("Overlay_log.pdf");
 }
 
+double f_fit(double *x, double *par) {
+  
+  Double_t fitval =  TMath::Power(x[0], par[0]);
+  return fitval;
+    
+}
+
+
+void Overlay_Fit(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  TFile *f = new TFile("Final2S.root");
+  TGraphAsymmErrors *S2;
+  S2 = (TGraphAsymmErrors*)gFile->Get("Ups2S");
+  TFile *f = new TFile("Final3S.root");
+  TGraphAsymmErrors *S3;
+  S3 = (TGraphAsymmErrors*)gFile->Get("Ups3S");  
+    
+  f0 = new TF1("f0", f_fit, 10., 20., 1);
+  f0->ReleaseParameter(0); 
+  f0->SetParLimits(0, -3, -1);
+  //f0->FixParameter(0, -1.7);
+  S1->Fit(f0);
+    
+  TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
+  c1->SetLogy();
+  S1->SetLineColor(1); S1->SetMarkerColor(1); S2->SetLineColor(2); S2->SetMarkerColor(2); S3->SetLineColor(4); S3->SetMarkerColor(4);
+  S1->SetMarkerStyle(20); S2->SetMarkerStyle(21); S3->SetMarkerStyle(22);
+  S1->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  S1->SetTitle("");
+  S1->SetMinimum(0.0001);
+  S1->SetMaximum(1.5);
+  S1->Draw("AP");
+  S2->Draw("P");
+  S3->Draw("P");
+  legg = new TLegend(0.5,0.6,0.7,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S1, "#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "#Upsilon(2S)","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S3, "#Upsilon(3S)","p"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  c1->SaveAs("Overlay_log_fit.pdf");
+}
+
+
+
 void Ratio_unpol(){
   
   gStyle->SetOptStat(00000000000);
