@@ -27,13 +27,21 @@ void XS(){
   S6Pt = new TH1D("Pt_3S", "Pt_3S", S6->GetNbinsY(), S6->GetYaxis()->GetXbins()->GetArray());  
   S4Y = new TH1D("Y_1S", "Y_1S", S4->GetNbinsX(), S4->GetXaxis()->GetXbins()->GetArray());    
   S5Y = new TH1D("Y_2S", "Y_2S", S5->GetNbinsX(), S5->GetXaxis()->GetXbins()->GetArray());    
-  S6Y = new TH1D("Y_3S", "Y_3S", S6->GetNbinsX(), S6->GetXaxis()->GetXbins()->GetArray());    
+  S6Y = new TH1D("Y_3S", "Y_3S", S6->GetNbinsX(), S6->GetXaxis()->GetXbins()->GetArray());  
+  
+  S4Pt_Nor = new TH1D("Pt_1S_Nor", "Pt_1S_Nor", S4->GetNbinsY(), S4->GetYaxis()->GetXbins()->GetArray());  
+  S5Pt_Nor = new TH1D("Pt_2S_Nor", "Pt_2S_Nor", S5->GetNbinsY(), S5->GetYaxis()->GetXbins()->GetArray());  
+  S6Pt_Nor = new TH1D("Pt_3S_Nor", "Pt_3S_Nor", S6->GetNbinsY(), S6->GetYaxis()->GetXbins()->GetArray());  
+  S4Y_Nor = new TH1D("Y_1S_Nor", "Y_1S_Nor", S4->GetNbinsX(), S4->GetXaxis()->GetXbins()->GetArray());    
+  S5Y_Nor = new TH1D("Y_2S_Nor", "Y_2S_Nor", S5->GetNbinsX(), S5->GetXaxis()->GetXbins()->GetArray());    
+  S6Y_Nor = new TH1D("Y_3S_Nor", "Y_3S_Nor", S6->GetNbinsX(), S6->GetXaxis()->GetXbins()->GetArray());    
     
   double reco(-1.); double reco2(-1.); double reco3(-1.); 
   double deno(-1.); double deno2(-1.); double deno3(-1.);
   double numa(-1.); double numa2(-1.); double numa3(-1.);
   double xs(-1.); double xs2(-1.); double xs3(-1.);  
   double lumi(162500.); double lumi2(190200.); double lumi3(566500.);
+  double n1(2.); double n2(2.7); double n3(1.4);  
   
   for ( int iy = 1; iy <= S1->GetNbinsX(); ++iy ){
     for ( int ipt = 1; ipt <= S1->GetNbinsY(); ++ipt ){
@@ -42,7 +50,7 @@ void XS(){
       numa = S3->GetBinContent(iy,ipt);
       xs = (reco/lumi)*(deno/numa);
       S4->SetBinContent(iy,ipt, xs);
-      
+            
       reco2 = S11->GetBinContent(iy,ipt);
       deno2 = S12->GetBinContent(iy,ipt);
       numa2 = S13->GetBinContent(iy,ipt);
@@ -53,6 +61,7 @@ void XS(){
       deno3 = S22->GetBinContent(iy,ipt);
       numa3 = S23->GetBinContent(iy,ipt);
       xs3 = (reco3/lumi3)*(deno3/numa3);
+      //xs3 *= 100;
       S6->SetBinContent(iy,ipt, xs3);        
       
     }
@@ -70,6 +79,10 @@ void XS(){
     S4Pt->SetBinContent(j,s4_pt/S4Pt->GetBinWidth(j));
     S5Pt->SetBinContent(j,s5_pt/S5Pt->GetBinWidth(j));
     S6Pt->SetBinContent(j,s6_pt/S6Pt->GetBinWidth(j));
+    
+    S4Pt_Nor->SetBinContent(j,(s4_pt/S4Pt->GetBinWidth(j))/n1);
+    S5Pt_Nor->SetBinContent(j,(s5_pt/S5Pt->GetBinWidth(j))/n2);
+    S6Pt_Nor->SetBinContent(j,(s6_pt/S6Pt->GetBinWidth(j))/n3);    
     
     s4_pt=0.; s5_pt=0.; s6_pt=0.;
     
@@ -89,17 +102,21 @@ void XS(){
     S5Y->SetBinContent(i,s5_y/S5Y->GetBinWidth(i));
     S6Y->SetBinContent(i,s6_y/S6Y->GetBinWidth(i));
     
+    S4Y_Nor->SetBinContent(i,(s4_y/S4Y->GetBinWidth(i))/n1);
+    S5Y_Nor->SetBinContent(i,(s5_y/S5Y->GetBinWidth(i))/n2);
+    S6Y_Nor->SetBinContent(i,(s6_y/S6Y->GetBinWidth(i))/n3);   
+    
     s4_y=0.; s5_y=0.; s6_y=0.;
     
   }
   
   TFile *f = new TFile("Pythia_XS.root", "RECREATE");
-  S4Pt->Write();
-  S5Pt->Write();
-  S6Pt->Write();
-  S4Y->Write();
-  S5Y->Write();
-  S6Y->Write();
+  S4Pt->Write(); S4Pt_Nor->Write();
+  S5Pt->Write(); S5Pt_Nor->Write();
+  S6Pt->Write(); S6Pt_Nor->Write();
+  S4Y->Write(); S4Y_Nor->Write();
+  S5Y->Write(); S5Y_Nor->Write();
+  S6Y->Write(); S6Y_Nor->Write();
 }
 
 void Overlay(){
@@ -153,6 +170,57 @@ void Overlay(){
   c1->SaveAs("Overlay_pythia.pdf");
 }
 
+void Overlay_Nor(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Pythia_XS.root");
+  TH1D *h1;
+  h1 = (TH1D*)gFile->Get("Pt_1S_Nor");
+  TH1D *h2;
+  h2 = (TH1D*)gFile->Get("Pt_2S_Nor");
+  TH1D *h3;
+  h3 = (TH1D*)gFile->Get("Pt_3S_Nor"); 
+  
+  TFile *f = new TFile("Final1S.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  TFile *f = new TFile("Final2S.root");
+  TGraphAsymmErrors *S2;
+  S2 = (TGraphAsymmErrors*)gFile->Get("Ups2S");
+  TFile *f = new TFile("Final3S.root");
+  TGraphAsymmErrors *S3;
+  S3 = (TGraphAsymmErrors*)gFile->Get("Ups3S");  
+  
+  TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
+  c1->SetLogy();
+  S1->SetLineColor(1); S1->SetMarkerColor(1); S2->SetLineColor(2); S2->SetMarkerColor(2); S3->SetLineColor(4); S3->SetMarkerColor(4);
+  S1->SetMarkerStyle(20); S2->SetMarkerStyle(21); S3->SetMarkerStyle(22);
+  S1->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  S1->SetTitle("");
+  S1->SetMinimum(0.0001);
+  S1->SetMaximum(2.5);
+  S1->Draw("AP");
+  h1->Draw("same");
+  S2->Draw("P");
+  h2->SetLineColor(2);
+  h2->Draw("same");
+  S3->Draw("P");
+  h3->SetLineColor(4);
+  h3->Draw("same");  
+  legg = new TLegend(0.45,0.5,0.7,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S1, "Data #Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(h1, "Pythia(Normalized) #Upsilon(1S)" ,"l"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Data #Upsilon(2S)","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(h2, "Pythia(Normalized #Upsilon(2S)","l"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S3, "Data #Upsilon(3S)","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(h3, "Pythia(Normalized #Upsilon(3S)","l"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  c1->SaveAs("Overlay_pythia_Nor.pdf");
+}
+
 void Overlay_rap(){
   
   gStyle->SetOptStat(00000000000);
@@ -201,6 +269,56 @@ void Overlay_rap(){
   legge = legg->AddEntry(h3, "Pythia #Upsilon(3S)","l"); legge->SetTextColor(kBlue);
   legg->Draw();
   c2->SaveAs("Overlay_pythia_rap.pdf");
+}
+
+void Overlay_rap_Nor(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Pythia_XS.root");
+  TH1D *h1;
+  h1 = (TH1D*)gFile->Get("Y_1S_Nor");
+  TH1D *h2;
+  h2 = (TH1D*)gFile->Get("Y_2S_Nor");
+  TH1D *h3;
+  h3 = (TH1D*)gFile->Get("Y_3S_Nor"); 
+  
+  TFile *f = new TFile("Final1S_rap.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  TFile *f = new TFile("Final2S_rap.root");
+  TGraphAsymmErrors *S2;
+  S2 = (TGraphAsymmErrors*)gFile->Get("Ups2S");
+  TFile *f = new TFile("Final3S_rap.root");
+  TGraphAsymmErrors *S3;
+  S3 = (TGraphAsymmErrors*)gFile->Get("Ups3S");  
+  
+  TCanvas *c2 = new TCanvas("c2", "c2", 800,600);
+  S1->SetLineColor(1); S1->SetMarkerColor(1); S2->SetLineColor(2); S2->SetMarkerColor(2); S3->SetLineColor(4); S3->SetMarkerColor(4);
+  S1->SetMarkerStyle(20); S2->SetMarkerStyle(21); S3->SetMarkerStyle(22);
+  S1->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  S1->SetTitle("");
+  S1->SetMinimum(0.0001);
+  S1->SetMaximum(9.5);
+  S1->Draw("AP");
+  h1->Draw("same");
+  S2->Draw("P");
+  h2->SetLineColor(2);
+  h2->Draw("same");
+  S3->Draw("P");
+  h3->SetLineColor(4);
+  h3->Draw("same");  
+  legg = new TLegend(0.41,0.62,0.85,0.9);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S1, "Data #Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(h1, "Pythia(Normalized) #Upsilon(1S)" ,"l"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Data #Upsilon(2S)","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(h2, "Pythia(Normalized) #Upsilon(2S)","l"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S3, "Data #Upsilon(3S)","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(h3, "Pythia(Normalized) #Upsilon(3S)","l"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  c2->SaveAs("Overlay_pythia_rap_Nor.pdf");
 }
 
 void Ratio(){
