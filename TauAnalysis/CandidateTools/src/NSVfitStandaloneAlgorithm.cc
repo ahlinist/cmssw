@@ -76,15 +76,14 @@ NSVfitStandaloneAlgorithm::fit(){
   minimizer_->Minimize();
   if( verbosity_>1 ){ minimizer_->PrintResults(); };
 
-  // evaluate Minuit status code:
+  //--- get Minimizer status code, check if solution is valid:
   //
-  //  0: error matrix not calculated at all
-  //  1: diagonal approximation only, not accurate
-  //  2: full matrix, but forced positive-definite
-  //  3: full accurate covariance matrix 
-  //    (after MIGRAD, this is the indication of normal convergence.)
-  //
-  // NOTE: meaning of error codes taken from http://lmu.web.psi.ch/facilities/software/minuit_doc.html
+  //    0: Valid solution
+  //    1: Covariance matrix was made positive definite
+  //    2: Hesse matrix is invalid
+  //    3: Estimated distance to minimum (EDM) is above maximum
+  //    4: Reached maximum number of function calls before reaching convergence
+  //    5: Any other failure
   //
   fitStatus_ = minimizer_->Status();
   if( verbosity_>0 ){ std::cout << ">> fitStatus = " << fitStatus_ << std::endl; }
