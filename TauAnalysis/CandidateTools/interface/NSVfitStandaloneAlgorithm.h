@@ -111,7 +111,15 @@ class NSVfitStandaloneAlgorithm
   /// return status of minuit fit
   int fitStatus() { return fitStatus_; };
   /// return whether this is a valid solution or not
-  bool isValidSolution() { return (fitStatus_ == 2 || fitStatus_ == 3); };
+    /*    
+	  0: Valid solution
+	  1: Covariance matrix was made positive definite
+	  2: Hesse matrix is invalid
+	  3: Estimated distance to minimum (EDM) is above maximum
+	  4: Reached maximum number of function calls before reaching convergence
+	  5: Any other failure
+    */
+  bool isValidSolution() { return fitStatus_ == 0; };
   /// return mass of the fitted di-tau system 
   double mass() const { return fittedDiTauSystem().mass(); };
   /// return uncertainty on the mass of the fitted di-tau system
