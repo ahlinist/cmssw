@@ -42,6 +42,7 @@ void XS(){
   double xs(-1.); double xs2(-1.); double xs3(-1.);  
   double lumi(162500.); double lumi2(190200.); double lumi3(566500.);
   double n1(2.); double n2(2.7); double n3(1.4);  
+  double totxs(0.); double totxs2(0.); double totxs3(0.); 
   
   for ( int iy = 1; iy <= S1->GetNbinsX(); ++iy ){
     for ( int ipt = 1; ipt <= S1->GetNbinsY(); ++ipt ){
@@ -50,22 +51,26 @@ void XS(){
       numa = S3->GetBinContent(iy,ipt);
       xs = (reco/lumi)*(deno/numa);
       S4->SetBinContent(iy,ipt, xs);
-            
+      totxs += xs;
+      
       reco2 = S11->GetBinContent(iy,ipt);
       deno2 = S12->GetBinContent(iy,ipt);
       numa2 = S13->GetBinContent(iy,ipt);
       xs2 = (reco2/lumi2)*(deno2/numa2);
       S5->SetBinContent(iy,ipt, xs2);      
+      totxs2 += xs2;
       
       reco3 = S21->GetBinContent(iy,ipt);
       deno3 = S22->GetBinContent(iy,ipt);
       numa3 = S23->GetBinContent(iy,ipt);
       xs3 = (reco3/lumi3)*(deno3/numa3);
-      //xs3 *= 100;
-      S6->SetBinContent(iy,ipt, xs3);        
+      S6->SetBinContent(iy,ipt, xs3);
+      totxs3 += xs3;
       
     }
   }
+  
+  cout << "totxs = " << totxs << " totxs2 = " << totxs2 << " totxs3 = " << totxs3 << endl;
   
   double s4_pt(0.); double s5_pt(0.); double s6_pt(0.); 
   
