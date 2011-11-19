@@ -40,15 +40,13 @@ void XSSystTot_1S(){
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
   double s1_(0.), s2_(0.), e5_(0.);
   double Stat[10]; double Errh[10]; double Errl[10]; double y[10];
-  double Stat[9]; double Errh[9]; double Errl[9]; double y[9];
+  //double Stat[9]; double Errh[9]; double Errl[9]; double y[9];
   
   double s0(0.), s0_(0.);
   double Errh_ratio[10]; double Errl_ratio[10]; double y_ratio[10];
-  double Errh_atlas[10]; double Errl_atlas[10]; double y_atlas[10];
   //double Errh_ratio[9]; double Errl_ratio[9]; double y_ratio[9];
-  //double Errh_atlas[9]; double Errl_atlas[9]; double y_atlas[9];  
   
-  for (int i = 1; i <= S5->GetNbinsX(); ++i) {
+  for (int i = 1; i <= S5->GetNbinsX()-1; ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); ///Muid
     s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
@@ -70,7 +68,7 @@ void XSSystTot_1S(){
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
-    //y[i-1] = S55->GetBinContent(i); for tcsm comparison
+    //y[i-1] = S55->GetBinContent(i); //for csm/com comparison
     s1=0; s1_=0;
     
     /// For Ratio Calculation
@@ -98,37 +96,24 @@ void XSSystTot_1S(){
   //double xh[9] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84};  
   
   double br_scale(40.3);
-  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
-    Errh_atlas[i-1] = Errh[i-1]/2;
-    Errl_atlas[i-1] = Errl[i-1]/2;
-    y_atlas[i-1] = y[i-1];
-  }
-    
-  gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
+  
+  gr = new TGraphAsymmErrors(9,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups1S");
   gr->SetMarkerColor(1);
   gr->SetMarkerStyle(21);
   gr->Draw("AP");
   
-  gr_ratio = new TGraphAsymmErrors(10,xbin,y_ratio,xl,xh,Errl_ratio,Errh_ratio);
+  gr_ratio = new TGraphAsymmErrors(9,xbin,y_ratio,xl,xh,Errl_ratio,Errh_ratio);
   gr_ratio->SetName("Ups1S_ratio");
   gr_ratio->SetMarkerColor(1);
   gr_ratio->SetMarkerStyle(21);
   gr_ratio->Draw("AP");  
   
-  gr_atlas = new TGraphAsymmErrors(10,xbin,y_atlas,xl,xh,Errl_atlas,Errh_atlas);
-  gr_atlas->SetName("Ups1S_atlas");
-  gr_atlas->SetMarkerColor(1);
-  gr_atlas->SetMarkerStyle(21);
-  gr_atlas->Draw("AP");   
-  
-  
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
   TFile *f = new TFile("Final1S.root", "RECREATE");
-  //TFile *f = new TFile("Final1S_0_2_0_50.root", "RECREATE");
+  //TFile *f = new TFile("Final1S_0_2_0_30.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
-  gr_atlas->Write();
   S100->Write();
   S200->Write();
   
