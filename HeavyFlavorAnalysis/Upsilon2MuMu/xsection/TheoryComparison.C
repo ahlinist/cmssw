@@ -71,13 +71,13 @@ void CSM(){
   TLegend *leg = new TLegend(0.65,0.65,0.89,0.89);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
-
+  leg->SetHeader("         #Upsilon(1S)");
   leg->AddEntry(NLO, "NLO prediction", "FL");
   leg->AddEntry(NNLO,"NNLO* prediction", "FL");
   leg->Draw();
 
   
-  c1->SaveAs("CSM_NLO_0_2.pdf");
+  c1->SaveAs("CSM_NLO_0_2_0_50.pdf");
 }
 
 void CSM3S(){
@@ -148,7 +148,7 @@ void CSM3S(){
   TLegend *leg = new TLegend(0.65,0.65,0.89,0.89);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
-
+  leg->SetHeader("         #Upsilon(3S)");
   leg->AddEntry(NLO, "NLO prediction", "FL");
   leg->AddEntry(NNLO,"NNLO* prediction", "FL");
   leg->Draw();
@@ -204,7 +204,7 @@ void NRQCD(){
   TLegend *leg = new TLegend(0.65,0.65,0.89,0.89);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
-
+  leg->SetHeader("         #Upsilon(1S)");
   leg->AddEntry(Nrqcd, "NRQCD prediction", "FL");
   leg->Draw();
     
@@ -460,8 +460,10 @@ void Tevatron(){
   }
   
   double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
-  double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
-  double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
+  //double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
+  //double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
+  double xl[10] = {0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
+  double xh[10] = {0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
 
   S1_norm = new TGraphAsymmErrors(10,xbin,y1s,xl,xh,y1s_errl,y1s_errh);
   S2_norm = new TGraphAsymmErrors(10,xbin,y2s,xl,xh,y2s_errl,y2s_errh);
@@ -477,7 +479,7 @@ void Tevatron(){
   CDF1s->SetMinimum(0.001);
   CDF1s->SetMaximum(0.2);
   S1_norm->SetMarkerColor(2); CDF1s->SetMarkerColor(4); D01s->SetMarkerColor(3); 
-  S1_norm->SetMarkerStyle(21); CDF1s->SetMarkerStyle(21); D01s->SetMarkerStyle(21);
+  S1_norm->SetMarkerStyle(21); CDF1s->SetMarkerStyle(22); D01s->SetMarkerStyle(23);
   CDF1s->Draw("AP");
   D01s->Draw("P");
   S1_norm->Draw("P");
@@ -500,7 +502,7 @@ void Tevatron(){
   CDF2s->SetMinimum(0.001);
   CDF2s->SetMaximum(0.2);
   S2_norm->SetMarkerColor(2); CDF2s->SetMarkerColor(4); 
-  S2_norm->SetMarkerStyle(21); CDF2s->SetMarkerStyle(21);
+  S2_norm->SetMarkerStyle(21); CDF2s->SetMarkerStyle(22);
   CDF2s->Draw("AP");
   S2_norm->Draw("P");
   legg = new TLegend(0.5,0.7,0.7,0.9);
@@ -521,7 +523,7 @@ void Tevatron(){
   CDF3s->SetMinimum(0.001);
   CDF3s->SetMaximum(0.2);
   S3_norm->SetMarkerColor(2); CDF3s->SetMarkerColor(4); 
-  S3_norm->SetMarkerStyle(21); CDF3s->SetMarkerStyle(21);
+  S3_norm->SetMarkerStyle(21); CDF3s->SetMarkerStyle(22);
   CDF3s->Draw("AP");
   S3_norm->Draw("P");
   legg = new TLegend(0.5,0.7,0.7,0.9);
