@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.61 2011/06/24 14:30:31 meridian Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.62 2011/11/02 11:50:37 meridian Exp $
 //
 //
 
@@ -133,6 +133,10 @@
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/MuonReco/interface/MuonTimeExtra.h"
+
+//EnergyCorrections
+#include "HiggsAnalysis/HiggsToGammaGamma/interface/EGEnergyCorrector.h"
+#include "HiggsAnalysis/HiggsToGammaGamma/interface/PhotonFix.h"
 
 using namespace edm;
 using namespace reco;
@@ -325,6 +329,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
     h2_n_vs_eta = new TH2D("n_vs_eta", "", 10, 0., 2.5, 1000, 0., 1000.);
   _debug = iConfig.getParameter<bool>("debug");
   outFileName= iConfig.getUntrackedParameter<std::string>("outFileName","output.root");
+  regressionWeights= iConfig.getUntrackedParameter<std::string>("regressionWeights","http://cern.ch/meridian/regweights/gbrph.root");
   puSummaryInfo_ = iConfig.getParameter<edm::InputTag>("PUSummaryInfoCollection");
   MCTruthCollection_ = iConfig.getUntrackedParameter<edm::InputTag>("MCTruthCollection");
   triggerTag_ = iConfig.getUntrackedParameter<edm::InputTag>("TriggerTag");
@@ -401,7 +406,8 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   vtxAnaFromConv= new HggVertexFromConversions(vtxPar);
   rankVariables.push_back("ptbal"), rankVariables.push_back("ptasym"), rankVariables.push_back("logsumpt2");
 
-
+  ecorr_=new EGEnergyCorrector();
+  PhotonFix::initialiseParameters(iConfig);
 }
 
 
@@ -416,7 +422,7 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
    //h1_etaPhot->Write();
    //h2_n_vs_eta->Write();
    //file_prova->Close();
-
+  delete ecorr_;
 }
 
 
@@ -451,15 +457,17 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    run = iEvent.id().run(); // unique ID - part 1
    event = iEvent.id().event(); // unique ID - part 2
 
+   if (!ecorr_->IsInitialized()) ecorr_->Initialize(iSetup,regressionWeights.c_str());
+   PhotonFix::initialiseGeometry(iSetup);
 
-    // rho from fast jet
-    edm::Handle<double> rhoH;
-    //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
-    if( iEvent.getByLabel(edm::InputTag("kt6PFJetsForIso","rho"),rhoH) )
-      rho = *rhoH;
-    else 
-      rho = 0;
-
+   // rho from fast jet
+   edm::Handle<double> rhoH;
+   //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
+   if( iEvent.getByLabel(edm::InputTag("kt6PFJetsForIso","rho"),rhoH) )
+     rho = *rhoH;
+   else 
+     rho = 0;
+   
     edm::Handle<double> rhocaloH;
     //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
     if( iEvent.getByLabel(edm::InputTag("kt6CaloJetsForIso","rho"),rhocaloH) )
@@ -1767,6 +1775,14 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ptPhot[nPhot] = it->pt();
      ePhot[nPhot] = it->energy();	 
      escPhot[nPhot] = it->superCluster()->energy();	 
+
+     std::pair<double,double> cor = ecorr_->CorrectedEnergyWithError(*it);
+     escRegrPhot[nPhot] = cor.first;
+     escRegrPhotError[nPhot] = cor.second;
+     PhotonFix fix(*it);
+     escPhFixPhot[nPhot] = fix.fixedEnergy();
+     escPhFixPhotError[nPhot] = fix.sigmaEnergy();
+
      escRawPhot[nPhot] = it->superCluster()->rawEnergy();	 
      eseedPhot[nPhot] = it->superCluster()->seed()->energy();	 
 
@@ -2795,6 +2811,10 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("ptPhot ",&ptPhot ,"ptPhot[nPhot]/F");
   m_tree->Branch("ePhot  ",&ePhot  ,"ePhot[nPhot]/F");
   m_tree->Branch("escPhot  ",&escPhot  ,"escPhot[nPhot]/F");
+  m_tree->Branch("escRegrPhot  ",&escRegrPhot  ,"escRegrPhot[nPhot]/F");
+  m_tree->Branch("escRegrPhotError  ",&escRegrPhotError  ,"escRegrPhotError[nPhot]/F");
+  m_tree->Branch("escPhFixPhot  ",&escPhFixPhot  ,"escPhFixPhot[nPhot]/F");
+  m_tree->Branch("escPhFixPhotError  ",&escPhFixPhotError  ,"escPhFixPhotError[nPhot]/F");
   m_tree->Branch("escRawPhot  ",&escRawPhot  ,"escRawPhot[nPhot]/F");
   m_tree->Branch("etascPhot  ",&etascPhot  ,"etascPhot[nPhot]/F");
   m_tree->Branch("phiscPhot  ",&phiscPhot  ,"phiscPhot[nPhot]/F");
@@ -2843,14 +2863,14 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_HoverE",&pid_HoverE,"pid_HoverE[nPhot]/F");
   m_tree->Branch("pid_hlwTrack",&pid_hlwTrack,"pid_hlwTarck[nPhot]/F");
   m_tree->Branch("pid_hlwTrackNoDz",&pid_hlwTrackNoDz,"pid_hlwTrackNoDz[nPhot]/F");
-  m_tree->Branch("pid_hlwTrackForCiC",&pid_hlwTrackForCiC,"pid_hlwTrackBestRank[40][30]/F");
+  m_tree->Branch("pid_hlwTrackForCiC",&pid_hlwTrackForCiC,"pid_hlwTrackBestRank[40][100]/F");
   m_tree->Branch("pid_etawid",&pid_etawid,"pid_etawid[nPhot]/F");
 
   m_tree->Branch("pid_jurECAL03",&pid_jurECAL03,"pid_jurECAL03[nPhot]/F");
   m_tree->Branch("pid_twrHCAL03",&pid_twrHCAL03,"pid_twrHCAL03[nPhot]/F");
   m_tree->Branch("pid_hlwTrack03",&pid_hlwTrack03,"pid_hlwTrack03[nPhot]/F");
   m_tree->Branch("pid_hlwTrack03NoDz",&pid_hlwTrack03NoDz,"pid_hlwTrack03NoDz[nPhot]/F");
-  m_tree->Branch("pid_hlwTrack03ForCiC",&pid_hlwTrack03ForCiC,"pid_hlwTrack03ForCiC[40][30]/F");
+  m_tree->Branch("pid_hlwTrack03ForCiC",&pid_hlwTrack03ForCiC,"pid_hlwTrack03ForCiC[40][100]/F");
 
   m_tree->Branch("ptiso004Phot",&ptiso004Phot,"ptiso004Phot[nPhot]/F");
   m_tree->Branch("ntrkiso004Phot",&ntrkiso004Phot,"ntrkiso004Phot[nPhot]/I");

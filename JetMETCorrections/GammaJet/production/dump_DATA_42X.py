@@ -1,5 +1,5 @@
 #
-# $Id: dump_DATA_42X.py,v 1.2 2011/05/22 12:57:08 meridian Exp $
+# $Id: dump_DATA_42X.py,v 1.3 2011/09/21 11:10:34 meridian Exp $
 #
 #  configuration to dump ntuples in data
 #   the only diff should be for jetmet corrections
@@ -39,7 +39,7 @@ options.register(
     VarParsing.VarParsing.varType.string,
     "GlobalTag name")
 
-options.diPhotonSkim=0
+options.diPhotonSkim=1
 options.diPhotonSkim2010=0
 #default GT for 42 reprocessing
 options.GlobalTag='GR_R_42_V19::All'
@@ -50,7 +50,9 @@ if (options.diPhotonSkim==1):
     process.load('Configuration.Skimming.PDWG_DiPhoton_SD_cff')
     process.CaloIdIsoPath = cms.Path( process.CaloIdIsoPhotonPairsFilter * process.analysisSequence)
     process.R9IdPath = cms.Path( process.R9IdPhotonPairsFilter * process.analysisSequence)
-    process.schedule = cms.Schedule(process.CaloIdIsoPath, process.R9IdPath)
+    process.MixedCaloIdIsoR9IdPath = cms.Path( process.MixedCaloIdIsoR9IdPhotonPairsFilter * process.analysisSequence)
+    process.MixedR9IdCaloIdIsoPath = cms.Path( process.MixedR9IdCaloIdIsoPhotonPairsFilter * process.analysisSequence)
+    process.schedule = cms.Schedule(process.CaloIdIsoPath, process.R9IdPath, process.MixedCaloIdIsoR9IdPath, process.MixedR9IdCaloIdIsoPath)
 elif (options.diPhotonSkim2010==1):
     process.load('Configuration.Skimming.PDWG_DiPhoton_SD_cff')
     process.CaloIdIsoPath = cms.Path( process.CaloIdIsoPhotonPairsFilter * process.analysisSequence)
@@ -63,11 +65,13 @@ else:
 ## DO NOT CHANGE THE PATH HERE! New modules should be added ONLY in the common configuration 
 #  only paramaters should be changes for data and MC
 process.source.fileNames = cms.untracked.vstring(
-    'file:/cmshome/meridian/data/Photon_42_2010ReReco_AOD.root'
+    'file:/tmp/testPhotonAOD.root'
 )
 
+#process.source.skipEvents = cms.untracked.uint32(20200)
+
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(2000)
 )
 
 # Global tag
