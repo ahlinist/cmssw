@@ -44,6 +44,8 @@ using namespace reco;
 // class declaration
 //
 
+class EGEnergyCorrector;
+
 class GammaJetAnalyzer : public edm::EDAnalyzer {
    public:
       explicit GammaJetAnalyzer(const edm::ParameterSet&);
@@ -210,6 +212,10 @@ TH2D* h2_n_vs_eta;
       Float_t ePhot[40];
       Float_t eseedPhot[40];
       Float_t escPhot[40];
+      Float_t escRegrPhot[40];
+      Float_t escRegrPhotError[40];
+      Float_t escPhFixPhot[40];
+      Float_t escPhFixPhotError[40];
       Float_t escRawPhot[40];
       Float_t etaPhot[40];
       Float_t phiPhot[40];
@@ -263,8 +269,8 @@ TH2D* h2_n_vs_eta;
       Float_t pid_hlwTrack03[40]; // Hollow cone track isolation
       Float_t pid_hlwTrack03NoDz[40]; // Hollow cone track isolation
       Float_t pid_hlwTrackNoDz[40]; // Hollow cone track isolation
-      Float_t pid_hlwTrackForCiC[40][30]; // Hollow cone track isolation
-      Float_t pid_hlwTrack03ForCiC[40][30]; // Hollow cone track isolation
+      Float_t pid_hlwTrackForCiC[40][100]; // Hollow cone track isolation
+      Float_t pid_hlwTrack03ForCiC[40][100]; // Hollow cone track isolation
 
      
       Float_t ptiso004Phot[40];
@@ -611,5 +617,7 @@ TH2D* h2_n_vs_eta;
       std::vector<std::string> rankVariables;
 
       std::string outFileName;
+      std::string regressionWeights;
+      EGEnergyCorrector* ecorr_;
 };
 

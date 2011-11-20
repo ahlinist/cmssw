@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.5 2011/08/10 13:46:26 pandolf Exp $
+# $Id: common_dump_config.py,v 1.6 2011/11/02 11:50:37 meridian Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -25,6 +25,7 @@ process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
 process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 process.load('Configuration/StandardSequences/Reconstruction_cff')
+
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
 
 process.source = cms.Source("PoolSource",
@@ -75,13 +76,13 @@ process.load("RecoMET.Configuration.GenMETParticles_cff")
 process.load("JetMETCorrections.Configuration.DefaultJEC_cff")
 process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
 
-process.ak5CaloL1Offset.useCondDB = False
+#process.ak5CaloL1Offset.useCondDB = False
 #process.ak5PFL1Offset.useCondDB = False
-process.ak5JPTL1Offset.useCondDB = False
+#process.ak5JPTL1Offset.useCondDB = False
 
-process.ak5CaloL1Fastjet.useCondDB = False
-process.ak5PFL1Fastjet.useCondDB = False
-process.ak5JPTL1Fastjet.useCondDB = False
+#process.ak5CaloL1Fastjet.useCondDB = False
+#process.ak5PFL1Fastjet.useCondDB = False
+#process.ak5JPTL1Fastjet.useCondDB = False
 
 process.ak5PFJets.doAreaFastjet = True
 #process.ak7PFJets.doAreaFastjet = True
@@ -101,10 +102,11 @@ process.ak5JetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
 process.softMuonTagInfos.jets =  cms.InputTag("ak5PFJets")
 process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
 
-
+from HiggsAnalysis.HiggsToGammaGamma.PhotonFixParams4_2_cfi import *
 ## dumper module
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
+    PFParameters = PhotonFixParameters,
     outFileName = cms.untracked.string("output.root"),                                    
     dumpBeamHaloInformations = cms.untracked.bool(True),
     dumpAKT5Jets=cms.untracked.bool(True),
@@ -148,6 +150,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
     vertices = cms.untracked.InputTag("offlinePrimaryVertices"),
                                     
+                                    
     genjetptthr = cms.double(5.),
     calojetptthr = cms.double(3.),
     pfjetptthr = cms.double(4.),
@@ -157,6 +160,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jptjetnmin = cms.int32(10),
     JetIDParams = theJetIDParams,
     Xsec = cms.double(1.)
+                                    
 )
 
 # compute rho with PF candidates

@@ -1,5 +1,5 @@
 #
-# $Id: dump_MC_42X.py,v 1.2 2011/05/22 12:57:08 meridian Exp $
+# $Id: dump_MC_42X.py,v 1.3 2011/06/24 15:00:31 meridian Exp $
 #
 #  configuration to dump ntuples in MC
 #   the only diff should be for jetmet corrections
@@ -33,7 +33,7 @@ process.source.fileNames = cms.untracked.vstring(
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(500)
+    input = cms.untracked.int32(2000)
 )
 
 # Global tag#
