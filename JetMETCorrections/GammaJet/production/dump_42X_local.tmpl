@@ -1,5 +1,5 @@
 #
-# $Id: dump_42X_local.tmpl,v 1.1 2011/11/02 11:50:20 meridian Exp $
+# $Id: dump_42X_local.tmpl,v 1.2 2011/11/04 11:43:02 meridian Exp $
 #
 #  configuration to dump ntuples in MC
 #   the only diff should be for jetmet corrections
@@ -50,6 +50,7 @@ process.myanalysis.JetCorrectionService_jptak7 = cms.string('ak7JPTL1L2L3')
 process.myanalysis.JetCorrectionService_pfakt5 = cms.string('ak5PFL1FastL2L3')
 process.myanalysis.JetCorrectionService_pfakt7 = cms.string('ak7PFL1FastL2L3')
 process.myanalysis.outFileName = cms.untracked.string('MYOUTFILENAME')
-#process.myanalysis.TriggerTag = cms.untracked.InputTag("TriggerResults::REDIGI311X")
+# Not running trigger for paolo local prod
+process.myanalysis.TriggerTag = cms.untracked.InputTag("")
 
 #print process.dumpPython()
