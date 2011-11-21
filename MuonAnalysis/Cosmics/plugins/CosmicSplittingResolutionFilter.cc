@@ -836,8 +836,8 @@ bool CosmicSplittingResolutionFilter::filter(edm::Event& event, const edm::Event
   // the TPFMS first station was.
   nt->hit_csc = tracks[tk_global][0]->hitPattern().cscStationsWithAnyHits() > 0 || tracks[tk_global][1]->hitPattern().cscStationsWithAnyHits() > 0;
   nt->hit_dt  = tracks[tk_global][0]->hitPattern().dtStationsWithAnyHits()  > 0 || tracks[tk_global][1]->hitPattern().dtStationsWithAnyHits()  > 0;
-  nt->tpfms_first_station[0] = tracks[tk_global][0]->hitPattern().innermostMuonStationWithHits(0);
-  nt->tpfms_first_station[1] = tracks[tk_global][0]->hitPattern().innermostMuonStationWithHits(0);
+  nt->tpfms_first_station[0] = 999; // tracks[tk_global][0]->hitPattern().innermostMuonStationWithHits(0);
+  nt->tpfms_first_station[1] = 999; // tracks[tk_global][1]->hitPattern().innermostMuonStationWithHits(0);
   edm::LogInfo("CosmicSplittingResolution") << "hit_csc: " << nt->hit_csc << " hit_dt: " << nt->hit_dt << " tpfms_first_station: " << nt->tpfms_first_station[0] << ", " << nt->tpfms_first_station[1];
 
   // Need transient tracks so we can propagate to the same point.
