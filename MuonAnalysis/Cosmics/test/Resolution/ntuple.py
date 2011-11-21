@@ -17,12 +17,11 @@ debugdump = True
 run_events = None
 max_events = -1
 no_edm_output = True
-#run_events = [(148952, 21812326)]
-#files = ['/store/data/Run2010B/Cosmics/RECO/Nov4ReReco_v1/0131/C0DFB543-F4EA-DF11-9BD1-003048678B7E.root']
-run_events = [(128899, 74158848)]
 files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RAW-RECO/399_fromv3_CosmicTP-v1/0000/62816537-0A3E-E011-8CC3-0030487E54B7.root']
+run_events = [(128899, 74158848)]
 no_refits = False
 use_dt_meantimer = False
+segments_in_fit = True
 
 # Reset these before submitting jobs.
 dumps = debugdump = False
@@ -33,11 +32,13 @@ nominal_muons = ('sqlite_file:Design.db', {'DTAlignmentRcd': 'DTAlignmentRcd', '
 new_tk = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'TrackerAlignmentRcd': 'TrackerAlignment_GR10_v5_offline', 'GlobalPositionRcd': 'GlobalAlignment_v4_offline'})
 new_tk_def = ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_v1_offline'})
 new_muons = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'DTAlignmentRcd': 'DTAlignment_2009_v5_offline', 'CSCAlignmentRcd': 'CSCAlignment_2009_v6_offline'})
+new_muon_apes = ('sqlite_file:initialMuonAlignment_DT-Aug11_CSC-Aug12_SetAPE.db', {'DTAlignmentErrorRcd': 'DTAlignmentErrorRcd', 'CSCAlignmentErrorRcd': 'CSCAlignmentErrorRcd'})
 
-jobname, extra_alca = 'globaltag', []
+#jobname, extra_alca = 'globaltag', []
 #jobname, extra_alca = 'asMUO10004', [from_38x]
 #jobname, extra_alca = 'newtknominalmu', [new_tk, new_tk_def, nominal_muons]
-#jobname, extra_alca = 'newtknewmu', [new_tk, new_tk_def, new_muons]
+jobname, extra_alca = 'newtknewmu', [new_tk, new_tk_def, new_muons]
+#jobname, extra_alca = 'newtknewmunewmuapes', [new_tk, new_tk_def, new_muons, new_muon_apes]
 
 #is_mc = True
 #global_tag = 'COSMC_42_PEAK::All'
@@ -45,8 +46,11 @@ jobname, extra_alca = 'globaltag', []
 #jobname, dataset_id = 'mcglobaltag', 2
 #files = ['file:/uscms/home/tucker/nobackup/cosmicmc/superPointing_p100_deconv.root']
 
+if segments_in_fit:
+    jobname += 'segsinfit'
+
 print 'configuring config:'
-for var in ['dumps', 'debugdump', 'dataset_id', 'global_tag', 'run_events', 'max_events', 'num_refits', 'extra_alca', 'no_edm_output', 'pp_reco_mode', 'require_pixels', 'no_refits', 'use_dt_meantimer', 'jobname']:
+for var in ['dumps', 'debugdump', 'dataset_id', 'global_tag', 'run_events', 'max_events', 'num_refits', 'extra_alca', 'no_edm_output', 'pp_reco_mode', 'require_pixels', 'no_refits', 'use_dt_meantimer', 'segments_in_fit', 'jobname']:
     print '%20s: %s' % (var, repr(eval(var)))
 
 ########################################################################################
@@ -63,15 +67,19 @@ scheduler = %(scheduler)s
 datasetpath = %(datasetpath)s
 %(dbs_url)s
 pset = ntuple.py
-split_by_event = 1
-total_number_of_events = -1
-events_per_job = 1000
 get_edm_output = 1
+%(job_control)s
 
 [USER]
 ui_working_dir = crab/crab_cosmicssplittingres_%(jobname)s_%(working)s
 return_data = 1
 %(additional_input_files)s
+'''
+
+    job_control = '''
+split_by_event = 1
+total_number_of_events = -1
+events_per_job = 1000
 '''
 
     additional_input_files = [connect.replace('sqlite_file:', '') for connect, rcds in extra_alca if 'sqlite_file' in connect]
@@ -87,7 +95,17 @@ return_data = 1
         ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
         ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
         ]
-        
+
+    if True:
+        jobname += 'highpt2010only'
+        datasets = datasets[:4]
+        job_control = '''
+lumi_mask = highpt2010.json
+split_by_lumi = 1
+lumis_per_job = 100
+total_number_of_lumis = -1
+'''
+
     for working, datasetpath in datasets:
         scheduler = 'condor' if 'SP' in working else 'glite'
         dbs_url = 'dbs_url = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet' if 'tucker' in datasetpath else ''
@@ -144,8 +162,12 @@ process.GlobalTag.globaltag = global_tag
 
 if not pp_reco_mode:
     process.load('Configuration.StandardSequences.ReconstructionCosmics_cff')
+    if segments_in_fit:
+        process.cosmicMuons.TrajectoryBuilderParameters.BackwardMuonTrajectoryUpdatorParameters.Granularity = 0
 else:
     process.load('Configuration.StandardSequences.Reconstruction_cff')
+    if segments_in_fit:
+        process.standAloneMuons.STATrajBuilderParameters.BWFilterParameters.Granularity = 0
 
 if is_mc:
     process.load('SimGeneral.TrackingAnalysis.Playback_cfi')
@@ -156,6 +178,7 @@ else:
 
 if not no_edm_output:
     process.out = cms.OutputModule('PoolOutputModule', fileName = cms.untracked.string('edm.root'))
+    process.outp = cms.EndPath(process.out)
 
 process.load('FWCore.MessageLogger.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
@@ -213,6 +236,8 @@ if not pp_reco_mode:
 if not pp_reco_mode:
     reco_frag = process.reconstructionCosmics
     reco_frag.remove(process.egammarecoCosmics_woElectrons) # this causes crashes, we don't use it anyway
+    reco_frag.remove(process.CSCHaloData) # crashes in segments_in_fit mode
+    reco_frag.remove(process.BeamHaloSummary) # needs the previous
 else:
     raise NotImplementedError("need to fix pp_reco_mode's reco_frag")
     localreco = cms.Sequence(process.trackerlocalreco+process.muonlocalreco+process.calolocalreco)
@@ -467,12 +492,9 @@ for reco_kind in label_names.keys():
 
 ########################################################################################
 
-if hasattr(process, 'out'):
-    if no_edm_output:
-        del process.out
-    else:
-        # The ntuple maker is an EDFilter, so it selects events that
-        # were written into the ntuple.
-        process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
+if hasattr(process, 'out') and not no_edm_output:
+    # The ntuple maker is an EDFilter, so it selects events that
+    # were written into the ntuple.
+    process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
 
 # Done!
