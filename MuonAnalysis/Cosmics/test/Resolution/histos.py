@@ -13,7 +13,6 @@ require_rpc_good = False
 require_tt25 = False
 require_not_tt25 = False
 min_pixel_layers = 1
-min_run = 0
 
 try:
     fn = [x for x in sys.argv if '.root' in x][0]
@@ -27,7 +26,7 @@ if require_tt25 and require_not_tt25:
 if require_tt25 and not require_rpc_good:
     print 'warning: require_tt25 and not require_rpc_good!'
 
-run_list = get_run_list(cosmics_or_collisions, dt_or_csc, require_pixels, require_rpc_good, min_run)
+run_list = get_run_list(cosmics_or_collisions, dt_or_csc, require_pixels, require_rpc_good) #, min_run)
 
 cfg = cms.PSet(
     directory               = cms.string('UTpickedTracks'),
@@ -45,7 +44,7 @@ cfg = cms.PSet(
     force_run_list          = cms.vuint32(run_list),
     require_tt25            = cms.bool(require_tt25),
     require_not_tt25        = cms.bool(require_not_tt25),
-    copy_selected_events    = cms.bool(True),
+    copy_selected_events    = cms.bool(False),
     )
 
 bins = make_bins('pt')
@@ -53,7 +52,7 @@ bins = make_bins('pt')
 
 print 'configuring config:'
 for k,v in cfg.parameters_().items() + [('number of bins', len(bins)),
-                                        ('bin names', [b.name for b in bins]),
+                                        ('bins', bins),
                                         ('cosmics_or_collisions', cosmics_or_collisions),
                                         ('require_rpc_good', require_rpc_good),
                                         ('output_file', output_file),
