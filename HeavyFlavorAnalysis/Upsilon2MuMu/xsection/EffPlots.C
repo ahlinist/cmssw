@@ -306,7 +306,7 @@ void Trig_DATA_Fit(){
   EffMC5 = new TH1D("TrigEfficiencyPos5", "TrigEfficiencyPos5", 7, pt);  
   
   f0 = new TF1("f0", f_Turnon, 3., 14., 4);
-    
+      
   for ( int i = 0; i < 7 ; i++){
     for ( int j = 0; j < 5 ; j++){
       
@@ -360,17 +360,34 @@ void Trig_DATA_Fit(){
   f0->SetParLimits(2, 0., 5.);
   f0->SetParLimits(3, 0., 2.);
   
-  EffMC1->Fit(f0);
+  EffMC1->Fit("f0");
   Status = gMinuit->fCstatu.Data();
   if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
     f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
-    EffMC1->Fit(f0);
+    EffMC1->Fit("f0");
   }
   Status = gMinuit->fCstatu.Data();
   if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
     f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
-    EffMC1->Fit(f0);
+    EffMC1->Fit("f0");
   }  
+  
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  double err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC1->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC1->Fit("f0","+");  
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 10.); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 2.);
   
   EffMC2->Fit(f0);
   Status = gMinuit->fCstatu.Data();
@@ -383,7 +400,24 @@ void Trig_DATA_Fit(){
     f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
     EffMC2->Fit(f0);
   } 
-    
+  
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC2->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC2->Fit("f0","+");   
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 10.); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 2.);  
+  
   EffMC3->Fit(f0);
   Status = gMinuit->fCstatu.Data();
   if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
@@ -395,6 +429,23 @@ void Trig_DATA_Fit(){
     f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
     EffMC3->Fit(f0);
   }  
+  
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC3->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC3->Fit("f0","+");   
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 10.); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 2.);    
   
   EffMC4->Fit(f0);
   Status = gMinuit->fCstatu.Data();
@@ -408,6 +459,23 @@ void Trig_DATA_Fit(){
     EffMC4->Fit(f0);
   }  
   
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC4->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC4->Fit("f0","+");   
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 10.); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 1.);
+  
   EffMC5->Fit(f0);
   Status = gMinuit->fCstatu.Data();
   if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
@@ -420,7 +488,19 @@ void Trig_DATA_Fit(){
     EffMC5->Fit(f0);
   }
   
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
   
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC5->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC5->Fit("f0","+");   
+    
   TCanvas *c8 = new TCanvas("c8","c8",1200,600); 
   c8->Divide(3,2);
   c8->cd(1);
@@ -445,7 +525,8 @@ void Trig_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffMC2,"b = 0.961 #pm 0.021"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC2,"b = 0.961 #pm 0.021"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC2,"b = 0.961 #pm 0.009"); legge->SetTextColor(kBlack);
   legg->Draw();  
   c8->cd(3);
   EffMC3->SetMinimum(0.4);
@@ -481,7 +562,8 @@ void Trig_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffMC5,"b = 0.904 #pm 0.083"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC5,"b = 0.904 #pm 0.083"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC5,"b = 0.939 #pm 0.008"); legge->SetTextColor(kBlack);
   legg->Draw();     
   
   
@@ -515,7 +597,8 @@ void Trig_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffMC2,"b = 0.961 #pm 0.021"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC2,"b = 0.961 #pm 0.021"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC2,"b = 0.961 #pm 0.009"); legge->SetTextColor(kBlack);
   legg->Draw();
   c802->SaveAs("TrigFIT2.pdf");
   
@@ -566,7 +649,8 @@ void Trig_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffMC5,"b = 0.904 #pm 0.083"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC5,"b = 0.904 #pm 0.083"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC5,"b = 0.939 #pm 0.008"); legge->SetTextColor(kBlack);
   legg->Draw();
   c805->SaveAs("TrigFIT5.pdf");
   
@@ -656,6 +740,23 @@ void MuID_DATA_Fit(){
     EffMC1->Fit(f0);
   }  
   
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  double err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC1->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC1->Fit("f0","+");  
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 10.); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 2.);
+  
   EffMC2->Fit(f0);
   Status = gMinuit->fCstatu.Data();
   if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
@@ -667,7 +768,24 @@ void MuID_DATA_Fit(){
     f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
     EffMC2->Fit(f0);
   } 
-    
+
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC2->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC2->Fit("f0","+");  
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 10.); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 2.);
+  
   EffMC3->Fit(f0);
   Status = gMinuit->fCstatu.Data();
   if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
@@ -680,6 +798,23 @@ void MuID_DATA_Fit(){
     EffMC3->Fit(f0);
   }  
   
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC3->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC3->Fit("f0","+");  
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 0.01); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 2.);
+  
   EffMC4->Fit(f0);
   Status = gMinuit->fCstatu.Data();
   if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
@@ -691,6 +826,23 @@ void MuID_DATA_Fit(){
     f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
     EffMC4->Fit(f0);
   }  
+
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC4->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC4->Fit("f0","+");  
+  
+  f0->SetLineColor(1);
+  f0->ReleaseParameter(0); f0->ReleaseParameter(1); f0->ReleaseParameter(2); f0->ReleaseParameter(3); 
+  f0->SetParLimits(0, 0., 0.01); f0->SetParLimits(1, 0.1, 2.5); f0->SetParLimits(2, 0., 5.); f0->SetParLimits(3, 0., 2.);
   
   EffMC5->Fit(f0);
   Status = gMinuit->fCstatu.Data();
@@ -704,6 +856,18 @@ void MuID_DATA_Fit(){
     EffMC5->Fit(f0);
   }
   
+  cout << "chisquare = " << f0->GetChisquare() << endl;
+  err = f0->GetParError(1);
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)+(err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(2);
+  EffMC5->Fit("f0","+");
+  
+  f0->FixParameter(0,f0->GetParameter(0)); f0->FixParameter(1,f0->GetParameter(1)-(2*err));
+  f0->FixParameter(2,f0->GetParameter(2)); f0->FixParameter(3,f0->GetParameter(3));
+  f0->SetLineColor(3);
+  EffMC5->Fit("f0","+");  
   
   TCanvas *c8 = new TCanvas("c8","c8",1200,600); 
   c8->Divide(3,2);
@@ -753,7 +917,8 @@ void MuID_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffMC4,"b = 0.114 #pm 0.033"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC4,"b = 0.114 #pm 0.033"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC4,"b = 0.981 #pm 0.003"); legge->SetTextColor(kBlack);
   legg->Draw();   
   c8->cd(5);
   EffMC5->SetMinimum(0.4);
@@ -765,7 +930,8 @@ void MuID_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffMC5,"b = 0.131 #pm 0.078"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC5,"b = 0.131 #pm 0.078"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC5,"b = 0.983 #pm 0.004"); legge->SetTextColor(kBlack);
   legg->Draw();     
   
   
@@ -833,7 +999,8 @@ void MuID_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffMC4,"b = 0.114 #pm 0.033"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC4,"b = 0.114 #pm 0.033"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC4,"b = 0.981 #pm 0.003"); legge->SetTextColor(kBlack);
   legg->Draw();
   c804->SaveAs("MuidFIT4.pdf");
   
@@ -850,7 +1017,8 @@ void MuID_DATA_Fit(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffMC5,"b = 0.131 #pm 0.078"); legge->SetTextColor(kBlack);
+  //legge = legg->AddEntry(EffMC5,"b = 0.131 #pm 0.078"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC4,"b = 0.983 #pm 0.004"); legge->SetTextColor(kBlack);
   legg->Draw();
   c805->SaveAs("MuidFIT5.pdf");
   
