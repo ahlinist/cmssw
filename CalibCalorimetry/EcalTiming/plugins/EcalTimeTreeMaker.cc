@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.12 2011/09/27 08:39:09 franzoni Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.13 2011/11/07 12:31:02 franzoni Exp $
 //
 //
 
@@ -237,6 +237,7 @@ void EcalTimeTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSetup
   dumpVertexInfo(theRecVtxs, myTreeVariables_);
 
   tree_ -> Fill();
+  delete lazyTools;
 }
 
 
