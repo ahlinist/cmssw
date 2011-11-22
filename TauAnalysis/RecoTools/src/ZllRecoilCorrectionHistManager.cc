@@ -44,7 +44,7 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramMEtS_               = book1D(dir, "metS",               "E_{T}^{miss}",                            30,          0.0,         60.0);
   histogramMEtL_               = book1D(dir, "metL",               "E_{T}^{miss}",                            75,          0.0,        150.0);
   histogramMEtProjParlZ_       = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",           75,        -75.0,        +75.0);
-  histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              75,        -75.0,        +75.0);
+  histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              50,        -50.0,        +50.0);
 
   const int qTnumBins = 22;
   double qTbinning[qTnumBins + 1] = { 
@@ -53,7 +53,7 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramUparlDivQtVsQt_ = book2D(dir, "uParlDivQtVsQt", "u_{#parallel}/q_{T} vs q_{T}",                           
 				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
   histogramUparlVsQt_      = book2D(dir, "uParlVsQt",      "u_{#parallel} vs q_{T}",                           
-				    qTnumBins, qTbinning, 130, -75.0, +250.0);
+				    qTnumBins, qTbinning, 130, -250.0,  +75.0);
   histogramUperpDivQtVsQt_ = book2D(dir, "uPerpDivQtVsQt", "u_{#perp}/q_{T} vs q_{T}",                           
 				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
   histogramUperpVsQt_      = book2D(dir, "uPerpVsQt",      "u_{#perp} vs q_{T}",                           
@@ -141,19 +141,19 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     if ( !errorFlag ) {
       double uParl = uT.first;
       double uPerp = uT.second;
-      if ( qT > 0. ) histogramUparlDivQtVsQt_->Fill(qT, uParl/qT);
-      histogramUparlVsQt_->Fill(qT, uParl);
-      if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT);
-      histogramUperpVsQt_->Fill(qT, uPerp);
+      if ( qT > 0. ) histogramUparlDivQtVsQt_->Fill(qT, uParl/qT, evtWeight);
+      histogramUparlVsQt_->Fill(qT, uParl, evtWeight);
+      if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
+      histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
 
       for ( std::vector<histogramsUvsQtNumVtxType*>::iterator it = histogramsUvsQtNumVtxBinned_.begin();
 	    it != histogramsUvsQtNumVtxBinned_.end(); ++it ) {
 	if ( ((*it)->numVtxMin_ == -1 || (int)vtxMultiplicity >= (*it)->numVtxMin_) &&
 	     ((*it)->numVtxMax_ == -1 || (int)vtxMultiplicity <= (*it)->numVtxMax_) ) {
-	  if ( qT > 0. ) (*it)->histogramUparlDivQtVsQt_->Fill(qT, uParl/qT);
-	  (*it)->histogramUparlVsQt_->Fill(qT, uParl);
-	  if ( qT > 0. ) (*it)->histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT);
-	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp);
+	  if ( qT > 0. ) (*it)->histogramUparlDivQtVsQt_->Fill(qT, uParl/qT, evtWeight);
+	  (*it)->histogramUparlVsQt_->Fill(qT, uParl, evtWeight);
+	  if ( qT > 0. ) (*it)->histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
+	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
 	}
       }
     }

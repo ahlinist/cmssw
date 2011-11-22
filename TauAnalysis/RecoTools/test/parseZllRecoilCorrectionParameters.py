@@ -4,7 +4,7 @@ import math
 import os
 import re
 
-inputFilePath = "/data1/veelken/tmp/ZllRecoilCorrection/v4_3/2011RunB/"
+inputFilePath = "/data1/veelken/tmp/ZllRecoilCorrection/v4_3_1/2011RunA/"
 
 tablesToPrint = {
     'rawPFMET' : {
@@ -66,8 +66,12 @@ for tableName, tableOptions in tablesToPrint.items():
                     if not currentVarName in varErrors[tableName][columnName].keys():
                         varErrors[tableName][columnName][currentVarName] = {}
                 elif varValue_regex.match(line):
-                    varValues[tableName][columnName][currentVarName][central_or_shift] = \
-                      float(varValue_regex.match(line).group('varValue'))
+                    if currentVarName != 'k1':
+                        varValues[tableName][columnName][currentVarName][central_or_shift] = \
+                          float(varValue_regex.match(line).group('varValue'))
+                    else:
+                        varValues[tableName][columnName][currentVarName][central_or_shift] = \
+                          -float(varValue_regex.match(line).group('varValue'))
                 elif varError_regex.match(line):    
                     varErrors[tableName][columnName][currentVarName][central_or_shift] = \
                       float(varError_regex.match(line).group('varError'))
@@ -79,9 +83,9 @@ for tableName, tableOptions in tablesToPrint.items():
     # CV: comma at end of print statement prevents new-line
     print "%-20s" % "parameter",
     for columnName in columnNames:
-        print "          %-18s" % columnName,
+        print "          %-20s" % columnName,
     print ""    
-    for varName in varErrors[tableName][columnName].keys():
+    for varName in [ 'k1', 'k2', 'k3', 'sigma1', 'b1', 'c1', 'sigma2', 'b2', 'c2' ]:
         print "%-20s" % varName,
         for columnName in columnNames:
             if len(varValues[tableName][columnName][varName].keys()) > 1:
@@ -95,13 +99,23 @@ for tableName, tableOptions in tablesToPrint.items():
                 error2 /= 2.            
                 # add statistical uncertainty in quadrature
                 error2 += math.pow(varErrors[tableName][columnName][varName][central], 2)
-                print "%10.3e +/- %10.3e   " % \
-                  (varValues[tableName][columnName][varName][central],
-                   math.sqrt(error2)),
+                if varValues[tableName][columnName][varName][central] > 1.e-2:
+                    print "%11.4f +/- %11.4f   " % \
+                      (varValues[tableName][columnName][varName][central],
+                       math.sqrt(error2)),
+                else:                    
+                    print "%11.4e +/- %11.4e   " % \
+                      (varValues[tableName][columnName][varName][central],
+                       math.sqrt(error2)),
             else:
                 # statistical uncertainties only
-                print "%10.3e +/- %10.3e   " % \
-                  (varValues[tableName][columnName][varName][central],
-                   varErrors[tableName][columnName][varName][central]),
+                if varValues[tableName][columnName][varName][central] > 1.e-2:
+                    print "%11.4f +/- %11.4f   " % \
+                      (varValues[tableName][columnName][varName][central],
+                       varErrors[tableName][columnName][varName][central]),
+                else:
+                    print "%11.4e +/- %11.4e   " % \
+                      (varValues[tableName][columnName][varName][central],
+                       varErrors[tableName][columnName][varName][central]),
         print ""
     print ""

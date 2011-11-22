@@ -17,7 +17,8 @@ process.source = cms.Source("PoolSource",
         #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_9_1_T1A.root'
         #'file:/data1/veelken/CMSSW_4_2_x/skims/skimByHLTpath_IsoMu12_run167830_AOD_11_1_lSt.root'
         #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_77_0_2OV.root'
-        'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_runs175832to179431_AOD_99_1_d1y.root'                       
+        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_runs175832to179431_AOD_99_1_d1y.root'
+        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_checkMEtSmearing_unclusteredEnDown_AOD.root'                        
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
@@ -29,8 +30,8 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-##isMC = True # use for MC
-isMC = False # use for Data
+isMC = True # use for MC
+##isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2011 Data
 HLTprocessName = "HLT" # use for Summer'11 MC
 #--------------------------------------------------------------------------------

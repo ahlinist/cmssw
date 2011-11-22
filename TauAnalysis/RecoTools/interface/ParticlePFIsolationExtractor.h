@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.13 2011/06/29 18:13:44 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.14 2011/11/17 14:28:05 veelken Exp $
  *
  */
 
@@ -94,7 +94,6 @@ class ParticlePFIsolationExtractor
       if ( methodPUcorr_ != kNone ) {
 	trackExtractor_ = new PATLeptonTrackVectorExtractor<T>();
 	
-	deltaZ_ = cfgPUcorr.getParameter<double>("deltaZ");
 	if ( methodPUcorr_ == kDeltaBeta ) chargedToNeutralFactor_ = cfgPUcorr.getParameter<double>("chargedToNeutralFactor");
 	
 	if ( methodPUcorr_ == kBeta || methodPUcorr_ == kDeltaBeta ) {
@@ -138,8 +137,8 @@ class ParticlePFIsolationExtractor
 
   
   double operator()(const T& lepton, int direction,
-		    const reco::PFCandidateCollection& pfCandidates,
-		    const reco::VertexCollection* vertices = 0, const reco::BeamSpot* beamSpot = 0, double rhoFastJetCorrection = 0.)
+		    const reco::PFCandidateCollection& pfCandidates, const reco::PFCandidateCollection& pfNoPileUpCandidates,
+		    double rhoFastJetCorrection = 0.)
   {
     reco::Particle::Vector coneAxis;
     if      ( direction == kDirP4    ) coneAxis = lepton.momentum();
@@ -156,12 +155,12 @@ class ParticlePFIsolationExtractor
       throw cms::Exception("ParticlePFIsolationExtractor")
 	<< "Invalid function argument 'direction' = " << direction << " !!\n";
 
-    return this->operator()(lepton, coneAxis, pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
+    return this->operator()(lepton, coneAxis, pfCandidates, pfNoPileUpCandidates, rhoFastJetCorrection);
   }
 
   double operator()(const T& lepton, const reco::Particle::Vector& coneAxis,
-		    const reco::PFCandidateCollection& pfCandidates,
-		    const reco::VertexCollection* vertices = 0, const reco::BeamSpot* beamSpot = 0, double rhoFastJetCorrection = 0.)
+		    const reco::PFCandidateCollection& pfCandidates, const reco::PFCandidateCollection& pfNoPileUpCandidates,
+		    double rhoFastJetCorrection = 0.)
   {
     std::vector<const reco::PFCandidate*> pfChargedParticles, pfChargedHadrons, pfNeutralHadrons, pfPhotons;
     if ( addChargedParticleIso_ || methodPUcorr_ != kNone ) {
@@ -171,8 +170,8 @@ class ParticlePFIsolationExtractor
       }
       pfChargedHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h);
     }
-    if ( addNeutralHadronIso_   ) pfNeutralHadrons   = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h0);
-    if ( addPhotonIso_          ) pfPhotons          = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::gamma);
+    if ( addNeutralHadronIso_   ) pfNeutralHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h0);
+    if ( addPhotonIso_          ) pfPhotons        = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::gamma);
 
     double sumPt = 0.;
     
@@ -181,17 +180,13 @@ class ParticlePFIsolationExtractor
       if ( addNeutralHadronIso_   ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
       if ( addPhotonIso_          ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
     } else {
-      if ( vertices == 0 || beamSpot == 0 ) 
-	throw cms::Exception("ParticlePFIsolationExtractor")
-	  << "Pile-up correction Method = 'deltaBeta' requires Vertex collection and BeamSpot !!\n";
-
       std::vector<const reco::Track*> signalTracks = (*trackExtractor_)(lepton);
 
       std::vector<const reco::PFCandidate*> pfNoPileUpChargedParticles, pfPileUpChargedParticles;
-      getPileUpPFCandidates(pfChargedParticles, signalTracks, *vertices, deltaZ_, *beamSpot, 
+      getPileUpPFCandidates(pfChargedParticles, pfNoPileUpCandidates, 1.e-3,
 			    pfNoPileUpChargedParticles, pfPileUpChargedParticles);
       std::vector<const reco::PFCandidate*> pfNoPileUpChargedHadrons, pfPileUpChargedHadrons;
-      getPileUpPFCandidates(pfChargedHadrons, signalTracks, *vertices, deltaZ_, *beamSpot, 
+      getPileUpPFCandidates(pfChargedHadrons, pfNoPileUpCandidates, 1.e-3,
 			    pfNoPileUpChargedHadrons, pfPileUpChargedHadrons);
       
       if ( methodPUcorr_ == kBeta ) {
@@ -346,7 +341,6 @@ class ParticlePFIsolationExtractor
   double pfPhotonIsoConeSize_;
 
   int methodPUcorr_;
-  double deltaZ_;
   double chargedToNeutralFactor_;
   PATLeptonTrackVectorExtractor<T>* trackExtractor_;			  
   pfIsoConfigType* pfNeutralHadronIsoPUcorr_;

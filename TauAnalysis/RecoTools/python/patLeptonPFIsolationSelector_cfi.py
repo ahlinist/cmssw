@@ -5,11 +5,7 @@ patMuonPFIsolationSelector = cms.PSet(
     # c.f. https://twiki.cern.ch/twiki/bin/view/CMS/Z2tautau2mujetFirstData#Default_event_selection
     
     pfCandidateSource = cms.InputTag('particleFlow'),
-
-    # CV: configuration parameters 'vertexSource' and 'beamSpotSource'
-    #     need to be set if using deltaBeta pile-up corrections
-    vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
-    beamSpotSource = cms.InputTag('offlineBeamSpot'),
+    pfNoPileUpCandidateSource = cms.InputTag('pfNoPileUp'),
 
     # CV: configuration parameters 'rhoFastJetSource' and 'ueRhoOffset'
     #     need to be set if using rho (FastJet) pile-up corrections
@@ -43,18 +39,15 @@ patMuonPFIsolationSelector = cms.PSet(
     pileUpCorr = cms.PSet(
         method = cms.string("deltaBeta"),
         ##method = cms.string("rho"),
-        deltaZ = cms.double(0.2),
-        chargedToNeutralFactor = cms.double(0.38), # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
+        chargedToNeutralFactor = cms.double(0.50), # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
         ueRhoOffset = cms.double(0.), # [GeV], energy density offset to be subtracted from rho computed by FastJet algorithm
     )
 )
 
 patElectronPFIsolationSelector = cms.PSet(
     
-    pfCandidateSource = cms.InputTag('pfNoPileUp'),
-
-    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
-    beamSpotSource = cms.InputTag('offlineBeamSpot'),
+    pfCandidateSource = cms.InputTag('particleFlow'),
+    pfNoPileUpCandidateSource = cms.InputTag('pfNoPileUp'),
     
     # CV: configuration parameters 'rhoFastJetSource' and 'ueRhoOffset'
     #     need to be set if using rho (FastJet) pile-up corrections
@@ -89,7 +82,6 @@ patElectronPFIsolationSelector = cms.PSet(
     
     pileUpCorr = cms.PSet(
         method = cms.string("deltaBeta"),
-        deltaZ = cms.double(0.2),
-        chargedToNeutralFactor = cms.double(0.5) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
+        chargedToNeutralFactor = cms.double(0.50) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
     )
 )

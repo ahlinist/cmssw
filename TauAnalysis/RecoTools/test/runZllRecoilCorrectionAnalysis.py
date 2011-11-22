@@ -10,7 +10,7 @@ version = 'v4_3'
 
 inputFilePath = '/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
-outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
+outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_2' % version
 
 samplesToAnalyze = {
     'Data_2011RunA' : {
@@ -96,8 +96,8 @@ samplesToAnalyze = {
     }
 }
 
-#runPeriod = '2011RunA'
-runPeriod = '2011RunB'
+runPeriod = '2011RunA'
+#runPeriod = '2011RunB'
 
 intLumiData = None
 hltPaths = None
@@ -329,38 +329,50 @@ for metOptionName in metOptions.keys():
                 processType = 'smMC'
             else:
                 processType = 'Data'
-            srcJets_central = metOptions[metOptionName]['srcJets'][processType]['central']
-            srcMEt_central = metOptions[metOptionName]['srcMEt'][processType]['central']
-            retVal_produceZllRecoilNtuples = \
-              buildConfigFile_produceZllRecoilNtuples(
-                sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
-                srcMEt_central, srcJets_central, hltPaths[processType], srcWeights[processType])
+            srcJets = metOptions[metOptionName]['srcJets'][processType]
+            srcMEt = metOptions[metOptionName]['srcMEt'][processType]
+            fileNames_produceZllRecoilNtuples[metOptionName][sampleName] = {}
+            for central_or_shift in srcMEt.keys():
+                retVal_produceZllRecoilNtuples = \
+                  buildConfigFile_produceZllRecoilNtuples(
+                    sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+                    central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType])
 
-            if retVal_produceZllRecoilNtuples is None:
-                continue
+                if retVal_produceZllRecoilNtuples is None:
+                    continue
 
-            fileNames_produceZllRecoilNtuples[metOptionName][sampleName] = retVal_produceZllRecoilNtuples
+                fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift] = \
+                  retVal_produceZllRecoilNtuples
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 #
 # build config files for fitting Z-recoil correction parameters 
 #
-fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp    = {}
+fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp = {}
 for metOptionName in metOptions.keys():
     fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName] = {}
     for sampleName in samplesToAnalyze.keys():
         if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
-            retVal_fitZllRecoilNtuples = \
-              buildConfigFile_fitZllRecoilNtuples(
-                sampleName, metOptionName,
-                fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], outputFilePath, samplesToAnalyze,
-                "qT", "uParl", "uPerp")
+            processType = None
+            if samplesToAnalyze[sampleName]['isMC']:
+                processType = 'smMC'
+            else:
+                processType = 'Data'
+            fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName] = {}            
+            for central_or_shift in metOptions[metOptionName]['srcMEt'][processType].keys():
+                retVal_fitZllRecoilNtuples = \
+                  buildConfigFile_fitZllRecoilNtuples(
+                    sampleName, metOptionName,
+                    fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift]['outputFileName'], outputFilePath,
+                    samplesToAnalyze, central_or_shift, 
+                    "qT", "uParl", "uPerp")
 
-            if retVal_fitZllRecoilNtuples is None:
-                continue
+                if retVal_fitZllRecoilNtuples is None:
+                    continue
 
-            fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName] = retVal_fitZllRecoilNtuples
+                fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName][central_or_shift] = \
+                  retVal_fitZllRecoilNtuples
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -379,7 +391,7 @@ for metOptionName in metOptions.keys():
         srcJets = metOptions[metOptionName]['srcJets'][processType]
         srcMEt = metOptions[metOptionName]['srcMEt'][processType]
         fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName] = {}
-        for central_or_shift in srcJets.keys():
+        for central_or_shift in srcMEt.keys():
             retVal_FWLiteZllRecoilCorrectionAnalyzer = \
               buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
                 sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
@@ -475,41 +487,53 @@ def make_MakeFile_vstring(list_of_strings):
 makeFileName = "Makefile_ZllRecoilCorrectionAnalysis_%s_%s" % (version, runPeriod)
 makeFile = open(makeFileName, "w")
 makeFile.write("\n")
-outputFileNames_makeZllRecoilCorrectionFinalPlots = []
+outputFileNames_makeZllRecoilCorrectionFinalPlots_and_Numbers = []
 for metOptionName in metOptions.keys():
     for corrLevelMC in corrLevelsMC:
-        outputFileNames_makeZllRecoilCorrectionFinalPlots.append(
+        outputFileNames_makeZllRecoilCorrectionFinalPlots_and_Numbers.append(
           fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['outputFileName'])
-makeFile.write("all: %s\n" % make_MakeFile_vstring(outputFileNames_makeZllRecoilCorrectionFinalPlots))
+    for sampleName in samplesToAnalyze.keys():
+        if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
+            if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName):
+                for central_or_shift in metOptions[metOptionName]['srcMEt']['smMC'].keys():
+                    if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName].has_key(central_or_shift):
+                        outputFileNames_makeZllRecoilCorrectionFinalPlots_and_Numbers.append(
+                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName][central_or_shift]['outputFileName'])
+makeFile.write("all: %s\n" % make_MakeFile_vstring(outputFileNames_makeZllRecoilCorrectionFinalPlots_and_Numbers))
 makeFile.write("\techo 'Finished running ZllRecoilCorrectionAnalysis.'\n")
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
             if fileNames_produceZllRecoilNtuples[metOptionName].has_key(sampleName):
-                makeFile.write("%s: %s\n" %
-                  (fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
-                   #executable_produceZllRecoilNtuples,
-                   ""))
-                makeFile.write("\t%s%s %s &> %s\n" %
-                  (nice, executable_produceZllRecoilNtuples,
-                   fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['configFileName'],
-                   fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['logFileName']))
+                for central_or_shift in metOptions[metOptionName]['srcJets']['smMC'].keys():
+                    if fileNames_produceZllRecoilNtuples[metOptionName][sampleName].has_key(central_or_shift):
+                        makeFile.write("%s: %s\n" %
+                          (fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift]['outputFileName'],
+                           #executable_produceZllRecoilNtuples,
+                           ""))
+                        makeFile.write("\t%s%s %s &> %s\n" %
+                          (nice, executable_produceZllRecoilNtuples,
+                           fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift]['configFileName'],
+                           fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift]['logFileName']))
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
             if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName) and \
                fileNames_produceZllRecoilNtuples[metOptionName].has_key(sampleName):
-                makeFile.write("%s: %s %s\n" %
-                  (fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['outputFileName'],
-                   fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
-                   #executable_fitZllRecoilNtuples,
-                   ""))
-                makeFile.write("\t%s%s %s &> %s\n" %
-                  (nice, executable_fitZllRecoilNtuples,
-                   fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['configFileName'],
-                   fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['logFileName']))
+                for central_or_shift in metOptions[metOptionName]['srcJets']['smMC'].keys():
+                    if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName].has_key(central_or_shift) and \
+                       fileNames_produceZllRecoilNtuples[metOptionName][sampleName].has_key(central_or_shift):
+                        makeFile.write("%s: %s %s\n" %
+                          (fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName][central_or_shift]['outputFileName'],
+                           fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift]['outputFileName'],
+                           #executable_fitZllRecoilNtuples,
+                           ""))
+                        makeFile.write("\t%s%s %s &> %s\n" %
+                          (nice, executable_fitZllRecoilNtuples,
+                           fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName][central_or_shift]['configFileName'],
+                           fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName][central_or_shift]['logFileName']))
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
@@ -525,11 +549,10 @@ for metOptionName in metOptions.keys():
                             processType = 'Data'
                         srcJets = metOptions[metOptionName]['srcJets'][processType]
                         srcMEt = metOptions[metOptionName]['srcMEt'][processType]            
-                        central_or_shift = 'central'
                         makeFile.write("%s: %s %s %s\n" %
                          (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'],
-                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['outputFileName'],
-                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal]['outputFileName'],
+                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['central']['outputFileName'],
+                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal][central_or_shift]['outputFileName'],
                           #executable_FWLiteZllRecoilCorrectionAnalyzer,
                           ""))
                         # rebuild config file to run FWLiteZllRecoilCorrectionAnalyzer macro
@@ -550,8 +573,8 @@ buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
        str(metOptions),
        sampleName, metOptionName, inputFilePath, outputFilePath,
        central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
-       fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['outputFileName'],
-       fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal]['outputFileName'],
+       fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['central']['outputFileName'],
+       fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal][central_or_shift]['outputFileName'],
        intLumiData)      
                         tmpConfigFileName = "makeTMPconfigFile_%s_%s.py" % (sampleName, metOptionName)
                         tmpConfigFileName_full = os.path.join(outputFilePath, tmpConfigFileName)    
@@ -613,22 +636,26 @@ for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
             if fileNames_produceZllRecoilNtuples[metOptionName].has_key(sampleName):
-                outputFileNames_produceZllRecoilNtuples.append(
-                  fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'])
+                for central_or_shift in metOptions[metOptionName]['srcMEt']['smMC'].keys():
+                    if fileNames_produceZllRecoilNtuples[metOptionName][sampleName].has_key(central_or_shift):
+                        outputFileNames_produceZllRecoilNtuples.append(
+                          fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift]['outputFileName'])
 makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_produceZllRecoilNtuples))
 outputFileNames_fitZllRecoilNtuples = []
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if not (samplesToAnalyze[sampleName]['isMC'] and samplesToAnalyze[sampleName]['Type'] == 'Background'):
             if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName):
-                outputFileNames_fitZllRecoilNtuples.append(
-                  fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['outputFileName'])
+                for central_or_shift in metOptions[metOptionName]['srcMEt']['smMC'].keys():
+                    if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName].has_key(central_or_shift):
+                        outputFileNames_fitZllRecoilNtuples.append(
+                          fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName][central_or_shift]['outputFileName'])
 makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_fitZllRecoilNtuples))
 outputFileNames_FWLiteZllRecoilCorrectionAnalyzer = []
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName].has_key(sampleName):
-            for central_or_shift in metOptions[metOptionName]['srcJets']['smMC'].keys():
+            for central_or_shift in metOptions[metOptionName]['srcMEt']['smMC'].keys():
                 if fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName].has_key(central_or_shift):
                     outputFileNames_FWLiteZllRecoilCorrectionAnalyzer.append(
                       fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'])

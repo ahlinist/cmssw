@@ -12,9 +12,9 @@
 #include <vector>
 
 std::vector<const reco::PFCandidate*> getPFCandidatesOfType(const reco::PFCandidateCollection&, reco::PFCandidate::ParticleType);
-void getPileUpPFCandidates(const std::vector<const reco::PFCandidate*>&, const std::vector<const reco::Track*>&, 
-			   const reco::VertexCollection&, double, const reco::BeamSpot&,
-			   std::vector<const reco::PFCandidate*>&, std::vector<const reco::PFCandidate*>&);
-const reco::Vertex* findVertex(const reco::Track*, const reco::VertexCollection&, double, const reco::BeamSpot&);
+void getPileUpPFCandidates(const std::vector<const reco::PFCandidate*>&, 
+			   const reco::PFCandidateCollection&, double,
+			   std::vector<const reco::PFCandidate*>&, 
+			   std::vector<const reco::PFCandidate*>&);
 
 #endif

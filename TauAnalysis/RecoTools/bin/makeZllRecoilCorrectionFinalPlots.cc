@@ -144,8 +144,8 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
       double value_central      = meMC_central->GetBinContent(iBin);
       double value_sysShiftUp   = meMC_sysShiftUp->GetBinContent(iBin);
       double value_sysShiftDown = meMC_sysShiftDown->GetBinContent(iBin);
-      std::cout << "value_central = " << value_central << "," 
-		<< " value_sysShiftUp = " << value_sysShiftUp << ", value_sysShiftDown = " << value_sysShiftDown << std::endl;
+      //std::cout << "value_central = " << value_central << "," 
+      //	  << " value_sysShiftUp = " << value_sysShiftUp << ", value_sysShiftDown = " << value_sysShiftDown << std::endl;
 
       double value_max = TMath::Max(value_sysShiftUp, value_sysShiftDown);
       if ( value_max > value_central ) errUp2MC_smSum[iBin - 1]   += square(value_max - value_central); 
@@ -301,7 +301,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   legend.Draw();
 
   double stats_x1 = ( meMC_smErrUp && meMC_smErrDown ) ? 0.64 : 0.70;
-  TPaveText statsData(stats_x1, 0.84, 0.95, 0.94, "brNDC"); 
+  TPaveText statsData(stats_x1, 0.84, 0.94, 0.94, "brNDC"); 
   statsData.SetBorderSize(0);
   statsData.SetFillColor(0);
    std::cout << "Data: mean = " << meData->GetMean() << std::endl;
@@ -356,8 +356,8 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
     double diff = (y_data - y_smSum)/y_smSum;
     double diffErr2 = 0.;
     if ( y_data  > 0. ) diffErr2 += square(yErr_data/y_data);
-    if ( y_smSum > 0. ) diffErr2 += square(yErr_smSum/y_smSum);
-    diffErr2 *= square(diff);
+    diffErr2 += square(yErr_smSum/y_smSum);
+    diffErr2 *= square(y_data/y_smSum);
 
     graphDataToMCdiff->SetPoint(iBin - 1, x, diff);
     graphDataToMCdiff->SetPointError(iBin - 1, 0., TMath::Sqrt(diffErr2));
@@ -674,10 +674,11 @@ struct plotUvsQtNumVtxType
     : numVtxMin_(numVtxMin),
       numVtxMax_(numVtxMax)
   {
-    TString label;
-    if      ( numVtxMin_ == -1 ) label = Form("Le%i",   numVtxMax_);
-    else if ( numVtxMax_ == -1 ) label = Form("Ge%i",   numVtxMin_);
-    else                         label = Form("%ito%i", numVtxMin_, numVtxMax_);
+    TString label = "NumVertices";
+    if      ( numVtxMin_ == -1         ) label.Append(Form("Le%i",   numVtxMax_));
+    else if ( numVtxMax_ == -1         ) label.Append(Form("Ge%i",   numVtxMin_));
+    else if ( numVtxMin_ == numVtxMax_ ) label.Append(Form("Eq%i",   numVtxMin_));
+    else                                 label.Append(Form("%ito%i", numVtxMin_, numVtxMax_));
 
     meUparlDivQtVsQtData_ = dynamic_cast<TH2*>(
       loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlDivQtVsQt").Append(label).Data()));

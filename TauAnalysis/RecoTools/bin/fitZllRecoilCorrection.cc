@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.8 2011/10/19 14:41:09 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.9 2011/11/04 09:39:19 veelken Exp $
  *
  */
 
@@ -81,22 +81,24 @@ void showControlPlot(TCanvas* canvas,
   topPad->Draw();
   topPad->cd();
 
-  TAxis* xAxis = dummyHistogram->GetXaxis();
-  xAxis->SetLabelColor(10);
-  xAxis->SetTitleColor(10);
-    
-  TAxis* yAxis = dummyHistogram->GetYaxis();
-  yAxis->SetTitle(yAxisLabel.data());
-  yAxis->SetTitleOffset(1.20);
-  yAxis->SetTitleSize(0.06);
+  TH1* dummyHistogram_top = (TH1*)dummyHistogram->Clone("dummyHistogram_top");
 
-  dummyHistogram->SetTitle("");
-  dummyHistogram->SetStats(false);
-  dummyHistogram->SetMaximum(yMax);
-  dummyHistogram->SetMinimum(yMin);
-  dummyHistogram->SetMarkerColor(1);
-  dummyHistogram->SetMarkerStyle(20);
-  dummyHistogram->Draw("axis");
+  TAxis* xAxis_top = dummyHistogram_top->GetXaxis();
+  xAxis_top->SetLabelColor(10);
+  xAxis_top->SetTitleColor(10);
+    
+  TAxis* yAxis_top = dummyHistogram_top->GetYaxis();
+  yAxis_top->SetTitle(yAxisLabel.data());
+  yAxis_top->SetTitleOffset(1.20);
+  yAxis_top->SetTitleSize(0.06);
+
+  dummyHistogram_top->SetTitle("");
+  dummyHistogram_top->SetStats(false);
+  dummyHistogram_top->SetMaximum(yMax);
+  dummyHistogram_top->SetMinimum(yMin);
+  dummyHistogram_top->SetMarkerColor(1);
+  dummyHistogram_top->SetMarkerStyle(20);
+  dummyHistogram_top->Draw("axis");
 
   graph_fitErr->SetLineColor(2);
   graph_fitErr->SetLineWidth(0);
@@ -130,7 +132,7 @@ void showControlPlot(TCanvas* canvas,
   graph->SetLineWidth(1);
   graph->Draw("P");
 
-  TLegend legend(legendX0, legendY0, legendX0 + 0.25, legendY0 + 0.25, "", "brNDC"); 
+  TLegend legend(legendX0, legendY0, legendX0 + 0.30, legendY0 + 0.285, "", "brNDC"); 
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
   legend.AddEntry(graph,        legendEntry.data(), "p");
@@ -174,40 +176,52 @@ void showControlPlot(TCanvas* canvas,
     graphDiff->SetPointError(iPoint, xErrDown, xErrUp, yErr_diff, yErr_diff);
   }
 
-  TAxis* xAxisDiff = graphDiff->GetXaxis();
-  xAxisDiff->SetTitle("q_{T} / GeV");
-  xAxisDiff->SetTitleOffset(1.20);
-  xAxisDiff->SetTitleSize(0.08);
-  xAxisDiff->SetLabelOffset(0.02);
-  xAxisDiff->SetLabelSize(0.08);
-  xAxisDiff->SetTickLength(0.055);
+  TH1* dummyHistogram_bottom = (TH1*)dummyHistogram->Clone("dummyHistogram_bottom");
 
-  TAxis* yAxisDiff = graphDiff->GetYaxis();
-  yAxisDiff->SetTitle("Measured - Fit");
-  yAxisDiff->SetTitleOffset(0.85);
-  yAxisDiff->SetNdivisions(505);
-  yAxisDiff->CenterTitle();
-  yAxisDiff->SetTitleSize(0.08);
-  yAxisDiff->SetLabelSize(0.08);
-  yAxisDiff->SetTickLength(0.04);
+  TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
+  xAxis_bottom->SetTitle("q_{T} / GeV");
+  xAxis_bottom->SetTitleOffset(1.20);
+  xAxis_bottom->SetTitleSize(0.08);
+  xAxis_bottom->SetLabelOffset(0.02);
+  xAxis_bottom->SetLabelSize(0.08);
+  xAxis_bottom->SetTickLength(0.055);
 
-  graphDiff->SetTitle("");
-  graphDiff->SetMaximum(+yDiffMax);
-  graphDiff->SetMinimum(-yDiffMax);
+  TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
+  yAxis_bottom->SetTitle("Measured - Fit");
+  yAxis_bottom->SetTitleOffset(0.85);
+  yAxis_bottom->SetNdivisions(505);
+  yAxis_bottom->CenterTitle();
+  yAxis_bottom->SetTitleSize(0.08);
+  yAxis_bottom->SetLabelSize(0.08);
+  yAxis_bottom->SetTickLength(0.04);
+
+  dummyHistogram_bottom->SetTitle("");
+  dummyHistogram_bottom->SetStats(false);
+  dummyHistogram_bottom->SetMaximum(+yDiffMax);
+  dummyHistogram_bottom->SetMinimum(-yDiffMax);
+  dummyHistogram_bottom->SetMarkerColor(1);
+  dummyHistogram_bottom->SetMarkerStyle(20);
+  dummyHistogram_bottom->Draw("axis");
+
   graphDiff->SetMarkerStyle(20);
   graphDiff->SetMarkerSize(1);
   graphDiff->SetMarkerColor(1);
   graphDiff->SetLineColor(1);
   graphDiff->SetLineWidth(1);
-  graphDiff->Draw("AP");
+  graphDiff->Draw("P");
 
   canvas->Update();
 
   size_t idx = outputFileName.find_last_of("_cfi.py");
   std::string outputFileName_plot = std::string(outputFileName, 0, idx - (strlen("_cfi.py") - 1));
   outputFileName_plot.append("_").append(outputFileLabel);
-  outputFileName_plot.append(".png");
-  canvas->Print(outputFileName_plot.data());
+  canvas->Print(std::string(outputFileName_plot).append(".png").data());
+  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+
+  delete dummyHistogram_top;
+  delete topPad;
+  delete dummyHistogram_bottom;
+  delete bottomPad;
 }
 
 void makeControlPlots(TH1* dummyHistogram,
@@ -344,23 +358,23 @@ void makeControlPlots(TH1* dummyHistogram,
   std::string legendEntry = ( isData ) ? "Data" : "Simulation";
 
   showControlPlot(canvas, 
-		  dummyHistogram, graph_uParl_mean, legendEntry, 0.64, 0.68, graph_uParlFit, graph_uParlFitErr,     
+		  dummyHistogram, graph_uParl_mean, legendEntry, 0.64, 0.665, graph_uParlFit, graph_uParlFitErr,     
 		  true, false, "u_{parl} / GeV", -600., +100., 10.,
 		  outputFileName, "uParl_mean");
   showControlPlot(canvas, 
-		  dummyHistogram, graph_uParl_div_qT_mean, legendEntry, 0.64, 0.68, graph_uParl_div_qTfit, graph_uParl_div_qTfitErr,     
-		  false, true, "u_{parl}/q_{T}", 0., 1.5, 0.25,
+		  dummyHistogram, graph_uParl_div_qT_mean, legendEntry, 0.64, 0.665, graph_uParl_div_qTfit, graph_uParl_div_qTfitErr,     
+		  false, true, "u_{parl}/q_{T}", 0., 1.5, 0.10,
 		  outputFileName, "uParl_div_qT_mean");
   showControlPlot(canvas, 
-		  dummyHistogram, graph_uParl_rms, legendEntry,  0.21, 0.64, graph_uParl_rmsFit, graph_uParl_rmsFitErr, 
+		  dummyHistogram, graph_uParl_rms, legendEntry,  0.19, 0.64, graph_uParl_rmsFit, graph_uParl_rmsFitErr, 
 		  false, false, "rms(u_{parl}) / GeV", 0., 50., 10., 
 		  outputFileName, "uParl_rms");
   showControlPlot(canvas, 
-		  dummyHistogram, graph_uPerp_mean, legendEntry, 0.64, 0.68, graph_uPerpFit, graph_uPerpFitErr,     
+		  dummyHistogram, graph_uPerp_mean, legendEntry, 0.64, 0.665, graph_uPerpFit, graph_uPerpFitErr,     
 		  false, false, "u_{perp} / GeV", -25., +25., 2.5,
 		  outputFileName, "uPerp_mean");
   showControlPlot(canvas, 
-		  dummyHistogram, graph_uPerp_rms, legendEntry, 0.21, 0.64, graph_uPerp_rmsFit, graph_uPerp_rmsFitErr, 
+		  dummyHistogram, graph_uPerp_rms, legendEntry, 0.19, 0.64, graph_uPerp_rmsFit, graph_uPerp_rmsFitErr, 
 		  false, false, "rms(u_{perp}) / GeV", 0., 50., 10.,
 		  outputFileName, "uPerp_rms");
   
