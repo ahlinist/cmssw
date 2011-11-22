@@ -36,7 +36,7 @@ def getPATtupleFileNames(sampleNames, inputFilePath):
 #--------------------------------------------------------------------------------
 
 def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
-                                            srcMEt, srcJets, hltPaths, srcWeights):
+                                            central_or_shift, srcMEt, srcJets, hltPaths, srcWeights):
 
     """Build cfg.py file to run FWLiteZllRecoilCorrectionNtupleProducer macro on PAT-tuples,
        and produce 'plain' ROOT Ntuple needed for fitting Z-recoil correction parameters"""
@@ -52,7 +52,7 @@ def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFile
 
     print(" building config file...")
 
-    outputFileName = 'ZllRecoilCorrectionNtuple_%s_%s.root' % (sampleName, metOptionName)
+    outputFileName = 'ZllRecoilCorrectionNtuple_%s_%s_%s.root' % (sampleName, metOptionName, central_or_shift)
     outputFileName_full = os.path.join(outputFilePath, outputFileName)
     
     directory = sampleName
@@ -116,7 +116,7 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
 """ % (fwliteInput_fileNames, outputFileName_full, directory, 
        srcMEt, srcJets, hltPaths_string, srcWeights_string, addPUreweight_string)
 
-    configFileName = "produceZllRecoilCorrectionNtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
+    configFileName = "produceZllRecoilCorrectionNtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, central_or_shift)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
     configFile = open(configFileName_full, "w")
     configFile.write(config)
@@ -132,7 +132,7 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
 
     return retVal
 
-def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName, outputFilePath, samplesToAnalyze,
+def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName, outputFilePath, samplesToAnalyze, central_or_shift, 
                                         refBranchName = "qT", projParlBranchName = "uParl", projPerpBranchName = "uPerp"):
 
     """Build cfg.py file to run fitZllRecoilCorrection macro to run on 'plain' ROOT Ntuples
@@ -152,7 +152,7 @@ def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName
     else:
         processType = 'Data'
 
-    outputFileName = "fittedZllRecoilCorrectionParameters_%s_%s_%s_cfi.py" % (sampleName, metOptionName, refBranchName)
+    outputFileName = "fittedZllRecoilCorrectionParameters_%s_%s_%s_%s_cfi.py" % (sampleName, metOptionName, refBranchName, central_or_shift)
     outputFileName_full = os.path.join(outputFilePath, outputFileName)
 
     config = \
@@ -184,7 +184,7 @@ process.fitZllRecoilCorrection = cms.PSet(
 """ % (inputFileName, directory, 
        processType, refBranchName, projParlBranchName, projPerpBranchName, outputFileName_full)
 
-    configFileName = "fitZllRecoilCorrectionNtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, refBranchName)
+    configFileName = "fitZllRecoilCorrectionNtuple_%s_%s_%s_%s_cfg.py" % (sampleName, metOptionName, refBranchName, central_or_shift)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
     configFile = open(configFileName_full, "w")
     configFile.write(config)
@@ -328,7 +328,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     selEventsFileName = cms.string('%s'),
 
     # CV: 'srcEventCounter' is defined in TauAnalysis/Skimming/test/skimTauIdEffSample_cfg.py
-    srcEventCounter = cms.InputTag('totalEventsProcessed'),
+    srcEventCounter = cms.InputTag('processedEventsSkimming'),
     allEvents_DBS = cms.int32(%i),
     
     xSection = cms.double(%f),

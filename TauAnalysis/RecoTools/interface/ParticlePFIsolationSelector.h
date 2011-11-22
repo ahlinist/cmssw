@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.14 2011/06/29 18:13:44 veelken Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.15 2011/08/31 18:47:59 jkolb Exp $
  *
  */
 
@@ -54,9 +54,8 @@ class ParticlePFIsolationSelector
       cfgError_(0)
   {
     pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
+    pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
 
-    if ( cfg.exists("vertexSource")     ) vertexSrc_     = cfg.getParameter<edm::InputTag>("vertexSource");
-    if ( cfg.exists("beamSpotSource")   ) beamSpotSrc_   = cfg.getParameter<edm::InputTag>("beamSpotSource");
     if ( cfg.exists("rhoFastJetSource") ) rhoFastJetSrc_ = cfg.getParameter<edm::InputTag>("rhoFastJetSource");
 
     if ( cfg.exists("direction") ) {
@@ -141,19 +140,8 @@ class ParticlePFIsolationSelector
       edm::Handle<reco::PFCandidateCollection> pfCandidates;
       evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
-      const reco::VertexCollection* vertices = 0;
-      if ( vertexSrc_.label() != "" ) {
-	edm::Handle<reco::VertexCollection> vertexHandle;
-	evt.getByLabel(vertexSrc_, vertexHandle);
-	vertices = &(*vertexHandle);
-      }
-
-      const reco::BeamSpot* beamSpot = 0;
-      if ( beamSpotSrc_.label() != "" ) {
-	edm::Handle<reco::BeamSpot> beamSpotHandle;
-	evt.getByLabel(beamSpotSrc_, beamSpotHandle);
-	beamSpot = &(*beamSpotHandle);
-      }
+      edm::Handle<reco::PFCandidateCollection> pfNoPileUpCandidates;
+      evt.getByLabel(pfNoPileUpCandidateSrc_, pfNoPileUpCandidates);
 
       double rhoFastJetCorrection = 0.;
       if ( rhoFastJetSrc_.label() != "" ) {
@@ -164,7 +152,7 @@ class ParticlePFIsolationSelector
 
       for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
 	    isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
-	double sumPt = extractor_(*isoParticleCandidate, direction_, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);  
+	double sumPt = extractor_(*isoParticleCandidate, direction_, *pfCandidates, *pfNoPileUpCandidates, rhoFastJetCorrection);  
 	
 	// need to fix for correct eta
 	double sumPtMax = ( isoParticleCandidate->eta() < 1.479 ) ? sumPtMaxEB_ : sumPtMaxEE_;
@@ -189,8 +177,8 @@ class ParticlePFIsolationSelector
     std::vector<const T*> selected_;
     
     edm::InputTag pfCandidateSrc_;
-    edm::InputTag vertexSrc_;
-    edm::InputTag beamSpotSrc_;
+    edm::InputTag pfNoPileUpCandidateSrc_;
+    
     edm::InputTag rhoFastJetSrc_;
 
     ParticlePFIsolationExtractor<T> extractor_;

@@ -4,7 +4,7 @@
  *
  * \author Evan, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  */
 
 #include <boost/shared_ptr.hpp>
@@ -48,9 +48,8 @@ class PATLeptonPFIsolationEmbedder : public edm::EDProducer
   int direction_;
 
   edm::InputTag pfCandidateSrc_;
+  edm::InputTag pfNoPileUpCandidateSrc_;
 
-  edm::InputTag vertexSrc_;
-  edm::InputTag beamSpotSrc_;
   edm::InputTag rhoFastJetSrc_;
 };
 
@@ -64,9 +63,8 @@ PATLeptonPFIsolationEmbedder<T>::PATLeptonPFIsolationEmbedder(const edm::Paramet
   userInfoString_ = cfg.getParameter<std::string>("userFloatName");
 
   pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
+  pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
 
-  if ( cfg.exists("vertexSource")     ) vertexSrc_     = cfg.getParameter<edm::InputTag>("vertexSource");
-  if ( cfg.exists("beamSpotSource")   ) beamSpotSrc_   = cfg.getParameter<edm::InputTag>("beamSpotSource");
   if ( cfg.exists("rhoFastJetSource") ) rhoFastJetSrc_ = cfg.getParameter<edm::InputTag>("rhoFastJetSource");
   
   if ( cfg.exists("direction") ) {
@@ -91,19 +89,8 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
   edm::Handle<reco::PFCandidateCollection> pfCandidates;
   evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
-  const reco::VertexCollection* vertices = 0;
-  if ( vertexSrc_.label() != "" ) {
-    edm::Handle<reco::VertexCollection> vertexHandle;
-    evt.getByLabel(vertexSrc_, vertexHandle);
-    vertices = &(*vertexHandle);
-  }
-  
-  const reco::BeamSpot* beamSpot = 0;
-  if ( beamSpotSrc_.label() != "" ) {
-    edm::Handle<reco::BeamSpot> beamSpotHandle;
-    evt.getByLabel(beamSpotSrc_, beamSpotHandle);
-    beamSpot = &(*beamSpotHandle);
-  }
+  edm::Handle<reco::PFCandidateCollection> pfNoPileUpCandidates;
+  evt.getByLabel(pfNoPileUpCandidateSrc_, pfNoPileUpCandidates);
 
   double rhoFastJetCorrection = -1.;
   if ( rhoFastJetSrc_.label() != "" ) {
@@ -119,7 +106,7 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
     const T& inputObject = (*inputObjects)[i];
     // Make a copy
     T outputObject = inputObject;
-    double sumPt = extractor_(outputObject, direction_, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
+    double sumPt = extractor_(outputObject, direction_, *pfCandidates, *pfNoPileUpCandidates, rhoFastJetCorrection);
     outputObject.addUserFloat(userInfoString_, sumPt);
     output->push_back(outputObject);
   }

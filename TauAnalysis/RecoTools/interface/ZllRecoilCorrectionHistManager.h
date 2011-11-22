@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.5 2011/11/04 09:39:20 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.6 2011/11/17 14:28:05 veelken Exp $
  *
  */
 
@@ -91,24 +91,24 @@ class ZllRecoilCorrectionHistManager
       : numVtxMin_(numVtxMin),
 	numVtxMax_(numVtxMax)
     {
-      TString label;
-      if      ( numVtxMin_ == -1         ) label = Form("Le%i",   numVtxMax_);
-      else if ( numVtxMax_ == -1         ) label = Form("Ge%i",   numVtxMin_);
-      else if ( numVtxMin_ == numVtxMax_ ) label = Form("Eq%i",   numVtxMin_);
-      else                                 label = Form("%ito%i", numVtxMin_, numVtxMax_);
+      TString label = "NumVertices";
+      if      ( numVtxMin_ == -1         ) label.Append(Form("Le%i",   numVtxMax_));
+      else if ( numVtxMax_ == -1         ) label.Append(Form("Ge%i",   numVtxMin_));
+      else if ( numVtxMin_ == numVtxMax_ ) label.Append(Form("Eq%i",   numVtxMin_));
+      else                                 label.Append(Form("%ito%i", numVtxMin_, numVtxMax_));
 
       histogramUparlDivQtVsQt_ = histManager->book2D(
 	dir, TString("uParlDivQtVsQt").Append(label).Data(), "u_{#parallel}/q_{T} vs q_{T}", 
 	qTnumBins, qTbinning, 400,  -5.0,   +5.0);
       histogramUparlVsQt_ = histManager->book2D(
 	dir, TString("uParlVsQt").Append(label).Data(),      "u_{#parallel} vs q_{T}",   
-	qTnumBins, qTbinning, 120, -50.0, +250.0);
+	qTnumBins, qTbinning, 130, -250.0, +75.0);
       histogramUperpDivQtVsQt_ = histManager->book2D(
         dir, TString("uPerpDivQtVsQt").Append(label).Data(), "u_{#perp}/q_{T} vs q_{T}", 
 	qTnumBins, qTbinning, 400,  -5.0,   +5.0);
       histogramUperpVsQt_ = histManager->book2D(
         dir, TString("uPerpVsQt").Append(label).Data(),      "u_{#perp} vs q_{T}",  
-	qTnumBins, qTbinning,  40, -50.0,  +50.0);
+	qTnumBins, qTbinning,  60, -75.0,  +75.0);
     }
     ~histogramsUvsQtNumVtxType() {}
     int numVtxMin_;
