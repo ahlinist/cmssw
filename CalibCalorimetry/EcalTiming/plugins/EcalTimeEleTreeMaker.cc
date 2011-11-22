@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 18 5:46:22 CEST 2008
-// $Id: EcalTimeEleTreeMaker.cc,v 1.9 2011/09/27 08:39:09 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.cc,v 1.10 2011/11/07 12:31:02 franzoni Exp $
 //
 //
 
@@ -242,6 +242,7 @@ void EcalTimeEleTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSe
   dumpVertexInfo(theRecVtxs, myTreeVariables_);
 
   tree_ -> Fill();
+  delete lazyTools;
 }
 
 
