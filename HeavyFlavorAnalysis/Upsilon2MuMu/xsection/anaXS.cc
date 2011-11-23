@@ -293,9 +293,9 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_10ptbins_ClosureTest.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups3s.xsReader_3S.24ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
-      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_Run2010Bp1.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
-      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_MSCMinus.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion_EffAmpMuIDMinus.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -1000,14 +1000,14 @@ void anaXS::makeAllMC(int channel) {
     
     // -- add backgrounds
     //addBackground(fS1Vector, 0.3);
-    addBackground_PtInt(fS12Vector, 0.3);
+    //addBackground_PtInt(fS12Vector, 0.3);
     //addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
     ///plot_PtInt_MC();
     
-    FITUpsilon(5); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
+    //FITUpsilon(5); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
     //GetMuIDEff(1);
@@ -4358,7 +4358,7 @@ void anaXS::GetTrackEff(){
 void anaXS::GetMuIDEff(int mode){
   
   /////////////////
-  TFile *f = new TFile("MuID.root", "RECREATE");
+  //TFile *f = new TFile("MuID.root", "RECREATE");
   /////////////////
   
   TH1D *h;
@@ -4451,14 +4451,14 @@ void anaXS::GetMuIDEff(int mode){
   
   
   ////////////
-  fMuIDEff->Write();
+  //fMuIDEff->Write();
   ////////////
 }
 
 void anaXS::GetTrigEff(int mode){
   
   ////////////////
-  TFile *f = new TFile("Trig.root", "RECREATE");
+  //TFile *f = new TFile("Trig.root", "RECREATE");
   ////////////////
   TH1D *h;
   double pt, eta; 
@@ -4554,7 +4554,7 @@ void anaXS::GetTrigEff(int mode){
   }
   
   ///////////
-  fTrigEff->Write();
+  //fTrigEff->Write();
   ////////////
 }
 
