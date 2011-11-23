@@ -87,8 +87,11 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   
-  fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.DATAv3.dat");
-  fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATAv3.dat");
+  fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.DATAv4.dat");
+  fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATAv4.dat");
+  
+  fPidTableTrigPos = new PidTable("PtMmbTrigBothv2-jpsi.8ptbin.DATA.dat");
+  fPidTableMuIDPos = new PidTable("PtMmbMuidBothv2-jpsi.8ptbin.DATA.dat");
     
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
@@ -240,6 +243,13 @@ bool xsReader::MomentumCorrection(){
     //cout << "After Correction " << endl;
     //cout << "pl1->fPlab.Perp() = " << pl1->fPlab.Perp() << " pl1->fPlab.Eta() = " << pl1->fPlab.Eta() << endl;
     //cout << "pl2->fPlab.Perp() = " << pl2->fPlab.Perp() << " pl2->fPlab.Eta() = " << pl2->fPlab.Eta() << endl;
+    
+    /// For pt-bias study
+    //corrPt1 = pl1->fPlab.Perp()*((a-aE)+((b-bE)*TMath::Abs(pl1->fPlab.Eta())));
+    //corrPt2 = pl2->fPlab.Perp()*((a-aE)+((b-bE)*TMath::Abs(pl2->fPlab.Eta())));
+    //pl1->fPlab.SetPerp(corrPt1+pl1->fPlab.Perp());
+    //pl2->fPlab.SetPerp(corrPt2+pl2->fPlab.Perp());
+    
   }
 }
 
@@ -1615,6 +1625,7 @@ void xsReader::fillCandHist(int mode) {
       if ( fCandY >= 0 ){
 	if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
 	  ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+	  ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedRapidity,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1])))->Fill(fCandY,fWeight);
 	}
       }
       
@@ -1622,6 +1633,7 @@ void xsReader::fillCandHist(int mode) {
 	fCandY*=-1;
 	if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
 	  ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+	  ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedRapidity,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1])))->Fill(fCandY,fWeight);
 	}
       }
     }
@@ -1631,6 +1643,7 @@ void xsReader::fillCandHist(int mode) {
       if ( fCandY >= 0 ){
 	if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
 	  ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1])))->Fill(fCandMass,fWeight);
+	  ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedPt,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1])))->Fill(fCandPt,fWeight);
 	}
       }
       
@@ -1638,6 +1651,7 @@ void xsReader::fillCandHist(int mode) {
 	fCandY*=-1;
 	if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
 	  ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1])))->Fill(fCandMass,fWeight);
+	  ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedPt,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1])))->Fill(fCandPt,fWeight);
 	}
       }
     }
@@ -1892,60 +1906,192 @@ void xsReader::calculateWeights(int mode){
     par3 = fPidTableMuidFit->effD(3, pl1->fPlab.Eta(), 0.); par4 = fPidTableMuidFit->effD(4, pl1->fPlab.Eta(), 0.);
     
     //////////// For Syst. Unc.
-    
-    //par2 += fPidTableMuidFit->errD(2, pl1->fPlab.Eta(), 0.);
-    
+    //par2 -= fPidTableMuidFit->errD(2, pl1->fPlab.Eta(), 0.);
     //////
     
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
     effID1 = par1 + par2*((TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))+1));
+    //////////// For Syst. Unc.
+    /*double eff(-99); double diff(-99); 
+    if ( (pl1->fPlab.Eta() > -2.4) && (pl1->fPlab.Eta() < -1.2) && (pl1->fPlab.Perp() > 14.) ){
+      eff = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effID1 - eff)/2;
+      effID1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID1  << endl;
+    }
     
+    if ( (pl1->fPlab.Eta() > -1.2) && (pl1->fPlab.Eta() < -0.4) && (pl1->fPlab.Perp() > 14.) ){
+      eff = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effID1 - eff)/2;
+      effID1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID1  << endl;
+    }    
+    
+    if ( (pl1->fPlab.Eta() > -0.4) && (pl1->fPlab.Eta() < 0.4) && (pl1->fPlab.Perp() < 14.) && (pl1->fPlab.Perp() > 6.)){
+      eff = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effID1 - eff)/2;
+      effID1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID1  << endl;
+    }     
+    
+    if ( (pl1->fPlab.Eta() > 0.4) && (pl1->fPlab.Eta() < 1.2) && (pl1->fPlab.Perp() > 14.)){
+      eff = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effID1 - eff)/2;
+      effID1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID1  << endl;
+    }      
+    
+    if ( (pl1->fPlab.Eta() > 1.2) && (pl1->fPlab.Eta() < 2.4) && (pl1->fPlab.Perp() > 10.)){
+      eff = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effID1 - eff)/2;
+      effID1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID1  << endl;
+    }    
+      
+    */
     par1 = fPidTableMuidFit->effD(1, pl2->fPlab.Eta(), 0.); par2 = fPidTableMuidFit->effD(2, pl2->fPlab.Eta(), 0.);
     par3 = fPidTableMuidFit->effD(3, pl2->fPlab.Eta(), 0.); par4 = fPidTableMuidFit->effD(4, pl2->fPlab.Eta(), 0.);
     
     //////////  For Syst. Unc
-    
-    //par2 += fPidTableMuidFit->errD(2, pl2->fPlab.Eta(), 0.);
-    
+    //par2 -= fPidTableMuidFit->errD(2, pl2->fPlab.Eta(), 0.);
     ////////
     
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
     effID2 = par1 + par2*((TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))+1));
+    /*
+    if ( (pl2->fPlab.Eta() > -2.4) && (pl2->fPlab.Eta() < -1.2) && (pl2->fPlab.Perp() > 14.) ){
+      eff = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effID2 - eff)/2;
+      effID2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID2  << endl;
+    }
+    
+    if ( (pl2->fPlab.Eta() > -1.2) && (pl2->fPlab.Eta() < -0.4) && (pl2->fPlab.Perp() > 14.) ){
+      eff = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effID2 - eff)/2;
+      effID2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID2  << endl;
+    }    
+    
+    if ( (pl2->fPlab.Eta() > -0.4) && (pl2->fPlab.Eta() < 0.4) && (pl2->fPlab.Perp() < 14.) && (pl2->fPlab.Perp() > 6.)){
+      eff = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effID2 - eff)/2;
+      effID2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID2  << endl;
+    }     
+    
+    if ( (pl2->fPlab.Eta() > 0.4) && (pl2->fPlab.Eta() < 1.2) && (pl2->fPlab.Perp() > 14.)){
+      eff = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effID2 - eff)/2;
+      effID2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID2  << endl;
+    }      
+    
+    if ( (pl2->fPlab.Eta() > 1.2) && (pl2->fPlab.Eta() < 2.4) && (pl2->fPlab.Perp() > 10.)){
+      eff = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effID2 - eff)/2;
+      effID2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effID2  << endl;
+    }
+    */
     
     //cout << " eta1 = " << pl1->fPlab.Eta()  << " eta2 = " << pl2->fPlab.Eta() << endl;
     //cout << " pt1 = " << pl1->fPlab.Perp()  << " pt2 = " << pl2->fPlab.Perp() << " effID1 = "<< effID1 <<" effID2 = "<< effID2 << endl;
-    
-    if ( effID1 > 1. ) effID1 = 0.999; if ( effID2 > 1. ) effID2 = 0.999;
     
     par1 = fPidTableTrigFit->effD(1, pl1->fPlab.Eta(), 0.); par2 = fPidTableTrigFit->effD(2, pl1->fPlab.Eta(), 0.);
     par3 = fPidTableTrigFit->effD(3, pl1->fPlab.Eta(), 0.); par4 = fPidTableTrigFit->effD(4, pl1->fPlab.Eta(), 0.);
     
     ////////// For Syst. Unc
-    //par2 += fPidTableTrigFit->errD(2, pl1->fPlab.Eta(), 0.);
+    //par2 -= fPidTableTrigFit->errD(2, pl1->fPlab.Eta(), 0.);
     /////
     
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
     
     effTR1 = par1 + par2*((TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl1->fPlab.Perp()-par4)))+1));
+    ///////// For Syst. Unc  
+    /*double eff(-99); double diff(-99); 
+    if ( (pl1->fPlab.Eta() > -2.4) && (pl1->fPlab.Eta() < -1.2) && (pl1->fPlab.Perp() > 8.) ){
+      eff = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effTR1 - eff)/2;
+      effTR1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR1  << endl;
+    }
+    
+    if ( (pl1->fPlab.Eta() > -1.2) && (pl1->fPlab.Eta() < -0.4) && (pl1->fPlab.Perp() > 14.) ){
+      eff = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effTR1 - eff)/2;
+      effTR1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR1  << endl;
+    }   
+    
+    if ( (pl1->fPlab.Eta() > -0.4) && (pl1->fPlab.Eta() < 0.4) && (pl1->fPlab.Perp() > 20.) ){
+      eff = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effTR1 - eff)/2;
+      effTR1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR1  << endl;
+    }
+    
+    if ( (pl1->fPlab.Eta() > 0.4) && (pl1->fPlab.Eta() < 1.2) && (pl1->fPlab.Perp() > 14.) ){
+      eff = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effTR1 - eff)/2;
+      effTR1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR1  << endl;
+    }    
+    
+    if ( (pl1->fPlab.Eta() > 1.2) && (pl1->fPlab.Eta() < 2.4) && (pl1->fPlab.Perp() > 14.) ){
+      eff = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      diff = (effTR1 - eff)/2;
+      effTR1 -= diff;
+      cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR1  << endl;
+    }     
+    */
     
     par1 = fPidTableTrigFit->effD(1, pl2->fPlab.Eta(), 0.); par2 = fPidTableTrigFit->effD(2, pl2->fPlab.Eta(), 0.);
     par3 = fPidTableTrigFit->effD(3, pl2->fPlab.Eta(), 0.); par4 = fPidTableTrigFit->effD(4, pl2->fPlab.Eta(), 0.);
     
     ///////// For Syst. Unc
-    //par2 += fPidTableTrigFit->errD(2, pl2->fPlab.Eta(), 0.);
+    //par2 -= fPidTableTrigFit->errD(2, pl2->fPlab.Eta(), 0.);
     //////
     
     //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
     
     effTR2 = par1 + par2*((TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))-1)/(TMath::Exp(2*(par3*(pl2->fPlab.Perp()-par4)))+1));
-    
-    //cout << " eta1 = " << pl1->fPlab.Eta()  << " eta2 = " << pl2->fPlab.Eta() << endl;
-    //cout << " pt1 = " << pl1->fPlab.Perp()  << " pt2 = " << pl2->fPlab.Perp() << " effTR1 = "<< effTR1 <<" effTR2 = "<< effTR2 << endl;
-    
     ///////// For Syst. Unc
-    //if ( effTR1 > 1. ) effTR1 = 0.999; if ( effTR2 > 1. ) effTR2 = 0.999;
-    //////    
+    /*if ( (pl2->fPlab.Eta() > -2.4) && (pl2->fPlab.Eta() < -1.2) && (pl2->fPlab.Perp() > 8.) ){
+      eff = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effTR2 - eff)/2;
+      effTR2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR2  << endl;
+    }
     
+    if ( (pl2->fPlab.Eta() > -1.2) && (pl2->fPlab.Eta() < -0.4) && (pl2->fPlab.Perp() > 14.) ){
+      eff = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effTR2 - eff)/2;
+      effTR2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR2  << endl;
+    }   
+    
+    if ( (pl2->fPlab.Eta() > -0.4) && (pl2->fPlab.Eta() < 0.4) && (pl2->fPlab.Perp() > 20.) ){
+      eff = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effTR2 - eff)/2;
+      effTR2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR2  << endl;
+    }
+    
+    if ( (pl2->fPlab.Eta() > 0.4) && (pl2->fPlab.Eta() < 1.2) && (pl2->fPlab.Perp() > 14.) ){
+      eff = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effTR2 - eff)/2;
+      effTR2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR2  << endl;
+    }    
+    
+    if ( (pl2->fPlab.Eta() > 1.2) && (pl2->fPlab.Eta() < 2.4) && (pl2->fPlab.Perp() > 14.) ){
+      eff = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      diff = (effTR2 - eff)/2;
+      effTR2 -= diff;
+      cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() <<" " << eff  <<" " << diff <<" " << effTR2  << endl;
+    }     
+    */
     fWeight = 1;
     
     MuIdWeight = effID1*effID2;
@@ -2201,10 +2347,13 @@ void xsReader::bookHist() {
     h = new TH1D(Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]), 
     		 Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]), fBin, fMassLow, fMassHigh);	      
     ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedMass,rapidity%.1f_%.1f",  fYbin[iy], fYbin[iy+1])))->Sumw2(); 
+    h = new TH1D(Form("Pt_IntegratedRapidity,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]), 
+    		 Form("Pt_IntegratedRapidity,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]), 48, 0., 2.4);	      
+    ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedRapidity,rapidity%.1f_%.1f",  fYbin[iy], fYbin[iy+1])))->Sumw2();     
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
       h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
 		   Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
-		   fBin, fMassLow, fMassHigh);
+		   fBin, fMassLow, fMassHigh );
       ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f",  fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
     }	
   }
@@ -2213,6 +2362,9 @@ void xsReader::bookHist() {
     h = new TH1D(Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]), 
 		 Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]), fBin, fMassLow, fMassHigh);
     ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedMass,pt%.1f_%.1f",  fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
+    h = new TH1D(Form("Rapidity_IntegratedPt,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]), 
+		 Form("Rapidity_IntegratedPt,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]), 100, 0., 50.);
+    ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedPt,pt%.1f_%.1f",  fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
   }
   
   // MCstudy() histograms
