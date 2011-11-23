@@ -143,10 +143,12 @@ void XS3SRho_1S(){
 
 void XSMuIDPlus_1S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TFile *f = new TFile("XSection1Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_MuIDPlus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_MuIDPlus.root");
+  TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S1YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -203,17 +205,20 @@ void XSMuIDPlus_1S(){
   legge = legg->AddEntry(S13, "Y(1S) 1Srho - 1Srho_MuIDPlus / Y(1S) 1Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSMuIDMinus_1S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TFile *f = new TFile("XSection1Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_MuIDMinus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_MuIDMinus.root");
+  TFile *f = new TFile("MuIDMinus_10ptbins_1Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S1YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -270,7 +275,8 @@ void XSMuIDMinus_1S(){
   legge = legg->AddEntry(S13, "Y(1S) 1Srho - 1Srho_MuIDMinus / Y(1S) 1Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("MuIDMinus_10ptbins_1Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("MuIDMinus_10ptbins_1Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("MuIDMinus_10ptbins_1Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
@@ -278,10 +284,12 @@ void XSMuIDMinus_1S(){
 
 void XSTrigMinus_1S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TFile *f = new TFile("XSection1Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_TrigMinus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_TrigMinus.root");
+  TFile *f = new TFile("TrigMinus_10ptbins_1Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S1YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -338,17 +346,20 @@ void XSTrigMinus_1S(){
   legge = legg->AddEntry(S13, "Y(1S) 1Srho - 1Srho_TrigMinus / Y(1S) 1Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("TrigMinus_10ptbins_1Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("TrigMinus_10ptbins_1Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("TrigMinus_10ptbins_1Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSTrigPlus_1S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TFile *f = new TFile("XSection1Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_TrigPlus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_TrigPlus.root");
+  TFile *f = new TFile("TrigPlus_10ptbins_1Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S1YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -405,7 +416,8 @@ void XSTrigPlus_1S(){
   legge = legg->AddEntry(S13, "Y(1S) 1Srho - 1Srho_TrigPlus / Y(1S) 1Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("TrigPlus_10ptbins_1Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("TrigPlus_10ptbins_1Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("TrigPlus_10ptbins_1Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
@@ -684,10 +696,12 @@ void XS3SRho_2S(){
 
 void XSMuIDPlus_2S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  TFile *f = new TFile("XSection2Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S2YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_MuIDPlus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_MuIDPlus.root");
+  TFile *f = new TFile("MuIDPlus_10ptbins_2Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S2YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -744,17 +758,20 @@ void XSMuIDPlus_2S(){
   legge = legg->AddEntry(S13, "Y(2S) 2Srho - 2Srho_MuIDPlus / Y(2S) 2Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("MuIDPlus_10ptbins_2Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("MuIDPlus_10ptbins_2Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("MuIDPlus_10ptbins_2Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSMuIDMinus_2S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  TFile *f = new TFile("XSection2Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S2YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_MuIDMinus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_MuIDMinus.root");
+  TFile *f = new TFile("MuIDMinus_10ptbins_2Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S2YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -811,17 +828,20 @@ void XSMuIDMinus_2S(){
   legge = legg->AddEntry(S13, "Y(2S) 2Srho - 2Srho_MuIDMinus / Y(2S) 2Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("MuIDMinus_10ptbins_2Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("MuIDMinus_10ptbins_2Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("MuIDMinus_10ptbins_2Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSTrigMinus_2S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  TFile *f = new TFile("XSection2Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S2YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_TrigMinus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_TrigMinus.root");
+  TFile *f = new TFile("TrigMinus_10ptbins_2Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S2YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -878,17 +898,20 @@ void XSTrigMinus_2S(){
   legge = legg->AddEntry(S13, "Y(2S) 2Srho - 2Srho_TrigMinus / Y(2S) 2Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("TrigMinus_10ptbins_2Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("TrigMinus_10ptbins_2Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("TrigMinus_10ptbins_2Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSTrigPlus_2S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  TFile *f = new TFile("XSection2Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S2YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_TrigPlus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_TrigPlus.root");
+  TFile *f = new TFile("TrigPlus_10ptbins_2Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S2YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -945,7 +968,8 @@ void XSTrigPlus_2S(){
   legge = legg->AddEntry(S13, "Y(2S) 2Srho - 2Srho_TrigPlus / Y(2S) 2Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("TrigPlus_10ptbins_2Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("TrigPlus_10ptbins_2Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("TrigPlus_10ptbins_2Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
@@ -1220,10 +1244,12 @@ void XS2SRho_3S(){
 
 void XSMuIDPlus_3S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  TFile *f = new TFile("XSection3Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S3YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_MuIDPlus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_MuIDPlus.root");
+  TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S3YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1280,17 +1306,20 @@ void XSMuIDPlus_3S(){
   legge = legg->AddEntry(S13, "Y(3S) 3Srho - 3Srho_MuIDPlus / Y(3S) 3Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSMuIDMinus_3S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  TFile *f = new TFile("XSection3Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S3YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_MuIDMinus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_MuIDMinus.root");
+  TFile *f = new TFile("MuIDMinus_10ptbins_3Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S3YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1347,17 +1376,20 @@ void XSMuIDMinus_3S(){
   legge = legg->AddEntry(S13, "Y(3S) 3Srho - 3Srho_MuIDMinus / Y(3S) 3Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("MuIDMinus_10ptbins_3Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("MuIDMinus_10ptbins_3Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("MuIDMinus_10ptbins_3Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSTrigMinus_3S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  TFile *f = new TFile("XSection3Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S3YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_TrigMinus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_TrigMinus.root");
+  TFile *f = new TFile("TrigMinus_10ptbins_3Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S3YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1414,17 +1446,20 @@ void XSTrigMinus_3S(){
   legge = legg->AddEntry(S13, "Y(3S) 3Srho - 3Srho_TrigMinus / Y(3S) 3Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("TrigMinus_10ptbins_3Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("TrigMinus_10ptbins_3Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("TrigMinus_10ptbins_3Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSTrigPlus_3S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  TFile *f = new TFile("XSection3Srho_finalversion.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S3YieldEta");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_TrigPlus.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_TrigPlus.root");
+  TFile *f = new TFile("TrigPlus_10ptbins_3Srho_fv.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S3YieldEta");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1481,10 +1516,12 @@ void XSTrigPlus_3S(){
   legge = legg->AddEntry(S13, "Y(3S) 3Srho - 3Srho_TrigPlus / Y(3S) 3Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("TrigPlus_10ptbins_3Srho_rap.root", "RECREATE");
+  //TFile *f = new TFile("TrigPlus_10ptbins_3Srho_rap.root", "RECREATE");
+  TFile *f = new TFile("TrigPlus_10ptbins_3Srho_rap_v2.root", "RECREATE");
   S12->Write();
   
 }
+
 
 void XSSigPDF_3S(){
 
