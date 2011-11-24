@@ -290,6 +290,7 @@ void XSSystTot_2S(){
     trig_h = TMath::Sqrt(S2->GetBinContent(x)*S2->GetBinContent(x))/S5->GetBinContent(x);
     sig = TMath::Sqrt(S3->GetBinContent(x)*S3->GetBinContent(x))/S5->GetBinContent(x);
     bg = TMath::Sqrt(S4->GetBinContent(x)*S4->GetBinContent(x))/S5->GetBinContent(x);
+    msc = TMath::Sqrt(S10->GetBinContent(x)*S10->GetBinContent(x))/S5->GetBinContent(x);
     muid_l = TMath::Sqrt(S6->GetBinContent(x)*S6->GetBinContent(x))/S5->GetBinContent(x);
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_l = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x);
@@ -309,6 +310,7 @@ void XSSystTot_2S(){
     OUT << Form("\\vdef{%iS_bgoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, bg ) << endl;
     OUT << Form("\\vdef{%iS_rhoLowoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, rho_l ) << endl;
     OUT << Form("\\vdef{%iS_rhoHighoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, rho_h ) << endl;
+    OUT << Form("\\vdef{%iS_mscoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, msc ) << endl;
   }
   
   OUT.close();
