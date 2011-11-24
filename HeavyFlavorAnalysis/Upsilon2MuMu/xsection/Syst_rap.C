@@ -3,6 +3,46 @@
 #include "TF1.h"
 #include "TH1.h"
 
+void XSNoMSC_1S(){
+  
+  TFile *f = new TFile("Yield_MSC.root");
+  TH2D *S1;
+  S1 = (TH2D*)gFile->Get("fS1Yield");
+  TFile *f = new TFile("Yield_NoMSC.root");
+  TH2D *S2;
+  S2 = (TH2D*)gFile->Get("fS1Yield");
+  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TH1D *S3;
+  S3 = (TH1D*)gFile->Get("S1YieldEta");  
+  TH1D *S11 = (TH1D*)S3->Clone();
+  TH1D *S22 = (TH1D*)S3->Clone();
+  TH1D *S12 = (TH1D*)S3->Clone();
+  TH1D *S13 = (TH1D*)S3->Clone();
+  
+  double s1(0.), s2(0.);
+  double e1(0.), e2(0.);
+  
+  for (int j = 1; j <= S1->GetNbinsX(); ++j) {
+    for (int i = 1; i <= S1->GetNbinsY(); ++i) {
+      s1 += S1->GetBinContent(i,j);
+      s2 += S2->GetBinContent(i,j);
+    }
+    S11->SetBinContent(j,s1);
+    S22->SetBinContent(j,s2);
+    S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
+    S13->SetBinContent(j,S12->GetBinContent(j)/S3->GetBinContent(j));
+    s1=0.; s2=0.;
+  }
+  
+  S13->SetMaximum(0.2); S12->SetMaximum(0.2); 
+  S13->SetMinimum(-0.4); S12->SetMinimum(-0.4);
+  S13->Draw();
+  TFile *f = new TFile("NoMSC_10ptbins_1Srho_rap.root", "RECREATE");
+  S12->Write();
+  
+}
+
+
 void XS2SRho_1S(){
 
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
@@ -560,6 +600,45 @@ void XSBgPDF_1S(){
   
 }
 
+void XSNoMSC_2S(){
+  
+  TFile *f = new TFile("Yield_MSC.root");
+  TH2D *S1;
+  S1 = (TH2D*)gFile->Get("fS2Yield");
+  TFile *f = new TFile("Yield_NoMSC.root");
+  TH2D *S2;
+  S2 = (TH2D*)gFile->Get("fS2Yield");
+  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TH1D *S3;
+  S3 = (TH1D*)gFile->Get("S2YieldEta");  
+  TH1D *S11 = (TH1D*)S3->Clone();
+  TH1D *S22 = (TH1D*)S3->Clone();
+  TH1D *S12 = (TH1D*)S3->Clone();
+  TH1D *S13 = (TH1D*)S3->Clone();
+  
+  double s1(0.), s2(0.);
+  double e1(0.), e2(0.);
+  
+  for (int j = 1; j <= S1->GetNbinsX(); ++j) {
+    for (int i = 1; i <= S1->GetNbinsY(); ++i) {
+      s1 += S1->GetBinContent(i,j);
+      s2 += S2->GetBinContent(i,j);
+    }
+    S11->SetBinContent(j,s1);
+    S22->SetBinContent(j,s2);
+    S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
+    S13->SetBinContent(j,S12->GetBinContent(j)/S3->GetBinContent(j));
+    s1=0.; s2=0.;
+  }
+  
+  S13->SetMaximum(0.15); S12->SetMaximum(0.3); 
+  S13->SetMinimum(-0.15); S12->SetMinimum(-0.3);
+  S13->Draw();
+  TFile *f = new TFile("NoMSC_10ptbins_2Srho_rap.root", "RECREATE");
+  S12->Write();
+  
+}
+
 void XS1SRho_2S(){
 
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
@@ -1107,6 +1186,46 @@ void XSBgPDF_2S(){
   S12->Write();
   
 }
+
+void XSNoMSC_3S(){
+  
+  TFile *f = new TFile("Yield_MSC.root");
+  TH2D *S1;
+  S1 = (TH2D*)gFile->Get("fS3Yield");
+  TFile *f = new TFile("Yield_NoMSC.root");
+  TH2D *S2;
+  S2 = (TH2D*)gFile->Get("fS3Yield");
+  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TH1D *S3;
+  S3 = (TH1D*)gFile->Get("S3YieldEta");  
+  TH1D *S11 = (TH1D*)S3->Clone();
+  TH1D *S22 = (TH1D*)S3->Clone();
+  TH1D *S12 = (TH1D*)S3->Clone();
+  TH1D *S13 = (TH1D*)S3->Clone();
+  
+  double s1(0.), s2(0.);
+  double e1(0.), e2(0.);
+  
+  for (int j = 1; j <= S1->GetNbinsX(); ++j) {
+    for (int i = 1; i <= S1->GetNbinsY(); ++i) {
+      s1 += S1->GetBinContent(i,j);
+      s2 += S2->GetBinContent(i,j);
+    }
+    S11->SetBinContent(j,s1);
+    S22->SetBinContent(j,s2);
+    S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
+    S13->SetBinContent(j,S12->GetBinContent(j)/S3->GetBinContent(j));
+    s1=0.; s2=0.;
+  }
+  
+  S13->SetMaximum(0.15); S12->SetMaximum(0.3); 
+  S13->SetMinimum(-0.15); S12->SetMinimum(-0.3);
+  S13->Draw();
+  TFile *f = new TFile("NoMSC_10ptbins_3Srho_rap.root", "RECREATE");
+  S12->Write();
+  
+}
+
 
 void XS1SRho_3S(){
 
