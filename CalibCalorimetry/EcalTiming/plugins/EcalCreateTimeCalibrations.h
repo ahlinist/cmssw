@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.h,v 1.5 2011/05/19 14:15:16 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.h,v 1.6 2011/08/18 16:03:20 scooper Exp $
 //
 //
 
@@ -100,6 +100,7 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 float maxSwissCrossNoise_;  // EB only, no spikes seen in EE
                 float maxHitTimeEB_, minHitTimeEB_;
                 float maxHitTimeEE_, minHitTimeEE_;
+		int eventsUsedFractionNum_, eventsUsedFractionDen_;
                 // vectors for skipping selections
                 std::vector<std::vector<double> > bxIncludeVector;
                 std::vector<std::vector<double> > bxExcludeVector;

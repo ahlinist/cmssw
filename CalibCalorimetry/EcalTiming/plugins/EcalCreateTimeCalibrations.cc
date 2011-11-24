@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.14 2011/07/15 13:54:38 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.15 2011/08/18 16:03:20 scooper Exp $
 //
 //
 
@@ -63,7 +63,9 @@ EcalCreateTimeCalibrations::EcalCreateTimeCalibrations(const edm::ParameterSet& 
   maxHitTimeEB_ (ps.getParameter<double>("MaxHitTimeEB")),
   minHitTimeEB_ (ps.getParameter<double>("MinHitTimeEB")),
   maxHitTimeEE_ (ps.getParameter<double>("MaxHitTimeEE")),
-  minHitTimeEE_ (ps.getParameter<double>("MinHitTimeEE"))
+  minHitTimeEE_ (ps.getParameter<double>("MinHitTimeEE")),
+  eventsUsedFractionNum_ (ps.getParameter<double>("EventsUsedFractionNum")),
+  eventsUsedFractionDen_ (ps.getParameter<double>("EventsUsedFractionDen"))
 {
 
   edm::Service<TFileService> fileService_;
@@ -134,6 +136,10 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   edm::LogInfo("EcalCreateTimeCalibrations") << "Begin loop over TTree";
   for(int entry = 0; entry < nEntries; ++entry)
   {
+    if(!(entry%eventsUsedFractionDen_ < eventsUsedFractionNum_))
+    {
+      continue;
+    }
     myInputTree_->GetEntry(entry);
     // Loop once to calculate average event time -- use all crys in EB+EE clusters
     float sumTime = 0;
@@ -171,7 +177,12 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       continue;
       
     numEventsUsed++;
-
+    //if more than 2.5 million events are used (about 500 hits per EB crystal) end the for loop to prevent code from taking too long due to memory issues 
+    if(numEventsUsed >= 2500000)
+    {
+      std::cout << "Using only first 2.5 million events" << std::endl;
+      break;
+    }
     // Loop over the clusters in the event
     for(int bCluster=0; bCluster < treeVars_.nClusters; bCluster++)
     {
