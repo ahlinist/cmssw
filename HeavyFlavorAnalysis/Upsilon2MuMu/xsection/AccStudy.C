@@ -1067,10 +1067,10 @@ void UG_Acceptance_ProRap(){
 			 UG_RecoGenRes_1S->GetNbinsX(), UG_RecoGenRes_1S->GetXaxis()->GetXbins()->GetArray()
 			 );
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
-  for (int j = 1; j <= UG_RecoGenRes_1S->GetNbinsX(); ++j) {
-    for (int i = 1; i <= UG_RecoGenRes_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_1S->GetCellContent(j,i);
-      bin_contentAfter += UG_RecoGenRes_1S->GetCellContent(j,i);
+  for (int i = 1; i <= UG_RecoGenRes_1S->GetNbinsX(); ++i) {
+    for (int j = 1; j <= UG_RecoGenRes_1S->GetNbinsY(); ++j){	
+      bin_contentBefore += UG_AllGenRes_1S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_1S->GetCellContent(i,j);
       cout << "i= " << i << "j= " << j << "UG_AllGenRes_1S->GetCellContent(i,j)  = " << UG_AllGenRes_1S->GetCellContent(i,j) << "UG_RecoGenRes_1S->GetCellContent(i,j) = "<< UG_RecoGenRes_1S->GetCellContent(i,j) << endl; 
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
@@ -1078,7 +1078,7 @@ void UG_Acceptance_ProRap(){
     if ( bin_contentBefore == 0 ) bin_ratio=0;
     if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
     cout << "bin_ratio = " << bin_ratio << endl;
-    Ratio_1S_1D->SetBinContent(j,bin_ratio);
+    Ratio_1S_1D->SetBinContent(i,bin_ratio);
     bin_contentBefore=0;
     bin_contentAfter=0;
     bin_ratio=0;
@@ -1093,17 +1093,17 @@ void UG_Acceptance_ProRap(){
 			       UG_RecoGenRes_HelPl_1S->GetNbinsX(), UG_RecoGenRes_HelPl_1S->GetXaxis()->GetXbins()->GetArray()
 			       );
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
-  for (int j = 1; j <= UG_RecoGenRes_HelPl_1S->GetNbinsX(); ++j) {
-    for (int i = 1; i <= UG_RecoGenRes_HelPl_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_HelPl_1S->GetCellContent(j,i);
-      bin_contentAfter += UG_RecoGenRes_HelPl_1S->GetCellContent(j,i);
+  for (int i = 1; i <= UG_RecoGenRes_HelPl_1S->GetNbinsX(); ++i) {
+    for (int j = 1; j <= UG_RecoGenRes_HelPl_1S->GetNbinsY(); ++j){	
+      bin_contentBefore += UG_AllGenRes_HelPl_1S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_HelPl_1S->GetCellContent(i,j);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
     if ( bin_contentBefore == 0 ) bin_ratio=0;
     if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
     cout << "bin_ratio = " << bin_ratio << endl;
-    Ratio_1S_1D_HelPl->SetBinContent(j,bin_ratio);
+    Ratio_1S_1D_HelPl->SetBinContent(i,bin_ratio);
     bin_contentBefore=0;
     bin_contentAfter=0;
     bin_ratio=0;
@@ -1118,17 +1118,17 @@ void UG_Acceptance_ProRap(){
 			       UG_RecoGenRes_HelMi_1S->GetNbinsX(), UG_RecoGenRes_HelMi_1S->GetXaxis()->GetXbins()->GetArray()
 			       );
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
-  for (int j = 1; j <= UG_RecoGenRes_HelMi_1S->GetNbinsX(); ++j) {
-    for (int i = 1; i <= UG_RecoGenRes_HelMi_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_HelMi_1S->GetCellContent(j,i);
-      bin_contentAfter += UG_RecoGenRes_HelMi_1S->GetCellContent(j,i);
+  for (int i = 1; i <= UG_RecoGenRes_HelMi_1S->GetNbinsX(); ++i) {
+    for (int j = 1; j <= UG_RecoGenRes_HelMi_1S->GetNbinsY(); ++j){	
+      bin_contentBefore += UG_AllGenRes_HelMi_1S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_HelMi_1S->GetCellContent(i,j);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
     if ( bin_contentBefore == 0 ) bin_ratio=0;
     if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
     cout << "bin_ratio = " << bin_ratio << endl;
-    Ratio_1S_1D_HelMi->SetBinContent(j,bin_ratio);
+    Ratio_1S_1D_HelMi->SetBinContent(i,bin_ratio);
     bin_contentBefore=0;
     bin_contentAfter=0;
     bin_ratio=0;
@@ -1143,17 +1143,17 @@ void UG_Acceptance_ProRap(){
 			       UG_RecoGenRes_CSPl_1S->GetNbinsX(), UG_RecoGenRes_CSPl_1S->GetXaxis()->GetXbins()->GetArray()
 			       );
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
-  for (int j = 1; j <= UG_RecoGenRes_CSPl_1S->GetNbinsX(); ++j) {
-    for (int i = 1; i <= UG_RecoGenRes_CSPl_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_CSPl_1S->GetCellContent(j,i);
-      bin_contentAfter += UG_RecoGenRes_CSPl_1S->GetCellContent(j,i);
+  for (int i = 1; i <= UG_RecoGenRes_CSPl_1S->GetNbinsX(); ++i) {
+    for (int j = 1; j <= UG_RecoGenRes_CSPl_1S->GetNbinsY(); ++j){	
+      bin_contentBefore += UG_AllGenRes_CSPl_1S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_CSPl_1S->GetCellContent(i,j);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
     if ( bin_contentBefore == 0 ) bin_ratio=0;
     if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
     cout << "bin_ratio = " << bin_ratio << endl;
-    Ratio_1S_1D_CSPl->SetBinContent(j,bin_ratio);
+    Ratio_1S_1D_CSPl->SetBinContent(i,bin_ratio);
     bin_contentBefore=0;
     bin_contentAfter=0;
     bin_ratio=0;
@@ -1168,17 +1168,17 @@ void UG_Acceptance_ProRap(){
 			       UG_RecoGenRes_CSMi_1S->GetNbinsX(), UG_RecoGenRes_CSMi_1S->GetXaxis()->GetXbins()->GetArray()
 			       );
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
-  for (int j = 1; j <= UG_RecoGenRes_CSMi_1S->GetNbinsX(); ++j) {
-    for (int i = 1; i <= UG_RecoGenRes_CSMi_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_CSMi_1S->GetCellContent(j,i);
-      bin_contentAfter += UG_RecoGenRes_CSMi_1S->GetCellContent(j,i);
+  for (int i = 1; i <= UG_RecoGenRes_CSMi_1S->GetNbinsX(); ++i) {
+    for (int j = 1; j <= UG_RecoGenRes_CSMi_1S->GetNbinsY(); ++j){	
+      bin_contentBefore += UG_AllGenRes_CSMi_1S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_CSMi_1S->GetCellContent(i,j);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
     if ( bin_contentBefore == 0 ) bin_ratio=0;
     if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
     cout << "bin_ratio = " << bin_ratio << endl;
-    Ratio_1S_1D_CSMi->SetBinContent(j,bin_ratio);
+    Ratio_1S_1D_CSMi->SetBinContent(i,bin_ratio);
     bin_contentBefore=0;
     bin_contentAfter=0;
     bin_ratio=0;
