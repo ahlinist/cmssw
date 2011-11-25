@@ -1057,7 +1057,7 @@ void UG_Acceptance_ProPt_3S(){
 void UG_Acceptance_ProRap(){
 
   gStyle->SetOptStat(00000000000);
-  TFile *f = new TFile("Acc_1S_0_50.xsReader_1Sbin.default.root ");
+  TFile *f = new TFile("Acc_1S_0_50.xsReader_3Sbin.default.root ");
   TH2D *UG_AllGenRes_1S;
   UG_AllGenRes_1S = (TH2D*)gFile->Get("UG_AllGenRes_1S");
   TH2D *UG_RecoGenRes_1S;
@@ -1069,8 +1069,9 @@ void UG_Acceptance_ProRap(){
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
   for (int j = 1; j <= UG_RecoGenRes_1S->GetNbinsX(); ++j) {
     for (int i = 1; i <= UG_RecoGenRes_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_1S->GetCellContent(i,j);
-      bin_contentAfter += UG_RecoGenRes_1S->GetCellContent(i,j);
+      bin_contentBefore += UG_AllGenRes_1S->GetCellContent(j,i);
+      bin_contentAfter += UG_RecoGenRes_1S->GetCellContent(j,i);
+      cout << "i= " << i << "j= " << j << "UG_AllGenRes_1S->GetCellContent(i,j)  = " << UG_AllGenRes_1S->GetCellContent(i,j) << "UG_RecoGenRes_1S->GetCellContent(i,j) = "<< UG_RecoGenRes_1S->GetCellContent(i,j) << endl; 
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
@@ -1094,8 +1095,8 @@ void UG_Acceptance_ProRap(){
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
   for (int j = 1; j <= UG_RecoGenRes_HelPl_1S->GetNbinsX(); ++j) {
     for (int i = 1; i <= UG_RecoGenRes_HelPl_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_HelPl_1S->GetCellContent(i,j);
-      bin_contentAfter += UG_RecoGenRes_HelPl_1S->GetCellContent(i,j);
+      bin_contentBefore += UG_AllGenRes_HelPl_1S->GetCellContent(j,i);
+      bin_contentAfter += UG_RecoGenRes_HelPl_1S->GetCellContent(j,i);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
@@ -1119,8 +1120,8 @@ void UG_Acceptance_ProRap(){
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
   for (int j = 1; j <= UG_RecoGenRes_HelMi_1S->GetNbinsX(); ++j) {
     for (int i = 1; i <= UG_RecoGenRes_HelMi_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_HelMi_1S->GetCellContent(i,j);
-      bin_contentAfter += UG_RecoGenRes_HelMi_1S->GetCellContent(i,j);
+      bin_contentBefore += UG_AllGenRes_HelMi_1S->GetCellContent(j,i);
+      bin_contentAfter += UG_RecoGenRes_HelMi_1S->GetCellContent(j,i);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
@@ -1144,8 +1145,8 @@ void UG_Acceptance_ProRap(){
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
   for (int j = 1; j <= UG_RecoGenRes_CSPl_1S->GetNbinsX(); ++j) {
     for (int i = 1; i <= UG_RecoGenRes_CSPl_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_CSPl_1S->GetCellContent(i,j);
-      bin_contentAfter += UG_RecoGenRes_CSPl_1S->GetCellContent(i,j);
+      bin_contentBefore += UG_AllGenRes_CSPl_1S->GetCellContent(j,i);
+      bin_contentAfter += UG_RecoGenRes_CSPl_1S->GetCellContent(j,i);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
@@ -1169,8 +1170,8 @@ void UG_Acceptance_ProRap(){
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
   for (int j = 1; j <= UG_RecoGenRes_CSMi_1S->GetNbinsX(); ++j) {
     for (int i = 1; i <= UG_RecoGenRes_CSMi_1S->GetNbinsY(); ++i){	
-      bin_contentBefore += UG_AllGenRes_CSMi_1S->GetCellContent(i,j);
-      bin_contentAfter += UG_RecoGenRes_CSMi_1S->GetCellContent(i,j);
+      bin_contentBefore += UG_AllGenRes_CSMi_1S->GetCellContent(j,i);
+      bin_contentAfter += UG_RecoGenRes_CSMi_1S->GetCellContent(j,i);
     }
     cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
     cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
@@ -1209,7 +1210,7 @@ void UG_Acceptance_ProRap(){
   Ratio_1S_1D_CSMi->SetMarkerColor(6);
   Ratio_1S_1D_CSMi->SetLineColor(6);
   Ratio_1S_1D_CSMi->Draw("psame");
-  legg = new TLegend(0.6,0.55,0.8,0.85);
+  legg = new TLegend(0.7,0.6,0.9,0.9);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legge = legg->AddEntry(Ratio_1S_1D,  "Unpol","p"); //legge->SetTextColor(kRed);
   legge = legg->AddEntry(Ratio_1S_1D_HelPl,  "HX T","p"); //legge->SetTextColor(kGreen);
