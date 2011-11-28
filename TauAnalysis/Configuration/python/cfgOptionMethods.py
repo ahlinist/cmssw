@@ -8,7 +8,6 @@ import TauAnalysis.Configuration.tools.mcToDataCorrectionTools as mcToDataCorrec
 import TauAnalysis.Configuration.tools.sysUncertaintyTools as sysUncertaintyTools
 import TauAnalysis.Configuration.tools.switchToData as switchToData
 import TauAnalysis.Configuration.tools.switchToAOD as switchToAOD
-import TauAnalysis.Configuration.tools.switchToPatTuple as switchToPatTuple
 import TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools as fakeRateAnalysisTools
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
