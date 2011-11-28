@@ -21,6 +21,7 @@ void XSSystTot_1S(){
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldPt");    
   //TFile *f = new TFile("XSection_1Srho_0_2_0_50.root");
+  //TFile *f = new TFile("XSection0_2_0_30.root");
   //TH1D *S55;
   //S55 = (TH1D*)gFile->Get("S1YieldPt");  
   TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_v2.root");
@@ -61,7 +62,7 @@ void XSSystTot_1S(){
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
     s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    //s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
     cout << " dSigma(Y(1S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
@@ -70,7 +71,7 @@ void XSSystTot_1S(){
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
-    S5->SetBinError(i,err5); // only one side -- needs to be edited
+    S5->SetBinError(i,err5); 
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
@@ -84,7 +85,7 @@ void XSSystTot_1S(){
     s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s0_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    //s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl_ratio[i-1] = TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y_ratio[i-1] = S5->GetBinContent(i);
@@ -142,7 +143,7 @@ void XSSystTot_1S(){
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_l = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x); 
     tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + sig*sig + msc*msc);
-    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg + rho_l*rho_l + msc*msc);
+    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg + rho_l*rho_l );
     OUT << Form("\\vdef{%iS_sigma%i} {\\ensuremath{ {%.3f } } }",1, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i} {\\ensuremath{ {%.3f } } }",1, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i} {\\ensuremath{ {%.3f } } }",1, x, stat ) << endl;
@@ -203,10 +204,13 @@ void XSSystTot_2S(){
   double s1(0.), s5(0.), s2(0.), e5(0.), err5(0.);
   double s1_(0.), s2_(0.), e5_(0.);
   double Stat[10]; double Errh[10]; double Errl[10]; double y[10]; 
+  //double Stat[9]; double Errh[9]; double Errl[9]; double y[9]; 
   
   double s0(0.), s0_(0.);
   double Errh_ratio[10]; double Errl_ratio[10]; double y_ratio[10]; 
-  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+  //double Errh_ratio[9]; double Errl_ratio[9]; double y_ratio[9]; 
+  
+  for (int i = 1; i <= S1->GetNbinsX()-1; ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Muid
     s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
@@ -219,7 +223,7 @@ void XSSystTot_2S(){
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig    
     s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho  
-    s1_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    //s1_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
     cout << " dSigma(Y(2S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) <<  " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
@@ -241,7 +245,7 @@ void XSSystTot_2S(){
     s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s0_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    s0_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    //s0_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl_ratio[i-1] = TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y_ratio[i-1] = S5->GetBinContent(i);
@@ -261,13 +265,13 @@ void XSSystTot_2S(){
   //double xl[9] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16};
   //double xh[9] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84};  
   
-  gr = new TGraphAsymmErrors(10,xbin,y,xl,xh,Errl,Errh);
+  gr = new TGraphAsymmErrors(9,xbin,y,xl,xh,Errl,Errh);
   gr->SetName("Ups2S");
   gr->SetMarkerColor(4);
   gr->SetMarkerStyle(21);
   gr->Draw("AP");
   
-  gr_ratio = new TGraphAsymmErrors(10,xbin,y_ratio,xl,xh,Errl_ratio,Errh_ratio);
+  gr_ratio = new TGraphAsymmErrors(9,xbin,y_ratio,xl,xh,Errl_ratio,Errh_ratio);
   gr_ratio->SetName("Ups2S_ratio");
   gr_ratio->SetMarkerColor(4);
   gr_ratio->SetMarkerStyle(21);
@@ -298,7 +302,7 @@ void XSSystTot_2S(){
     rho_l = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x);
     rho_h = TMath::Sqrt(S9->GetBinContent(x)*S9->GetBinContent(x))/S5->GetBinContent(x);
     tot_h = TMath::Sqrt(((muid_h*muid_h) + (trig_h*trig_h) + (bg*bg) + (sig*sig) + (rho_h*rho_h) + (msc*msc)));
-    tot_l = TMath::Sqrt((muid_l*muid_l) + (trig_l*trig_l) + (sig*sig) + (bg*bg) + (rho_l*rho_l) + (msc*msc));
+    tot_l = TMath::Sqrt((muid_l*muid_l) + (trig_l*trig_l) + (sig*sig) + (bg*bg) + (rho_l*rho_l));
     OUT << Form("\\vdef{%iS_sigma%i} {\\ensuremath{ {%.3f } } }",2, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i} {\\ensuremath{ {%.3f } } }",2, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i} {\\ensuremath{ {%.3f } } }",2, x, stat ) << endl;
@@ -334,10 +338,10 @@ void XSSystTot_3S(){
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S3YieldPt");  
   TFile *f = new TFile("XSection3Srho_finalversion.root");
-  //TFile *f = new TFile("XSection_3Srho_0_2_0_50.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S3YieldPt");    
   //TFile *f = new TFile("XSection_3Srho_0_2_0_50.root");
+  //TFile *f = new TFile("XSection0_2_0_30.root");
   //TH1D *S55;
   //S55 = (TH1D*)gFile->Get("S3YieldPt");    
   TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_v2.root");
@@ -376,7 +380,7 @@ void XSSystTot_3S(){
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
     s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    //s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
     cout << " dSigma(Y(3S))/dp_{T} = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
@@ -399,7 +403,7 @@ void XSSystTot_3S(){
     s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s0_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    //s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl_ratio[i-1] = TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y_ratio[i-1] = S5->GetBinContent(i);
@@ -434,7 +438,7 @@ void XSSystTot_3S(){
   
   cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
   TFile *f = new TFile("Final3S.root", "RECREATE");
-  //TFile *f = new TFile("Final3S_0_2_0_50.root", "RECREATE");
+  //TFile *f = new TFile("Final3S_0_2_0_30.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
   S100->Write();
@@ -456,7 +460,7 @@ void XSSystTot_3S(){
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_h = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x); 
     tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + rho_h*rho_h + sig*sig + msc*msc);
-    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg + msc*msc);
+    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg);
     OUT << Form("\\vdef{%iS_sigma%i} {\\ensuremath{ {%.3f } } }",3, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i} {\\ensuremath{ {%.3f } } }",3, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, stat ) << endl;
