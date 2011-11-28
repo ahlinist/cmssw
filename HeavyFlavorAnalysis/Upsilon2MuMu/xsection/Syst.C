@@ -24,9 +24,12 @@ void XSNoMSC_1S(){
   
   for (int j = 1; j <= S1->GetNbinsY(); ++j) {
     for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+      cout << "i = " << i << " j = " << j << endl;
+      cout << "S1->GetBinContent(i,j) = " <<S1->GetBinContent(i,j) << " S2->GetBinContent(i,j) = " <<S2->GetBinContent(i,j) << endl; 
       s1 += S1->GetBinContent(i,j);
       s2 += S2->GetBinContent(i,j);
     }
+    cout << "s1 = " <<s1<< " s2 = " <<s2 << endl;
     S11->SetBinContent(j,s1);
     S22->SetBinContent(j,s2);
     S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
@@ -689,9 +692,12 @@ void XSNoMSC_2S(){
   
   for (int j = 1; j <= S1->GetNbinsY(); ++j) {
     for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+      cout << "i = " << i << " j = " << j << endl;
+      cout << "S1->GetBinContent(i,j) = " <<S1->GetBinContent(i,j) << " S2->GetBinContent(i,j) = " <<S2->GetBinContent(i,j) << endl; 
       s1 += S1->GetBinContent(i,j);
       s2 += S2->GetBinContent(i,j);
     }
+    cout << "s1 = " << s1 << " s2 = " << s2 << endl;
     S11->SetBinContent(j,s1);
     S22->SetBinContent(j,s2);
     S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
@@ -1353,9 +1359,12 @@ void XSNoMSC_3S(){
   
   for (int j = 1; j <= S1->GetNbinsY(); ++j) {
     for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+      cout << "i = " << i << " j = " << j << endl;
+      cout << "S1->GetBinContent(i,j) = " <<S1->GetBinContent(i,j) << " S2->GetBinContent(i,j) = " <<S2->GetBinContent(i,j) << endl; 
       s1 += S1->GetBinContent(i,j);
       s2 += S2->GetBinContent(i,j);
     }
+    cout << "s1 = " << s1 << " s2 = " << s2 << endl;
     S11->SetBinContent(j,s1);
     S22->SetBinContent(j,s2);
     S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
@@ -1364,8 +1373,8 @@ void XSNoMSC_3S(){
   }
   
   S13->Draw();
-  TFile *f = new TFile("NoMSC_10ptbins_3Srho.root", "RECREATE");
-  S12->Write();
+  //TFile *f = new TFile("NoMSC_10ptbins_3Srho.root", "RECREATE");
+  //S12->Write();
   
 }
 

@@ -22,15 +22,18 @@ void XSNoMSC_1S(){
   double s1(0.), s2(0.);
   double e1(0.), e2(0.);
   
-  for (int j = 1; j <= S1->GetNbinsX(); ++j) {
-    for (int i = 1; i <= S1->GetNbinsY(); ++i) {
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    for (int j = 1; j <= S1->GetNbinsY(); ++j) {
+      cout << "i = " << i << " j = " << j << endl;
+      cout << "S1->GetBinContent(i,j) = " <<S1->GetBinContent(i,j) << " S2->GetBinContent(i,j) = " <<S2->GetBinContent(i,j) << endl;
       s1 += S1->GetBinContent(i,j);
       s2 += S2->GetBinContent(i,j);
     }
-    S11->SetBinContent(j,s1);
-    S22->SetBinContent(j,s2);
-    S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
-    S13->SetBinContent(j,S12->GetBinContent(j)/S3->GetBinContent(j));
+    cout << "s1 = " <<s1<< " s2 = " <<s2 << endl;
+    S11->SetBinContent(i,s1);
+    S22->SetBinContent(i,s2);
+    S12->SetBinContent(i,((s1-s2)/s1)*S3->GetBinContent(i));
+    S13->SetBinContent(i,S12->GetBinContent(i)/S3->GetBinContent(i));
     s1=0.; s2=0.;
   }
   
@@ -619,20 +622,23 @@ void XSNoMSC_2S(){
   double s1(0.), s2(0.);
   double e1(0.), e2(0.);
   
-  for (int j = 1; j <= S1->GetNbinsX(); ++j) {
-    for (int i = 1; i <= S1->GetNbinsY(); ++i) {
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    for (int j = 1; j <= S1->GetNbinsY(); ++j) {
+      cout << "i = " << i << " j = " << j << endl;
+      cout << "S1->GetBinContent(i,j) = " <<S1->GetBinContent(i,j) << " S2->GetBinContent(i,j) = " <<S2->GetBinContent(i,j) << endl;
       s1 += S1->GetBinContent(i,j);
       s2 += S2->GetBinContent(i,j);
     }
-    S11->SetBinContent(j,s1);
-    S22->SetBinContent(j,s2);
-    S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
-    S13->SetBinContent(j,S12->GetBinContent(j)/S3->GetBinContent(j));
+    cout << "s1 = " << s1 << " s2 = " << s2 << endl;
+    S11->SetBinContent(i,s1);
+    S22->SetBinContent(i,s2);
+    S12->SetBinContent(i,((s1-s2)/s1)*S3->GetBinContent(i));
+    S13->SetBinContent(i,S12->GetBinContent(i)/S3->GetBinContent(i));
     s1=0.; s2=0.;
   }
   
-  S13->SetMaximum(0.15); S12->SetMaximum(0.3); 
-  S13->SetMinimum(-0.15); S12->SetMinimum(-0.3);
+  S13->SetMaximum(0.35); S12->SetMaximum(0.3); 
+  S13->SetMinimum(-0.35); S12->SetMinimum(-0.3);
   S13->Draw();
   TFile *f = new TFile("NoMSC_10ptbins_2Srho_rap.root", "RECREATE");
   S12->Write();
@@ -1206,20 +1212,23 @@ void XSNoMSC_3S(){
   double s1(0.), s2(0.);
   double e1(0.), e2(0.);
   
-  for (int j = 1; j <= S1->GetNbinsX(); ++j) {
-    for (int i = 1; i <= S1->GetNbinsY(); ++i) {
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    for (int j = 1; j <= S1->GetNbinsY(); ++j) {
+      cout << "i = " << i << " j = " << j << endl;
+      cout << "S1->GetBinContent(i,j) = " <<S1->GetBinContent(i,j) << " S2->GetBinContent(i,j) = " <<S2->GetBinContent(i,j) << endl;
       s1 += S1->GetBinContent(i,j);
       s2 += S2->GetBinContent(i,j);
     }
-    S11->SetBinContent(j,s1);
-    S22->SetBinContent(j,s2);
-    S12->SetBinContent(j,((s1-s2)/s1)*S3->GetBinContent(j));
-    S13->SetBinContent(j,S12->GetBinContent(j)/S3->GetBinContent(j));
+    cout << "s1 = " << s1 << " s2 = " << s2 << endl;
+    S11->SetBinContent(i,s1);
+    S22->SetBinContent(i,s2);
+    S12->SetBinContent(i,((s1-s2)/s1)*S3->GetBinContent(i));
+    S13->SetBinContent(i,S12->GetBinContent(i)/S3->GetBinContent(i));
     s1=0.; s2=0.;
   }
   
-  S13->SetMaximum(0.15); S12->SetMaximum(0.3); 
-  S13->SetMinimum(-0.15); S12->SetMinimum(-0.3);
+  S13->SetMaximum(0.35); S12->SetMaximum(0.3); 
+  S13->SetMinimum(-0.35); S12->SetMinimum(-0.3);
   S13->Draw();
   TFile *f = new TFile("NoMSC_10ptbins_3Srho_rap.root", "RECREATE");
   S12->Write();
