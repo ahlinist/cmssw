@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <vector>
+#include <boost/foreach.hpp>
 // for timespec and clock_gettime
 #include <time.h>
 // for timeval and gettimeofday
@@ -16,8 +18,21 @@
 #define SIZE 1000000
 
 
+class TimerInterface {
+public:
+  // perform the measurements
+  virtual void measure(void) = 0;
+
+  // extract from characteristics of the timer from the measurements
+  virtual void compute(void) = 0;
+
+  // print a report
+  virtual void report(void) = 0;
+};
+
+
 template <typename T>
-class TimerBase {
+class TimerBase : public TimerInterface {
 public:
   typedef T time_type;
 
@@ -36,10 +51,6 @@ public:
   double delta(const time_type & start, const time_type & stop) {
     // generic implementation, see below for template specializations
     return (double) (stop - start) / ticks_per_second;
-  }
-
-  // perform the measurements
-  virtual void measure(void) {
   }
 
   // extract from characteristics of the timer from the measurements
@@ -247,49 +258,23 @@ public:
 
 
 int main(void) {
+  std::vector<TimerInterface *> timers;
 #ifdef __linux
-  TimerClockGettimeThread   t1;
-  TimerClockGettimeProcess  t2;
-  TimerClockGettimeRealtime t3;
+  timers.push_back(new TimerClockGettimeThread());
+  timers.push_back(new TimerClockGettimeProcess());
+  timers.push_back(new TimerClockGettimeRealtime());
 #endif // __linux
-  TimerGettimeofday         t4;
-  TimerGetrusageSelf        t5;
-  TimerOMPGetWtime          t6;
-  TimerClock                t7;
-  TimerTimes                t8;
+  timers.push_back(new TimerGettimeofday());
+  timers.push_back(new TimerGetrusageSelf());
+  timers.push_back(new TimerOMPGetWtime());
+  timers.push_back(new TimerClock());
+  timers.push_back(new TimerTimes());
 
-#ifdef __linux
-  t1.measure();
-  t2.measure();
-  t3.measure();
-#endif // __linux
-  t4.measure();
-  t5.measure();
-  t6.measure();
-  t7.measure();
-  t8.measure();
-
-#ifdef __linux
-  t1.compute();
-  t2.compute();
-  t3.compute();
-#endif // __linux
-  t4.compute();
-  t5.compute();
-  t6.compute();
-  t7.compute();
-  t8.compute();
-
-#ifdef __linux
-  t1.report();
-  t2.report();
-  t3.report();
-#endif // __linux
-  t4.report();
-  t5.report();
-  t6.report();
-  t7.report();
-  t8.report();
+  BOOST_FOREACH(TimerInterface * timer, timers) {
+    timer->measure();
+    timer->compute();
+    timer->report();
+  }
 
   return 0;
 }
