@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <cmath>
 #include <boost/foreach.hpp>
 // for timespec and clock_gettime
 #include <time.h>
@@ -41,6 +43,8 @@ public:
     values( new time_type[2*SIZE+1] ),
     granularity( 0. ),
     resolution( 0. ),
+    resolution_mean( 0. ),
+    resolution_sigma( 0. ),
     overhead( 0. ),
     ticks_per_second( 1. ),
     description()
@@ -58,17 +62,30 @@ public:
     // per-call overhead
     overhead = delta(values[SIZE], values[2*SIZE]) / (double) SIZE;
 
-    // resolution (average of increments)
-    unsigned int steps = 0;
+    // resolution (median of the increments)
+    std::vector<double> steps;
+    steps.reserve(SIZE + 1);
     for (unsigned int i = 0; i < SIZE; ++i) {
       double step = delta(values[SIZE + i], values[SIZE + i + 1]);
       if (step > 0)
-        ++steps;
+        steps.push_back(step);
     }
-    if (steps)
-      resolution = delta(values[SIZE], values[2*SIZE]) / (double) steps;
-    else
-      resolution = 0.;
+    std::sort( steps.begin(), steps.end() );
+    if (not steps.empty()) {
+      // measure resolution as the median of the steps
+      resolution = steps[steps.size() / 2];
+
+      // measure average and sigma of the steps
+      double sum  = 0.;
+      double sum2 = 0.;
+      for (size_t i = 0; i < steps.size(); ++i) {
+        sum  += steps[i];
+        sum2 += steps[i] * steps[i];
+      }
+      double n = steps.size();
+      resolution_mean  = sum / n;
+      resolution_sigma = std::sqrt( sum2/(n-1) - resolution_mean * resolution_mean * n/(n-1) );
+    }
   }
 
   // print a report
@@ -77,14 +94,24 @@ public:
     std::cout << "Performance of " << description << std::endl;
     std::cout << "\tAverage time per call: " << std::right << std::setw(10) << overhead    * 1e9 << " ns" << std::endl;
     std::cout << "\tReported resolution:   " << std::right << std::setw(10) << granularity * 1e9 << " ns" << std::endl;
-    std::cout << "\tMeasured resolution:   " << std::right << std::setw(10) << resolution  * 1e9 << " ns" << std::endl;
+    std::cout << "\tMeasured resolution:   " << std::right << std::setw(10) << resolution  * 1e9 << " ns (" << resolution_mean * 1e9 << " +/- " << resolution_sigma * 1e9 << " ns)" << std::endl;
+    /*
+    std::cout << "\tSteps:" << std::endl;
+    for (unsigned int i = 0; i < SIZE; ++i) {
+      double step = delta(values[SIZE + i], values[SIZE + i + 1]);
+      if (step > 0)
+        std::cout << "\t\t" << std::right << std::setw(10) << delta(values[SIZE + i], values[SIZE + i + 1]) * 1e9 << " ns" << std::endl;
+    }
+    */
     std::cout << std::endl;
   }
 
 protected:
   time_type *   values;
   double        granularity;            // the reported resolution, in seconds
-  double        resolution;             // the measured resolution, in seconds
+  double        resolution;      // the measured resolution, in seconds (median of the steps)
+  double        resolution_mean;        // the measured resolution, in seconds (mean of the steps)
+  double        resolution_sigma;       // the measured resolution, in seconds (sigma of the mean)
   double        overhead;               // the measured per-call overhead, in seconds
   double        ticks_per_second;       // optinally used by the delta() method
   std::string   description;
@@ -160,7 +187,7 @@ public:
   TimerClockGettimeRealtime() {
     description = "clock_gettime(CLOCK_REALTIME)";
 
-    timespec value;
+    timespec value = { 0, 0 };
     clock_getres(CLOCK_REALTIME, & value);
     granularity = value.tv_sec + value.tv_nsec / (double) 1e9;
   }
@@ -168,6 +195,25 @@ public:
   void measure() {
     for (unsigned int i = 0; i <= 2*SIZE; ++i)
       clock_gettime(CLOCK_REALTIME, values+i);
+  }
+};
+#endif // __linux
+
+#ifdef __linux
+// clock_gettime(CLOCK_MONOTONIC)
+class TimerClockGettimeMonotonic : public TimerBase<timespec> {
+public:
+  TimerClockGettimeMonotonic() {
+    description = "clock_gettime(CLOCK_MONOTONIC)";
+
+    timespec value = { 0, 0 };
+    clock_getres(CLOCK_MONOTONIC, & value);
+    granularity = value.tv_sec + value.tv_nsec / (double) 1e9;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      clock_gettime(CLOCK_MONOTONIC, values+i);
   }
 };
 #endif // __linux
@@ -263,6 +309,7 @@ int main(void) {
   timers.push_back(new TimerClockGettimeThread());
   timers.push_back(new TimerClockGettimeProcess());
   timers.push_back(new TimerClockGettimeRealtime());
+  timers.push_back(new TimerClockGettimeMonotonic());
 #endif // __linux
   timers.push_back(new TimerGettimeofday());
   timers.push_back(new TimerGetrusageSelf());
