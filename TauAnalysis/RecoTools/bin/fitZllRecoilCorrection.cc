@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.9 2011/11/04 09:39:19 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.10 2011/11/22 10:04:51 veelken Exp $
  *
  */
 
@@ -24,6 +24,7 @@
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionParameterSet.h"
+#include "TauAnalysis/RecoTools/bin/fitZllRecoilCorrectionAuxFunctions.h"
 
 #include <TFile.h>
 #include <TChain.h>
@@ -46,15 +47,10 @@
 
 typedef std::vector<std::string> vstring;
 
-double square(double x)
-{
-  return x*x;
-}
-
 void showControlPlot(TCanvas* canvas, 
 		     TH1* dummyHistogram, 
 		     TGraphAsymmErrors* graph, const std::string& legendEntry, double legendX0, double legendY0,
-		     TGraph* graph_fit, TGraphErrors* graph_fitErr, 
+		     TGraph* graph_fit, TGraphAsymmErrors* graph_fitErr, 
 		     bool showIdLine, bool showConstLine, const std::string& yAxisLabel, double yMin, double yMax, double yDiffMax, 
 		     const std::string& outputFileName, const std::string& outputFileLabel)
 {
@@ -225,128 +221,49 @@ void showControlPlot(TCanvas* canvas,
 }
 
 void makeControlPlots(TH1* dummyHistogram,
-		      TGraphAsymmErrors* graph_uParl_mean, TGraphAsymmErrors* graph_uParl_div_qT_mean, 
-		      TGraphAsymmErrors* graph_uParl_rms, 
-		      TGraphAsymmErrors* graph_uPerp_mean, 
-		      TGraphAsymmErrors* graph_uPerp_rms, 
-		      const ZllRecoilCorrectionParameterSet& fitResultsfitResults, bool isData, const std::string& outputFileName)
+		      TGraphAsymmErrors* graph_uParl_mean, TF1* f_uParl_mean,
+		      TGraphAsymmErrors* graph_uParl_div_qT_mean, TF1* f_uParl_div_qT_mean, 
+		      TGraphAsymmErrors* graph_uParl_rms, TF1* f_uParl_rms,
+		      TGraphAsymmErrors* graph_uPerp_mean, TF1* f_uPerp_mean,
+		      TGraphAsymmErrors* graph_uPerp_rms, TF1* f_uPerp_rms,
+		      bool isData, const std::string& outputFileName)
 {
   TAxis* xAxis = dummyHistogram->GetXaxis();
-
-  double xStepSize = 1.;
-  double xMin = xAxis->GetXmin() + 0.5*xStepSize;
+  double xMin = xAxis->GetXmin();
   double xMax = xAxis->GetXmax();
+  double dx = 1.;
 
-  int numPoints = TMath::FloorNint((xMax - xMin)/xStepSize);
-
-  TGraph*       graph_uParlFit           = new TGraph(numPoints);
-  TGraphErrors* graph_uParlFitErr        = new TGraphErrors(numPoints);
-  TGraph*       graph_uParl_div_qTfit    = new TGraph(numPoints);
-  TGraphErrors* graph_uParl_div_qTfitErr = new TGraphErrors(numPoints);
-  TGraph*       graph_uParl_rmsFit       = new TGraph(numPoints);
-  TGraphErrors* graph_uParl_rmsFitErr    = new TGraphErrors(numPoints);
-
-  TGraph*       graph_uPerpFit           = new TGraph(numPoints);
-  TGraphErrors* graph_uPerpFitErr        = new TGraphErrors(numPoints);
-  TGraph*       graph_uPerp_rmsFit       = new TGraph(numPoints);
-  TGraphErrors* graph_uPerp_rmsFitErr    = new TGraphErrors(numPoints);
-
-  for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
-    double x = xMin + iPoint*xStepSize;
-
-    double uParl_av             = fitResultsfitResults.d() 
-                                 + fitResultsfitResults.k1()*x
-                                  *0.5*(1.0 - TMath::Erf(-fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())));
-    double uParl_dUp            = uParl_av + fitResultsfitResults.dErr();
-    double uParl_dDown          = uParl_av - fitResultsfitResults.dErr();
-    double d_uParl_by_k1        = 0.5*(1.0 - TMath::Erf(-fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())))*x;
-    double uParl_k1Up           = uParl_av + TMath::Abs(d_uParl_by_k1)*fitResultsfitResults.k1Err();
-    double uParl_k1Down         = uParl_av - TMath::Abs(d_uParl_by_k1)*fitResultsfitResults.k1Err();
-    double d_uParl_by_k2        = (1./TMath::Sqrt(TMath::Pi()))
-                                 *TMath::Exp(-square(fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())))
-                                 *fitResultsfitResults.k1()*TMath::Power(x, fitResultsfitResults.k3() + 1.);
-    double uParl_k2Up           = uParl_av + TMath::Abs(d_uParl_by_k2)*fitResultsfitResults.k2Err();
-    double uParl_k2Down         = uParl_av - TMath::Abs(d_uParl_by_k2)*fitResultsfitResults.k2Err();
-    double d_uParl_by_k3        = (1./TMath::Sqrt(TMath::Pi()))
-                                 *TMath::Exp(-square(fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3())))
-                                 *fitResultsfitResults.k1()*fitResultsfitResults.k2()*TMath::Power(x, fitResultsfitResults.k3() + 1.)
-                                 *TMath::Log(x);
-    double uParl_k3Up           = uParl_av + TMath::Abs(d_uParl_by_k3)*fitResultsfitResults.k3Err();
-    double uParl_k3Down         = uParl_av - TMath::Abs(d_uParl_by_k3)*fitResultsfitResults.k3Err();
-    
-    double uParlErrUp           = uParl_av 
-                                 + TMath::Sqrt(square(uParl_dUp - uParl_av) 
-                                              + square(uParl_k1Up - uParl_av)
-                                              + square(uParl_k2Up - uParl_av)
-                                              + square(uParl_k3Up - uParl_av));
-    double uParlErrDown         = uParl_av 
-                                 - TMath::Sqrt(square(uParl_dDown - uParl_av) 
-                                              + square(uParl_k1Down - uParl_av)
-                                              + square(uParl_k2Down - uParl_av)
-                                              + square(uParl_k3Down - uParl_av));
-
-    graph_uParlFit->SetPoint(iPoint, x, uParl_av);
-    graph_uParlFitErr->SetPoint(iPoint, x, 0.5*(uParlErrUp + uParlErrDown));
-    graph_uParlFitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(uParlErrUp - uParlErrDown));
-    
-    graph_uParl_div_qTfit->SetPoint(iPoint, x, -uParl_av/x);
-    graph_uParl_div_qTfitErr->SetPoint(iPoint, x, -0.5*(uParlErrUp + uParlErrDown)/x);
-    graph_uParl_div_qTfitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(uParlErrUp - uParlErrDown)/x);
-
-    double uParl_rms_av         = fitResultsfitResults.sigma1()*(1. + fitResultsfitResults.b1()*x + fitResultsfitResults.c1()*x*x);
-    double uParl_rms_sigma1Up   = (fitResultsfitResults.sigma1() + fitResultsfitResults.sigma1Err())
-                              *(1. + fitResultsfitResults.b1()*x + fitResultsfitResults.c1()*x*x);
-    double uParl_rms_sigma1Down = (fitResultsfitResults.sigma1() - fitResultsfitResults.sigma1Err())
-                              *(1. + fitResultsfitResults.b1()*x + fitResultsfitResults.c1()*x*x);
-    double uParl_rms_b1Up       = fitResultsfitResults.sigma1()
-                              *(1. + (fitResultsfitResults.b1() + fitResultsfitResults.b1Err())*x + fitResultsfitResults.c1()*x*x);
-    double uParl_rms_b1Down     = fitResultsfitResults.sigma1()
-                              *(1. + (fitResultsfitResults.b1() - fitResultsfitResults.b1Err())*x + fitResultsfitResults.c1()*x*x);
-    double uParl_rms_c1Up       = fitResultsfitResults.sigma1()
-                              *(1. + fitResultsfitResults.b1()*x + (fitResultsfitResults.c1() + fitResultsfitResults.c1Err())*x*x);
-    double uParl_rms_c1Down     = fitResultsfitResults.sigma1()
-                              *(1. + fitResultsfitResults.b1()*x + (fitResultsfitResults.c1() - fitResultsfitResults.c1Err())*x*x);
-    
-    double uParl_rmsErrUp       = uParl_rms_av + TMath::Sqrt(square(uParl_rms_sigma1Up   - uParl_rms_av) 
-                                                           + square(TMath::Max(uParl_rms_b1Up, uParl_rms_b1Down) - uParl_rms_av) 
-                                                           + square(TMath::Max(uParl_rms_c1Up, uParl_rms_c1Down) - uParl_rms_av));
-    double uParl_rmsErrDown     = uParl_rms_av - TMath::Sqrt(square(uParl_rms_sigma1Down - uParl_rms_av) 
-                                                           + square(TMath::Min(uParl_rms_b1Up, uParl_rms_b1Down) - uParl_rms_av) 
-                                                           + square(TMath::Min(uParl_rms_c1Up, uParl_rms_c1Down) - uParl_rms_av));
-    
-    graph_uParl_rmsFit->SetPoint(iPoint, x, uParl_rms_av);
-    graph_uParl_rmsFitErr->SetPoint(iPoint, x, 0.5*(uParl_rmsErrUp + uParl_rmsErrDown));
-    graph_uParl_rmsFitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(uParl_rmsErrUp - uParl_rmsErrDown));
-    
-    graph_uPerpFit->SetPoint(iPoint, x, 0.);
-    graph_uPerpFitErr->SetPoint(iPoint, x, 0.);
-    graph_uPerpFitErr->SetPointError(iPoint, 0., 1.e0);
-
-    double uPerp_rms_av         = fitResultsfitResults.sigma2()*(1. + fitResultsfitResults.b2()*x + fitResultsfitResults.c2()*x*x);
-    double uPerp_rms_sigma2Up   = (fitResultsfitResults.sigma2() + fitResultsfitResults.sigma2Err())
-                              *(1. + fitResultsfitResults.b2()*x + fitResultsfitResults.c2()*x*x);
-    double uPerp_rms_sigma2Down = (fitResultsfitResults.sigma2() - fitResultsfitResults.sigma2Err())
-                              *(1. + fitResultsfitResults.b2()*x + fitResultsfitResults.c2()*x*x);
-    double uPerp_rms_b2Up       = fitResultsfitResults.sigma2()
-                              *(1. + (fitResultsfitResults.b2() + fitResultsfitResults.b2Err())*x + fitResultsfitResults.c2()*x*x);
-    double uPerp_rms_b2Down     = fitResultsfitResults.sigma2()
-                              *(1. + (fitResultsfitResults.b2() - fitResultsfitResults.b2Err())*x + fitResultsfitResults.c2()*x*x);
-    double uPerp_rms_c2Up       = fitResultsfitResults.sigma2()
-                              *(1. + fitResultsfitResults.b2()*x + (fitResultsfitResults.c2() + fitResultsfitResults.c2Err())*x*x);
-    double uPerp_rms_c2Down     = fitResultsfitResults.sigma2()
-                              *(1. + fitResultsfitResults.b2()*x + (fitResultsfitResults.c2() - fitResultsfitResults.c2Err())*x*x);
-    
-    double uPerp_rmsErrUp       = uPerp_rms_av + TMath::Sqrt(square(uPerp_rms_sigma2Up   - uPerp_rms_av) 
-                                                           + square(TMath::Max(uPerp_rms_b2Up, uPerp_rms_b2Down) - uPerp_rms_av) 
-                                                           + square(TMath::Max(uPerp_rms_c2Up, uPerp_rms_c2Down) - uPerp_rms_av));
-    double uPerp_rmsErrDown     = uPerp_rms_av - TMath::Sqrt(square(uPerp_rms_sigma2Down - uPerp_rms_av) 
-                                                           + square(TMath::Min(uPerp_rms_b2Up, uPerp_rms_b2Down) - uPerp_rms_av) 
-                                                           + square(TMath::Min(uPerp_rms_c2Up, uPerp_rms_c2Down) - uPerp_rms_av));
-    
-    graph_uPerp_rmsFit->SetPoint(iPoint, x, uPerp_rms_av);
-    graph_uPerp_rmsFitErr->SetPoint(iPoint, x, 0.5*(uPerp_rmsErrUp + uPerp_rmsErrDown));
-    graph_uPerp_rmsFitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(uPerp_rmsErrUp - uPerp_rmsErrDown));
-  }
+  TGraphAsymmErrors* graph_uParlFit = 
+    makeGraph_fitValue("graph_uParlFit", "", 
+		       f_uParl_mean, xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uParlFitErr = 
+    makeGraph_fitUncertainty("graph_uParlFitErr", "", 
+			     f_uParl_mean, makeFitUncertaintyFunctions(f_uParl_mean), xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uParl_div_qTfit =
+    makeGraph_fitValue("graph_uParl_div_qTfit", "",
+		       f_uParl_div_qT_mean, xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uParl_div_qTfitErr = 
+    makeGraph_fitUncertainty("graph_uParl_div_qTfitErr", "", 
+			     f_uParl_div_qT_mean, makeFitUncertaintyFunctions(f_uParl_div_qT_mean), xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uParl_rmsFit =
+    makeGraph_fitValue("graph_uParl_rmsFit", "", 
+		       f_uParl_rms, xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uParl_rmsFitErr = 
+    makeGraph_fitUncertainty("graph_uParl_rmsFitErr", "", 
+			     f_uParl_rms, makeFitUncertaintyFunctions(f_uParl_rms), xMin, xMax, dx);
+  
+  TGraphAsymmErrors* graph_uPerpFit = 
+    makeGraph_fitValue("graph_uPerpFit", "", 
+		       f_uPerp_mean, xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uPerpFitErr = 
+    makeGraph_fitUncertainty("graph_uPerpFitErr", "", 
+			     f_uPerp_mean, makeFitUncertaintyFunctions(f_uPerp_mean), xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uPerp_rmsFit =
+    makeGraph_fitValue("graph_uPerp_rmsFit", "", 
+		       f_uPerp_rms, xMin, xMax, dx);
+  TGraphAsymmErrors* graph_uPerp_rmsFitErr = 
+    makeGraph_fitUncertainty("graph_uPerp_rmsFitErr", "", 
+			     f_uPerp_rms, makeFitUncertaintyFunctions(f_uPerp_rms), xMin, xMax, dx);
 
   TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 1000);
   canvas->SetFillColor(10);
@@ -359,23 +276,23 @@ void makeControlPlots(TH1* dummyHistogram,
 
   showControlPlot(canvas, 
 		  dummyHistogram, graph_uParl_mean, legendEntry, 0.64, 0.665, graph_uParlFit, graph_uParlFitErr,     
-		  true, false, "u_{parl} / GeV", -600., +100., 10.,
+		  true, false, "u_{#parallel} / GeV", -600., +100., 10.,
 		  outputFileName, "uParl_mean");
   showControlPlot(canvas, 
-		  dummyHistogram, graph_uParl_div_qT_mean, legendEntry, 0.64, 0.665, graph_uParl_div_qTfit, graph_uParl_div_qTfitErr,     
-		  false, true, "u_{parl}/q_{T}", 0., 1.5, 0.10,
+		  dummyHistogram, graph_uParl_div_qT_mean, legendEntry, 0.64, 0.165, graph_uParl_div_qTfit, graph_uParl_div_qTfitErr,     
+		  false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, 0.10,
 		  outputFileName, "uParl_div_qT_mean");
   showControlPlot(canvas, 
 		  dummyHistogram, graph_uParl_rms, legendEntry,  0.19, 0.64, graph_uParl_rmsFit, graph_uParl_rmsFitErr, 
-		  false, false, "rms(u_{parl}) / GeV", 0., 50., 10., 
+		  false, false, "rms(u_{#parallel} ) / GeV", 0., 50., 10., 
 		  outputFileName, "uParl_rms");
   showControlPlot(canvas, 
 		  dummyHistogram, graph_uPerp_mean, legendEntry, 0.64, 0.665, graph_uPerpFit, graph_uPerpFitErr,     
-		  false, false, "u_{perp} / GeV", -25., +25., 2.5,
+		  false, false, "u_{#perp}  / GeV", -25., +25., 2.5,
 		  outputFileName, "uPerp_mean");
   showControlPlot(canvas, 
 		  dummyHistogram, graph_uPerp_rms, legendEntry, 0.19, 0.64, graph_uPerp_rmsFit, graph_uPerp_rmsFitErr, 
-		  false, false, "rms(u_{perp}) / GeV", 0., 50., 10.,
+		  false, false, "rms(u_{#perp}  ) / GeV", 0., 50., 10.,
 		  outputFileName, "uPerp_rms");
   
   delete canvas;
@@ -458,87 +375,27 @@ int main(int argc, char* argv[])
     histogram_qT->Fill(refT_value, evtWeight_value);
   }
 
-  TGraphAsymmErrors* graph_uParl_mean = new TGraphAsymmErrors(numBins);
-  graph_uParl_mean->SetName("graph_uParl_mean");
-  graph_uParl_mean->SetTitle("<u_{parl}> as function of q_{T}");  
-  TGraphAsymmErrors* graph_uParl_div_qT_mean = new TGraphAsymmErrors(numBins);
-  graph_uParl_div_qT_mean->SetName("graph_uParl_div_qT_mean");
-  graph_uParl_div_qT_mean->SetTitle("<u_{parl}>/q_{T} as function of q_{T}");
-  TGraphAsymmErrors* graph_uParl_rms  = new TGraphAsymmErrors(numBins);
-  graph_uParl_rms->SetName("graph_uParl_rms");
-  graph_uParl_rms->SetTitle("rms(u_{perp} - d + k*q_{T}) as function of q_{T}");
-  TGraphAsymmErrors* graph_uPerp_mean = new TGraphAsymmErrors(numBins); 
-  graph_uPerp_mean->SetName("graph_uPerp_mean");
-  graph_uPerp_mean->SetTitle("<u_{parl}> as function of q_{T}");
-  TGraphAsymmErrors* graph_uPerp_rms  =  new TGraphAsymmErrors(numBins);
-  graph_uPerp_rms->SetName("graph_uPerp_rms");
-  graph_uPerp_rms->SetTitle("rms(u_{perp}) as function of q_{T}");
-
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    double qTmin = histogram_uParl->GetXaxis()->GetBinLowEdge(iBin);
-    double qTmax = histogram_uParl->GetXaxis()->GetBinUpEdge(iBin);
-
-    int binLowIndex = histogram_qT->FindBin(qTmin);
-    int binUpIndex  = histogram_qT->FindBin(qTmax);
-    histogram_qT->GetXaxis()->SetRange(binLowIndex, binUpIndex);
-
-    double x        = histogram_qT->GetMean();
-    double xErrUp   = qTmax - x;
-    double xErrDown = x - qTmin;
-
-    TString histogramName_uParl_proj = Form("%s_py_%i", histogram_uParl->GetName(), iBin);
-    TH1D* histogram_uParl_proj = histogram_uParl->ProjectionY(histogramName_uParl_proj.Data(), iBin, iBin, "e");
-    double y_uParl_mean = histogram_uParl_proj->GetMean();
-    double yErr_uParl_mean = histogram_uParl_proj->GetMeanError();
-    graph_uParl_mean->SetPoint(iBin - 1, x, y_uParl_mean);
-    graph_uParl_mean->SetPointError(iBin - 1, xErrDown, xErrUp, yErr_uParl_mean, yErr_uParl_mean);
-    if ( x > 0. ) {
-      graph_uParl_div_qT_mean->SetPoint(iBin - 1, x, -y_uParl_mean/x);
-      graph_uParl_div_qT_mean->SetPointError(iBin - 1, xErrDown, xErrUp, yErr_uParl_mean/x, yErr_uParl_mean/x);
-    }
-    double y_uParl_rms = histogram_uParl_proj->GetRMS();
-    double yErr_uParl_rms = histogram_uParl_proj->GetRMSError();
-    graph_uParl_rms->SetPoint(iBin - 1, x, y_uParl_rms);
-    graph_uParl_rms->SetPointError(iBin - 1, xErrDown, xErrUp, yErr_uParl_rms, yErr_uParl_rms);
-
-    TString histogramName_uPerp_proj = Form("%s_py_%i", histogram_uPerp->GetName(), iBin);
-    TH1D* histogram_uPerp_proj = histogram_uPerp->ProjectionY(histogramName_uPerp_proj.Data(), iBin, iBin, "e");
-    double y_uPerp_mean = histogram_uPerp_proj->GetMean();
-    double yErr_uPerp_mean = histogram_uPerp_proj->GetMeanError();
-    graph_uPerp_mean->SetPoint(iBin - 1, x, y_uPerp_mean);
-    graph_uPerp_mean->SetPointError(iBin - 1, xErrDown, xErrUp, yErr_uPerp_mean, yErr_uPerp_mean);
-    double y_uPerp_rms = histogram_uPerp_proj->GetRMS();
-    double yErr_uPerp_rms = histogram_uPerp_proj->GetRMSError();
-    graph_uPerp_rms->SetPoint(iBin - 1, x, y_uPerp_rms);
-    graph_uPerp_rms->SetPointError(iBin - 1, xErrDown, xErrUp, yErr_uPerp_rms, yErr_uPerp_rms);
-  }
-
-  // reset x-axis range selection 
-  histogram_qT->GetXaxis()->SetRange(1, 0);
+  TGraphAsymmErrors* graph_uParl_mean = 
+    makeGraph_mean("graph_uParl_mean", "<u_{parl}> as function of q_{T}", histogram_uParl, histogram_qT);
+  TGraphAsymmErrors* graph_uParl_div_qT_mean = 
+    makeGraph_uParl_div_qT("graph_uParl_div_qT_mean", "<u_{parl}>/q_{T} as function of q_{T}", histogram_uParl, histogram_qT);
+  TGraphAsymmErrors* graph_uParl_rms = 
+    makeGraph_rms("graph_uParl_rms", "rms(u_{perp} - d + k*q_{T}) as function of q_{T}", histogram_uParl, histogram_qT);
+  TGraphAsymmErrors* graph_uPerp_mean = 
+    makeGraph_mean("graph_uPerp_mean", "<u_{parl}> as function of q_{T}", histogram_uPerp, histogram_qT);
+  TGraphAsymmErrors* graph_uPerp_rms =  
+    makeGraph_rms("graph_uPerp_rms", "rms(u_{perp}) as function of q_{T}", histogram_uPerp, histogram_qT);
 
   std::cout << "starting uParl fit..." << std::endl;
-  TF1* f_uParl_mean = new TF1("f_uParl_mean", "[0]*x*0.5*(1.0 - TMath::Erf(-[1]*TMath::Power(x, [2])))", 0., 500.);
-  f_uParl_mean->SetLineWidth(0);
-  f_uParl_mean->SetParameter(0, -1.0);
-  f_uParl_mean->SetParameter(1,  5.e-2);
-  f_uParl_mean->SetParameter(2,  1.0);
-  graph_uParl_mean->Fit(f_uParl_mean, "E");
-  //graph_uParl_mean->Fit(f_uParl_mean, "W");
-
-  TF1* f_uParl_rms = new TF1("f_uParl_rms", "[0]*(1.0 + [1]*x + [2]*x*x)", 0., 500.);
-  f_uParl_rms->SetLineWidth(0);
-  f_uParl_rms->SetParameter(0, 10.);
-  f_uParl_rms->SetParameter(0,  5.e-2);
-  f_uParl_rms->SetParameter(0,  0.);
-  graph_uParl_rms->Fit(f_uParl_rms, "E");
+  TF1* f_uParl_mean = fitGraph_uParl_mean("f_uParl_mean", graph_uParl_mean, 0., 500.);
+  TF1* f_uParl_div_qT_mean = fitGraph_uParl_dix_qT("f_uParl_div_qT_mean", graph_uParl_div_qT_mean, 0., 500.);
+  TF1* f_uParl_rms = fitGraph_uParl_rms("f_uParl_rms", graph_uParl_rms, 0., 500.);
 
   std::cout << "starting uPerp fit..." << std::endl;
-  TF1* f_uPerp_rms = new TF1("f_uPerp_rms", "[0]*(1.0 + [1]*x + [2]*x*x)", 0., 500.);
-  f_uPerp_rms->SetLineWidth(0);
-  f_uPerp_rms->SetParameter(0, 10.);
-  f_uPerp_rms->SetParameter(0,  5.e-2);
-  f_uPerp_rms->SetParameter(0,  0.);
-  graph_uPerp_rms->Fit(f_uPerp_rms, "E");
+  TF1* f_uPerp_mean = new TF1("f_uPerp_mean", "[0]", 0., 500.);
+  f_uPerp_mean->SetParameter(0, 0.);
+  f_uPerp_mean->SetParError(0, 1.);
+  TF1* f_uPerp_rms = fitGraph_uPerp_rms("f_uPerp_rms", graph_uPerp_rms, 0., 500.);
 
   std::cout << "done." << std::endl;
 
@@ -560,8 +417,12 @@ int main(int argc, char* argv[])
 
   TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", 50, 0., 500.);
   makeControlPlots(dummyHistogram,
-		   graph_uParl_mean, graph_uParl_div_qT_mean, graph_uParl_rms, graph_uPerp_mean, graph_uPerp_rms, 
-		   fitResults, isData, outputFileName);
+		   graph_uParl_mean, f_uParl_mean,
+		   graph_uParl_div_qT_mean, f_uParl_div_qT_mean, 
+		   graph_uParl_rms, f_uParl_rms,
+		   graph_uPerp_mean, f_uPerp_mean,
+		   graph_uPerp_rms, f_uPerp_rms,
+		   isData, outputFileName);
 
   int numEvents_processed = tree->GetEntries();
 
