@@ -76,18 +76,17 @@ public:
       resolution = steps[steps.size() / 2];
 
       // measure average and sigma of the steps
+      double n    = steps.size();
       double sum  = 0.;
-      double sum2 = 0.;
-      for (size_t i = 0; i < steps.size(); ++i) {
+      for (size_t i = 0; i < steps.size(); ++i)
         sum  += steps[i];
-        sum2 += steps[i] * steps[i];
+      resolution_mean = sum / n;
+      if (steps.size() > 1) {
+        double sum2 = 0.;
+        for (size_t i = 0; i < steps.size(); ++i)
+          sum2 += (steps[i] - resolution_mean) * (steps[i] - resolution_mean);
+        resolution_sigma = std::sqrt( sum2 / n );
       }
-      double n = steps.size();
-      resolution_mean  = sum / n;
-      if (n > 1)
-        resolution_sigma = std::sqrt( sum2/(n-1) - resolution_mean * resolution_mean * n/(n-1) );
-      else
-        resolution_sigma = 0.;
     }
   }
 
