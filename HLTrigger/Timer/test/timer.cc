@@ -84,7 +84,10 @@ public:
       }
       double n = steps.size();
       resolution_mean  = sum / n;
-      resolution_sigma = std::sqrt( sum2/(n-1) - resolution_mean * resolution_mean * n/(n-1) );
+      if (n > 1)
+        resolution_sigma = std::sqrt( sum2/(n-1) - resolution_mean * resolution_mean * n/(n-1) );
+      else
+        resolution_sigma = 0.;
     }
   }
 
