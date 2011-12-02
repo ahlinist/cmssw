@@ -431,7 +431,7 @@ int main (int argc, char* argv[])
 	  if ( doTracks ) {
 	    TLorentzVector p4_tracks(0,0,0,0);
 	    for ( reco::TrackRefVector::const_iterator itrk = jetTracks.begin(),
-		    itrkBegin = jetTracks.begin(), itrkEnd = jetTracks.end();
+		    itrkEnd = jetTracks.end();
 		  itrk != itrkEnd; ++itrk ) {
 	      TLorentzVector p4_trk;
 	      double M_PION = 0.140;
