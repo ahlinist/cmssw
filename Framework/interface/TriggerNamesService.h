@@ -94,6 +94,19 @@ namespace edm {
 	return (modulenames_.at(i)).at(j);
       }
 
+      Strings const& getEndPathModules(std::string const& name) const {
+	return end_modulenames_.at(find(end_pos_,name));
+      }
+      Strings const& getEndPathModules(size_type const i) const {
+	return end_modulenames_.at(i);
+      }
+      std::string const&  getEndPathModule (std::string const& name, size_type const j) const {
+	return (end_modulenames_.at(find(end_pos_,name))).at(j);
+      }
+      std::string const&  getEndPathModule (size_type const i, size_type const j) const {
+	return (end_modulenames_.at(i)).at(j);
+      }
+
       size_type find (PosMap const& posmap, std::string const& name) const {
 	PosMap::const_iterator const pos(posmap.find(name));
         if (pos == posmap.end()) {
@@ -125,7 +138,8 @@ namespace edm {
       Strings end_names_;
       PosMap  end_pos_;
 
-      std::vector<Strings> modulenames_; // of modules on trigger paths
+      std::vector<Strings> modulenames_;        // modules on trigger paths
+      std::vector<Strings> end_modulenames_;    // modules on endpaths
 
       std::string process_name_;
       bool wantSummary_;
