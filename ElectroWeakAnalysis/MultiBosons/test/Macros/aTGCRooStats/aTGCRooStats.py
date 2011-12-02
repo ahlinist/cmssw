@@ -415,7 +415,9 @@ def processBackgroundModel(ws,cfg,section):
         temp = TH1F('%s_background_input'%section,
                     '',
                     len(bins)-1,array('d',bins))        
-        bkgObj.Draw('%s >> %s_background_input'%(obsVar,section),'','goff')
+        bkgObj.Draw('%s >> %s_background_input'%(obsVar,section),
+                    cfg.get(section,'bkg_weight_var'),
+                    'goff')
 
         for i in range(1,len(bins)):
             print i,temp.GetBinContent(i)
