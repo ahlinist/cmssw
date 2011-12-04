@@ -38,7 +38,6 @@ class beautify:
         leg.SetFillColor(0)
         leg.SetBorderSize(0)
 
-
     def SetTitles(self,hist,Name,Title,xTitle,yTitle,zTitle):
         if not Name==''  :  hist.SetName(Name)
         if not Title=='' :  hist.SetTitle(Title)

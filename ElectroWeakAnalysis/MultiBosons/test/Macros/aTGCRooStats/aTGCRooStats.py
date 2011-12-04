@@ -4,13 +4,15 @@ from array import array
 from math import sqrt,exp
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
-
+#root and roofit classes
 import ROOT
 from ROOT import RooWorkspace, TFile, TH1, TChain, RooDataHist, \
      RooHistFunc, RooFit, RooSimultaneous, RooDataSet, TH1F, \
      RooRealVar, RooBinning, RooThresholdCategory, RooCategory, \
-     RooArgSet, RooArgList, TH2F, TTree, TF2, RooFormulaVar
-
+     RooArgSet, RooArgList, TH2F, TTree, TF2, RooFormulaVar, TCanvas
+#pretty plots stuff from Irakli
+from beautify import beautify
+from initCMSStyle import initCMSStyle
 
 #ROOT.RooMsgService.instance().addStream(RooFit.DEBUG,RooFit.Topic(RooFit.Tracing))
 #ROOT.RooMsgService.instance().addStream(RooFit.DEBUG,RooFit.Topic(RooFit.Eval))
@@ -33,6 +35,8 @@ def main(options,args):
                                              RooFit.NumCPU(1),
                                              RooFit.ConditionalObservables(ws.set('condObs')),
                                              RooFit.Verbose(True))
+
+    ws.saveSnapshot('standardmodel',ws.allVars())
     
     minuit = ROOT.RooMinuit(theNLL)
     minuit.setPrintLevel(1)
@@ -52,9 +56,10 @@ def main(options,args):
     ws.defineSet('POI',
                  ROOT.RooArgSet(ws.var('%s_%s'%(cfg.get('Global','par1Name'),cfg.get('Global','couplingType'))),
                                 ws.var('%s_%s'%(cfg.get('Global','par2Name'),cfg.get('Global','couplingType')))))
-    
-    nll_fit_result = minuit.save('%s_fitresult'%cfg.get('Global','couplingType'))                 
-    
+
+    ws.saveSnapshot('%s_fitresult'%cfg.get('Global','couplingType'),
+                    ws.allVars())
+        
     #create profile likelihood       
     level_68 = ROOT.TMath.ChisquareQuantile(.68,2)/2.0 # delta NLL for 68% confidence level for -log(LR)
     level_95 = ROOT.TMath.ChisquareQuantile(.95,2)/2.0 # delta NLL for 95% confidence level for -log(LR)
@@ -130,6 +135,8 @@ def main(options,args):
     par2Line.SetLineColor(ROOT.kRed)
     
     thePlot.addObject(par2Line)
+    
+    ws.var('%s_%s'%(cfg.get('Global','par1Name'),cfg.get('Global','couplingType'))).setConstant(False)
 
     #construct likelihood scan histograms
     plot = parm1.frame()
@@ -153,17 +160,21 @@ def main(options,args):
     profNLL_par2 = theNLL.createProfile(RooArgSet(parm2))
     profNLL_par2_plot = parm2.frame()
     profNLL_par2.plotOn(profNLL_par2_plot)
+
+    initCMSStyle()
     
     output = TFile.Open(workspaceName+'.root','RECREATE')
     
     ws.Write()
     contCanvas = ROOT.TCanvas('contour_canvas','',500,500)
     thePlot.Draw()
+    prettyContour(contCanvas,cfg)
     contCanvas.Write()
     thePlot.Write()
     
     scanCanvas2D = ROOT.TCanvas('scan2d_canvas','',500,500)
     scanHist.Draw('colz')
+    prettyScan(scanCanvas2D,cfg)
     scanCanvas2D.Write()
     scanHist.Write()
 
@@ -178,6 +189,8 @@ def main(options,args):
     profNLL_par2_plot.Draw()
     par2ScanCanvas.Write()
     profNLL_par2_plot.Write()
+
+    prettyObsPlots(ws,cfg)
     
     output.Close()
 
@@ -622,13 +635,137 @@ def histogramsAreCompatible(h1,h2):
             return False
     return True
 
+#make pretty contour plots
+def prettyContour(c,cfg):
+    c.UseCurrentStyle()
+    prims = c.GetListOfPrimitives()
+    it = prims.__iter__()
+    histoName = None
+    for it in prims:
+        tempName = it.GetName()
+        if tempName and "frame_" in tempName:
+            histoName = tempName
+    histo = c.FindObject(histoName)
+    histo.SetTitle("")
+    histo.SetStats(0)
+    histo.GetXaxis().SetTitle(cfg.get('Global','par1PlotName'))
+    histo.GetYaxis().SetTitle(cfg.get('Global','par2PlotName'))
+    histo.GetXaxis().SetTitleFont(132)
+    histo.GetYaxis().SetTitleFont(132)
+    histo.GetYaxis().SetTitleOffset(1.35)
+    histo.GetXaxis().SetNdivisions(505)
+    cont95 = c.FindObject("contour_nll_TopLevelPdf_allcountingdata_with_constr_n2.447747")
+    cont68 = c.FindObject("contour_nll_TopLevelPdf_allcountingdata_with_constr_n1.509592")
+    if not cont68 == None:
+        cont68.SetLineStyle(2)
+    c.RedrawAxis()
+    c.ResetAttPad()
+    c.Update()
+    
+def prettyScan(c,cfg):
+    ROOT.gStyle.SetPalette(1)
+    prims = c.GetListOfPrimitives()
+    it = prims.__iter__()
+    histoName = None
+    for it in prims:
+        tempName = it.GetName()
+        if tempName and "scan2d_plot" in tempName:
+            histoName = tempName
+    histo = c.FindObject(histoName)
+    histo.SetTitle("")
+    histo.SetStats(0)
+    histo.GetXaxis().SetTitle(cfg.get('Global','par1PlotName'))
+    histo.GetYaxis().SetTitle(cfg.get('Global','par2PlotName'))
+    histo.GetXaxis().SetTitleFont(132)
+    histo.GetYaxis().SetTitleFont(132)
+    histo.GetYaxis().SetTitleOffset(1.35)
+    histo.GetXaxis().SetNdivisions(505)
+    histo.Draw("colz")
+    c.RedrawAxis()
+    c.ResetAttPad()
+    c.Update()
 
-def makePlots(ws,options):
-    print "not done yet" 
+def prettyObsPlots(ws,cfg):
+    bea = beautify()
+    fit_sections = cfg.sections()
+    fit_sections.remove('Global')
+    
+    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                    cfg.get('Global','couplingType'))).removeMax()
+    #make a pt plot with data/background/sm/atgc for each input channel
+    for section in fit_sections:
+        obsVar = ws.var('%s_%s'%(cfg.get(section,'obsVar'),section))
+        obsHist = ws.obj('%s_input_data'%section)
+        bkgHist = ws.obj('%s_background_input'%section)        
+
+        ws.loadSnapshot('%s_fitresult'%cfg.get('Global','couplingType'))
+        bestFit = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
+        bestFit.SetName('%s_bestfit'%section)
+        ws.loadSnapshot('standardmodel')
+        
+        sm = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
+        sm.SetName('%s_sm'%section)
+
+        
+        ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                        cfg.get('Global','couplingType'))).setVal(cfg.getfloat(section,'par1GridMax'))
+        ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                        cfg.get('Global','couplingType'))).setVal(0)
+        
+        gridPoint = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
+        gridPoint.SetName('%s_gridpoint'%section)
+        
+        
+        obsHist.GetXaxis().SetTitle(cfg.get(section,'obsVarPlotName'))
+        obsHist.GetYaxis().SetTitle('Events')
+        obsHist.SetMinimum(0.0)
+
+        canv = TCanvas('%s_obs_canvas'%section,'',500,500)
+        
+        canv.cd()
+        obsHist.SetStats(0)
+        obsHist.SetTitle('')
+        obsHist.Draw('E')
+
+        bkgHist.SetLineColor(4)
+        bkgHist.SetFillStyle(3001)
+        bkgHist.SetFillColor(4)
+        bkgHist.Draw('SAMEHISTO')
+
+        sm.SetFillColor(0)
+        sm.SetLineColor(1)
+        sm.Draw('SAMEHISTO')
+
+        bestFit.SetLineColor(4)
+        bestFit.SetLineStyle(7)
+        bestFit.Draw('SAMEHISTO')
+
+        gridPoint.SetLineWidth(2)
+        gridPoint.SetLineColor(2)
+        gridPoint.SetFillColor(0)
+        gridPoint.Draw('SAMEHISTO')        
+        
+        legend = ROOT.TLegend(3.42741935483870941e-01,6.03813559322033955e-01,
+                              9.15322580645161255e-01,9.23728813559322015e-01)
+        legend.SetNColumns(2)
+        bea.beautifyLegend(legend)
+        legend.SetHeader("CMS Preliminary, #int L = 4.7  fb^{-1}");
+        legend.AddEntry(obsHist,"Data","lpe")
+        legend.AddEntry(bkgHist,"Background","f")
+        legend.AddEntry(sm,"Standard Model","l")
+        legend.AddEntry(bestFit,"Best Fit","l")
+        legend.AddEntry(gridPoint,
+                        "Anomalous Coupling %s = %.3f"%(cfg.get('Global','par1Name'),
+                                                        cfg.getfloat(section,'par1GridMax')),
+                        "l")
+        legend.Draw()
+
+        canv.Write()
+
 
 if __name__ == "__main__":
     parser = OptionParser(description="%prog : A RooStats Implementation of Anomalous Triple Gauge Coupling Analysis.",
-                          usage="aTGCRooStats --intLumi=TheLumi --lumiErr=Err")
+                          usage="aTGCRooStats --config=example_config.cfg")
     cfgparse = SafeConfigParser()
     
     parser.add_option("--config",dest="config",help="The name of the input configuration file.")   
@@ -672,3 +809,4 @@ if __name__ == "__main__":
         options.workspaceName = wstemp
     else:
         main(options,args)
+        
