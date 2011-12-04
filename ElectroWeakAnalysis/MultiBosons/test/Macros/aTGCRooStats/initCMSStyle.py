@@ -2,7 +2,7 @@ import ROOT
 
 def initCMSStyle():
     ROOT.gROOT.Reset()
-    ROOT.gROOT.ProcessLine(".L ~/Style.C")
+    ROOT.gROOT.ProcessLine(".L CMSStyle.C")
     #ROOT.gROOT.ProcessLine(".L ~/CMSStyle.C")
     ROOT.gROOT.ProcessLine("CMSstyle()")
     ROOT.gStyle.SetOptStat(0)
