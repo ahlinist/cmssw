@@ -81,11 +81,13 @@ def main(options,args):
 
     thePlot.SetName('%s_%s_%s_contour'%(cfg.get('Global','par1Name'),
                                         cfg.get('Global','par2Name'),
-                                        cfg.get('Global','couplingType')))
-
-    
+                                        cfg.get('Global','couplingType')))    
     
     thePlot.SetTitle('68% & 95% CL on the Best Fit Values of '+cfg.get('Global','par1Name')+' and '+cfg.get('Global','par2Name'))
+    legend = ROOT.TLegend(2.01612903225806439e-01,7.86016949152542388e-01,
+                          7.15725806451612989e-01,9.13135593220338992e-01)
+    legend.SetNColumns(2)
+    thePlot.addObject(legend)
 
     # 1-D Limits
     
@@ -637,6 +639,7 @@ def histogramsAreCompatible(h1,h2):
 
 #make pretty contour plots
 def prettyContour(c,cfg):
+    bea = beautify()
     c.UseCurrentStyle()
     prims = c.GetListOfPrimitives()
     it = prims.__iter__()
@@ -653,14 +656,30 @@ def prettyContour(c,cfg):
     histo.GetXaxis().SetTitleFont(132)
     histo.GetYaxis().SetTitleFont(132)
     histo.GetYaxis().SetTitleOffset(1.35)
+    
     histo.GetXaxis().SetNdivisions(505)
     cont95 = c.FindObject("contour_nll_TopLevelPdf_allcountingdata_with_constr_n2.447747")
+    histo.GetYaxis().SetRangeUser(-1.5*cont95.GetYaxis().GetXmax(),
+                                  1.5*cont95.GetYaxis().GetXmax()) # pad RooPlot
     cont68 = c.FindObject("contour_nll_TopLevelPdf_allcountingdata_with_constr_n1.509592")
     if not cont68 == None:
-        cont68.SetLineStyle(2)
+        cont68.SetLineStyle(2)    
+    
+    legend = c.GetPrimitive("TPave")
+    
+   
+    bea.beautifyLegend(legend)
+    legend.SetHeader("CMS Preliminary, #int L = 4.7  fb^{-1}");
+    legend.AddEntry(cont68,"68% CL","l")
+    legend.AddEntry(cont95,"95% CL","l")
+    legend.Draw()
+    
+    
     c.RedrawAxis()
     c.ResetAttPad()
     c.Update()
+
+    
     
 def prettyScan(c,cfg):
     ROOT.gStyle.SetPalette(1)
