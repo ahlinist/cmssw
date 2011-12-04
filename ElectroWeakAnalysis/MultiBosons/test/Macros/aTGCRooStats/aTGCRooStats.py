@@ -718,6 +718,7 @@ def prettyObsPlots(ws,cfg):
         
         obsHist.GetXaxis().SetTitle(cfg.get(section,'obsVarPlotName'))
         obsHist.GetYaxis().SetTitle('Events')
+        obsHist.GetYaxis().SetTitleOffset(1.35)
         obsHist.SetMinimum(0.0)
 
         canv = TCanvas('%s_obs_canvas'%section,'',500,500)
