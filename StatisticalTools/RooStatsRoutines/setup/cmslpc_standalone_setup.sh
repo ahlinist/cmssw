@@ -25,12 +25,14 @@ export PYTHONDIR=/uscmst1/prod/sw/cms/slc5_amd64_gcc434/external/python/2.6.4-cm
 
 #export PATH=${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.28.00b/bin:$PATH
 #export PATH=${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.30.00/bin:$PATH
-export PATH=${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64/bin:$PATH
+#export PATH=${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64/bin:$PATH
+export PATH=${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.32.00/bin:$PATH
 
 #export ROOTSYS=/uscms/home/kukarzev/nobackup/root/root_v5.28.00b
 #export ROOTSYS=/uscms/home/kukarzev/nobackup/root/root_v5.30.00
 #export ROOTSYS=/uscms/home/kukarzev/nobackup/root/root_v5.30.02
-export ROOTSYS=/uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64
+#export ROOTSYS=/uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64
+export ROOTSYS=/uscms/home/kukarzev/nobackup/root/root_v5.32.00
 
 export PYTHONPATH=${ROOTSYS}/lib:${PYTHONPATH}
 

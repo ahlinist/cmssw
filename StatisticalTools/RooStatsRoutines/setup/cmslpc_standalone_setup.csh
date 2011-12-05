@@ -26,12 +26,14 @@ setenv PYTHONDIR /uscmst1/prod/sw/cms/slc5_amd64_gcc434/external/python/2.6.4-cm
 
 #setenv PATH ${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.28.00b/bin:$PATH
 #setenv PATH ${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.30.00/bin:$PATH
-setenv PATH ${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64/bin:$PATH
+#setenv PATH ${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64/bin:$PATH
+setenv PATH ${PYTHONDIR}/bin:/uscms/home/kukarzev/nobackup/root/root_v5.32.00/bin:$PATH
 
 #setenv ROOTSYS /uscms/home/kukarzev/nobackup/root/root_v5.28.00b
 #setenv ROOTSYS /uscms/home/kukarzev/nobackup/root/root_v5.30.00
 #setenv ROOTSYS /uscms/home/kukarzev/nobackup/root/root_v5.30.02
-setenv ROOTSYS /uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64
+#setenv ROOTSYS /uscms/home/kukarzev/nobackup/root/root_v5.30.02_amd64
+setenv ROOTSYS /uscms/home/kukarzev/nobackup/root/root_v5.32.00
 
 setenv PYTHONPATH ${ROOTSYS}/lib
 
