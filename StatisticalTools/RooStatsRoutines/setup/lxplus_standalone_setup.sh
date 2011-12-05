@@ -14,17 +14,17 @@
 echo ''
 echo 'Setting up python, ROOT and PyROOT'
 echo ''
-echo 'ROOT nightly release is still used, UPDATE TO SOMETHING MORE MODERN!'
-echo ''
 
 # set up compiler
 . /afs/cern.ch/sw/lcg/contrib/gcc/4.3/x86_64-slc5/setup.sh
 
 # set location of the ROOT release
-. /afs/cern.ch/sw/lcg/app/nightlies/dev1/Thu/ROOT/ROOT_5_30_00-patches/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
+#. /afs/cern.ch/sw/lcg/app/nightlies/dev1/Thu/ROOT/ROOT_5_30_00-patches/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
+. /afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
 
 # setting up python and PyROOT
-export PYTHONDIR=/afs/cern.ch/cms/slc5_amd64_gcc434/external/python/2.6.4-cms6
+#export PYTHONDIR=/afs/cern.ch/cms/slc5_amd64_gcc434/external/python/2.6.4-cms6
+export PYTHONDIR=/afs/cern.ch/cms/slc5_amd64_gcc434/external/python/2.6.4-cms16
 
 PATH=/afs/cern.ch/sw/lcg/contrib/gcc/4.3.2/x86_64-slc5-gcc34-opt/bin:${PATH}
 export PATH=${PYTHONDIR}/bin:${PATH}
