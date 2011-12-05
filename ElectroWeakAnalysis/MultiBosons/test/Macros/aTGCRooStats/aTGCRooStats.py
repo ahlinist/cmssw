@@ -414,12 +414,14 @@ def processBackgroundModel(ws,cfg,section):
             print '%s_input_data binning : '%(section),binEdges(ws.obj('%s_input_data'%section))
             print ' is not equal to '
             print bkgObj.GetName(),'binning :',binEdges(bkgObj)
+            exit(1)
 
         if not histogramsAreCompatible(ws.obj('%s_signal_hc_input'%section),
                                        bkgObj):
             print '%s_signal_hc_input binning : '%s,binEdges(ws.obj('%s_signal_model_sm'%section))
             print ' is not equal to '
             print bkgObj.GetName(),'binning :',binEdges(bkgObj)
+            exit(1)
         
         histoToRooHistFunc(ws,cfg,section,bkgObj,'background')        
     elif isinstance(bkgObj,ROOT.TTree):
@@ -500,8 +502,7 @@ def processFittingData(ws,cfg,section):
 
         for i in range(1,len(bins)+1):
             print i,inpObj.GetBinContent(i)
-        
-        getattr(ws,'import')(inpObj)
+                
         histoToCountingSet(ws,cfg,section,inpObj,countingSet,n_observed)        
             
     elif isinstance(inpObj,ROOT.TTree):
@@ -516,8 +517,7 @@ def processFittingData(ws,cfg,section):
 
         for i in range(1,len(bins)+1):
             print i,temp.GetBinContent(i)
-        
-        getattr(ws,'import')(temp)
+
         histoToCountingSet(ws,cfg,section,temp,countingSet,n_observed)
         
         
@@ -545,15 +545,14 @@ def createPdfForChannel(ws,cfg,section):
 #adds the overflow bin to the last bin of a histogram
 def makeLastBinOverflow(h,nBins):
     lastBin = h.GetBinContent(nBins)+ h.GetBinContent(nBins+1)
+    print lastBin
     h.SetBinContent(nBins,lastBin)
     h.SetBinContent(nBins+1,0)
     
 #wraps an input histogram in a RooHistFunc
 def histoToRooHistFunc(ws,cfg,section,histo,name):
     nBins = len(cfg.get(section,'obsBins').split(','))-1
-    if(histo.GetBinContent(nBins+1) != 0.0):
-        makeLastBinOverflow(histo,nBins)
-        
+    makeLastBinOverflow(histo,nBins)
     histo.SetName('%s_%s_input'%(section,name))
     getattr(ws,'import')(histo)
     
@@ -576,8 +575,9 @@ def histoToRooHistFunc(ws,cfg,section,histo,name):
 #including the number of counts in a bin, the bin center and bin number
 def histoToCountingSet(ws,cfg,section,histo,rds,nObs):
     nBins = len(cfg.get(section,'obsBins').split(','))-1
-    if(histo.GetBinContent(nBins+1) != 0.0):
-        makeLastBinOverflow(histo,nBins)
+    makeLastBinOverflow(histo,nBins)
+    getattr(ws,'import')(histo)
+
     
     obsTemp = ws.var('%s_%s'%(cfg.get(section,'obsVar'),section))
     for i in range(1,histo.GetNbinsX()+1): # last bin = overflow + last bin                
