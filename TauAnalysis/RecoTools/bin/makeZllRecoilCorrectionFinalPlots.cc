@@ -9,6 +9,7 @@
 #include "DataFormats/FWLite/interface/InputSource.h"
 
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/RecoTools/bin/fitZllRecoilCorrectionAuxFunctions.h"
 
 #include <TFile.h>
 #include <TSystem.h>
@@ -18,7 +19,9 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <THStack.h>
+#include <TGraph.h>
 #include <TGraphErrors.h>
+#include <TGraphAsymmErrors.h>
 #include <TCanvas.h>
 #include <TLegend.h>
 #include <TPaveText.h>
@@ -104,11 +107,6 @@ TH1* loadHistogram(TFile* inputFile, const std::string& directory,
   return histograms[key];
 }
 
-double square(double x)
-{
-  return x*x;
-}
-
 std::string getDirectorySysErr(const std::string& directory, const std::string& sysShift)
 {
   //std::string directory_sysShift = terminate_dqmDirectory(directory).append(sysShift);
@@ -144,8 +142,6 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
       double value_central      = meMC_central->GetBinContent(iBin);
       double value_sysShiftUp   = meMC_sysShiftUp->GetBinContent(iBin);
       double value_sysShiftDown = meMC_sysShiftDown->GetBinContent(iBin);
-      //std::cout << "value_central = " << value_central << "," 
-      //	  << " value_sysShiftUp = " << value_sysShiftUp << ", value_sysShiftDown = " << value_sysShiftDown << std::endl;
 
       double value_max = TMath::Max(value_sysShiftUp, value_sysShiftDown);
       if ( value_max > value_central ) errUp2MC_smSum[iBin - 1]   += square(value_max - value_central); 
@@ -297,9 +293,9 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   legend.AddEntry(meData, std::string(runPeriod).append(" Data").data(), "p");
   legend.AddEntry(meMC_signal, "exp. Signal", "l");
   if ( meMC_bgrSum ) legend.AddEntry(meMC_bgrSum, "exp. Background", "f");
-  if ( meMC_smErr  ) legend.AddEntry(meMC_smErr, "Uncertainty", "f");
+  if ( meMC_smErr  ) legend.AddEntry(meMC_smErr, "Sys. Uncertainty", "f");
   legend.Draw();
-
+  
   double stats_x1 = ( meMC_smErrUp && meMC_smErrDown ) ? 0.64 : 0.70;
   TPaveText statsData(stats_x1, 0.84, 0.94, 0.94, "brNDC"); 
   statsData.SetBorderSize(0);
@@ -311,7 +307,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   statsData.SetTextSize(0.045);
   statsData.Draw();
 
-  TPaveText statsMC(stats_x1, 0.73, 0.95, 0.83, "brNDC"); 
+  TPaveText statsMC(stats_x1, 0.73, 0.94, 0.83, "brNDC"); 
   statsMC.SetBorderSize(0);
   statsMC.SetFillColor(0);
   if ( meMC_smErrUp && meMC_smErrDown ) {
@@ -372,8 +368,8 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
       if ( !(meMC_smSum->GetBinContent(iBin) > 0.) ) continue;
       double rel = (meMC_smErr->GetBinContent(iBin)/meMC_smSum->GetBinContent(iBin)) - 1.;
       double relErr = meMC_smErr->GetBinError(iBin)/meMC_smSum->GetBinContent(iBin);
-      std::cout << "variable = " << variable.meName_ << ", bin = " << iBin << ":" 
-		<< " rel. = " << rel << " +/- " << relErr << std::endl;
+      //std::cout << "variable = " << variable.meName_ << ", bin = " << iBin << ":" 
+      //	  << " rel. = " << rel << " +/- " << relErr << std::endl;
       
       graphMCerr->SetPoint(iBin - 1, x, rel);
       graphMCerr->SetPointError(iBin - 1, 0.5*meMC_smSum->GetBinWidth(iBin), relErr);
@@ -446,294 +442,254 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   delete canvas;
 }	     
 
-double getMaximum(TGraphErrors* graph)
+struct plotUvsQtNumObjType
 {
-  double retVal = 0.;
-
-  int numPoints = graph->GetN();
-  for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
-    Double_t x, y;
-    graph->GetPoint(iPoint, x, y);
-
-    Double_t yErr = graph->GetErrorY(iPoint);
-
-    if ( (y + yErr) > retVal ) retVal = y + yErr;
-  }
-
-  return retVal;
-}
-
-void drawGraphs(const std::string& yAxisTitle, const std::string& outputFileName, const std::string& outputFileLabel,
-		TGraphErrors* graphData1, const std::string& legendEntryData1, 
-		TGraphErrors* graphMC1, const std::string& legendEntryMC1, 
-		TGraphErrors* graphData2 = 0, const std::string& legendEntryData2 = "", 
-		TGraphErrors* graphMC2 = 0, const std::string& legendEntryMC2 = "", 
-		TGraphErrors* graphData3 = 0, const std::string& legendEntryData3 = "", 
-		TGraphErrors* graphMC3 = 0, const std::string& legendEntryMC3 = "", 
-		TGraphErrors* graphData4 = 0, const std::string& legendEntryData4 = "", 
-		TGraphErrors* graphMC4 = 0, const std::string& legendEntryMC4 = "", 
-		TGraphErrors* graphData5 = 0, const std::string& legendEntryData5 = "", 
-		TGraphErrors* graphMC5 = 0, const std::string& legendEntryMC5 = "")
-{
-  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
-  canvas->SetFillColor(10);
-  canvas->SetBorderSize(2);
-  
-  canvas->SetLeftMargin(0.12);
-  canvas->SetBottomMargin(0.12);
-  
-  canvas->SetLogy(false);
-  
-  double yMax = getMaximum(graphData1);
-  yMax = TMath::Max(yMax, getMaximum(graphMC1));
-  unsigned numGraphs = 2;
-  if ( graphData2 ) {
-    yMax = TMath::Max(yMax, getMaximum(graphData2));
-    ++numGraphs;
-  }
-  if ( graphMC2   ) {
-    yMax = TMath::Max(yMax, getMaximum(graphMC2));
-    ++numGraphs;
-  }
-  if ( graphData3 ) {
-    yMax = TMath::Max(yMax, getMaximum(graphData3));
-    ++numGraphs;
-  }
-  if ( graphMC3   ) {
-    yMax = TMath::Max(yMax, getMaximum(graphMC3));
-    ++numGraphs;
-  }
-  if ( graphData4 ) {
-    yMax = TMath::Max(yMax, getMaximum(graphData4));
-    ++numGraphs;
-  }
-  if ( graphMC4   ) {
-    yMax = TMath::Max(yMax, getMaximum(graphMC4));
-    ++numGraphs;
-  }
-  if ( graphData5 ) {
-    yMax = TMath::Max(yMax, getMaximum(graphData5));
-    ++numGraphs;
-  }
-  if ( graphMC5   ) {
-    yMax = TMath::Max(yMax, getMaximum(graphMC5));
-    ++numGraphs;
-  }
-
-  graphData1->SetTitle("");
-  
-  graphData1->SetMaximum(1.2*yMax);
-  graphData1->SetMinimum(0.);
-
-  graphData1->GetXaxis()->SetTitle("q_{T} / GeV");
-  graphData1->GetXaxis()->SetTitleOffset(1.2);
-  graphData1->GetYaxis()->SetTitle(yAxisTitle.data());
-  graphData1->GetYaxis()->SetTitleOffset(1.4);
-
-  graphData1->SetLineColor(1);
-  graphData1->SetMarkerColor(1);
-  graphData1->SetMarkerStyle(20);
-  graphData1->Draw("ap");
-
-  graphMC1->SetLineColor(1);
-  graphMC1->SetMarkerColor(1);
-  graphMC1->SetMarkerStyle(24);
-  graphMC1->Draw("p");
-
-  double textSize = ( numGraphs <= 8 ) ? 0.045 : 0.035;
-  TLegend legend(0.64, 0.89 - textSize*numGraphs, 0.89, 0.89, "", "brNDC"); 
-  legend.SetBorderSize(0);
-  legend.SetFillColor(0);
-  legend.AddEntry(graphData1, legendEntryData1.data(), "p");
-  legend.AddEntry(graphMC1,   legendEntryMC1.data(),   "p");
-
-  if ( graphData2 ) {
-    graphData2->SetLineColor(2);
-    graphData2->SetMarkerColor(2);
-    graphData2->SetMarkerStyle(21);
-    graphData2->Draw("p");
-    legend.AddEntry(graphData2, legendEntryData2.data(), "p");
-  }
-
-  if ( graphMC2 ) {
-    graphMC2->SetLineColor(2);
-    graphMC2->SetMarkerColor(2);
-    graphMC2->SetMarkerStyle(25);
-    graphMC2->Draw("p");
-    legend.AddEntry(graphMC2, legendEntryMC2.data(), "p");
-  }
-
-  if ( graphData3 ) {
-    graphData3->SetLineColor(3);
-    graphData3->SetMarkerColor(3);
-    graphData3->SetMarkerStyle(22);
-    graphData3->Draw("p");
-    legend.AddEntry(graphData3, legendEntryData3.data(), "p");
-  }
-
-  if ( graphMC3 ) {
-    graphMC3->SetLineColor(3);
-    graphMC3->SetMarkerColor(3);
-    graphMC3->SetMarkerStyle(26);
-    graphMC3->Draw("p");
-    legend.AddEntry(graphMC3, legendEntryMC3.data(), "p");
-  }
-
-  if ( graphData4 ) {
-    graphData4->SetLineColor(4);
-    graphData4->SetMarkerColor(4);
-    graphData4->SetMarkerStyle(23);
-    graphData4->Draw("p");
-    legend.AddEntry(graphData4, legendEntryData4.data(), "p");
-  }
-
-  if ( graphMC4 ) {
-    graphMC4->SetLineColor(4);
-    graphMC4->SetMarkerColor(4);
-    graphMC4->SetMarkerStyle(32);
-    graphMC4->Draw("p");
-    legend.AddEntry(graphMC4, legendEntryMC4.data(), "p");
-  }
-
-  if ( graphData5 ) {
-    graphData5->SetLineColor(6);
-    graphData5->SetMarkerColor(6);
-    graphData5->SetMarkerStyle(34);
-    graphData5->Draw("p");
-    legend.AddEntry(graphData5, legendEntryData5.data(), "p");
-  }
-
-  if ( graphMC5 ) {
-    graphMC5->SetLineColor(6);
-    graphMC5->SetMarkerColor(6);
-    graphMC5->SetMarkerStyle(28);
-    graphMC5->Draw("p");
-    legend.AddEntry(graphMC5, legendEntryMC5.data(), "p");
-  }
-
-  legend.Draw();
-
-  canvas->Update();
-
-  size_t idx = outputFileName.find_last_of('.');
-  std::string outputFileName_plot = std::string(outputFileName, 0, idx);
-  outputFileName_plot.append("_").append(outputFileLabel);
-  if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
-  canvas->Print(std::string(outputFileName_plot).append(".png").data());
-  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
-}
-
-std::pair<TGraphErrors*, TGraphErrors*> makeGraphs_mean_and_rms(TH2* histogram)
-{
-  TAxis* xAxis = histogram->GetXaxis();
-
-  int numBins = xAxis->GetNbins();
-
-  TGraphErrors* graph_mean = new TGraphErrors(numBins);
-  TGraphErrors* graph_rms  = new TGraphErrors(numBins);
-
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    TString histogramName_proj = Form("%s_py_%i", histogram->GetName(), iBin);
-    TH1D* histogram_proj = histogram->ProjectionY(histogramName_proj.Data(), iBin, iBin, "e");
-
-    double x = xAxis->GetBinCenter(iBin);
-
-    double mean = TMath::Abs(histogram_proj->GetMean());
-    double meanErr = TMath::Abs(histogram_proj->GetMeanError());
-    
-    double rms = histogram_proj->GetRMS();
-    double rmsErr = histogram_proj->GetRMSError();
-
-    int iPoint = iBin - 1;
-
-    graph_mean->SetPoint(iPoint, x, mean);
-    graph_mean->SetPointError(iPoint, 0., meanErr);
-
-    graph_rms->SetPoint(iPoint, x, rms);
-    graph_rms->SetPointError(iPoint, 0., rmsErr);
-  }
-
-  return std::pair<TGraphErrors*, TGraphErrors*>(graph_mean, graph_rms);
-}
-
-TGraphErrors* makeGraph_mean(TH2* histogram)
-{
-  return makeGraphs_mean_and_rms(histogram).first;
-}
-
-TGraphErrors* makeGraph_rms(TH2* histogram)
-{
-  return makeGraphs_mean_and_rms(histogram).second;
-}
-
-struct plotUvsQtNumVtxType
-{
-  plotUvsQtNumVtxType(TFile* inputFile, int numVtxMin, int numVtxMax, 
+  plotUvsQtNumObjType(TFile* inputFile, const std::string& numObjLabel, int numObjMin, int numObjMax,
+		      const std::string& numObjLabel_subscript,
 		      const std::string& directoryData, const std::string& directoryMC,
-		      const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod)
-    : numVtxMin_(numVtxMin),
-      numVtxMax_(numVtxMax)
+		      const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
+		      const vstring& sysShiftsUp, const vstring& sysShiftsDown)
+    : numObjMin_(numObjMin),
+      numObjMax_(numObjMax)
   {
-    TString label = "NumVertices";
-    if      ( numVtxMin_ == -1         ) label.Append(Form("Le%i",   numVtxMax_));
-    else if ( numVtxMax_ == -1         ) label.Append(Form("Ge%i",   numVtxMin_));
-    else if ( numVtxMin_ == numVtxMax_ ) label.Append(Form("Eq%i",   numVtxMin_));
-    else                                 label.Append(Form("%ito%i", numVtxMin_, numVtxMax_));
+    if      ( numObjMin_ == -1 &&
+	      numObjMax_ == -1         ) meLabel_ = "";
+    else if ( numObjMin_ == -1         ) meLabel_ = Form("%sLe%i",   numObjLabel.data(), numObjMax_);
+    else if ( numObjMax_ == -1         ) meLabel_ = Form("%sGe%i",   numObjLabel.data(), numObjMin_);
+    else if ( numObjMin_ == numObjMax_ ) meLabel_ = Form("%sEq%i",   numObjLabel.data(), numObjMin_);
+    else                                 meLabel_ = Form("%s%ito%i", numObjLabel.data(), numObjMin_, numObjMax_);
 
     meUparlDivQtVsQtData_ = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlDivQtVsQt").Append(label).Data()));
-    meUparlVsQtData_      = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlVsQt").Append(label).Data()));
-    meUperpVsQtData_      = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uPerpVsQt").Append(label).Data()));
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
+    meUparlVsQtData_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
+    meUperpVsQtData_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
+    meQtData_ = dynamic_cast<TH1*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
 
-    graphUparlResponseData_   = makeGraph_mean(meUparlDivQtVsQtData_);
-    graphUparlResolutionData_ = makeGraph_rms(meUparlVsQtData_);
-    graphUperpResolutionData_ = makeGraph_rms(meUperpVsQtData_);
+    graphUparlResponseData_ = makeGraph_uParl_div_qT(
+      "graph_uParl_div_qT_mean_data", "<u_{#parallel} >/q_{T} as function of q_{T}",
+      meUparlVsQtData_, meQtData_);
+    graphUparlResolutionData_ = makeGraph_rms(
+      "graph_uParl_rms_data", "RMS(u_{#parallel} ) as function of q_{T}", 
+      meUparlVsQtData_, meQtData_);
+    graphUperpResolutionData_ = makeGraph_rms(
+      "graph_uPerp_rms_data", "RMS(u_{#perp}  ) as function of q_{T}", 
+      meUperpVsQtData_, meQtData_);
 
-    meUparlDivQtVsQtMC_   = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryMC,   mcScaleFactors, TString("uParlDivQtVsQt").Append(label).Data()));
-    meUparlVsQtMC_        = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryMC,   mcScaleFactors, TString("uParlVsQt").Append(label).Data()));
-    meUperpVsQtMC_        = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryMC,   mcScaleFactors, TString("uPerpVsQt").Append(label).Data()));
+    meUparlDivQtVsQtMC_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
+    meUparlVsQtMC_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
+    meUperpVsQtMC_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
+    meQtMC_ = dynamic_cast<TH1*>(
+      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
 
-    graphUparlResponseMC_     = makeGraph_mean(meUparlDivQtVsQtMC_);
-    graphUparlResolutionMC_   = makeGraph_rms(meUparlVsQtMC_);
-    graphUperpResolutionMC_   = makeGraph_rms(meUperpVsQtMC_);
+    graphUparlResponseMC_ = makeGraph_uParl_div_qT(
+      "graph_uParl_div_qT_mean_mc", "<u_{#parallel} >/q_{T} as function of q_{T}",
+      meUparlVsQtMC_, meQtMC_);
+    graphUparlResolutionMC_ = makeGraph_rms(
+      "graph_uParl_rms_mc", "RMS(u_{#parallel} ) as function of q_{T}", 
+      meUparlVsQtMC_, meQtMC_);
+    graphUperpResolutionMC_ = makeGraph_rms(
+      "graph_uPerp_rms_mc", "RMS(u_{#perp}  ) as function of q_{T}", 
+      meUperpVsQtMC_, meQtMC_);
+    
+    assert(sysShiftsUp.size() == sysShiftsDown.size());
+    int numSysShifts = sysShiftsUp.size();
+    for ( int iSysShift = 0; iSysShift < numSysShifts; ++iSysShift ) {
+      sysUncertainties_.push_back(sysShiftsUp[iSysShift]);
+      sysUncertainties_.push_back(sysShiftsDown[iSysShift]);
+    }
+    
+    for ( vstring::const_iterator sysUncertainty = sysUncertainties_.begin();
+	  sysUncertainty != sysUncertainties_.end(); ++sysUncertainty ) {
+      std::string directoryMCsysUncertainty = getDirectorySysErr(directoryMC, *sysUncertainty);
+      TH2* meUparlDivQtVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
+	loadHistogram(inputFile, directoryMCsysUncertainty,mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
+      meUparlDivQtVsQtMCsysUncertainty_.push_back(meUparlDivQtVsQtMCsysUncertainty_sysUncertainty);
+      TH2* meUparlVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
+      meUparlVsQtMCsysUncertainty_.push_back(meUparlVsQtMCsysUncertainty_sysUncertainty);
+      TH2* meUperpVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
+      meUperpVsQtMCsysUncertainty_.push_back(meUperpVsQtMCsysUncertainty_sysUncertainty);
+      TH1* meQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH1*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+      meQtMCsysUncertainty_.push_back(meQtMCsysUncertainty_sysUncertainty);
 
-    if      ( numVtxMin_ == -1 ) label = Form("N_{vtx} < %i",      numVtxMax_);
-    else if ( numVtxMax_ == -1 ) label = Form("N_{vtx} > %i",      numVtxMin_);
-    else                         label = Form("%i < N_{vtx} < %i", numVtxMin_, numVtxMax_);
+      graphUparlResponseMCsysUncertainty_.push_back(makeGraph_uParl_div_qT(
+	Form("graph_uParl_div_qT_mean_mc_%s", sysUncertainty->data()), "<u_{#parallel} >/q_{T} as function of q_{T}",
+        meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
+      graphUparlResolutionMCsysUncertainty_.push_back(makeGraph_rms(
+        Form("graph_uParl_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#parallel} ) as function of q_{T}", 
+        meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
+      graphUperpResolutionMCsysUncertainty_.push_back(makeGraph_rms(
+        Form("graph_uPerp_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#perp}  ) as function of q_{T}", 
+        meUperpVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
+    }
 
-    legendEntryData_ = std::string(runPeriod).append(" Data").append(": ").append(label);
-    legendEntryMC_   = std::string("Sim.").append(": ").append(label);
+    if      ( numObjMin_ == -1 && 
+	      numObjMax_ == -1         ) plotLabel_ = ""; 
+    else if ( numObjMin_ == -1         ) plotLabel_ = Form("N_{%s} < %i",      numObjLabel_subscript.data(), numObjMax_);
+    else if ( numObjMax_ == -1         ) plotLabel_ = Form("N_{%s} > %i",      numObjLabel_subscript.data(), numObjMin_);
+    else if ( numObjMin_ == numObjMax_ ) plotLabel_ = Form("N_{%s} = %i",      numObjLabel_subscript.data(), numObjMin_);
+    else                                 plotLabel_ = Form("%i < N_{%s} < %i", numObjMin_, numObjLabel_subscript.data(), numObjMax_);
+
+    legendEntryData_ = std::string(runPeriod).append(" Data");
+    legendEntryMC_   = std::string("Simulation");
   }
-  ~plotUvsQtNumVtxType() {}
+  ~plotUvsQtNumObjType() {}
 
-  int numVtxMin_;
-  int numVtxMax_;
+  int numObjMin_;
+  int numObjMax_;
+
+  std::string meLabel_;						    
 
   TH2* meUparlDivQtVsQtData_;
   TH2* meUparlVsQtData_;
   TH2* meUperpVsQtData_;
+  TH1* meQtData_;
 
-  TGraphErrors* graphUparlResponseData_;
-  TGraphErrors* graphUparlResolutionData_;
-  TGraphErrors* graphUperpResolutionData_;
+  TGraphAsymmErrors* graphUparlResponseData_;
+  TGraphAsymmErrors* graphUparlResolutionData_;
+  TGraphAsymmErrors* graphUperpResolutionData_;
 
   TH2* meUparlDivQtVsQtMC_;
   TH2* meUparlVsQtMC_;
   TH2* meUperpVsQtMC_;
+  TH1* meQtMC_;
 
-  TGraphErrors* graphUparlResponseMC_;
-  TGraphErrors* graphUparlResolutionMC_;
-  TGraphErrors* graphUperpResolutionMC_;
+  TGraphAsymmErrors* graphUparlResponseMC_;
+  TGraphAsymmErrors* graphUparlResolutionMC_;
+  TGraphAsymmErrors* graphUperpResolutionMC_;
+
+  vstring sysUncertainties_;
+
+  std::vector<TH2*> meUparlDivQtVsQtMCsysUncertainty_; 
+  std::vector<TH2*> meUparlVsQtMCsysUncertainty_;
+  std::vector<TH2*> meUperpVsQtMCsysUncertainty_;
+  std::vector<TH1*> meQtMCsysUncertainty_;
+
+  std::vector<TGraphAsymmErrors*> graphUparlResponseMCsysUncertainty_;
+  std::vector<TGraphAsymmErrors*> graphUparlResolutionMCsysUncertainty_;
+  std::vector<TGraphAsymmErrors*> graphUperpResolutionMCsysUncertainty_;
+
+  std::string plotLabel_;
 
   std::string legendEntryData_;
   std::string legendEntryMC_;
 };
 
+void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::string& outputFileName)
+{
+  const double xMin = 0.;
+  const double xMax = 300.;
+
+  TF1* f_uParl_div_qT_mean_data = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_data", plotUvsQtNumObj->graphUparlResponseData_, xMin, xMax);
+  TF1* f_uParl_rms_data = fitGraph_uParl_rms("f_uParl_rms_data", plotUvsQtNumObj->graphUparlResolutionData_, xMin, xMax);
+  TF1* f_uPerp_rms_data = fitGraph_uPerp_rms("f_uPerp_rms_data", plotUvsQtNumObj->graphUperpResolutionData_, xMin, xMax);
+
+  TF1* f_uParl_div_qT_mean_mc = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc", plotUvsQtNumObj->graphUparlResponseMC_, xMin, xMax);
+  TF1* f_uParl_rms_mc = fitGraph_uParl_rms("f_uParl_rms_mc", plotUvsQtNumObj->graphUparlResolutionMC_, xMin, xMax);
+  TF1* f_uPerp_rms_mc = fitGraph_uPerp_rms("f_uPerp_rms_mc", plotUvsQtNumObj->graphUperpResolutionMC_, xMin, xMax);
+  std::vector<TF1*> f_uParl_div_qT_mean_mcSysUncertainties;
+  std::vector<TF1*> f_uParl_rms_mcSysUncertainties;
+  std::vector<TF1*> f_uPerp_rms_mcSysUncertainties;
+  int numSysUncertainties = plotUvsQtNumObj->sysUncertainties_.size();
+  for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
+    const std::string& sysUncertainty = plotUvsQtNumObj->sysUncertainties_[iSysUncertainty];
+    f_uParl_div_qT_mean_mcSysUncertainties.push_back(fitGraph_uParl_div_qT(
+      std::string("f_uParl_div_qT_mean_mc").append("_").append(sysUncertainty), 
+      plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_[iSysUncertainty], xMin, xMax));
+    f_uParl_rms_mcSysUncertainties.push_back(fitGraph_uParl_rms(
+      std::string("f_uParl_rms_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_[iSysUncertainty], xMin, xMax));
+    f_uPerp_rms_mcSysUncertainties.push_back(fitGraph_uPerp_rms(
+      std::string("f_uPerp_rms_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_[iSysUncertainty], xMin, xMax));
+  }
+
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 900);
+  canvas->SetFillColor(10);
+  canvas->SetBorderSize(2);
+
+  canvas->SetLeftMargin(0.12);
+  canvas->SetBottomMargin(0.12);
+
+  TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", (xMax - xMin)/10., xMin, xMax);
+
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUparlResponseData_, f_uParl_div_qT_mean_data,
+			  "Data", 0.62, 0.165, false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			 outputFileName, "uParlResponseFitData");
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUparlResponseMC_, f_uParl_div_qT_mean_mc,
+			 "Simulation", 0.62, 0.165, false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			 outputFileName, "uParlResponseFitMC",
+			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_, &f_uParl_div_qT_mean_mcSysUncertainties);  
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUparlResolutionData_, f_uParl_rms_data,
+			 "Data",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
+			 outputFileName, "uParlResolutionFitData");
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUparlResolutionMC_, f_uParl_rms_mc,
+			 "Simulation",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
+			 outputFileName, "uParlResolutionFitMC",
+			 &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_, &f_uParl_rms_mcSysUncertainties);
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUperpResolutionData_, f_uPerp_rms_data,
+			 "Data", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
+			 outputFileName, "uParlResolutionFitData");
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUperpResolutionMC_, f_uPerp_rms_mc,
+			 "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
+			 outputFileName, "uParlResolutionFitMC",
+			 &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_, &f_uPerp_rms_mcSysUncertainties);
+
+  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			   plotUvsQtNumObj->graphUparlResponseData_, plotUvsQtNumObj->graphUparlResponseMC_, 
+			   "Data", "Simulation", 0.62, 0.165, false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			   outputFileName, "uParlResponseData_vs_MC",
+			   &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_);
+  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			   plotUvsQtNumObj->graphUparlResolutionData_, plotUvsQtNumObj->graphUparlResolutionMC_, 
+			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.25, 
+			   outputFileName, "uParlResolutionData_vs_MC",
+			   &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_);
+  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			   plotUvsQtNumObj->graphUperpResolutionData_, plotUvsQtNumObj->graphUperpResolutionMC_, 
+			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.25,
+			   outputFileName, "uPerpResolutionData_vs_MC",
+			   &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_);
+
+  delete f_uParl_div_qT_mean_data;
+  delete f_uParl_rms_data;
+  delete f_uPerp_rms_data;
+  delete f_uParl_div_qT_mean_mc;
+  delete f_uParl_rms_mc;
+  delete f_uPerp_rms_mc;
+  for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
+    delete f_uParl_div_qT_mean_mcSysUncertainties[iSysUncertainty];
+    delete f_uParl_rms_mcSysUncertainties[iSysUncertainty];
+    delete f_uPerp_rms_mcSysUncertainties[iSysUncertainty];
+  }
+
+  delete canvas;
+  delete dummyHistogram;
+}
+
+std::string getOutputFileName_plot(const std::string& outputFileName, const std::string& plotLabel)
+{
+  size_t idx = outputFileName.find_last_of('.');
+  std::string outputFileName_plot = std::string(outputFileName, 0, idx);
+  outputFileName_plot.append("_").append(plotLabel);
+  if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
+  return outputFileName_plot;
+}
+ 
 int main(int argc, const char* argv[])
 {
 //--- parse command-line arguments
@@ -816,76 +772,30 @@ int main(int argc, const char* argv[])
   }
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
-  TH2* meUparlDivQtVsQt_data = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      mcScaleFactors, "uParlDivQtVsQt"));
-  TH2* meUparlVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      mcScaleFactors, "uParlVsQt"));
-  TH2* meUperpVsQt_data      = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryData,      mcScaleFactors, "uPerpVsQt"));
-
-  TGraphErrors* graphUparlResponse_data   = makeGraph_mean(meUparlDivQtVsQt_data);
-  TGraphErrors* graphUparlResolution_data = makeGraph_rms(meUparlVsQt_data);
-  TGraphErrors* graphUperpResolution_data = makeGraph_rms(meUperpVsQt_data);
-
-  TH2* meUparlDivQtVsQt_mc   = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, "uParlDivQtVsQt"));
-  TH2* meUparlVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, "uParlVsQt"));
-  TH2* meUperpVsQt_mc        = dynamic_cast<TH2*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, "uPerpVsQt"));
-
-  TGraphErrors* graphUparlResponse_mc     = makeGraph_mean(meUparlDivQtVsQt_mc);
-  TGraphErrors* graphUparlResolution_mc   = makeGraph_rms(meUparlVsQt_mc);
-  TGraphErrors* graphUperpResolution_mc   = makeGraph_rms(meUperpVsQt_mc);
-
-  drawGraphs("<u_{parl}>/q_{T}", outputFileName, "uParlResponse",
-	     graphUparlResponse_data, std::string(runPeriod).append(" Data"), graphUparlResponse_mc, "Simulation");
-  drawGraphs("RMS(u_{parl})", outputFileName, "uParlResolution",
-	     graphUparlResolution_data, std::string(runPeriod).append(" Data"), graphUparlResolution_mc, "Simulation");
-  drawGraphs("RMS(u_{perp})", outputFileName, "uPerpResolution",
-	     graphUperpResolution_data, std::string(runPeriod).append(" Data"), graphUperpResolution_mc, "Simulation");
+  plotUvsQtNumObjType* plotUvsQt  = 
+    new plotUvsQtNumObjType(inputFile, "", -1, -1, "", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  fitAndMakeControlPlots(plotUvsQt, outputFileName);
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
-//    in different bins of reconstructed vertex multiplicity
-  plotUvsQtNumVtxType* plotUvsQtNumVtxLe2   = 
-    new plotUvsQtNumVtxType(inputFile, -1,  2, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx3to5  = 
-    new plotUvsQtNumVtxType(inputFile,  3,  5, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx6to8  = 
-    new plotUvsQtNumVtxType(inputFile,  6,  8, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
-  plotUvsQtNumVtxType* plotUvsQtNumVtx9to11 = 
-    new plotUvsQtNumVtxType(inputFile,  9, 11, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
-  plotUvsQtNumVtxType* plotUvsQtNumVtxGe12  = 
-    new plotUvsQtNumVtxType(inputFile, 12, -1, directoryData, directoryMC_signal, mcScaleFactors, runPeriod);
-  
-  drawGraphs("<u_{parl}>/q_{T}", outputFileName, "uParlResponse_binnedVtxMultiplicity",
-	     plotUvsQtNumVtxLe2->graphUparlResponseData_, plotUvsQtNumVtxLe2->legendEntryData_,
-	     plotUvsQtNumVtxLe2->graphUparlResponseMC_, plotUvsQtNumVtxLe2->legendEntryMC_,
-	     plotUvsQtNumVtx3to5->graphUparlResponseData_, plotUvsQtNumVtx3to5->legendEntryData_,
-	     plotUvsQtNumVtx3to5->graphUparlResponseMC_, plotUvsQtNumVtx3to5->legendEntryMC_,
-	     plotUvsQtNumVtx6to8->graphUparlResponseData_, plotUvsQtNumVtx6to8->legendEntryData_,
-	     plotUvsQtNumVtx6to8->graphUparlResponseMC_, plotUvsQtNumVtx6to8->legendEntryMC_,
-	     plotUvsQtNumVtx9to11->graphUparlResponseData_, plotUvsQtNumVtx9to11->legendEntryData_,
-	     plotUvsQtNumVtx9to11->graphUparlResponseMC_, plotUvsQtNumVtx9to11->legendEntryMC_,
-	     plotUvsQtNumVtxGe12->graphUparlResponseData_, plotUvsQtNumVtxGe12->legendEntryData_,
-	     plotUvsQtNumVtxGe12->graphUparlResponseMC_, plotUvsQtNumVtxGe12->legendEntryMC_);
-  drawGraphs("RMS(u_{parl})", outputFileName, "uParlResolution_binnedVtxMultiplicity",
-	     plotUvsQtNumVtxLe2->graphUparlResolutionData_, plotUvsQtNumVtxLe2->legendEntryData_,
-	     plotUvsQtNumVtxLe2->graphUparlResolutionMC_, plotUvsQtNumVtxLe2->legendEntryMC_,
-	     plotUvsQtNumVtx3to5->graphUparlResolutionData_, plotUvsQtNumVtx3to5->legendEntryData_,
-	     plotUvsQtNumVtx3to5->graphUparlResolutionMC_, plotUvsQtNumVtx3to5->legendEntryMC_,
-	     plotUvsQtNumVtx6to8->graphUparlResolutionData_, plotUvsQtNumVtx6to8->legendEntryData_,
-	     plotUvsQtNumVtx6to8->graphUparlResolutionMC_, plotUvsQtNumVtx6to8->legendEntryMC_,
-	     plotUvsQtNumVtx9to11->graphUparlResolutionData_, plotUvsQtNumVtx9to11->legendEntryData_,
-	     plotUvsQtNumVtx9to11->graphUparlResolutionMC_, plotUvsQtNumVtx9to11->legendEntryMC_,
-	     plotUvsQtNumVtxGe12->graphUparlResolutionData_, plotUvsQtNumVtxGe12->legendEntryData_,
-	     plotUvsQtNumVtxGe12->graphUparlResolutionMC_, plotUvsQtNumVtxGe12->legendEntryMC_);
-  drawGraphs("RMS(u_{perp})", outputFileName, "uPerpResolution_binnedVtxMultiplicity",
-	     plotUvsQtNumVtxLe2->graphUperpResolutionData_, plotUvsQtNumVtxLe2->legendEntryData_,
-	     plotUvsQtNumVtxLe2->graphUperpResolutionMC_, plotUvsQtNumVtxLe2->legendEntryMC_,
-	     plotUvsQtNumVtx3to5->graphUperpResolutionData_, plotUvsQtNumVtx3to5->legendEntryData_,
-	     plotUvsQtNumVtx3to5->graphUperpResolutionMC_, plotUvsQtNumVtx3to5->legendEntryMC_,
-	     plotUvsQtNumVtx6to8->graphUperpResolutionData_, plotUvsQtNumVtx6to8->legendEntryData_,
-	     plotUvsQtNumVtx6to8->graphUperpResolutionMC_, plotUvsQtNumVtx6to8->legendEntryMC_,
-	     plotUvsQtNumVtx9to11->graphUperpResolutionData_, plotUvsQtNumVtx9to11->legendEntryData_,
-	     plotUvsQtNumVtx9to11->graphUperpResolutionMC_, plotUvsQtNumVtx9to11->legendEntryMC_,
-	     plotUvsQtNumVtxGe12->graphUperpResolutionData_, plotUvsQtNumVtxGe12->legendEntryData_,
-	     plotUvsQtNumVtxGe12->graphUperpResolutionMC_, plotUvsQtNumVtxGe12->legendEntryMC_);
-  
+//    in different bins of reconstructed jet multiplicity
+  plotUvsQtNumObjType* plotUvsQtNumJetsEq0 = 
+    new plotUvsQtNumObjType(inputFile, "NumJets", 0,  0, "jet", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  fitAndMakeControlPlots(plotUvsQtNumJetsEq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsEq0->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsEq1 = 
+    new plotUvsQtNumObjType(inputFile, "NumJets", 1,  1, "jet", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  fitAndMakeControlPlots(plotUvsQtNumJetsEq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsEq1->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsEq2 = 
+    new plotUvsQtNumObjType(inputFile, "NumJets", 2,  2, "jet", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  fitAndMakeControlPlots(plotUvsQtNumJetsEq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsEq2->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsGe3 = 
+    new plotUvsQtNumObjType(inputFile, "NumJets", 3, -1, "jet", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  fitAndMakeControlPlots(plotUvsQtNumJetsGe3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsGe3->meLabel_));
+
   delete inputFile;
 
 //--print time that it took macro to run

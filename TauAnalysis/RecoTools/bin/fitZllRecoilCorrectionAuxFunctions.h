@@ -1,11 +1,14 @@
 #ifndef TauAnalysis_RecoTools_fitZllRecoilCorrectionAuxFunctions_h
 #define TauAnalysis_RecoTools_fitZllRecoilCorrectionAuxFunctions_h
 
+#include <TCanvas.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TGraph.h>
 #include <TGraphAsymmErrors.h>
 #include <TF1.h>
+#include <TLegend.h>
+#include <TPaveText.h>
 #include <TMath.h>
 
 #include <string>
@@ -85,6 +88,9 @@ TGraphAsymmErrors* makeGraph_rms(const std::string& name, const std::string& tit
 TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::string& title, 
 					  const TH2* histogram_uParl, const TH1* histogram_qT)
 {
+  //std::cout << "<makeGraph_uParl_div_qT>:" << std::endl;
+  //std::cout << " histogram_uParl = " << histogram_uParl << ", name = " << histogram_uParl->GetName() << std::endl;
+
   const TAxis* xAxis = histogram_uParl->GetXaxis();
   int numBins = xAxis->GetNbins();
 
@@ -108,9 +114,10 @@ TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::st
     TH1D* histogram_uParl_proj = histogram_uParl->ProjectionY(histogramName_uParl_proj.Data(), iBin, iBin, "e");
     
     if ( x > 0. ) {
-      double y = -histogram_uParl_proj->GetMean()/x;
+      double y = -histogram_uParl_proj->GetMean()/x;      
       double yErr = histogram_uParl_proj->GetMeanError()/x;
-      graph->SetPoint(iBin - 1, x, y);
+      //std::cout << "x = " << x << ", y = " << y << std::endl;
+      graph->SetPoint(iBin - 1, x, y);      
       graph->SetPointError(iBin - 1, xErrDown, xErrUp, yErr, yErr);
     }
   }
@@ -122,14 +129,19 @@ TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::st
 //-------------------------------------------------------------------------------
 //
 
-TF1* fitGraph_uParl_dix_qT(const std::string& name, TGraph* graph, double xMin = 0., double xMax = 300.)
+TF1* fitGraph_uParl_div_qT(const std::string& name, TGraph* graph, double xMin = 0., double xMax = 300.)
 {
+  //std::cout << "<fitGraph_uParl_div_qT>:" << std::endl;
   TF1* f = new TF1(name.data(), "[0]*0.5*(1.0 - TMath::Erf(-[1]*TMath::Power(x, [2])))", xMin, xMax);
   f->SetLineWidth(0);
-  f->SetParameter(0, -1.0);
-  f->SetParameter(1,  5.e-2);
-  f->SetParameter(2,  1.0);
-  graph->Fit(f, "E");
+  f->SetParameter(0, 1.0);
+  f->SetParameter(1, 5.e-2);
+  f->SetParameter(2, 1.0);
+  TGraph* dummyGraph = (TGraph*)graph->Clone();
+  dummyGraph->Fit(f, "E");
+  //std::cout << "p0 = " << f->GetParameter(0) << " +/- " << f->GetParError(0) << std::endl;
+  //std::cout << "p1 = " << f->GetParameter(1) << " +/- " << f->GetParError(1) << std::endl;
+  //std::cout << "p2 = " << f->GetParameter(2) << " +/- " << f->GetParError(2) << std::endl;
   return f;
 }
 
@@ -140,7 +152,8 @@ TF1* fitGraph_uParl_mean(const std::string& name, TGraph* graph, double xMin = 0
   f->SetParameter(0, -1.0);
   f->SetParameter(1,  5.e-2);
   f->SetParameter(2,  1.0);
-  graph->Fit(f, "E");
+  TGraph* dummyGraph = (TGraph*)graph->Clone();
+  dummyGraph->Fit(f, "E");
   return f;
 }
 
@@ -151,7 +164,8 @@ TF1* fitGraph_uParl_rms(const std::string& name, TGraph* graph, double xMin = 0.
   f->SetParameter(0, 10.);
   f->SetParameter(1,  5.e-2);
   f->SetParameter(2,  0.);
-  graph->Fit(f, "E");
+  TGraph* dummyGraph = (TGraph*)graph->Clone();
+  dummyGraph->Fit(f, "E");
   return f;
 }
 
@@ -261,7 +275,8 @@ TGraphAsymmErrors* makeGraph_fitUncertainty(const std::string& name, const std::
 //
 
 TGraphAsymmErrors* makeGraph_sysUncertainty(const TGraphAsymmErrors* graph_central_value, 
-					    const std::vector<TGraphAsymmErrors*>& graphs_sysUncertainty, bool center_on_central_value)
+					    const std::vector<TGraphAsymmErrors*>& graphs_sysUncertainty, 
+					    bool center_on_central_value, bool divide_by_central_value)
 {
   assert((graphs_sysUncertainty.size() % 2) == 0);
   int numSysUncertainties = (graphs_sysUncertainty.size() / 2);
@@ -284,7 +299,9 @@ TGraphAsymmErrors* makeGraph_sysUncertainty(const TGraphAsymmErrors* graph_centr
       graphUp->GetPoint(iPoint, xUp, yUp);
       double yErrUp_high = graphUp->GetErrorYhigh(iPoint); 
       double yErrUp_low = graphUp->GetErrorYlow(iPoint); 
-      assert(xUp == x);
+      //assert(xUp == x); // CV: x-positions of central value and systematic uncertainty graph may be slightly different,
+                          //     in case x-position is computed as center of gravity of qT distribution
+                          //    (events passing event selection for central value and systematic uncertainty may differ)
 
       const TGraphAsymmErrors* graphDown = graphs_sysUncertainty[2*iSysUncertainty + 1];
       assert(graphDown->GetN() == numPoints);
@@ -292,20 +309,631 @@ TGraphAsymmErrors* makeGraph_sysUncertainty(const TGraphAsymmErrors* graph_centr
       graphDown->GetPoint(iPoint, xDown, yDown);
       double yErrDown_high = graphDown->GetErrorYhigh(iPoint); 
       double yErrDown_low = graphDown->GetErrorYlow(iPoint); 
-      assert(xDown == x);
+      //assert(xDown == x);
 
       double yMin = TMath::Min(yUp + yErrUp_high, yDown + yErrDown_high);
       double yMax = TMath::Max(yUp - yErrUp_low, yDown - yErrDown_low);
       if ( yMin < y ) yErrMin2 += square(y - yMin);
       if ( yMax > y ) yErrMax2 += square(yMax - y);
     }
+    double yErrMin = TMath::Sqrt(yErrMin2);
+    double yErrMax = TMath::Sqrt(yErrMax2);
 
     if ( !center_on_central_value ) graph->SetPoint(iPoint, x, y);
     else graph->SetPoint(iPoint, x, 0.);
-    graph->SetPointError(iPoint, xErrDown, xErrUp, TMath::Sqrt(yErrMin2), TMath::Sqrt(yErrMax2));
+    if ( !divide_by_central_value ) graph->SetPointError(iPoint, xErrDown, xErrUp, yErrMin, yErrMax);
+    else if ( y != 0. ) graph->SetPointError(iPoint, xErrDown, xErrUp, yErrMin/TMath::Abs(y), yErrMax/TMath::Abs(y));
   }
 
   return graph;
+}
+
+/*
+TGraphAsymmErrors* makeGraph_sysUncertainty(const TGraphAsymmErrors* graph_central_value, 
+					    const std::vector<TGraphAsymmErrors*>& graphs_sysUncertainty, 
+					    bool center_on_central_value, bool divide_by_central_value)
+{
+  assert((graphs_sysUncertainty.size() % 2) == 0);
+  int numSysUncertainties = (graphs_sysUncertainty.size() / 2);
+
+  int numPoints = -1;
+  for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
+    const TGraphAsymmErrors* graph_i = graphs_sysUncertainty[iSysUncertainty];
+    if ( numPoints == -1 ) numPoints = graph_i->GetN();
+    else assert(graph_i->GetN() == numPoints);
+  }
+
+  for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+
+    double x = 0.;
+    double y = 0.;
+
+    double yErrMin2 = 0.;
+    double yErrMax2 = 0.;
+
+    for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
+      const TGraphAsymmErrors* graphUp = graphs_sysUncertainty[2*iSysUncertainty];
+      assert(graphUp->GetN() == numPoints);
+      double xUp, yUp;
+      graphUp->GetPoint(iPoint, xUp, yUp);
+      double yErrUp_high = graphUp->GetErrorYhigh(iPoint); 
+      double yErrUp_low = graphUp->GetErrorYlow(iPoint); 
+      
+      const TGraphAsymmErrors* graphDown = graphs_sysUncertainty[2*iSysUncertainty + 1];
+      assert(graphDown->GetN() == numPoints);
+      double xDown, yDown;
+      graphDown->GetPoint(iPoint, xDown, yDown);
+      double yErrDown_high = graphDown->GetErrorYhigh(iPoint); 
+      double yErrDown_low = graphDown->GetErrorYlow(iPoint); 
+
+      double x_ref = 0.5*(xUp + xDown);
+
+//--- find point of 'graph_central_value'
+//    matching point of 'graphUp' closest in x
+//   (do not assume that both graphs have the same binning)
+      Double_t y_central_value = 0.;
+      Double_t yErrUp_central_value = 0.;
+      Double_t yErrDown_central_value = 0.;
+      Double_t dxMin = 1.e+6; 
+      for ( int iPoint_central_value = 0; iPoint_central_value < graph_central_value->GetN(); ++iPoint_central_value ) {
+	Double_t x_i, y_i;
+	graph_ref->GetPoint(iPoint_central_value, x_i, y_i);
+	
+	Double_t dx = x_i - x_ref;
+	if ( TMath::Abs(dx) < dxMin ) {
+	  y_central_value = y_i;
+	  yErrUp_central_value = graph_central_value->GetErrorYhigh(iPoint_central_value);
+	  yErrDown_central_value = graph_central_value->GetErrorYlow(iPoint_central_value);
+	  dxMin = TMath::Abs(dx);
+	}
+      }
+      
+      x += x_ref;
+      y += y_central_value;
+
+      double yMin = TMath::Min(yUp + yErrUp_high, yDown + yErrDown_high);
+      double yMax = TMath::Max(yUp - yErrUp_low, yDown - yErrDown_low);
+      if ( yMin < y_central_value ) yErrMin2 += square(y_central_value - yMin);
+      if ( yMax > y_central_value ) yErrMax2 += square(yMax - y_central_value);
+    }
+
+    x /= numSysUncertainties;
+    y /= numSysUncertainties;
+
+    double yErrMin = TMath::Sqrt(yErrMin2);
+    double yErrMax = TMath::Sqrt(yErrMax2);
+
+    if ( !center_on_central_value ) graph->SetPoint(iPoint, x, y);
+    else graph->SetPoint(iPoint, x, 0.);
+    if ( !divide_by_central_value ) graph->SetPointError(iPoint, xErrDown, xErrUp, yErrMin, yErrMax);
+    else if ( y != 0. ) graph->SetPointError(iPoint, xErrDown, xErrUp, yErrMin/TMath::Abs(y), yErrMax/TMath::Abs(y));
+  }
+  
+  return graph;
+}
+*/
+
+//
+//-------------------------------------------------------------------------------
+//
+
+TGraphAsymmErrors* makeGraph_diff(const TGraphAsymmErrors* graph, const TGraphAsymmErrors* graph_ref,
+				  bool addRefErr, bool divideByRef)
+{
+  //std::cout << "<makeGraph_diff>:" << std::endl;
+  //std::cout << " graph = " << graph << ", name = " << graph->GetName() << std::endl;
+  //std::cout << " graph_ref = " << graph_ref << ", name = " << graph_ref->GetName() << std::endl;
+  //std::cout << " addRefErr = " << addRefErr << std::endl;
+  //std::cout << " divideByRef = " << divideByRef << std::endl;
+
+//--- take binning of 'graph_diff' from 'graph'
+  int numPoints = graph->GetN();
+  TGraphAsymmErrors* graph_diff = new TGraphAsymmErrors(numPoints);
+
+  for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+    Double_t x, y;
+    graph->GetPoint(iPoint, x, y);
+    Double_t xErrUp = graph->GetErrorXhigh(iPoint);
+    Double_t xErrDown = graph->GetErrorXlow(iPoint);
+    Double_t yErrUp = graph->GetErrorYhigh(iPoint);
+    Double_t yErrDown = graph->GetErrorYlow(iPoint);
+
+    //std::cout << "x = " << x << ", y = " << y << std::endl;
+
+//--- find point of 'graph_ref'
+//    matching point of 'graph' closest in x
+//   (do not assume that both graphs have the same binning)
+    Double_t y_ref = 0.;
+    Double_t yErrUp_ref = 0.;
+    Double_t yErrDown_ref = 0.;
+    Double_t dxMin = 1.e+6; 
+    for ( int iPoint_ref = 0; iPoint_ref < graph_ref->GetN(); ++iPoint_ref ) {
+      Double_t x_i, y_i;
+      graph_ref->GetPoint(iPoint_ref, x_i, y_i);
+      
+      Double_t dx = x_i - x;
+      if ( TMath::Abs(dx) < dxMin ) {
+	y_ref = y_i;
+	yErrUp_ref = graph_ref->GetErrorYhigh(iPoint_ref);
+	yErrDown_ref = graph_ref->GetErrorYlow(iPoint_ref);
+	dxMin = TMath::Abs(dx);
+      }
+    }
+
+    //std::cout << "y_ref = " << y_ref << ", dxMin = " << dxMin << std::endl;
+
+    Double_t y_diff = 0.;
+    Double_t yErrUp2_diff = 0.;
+    Double_t yErrDown2_diff = 0.;
+    if ( divideByRef ) {
+      if ( y_ref != 0. ) {
+	y_diff = (y/y_ref) - 1.;
+	if ( y != 0. ) yErrUp2_diff += square(yErrUp/y);
+	if ( addRefErr ) yErrUp2_diff += square(yErrDown_ref/y_ref);
+	yErrUp2_diff *= (y/y_ref);
+	if ( y != 0. ) yErrDown2_diff += square(yErrDown/y);
+	if ( addRefErr ) yErrDown2_diff += square(yErrUp_ref/y_ref);
+	yErrDown2_diff *= (y/y_ref);
+      }
+    } else {
+      y_diff = y - y_ref;	
+      yErrUp2_diff = square(yErrUp);
+      if ( addRefErr ) yErrUp2_diff += square(yErrDown_ref);
+      yErrDown2_diff = square(yErrDown);
+      if ( addRefErr ) yErrDown2_diff += square(yErrUp_ref);
+    }
+    
+    graph_diff->SetPoint(iPoint, x, y_diff);
+    graph_diff->SetPointError(iPoint, xErrDown, xErrUp, TMath::Sqrt(yErrDown2_diff), TMath::Sqrt(yErrUp2_diff));
+  }
+
+  return graph_diff;
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
+void cloneStyleOptions(TGraphAsymmErrors* graph, const TGraphAsymmErrors* graph_ref)
+{
+  graph->SetMarkerStyle(graph_ref->GetMarkerStyle());
+  graph->SetMarkerSize(graph_ref->GetMarkerSize());
+  graph->SetMarkerColor(graph_ref->GetMarkerColor());
+  graph->SetLineColor(graph_ref->GetLineColor());
+  graph->SetLineWidth(graph_ref->GetLineWidth());
+  graph->SetFillColor(graph_ref->GetFillColor());
+  graph->SetFillStyle(graph_ref->GetFillStyle());
+}
+
+void drawZllRecoilFitResult(
+       TCanvas* canvas, 
+       TH1* dummyHistogram, 
+       const std::string& plotLabel,
+       TGraphAsymmErrors* graph_central_value, TF1* fitFunction_central_value,
+       const std::string& legendEntry, double legendX0, double legendY0,
+       bool showIdLine, bool showConstLine, 
+       const std::string& yAxisLabel, double yMin, double yMax, bool yDiffDivideByRef, double yDiffMax, 
+       const std::string& outputFileName, const std::string& outputFileLabel,
+       const std::vector<TGraphAsymmErrors*>* graphs_sysUncertainty = 0, const std::vector<TF1*>* fitFunctions_sysUncertainty = 0)
+{
+  TAxis* xAxis = dummyHistogram->GetXaxis();
+  double xMin = xAxis->GetXmin();
+  double xMax = xAxis->GetXmax();
+  double dx = 1.;
+  
+  TGraphAsymmErrors* graph_fit_central_value_top = 
+    makeGraph_fitValue("graph_fit_central_value", "",
+		       fitFunction_central_value, xMin, xMax, dx);
+  TGraphAsymmErrors* graph_fit_central_value_bottom = 
+    makeGraph_diff(graph_fit_central_value_top, graph_fit_central_value_top, false, yDiffDivideByRef);
+  TGraphAsymmErrors* graph_fitErr_central_value_top = 
+    makeGraph_fitUncertainty("graph_fitErr_central_value", "", 
+			     fitFunction_central_value, makeFitUncertaintyFunctions(fitFunction_central_value), xMin, xMax, dx);
+  TGraphAsymmErrors* graph_fitErr_central_value_bottom = 
+    makeGraph_diff(graph_fitErr_central_value_top, graph_fit_central_value_top, false, yDiffDivideByRef);
+  
+  TGraphAsymmErrors* graph_central_value_bottom = 
+    makeGraph_diff(graph_central_value, graph_fit_central_value_top, false, yDiffDivideByRef);
+
+  TGraphAsymmErrors* graphErr_sysUncertainty_top = 0;
+  TGraphAsymmErrors* graphErr_sysUncertainty_bottom = 0;
+  if ( graphs_sysUncertainty ) {
+    graphErr_sysUncertainty_top = 
+      makeGraph_sysUncertainty(graph_central_value, *graphs_sysUncertainty, false, false);
+    TGraphAsymmErrors* graph_tmp = 
+      makeGraph_sysUncertainty(graph_central_value, *graphs_sysUncertainty, false, yDiffDivideByRef);
+    graphErr_sysUncertainty_bottom = 
+      makeGraph_diff(graph_tmp, graph_fit_central_value_top, false, yDiffDivideByRef);
+  }
+
+  TGraphAsymmErrors* graph_fitErr_sysUncertainty_top = 0;
+  TGraphAsymmErrors* graph_fitErr_sysUncertainty_bottom = 0;
+  if ( fitFunctions_sysUncertainty ) {
+    std::vector<TGraphAsymmErrors*> graphs_fitErr_sysUncertainty;
+    for ( std::vector<TF1*>::const_iterator fitFunction_sysUncertainty = fitFunctions_sysUncertainty->begin();
+	  fitFunction_sysUncertainty != fitFunctions_sysUncertainty->end(); ++fitFunction_sysUncertainty ) {
+      TGraphAsymmErrors* graph_fitErr_sysUncertainty =
+	makeGraph_fitUncertainty("graph_fitErr_sysUncertainty", "", 
+				 *fitFunction_sysUncertainty, makeFitUncertaintyFunctions(*fitFunction_sysUncertainty), xMin, xMax, dx);
+      graphs_fitErr_sysUncertainty.push_back(graph_fitErr_sysUncertainty);
+    }
+    graph_fitErr_sysUncertainty_top = 
+      makeGraph_sysUncertainty(graph_fit_central_value_top, graphs_fitErr_sysUncertainty, false, false);
+    graph_fitErr_sysUncertainty_bottom = 
+      makeGraph_sysUncertainty(graph_fit_central_value_top, graphs_fitErr_sysUncertainty, true, yDiffDivideByRef);
+  }
+
+  canvas->SetLogy(false);
+  canvas->Clear();
+  canvas->SetLeftMargin(0.12);
+  canvas->SetBottomMargin(0.12);
+
+  TPad* topPad = new TPad("topPad", "topPad", 0.00, 0.35, 1.00, 1.00);
+  topPad->SetFillColor(10);
+  topPad->SetTopMargin(0.04);
+  topPad->SetLeftMargin(0.15);
+  topPad->SetBottomMargin(0.03);
+  topPad->SetRightMargin(0.05);
+
+  TPad* bottomPad = new TPad("bottomPad", "bottomPad", 0.00, 0.00, 1.00, 0.35);
+  bottomPad->SetFillColor(10);
+  bottomPad->SetTopMargin(0.02);
+  bottomPad->SetLeftMargin(0.15);
+  bottomPad->SetBottomMargin(0.24);
+  bottomPad->SetRightMargin(0.05);
+
+  canvas->cd();
+  topPad->Draw();
+  topPad->cd();
+
+  TH1* dummyHistogram_top = (TH1*)dummyHistogram->Clone("dummyHistogram_top");
+
+  TAxis* xAxis_top = dummyHistogram_top->GetXaxis();
+  xAxis_top->SetLabelColor(10);
+  xAxis_top->SetTitleColor(10);
+    
+  TAxis* yAxis_top = dummyHistogram_top->GetYaxis();
+  yAxis_top->SetTitle(yAxisLabel.data());
+  yAxis_top->SetTitleOffset(1.20);
+  yAxis_top->SetTitleSize(0.06);
+
+  dummyHistogram_top->SetTitle("");
+  dummyHistogram_top->SetStats(false);
+  dummyHistogram_top->SetMaximum(yMax);
+  dummyHistogram_top->SetMinimum(yMin);
+  dummyHistogram_top->SetMarkerColor(1);
+  dummyHistogram_top->SetMarkerStyle(20);
+  dummyHistogram_top->Draw("axis");
+
+  if ( graph_fitErr_sysUncertainty_top ) {
+    graph_fitErr_sysUncertainty_top->SetLineColor(396);
+    graph_fitErr_sysUncertainty_top->SetLineWidth(0);
+    graph_fitErr_sysUncertainty_top->SetFillColor(396);
+    graph_fitErr_sysUncertainty_top->SetFillStyle(1001);
+    graph_fitErr_sysUncertainty_top->Draw("3");
+  }
+  
+  graph_fitErr_central_value_top->SetLineColor(797);
+  graph_fitErr_central_value_top->SetLineWidth(0);
+  graph_fitErr_central_value_top->SetFillColor(797);
+  graph_fitErr_central_value_top->SetFillStyle(1001);
+  graph_fitErr_central_value_top->Draw("3");
+
+  graph_fit_central_value_top->SetLineColor(28);
+  graph_fit_central_value_top->SetLineWidth(2);
+  graph_fit_central_value_top->Draw("L");
+
+  if ( showIdLine || showConstLine ) {
+    int numPoints = graph_fit_central_value_top->GetN();
+    TGraph* graph_line = new TGraph(numPoints);
+    for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+      Double_t x, y;
+      graph_fit_central_value_top->GetPoint(iPoint, x, y);
+      if      ( showIdLine    ) graph_line->SetPoint(iPoint, x,  -x);
+      else if ( showConstLine ) graph_line->SetPoint(iPoint, x, 1.0);
+      else assert(0);
+    }
+    graph_line->SetLineColor(8);
+    graph_line->SetLineWidth(1);
+    graph_line->Draw("L");
+  }
+
+  if ( graphErr_sysUncertainty_top ) {
+    graphErr_sysUncertainty_top->SetMarkerStyle(20);
+    graphErr_sysUncertainty_top->SetMarkerSize(1);
+    graphErr_sysUncertainty_top->SetMarkerColor(1);
+    graphErr_sysUncertainty_top->SetLineColor(1);
+    graphErr_sysUncertainty_top->SetLineWidth(1);
+    graphErr_sysUncertainty_top->Draw("P");
+  }
+
+  graph_central_value->SetMarkerStyle(20);
+  graph_central_value->SetMarkerSize(1);
+  graph_central_value->SetMarkerColor(1);
+  graph_central_value->SetLineColor(1);
+  graph_central_value->SetLineWidth(1);
+  graph_central_value->Draw("P");
+
+  double legendX1 = legendX0 + 0.30;
+  double legendY1 = ( graph_fitErr_sysUncertainty_top ) ?
+    legendY0 + 0.330 : legendY0 + 0.285;
+  TLegend legend(legendX0, legendY0, legendX1, legendY1, "", "brNDC"); 
+  legend.SetBorderSize(0);
+  legend.SetFillColor(0);
+  legend.AddEntry(graph_central_value,            legendEntry.data(), "p");
+  legend.AddEntry(graph_fit_central_value_top,    "Fit",              "l");
+  legend.AddEntry(graph_fitErr_central_value_top, "Fit Uncertainty",  "f");
+  if ( graph_fitErr_sysUncertainty_top ) 
+    legend.AddEntry(graph_fitErr_sysUncertainty_top, "Sys. Uncertainty",  "f");
+  legend.Draw();
+  
+  TPaveText* plotLabel_text = 0;
+  if ( plotLabel != "" ) {
+    double plotLabelX0 = ( legendX0 < 0.50 ) ? 0.64 : 0.19;
+    double plotLabelY0 = 0.83;
+    plotLabel_text = new TPaveText(plotLabelX0, plotLabelY0, plotLabelX0 + 0.25, plotLabelY0 + 0.06, "NDC");
+    plotLabel_text->SetBorderSize(0);
+    plotLabel_text->SetFillColor(0);
+    plotLabel_text->AddText(plotLabel.data());
+    plotLabel_text->SetTextSize(0.055);
+    plotLabel_text->Draw();
+  }
+
+  canvas->cd();
+  bottomPad->Draw();
+  bottomPad->cd();
+
+  TH1* dummyHistogram_bottom = (TH1*)dummyHistogram->Clone("dummyHistogram_bottom");
+
+  TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
+  xAxis_bottom->SetTitle("q_{T} / GeV");
+  xAxis_bottom->SetTitleOffset(1.20);
+  xAxis_bottom->SetTitleSize(0.08);
+  xAxis_bottom->SetLabelOffset(0.02);
+  xAxis_bottom->SetLabelSize(0.08);
+  xAxis_bottom->SetTickLength(0.055);
+
+  TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
+  if ( yDiffDivideByRef ) yAxis_bottom->SetTitle("#frac{Measured - Fit}{Fit}");
+  else  yAxis_bottom->SetTitle("Measured - Fit");
+  yAxis_bottom->SetTitleOffset(0.85);
+  yAxis_bottom->SetNdivisions(505);
+  yAxis_bottom->CenterTitle();
+  yAxis_bottom->SetTitleSize(0.08);
+  yAxis_bottom->SetLabelSize(0.08);
+  yAxis_bottom->SetTickLength(0.04);
+
+  dummyHistogram_bottom->SetTitle("");
+  dummyHistogram_bottom->SetStats(false);
+  dummyHistogram_bottom->SetMaximum(+yDiffMax);
+  dummyHistogram_bottom->SetMinimum(-yDiffMax);
+  dummyHistogram_bottom->SetMarkerColor(1);
+  dummyHistogram_bottom->SetMarkerStyle(20);
+  dummyHistogram_bottom->Draw("axis");
+
+  if ( graph_fitErr_sysUncertainty_bottom ) {
+    cloneStyleOptions(graph_fitErr_sysUncertainty_bottom, graph_fitErr_sysUncertainty_top);
+    graph_fitErr_sysUncertainty_bottom->Draw("3");
+  }
+
+  cloneStyleOptions(graph_fitErr_central_value_bottom, graph_fitErr_central_value_top);
+  graph_fitErr_central_value_bottom->Draw("3");
+  
+  cloneStyleOptions(graph_fit_central_value_bottom, graph_fit_central_value_top);
+  graph_fit_central_value_bottom->Draw("L");
+
+  if ( graphErr_sysUncertainty_bottom ) {
+    cloneStyleOptions(graphErr_sysUncertainty_bottom, graphErr_sysUncertainty_top);
+    graphErr_sysUncertainty_bottom->Draw("P");
+  }
+  
+  cloneStyleOptions(graph_central_value_bottom, graph_central_value);
+  graph_central_value_bottom->Draw("P");
+
+  canvas->Update();
+
+  size_t idx = outputFileName.find_last_of('.');
+  std::string outputFileName_plot = std::string(outputFileName, 0, idx);
+  outputFileName_plot.append("_").append(outputFileLabel);
+  if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
+  canvas->Print(std::string(outputFileName_plot).append(".png").data());
+  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+
+  delete dummyHistogram_top;
+  delete graph_fit_central_value_top;
+  delete graph_fitErr_central_value_top;
+  delete graphErr_sysUncertainty_top;
+  delete graph_fitErr_sysUncertainty_top;
+  delete plotLabel_text;
+  delete topPad;
+  delete dummyHistogram_bottom;
+  delete graph_fit_central_value_bottom;
+  delete graph_fitErr_central_value_bottom;
+  delete graph_central_value_bottom;
+  delete graphErr_sysUncertainty_bottom;
+  delete graph_fitErr_sysUncertainty_bottom;
+  delete bottomPad;
+}
+
+void drawData_vs_MCcomparison(
+       TCanvas* canvas, 
+       TH1* dummyHistogram, 
+       const std::string& plotLabel,
+       TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc, 
+       const std::string& legendEntry_data, const std::string& legendEntry_mc, double legendX0, double legendY0,
+       bool showIdLine, bool showConstLine, 
+       const std::string& yAxisLabel, double yMin, double yMax, bool yDiffDivideByRef, double yDiffMax, 
+       const std::string& outputFileName, const std::string& outputFileLabel,
+       const std::vector<TGraphAsymmErrors*>* graphs_mcSysUncertainty = 0)
+{
+  TGraphAsymmErrors* graph_diff = makeGraph_diff(graph_data, graph_mc, true, yDiffDivideByRef);
+
+  TGraphAsymmErrors* graph_mcErr_sysUncertainty_top = 0;
+  TGraphAsymmErrors* graph_mcErr_sysUncertainty_bottom = 0;
+  if ( graphs_mcSysUncertainty ) {
+    graph_mcErr_sysUncertainty_top = makeGraph_sysUncertainty(graph_mc, *graphs_mcSysUncertainty, false, false);
+    graph_mcErr_sysUncertainty_bottom = makeGraph_sysUncertainty(graph_mc, *graphs_mcSysUncertainty, true, yDiffDivideByRef);
+  }
+
+  canvas->SetLogy(false);
+  canvas->Clear();
+  canvas->SetLeftMargin(0.12);
+  canvas->SetBottomMargin(0.12);
+
+  TPad* topPad = new TPad("topPad", "topPad", 0.00, 0.35, 1.00, 1.00);
+  topPad->SetFillColor(10);
+  topPad->SetTopMargin(0.04);
+  topPad->SetLeftMargin(0.15);
+  topPad->SetBottomMargin(0.03);
+  topPad->SetRightMargin(0.05);
+
+  TPad* bottomPad = new TPad("bottomPad", "bottomPad", 0.00, 0.00, 1.00, 0.35);
+  bottomPad->SetFillColor(10);
+  bottomPad->SetTopMargin(0.02);
+  bottomPad->SetLeftMargin(0.15);
+  bottomPad->SetBottomMargin(0.24);
+  bottomPad->SetRightMargin(0.05);
+
+  canvas->cd();
+  topPad->Draw();
+  topPad->cd();
+
+  TH1* dummyHistogram_top = (TH1*)dummyHistogram->Clone("dummyHistogram_top");
+
+  TAxis* xAxis_top = dummyHistogram_top->GetXaxis();
+  xAxis_top->SetLabelColor(10);
+  xAxis_top->SetTitleColor(10);
+    
+  TAxis* yAxis_top = dummyHistogram_top->GetYaxis();
+  yAxis_top->SetTitle(yAxisLabel.data());
+  yAxis_top->SetTitleOffset(1.20);
+  yAxis_top->SetTitleSize(0.06);
+
+  dummyHistogram_top->SetTitle("");
+  dummyHistogram_top->SetStats(false);
+  dummyHistogram_top->SetMaximum(yMax);
+  dummyHistogram_top->SetMinimum(yMin);
+  dummyHistogram_top->SetMarkerColor(1);
+  dummyHistogram_top->SetMarkerStyle(20);
+  dummyHistogram_top->Draw("axis");
+
+  if ( showIdLine || showConstLine ) {
+    int numPoints = graph_data->GetN();
+    TGraph* graph_line = new TGraph(numPoints);
+    for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+      Double_t x, y;
+      graph_data->GetPoint(iPoint, x, y);
+      if      ( showIdLine    ) graph_line->SetPoint(iPoint, x,  -x);
+      else if ( showConstLine ) graph_line->SetPoint(iPoint, x, 1.0);
+      else assert(0);
+    }
+    graph_line->SetLineColor(8);
+    graph_line->SetLineWidth(1);
+    graph_line->Draw("L");
+  }
+
+  if ( graph_mcErr_sysUncertainty_top ) {
+    graph_mcErr_sysUncertainty_top->SetMarkerStyle(20);
+    graph_mcErr_sysUncertainty_top->SetMarkerSize(1);
+    graph_mcErr_sysUncertainty_top->SetMarkerColor(1);
+    graph_mcErr_sysUncertainty_top->SetLineColor(1);
+    graph_mcErr_sysUncertainty_top->SetLineWidth(1);
+    graph_mcErr_sysUncertainty_top->Draw("P");
+  }
+
+  graph_mc->SetMarkerStyle(24);
+  graph_mc->SetMarkerSize(1);
+  graph_mc->SetMarkerColor(1);
+  graph_mc->SetLineColor(1);
+  graph_mc->SetLineWidth(1);
+  graph_mc->Draw("P");
+
+  graph_data->SetMarkerStyle(20);
+  graph_data->SetMarkerSize(1);
+  graph_data->SetMarkerColor(1);
+  graph_data->SetLineColor(1);
+  graph_data->SetLineWidth(1);
+  graph_data->Draw("P");
+
+  double legendX1 = legendX0 + 0.30;
+  double legendY1 = ( graph_mcErr_sysUncertainty_top ) ?
+    legendY0 + 0.340 : legendY0 + 0.285;
+  TLegend legend(legendX0, legendY0, legendX1, legendY1, "", "brNDC"); 
+  legend.SetBorderSize(0);
+  legend.SetFillColor(0);
+  legend.AddEntry(graph_data, legendEntry_data.data(), "p");
+  legend.AddEntry(graph_mc,   legendEntry_mc.data(),   "p");
+  legend.Draw();
+
+  TPaveText* plotLabel_text = 0;
+  if ( plotLabel != "" ) {
+    double plotLabelX0 = ( legendX0 < 0.50 ) ? 0.64 : 0.19;
+    double plotLabelY0 = 0.83;
+    plotLabel_text = new TPaveText(plotLabelX0, plotLabelY0, plotLabelX0 + 0.25, plotLabelY0 + 0.06, "NDC");
+    plotLabel_text->SetBorderSize(0);
+    plotLabel_text->SetFillColor(0);
+    plotLabel_text->AddText(plotLabel.data());
+    plotLabel_text->SetTextSize(0.055);
+    plotLabel_text->Draw();
+  }
+
+  canvas->cd();
+  bottomPad->Draw();
+  bottomPad->cd();
+
+  TH1* dummyHistogram_bottom = (TH1*)dummyHistogram->Clone("dummyHistogram_bottom");
+
+  TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
+  xAxis_bottom->SetTitle("q_{T} / GeV");
+  xAxis_bottom->SetTitleOffset(1.20);
+  xAxis_bottom->SetTitleSize(0.08);
+  xAxis_bottom->SetLabelOffset(0.02);
+  xAxis_bottom->SetLabelSize(0.08);
+  xAxis_bottom->SetTickLength(0.055);
+
+  TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
+  if ( yDiffDivideByRef ) yAxis_bottom->SetTitle("#frac{Data - Simulation}{Simulation}");
+  else  yAxis_bottom->SetTitle("Data - Simulation");
+  yAxis_bottom->SetTitleOffset(0.85);
+  yAxis_bottom->SetNdivisions(505);
+  yAxis_bottom->CenterTitle();
+  yAxis_bottom->SetTitleSize(0.08);
+  yAxis_bottom->SetLabelSize(0.08);
+  yAxis_bottom->SetTickLength(0.04);
+
+  dummyHistogram_bottom->SetTitle("");
+  dummyHistogram_bottom->SetStats(false);
+  dummyHistogram_bottom->SetMaximum(+yDiffMax);
+  dummyHistogram_bottom->SetMinimum(-yDiffMax);
+  dummyHistogram_bottom->SetMarkerColor(1);
+  dummyHistogram_bottom->SetMarkerStyle(20);
+  dummyHistogram_bottom->Draw("axis");
+
+  if ( graph_mcErr_sysUncertainty_bottom ) {
+    cloneStyleOptions(graph_mcErr_sysUncertainty_bottom, graph_mcErr_sysUncertainty_top);
+    graph_mcErr_sysUncertainty_bottom->Draw("P");
+  }
+  
+  cloneStyleOptions(graph_diff, graph_data);
+  graph_diff->Draw("P");
+
+  canvas->Update();
+
+  size_t idx = outputFileName.find_last_of('.');
+  std::string outputFileName_plot = std::string(outputFileName, 0, idx);
+  outputFileName_plot.append("_").append(outputFileLabel);
+  if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
+  canvas->Print(std::string(outputFileName_plot).append(".png").data());
+  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+
+  delete dummyHistogram_top;
+  delete graph_mcErr_sysUncertainty_top;
+  delete plotLabel_text;
+  delete topPad;
+  delete dummyHistogram_bottom;
+  delete graph_diff;
+  delete graph_mcErr_sysUncertainty_bottom;
+  delete bottomPad;
 }
 
 #endif
