@@ -1824,6 +1824,7 @@ LimitResult roostats_clm(Double_t ilum, Double_t slum,
 bool plotHypoTestResult = false; 
 bool useProof = false;
 bool optimize = false;
+//bool optimize = true;
 bool writeResult = false;
 int nworkers = 1;
 
@@ -2015,7 +2016,6 @@ HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName
 
    //w->Print();
 
-
    RooAbsData * data = w->data(dataName); 
    if (!data) { 
       Error("StandardHypoTestDemo","Not existing data %s",dataName);
@@ -2083,6 +2083,15 @@ HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName
    }
 
 
+   // FIXME:
+   //optimizations
+   //if (optimize){
+   //  RooAbsData::defaultStorageType = RooAbsData::Vector;
+   //  data->convertToVectorStore() ;
+   //}
+
+
+
    SimpleLikelihoodRatioTestStat slrts(*sbModel->GetPdf(),*bModel->GetPdf());
    if (sbModel->GetSnapshot()) slrts.SetNullParameters(*sbModel->GetSnapshot());
    if (bModel->GetSnapshot()) slrts.SetAltParameters(*bModel->GetSnapshot());
@@ -2094,7 +2103,12 @@ HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName
    
    ProfileLikelihoodTestStat profll(*sbModel->GetPdf());
    if (testStatType == 3) profll.SetOneSided(1);
-   if (optimize) profll.SetReuseNLL(true);
+   // FIXME: experimental optimization
+   if (optimize){
+     profll.SetReuseNLL(true);
+     //slrts.setReuseNLL(true);
+     //profll.SetStrategy(0);
+   }
 
    TestStatistic * testStat = &slrts;
    if (testStatType == 1) testStat = &ropl;
@@ -2109,7 +2123,12 @@ HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName
    // FIXME:
    toymcs->SetNEventsPerToy(1);
    toymcs->SetTestStatistic(testStat);
-   if (optimize) toymcs->SetUseMultiGen(true);
+   // FIXME: experimental optimization
+   if (optimize){
+     toymcs->SetUseMultiGen(true);
+     //toymcs->SetGenerateBinned(true);
+     
+   }
 
 
    if (type == 1) { 
