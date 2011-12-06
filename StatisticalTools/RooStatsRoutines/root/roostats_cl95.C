@@ -197,20 +197,9 @@ roostats_limit(Double_t ilum, Double_t slum,
 	       std::string plotFileName,
 	       UInt_t seed);
 
-// below are experimental interfaces
-LimitResult
-roostats_cls(  Double_t ilum, Double_t slum,
-	       Double_t eff, Double_t seff,
-	       Double_t bck, Double_t sbck,
-	       Int_t n,
-	       Bool_t gauss = kFALSE,
-	       Int_t nuisanceModel = 1,
-	       std::string method = "cls",
-	       std::string type = "observed",
-	       Double_t expected_quantile = 0.0,
-	       std::string plotFileName = "plot_cl95.pdf",
-	       UInt_t seed = 12345,
-	       LimitResult * pLimitResult = 0);
+
+
+// below are experimental and legacy interfaces
 
 // legacy support: use roostats_clm() instead
 Double_t roostats_cla(Double_t ilum, Double_t slum,
@@ -1185,14 +1174,15 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 
       // load parameter point with the best fit to data
       SbModel.LoadSnapshot();
-      RooRealVar * pPoi = (RooRealVar *)(SbModel.GetParametersOfInterest()->first());
-      // get POI upper error from the fit
-      Double_t poi_err = pPoi->getErrorHi();
-      // get POI upper range boundary
-      Double_t poi_upper_range = pPoi->getMax();
 
+      //RooRealVar * pPoi = (RooRealVar *)(SbModel.GetParametersOfInterest()->first());
+      // get POI upper error from the fit
+      //Double_t poi_err = pPoi->getErrorHi();
+      // get POI upper range boundary
+      //Double_t poi_upper_range = pPoi->getMax();
       // get the upper range boundary for CLs as min of poi range and 5*error
       //Double_t upper_range = std::min(5.0*poi_err,poi_upper_range);
+
 
       // estimate upper range boundary using quick PLR limit
       GetPlrInterval(0.95);
@@ -1668,31 +1658,31 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
 
 
 
-LimitResult
-roostats_cls(  Double_t ilum, Double_t slum,
-	       Double_t eff, Double_t seff,
-	       Double_t bck, Double_t sbck,
-	       Int_t n,
-	       Bool_t gauss,
-	       Int_t nuisanceModel,
-	       std::string method,                   // reserved for asymptotic CLs
-	       std::string type,
-	       Double_t expected_quantile,
-	       std::string plotFileName,
-	       UInt_t seed,
-	       LimitResult * pLimitResult ){
-  //
-  // Compute observed and expected CLs limit
-  // 
-  LimitResult limit;
-
-  std::string legend = "[roostats_cls()]: ";
-
-  std::cout << legend << "not implemented yet, use roostats_limit instead"
-	    << std::endl;
-
-  return limit;
-}
+//LimitResult
+//roostats_cls(  Double_t ilum, Double_t slum,
+//	       Double_t eff, Double_t seff,
+//	       Double_t bck, Double_t sbck,
+//	       Int_t n,
+//	       Bool_t gauss,
+//	       Int_t nuisanceModel,
+//	       std::string method,                   // reserved for asymptotic CLs
+//	       std::string type,
+//	       Double_t expected_quantile,
+//	       std::string plotFileName,
+//	       UInt_t seed,
+//	       LimitResult * pLimitResult ){
+//  //
+//  // Compute observed and expected CLs limit
+//  // 
+//  LimitResult limit;
+//
+//  std::string legend = "[roostats_cls()]: ";
+//
+//  std::cout << legend << "not implemented yet, use roostats_limit instead"
+//	    << std::endl;
+//
+//  return limit;
+//}
 
 
 
