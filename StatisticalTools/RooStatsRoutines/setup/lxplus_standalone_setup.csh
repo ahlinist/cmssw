@@ -20,18 +20,13 @@ source /afs/cern.ch/sw/lcg/external/gcc/4.3/x86_64-slc5/setup.csh
 
 # set location of the ROOT release
 #source /afs/cern.ch/sw/lcg/app/nightlies/dev1/Thu/ROOT/ROOT_5_30_00-patches/x86_64-slc5-gcc43-opt/root/bin/thisroot.csh
-source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.csh
-#set root_sys = '/afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/'
-#set curr = `pwd`
-#pwd
-#cd $root_sys
-#pwd
-#source bin/thisroot.csh
-#pwd
-#cd $curr
-#pwd
-
-echo $ROOTSYS
+#source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.csh
+# workaround (one-liner source above doesn't work for whatever reason)
+set root_sys = '/afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/'
+set curr = `pwd`
+cd $root_sys/bin/
+source thisroot.csh
+cd $curr
 
 # setting up python and PyROOT
 #setenv PYTHONDIR /afs/cern.ch/cms/slc5_amd64_gcc434/external/python/2.6.4-cms6
