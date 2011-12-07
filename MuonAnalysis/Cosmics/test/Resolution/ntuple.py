@@ -7,7 +7,7 @@ from copy import deepcopy
 
 require_pixels = False
 pp_reco_mode = False
-global_tag = 'GR_R_42_V18::All'
+global_tag = 'GR_R_44_V12::All'
 is_mc = False
 dataset_id = 0
 num_refits = 4
@@ -21,7 +21,7 @@ files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RA
 run_events = [(128899, 74158848)]
 no_refits = False
 use_dt_meantimer = False
-segments_in_fit = True
+segments_in_fit = False
 
 # Reset these before submitting jobs.
 dumps = debugdump = False
@@ -167,7 +167,7 @@ if not pp_reco_mode:
 else:
     process.load('Configuration.StandardSequences.Reconstruction_cff')
     if segments_in_fit:
-        process.standAloneMuons.STATrajBuilderParameters.BWFilterParameters.Granularity = 0
+        process.standAloneMuons.STATrajBuilderParameters.BWFilterParameters.MuonTrajectoryUpdatorParameters.Granularity = 0
 
 if is_mc:
     process.load('SimGeneral.TrackingAnalysis.Playback_cfi')
@@ -239,10 +239,7 @@ if not pp_reco_mode:
     reco_frag.remove(process.CSCHaloData) # crashes in segments_in_fit mode
     reco_frag.remove(process.BeamHaloSummary) # needs the previous
 else:
-    raise NotImplementedError("need to fix pp_reco_mode's reco_frag")
-    localreco = cms.Sequence(process.trackerlocalreco+process.muonlocalreco+process.calolocalreco)
-    globalreco = cms.Sequence(process.offlineBeamSpot+process.recopixelvertexing*process.ckftracks+process.ecalClusters+process.caloTowersRec*process.vertexreco*process.recoJets+process.muonrecoComplete)
-    reco_frag = localreco * globalreco
+    reco_frag = process.reconstruction
 
 # If specified, try the "meantimer" DT algo.
 if use_dt_meantimer:
@@ -340,7 +337,6 @@ for reco_kind in label_names.keys():
     # the next module to the current module in the chain.
 
     map_tags = []
-    refit_comps = []
 
     def refit_it(module, name, first_from, is_tracker_only=False):
         refits = []
@@ -377,18 +373,6 @@ for reco_kind in label_names.keys():
                 setattr(process, label, match_obj)
                 refits.append(match_obj)
 
-            # Perform comparisons on the refit tracks to get a sense
-            # of the fits' stability.
-            refit_comp_obj = cms.EDAnalyzer('TrackComparer',
-                src     = tag_src,
-                map_tag = match_tag
-            )
-            label = kindify('refitComparison%s%i' % (name, i + 1))
-            setattr(process, label, refit_comp_obj)
-
-            global refit_comps
-            refit_comps.append(refit_comp_obj)
-
             global map_tags
             map_tags.append(match_tag)
 
@@ -411,10 +395,6 @@ for reco_kind in label_names.keys():
     # the already-refit tracker tracks above.)
     if split_tracks_mode:
         refits *= refit_it(track_refitter, 'Unsplit', proc_tag('cosmictrackfinderP5'), True) 
-
-    # We want to run the comparisons only on events passing our
-    # selection, so prepare the product of modules for use below.
-    refit_comps = reduce(lambda x,y: x*y, refit_comps)
 
     # We need maps that go straight from the original tracks to the
     # ultimate refit collections. Make such maps by composing all the
@@ -485,7 +465,7 @@ for reco_kind in label_names.keys():
         pickedTracks.dyt_map_label    = cms.InputTag('tevMuons', 'dyt')
         pickedTracks.trackeronly_map_label = cms.InputTag('')
     else:
-        to_run = myrecocosmics * pickedTracks * refit_comps
+        to_run = myrecocosmics * pickedTracks
 
     path_obj, path_name = kindly_process('recoonlypath', cms.Path(to_run), return_name=True)
     output_paths.append(path_name)
