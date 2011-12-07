@@ -96,7 +96,7 @@ events_per_job = 1000
         ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
         ]
 
-    if True:
+    if 'highpt2010_only' in sys.argv:
         jobname += 'highpt2010only'
         datasets = datasets[:4]
         job_control = '''
@@ -477,4 +477,24 @@ if hasattr(process, 'out') and not no_edm_output:
     # were written into the ntuple.
     process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
 
+if dumps and False:
+    from Test.Tests.tools import vinputtagize
+    process.EventDump = cms.EDAnalyzer('EventDump', use_cout = cms.untracked.bool(True))
+    if not pp_reco_mode:
+        process.EventDump.track_labels = vinputtagize([
+            'cosmicMuons',
+            'globalCosmicMuons',
+            'UTstmTPFMS1',
+            'UTstmPicky1',
+            ])
+    else:
+        process.EventDump.track_labels = vinputtagize([
+            'standAloneMuons',
+            'globalMuons',
+            'PPstmTPFMS1',
+            'PPstmPicky1',
+            ])
+    process.ped = cms.Path(process.EventDump)
+    #process.Tracer = cms.Service('Tracer')
+                        
 # Done!
