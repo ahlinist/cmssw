@@ -5,13 +5,16 @@
 
 void XSNoMSC_1S(){
   
-  TFile *f = new TFile("Yield_MSC.root");
+  //TFile *f = new TFile("Yield_MSC.root");
+  TFile *f = new TFile("Yield_MSC_v2.root");
   TH2D *S1;
   S1 = (TH2D*)gFile->Get("fS1Yield");
-  TFile *f = new TFile("Yield_NoMSC.root");
+  //TFile *f = new TFile("Yield_NoMSC.root");
+  TFile *f = new TFile("Yield_NoMSC_v2.root");
   TH2D *S2;
   S2 = (TH2D*)gFile->Get("fS1Yield");
-  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  //TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TFile *f = new TFile("XSection.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S1YieldPt");  
   TH1D *S11 = (TH1D*)S3->Clone();
@@ -38,7 +41,7 @@ void XSNoMSC_1S(){
   }
   
   S13->Draw();
-  TFile *f = new TFile("NoMSC_10ptbins_1Srho.root", "RECREATE");
+  TFile *f = new TFile("NoMSC_10ptbins_1Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
@@ -461,10 +464,12 @@ void XSTrigPlus_1S(){
 
 void XSSigPDF_1S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
+  TFile *f = new TFile("XSection1Sfinal.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldPt");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_SigPDF.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_SigPDF.root");
+  TFile *f = new TFile("XSection1Sfinal_sigPDF.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S1YieldPt");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -521,17 +526,19 @@ void XSSigPDF_1S(){
   legge = legg->AddEntry(S13, "Y(1S) 1Srho - 1Srho_SigPDF / Y(1S) 1Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("SigPDF_10ptbins_1Srho_.root", "RECREATE");
+  TFile *f = new TFile("SigPDF_10ptbins_1Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSBgPDF_1S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_BgPDF_ref.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_BgPDF_ref.root");
+  TFile *f = new TFile("XSection1Sfinal.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldPt");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_BgPDF.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho_BgPDF.root");
+  TFile *f = new TFile("XSection1Sfinal_bgPDF.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S1YieldPt");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -588,7 +595,7 @@ void XSBgPDF_1S(){
   legge = legg->AddEntry(S13, "Y(1S) 1Srho - 1Srho_BgPDF / Y(1S) 1Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("BgPDF_10ptbins_1Srho_.root", "RECREATE");
+  TFile *f = new TFile("BgPDF_10ptbins_1Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
@@ -673,13 +680,16 @@ void XSSystTotPos_1S(){
 
 void XSNoMSC_2S(){
   
-  TFile *f = new TFile("Yield_MSC.root");
+  //TFile *f = new TFile("Yield_MSC.root");
+  TFile *f = new TFile("Yield_MSC_v2.root");
   TH2D *S1;
   S1 = (TH2D*)gFile->Get("fS2Yield");
-  TFile *f = new TFile("Yield_NoMSC.root");
+  //TFile *f = new TFile("Yield_NoMSC.root");
+  TFile *f = new TFile("Yield_NoMSC_v2.root");
   TH2D *S2;
   S2 = (TH2D*)gFile->Get("fS2Yield");
-  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  //TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TFile *f = new TFile("XSection.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S2YieldPt");  
   TH1D *S11 = (TH1D*)S3->Clone();
@@ -706,7 +716,7 @@ void XSNoMSC_2S(){
   }
   
   S13->Draw();
-  TFile *f = new TFile("NoMSC_10ptbins_2Srho.root", "RECREATE");
+  TFile *f = new TFile("NoMSC_10ptbins_2Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
@@ -1128,10 +1138,12 @@ void XSTrigPlus_2S(){
 
 void XSSigPDF_2S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
+  TFile *f = new TFile("XSection2Sfinal.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S2YieldPt");
   TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_SigPDF.root");
+  TFile *f = new TFile("XSection2Sfinal_sigPDF.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S2YieldPt");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1188,17 +1200,19 @@ void XSSigPDF_2S(){
   legge = legg->AddEntry(S13, "Y(2S) 2Srho - 2Srho_SigPDF / Y(2S) 2Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("SigPDF_10ptbins_2Srho_.root", "RECREATE");
+  TFile *f = new TFile("SigPDF_10ptbins_2Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSBgPDF_2S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_BgPDF_ref.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_BgPDF_ref.root");
+  TFile *f = new TFile("XSection2Sfinal.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S2YieldPt");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_BgPDF.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho_BgPDF.root");
+  TFile *f = new TFile("XSection2Sfinal_bgPDF.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S2YieldPt");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1255,7 +1269,7 @@ void XSBgPDF_2S(){
   legge = legg->AddEntry(S13, "Y(2S) 2Srho - 2Srho_BgPDF / Y(2S) 2Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("BgPDF_10ptbins_2Srho_.root", "RECREATE");
+  TFile *f = new TFile("BgPDF_10ptbins_2Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
@@ -1340,13 +1354,16 @@ void XSSystTotPos_2S(){
 
 void XSNoMSC_3S(){
   
-  TFile *f = new TFile("Yield_MSC.root");
+  //TFile *f = new TFile("Yield_MSC.root");
+  TFile *f = new TFile("Yield_MSC_v2.root");
   TH2D *S1;
   S1 = (TH2D*)gFile->Get("fS3Yield");
-  TFile *f = new TFile("Yield_NoMSC.root");
+  //TFile *f = new TFile("Yield_NoMSC.root");
+  TFile *f = new TFile("Yield_NoMSC_v2.root");
   TH2D *S2;
   S2 = (TH2D*)gFile->Get("fS3Yield");
-  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  //TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TFile *f = new TFile("XSection.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S3YieldPt");  
   TH1D *S11 = (TH1D*)S3->Clone();
@@ -1373,8 +1390,8 @@ void XSNoMSC_3S(){
   }
   
   S13->Draw();
-  //TFile *f = new TFile("NoMSC_10ptbins_3Srho.root", "RECREATE");
-  //S12->Write();
+  TFile *f = new TFile("NoMSC_10ptbins_3Srho_v2.root", "RECREATE");
+  S12->Write();
   
 }
 
@@ -1796,10 +1813,12 @@ void XSTrigPlus_3S(){
 
 void XSSigPDF_3S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
+  TFile *f = new TFile("XSection3Sfinal.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S3YieldPt");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_SigPDF.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_SigPDF.root");
+  TFile *f = new TFile("XSection3Sfinal_sigPDF.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S3YieldPt");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1856,17 +1875,19 @@ void XSSigPDF_3S(){
   legge = legg->AddEntry(S13, "Y(3S) 3Srho - 3Srho_SigPDF / Y(3S) 3Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("SigPDF_10ptbins_3Srho_.root", "RECREATE");
+  TFile *f = new TFile("SigPDF_10ptbins_3Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
 
 void XSBgPDF_3S(){
 
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_BgPDF_ref.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_BgPDF_ref.root");
+  TFile *f = new TFile("XSection3Sfinal.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S3YieldPt");
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_BgPDF.root");
+  //TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho_BgPDF.root");
+  TFile *f = new TFile("XSection3Sfinal_bgPDF.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S3YieldPt");
   TH1D *S12 = (TH1D*)S2->Clone();
@@ -1923,7 +1944,7 @@ void XSBgPDF_3S(){
   legge = legg->AddEntry(S13, "Y(3S) 3Srho - 3Srho_BgPDF / Y(3S) 3Srho","p"); legge->SetTextColor(kBlack);
   legg->Draw();
   
-  TFile *f = new TFile("BgPDF_10ptbins_3Srho_.root", "RECREATE");
+  TFile *f = new TFile("BgPDF_10ptbins_3Srho_v2.root", "RECREATE");
   S12->Write();
   
 }
