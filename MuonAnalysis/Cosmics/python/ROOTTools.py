@@ -4,6 +4,41 @@ import ROOT; ROOT.TCanvas   # make sure libGui gets initialized while '-b' is sp
 assert sys.argv[-1] == '-b' # and don't mess up sys.argv.
 sys.argv.pop()
 
+def core_gaussian(hist, factor, i=[0]):
+    """Make a Gaussian TF1 with range set to hist.mean +/- factor *
+    hist.rms.
+    """
+    core_mean  = hist.GetMean()
+    core_width = factor*hist.GetRMS()
+    f = ROOT.TF1('core%i' % i[0], 'gaus', core_mean - core_width, core_mean + core_width)
+    i[0] += 1
+    return f
+
+def fit_gaussian(hist, factor=None, draw=False, cache=[]):
+    """Fit a Gaussian to the histogram, and return a dict with fitted
+    parameters and errors. If factor is supplied, fit only to range in
+    hist.mean +/- factor * hist.rms.
+    """
+
+    if draw:
+        opt = 'qr'
+    else:
+        opt = 'qr0'
+
+    if factor is not None:
+        fcn = core_gaussian(hist, factor)
+        cache.append(fcn)
+        hist.Fit(fcn, opt)
+    else:
+        hist.Fit('gaus', opt)
+        fcn = hist.GetFunction('gaus')
+        
+    return {
+        'constant': (fcn.GetParameter(0), fcn.GetParError(0)),
+        'mu':       (fcn.GetParameter(1), fcn.GetParError(1)),
+        'sigma':    (fcn.GetParameter(2), fcn.GetParError(2))
+        }
+
 class plot_saver:
     i = 0
     
@@ -203,6 +238,8 @@ def tdr_style(_cache=[]):
 
 __all__ = [
     'ROOT',
+    'core_gaussian',
+    'fit_gaussian',
     'plot_saver',
     'tdr_style',
     ]
