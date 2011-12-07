@@ -6,15 +6,15 @@
 void XSNoMSC_1S(){
   
   //TFile *f = new TFile("Yield_MSC.root");
-  TFile *f = new TFile("Yield_MSC_v2.root");
+  TFile *f = new TFile("Yield_MSC_v3.root");
   TH2D *S1;
   S1 = (TH2D*)gFile->Get("fS1Yield");
   //TFile *f = new TFile("Yield_NoMSC.root");
-  TFile *f = new TFile("Yield_NoMSC_v2.root");
+  TFile *f = new TFile("Yield_NoMSC_v3.root");
   TH2D *S2;
   S2 = (TH2D*)gFile->Get("fS1Yield");
   //TFile *f = new TFile("XSection1Srho_finalversion.root");
-  TFile *f = new TFile("XSection.root");
+  TFile *f = new TFile("XSection1Sfinal.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S1YieldPt");  
   TH1D *S11 = (TH1D*)S3->Clone();
@@ -41,7 +41,7 @@ void XSNoMSC_1S(){
   }
   
   S13->Draw();
-  TFile *f = new TFile("NoMSC_10ptbins_1Srho_v2.root", "RECREATE");
+  TFile *f = new TFile("NoMSC_10ptbins_1Srho_v3.root", "RECREATE");
   S12->Write();
   
 }
@@ -681,15 +681,15 @@ void XSSystTotPos_1S(){
 void XSNoMSC_2S(){
   
   //TFile *f = new TFile("Yield_MSC.root");
-  TFile *f = new TFile("Yield_MSC_v2.root");
+  TFile *f = new TFile("Yield_MSC_v3.root");
   TH2D *S1;
   S1 = (TH2D*)gFile->Get("fS2Yield");
   //TFile *f = new TFile("Yield_NoMSC.root");
-  TFile *f = new TFile("Yield_NoMSC_v2.root");
+  TFile *f = new TFile("Yield_NoMSC_v3.root");
   TH2D *S2;
   S2 = (TH2D*)gFile->Get("fS2Yield");
   //TFile *f = new TFile("XSection1Srho_finalversion.root");
-  TFile *f = new TFile("XSection.root");
+  TFile *f = new TFile("XSection2Sfinal.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S2YieldPt");  
   TH1D *S11 = (TH1D*)S3->Clone();
@@ -704,7 +704,7 @@ void XSNoMSC_2S(){
     for (int i = 1; i <= S1->GetNbinsX(); ++i) {
       cout << "i = " << i << " j = " << j << endl;
       cout << "S1->GetBinContent(i,j) = " <<S1->GetBinContent(i,j) << " S2->GetBinContent(i,j) = " <<S2->GetBinContent(i,j) << endl; 
-      s1 += S1->GetBinContent(i,j);
+      s1 += S1->GetBinContent(i,j); 
       s2 += S2->GetBinContent(i,j);
     }
     cout << "s1 = " << s1 << " s2 = " << s2 << endl;
@@ -716,7 +716,7 @@ void XSNoMSC_2S(){
   }
   
   S13->Draw();
-  TFile *f = new TFile("NoMSC_10ptbins_2Srho_v2.root", "RECREATE");
+  TFile *f = new TFile("NoMSC_10ptbins_2Srho_v3.root", "RECREATE");
   S12->Write();
   
 }
@@ -1355,15 +1355,15 @@ void XSSystTotPos_2S(){
 void XSNoMSC_3S(){
   
   //TFile *f = new TFile("Yield_MSC.root");
-  TFile *f = new TFile("Yield_MSC_v2.root");
+  TFile *f = new TFile("Yield_MSC_v3.root");
   TH2D *S1;
   S1 = (TH2D*)gFile->Get("fS3Yield");
   //TFile *f = new TFile("Yield_NoMSC.root");
-  TFile *f = new TFile("Yield_NoMSC_v2.root");
+  TFile *f = new TFile("Yield_NoMSC_v3.root");
   TH2D *S2;
   S2 = (TH2D*)gFile->Get("fS3Yield");
   //TFile *f = new TFile("XSection1Srho_finalversion.root");
-  TFile *f = new TFile("XSection.root");
+  TFile *f = new TFile("XSection2Sfinal.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S3YieldPt");  
   TH1D *S11 = (TH1D*)S3->Clone();
@@ -1390,7 +1390,7 @@ void XSNoMSC_3S(){
   }
   
   S13->Draw();
-  TFile *f = new TFile("NoMSC_10ptbins_3Srho_v2.root", "RECREATE");
+  TFile *f = new TFile("NoMSC_10ptbins_3Srho_v3.root", "RECREATE");
   S12->Write();
   
 }
