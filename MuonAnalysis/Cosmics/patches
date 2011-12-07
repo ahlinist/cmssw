@@ -1,0 +1,116 @@
+Index: DataFormats/MuonReco/interface/MuonCocktails.h
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/DataFormats/MuonReco/interface/MuonCocktails.h,v
+retrieving revision 1.2
+diff -u -r1.2 MuonCocktails.h
+--- DataFormats/MuonReco/interface/MuonCocktails.h	21 Sep 2011 01:02:50 -0000	1.2
++++ DataFormats/MuonReco/interface/MuonCocktails.h	7 Dec 2011 08:06:43 -0000
+@@ -26,7 +26,7 @@
+ 
+   // Version for convenience. (NB: can be used with pat::Muon, even
+   // with embedded tracks, equally conveniently!)
+-  reco::TrackRef tevOptimized(const reco::Muon& muon,
++  inline reco::TrackRef tevOptimized(const reco::Muon& muon,
+ 			      const double tune1 = 30.,
+ 			      const double tune2 = 0.) {
+     return tevOptimized(muon.globalTrack(),
+@@ -44,13 +44,13 @@
+   // are just for backward compatibility and not for new code, we
+   // don't bother to expose the tune parameters.
+ 
+-  reco::TrackRef getTevRefitTrack(const reco::TrackRef& combinedTrack,
++  inline reco::TrackRef getTevRefitTrack(const reco::TrackRef& combinedTrack,
+ 				  const reco::TrackToTrackMap& map) {
+     reco::TrackToTrackMap::const_iterator it = map.find(combinedTrack);
+     return it == map.end() ? reco::TrackRef() : it->val;
+   }
+ 
+-  reco::TrackRef tevOptimized(const reco::TrackRef& combinedTrack,
++  inline reco::TrackRef tevOptimized(const reco::TrackRef& combinedTrack,
+ 			      const reco::TrackRef& trackerTrack,
+ 			      const reco::TrackToTrackMap& tevMap1,
+ 			      const reco::TrackToTrackMap& tevMap2,
+@@ -61,7 +61,7 @@
+ 			getTevRefitTrack(combinedTrack, tevMap3));
+   }
+ 
+-  reco::TrackRef tevOptimized(const reco::Muon& muon,
++  inline reco::TrackRef tevOptimized(const reco::Muon& muon,
+ 			      const reco::TrackToTrackMap& tevMap1,
+ 			      const reco::TrackToTrackMap& tevMap2,
+ 			      const reco::TrackToTrackMap& tevMap3 ) {
+@@ -79,7 +79,7 @@
+ 				  const reco::TrackToTrackMap tevMap2,
+ 				  const reco::TrackToTrackMap tevMap3 );
+   
+-  reco::TrackRef tevOptimizedOld( const reco::Muon& muon,
++  inline reco::TrackRef tevOptimizedOld( const reco::Muon& muon,
+ 				  const reco::TrackToTrackMap tevMap1,
+ 				  const reco::TrackToTrackMap tevMap2,
+ 				  const reco::TrackToTrackMap tevMap3 ) {
+@@ -94,7 +94,7 @@
+ 			     const double ptThreshold = 200.);
+ 
+   // Convenience version of the above.
+-  reco::TrackRef sigmaSwitch(const reco::Muon& muon,
++  inline reco::TrackRef sigmaSwitch(const reco::Muon& muon,
+ 			     const double nSigma = 2.,
+                              const double ptThreshold = 200.) {
+     return muon::sigmaSwitch(muon.globalTrack(),
+Index: RecoMuon/CosmicMuonProducer/src/GlobalCosmicMuonTrajectoryBuilder.cc
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoMuon/CosmicMuonProducer/src/GlobalCosmicMuonTrajectoryBuilder.cc,v
+retrieving revision 1.25
+diff -u -r1.25 GlobalCosmicMuonTrajectoryBuilder.cc
+--- RecoMuon/CosmicMuonProducer/src/GlobalCosmicMuonTrajectoryBuilder.cc	20 Oct 2009 04:22:32 -0000	1.25
++++ RecoMuon/CosmicMuonProducer/src/GlobalCosmicMuonTrajectoryBuilder.cc	7 Dec 2011 08:06:43 -0000
+@@ -225,7 +225,7 @@
+       LogTrace(category_) << "No valid tracker hits";
+       return;
+    }
+-   if ( frontMuHit == backMuHit ) {
++   if ( frontMuHit == backMuHit && muonHits.size() > 1 ) {
+       LogTrace(category_) << "No valid muon hits";
+       return;
+    }
+Index: RecoMuon/GlobalTrackingTools/interface/GlobalMuonRefitter.h
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoMuon/GlobalTrackingTools/interface/GlobalMuonRefitter.h,v
+retrieving revision 1.12
+diff -u -r1.12 GlobalMuonRefitter.h
+--- RecoMuon/GlobalTrackingTools/interface/GlobalMuonRefitter.h	7 Jun 2011 15:34:27 -0000	1.12
++++ RecoMuon/GlobalTrackingTools/interface/GlobalMuonRefitter.h	7 Dec 2011 08:06:43 -0000
+@@ -140,6 +140,8 @@
+   
+     bool theRPCInTheFit;
+ 
++    double theRescaleErrorFactor;
++
+     RefitDirection theRefitDirection;
+ 
+     std::string theFitterName;
+Index: RecoMuon/GlobalTrackingTools/src/GlobalMuonRefitter.cc
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoMuon/GlobalTrackingTools/src/GlobalMuonRefitter.cc,v
+retrieving revision 1.16
+diff -u -r1.16 GlobalMuonRefitter.cc
+--- RecoMuon/GlobalTrackingTools/src/GlobalMuonRefitter.cc	7 Jun 2011 15:34:27 -0000	1.16
++++ RecoMuon/GlobalTrackingTools/src/GlobalMuonRefitter.cc	7 Dec 2011 08:06:44 -0000
+@@ -111,6 +111,8 @@
+ 
+   theRPCInTheFit = par.getParameter<bool>("RefitRPCHits");
+ 
++  theRescaleErrorFactor = par.existsAs<double>("RescaleErrorFactor") ? par.getParameter<double>("RescaleErrorFactor") : 1000.;
++
+   theCacheId_TRH = 0;
+ 
+ }
+@@ -572,7 +574,7 @@
+     return vector<Trajectory>();
+   }
+ 
+-  firstTSOS.rescaleError(1000.);
++  firstTSOS.rescaleError(theRescaleErrorFactor);
+ 
+   // This is the only way to get a TrajectorySeed with settable propagation direction
+   PTrajectoryStateOnDet garbage1;
