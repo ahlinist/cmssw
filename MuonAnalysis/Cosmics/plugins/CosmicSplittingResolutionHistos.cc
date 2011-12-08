@@ -469,6 +469,9 @@ private:
   // The list of good runs (no longer done at ntupling time, or to
   // force a subset after the fact).
   const std::vector<unsigned> force_run_list;
+  // The list of events (run, lumi, event 3-tuples flattened) that are
+  // used only (optional, for e.g. making 1-1 comparisons).
+  const std::vector<unsigned> force_event_list;
   // Whether to require or veto technical trigger bit 25 (special
   // barrel RPC cosmic trigger in collisions menu).
   const bool require_tt25;
@@ -485,7 +488,7 @@ private:
   // Keep track of how many events fail the cut sequence at which cut
   // ("error").
   TH1F* errors;
-  enum error_code { error_none, error_bad_run, error_tt25, error_wrong_sample, error_propagation, error_prop_mc,
+  enum error_code { error_none, error_bad_run, error_bad_event, error_tt25, error_wrong_sample, error_propagation, error_prop_mc,
 		    error_muon_hits, error_pixels, error_strips, error_tpfms_station, error_dt, error_csc, error_tksta_dphi,
 		    error_last };
 
@@ -500,6 +503,9 @@ private:
 
   // Used by cut() to check whether the run is in the good run list.
   bool run_is_bad(unsigned run);
+
+  // Used by cut() for only allowing specific events.
+  bool event_is_bad(unsigned run, unsigned lumi, unsigned event);
 
   // Apply the cuts described by the parameters above.
   error_code cut();
@@ -522,10 +528,14 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
     use_unpropagated_values(cfg.getParameter<bool>("use_unpropagated_values")),
     pp_reco_mode(cfg.getParameter<bool>("pp_reco_mode")),
     force_run_list(cfg.getParameter<std::vector<unsigned> >("force_run_list")),
+    force_event_list(cfg.getParameter<std::vector<unsigned> >("force_event_list")),
     require_tt25(cfg.getParameter<bool>("require_tt25")),
     require_not_tt25(cfg.getParameter<bool>("require_not_tt25")),
     copy_selected_events(cfg.getParameter<bool>("copy_selected_events"))
 {
+  if (force_event_list.size() % 3 != 0)
+    throw cms::Exception("CosmicSplittingResolutionHistos") << "force_event_list size must be a multiple of 3\n";
+
   // Make the bins from the vector of ParameterSets. See the config
   // file for how this works. Make a set of Bins for each type of
   // track (e.g. {..., pT100200, pT2002000, ... } x {..., TkOnly, TPFMS, ... }
@@ -544,6 +554,7 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
   errors = fs->make<TH1F>("errors", "", error_last, 0, error_last);
   errors->GetXaxis()->SetBinLabel(1 + error_none,                "none");
   errors->GetXaxis()->SetBinLabel(1 + error_bad_run,             "bad_run");
+  errors->GetXaxis()->SetBinLabel(1 + error_bad_event,           "bad_event");
   errors->GetXaxis()->SetBinLabel(1 + error_tt25,                "tt25");
   errors->GetXaxis()->SetBinLabel(1 + error_wrong_sample,        "wrong_sample");
   errors->GetXaxis()->SetBinLabel(1 + error_propagation,         "propagation");
@@ -613,12 +624,33 @@ bool CosmicSplittingResolutionHistos::run_is_bad(unsigned run) {
     return false;
 }
 
+bool CosmicSplittingResolutionHistos::event_is_bad(unsigned run, unsigned lumi, unsigned event) {
+  // JMTBAD optimize
+  size_t n = force_event_list.size();
+  if (n > 0) {
+    assert(n % 3 == 0);
+    bool found = false;
+    for (size_t i = 0; i < n; i += 3) {
+      if (run == force_event_list[i] && lumi == force_event_list[i+1] && event == force_event_list[i+2]) {
+	found = true;
+	break;
+      }
+    }
+    return not found;
+  }
+  else
+    return false;
+}
+
 CosmicSplittingResolutionHistos::error_code CosmicSplittingResolutionHistos::cut() {
   // Apply the cuts, keeping track using the errors histogram defined
   // above.
 
   if (!is_mc && run_is_bad(nt->run))
     return error_bad_run;
+
+  if (event_is_bad(nt->run, nt->lumi, nt->event))
+    return error_bad_event;
 
   if (require_tt25 && !nt->tt25)
     return error_tt25;
