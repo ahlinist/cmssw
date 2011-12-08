@@ -33,12 +33,14 @@ new_tk = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'TrackerAlignmentRc
 new_tk_def = ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_v1_offline'})
 new_muons = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'DTAlignmentRcd': 'DTAlignment_2009_v5_offline', 'CSCAlignmentRcd': 'CSCAlignment_2009_v6_offline'})
 new_muon_apes = ('sqlite_file:initialMuonAlignment_DT-Aug11_CSC-Aug12_SetAPE.db', {'DTAlignmentErrorRcd': 'DTAlignmentErrorRcd', 'CSCAlignmentErrorRcd': 'CSCAlignmentErrorRcd'})
+from_173665 = ('sqlite_file:alignments_FT_R_44_V9_173665.db', dict((x, x+'JMT') for x in ['GlobalPositionRcd', 'TrackerAlignmentRcd', 'TrackerAlignmentErrorRcd', 'DTAlignmentRcd', 'DTAlignmentErrorRcd', 'CSCAlignmentRcd', 'CSCAlignmentErrorRcd']))
 
 #jobname, extra_alca = 'globaltag', []
 #jobname, extra_alca = 'asMUO10004', [from_38x]
 #jobname, extra_alca = 'newtknominalmu', [new_tk, new_tk_def, nominal_muons]
 jobname, extra_alca = 'newtknewmu', [new_tk, new_tk_def, new_muons]
 #jobname, extra_alca = 'newtknewmunewmuapes', [new_tk, new_tk_def, new_muons, new_muon_apes]
+#jobname, extra_alca = 'from173665', [from_173665]
 
 #is_mc = True
 #global_tag = 'COSMC_42_PEAK::All'
@@ -94,6 +96,7 @@ events_per_job = 1000
         ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
         ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
         ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
+        ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'),
         ]
 
     if 'highpt2010_only' in sys.argv:
