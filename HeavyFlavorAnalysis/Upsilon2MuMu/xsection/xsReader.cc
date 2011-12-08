@@ -1747,6 +1747,26 @@ void xsReader::MCstudy(){
     
   }
   
+  ((TH1D*)fpHistFile->Get("GenRap_Cand"))->Fill(fGenCandY);
+  ((TH1D*)fpHistFile->Get("RecoRap_Cand"))->Fill(fCandY);
+  for ( int iy = 0; iy < fNy; ++iy ){
+    
+    if ( ( fGenCandY >= fYbin[iy] ) && ( fGenCandY < fYbin[iy+1] ) ){
+      if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ) {
+	((TH1D*)fpHistFile->Get("RecoRapinSameBin_Cand"))->Fill(fGenCandY);
+	((TH1D*)fpHistFile->Get("RecoRapinSameBin_Candv2"))->Fill(fCandY);
+      }
+    }
+    
+    if ( !((fGenCandY >= fYbin[iy]) && (fGenCandY < fYbin[iy+1]))  ){
+      if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ) {
+	((TH1D*)fpHistFile->Get("RecoRapinDiffBin_Cand"))->Fill(fGenCandY);
+	((TH1D*)fpHistFile->Get("RecoRapinDiffBin_Candv2"))->Fill(fCandY);
+      }
+    }
+    
+  }
+  
   double deltaPtCand(-99), deltaYCand(-99), deltaPtMuon1(-99), deltaEtaMuon1(-99), deltaPtMuon2(-99), deltaEtaMuon2(-99);
   ((TH2D*)fpHistFile->Get("PtResolution_Cand"))->Fill(fGenCandPt,fCandPt);
   ((TH2D*)fpHistFile->Get("PtResolution_Cand"))->GetXaxis()->SetTitle(Form("P_{T}^{GenCand}"));
@@ -2388,6 +2408,12 @@ void xsReader::bookHist() {
   h = new TH1D("RecoPtinDiffBin_Cand","RecoPtinDiffBin_Cand", fNpt, fPTbin);
   h = new TH1D("RecoPtinSameBin_Candv2","RecoPtinSameBin_Candv2", fNpt, fPTbin);
   h = new TH1D("RecoPtinDiffBin_Candv2","RecoPtinDiffBin_Candv2", fNpt, fPTbin);  
+  h = new TH1D("GenRap_Cand","GenRap_Cand", fNy, fYbin);
+  h = new TH1D("RecoRap_Cand","RecoRap_Cand", fNy, fYbin);
+  h = new TH1D("RecoRapinSameBin_Cand","RecoRapinSameBin_Cand", fNy, fYbin);
+  h = new TH1D("RecoRapinDiffBin_Cand","RecoRapinDiffBin_Cand", fNy, fYbin);
+  h = new TH1D("RecoRapinSameBin_Candv2","RecoRapinSameBin_Candv2", fNy, fYbin);
+  h = new TH1D("RecoRapinDiffBin_Candv2","RecoRapinDiffBin_Candv2", fNy, fYbin);   
   
   h = new TH1D("ForRecoCand10_MuonPt", "ForRecoCand10_MuonPt", 50, 0., 50.);
   h = new TH1D("ForRecoCand10_20_MuonPt", "ForRecoCand10_20_MuonPt", 50, 0., 50.);
