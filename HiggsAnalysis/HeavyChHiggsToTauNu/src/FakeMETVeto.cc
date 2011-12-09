@@ -16,7 +16,6 @@ namespace HPlus {
   FakeMETVeto::Data::~Data() {}
   
   FakeMETVeto::FakeMETVeto(const edm::ParameterSet& iConfig, EventCounter& eventCounter, EventWeight& eventWeight):
-    fSrc(iConfig.getUntrackedParameter<edm::InputTag>("src")),
     fMinDeltaPhi(iConfig.getUntrackedParameter<double>("minDeltaPhi")),
     //fCount(eventCounter.addCounter(" ")),
     fEventWeight(eventWeight) {
@@ -34,19 +33,16 @@ namespace HPlus {
 
   FakeMETVeto::~FakeMETVeto() {}
 
-  FakeMETVeto::Data FakeMETVeto::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup, const edm::PtrVector<reco::Candidate>& taus, const edm::PtrVector<pat::Jet>& jets) {
+  FakeMETVeto::Data FakeMETVeto::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup, const edm::Ptr<reco::Candidate>& tau , const edm::PtrVector<pat::Jet>& jets, const edm::Ptr<reco::MET>& met) {
     bool passEvent = false;
-    edm::Handle<edm::View<reco::MET> > metHandle;
-    iEvent.getByLabel(fSrc, metHandle);
-    edm::Ptr<reco::MET> met = metHandle->ptrAt(0);
 
     // Loop over selected taus
     fClosestDeltaPhiToTaus = 999.;
-    for(edm::PtrVector<reco::Candidate>::const_iterator iter = taus.begin(); iter != taus.end(); ++iter) {
-      double myDeltaPhi = reco::deltaPhi(*met, **iter) * 180./3.14159;
-      if ( fabs(myDeltaPhi) < fClosestDeltaPhiToTaus)
-        fClosestDeltaPhiToTaus = fabs(myDeltaPhi);
-    }
+    //    for(edm::PtrVector<reco::Candidate>::const_iterator iter = taus.begin(); iter != taus.end(); ++iter) {
+    double fClosestDeltaPhiToTaus  = reco::deltaPhi(*met, *tau ) * 180./3.14159;
+      //      if ( fabs(myDeltaPhi) < fClosestDeltaPhiToTaus)
+      //        fClosestDeltaPhiToTaus = fabs(myDeltaPhi);
+   
     hClosestDeltaPhiToTaus->Fill(fClosestDeltaPhiToTaus, fEventWeight.getWeight());
     hClosestDeltaPhiToTausZoom->Fill(fClosestDeltaPhiToTaus, fEventWeight.getWeight());
     

@@ -70,6 +70,8 @@ namespace HPlus {
     
     hMuonPt = makeTH<TH1F>(myDir, "GlobalMuonPt", "GlobalMuonPt;isolated muon p_{T}, GeV/c;N_{muons} / 5 GeV/c", 80, 0., 400.);
     hMuonEta = makeTH<TH1F>(myDir, "GlobalMuonEta", "GlobalMuonEta;isolated muon #eta;N_{muons} / 0.1", 60, -3., 3.);
+    hMuonEta_identified = makeTH<TH1F>(myDir, "GlobalMuonEta_identified", "GlobalMuonEta;isolated muon #eta;N_{muons} / 0.1", 60, -3., 3.);
+    hMuonPt_identified_eta = makeTH<TH1F>(myDir, "GlobalMuonPt_identified_eta", "GlobalMuonPt;isolated muon p_{T}, GeV/c;N_{muons} / 5 GeV/c", 80, 0., 400.);
     hMuonPt_matchingMCmuon = makeTH<TH1F>(myDir, "GlobalMuonPtmatchingMCmuon", "GlobalMuonPtmatchingMCmuon", 400, 0., 400.);
     hMuonEta_matchingMCmuon = makeTH<TH1F>(myDir, "GlobalMuonEtamatchingMCmuon", "GlobalMuonEtamatchingMCmuon", 400, -3., 3.);
     hMuonPt_matchingMCmuonFromW = makeTH<TH1F>(myDir, "GlobalMuonPtmatchingMCmuonFromW", "GlobalMuonPtmatchingMCmuonFromW", 400, 0., 400.);
@@ -113,16 +115,32 @@ namespace HPlus {
   GlobalMuonVeto::~GlobalMuonVeto() {}
 
   GlobalMuonVeto::Data GlobalMuonVeto::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup, const edm::Ptr<reco::Vertex>& primaryVertex) {
-    // Reset data variables
-    fSelectedMuonPt = -1.0;
-    fSelectedMuonEta = -999.99;
-    // Get result
-    bool passEvent = MuonSelection(iEvent,iSetup, primaryVertex);
-    return Data(this, passEvent);
+    // Do analysis
+    MuonSelection(iEvent,iSetup, primaryVertex);
+    if (fSelectedMuons.size())
+      increment(fGlobalMuonVetoCounter);
+    return Data(this, fSelectedMuons.size() == 0);
   }
 
-  bool GlobalMuonVeto::MuonSelection(const edm::Event& iEvent, const edm::EventSetup& iSetup, const edm::Ptr<reco::Vertex>& primaryVertex){
+  GlobalMuonVeto::Data GlobalMuonVeto::analyzeWithoutIsolation(const edm::Event& iEvent, const edm::EventSetup& iSetup, const edm::Ptr<reco::Vertex>& primaryVertex) {
+    // Do analysis
+    MuonSelection(iEvent,iSetup, primaryVertex);
+    if (fSelectedMuonsBeforeIsolation.size())
+      increment(fGlobalMuonVetoCounter);
+    return Data(this, fSelectedMuonsBeforeIsolation.size() == 0);
+  }
 
+
+  void GlobalMuonVeto::MuonSelection(const edm::Event& iEvent, const edm::EventSetup& iSetup, const edm::Ptr<reco::Vertex>& primaryVertex){
+    // Reset data variables
+    fSelectedMuonPt = -1.0;
+    fSelectedMuonPtBeforePtCut = -1.0;
+    fSelectedMuonEta = -999.99;
+    fSelectedMuons.clear();
+    fSelectedMuonsBeforePtAndEtaCuts.clear();
+    fSelectedMuonsBeforeIsolationAndPtAndEtaCuts.clear();
+    fSelectedMuonsBeforeIsolation.clear();
+    
     // the Collection is currently NOT available in the PatTuples but it will be soon (next pattuple production)
     /* FIX ME
    // Create and attach handle to (Offline) Primary Vertices Collection
@@ -164,6 +182,7 @@ namespace HPlus {
     // Create and attach handle to Muon Collection
     edm::Handle<edm::View<pat::Muon> > myMuonHandle;
     iEvent.getByLabel(fMuonCollectionName, myMuonHandle);    
+    edm::PtrVector<pat::Muon> muons = myMuonHandle->ptrVector();
     // In the case where the handle is empty...
     if ( !myMuonHandle->size() ){
       // std::cout << "Muon handle for '" << fMuonCollectionName << " is empty!" << std::endl;
@@ -174,6 +193,7 @@ namespace HPlus {
 
     // Reset/initialise variables
     float myHighestMuonPt = -1.0;
+    float myHighestMuonPtBeforePtCut = -1.0;
     float myHighestMuonEta = -999.99;
     // 
     bool bMuonPresent = false;
@@ -193,7 +213,7 @@ namespace HPlus {
     bool bMuonMatchingMCmuonFromW = false;
     
     // Loop over all Muons
-    for(edm::View<pat::Muon>::const_iterator iMuon = myMuonHandle->begin(); iMuon != myMuonHandle->end(); ++iMuon) {
+    for(edm::PtrVector<pat::Muon>::const_iterator iMuon = muons.begin(); iMuon != muons.end(); ++iMuon) {
 
       // Keep track of the muons analyzed
       bMuonPresent = true;
@@ -201,31 +221,31 @@ namespace HPlus {
       
       // Keep track of the MuonID's. Just for my information. 
       // 28/10/2010 - pat::Muon::muonID() used instead of pat::Muon::isGood(). The latter is there only for backward compatibility.
-      if( (*iMuon).muonID("All") ) increment(fMuonIDSubCountAll);
-      if( (*iMuon).muonID("AllGlobalMuons") ) increment(fMuonIDSubCountAllGlobalMuons);
-      if( (*iMuon).muonID("AllStandAloneMuons") ) increment(fMuonIDSubCountAllStandAloneMuons);
-      if( (*iMuon).muonID("AllTrackerMuons") ) increment(fMuonIDSubCountAllTrackerMuons);  
-      if( (*iMuon).muonID("TrackerMuonArbitrated") ) increment(fMuonIDSubCountTrackerMuonArbitrated);
-      if( (*iMuon).muonID("AllArbitrated") ) increment(fMuonIDSubCountAllArbitrated);
-      if( (*iMuon).muonID("GlobalMuonPromptTight")  ) increment(fMuonIDSubCountGlobalMuonPromptTight);  
-      if( (*iMuon).muonID("TMLastStationLoose") ) increment(fMuonIDSubCountTMLastStationLoose); 
-      if( (*iMuon).muonID("TMLastStationTight") ) increment(fMuonIDSubCountTMLastStationTight); 
-      if( (*iMuon).muonID("TMOneStationLoose") ) increment(fMuonIDSubCountTMOneStationLoose);   
-      if( (*iMuon).muonID("TMLastStationOptimizedLowPtLoose") ) increment(fMuonIDSubCountTMLastStationOptimizedLowPtLoose);  
-      if( (*iMuon).muonID("TMLastStationOptimizedLowPtTight") ) increment(fMuonIDSubCountTMLastStationOptimizedLowPtTight);
-      if( (*iMuon).muonID("GMTkChiCompatibility") ) increment(fMuonIDSubCountGMTkChiCompatibility);  
-      if( (*iMuon).muonID("GMTkKinkTight") ) increment(fMuonIDSubCountGMTkKinkTight); 
-      if( (*iMuon).muonID("TMLastStationAngLoose") ) increment(fMuonIDSubCountTMLastStationAngLoose); 
-      if( (*iMuon).muonID("TMLastStationAngTight") ) increment(fMuonIDSubCountTMLastStationAngTight); 
-      if( (*iMuon).muonID("TMLastStationOptimizedBarrelLowPtLoose") ) increment(fMuonIDSubCountTMLastStationOptimizedBarrelLowPtLoose);
-      if( (*iMuon).muonID("TMLastStationOptimizedBarrelLowPtTight") ) increment(fMuonIDSubCountTMLastStationOptimizedBarrelLowPtTight);
+      if( (*iMuon)->muonID("All") ) increment(fMuonIDSubCountAll);
+      if( (*iMuon)->muonID("AllGlobalMuons") ) increment(fMuonIDSubCountAllGlobalMuons);
+      if( (*iMuon)->muonID("AllStandAloneMuons") ) increment(fMuonIDSubCountAllStandAloneMuons);
+      if( (*iMuon)->muonID("AllTrackerMuons") ) increment(fMuonIDSubCountAllTrackerMuons);  
+      if( (*iMuon)->muonID("TrackerMuonArbitrated") ) increment(fMuonIDSubCountTrackerMuonArbitrated);
+      if( (*iMuon)->muonID("AllArbitrated") ) increment(fMuonIDSubCountAllArbitrated);
+      if( (*iMuon)->muonID("GlobalMuonPromptTight")  ) increment(fMuonIDSubCountGlobalMuonPromptTight);  
+      if( (*iMuon)->muonID("TMLastStationLoose") ) increment(fMuonIDSubCountTMLastStationLoose); 
+      if( (*iMuon)->muonID("TMLastStationTight") ) increment(fMuonIDSubCountTMLastStationTight); 
+      if( (*iMuon)->muonID("TMOneStationLoose") ) increment(fMuonIDSubCountTMOneStationLoose);   
+      if( (*iMuon)->muonID("TMLastStationOptimizedLowPtLoose") ) increment(fMuonIDSubCountTMLastStationOptimizedLowPtLoose);  
+      if( (*iMuon)->muonID("TMLastStationOptimizedLowPtTight") ) increment(fMuonIDSubCountTMLastStationOptimizedLowPtTight);
+      if( (*iMuon)->muonID("GMTkChiCompatibility") ) increment(fMuonIDSubCountGMTkChiCompatibility);  
+      if( (*iMuon)->muonID("GMTkKinkTight") ) increment(fMuonIDSubCountGMTkKinkTight); 
+      if( (*iMuon)->muonID("TMLastStationAngLoose") ) increment(fMuonIDSubCountTMLastStationAngLoose); 
+      if( (*iMuon)->muonID("TMLastStationAngTight") ) increment(fMuonIDSubCountTMLastStationAngTight); 
+      if( (*iMuon)->muonID("TMLastStationOptimizedBarrelLowPtLoose") ) increment(fMuonIDSubCountTMLastStationOptimizedBarrelLowPtLoose);
+      if( (*iMuon)->muonID("TMLastStationOptimizedBarrelLowPtTight") ) increment(fMuonIDSubCountTMLastStationOptimizedBarrelLowPtTight);
       else{
 	increment(fMuonIDSubCountOther);
       }
 
       // Obtain reference to a Muon track
-      reco::TrackRef myGlobalTrackRef = (*iMuon).globalTrack();
-      reco::TrackRef myInnerTrackRef = (*iMuon).innerTrack(); // inner tracks give best resolution for muons with Pt up to 200 GeV/c
+      reco::TrackRef myGlobalTrackRef = (*iMuon)->globalTrack();
+      reco::TrackRef myInnerTrackRef = (*iMuon)->innerTrack(); // inner tracks give best resolution for muons with Pt up to 200 GeV/c
 
       // Check that track was found.
       if ( myInnerTrackRef.isNull() || myGlobalTrackRef.isNull() ){
@@ -239,15 +259,12 @@ namespace HPlus {
       bMuonHasGlobalOrInnerTrk = true;
       
       // Muon Variables (Pt, Eta etc..)
-      // float myMuonPt  = myInnerTrackRef->pt();
-      // float myMuonEta = myInnerTrackRef->eta();
-      // float myMuonPhi = myInnerTrackRef->phi();
-      float myMuonPt  = (*iMuon).pt();
-      float myMuonEta = (*iMuon).eta();
-      float myMuonPhi = (*iMuon).phi();
+      float myMuonPt  = (*iMuon)->pt();
+      float myMuonEta = (*iMuon)->eta();
       int myInnerTrackNTrkHits   = myInnerTrackRef->hitPattern().numberOfValidTrackerHits();
       int myInnerTrackNPixelHits = myInnerTrackRef->hitPattern().numberOfValidPixelHits();
-      int myGlobalTrackNMuonHits  = myGlobalTrackRef->hitPattern().numberOfValidMuonHits(); 
+      //int myGlobalTrackNMuonHits  = myGlobalTrackRef->hitPattern().numberOfValidMuonHits(); 
+      int myMatchedSegments = (*iMuon)->numberOfMatches();
       // Note: It is possible for a Global Muon to have zero muon hits. This happens because once the inner and outter tracks used to create
       // global fit to the muon track that covers all of the detector, hits that are incompatible to the new trajectory are removed 
       // (i.e. de-associated from the muon). This is the so called "outlier rejection". 
@@ -261,60 +278,70 @@ namespace HPlus {
       hMuonPt_GlobalTrack->Fill(myGlobalTrackRef->pt(), fEventWeight.getWeight());
       hMuonEta_GlobalTrack->Fill(myGlobalTrackRef->eta(), fEventWeight.getWeight());
 
-      // 1) Apply Pt and Eta cut requirements
-      if (myMuonPt < fMuonPtCut) continue;
-      bMuonPtCut = true;
-
-      if (std::fabs(myMuonEta) > fMuonEtaCut) continue;
-      bMuonEtaCut = true;
-      
-      // 2) Demand that the Muon is both a "GlobalMuon" And a "TrackerMuon"
-      if( (!(*iMuon).isGlobalMuon()) || (!(*iMuon).isTrackerMuon()) ) continue;
+      // 1) Demand that the Muon is both a "GlobalMuon" And a "TrackerMuon"
+      if( (!(*iMuon)->isGlobalMuon()) || (!(*iMuon)->isTrackerMuon()) ) continue;
       bMuonGlobalMuonOrTrkerMuon = true;
 
-      // 3) Demand that the selected Muon Identification as defined in the python cfg is satisfied
-      if( !((*iMuon).muonID( fMuonSelection )) ) continue;
+      // 2) Demand that the selected Muon Identification as defined in the python cfg is satisfied
+      if( !((*iMuon)->muonID( fMuonSelection )) ) continue;
       bMuonSelection = true;
       
-      // 4) NHits cuts (Trk, Pixel, Muon). There has to be at LEAST greater than 10 track hits.
+      // 3) NHits cuts (Trk, Pixel, Muon). There has to be at LEAST greater than 10 track hits.
       if ( myInnerTrackNTrkHits <= 10) continue;
       bMuonNTrkerHitsCut = true;
 
       if ( myInnerTrackNPixelHits < 1) continue;
       bMuonNPixelHitsCut = true;
       // std::cout << "myGlobalTrackNMuonHits = " << myGlobalTrackNMuonHits << std::endl;
-      if ( myGlobalTrackNMuonHits < 1) continue;
+      if(myMatchedSegments < 2) continue;
       bMuonNMuonlHitsCut = true;
 
-      // 5) Global Track Chi Square / ndof must be less than 10
-      if( (*iMuon).normChi2() > 10) continue; 
+      // 4) Global Track Chi Square / ndof must be less than 10
+      if( (*iMuon)->normChi2() > 10) continue; 
       bMuonGlobalTrkChiSqCut = true;
 
-      // 6) Impact Paremeter (d0) wrt beam spot < 0.02cm (applied to track from the inner tracker)
-      // FIX ME
-      // if ( myInnerTrackRef->dxy() < 0.02) continue; // This is the transverse IP w.r.t to (0,0,0). Replace latter with BeamSpot
-      hMuonImpactParameter->Fill((*iMuon).dB(),fEventWeight.getWeight()); 
-      if ((*iMuon).dB() > 0.02) continue; // This is the transverse IP w.r.t to beamline.
+      // 5) Impact Paremeter (d0) wrt beam spot < 0.02cm (applied to track from the inner tracker)
+      double muonIp = std::abs((*iMuon)->dB());
+      hMuonImpactParameter->Fill(muonIp, fEventWeight.getWeight());
+      if (muonIp >= 0.02) continue; // This is the transverse IP w.r.t to beamline.
       bMuonImpactParCut = true;
-      
-      // 7) Relative Isolation (around cone of DeltaR = 0.3) < 0.15. 
-      float myTrackIso =  (*iMuon).trackIso(); // isolation cones are dR=0.3 
-      float myEcalIso  =  (*iMuon).ecalIso();  // isolation cones are dR=0.3 
-      float myHcalIso  =  (*iMuon).hcalIso();  // isolation cones are dR=0.3 
-      float relIsol = ( myTrackIso + myEcalIso + myHcalIso )/(myMuonPt);
-      // std::cout << "relIsol = " << (*iMuon).isolationR03().sumPt << "/" << myMuonPt << " = " << relIsol << std::endl;
-      if( relIsol > 0.15 )continue; 
-      bMuonRelIsolationR03Cut = true;
 
-      // 8) Check that muon has good PV (i.e diff between muon track at its vertex and the PV along the Z position < 1cm)
-
+      // 6) Check that muon has good PV (i.e diff between muon track at its vertex and the PV along the Z position < 1cm)
       if(fMuonApplyIpz) {
         if(primaryVertex.get() == 0)
           throw cms::Exception("LogicError") << "MuonApplyIpz is true, but got null primary vertex" << std::endl;
         if(std::abs(myInnerTrackRef->dz(primaryVertex->position())) < 1.0) continue; // This is the z-impact parameter w.r.t to selected primary vertex
         bMuonGoodPVCut = true;
       }
+      fSelectedMuonsBeforeIsolationAndPtAndEtaCuts.push_back(*iMuon);
+      
+      // Store muons before isolation, but passing pt and eta cuts
+      if (myMuonPt > fMuonPtCut && std::fabs(myMuonEta) < fMuonEtaCut)
+        fSelectedMuonsBeforeIsolation.push_back(*iMuon);
+      
+      // 7) Relative Isolation (around cone of DeltaR = 0.3) < 0.15. 
+      float myTrackIso =  (*iMuon)->trackIso(); // isolation cones are dR=0.3 
+      float myEcalIso  =  (*iMuon)->ecalIso();  // isolation cones are dR=0.3 
+      float myHcalIso  =  (*iMuon)->hcalIso();  // isolation cones are dR=0.3 
+      float relIsol = ( myTrackIso + myEcalIso + myHcalIso )/(myMuonPt);
+      // std::cout << "relIsol = " << (*iMuon).isolationR03().sumPt << "/" << myMuonPt << " = " << relIsol << std::endl;
+      if( relIsol > 0.15 ) continue; 
+      bMuonRelIsolationR03Cut = true;
+      fSelectedMuonsBeforePtAndEtaCuts.push_back(*iMuon);
 
+      hMuonEta_identified->Fill(myMuonEta);
+
+      if(std::abs(myMuonEta) < fMuonEtaCut) {
+        myHighestMuonPtBeforePtCut = std::max(myHighestMuonPtBeforePtCut, myMuonPt);
+        hMuonPt_identified_eta->Fill(myMuonPt);
+      }
+
+      // 8) Apply Pt and Eta cut requirements
+      if (myMuonPt < fMuonPtCut) continue;
+      bMuonPtCut = true;
+      if (std::abs(myMuonEta) >= fMuonEtaCut) continue;
+      bMuonEtaCut = true;
+      fSelectedMuons.push_back(*iMuon);
 
       
       // If Muon survives all cuts (1->8) then it is considered an isolated Muon. Now find the max Muon Pt of such isolated muons.
@@ -337,7 +364,7 @@ namespace HPlus {
       if(!iEvent.isRealData()) {
         for (size_t i=0; i < genParticles->size(); ++i){  
           const reco::Candidate & p = (*genParticles)[i];
-          const reco::Candidate & muon = (*iMuon);
+          const reco::Candidate & muon = (**iMuon);
           int status = p.status();
           double deltaR = ROOT::Math::VectorUtil::DeltaR( p.p4() , muon.p4() );
           if ( deltaR > 0.05 || status != 1) continue;
@@ -360,43 +387,41 @@ namespace HPlus {
           }
         }
       }
-
-
-
     }//eof: for(pat::MuonCollection::const_iterator iMuon = myMuonHandle->begin(); iMuon != myMuonHandle->end(); ++iMuon) {
-  
-    if(bMuonPresent) {
+    
+    // Order of if-sentences was corrected 27.10.2011 / LAW
+    if(bMuonPresent) { // 0.1
       increment(fMuonSelectionSubCountMuonPresent);
-      if(bMuonHasGlobalOrInnerTrk) {
+      if(bMuonHasGlobalOrInnerTrk) { // 0.2
         increment(fMuonSelectionSubCountMuonHasGlobalOrInnerTrk);
-        if(bMuonPtCut) {
-          increment(fMuonSelectionSubCountPtCut);
-          if(bMuonEtaCut) {
-            increment(fMuonSelectionSubCountEtaCut);
-            if(bMuonGlobalMuonOrTrkerMuon) {
-              increment(fMuonSelectionSubCountMuonGlobalMuonOrTrkerMuon); 
-              if(bMuonSelection) {
-                increment(fMuonSelectionSubCountMuonSelection);
-                if(bMuonNTrkerHitsCut) {
-                  increment(fMuonSelectionSubCountNTrkerHitsCut);
-                  if(bMuonNPixelHitsCut) {
-                    increment(fMuonSelectionSubCountNPixelHitsCut);
-                    if(bMuonNMuonlHitsCut) {
-                      increment(fMuonSelectionSubCountNMuonlHitsCut);
-                      if(bMuonGlobalTrkChiSqCut) {
-                        increment(fMuonSelectionSubCountGlobalTrkChiSqCut);
-                        if(bMuonImpactParCut) {
-                          increment(fMuonSelectionSubCountImpactParCut);
-                          if(bMuonRelIsolationR03Cut) {
-                            increment(fMuonSelectionSubCountRelIsolationR03Cut);
-                            if(bMuonGoodPVCut) {
-                              increment(fMuonSelectionSubCountGoodPVCut);
-			      if(bMuonMatchingMCmuon) {
-				increment(fMuonSelectionSubCountMatchingMCmuon);
-				if(bMuonMatchingMCmuonFromW) {
-				  increment(fMuonSelectionSubCountMatchingMCmuonFromW);
-				}
-			      }
+        if(bMuonGlobalMuonOrTrkerMuon) { // 1
+          increment(fMuonSelectionSubCountMuonGlobalMuonOrTrkerMuon); 
+          if(bMuonSelection) { // 2
+            increment(fMuonSelectionSubCountMuonSelection);
+            if(bMuonNTrkerHitsCut) { // 3.1
+              increment(fMuonSelectionSubCountNTrkerHitsCut);
+              if(bMuonNPixelHitsCut) { // 3.2
+                increment(fMuonSelectionSubCountNPixelHitsCut);
+                if(bMuonNMuonlHitsCut) { // 3.3
+                  increment(fMuonSelectionSubCountNMuonlHitsCut);
+                  if(bMuonGlobalTrkChiSqCut) { // 4
+                    increment(fMuonSelectionSubCountGlobalTrkChiSqCut);
+                    if(bMuonImpactParCut) { // 5
+                      increment(fMuonSelectionSubCountImpactParCut);
+                      if(bMuonGoodPVCut || !fMuonApplyIpz) { // 6
+                        increment(fMuonSelectionSubCountGoodPVCut);
+                        if(bMuonRelIsolationR03Cut) { // 7
+                          increment(fMuonSelectionSubCountRelIsolationR03Cut);
+                          if(bMuonPtCut) { // 8.1
+                            increment(fMuonSelectionSubCountPtCut);
+                            if(bMuonEtaCut) { // 8.2
+                              increment(fMuonSelectionSubCountEtaCut);
+                              if(bMuonMatchingMCmuon) { // 9
+                                increment(fMuonSelectionSubCountMatchingMCmuon);
+                                if(bMuonMatchingMCmuonFromW) { // 10
+                                  increment(fMuonSelectionSubCountMatchingMCmuonFromW);
+                                }
+                              }
                             }
                           }
                         }
@@ -410,23 +435,11 @@ namespace HPlus {
         }
       }
     }
-
-    // Make a boolean that describes whether a Global Muon (passing all selection criteria) is found.
-    bool bDecision = bMuonPresent*bMuonHasGlobalOrInnerTrk*bMuonPtCut*bMuonEtaCut*bMuonGlobalMuonOrTrkerMuon*bMuonSelection*bMuonNTrkerHitsCut*bMuonNPixelHitsCut*bMuonNMuonlHitsCut*bMuonGlobalTrkChiSqCut*bMuonImpactParCut*bMuonRelIsolationR03Cut;
-    if(fMuonApplyIpz)
-      bDecision = bDecision && bMuonGoodPVCut;
-
-    // Now store the highest Muon Pt and Eta
+    // Store the highest Muon Pt and Eta
     fSelectedMuonPt  = myHighestMuonPt;
+    fSelectedMuonPtBeforePtCut  = myHighestMuonPtBeforePtCut;
     fSelectedMuonEta = myHighestMuonEta;
-    // std::cout << "fSelectedMuonPt = " << fSelectedMuonsPt << ", fSelectedMuonsEta = " << fSelectedMuonsEta << std::endl;
-
-    // If a Global Muon (passing all selection criteria) is found, do not increment counter. Return false.
-    if(bDecision) return false;
-    // Otherwise increment counter and return true.
-    else increment(fGlobalMuonVetoCounter);
-    return true;
-    
+    // std::cout << "fSelectedMuonPt = " << fSelectedMuonsPt << ", fSelectedMuonsEta = " << fSelectedMuonsEta << std::endl;   
   }//eof: bool GlobalMuonVeto::MuonSelection(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   
 }//eof: namespace HPlus {
