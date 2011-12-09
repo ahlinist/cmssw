@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 
 def addPrimaryVertexSelection(process, sequence):
-    process.firstPrimaryVertex = cms.EDProducer("HPlusSelectFirstVertex",
+    process.firstPrimaryVertex = cms.EDProducer("HPlusFirstVertexSelector",
         src = cms.InputTag("offlinePrimaryVertices")
     )
     sequence *= process.firstPrimaryVertex
@@ -13,10 +13,13 @@ def addPrimaryVertexSelection(process, sequence):
     )
     sequence *= process.selectedPrimaryVertex
 
-    process.selectedPrimaryVertexFilter = cms.EDFilter("VertexCountFilter",
-                                                       src = cms.InputTag("selectedPrimaryVertex"),
-                                                       minNumber = cms.uint32(1),
-                                                       maxNumber = cms.uint32(999)
-                                                       )
-    sequence *= process.selectedPrimaryVertexFilter
+    process.goodPrimaryVertices = pv.goodPrimaryVertices.clone()
+    sequence *= process.goodPrimaryVertices
+
+#    process.selectedPrimaryVertexFilter = cms.EDFilter("VertexCountFilter",
+#                                                       src = cms.InputTag("selectedPrimaryVertex"),
+#                                                       minNumber = cms.uint32(1),
+#                                                       maxNumber = cms.uint32(999)
+#                                                       )
+#    sequence *= process.selectedPrimaryVertexFilter
     

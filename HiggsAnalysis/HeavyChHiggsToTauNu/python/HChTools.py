@@ -1,16 +1,31 @@
 import FWCore.ParameterSet.Config as cms
 from HLTrigger.HLTfilters.triggerResultsFilter_cfi import triggerResultsFilter
+import subprocess
+import  errno
 
 def addConfigInfo(process, options, dataVersion):
     process.configInfo = cms.EDAnalyzer("HPlusConfigInfoAnalyzer",
-        dataVersion = cms.untracked.string(dataVersion.version)
+        dataVersion = cms.untracked.string(dataVersion.version),
+        isData = cms.untracked.bool(dataVersion.isData())
     )
     if options.crossSection >= 0.:
         process.configInfo.crossSection = cms.untracked.double(options.crossSection)
         print "Dataset cross section has been set to %g pb" % options.crossSection
-    if options.luminosity >= 0:
-        process.configInfo.luminosity = cms.untracked.double(options.luminosity)
-        print "Dataset integrated luminosity has been set to %g pb^-1" % options.luminosity
+
+    cmd = ["git", "show", "--pretty=format:%H"]
+    try:
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (output, error) = p.communicate()
+        ret = p.returncode
+        if ret != 0:
+            raise Exception("Ran %s, got exit code %d with output\n%s\n%s" % (" ".join(cmd), ret, output, error))
+
+        process.configInfo.codeVersion = cms.untracked.string(output.split("\n")[0])
+    except OSError, e:
+        # ENOENT is given if git is not found from path
+        if e.errno != errno.ENOENT:
+            raise e
+
     return cms.Path(process.configInfo)
 
 def insertPSetContentsTo(src, dst):

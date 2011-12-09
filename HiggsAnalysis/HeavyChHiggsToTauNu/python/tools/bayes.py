@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env bin
+# had to change because of CVS complaining about this: #!/usr/bin env python
 import ROOT
 
 ### Function to calculate efficiency of two numbers with Bayesian method.

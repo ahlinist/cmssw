@@ -21,6 +21,7 @@
 
 import ROOT
 import array
+import math
 
 import dataset
 import histograms
@@ -62,12 +63,20 @@ _physicalToLogical = {
     "TTToHplusBHminusB_M155_Spring11": "TTToHplusBHminusB_M155",
     "TTToHplusBHminusB_M160_Spring11": "TTToHplusBHminusB_M160",
     "TTToHplusBHminusB_M80_Summer11": "TTToHplusBHminusB_M80",
+    "TTToHplusBHminusB_M90_Summer11": "TTToHplusBHminusB_M90",
     "TTToHplusBHminusB_M100_Summer11": "TTToHplusBHminusB_M100",
     "TTToHplusBHminusB_M120_Summer11": "TTToHplusBHminusB_M120",
     "TTToHplusBHminusB_M140_Summer11": "TTToHplusBHminusB_M140",
     "TTToHplusBHminusB_M150_Summer11": "TTToHplusBHminusB_M150",
     "TTToHplusBHminusB_M155_Summer11": "TTToHplusBHminusB_M155",
     "TTToHplusBHminusB_M160_Summer11": "TTToHplusBHminusB_M160",
+
+    "HplusTB_M180_Summer11": "HplusTB_M180",
+    "HplusTB_M190_Summer11": "HplusTB_M190",
+    "HplusTB_M200_Summer11": "HplusTB_M200",
+    "HplusTB_M220_Summer11": "HplusTB_M220",
+    "HplusTB_M250_Summer11": "HplusTB_M250",
+    "HplusTB_M300_Summer11": "HplusTB_M300",
 
     "TTJets_TuneD6T_Winter10": "TTJets",
     "TTJets_TuneZ2_Winter10": "TTJets",
@@ -95,9 +104,12 @@ _physicalToLogical = {
     "TToBLNu_s-channel_TuneZ2_Spring11": "TToBLNu_s-channel",
     "TToBLNu_t-channel_TuneZ2_Spring11": "TToBLNu_t-channel",
     "TToBLNu_tW-channel_TuneZ2_Spring11": "TToBLNu_tW-channel",
-    "TToBLNu_s-channel_TuneZ2_Summer11": "TToBLNu_s-channel",
-    "TToBLNu_t-channel_TuneZ2_Summer11": "TToBLNu_t-channel",
-    "TToBLNu_tW-channel_TuneZ2_Summer11": "TToBLNu_tW-channel",
+    "T_t-channel_TuneZ2_Summer11":     "T_t-channel",
+    "Tbar_t-channel_TuneZ2_Summer11":  "Tbar_t-channel",
+    "T_tW-channel_TuneZ2_Summer11":    "T_tW-channel",
+    "Tbar_tW-channel_TuneZ2_Summer11": "Tbar_tW-channel",
+    "T_s-channel_TuneZ2_Summer11":     "T_s-channel",
+    "Tbar_s-channel_TuneZ2_Summer11":  "Tbar_s-channel",
 
     "QCD_Pt30to50_TuneZ2_Winter10":   "QCD_Pt30to50",
     "QCD_Pt50to80_TuneZ2_Winter10":   "QCD_Pt50to80",
@@ -134,6 +146,16 @@ _physicalToLogical = {
 }
 
 ## Map the datasets to be merged to the name of the merged dataset.
+_signalMerge = [
+    ("TTToHplusBWB_M80",  "TTToHplusBHminusB_M80",  "TTToHplus_M80"),
+    ("TTToHplusBWB_M90",  "TTToHplusBHminusB_M90",  "TTToHplus_M90"),
+    ("TTToHplusBWB_M100", "TTToHplusBHminusB_M100", "TTToHplus_M100"),
+    ("TTToHplusBWB_M120", "TTToHplusBHminusB_M120", "TTToHplus_M120"),
+    ("TTToHplusBWB_M140", "TTToHplusBHminusB_M140", "TTToHplus_M140"),
+    ("TTToHplusBWB_M150", "TTToHplusBHminusB_M150", "TTToHplus_M150"),
+    ("TTToHplusBWB_M155", "TTToHplusBHminusB_M155", "TTToHplus_M155"),
+    ("TTToHplusBWB_M160", "TTToHplusBHminusB_M160", "TTToHplus_M160"),
+]
 _datasetMerge = {
     "QCD_Pt30to50":   "QCD",
     "QCD_Pt50to80":   "QCD",
@@ -145,6 +167,12 @@ _datasetMerge = {
     "TToBLNu_s-channel": "SingleTop",
     "TToBLNu_t-channel": "SingleTop",
     "TToBLNu_tW-channel": "SingleTop",
+    "T_t-channel":     "SingleTop",
+    "Tbar_t-channel":  "SingleTop",
+    "T_tW-channel":    "SingleTop",
+    "Tbar_tW-channel": "SingleTop",
+    "T_s-channel":     "SingleTop",
+    "Tbar_s-channel":  "SingleTop",
 
     "DYJetsToLL_M10to50": "DYJetsToLL",
     "DYJetsToLL_M50": "DYJetsToLL",
@@ -166,6 +194,7 @@ _datasetOrder = [
     "TTToHplusBWB_M155",
     "TTToHplusBWB_M160",
     "TTToHplusBHminusB_M80",
+    "TTToHplusBHminusB_M90",
     "TTToHplusBHminusB_M100",
     "TTToHplusBHminusB_M120",
     "TTToHplusBHminusB_M140",
@@ -173,13 +202,21 @@ _datasetOrder = [
     "TTToHplusBHminusB_M155",
     "TTToHplusBHminusB_M160",
     "TTToHplus_M80",
+    "TTToHplus_M90",
     "TTToHplus_M100",
     "TTToHplus_M120",
     "TTToHplus_M140",
     "TTToHplus_M150",
     "TTToHplus_M155",
     "TTToHplus_M160",
+    "HplusTB_M180",
+    "HplusTB_M190",
+    "HplusTB_M290",
+    "HplusTB_M220",
+    "HplusTB_M250",
+    "HplusTB_M300",
     "QCD",
+    "QCDdata",
     "QCD_Pt20_MuEnriched",
     "WJets",
     "WToTauNu",
@@ -204,6 +241,7 @@ _legendLabels = {
     "TTToHplusBWB_M160": "H^{+}W^{-} m_{H^{#pm}}=160",
 
     "TTToHplusBHminusB_M80":  "H^{+}H^{-} m_{H^{#pm}}=80",
+    "TTToHplusBHminusB_M90":  "H^{+}H^{-} m_{H^{#pm}}=90",
     "TTToHplusBHminusB_M100": "H^{+}H^{-} m_{H^{#pm}}=100",
     "TTToHplusBHminusB_M120": "H^{+}H^{-} m_{H^{#pm}}=120",
     "TTToHplusBHminusB_M140": "H^{+}H^{-} m_{H^{#pm}}=140",
@@ -212,12 +250,20 @@ _legendLabels = {
     "TTToHplusBHminusB_M160": "H^{+}H^{-} m_{H^{#pm}}=160",
 
     "TTToHplus_M80":  "H^{#pm} m_{H^{#pm}}=80",
+    "TTToHplus_M90":  "H^{#pm} m_{H^{#pm}}=90",
     "TTToHplus_M100": "H^{#pm} m_{H^{#pm}}=100",
     "TTToHplus_M120": "H^{#pm} m_{H^{#pm}}=120",
     "TTToHplus_M140": "H^{#pm} m_{H^{#pm}}=140",
     "TTToHplus_M150": "H^{#pm} m_{H^{#pm}}=150",
     "TTToHplus_M155": "H^{#pm} m_{H^{#pm}}=155",
     "TTToHplus_M160": "H^{#pm} m_{H^{#pm}}=160",
+
+    "HplusTB_M180": "H^{#pm} m_{H^{#pm}}=180",
+    "HplusTB_M190": "H^{#pm} m_{H^{#pm}}=190",
+    "HplusTB_M200": "H^{#pm} m_{H^{#pm}}=200",
+    "HplusTB_M220": "H^{#pm} m_{H^{#pm}}=220",
+    "HplusTB_M250": "H^{#pm} m_{H^{#pm}}=250",
+    "HplusTB_M300": "H^{#pm} m_{H^{#pm}}=300",
 
     "TTJets":                "t#bar{t}+jets",
     "TT":                    "t#bar{t}",
@@ -232,6 +278,8 @@ _legendLabels = {
     "QCD_Pt170to300":        "QCD, 170 < #hat{p}_{T} < 300",
     "QCD_Pt300to470":        "QCD, 300 < #hat{p}_{T} < 470",
 
+    "QCDdata": "QCD (data driven)",
+
     "DYJetsToLL":            "DY+jets",
     "QCD_Pt20_MuEnriched":   "QCD (#mu enr.), #hat{p}_{T} > 20",
 
@@ -239,6 +287,12 @@ _legendLabels = {
     "TToBLNu_s-channel":     "Single t (s channel)",
     "TToBLNu_t-channel":     "Single t (t channel)",
     "TToBLNu_tW-channel":    "Single t (tW channel)",
+    "T_t-channel":           "Single t (t channel)",
+    "Tbar_t-channel":        "Single #bar{t} (t channel)",
+    "T_tW-channel":          "Single t (tW channel)",
+    "Tbar_tW-channel":       "Single #bar{t} (tW channel)",
+    "T_s-channel":           "Single t (s channel)",
+    "Tbar_s-channel":        "Single #bar{t} (s channel)",
 }
 
 ## Map the logical dataset names to plot styles
@@ -255,6 +309,7 @@ _plotStyles = {
     "TTToHplusBWB_M160":          styles.signal160Style,
 
     "TTToHplusBHminusB_M80":       styles.signalHH80Style,
+    "TTToHplusBHminusB_M90":       styles.signalHH90Style,
     "TTToHplusBHminusB_M100":      styles.signalHH100Style,
     "TTToHplusBHminusB_M120":      styles.signalHH120Style,
     "TTToHplusBHminusB_M140":      styles.signalHH140Style,
@@ -271,6 +326,13 @@ _plotStyles = {
     "TTToHplus_M155":          styles.signal155Style,
     "TTToHplus_M160":          styles.signal160Style,
 
+    "HplusTB_M180": styles.signal180Style,
+    "HplusTB_M190": styles.signal190Style,
+    "HplusTB_M200": styles.signal200Style,
+    "HplusTB_M220": styles.signal220Style,
+    "HplusTB_M250": styles.signal250Style,
+    "HplusTB_M300": styles.signal300Style,
+
     "TTJets":                styles.ttStyle,
     "TT":                    styles.ttStyle,
 
@@ -278,12 +340,17 @@ _plotStyles = {
     "WToTauNu":              styles.wStyle,
 
     "QCD":                   styles.qcdStyle,
+    "QCDdata":               styles.qcdStyle,
 
     "DYJetsToLL":            styles.dyStyle,
     "QCD_Pt20_MuEnriched":   styles.qcdStyle,
     "SingleTop":             styles.stStyle,
     "Diboson":               styles.dibStyle,
 }
+
+def isSignal(name):
+    return "TTToHplus" in name or "HplusTB" in name
+
 
 ## Update the default legend labels
 def updateLegendLabel(datasetName, legendLabel):
@@ -407,6 +474,21 @@ def mergeRenameReorderForDataMC(datasetMgr):
     newOrder.extend(mcNames)
     datasetMgr.selectAndReorder(newOrder)
 
+def mergeWHandHH(datasetMgr):
+    names = datasetMgr.getAllDatasetNames()
+    for signalWH, signalHH, target in _signalMerge:
+        if signalWH in names and signalHH in names:
+            datasetMgr.merge(target, [signalWH, signalHH])
+
+def replaceQCDFromData(datasetMgr, datasetQCDdata):
+    names = datasetMgr.getAllDatasetNames()
+    index = names.index("QCD")
+    names.pop(index)
+    names.insert(index, datasetQCDdata.getName())
+    datasetMgr.remove("QCD")
+    datasetMgr.append(datasetQCDdata)
+    datasetMgr.selectAndReorder(names)
+
 ## Creates a ratio histogram
 #
 # \param rootHisto1  TH1 dividend
@@ -415,11 +497,49 @@ def mergeRenameReorderForDataMC(datasetMgr):
 #
 # \return TH1 of rootHisto1/rootHisto2
 def _createRatio(rootHisto1, rootHisto2, ytitle):
-    ratio = rootHisto1.Clone()
-    ratio.Divide(rootHisto2)
-    styles.getDataStyle().apply(ratio)
-    ratio.GetYaxis().SetTitle(ytitle)
-    return ratio
+    if isinstance(rootHisto1, ROOT.TH1) and isinstance(rootHisto2, ROOT.TH1):
+        ratio = rootHisto1.Clone()
+        ratio.SetDirectory(0)
+        ratio.Divide(rootHisto2)
+        styles.getDataStyle().apply(ratio)
+        ratio.GetYaxis().SetTitle(ytitle)
+        return ratio
+    elif isinstance(rootHisto1, ROOT.TGraph) and isinstance(rootHisto2, ROOT.TGraph):
+        xvalues = []
+        yvalues = []
+        yerrs = []
+        for i in xrange(0, rootHisto1.GetN()):
+            yval = rootHisto2.GetY()[i]
+            if yval == 0:
+                continue
+            xvalues.append(rootHisto1.GetX()[i])
+            yvalues.append(rootHisto1.GetY()[i] / yval)
+            err1 = max(rootHisto1.GetErrorYhigh(i), rootHisto1.GetErrorYlow(i))
+            err2 = max(rootHisto2.GetErrorYhigh(i), rootHisto2.GetErrorYlow(i))
+            yerrs.append( yvalues[i]* math.sqrt( (err1/rootHisto1.GetY()[i])**2 +
+                                                 (err2/rootHisto2.GetY()[i])**2 ) )
+
+        gr = ROOT.TGraphAsymmErrors()
+        if len(xvalues) > 0:
+            gr = ROOT.TGraphAsymmErrors(len(xvalues), array.array("d", xvalues), array.array("d", yvalues),
+                                        rootHisto1.GetEXlow(), rootHisto1.GetEXhigh(),
+                                        array.array("d", yerrs), array.array("d", yerrs))
+        return gr
+    else:
+        raise Exception("Arguments are of unsupported type, rootHisto1 is %s and rootHisto2 is %s" % (type(rootHisto1).__name__, type(rootHisto2).__name__))
+
+def copyStyle(src, dst):
+    properties = []
+    if hasattr(src, "GetLineColor") and hasattr(dst, "SetLineColor"):
+        properties.extend(["LineColor", "LineStyle", "LineWidth"])
+    if hasattr(src, "GetFillColor") and hasattr(dst, "SetFillColor"):
+        properties.extend(["FillColor", "FillStyle"])
+    if hasattr(src, "GetMarkerColor") and hasattr(dst, "SetMarkerColor"):
+        properties.extend(["MarkerColor", "MarkerSize", "MarkerStyle"])
+
+    for prop in properties:
+        getattr(dst, "Set"+prop)(getattr(src, "Get"+prop)())
+
 
 ## Creates a 1-line for ratio plots
 #
@@ -427,8 +547,8 @@ def _createRatio(rootHisto1, rootHisto2, ytitle):
 # \param xmax  Maximum x value
 #
 # \return TGraph of line from (xmin, 1.0) to (xmax, 1.0)
-def _createRatioLine(xmin, xmax):
-    line = ROOT.TGraph(2, array.array("d", [xmin, xmax]), array.array("d", [1.0, 1.0]))
+def _createRatioLine(xmin, xmax, yvalue=1.0):
+    line = ROOT.TGraph(2, array.array("d", [xmin, xmax]), array.array("d", [yvalue, yvalue]))
 #    line.SetLineColor(ROOT.kBlack)
     line.SetLineColor(ROOT.kRed)
     line.SetLineWidth(2)
@@ -462,19 +582,21 @@ def _createCoverPad(xmin=0.065, ymin=0.285, xmax=0.165, ymax=0.33):
     coverPad.SetBorderMode(0)
     return coverPad
  
-
 ## Base class for plots
 class PlotBase:
     ## Construct plot from DatasetManager and histogram name
     #
     # \param datasetRootHistos  dataset.DatasetRootHistoBase objects to plot
     # \param saveFormats        List of suffixes for formats for which to save the plot
-    def __init__(self, datasetRootHistos, saveFormats=[".png", ".eps", ".C"]):
+    def __init__(self, datasetRootHistos=[], saveFormats=[".png", ".eps", ".C"]):
         # Create the histogram manager
         self.histoMgr = histograms.HistoManager(datasetRootHistos = datasetRootHistos)
 
         # Save the format
         self.saveFormats = saveFormats
+
+        self.plotObjectsBefore = []
+        self.plotObjectsAfter = []
 
     ## Set the default legend styles
     #
@@ -534,6 +656,35 @@ class PlotBase:
     def removeLegend(self):
         delattr(self, "legend")
 
+    def prependPlotObject(self, obj, option=""):
+        self.plotObjectsBefore.append( (obj, option) )
+
+    def appendPlotObject(self, obj, option=""):
+        self.plotObjectsAfter.append( (obj, option) )
+
+    def addCutBoxAndLine(self, cutValue, fillColor=18, box=True, line=True, **kwargs):
+        xmin = self.getFrame().GetXaxis().GetXmin()
+        xmax = self.getFrame().GetXaxis().GetXmax()
+        ymin = self.getFrame().GetYaxis().GetXmin()
+        ymax = self.getFrame().GetYaxis().GetXmax()
+    
+        if box:
+            if histograms.isLessThan(**kwargs):
+                xmin = cutValue
+            else:
+                xmax = cutValue
+
+            b = ROOT.TBox(xmin, ymin, xmax, ymax)
+            b.SetFillColor(fillColor)
+            self.prependPlotObject(b)
+
+        if line:
+            l = ROOT.TLine(cutValue, ymin, cutValue, ymax)
+            l.SetLineWidth(3)
+            l.SetLineStyle(ROOT.kDashed)
+            l.SetLineColor(ROOT.kBlack)
+            self.appendPlotObject(l)
+
     ## Add MC uncertainty histogram
     def addMCUncertainty(self):
         self.histoMgr.addMCUncertainty(styles.getErrorStyle())
@@ -546,9 +697,12 @@ class PlotBase:
         self.cf = histograms.CanvasFrame(self.histoMgr, filename, **kwargs)
         self.frame = self.cf.frame
 
+    def setFrameName(self, filename):
+        self.cf.canvas.SetName(filename)
+
     ## Get the frame TH1
     def getFrame(self):
-        return frame
+        return self.frame
 
     ## Get the TPad
     def getPad(self):
@@ -558,9 +712,16 @@ class PlotBase:
     #
     # Draw also the legend if one has been associated
     def draw(self):
+        for obj, option in self.plotObjectsBefore:
+            obj.Draw(option+"same")
+
         self.histoMgr.draw()
         if hasattr(self, "legend"):
             self.legend.Draw()
+
+        for obj, option in self.plotObjectsAfter:
+            obj.Draw(option+"same")
+
         # Redraw the axes in order to get the tick marks on top of the
         # histogram
         self.getPad().RedrawAxis()
@@ -615,9 +776,6 @@ class PlotSameBase(PlotBase):
         self.rootHistoPath = name
         self.normalizeToOne = normalizeToOne
 
-    def _isSignal(self, name):
-        return "TTToHplus" in name
-
     ## Get the path of the histograms in the ROOT files
     def getRootHistoPath(self):
         return self.rootHistoPath
@@ -628,8 +786,9 @@ class PlotSameBase(PlotBase):
     #
     # Signal histograms are identified by checking if the name contains "TTToHplus"
     def stackMCHistograms(self, stackSignal=False):
-        mcNames = self.datasetMgr.getMCDatasetNames()
-        mcNamesNoSignal = filter(lambda n: not self._isSignal(n), mcNames)
+        #mcNames = self.datasetMgr.getMCDatasetNames()
+        mcNames = [h.getName() for h in filter(lambda h: h.isMC(), self.histoMgr.getHistos())]
+        mcNamesNoSignal = filter(lambda n: not isSignal(n) and not "StackedMCSignal" in n, mcNames)
         if not stackSignal:
             mcNames = mcNamesNoSignal
 
@@ -638,7 +797,7 @@ class PlotSameBase(PlotBase):
         self.histoMgr.stackHistograms("StackedMC", mcNames)
 
     def stackMCSignalHistograms(self):
-        mcSignal = filter(lambda n: self._isSignal(n), self.datasetMgr.getMCDatasetNames())
+        mcSignal = filter(lambda n: isSignal(n), self.datasetMgr.getMCDatasetNames())
         self.histoMgr.stackHistograms("StackedMCSignal", mcSignal)
 
     ## Add MC uncertainty band
@@ -872,7 +1031,17 @@ class ComparisonPlot(PlotBase):
     #
     # The possible ratio is calculated as datasetRootHisto1/datasetRootHisto2
     def __init__(self, datasetRootHisto1, datasetRootHisto2, **kwargs):
-        PlotBase.__init__(self,[datasetRootHisto1, datasetRootHisto2], **kwargs)
+        if isinstance(datasetRootHisto1, dataset.DatasetRootHistoBase) and isinstance(datasetRootHisto2, dataset.DatasetRootHistoBase):
+            PlotBase.__init__(self,[datasetRootHisto1, datasetRootHisto2], **kwargs)
+        else:
+            # assume datasetRootHisto* arguments are HistoBase objects instead
+            if isinstance(datasetRootHisto1, dataset.DatasetRootHistoBase):
+                raise Exception("Input types can't be a mixture of DatasetRootHistoBase and something, datasetRootHisto2 is %s" % type(datasetRootHisto2).__name__)
+            if isinstance(datasetRootHisto2, dataset.DatasetRootHistoBase):
+                raise Exception("Input types can't be a mixture of DatasetRootHistoBase and something, datasetRootHisto1 is %s" % type(datasetRootHisto1).__name__)
+            PlotBase.__init__(self, **kwargs)
+            self.histoMgr.appendHisto(datasetRootHisto1)
+            self.histoMgr.appendHisto(datasetRootHisto2)
 
     ## Create TCanvas and frames for the histogram and a data/MC ratio
     #
@@ -880,13 +1049,16 @@ class ComparisonPlot(PlotBase):
     # \param createRatio  Create also the ratio pad?
     # \param coverPadOpts Options for cover TPad, forwarded to _createCoverPad()
     # \param kwargs       Keyword arguments, forwarded to PlotBase.createFrame() or histograms.CanvasFrameTwo.__init__()
-    def createFrame(self, filename, createRatio=False, coverPadOpts={}, **kwargs):
+    def createFrame(self, filename, createRatio=False, invertRatio=False, coverPadOpts={}, **kwargs):
         if not createRatio:
             PlotBase.createFrame(self, filename, **kwargs)
         else:
             histos = self.histoMgr.getHistos()
-            self.ratio = _createRatio(histos[0].getRootHisto(), histos[1].getRootHisto(),
-                                      "%s/%s" % (histos[0].getName(), histos[1].getName()))
+            (numerator, denominator) = (histos[0], histos[1])
+            if invertRatio:
+                (numerator, denominator) = (denominator, numerator)
+            self.ratio = _createRatio(numerator.getRootHisto(), denominator.getRootHisto(),
+                                      "%s/%s" % (numerator.getName(), denominator.getName()))
 
             self.cf = histograms.CanvasFrameTwo(self.histoMgr, [self.ratio], filename, **kwargs)
             self.frame = self.cf.frame
@@ -935,8 +1107,12 @@ class ComparisonPlot(PlotBase):
             self.cf.canvas.cd(1)
             self.cf.pad1.Pop() # Move the first pad on top
 
-    def addLuminosityText(self, *args, **kwargs):
-        pass
+    def setLuminosity(self, lumi):
+        self.luminosity = lumi
+
+    def addLuminosityText(self, x=None, y=None):
+        if hasattr(self, "luminosity"):
+            histograms.addLuminosityText(x, y, self.luminosity)
 
     ## \var ratio
     # Holds the TH1 for data/MC ratio, if exists
@@ -945,3 +1121,91 @@ class ComparisonPlot(PlotBase):
     ## \var coverPad
     # Holds TPad to cover the larget Y axis value of the ratio TPad,
     # if ratio exists
+
+class ComparisonManyPlot(PlotBase):
+    def __init__(self, histoReference, histoCompares, **kwargs):
+        if isinstance(histoReference, dataset.DatasetRootHistoBase):
+            PlotBase.__init__(self, [histoReference]+histoCompares, **kwargs)
+        else:
+            # assume all argumetns are HistoBase objects instead
+            for i, hc in enumerate(histoCompares):
+                if isinstance(hc, dataset.DatasetRootHistoBase):
+                    raise Exception("Input types can't be a mixture of DatasetRootHistoBase and something, histoReference is %s, histoCompare %d is %s" % (type(histoReference).__name__, i, type(hc).__name__))
+            PlotBase.__init__(self, **kwargs)
+            for h in [histoReference]+histoCompares:
+                self.histoMgr.appendHisto(h)
+
+    def createFrame(self, filename, createRatio=False, invertRatio=False, coverPadOpts={}, **kwargs):
+        if not createRatio:
+            PlotBase.createFrame(self, filename, **kwargs)
+        else:
+            histos = self.histoMgr.getHistos()
+            reference = histos[0]
+            compares = histos[1:]
+            self.ratios = []
+            for ch in compares:
+                (numerator, denominator) = (reference.getRootHisto(), ch.getRootHisto())
+                if invertRatio:
+                    (numerator, denominator) = (denominator, numerator)
+                ratio = _createRatio(numerator, denominator, "%s/%s" % (reference.getName(), ch.getName()))
+                copyStyle(ch.getRootHisto(), ratio)
+                self.ratios.append(ratio)
+
+            self.cf = histograms.CanvasFrameTwo(self.histoMgr, self.ratios, filename, **kwargs)
+            self.frame = self.cf.frame
+            self.cf.frame2.GetYaxis().SetNdivisions(505)
+
+            self.coverPadOpts = coverPadOpts
+
+    ## Get the upper frame TH1
+    def getFrame1(self):
+        return self.cf.frame1
+
+    ## Get the lower frame TH1
+    def getFrame2(self):
+        return self.cf.frame2
+
+    ## Get the upper TPad
+    def getPad1(self):
+        return self.cf.pad1
+
+    ## Get the lower TPad
+    def getPad2(self):
+        return self.cf.pad2
+
+    def draw(self):
+        PlotBase.draw(self)
+        if hasattr(self, "ratios"):
+            self.cf.canvas.cd(2)
+
+            self.line = _createRatioLine(self.cf.frame.getXmin(), self.cf.frame.getXmax())
+            self.line.Draw("L")
+
+            ratios = self.ratios[:]
+            ratios.reverse()
+            for r in ratios:
+                r.Draw("EP same")
+
+            # Redraw the axes in order to get the tick marks on top of the
+            # histogram
+            self.getPad1().RedrawAxis()
+
+            self.cf.canvas.cd()
+
+            # Create an empty, white-colored pad to hide the topmost
+            # label of the y-axis of the lower pad. Then move the
+            # upper pad on top, so that the lowest label of the y-axis
+            # of it is shown
+            self.coverPad = _createCoverPad(**self.coverPadOpts)
+            self.coverPad.Draw()
+
+            self.cf.canvas.cd(1)
+            self.cf.pad1.Pop() # Move the first pad on top
+
+    def setLuminosity(self, lumi):
+        self.luminosity = lumi
+
+    def addLuminosityText(self, x=None, y=None):
+        if hasattr(self, "luminosity"):
+            histograms.addLuminosityText(x, y, self.luminosity)
+

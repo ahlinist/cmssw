@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env bin
+# had to change because of CVS complaining about this: #!/usr/bin env python
 import ROOT
 
 def FindFirstBinAbove(TH1, threshold, axis):
