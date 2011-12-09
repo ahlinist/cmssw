@@ -54,14 +54,17 @@ namespace HPlus {
     edm::Service<TFileService> fs;
     TFileDirectory myDir = fs->mkdir("GlobalElectronVeto");
     
-    hElectronPt  = makeTH<TH1F>(myDir, "GlobalElectronPt", "GlobalElectronPt;isolated electron p_{T}, GeV/c;N_{electrons} / 5 GeV/c", 80, 0.0, 400.0);
-    hElectronEta = makeTH<TH1F>(myDir, "GlobalElectronEta", "GlobalElectronEta;isolated electron #eta;N_{electrons} / 0.1", 60, -3.0, 3.0);
+    hElectronPt  = makeTH<TH1F>(myDir, "GlobalElectronPt", "GlobalElectronPt;isolated electron p_{T}, GeV/c;N_{electrons} / 5 GeV/c", 400, 0.0, 400.0);
+    hElectronEta = makeTH<TH1F>(myDir, "GlobalElectronEta", "GlobalElectronEta;isolated electron #eta;N_{electrons} / 0.1", 300, -3.0, 3.0);
+    hElectronEta_identified = makeTH<TH1F>(myDir, "GlobalElectronEta_identified", "GlobalElectronEta_identified;isolated electron #eta;N_{electrons} / 0.1", 300, -3.0, 3.0);
+    hElectronPt_identified_eta  = makeTH<TH1F>(myDir, "GlobalElectronPt_identified_eta", "GlobalElectronPt;isolated electron p_{T}, GeV/c;N_{electrons} / 5 GeV/c", 400, 0.0, 400.0);
+
     hElectronPt_matchingMCelectron  = makeTH<TH1F>(myDir, "GlobalElectronPt_matchingMCelectron", "GlobalElectronPt_matchingMCelectron", 400, 0.0, 400.0);
     hElectronEta_matchingMCelectron = makeTH<TH1F>(myDir, "GlobalElectronEta_matchingMCelectron", "GlobalElectronEta_matchingMCelectron", 400, -3.0, 3.0);
     hElectronPt_matchingMCelectronFromW  = makeTH<TH1F>(myDir, "GlobalElectronPt_matchingMCelectronFromW", "GlobalElectronPt_matchingMCelectronFromW", 400, 0.0, 400.0);
     hElectronEta_matchingMCelectronFromW = makeTH<TH1F>(myDir, "GlobalElectronEta_matchingMCelectronFromW", "GlobalElectronEta_matchingMCelectronFromW", 400, -3.0, 3.0);
-    hElectronPt_gsfTrack  = makeTH<TH1F>(myDir, "GlobalElectronPt_gsfTrack", "GlobalElectronPt_gsfTrack", 100, 0.0, 200.0);
-    hElectronEta_gsfTrack = makeTH<TH1F>(myDir, "GlobalElectronEta_gsfTrack", "GlobalElectronEta_gsfTrack", 60, -3.0, 3.0);
+    hElectronPt_gsfTrack  = makeTH<TH1F>(myDir, "GlobalElectronPt_gsfTrack", "GlobalElectronPt_gsfTrack", 400, 0.0, 400.0);
+    hElectronEta_gsfTrack = makeTH<TH1F>(myDir, "GlobalElectronEta_gsfTrack", "GlobalElectronEta_gsfTrack", 300, -3.0, 3.0);
     hElectronEta_superCluster = makeTH<TH1F>(myDir, "GlobalElectronEta_superCluster", "GlobalElectronEta_superCluster", 60, -3.0, 3.0);
     hElectronPt_AfterSelection = makeTH<TH1F>(myDir, "GlobalElectronPt_AfterSelection", "GlobalElectronPt_AfterSelection", 100, 0.0, 200.0);
     hElectronEta_AfterSelection = makeTH<TH1F>(myDir, "GlobalElectronPt_AfterSelection", "GlobalElectronEta_AfterSelection", 60, -3.0, 3.0);
@@ -69,8 +72,6 @@ namespace HPlus {
     hElectronEta_gsfTrack_AfterSelection = makeTH<TH1F>(myDir, "GlobalElectronPt_gsfTrack_AfterSelection", "GlobalElectronPt_gsTrack_AfterSelection", 60, -3.0, 3.0);
     hElectronImpactParameter = makeTH<TH1F>(myDir, "ElectronImpactParameter", "ElectronImpactParameter", 100, 0.0, 0.1);
 
-    bDecision = false;
-    bPassedElecID = false;
     bUseLooseID = false;
     bUseRobustLooseID = false;
     bUseTightID = false;
@@ -107,7 +108,10 @@ namespace HPlus {
   GlobalElectronVeto::Data GlobalElectronVeto::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
     // Reset data variables
     fSelectedElectronPt = -1.0;
+    fSelectedElectronPtBeforePtCut = -1.0;
     fSelectedElectronEta = -999.99;
+    fSelectedElectrons.clear();
+
     if(!bUseCustomElectronID) return Data(this, ElectronSelection(iEvent,iSetup));
     else{
       throw cms::Exception("Error") << "The ElectronSelection \"" << fElecSelection << "\" cannot be called with the function:\n\"GlobalElectronVeto::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)\"\nFor this selection you must call the function:\n\"GlobalElectronVeto::analyzeCustomElecID(const edm::Event& iEvent, const edm::EventSetup& iSetup)\"" << std::endl;      
@@ -118,7 +122,9 @@ namespace HPlus {
   GlobalElectronVeto::Data GlobalElectronVeto::analyzeCustomElecID(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
     // Reset data variables
     fSelectedElectronPt = -1.0;
+    fSelectedElectronPtBeforePtCut = -1.0;
     fSelectedElectronEta = -999.99;
+    fSelectedElectrons.clear();
     
     if(bUseCustomElectronID) return Data(this, CustomElectronSelection(iEvent,iSetup));
     else{
@@ -129,8 +135,9 @@ namespace HPlus {
 
   bool GlobalElectronVeto::ElectronSelection(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     // Create and attach handle to Electron Collection
-    edm::Handle<std::vector<pat::Electron> > myElectronHandle;
+    edm::Handle<edm::View<pat::Electron> > myElectronHandle;
     iEvent.getByLabel(fElecCollectionName, myElectronHandle);
+    edm::PtrVector<pat::Electron> electrons = myElectronHandle->ptrVector();
 
     // In the case where the Electron Collection handle is empty...
     if ( !myElectronHandle->size() ) return true;
@@ -140,6 +147,7 @@ namespace HPlus {
     
     // Reset/initialise variables
     float myHighestElecPt = -1.0;
+    float myHighestElecPtBeforePtCut = -1.0;
     float myHighestElecEta = -999.99;
     // 
     bool bElecPresent = false;
@@ -149,10 +157,10 @@ namespace HPlus {
     bool bElecFiducialVolumeCut  = false;
     bool bElecMatchingMCelectron = false;
     bool bElecMatchingMCelectronFromW = false;
+    bool bPassedElecID = false;
 
-   
     // Loop over all Electrons
-    for(pat::ElectronCollection::const_iterator iElectron = myElectronHandle->begin(); iElectron != myElectronHandle->end(); ++iElectron) {
+    for(edm::PtrVector<pat::Electron>::const_iterator iElectron = electrons.begin(); iElectron != electrons.end(); ++iElectron) {
 
       // keep track of the electrons analyzed
       bElecPresent = true;
@@ -166,20 +174,20 @@ namespace HPlus {
       bool bElecIDIsRobustHighEnergy = false;
 
       // Simple Electron ID's return 1 or 0 (true or false)
-      if( (*iElectron).electronID("eidLoose") ) bElecIDIsLoose = true;
-      if( (*iElectron).electronID("eidRobustLoose") ) bElecIDIsRobustLoose = true;
-      if( (*iElectron).electronID("eidTight") ) bElecIDIsTight = true;
-      if( (*iElectron).electronID("eidRobustTight") ) bElecIDIsRobustTight = true;
-      if( (*iElectron).electronID("eidRobustHighEnergy") ) bElecIDIsRobustHighEnergy = true;
+      if( (*iElectron)->electronID("eidLoose") ) bElecIDIsLoose = true;
+      if( (*iElectron)->electronID("eidRobustLoose") ) bElecIDIsRobustLoose = true;
+      if( (*iElectron)->electronID("eidTight") ) bElecIDIsTight = true;
+      if( (*iElectron)->electronID("eidRobustTight") ) bElecIDIsRobustTight = true;
+      if( (*iElectron)->electronID("eidRobustHighEnergy") ) bElecIDIsRobustHighEnergy = true;
       // Electron ID's with working points return 0,1,2,3,4,5,6,7.
       // Note: 0=fails, 1=passes eID , 2=passes eIsolation , 3=passes eID and eIsolation, 4=passes conversion rejection
       // 5=passes conversion rejection and eID, 6=passes conversion rejection and eIsolation, 7=passes the whole selection
-      float fElecIDSimpleEleId95relIso =  (*iElectron).electronID("simpleEleId95relIso");
-      float fElecIDSimpleEleId90relIso =  (*iElectron).electronID("simpleEleId90relIso");
-      float fElecIDSimpleEleId85relIso =  (*iElectron).electronID("simpleEleId85relIso"); 
-      float fElecIDSimpleEleId80relIso =  (*iElectron).electronID("simpleEleId80relIso");
-      float fElecIDSimpleEleId70relIso =  (*iElectron).electronID("simpleEleId70relIso");
-      float fElecIDSimpleEleId60relIso =  (*iElectron).electronID("simpleEleId60relIso");
+      float fElecIDSimpleEleId95relIso =  (*iElectron)->electronID("simpleEleId95relIso");
+      float fElecIDSimpleEleId90relIso =  (*iElectron)->electronID("simpleEleId90relIso");
+      float fElecIDSimpleEleId85relIso =  (*iElectron)->electronID("simpleEleId85relIso"); 
+      float fElecIDSimpleEleId80relIso =  (*iElectron)->electronID("simpleEleId80relIso");
+      float fElecIDSimpleEleId70relIso =  (*iElectron)->electronID("simpleEleId70relIso");
+      float fElecIDSimpleEleId60relIso =  (*iElectron)->electronID("simpleEleId60relIso");
 
       // Take care of the Simple Electron ID counters
       if( bElecIDIsLoose) increment(fElecIDSubCountElecIDLoose);
@@ -196,16 +204,16 @@ namespace HPlus {
       if( fElecIDSimpleEleId60relIso == 7) increment(fElecIDSubCountSimpleEleId60relIso);
 
       // Obtain reference to an Electron track
-      reco::GsfTrackRef myGsfTrackRef = (*iElectron).gsfTrack(); // gsfElecs were selected to create the current PatTuples
+      reco::GsfTrackRef myGsfTrackRef = (*iElectron)->gsfTrack(); // gsfElecs were selected to create the current PatTuples
       
       // Check that track was found
       if (myGsfTrackRef.isNull()) continue;
       bElecHasGsfTrkOrTrk = true;
       
       // Electron Variables (Pt, Eta etc..)
-      float myElectronPt  = (*iElectron).pt();
-      float myElectronEta = (*iElectron).eta();
-      // float myElectronPhi = (*iElectron).phi();
+      float myElectronPt  = (*iElectron)->pt();
+      float myElectronEta = (*iElectron)->eta();
+      // float myElectronPhi = (*iElectron)->phi();
 
       // Fill histos with all-Electrons Pt and Eta
       hElectronPt->Fill(myElectronPt, fEventWeight.getWeight());
@@ -213,18 +221,9 @@ namespace HPlus {
       hElectronPt_gsfTrack->Fill(myGsfTrackRef->pt(), fEventWeight.getWeight());
       hElectronEta_gsfTrack->Fill(myGsfTrackRef->eta(), fEventWeight.getWeight());
 
-      // 1) Apply Pt cut requirement
-      if (myElectronPt < fElecPtCut) continue;
-      bElecPtCut = true;
-
-
-      // 2) Apply Eta cut requirement      
-      if (std::fabs(myElectronEta) > fElecEtaCut) continue;
-      bElecEtaCut = true;
-
       // Apply electron fiducial volume cut
       // Obtain reference to the superCluster
-      reco::SuperClusterRef mySuperClusterRef = (*iElectron).superCluster(); 
+      reco::SuperClusterRef mySuperClusterRef = (*iElectron)->superCluster(); 
       
       // Check that superCluster was found
       if ( mySuperClusterRef.isNull()) continue;
@@ -236,25 +235,44 @@ namespace HPlus {
 
 
       bElecHasGsfTrkOrTrk = true;   
-      // 3) Apply Electron ID (choose low efficiency => High Purity)
-      if( (bUseLooseID) && (bElecIDIsLoose) ) bPassedElecID = true;
-      else if( (bUseRobustLooseID ) && (bElecIDIsRobustLoose) ) bPassedElecID = true;
-      else if( (bUseTightID) && (bElecIDIsTight) ) bPassedElecID = true;
-      else if( (bUseRobustTightID)         && (bElecIDIsRobustTight) ) bPassedElecID = true;
-      else if( (bUseRobustHighEnergyID)    && (bElecIDIsRobustHighEnergy) ) bPassedElecID = true;
-      else if( (bUseSimpleEleId95relIsoID) && (fElecIDSimpleEleId95relIso == 7) ) bPassedElecID = true;
-      else if( (bUseSimpleEleId90relIsoID) && (fElecIDSimpleEleId90relIso == 7) ) bPassedElecID = true;
-      else if( (bUseSimpleEleId85relIsoID) && (fElecIDSimpleEleId85relIso == 7) ) bPassedElecID = true;
-      else if( (bUseSimpleEleId80relIsoID) && (fElecIDSimpleEleId80relIso == 7) ) bPassedElecID = true;
-      else if( (bUseSimpleEleId70relIsoID) && (fElecIDSimpleEleId70relIso == 7) ) bPassedElecID = true;
-      else if( (bUseSimpleEleId60relIsoID) && (fElecIDSimpleEleId60relIso == 7) ) bPassedElecID = true;
-      else{
-	// This should never be called
-	bPassedElecID = false;
-      }
+      // 1) Apply Electron ID (choose low efficiency => High Purity)
+      bool thisPassedID = false;
+      if( (bUseLooseID) && (bElecIDIsLoose) ) thisPassedID = true;
+      else if( (bUseRobustLooseID ) && (bElecIDIsRobustLoose) ) thisPassedID = true;
+      else if( (bUseTightID) && (bElecIDIsTight) ) thisPassedID = true;
+      else if( (bUseRobustTightID)         && (bElecIDIsRobustTight) ) thisPassedID = true;
+      else if( (bUseRobustHighEnergyID)    && (bElecIDIsRobustHighEnergy) ) thisPassedID = true;
+      else if( (bUseSimpleEleId95relIsoID) && (fElecIDSimpleEleId95relIso == 7) ) thisPassedID = true;
+      else if( (bUseSimpleEleId90relIsoID) && (fElecIDSimpleEleId90relIso == 7) ) thisPassedID = true;
+      else if( (bUseSimpleEleId85relIsoID) && (fElecIDSimpleEleId85relIso == 7) ) thisPassedID = true;
+      else if( (bUseSimpleEleId80relIsoID) && (fElecIDSimpleEleId80relIso == 7) ) thisPassedID = true;
+      else if( (bUseSimpleEleId70relIsoID) && (fElecIDSimpleEleId70relIso == 7) ) thisPassedID = true;
+      else if( (bUseSimpleEleId60relIsoID) && (fElecIDSimpleEleId60relIso == 7) ) thisPassedID = true;
       
+      if(!thisPassedID) continue;
+      fSelectedElectrons.push_back(*iElectron);
+      bPassedElecID = true;
+
+      hElectronEta_identified->Fill(myElectronEta);
+
+      if(std::abs(myElectronEta) < fElecEtaCut) {
+        myHighestElecPtBeforePtCut = std::max(myHighestElecPtBeforePtCut, myElectronPt);
+      hElectronPt_identified_eta->Fill(myElectronPt);
+      }
+
+      // 2) Apply Pt cut requirement
+      if (myElectronPt < fElecPtCut) continue;
+      bElecPtCut = true;
+
+
+      // 3) Apply Eta cut requirement      
+      if (std::abs(myElectronEta) >= fElecEtaCut) continue;
+      bElecEtaCut = true;
+
+
+
       // If Electron survives all cuts (1->3) then it is considered an isolated Electron. Now find the max Electron Pt.
-	if (myElectronPt > myHighestElecPt) {
+	if (thisPassedID && myElectronPt > myHighestElecPt) {
 	  myHighestElecPt = myElectronPt;
 	  myHighestElecEta = myElectronEta;
 	}
@@ -269,7 +287,7 @@ namespace HPlus {
       if(!iEvent.isRealData()) {
         for (size_t i=0; i < genParticles->size(); ++i){  
           const reco::Candidate & p = (*genParticles)[i];
-          const reco::Candidate & electron = (*iElectron);
+          const reco::Candidate & electron = (**iElectron);
           int status = p.status();
           double deltaR = ROOT::Math::VectorUtil::DeltaR( p.p4() , electron.p4() );
           if ( deltaR > 0.05 || status != 1) continue;

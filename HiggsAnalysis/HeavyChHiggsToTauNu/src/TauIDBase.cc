@@ -13,6 +13,7 @@ namespace HPlus {
     fRtauCut(iConfig.getUntrackedParameter<double>("rtauCut")),
     fAntiRtauCut(iConfig.getUntrackedParameter<double>("antiRtauCut")),
     fInvMassCut(iConfig.getUntrackedParameter<double>("invMassCut")),
+    fEMFractionCutValue(iConfig.getUntrackedParameter<double>("maximumEMFractionCut")),
     fCounterPackager(eventCounter, eventWeight),
     fEventWeight(eventWeight),
     fBaseLabel(baseLabel)
@@ -26,6 +27,7 @@ namespace HPlus {
     
     // Initialize counter objects for tau candidate selection
     fIDAllTauCandidates = fCounterPackager.addSubCounter(baseLabel, "AllTauCandidates", 0);
+    fIDDecayModeFinding = fCounterPackager.addSubCounter(baseLabel, "DecayModeFinding", 0);
     fIDJetPtCut = fCounterPackager.addSubCounter(baseLabel, "TauJetPt",
       makeTH<TH1F>(fMyDir, "TauCand_JetPt", "TauJetPt;#tau jet p_{T}, GeV/c;N_{jets} / 2 GeV/c", 100, 0., 200.));
     fIDJetEtaCut = fCounterPackager.addSubCounter(baseLabel, "TauJetEta",
@@ -45,6 +47,7 @@ namespace HPlus {
     fIDInvMassCut = -1;
     fIDDeltaECut = -1; 
     fIDFlightpathCut = -1;
+    fIDEMFractionCut = -1;
     // Histograms
     hRtauVsEta = makeTH<TH2F>(fMyDir, "TauID_RtauDetail_RtauVsEta", "RtauVsEta;R_{#tau};#tau eta", 60, 0.0, 1.2, 60, -3., 3.);
     /*
@@ -87,10 +90,15 @@ namespace HPlus {
       fIDFlightpathCut = fCounterPackager.addSubCounter(fBaseLabel, "TauFlightpathCut",
         makeTH<TH1F>(fMyDir, "TauID_FlightpathCut", "TauFlightpathCut;#tau flight path signif.;N_{jets} / 0.2", 75, -5., 10));
     }
+    fIDEMFractionCut = fCounterPackager.addSubCounter(fBaseLabel, "EMFractionCut", 
+      makeTH<TH1F>(fMyDir, "TauCand_EMFractionCut", "TauCandEMFractionCut;#tau EM fraction; N_{jets} / 0.01", 100, 0., 1.));
+  }
+
+  void TauIDBase::incrementAllCandidates() {
+    fCounterPackager.incrementSubCount(fIDAllTauCandidates);
   }
 
   bool TauIDBase::passTauCandidateSelection(const edm::Ptr<pat::Tau> tau) {
-    fCounterPackager.incrementSubCount(fIDAllTauCandidates);
     // Jet pt cut
     double myJetPt = tau->pt();
     double myJetEta = tau->eta();
@@ -168,7 +176,14 @@ namespace HPlus {
     // All cuts passed, return true
     return true;
   }
-  
+
+  bool TauIDBase::passEMFractionCut(const edm::Ptr<pat::Tau> tau) {
+    fCounterPackager.fill(fIDEMFractionCut, tau->emFraction());
+    if (tau->emFraction() > fEMFractionCutValue) return false;
+    fCounterPackager.incrementSubCount(fIDEMFractionCut);
+    return true;
+  }
+
   void TauIDBase::reset() {
     fCounterPackager.reset();
   }
