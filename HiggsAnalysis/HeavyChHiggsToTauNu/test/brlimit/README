@@ -1,0 +1,74 @@
+To run the analysis in lxplus, in afs-visible area (not tmp directory):
+========================================================================
+
+These instructions describe how to run the "shapes" version with LandS.
+
+0) Requirements:
+--------------------
+
+The following files are needed to a separate working directory with a unique name, 
+replace "*" by the mass points 80/100/120/140/150/155/160:
+
+-datacard*.txt (LandS datacard files)
+-hplus*.txt    (LandS shapes histograms)
+
+The working directory should have a unique name to make possible
+running several analysis jobs simultaneously.  The name of the
+directory is used as the name of the LSF job, and a new job cannot be
+started if a job with the same name is still running. 
+
+
+1) Setup:
+----------
+
+In addition to the files mentioned in 0), copy the running files to the working 
+directory:
+
+ cp ??/brlimit/mkBrLimits* .
+
+
+2) Set number of MC toys and luminosity:
+-----------------------------------------
+
+By default, 500 toy MC runs are performed.  This takes about 4 hours.  You can
+change the number of toys in the file mkBrLimits_runExp .
+
+Type the integrated luminosity as a plain number to a file "input_luminosity".
+
+
+3) Running
+-------------
+
+Just type the following command to launch the jobs:
+
+ ./mkBrLimits
+
+Jobs are submitted LSF, and as a result, the following limit plots are
+generated:
+
+ -brlimits.png,          limit plot (mH,Br)
+ -mssmLimits_mh.png,     limit plot (mH,tanB)
+ -mssmLimits_mus_mh.png, limit plot (mH,tanB) with various mu values 
+
+Also the corresponding eps files are generated.
+
+In "mkBrLimits_mssmLimit.py", you may want to toggle the setting
+"useMA" to show results in mA,tanb space, or the setting "showTeva"
+and "showLEP" to show/hide Tevatron and LEP results.
+
+Tip: if you have already run the jobs, and want to simpley regenerate plots 
+(change plotting style or some other reason), you can do this quickly with 
+the following command, which reads the output files from the directory 
+"outputs" and producess the plots:
+
+ ./mkBrLimits_process 
+
+
+Possible problems:
+===================
+
+* no output files: 
+  -check that you are in lxplus, and your working area can be 
+   accessed by afs:  do not use a /tmp/ directory
+
+===========================================================================
