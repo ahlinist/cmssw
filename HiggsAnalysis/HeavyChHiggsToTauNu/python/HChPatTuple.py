@@ -23,15 +23,17 @@ import HiggsAnalysis.HeavyChHiggsToTauNu.HChTools as HChTools
 import HiggsAnalysis.HeavyChHiggsToTauNu.tauEmbedding.muonSelectionPF_cff as MuonSelection
 import HiggsAnalysis.HeavyChHiggsToTauNu.tauEmbedding.RemoveSoftMuonVisitor as RemoveSoftMuonVisitor
 
-tauPreSelection = "pt() > 10"
+tauPreSelection = "pt() > 15"
 #tauPreSelection = ""
 
+jetPreSelection = "pt() > 10"
+#jetPreSelection = ""
 
 ##################################################
 #
 # PAT on the fly
 #
-def addPatOnTheFly(process, options, dataVersion, jetTrigger=None,
+def addPatOnTheFly(process, options, dataVersion,
                    doPlainPat=True, doPF2PAT=False,
                    plainPatArgs={}, pf2patArgs={},
                    doMcPreselection=False):
@@ -44,12 +46,13 @@ def addPatOnTheFly(process, options, dataVersion, jetTrigger=None,
             setPatArg(args, name, value)
 
     counters = []
+    if dataVersion.isData():
+        counters.extend(HChDataSelection.dataSelectionCounters[:])
+    
     if options.tauEmbeddingInput != 0:
         import HiggsAnalysis.HeavyChHiggsToTauNu.tauEmbedding.PFEmbeddingSource_cff as PFEmbeddingSource
-        counters = MuonSelection.muonSelectionCounters[:]
+        counters.extend(MuonSelection.muonSelectionCounters[:])
         counters.extend(PFEmbeddingSource.muonSelectionCounters)
-    elif dataVersion.isData():
-        counters = HChDataSelection.dataSelectionCounters[:]
     elif dataVersion.isMC() and doMcPreselection:
         counters = HChMcSelection.mcSelectionCounters[:]
     
@@ -61,6 +64,9 @@ def addPatOnTheFly(process, options, dataVersion, jetTrigger=None,
         if dataVersion.isMC() and doMcPreselection:
             process.eventPreSelection = HChMcSelection.addMcSelection(process, dataVersion, options.trigger)
             seq *= process.eventPreSelection
+        if options.doTauHLTMatchingInAnalysis != 0:
+            process.patTausHpsPFTauTauTriggerMatched = HChTriggerMatching.createTauTriggerMatchingInAnalysis(options.trigger, "selectedPatTausHpsPFTau")
+            seq *= process.patTausHpsPFTauTauTriggerMatched
         return (seq, counters)
 
     print "Running PAT on the fly"
@@ -81,8 +87,7 @@ def addPatOnTheFly(process, options, dataVersion, jetTrigger=None,
                              "doTauHLTMatching": False,
                              "doPatCalo": False,
                              "doBTagging": True,
-                             "doPatElectronID": False,
-                             "doPatMET": False})
+                             "doPatElectronID": False})
 
         process.patSequence = addPat(process, dataVersion, plainPatArgs=plainPatArgs)
         # FIXME: this is broken at the moment
@@ -135,14 +140,11 @@ def addPatOnTheFly(process, options, dataVersion, jetTrigger=None,
 
         for args in argsList:
             if args.get("doTauHLTMatching", True):
-                if options.trigger == "":
-                    raise Exception("Command line argument 'trigger' is missing")
-    
-                print "Trigger used for tau matching:", options.trigger
-                args["matchingTauTrigger"] = options.trigger
-                if jetTrigger != None:
-                    print "Trigger used for jet matching:", jetTrigger
-                    args["matchingJetTrigger"] = jetTrigger
+                if not "matchingTauTrigger" in args:
+                    if options.trigger == "":
+                        raise Exception("Command line argument 'trigger' is missing")
+                    args["matchingTauTrigger"] = options.trigger
+                print "Trigger used for tau matching:", args["matchingTauTrigger"]
 
         process.patSequence = addPat(process, dataVersion,
                                      doPlainPat=doPlainPat, doPF2PAT=doPF2PAT,
@@ -189,7 +191,7 @@ def addPat(process, dataVersion,
     if outdict.has_key("out"):
         out = outdict["out"]
         out.outputCommands.extend([
-                "keep *_goodPrimaryVertices*_*_*",
+ #               "keep *_goodPrimaryVertices*_*_*",
                 "keep *_offlinePrimaryVerticesSumPt_*_*",
                 "keep *_offlineBeamSpot_*_*",
                 ])
@@ -204,8 +206,8 @@ def addPat(process, dataVersion,
     # patDefaultSequence), but run first (we use some stuff produced
     # with plain PAT in PF2PAT)
     sequence = cms.Sequence(
-        process.goodPrimaryVertices *
-        process.goodPrimaryVertices10 *
+#        process.goodPrimaryVertices *
+#        process.goodPrimaryVertices10 *
         process.offlinePrimaryVerticesSumPt *
         process.plainPatSequence *
         process.pf2patSequence
@@ -289,6 +291,7 @@ def addPlainPat(process, dataVersion, doPatTrigger=True, doPatTaus=True, doHChTa
     setPatJetCorrDefaults(process.patJetCorrFactors, dataVersion)
     process.patDefaultSequence.replace(process.patJetCorrFactors,
                                        process.ak5PFJetSequence*process.patJetCorrFactors)
+    process.selectedPatJets.cut = jetPreSelection
 
     # The default JEC to be embedded to pat::Jets are L2Relative,
     # L3Absolute, L5Flavor and L7Parton. The default JEC to be applied
@@ -296,17 +299,18 @@ def addPlainPat(process, dataVersion, doPatTrigger=True, doPatTaus=True, doHChTa
 
     if doPatCalo:
         # Add JPT jets
-        addJetCollection(process, cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
-                         'AK5', 'JPT',
-                         doJTA        = True,
-                         doBTagging   = doBTagging,
-                         jetCorrLabel = ('AK5JPT', process.patJetCorrFactors.levels),
-                         doType1MET   = False,
-                         doL1Cleaning = False,
-                         doL1Counters = True,
-                         genJetCollection = cms.InputTag("ak5GenJets"),
-                         doJetID      = True
-        )
+        # FIXME: Disabled for now until the JEC for JPT works again (with the latest JEC)
+#        addJetCollection(process, cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
+#                         'AK5', 'JPT',
+#                         doJTA        = True,
+#                         doBTagging   = doBTagging,
+#                         jetCorrLabel = ('AK5JPT', process.patJetCorrFactors.levels),
+#                         doType1MET   = False,
+#                         doL1Cleaning = False,
+#                         doL1Counters = True,
+#                         genJetCollection = cms.InputTag("ak5GenJets"),
+#                         doJetID      = True
+#        )
     
         # Add PF jets
         addJetCollection(process, cms.InputTag('ak5PFJets'),
@@ -423,15 +427,9 @@ def addPlainPat(process, dataVersion, doPatTrigger=True, doPatTaus=True, doHChTa
                            ])
 
     # MET
-    if doPatMET:
+    addPfMET(process, 'PF')
+    if doPatCalo:
         addTcMET(process, 'TC')
-        addPfMET(process, 'PF')
-        outputCommands.extend([
-                "keep *_patMETs_*_*",
-                "keep *_patMETsTC_*_*",
-                "keep *_patMETsPF_*_*",
-                "keep *_genMetTrue_*_*",
-        ])
     else:
         # FIXME: This is broken at the moment...
         #removeSpecificPATObjects(process, ["METs"], outputInProcess= out != None)
@@ -440,6 +438,13 @@ def addPlainPat(process, dataVersion, doPatTrigger=True, doPatTaus=True, doHChTa
         process.patDefaultSequence.remove(process.patMETs)
         del process.patMETCorrections
         del process.patMETs
+
+    outputCommands.extend([
+            "keep *_patMETs_*_*",
+            "keep *_patMETsTC_*_*",
+            "keep *_patMETsPF_*_*",
+            "keep *_genMetTrue_*_*",
+            ])
 
     # Muons
     setPatLeptonDefaults(process.patMuons, includePFCands)
@@ -476,6 +481,14 @@ def addPlainPat(process, dataVersion, doPatTrigger=True, doPatTaus=True, doHChTa
         if out != None:
             outMod  = 'out'
         switchOnTrigger(process, hltProcess=dataVersion.getTriggerProcess(), outputModule=outMod)
+        process.patTrigger.addL1Algos = cms.bool(True)
+        process.patTrigger.l1ExtraMu = cms.InputTag("l1extraParticles")
+        process.patTrigger.l1ExtraCenJet = cms.InputTag("l1extraParticles", "Central")
+        process.patTrigger.l1ExtraTauJet = cms.InputTag("l1extraParticles", "Tau")
+        process.patTrigger.l1ExtraForJet = cms.InputTag("l1extraParticles", "Forward")
+        process.patTrigger.l1ExtraETM = cms.InputTag("l1extraParticles", "MET")
+        process.patTrigger.l1ExtraHTM = cms.InputTag("l1extraParticles", "MHT")
+
 
         # Keep StandAlone trigger objects for enabling trigger
         # matching in the analysis phase with PAT tools
@@ -606,8 +619,8 @@ def patJetCorrLevels(dataVersion, L1FastJet=False):
     else:
         levels.append("L1Offset")
     levels.extend(["L2Relative", "L3Absolute"])
-#    if dataVersion.isData():
-#        module.levels.append("L2L3Residual")
+    if dataVersion.isData():
+        levels.append("L2L3Residual")
     levels.extend(["L5Flavor", "L7Parton"])
     return levels
 
@@ -729,7 +742,7 @@ def addPF2PAT(process, dataVersion, postfix="PFlow",
     # Enable PFnoPU
     getattr(process, "pfPileUp"+postfix).Enable = True
     getattr(process, "pfPileUp"+postfix).checkClosestZVertex = False
-    getattr(process, "pfPileUp"+postfix).Vertices = "goodPrimaryVertices"
+    getattr(process, "pfPileUp"+postfix).Vertices = "offlinePrimaryVertices"
 
     # Jet modifications
     # L1FastJet

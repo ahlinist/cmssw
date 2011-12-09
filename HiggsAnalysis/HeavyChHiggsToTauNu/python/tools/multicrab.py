@@ -17,6 +17,13 @@ defaultSeBlacklist = [
 
     # blacklist after v13
     "colorado.edu", # Ultraslow bandwidth, no chance to get even the smaller pattuples through
+    "T3_*", # Don't submit to T3's  
+    "T2_UK_London_Brunel", # Noticeable fraction of submitted jobs fail due to stageout errors
+    "ucl.ac.be", # Jobs end up in queuing, lot's of file open errors
+    "iihe.ac.be", # Problematic site with server
+    "T2_US_Florida", # In practice gives low bandwidth to T2_FI_HIP => stageouts timeout, also jobs can queue long times
+    "unl.edu", # Jobs can wait in queues for a looong time
+    "wisc.edu", # Stageout failures
     ]
 
 def getTaskDirectories(opts, filename="multicrab.cfg"):
@@ -255,6 +262,8 @@ class CrabJob:
     def failed(self, status):
         if (status == "all" or status == "aborted") and self.origStatus == "Aborted":
             return True
+        if status == "done" and self.origStatus == "Done":
+            return True
         if self.origStatus != "Retrieved":
             return False
         if self.exeExitCode == 0 and self.jobExitCode == 0:
@@ -308,15 +317,19 @@ class MulticrabDataset:
                 self.data[key] = value
 
         if "data" in config:
+            dataConf = None
             try:
                 dataConf = config["data"][dataInput]
-                if "fallback" in dataConf:
-                    dataConf = config["data"][dataConf["fallback"]]
-
-                for key, value in dataConf.iteritems():
-                    self.data[key] = value
             except KeyError:
-                raise Exception("No dataInput '%s' for datasets '%s'" % (dataInput, name))
+                raise Exception("No dataInput '%s' for datasets '%s'." % (dataInput, name))
+            if "fallback" in dataConf:
+                try:
+                    dataConf = config["data"][dataConf["fallback"]]
+                except KeyError:
+                    raise Exception("No dataInput '%s' (via '%s') for datasets '%s'."% (dataConf["fallback"], dataInput, name))
+
+            for key, value in dataConf.iteritems():
+                self.data[key] = value
 
         # Sanity checks
         if not "dataVersion" in self.data:
@@ -480,23 +493,30 @@ class MulticrabDataset:
         The method was intended to be called from Multicrab class.
         """
 
+        if "trigger" in self.data and "triggerOR" in self.data:
+            raise Exception("May not have both 'trigger' and 'triggerOR', in task %s" % self.name)
+
         dataKeys = self.data.keys()
 
         args = ["dataVersion=%s" % self.data["dataVersion"]]
         del dataKeys[dataKeys.index("dataVersion")]
-        for argName in ["trigger", "crossSection", "luminosity", "tauIDFactorizationMap"]:
+        for argName in ["trigger", "crossSection", "luminosity"]:
             try:
                 args.append("%s=%s" % (argName, self.data[argName]))
                 del dataKeys[dataKeys.index(argName)]
             except KeyError:
                 pass
-
-        args += self.args
         try:
-            args.extend(self.data["args"])
-            del dataKeys[dataKeys.index("args")]
+            args.extend(["trigger=%s" % trigger for trigger in self.data["triggerOR"]])
         except KeyError:
-            pass           
+            pass
+
+        if "args" in self.data:
+            for key, value in self.data["args"].iteritems():
+                print key, value
+                args.append("%s=%s" % (key, str(value)))
+            del dataKeys[dataKeys.index("args")]
+        args += self.args
 
         ret = "[%s]\n" % self.name
         ret += "CMSSW.datasetpath = %s\n" % self.data["datasetpath"]
