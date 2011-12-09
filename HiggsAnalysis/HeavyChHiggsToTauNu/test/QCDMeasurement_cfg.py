@@ -5,31 +5,26 @@ from HiggsAnalysis.HeavyChHiggsToTauNu.HChOptions import getOptionsDataVersion
 # Configuration
 
 # Select the version of the data (needed only for interactice running,
-# overridden automatically from multicrab
-#dataVersion = "39Xredigi" # Winter10 MC
-#dataVersion = "39Xdata"   # Run2010 Dec22 ReReco
-dataVersion = "311Xredigi" # Spring11 MC
-#dataVersion = "41Xdata"   # Run2011 PromptReco
+dataVersion = "42XmcS4"
+#dataVersion = "42Xdata"   # Run2011 data
 
 
 ##########
 # Flags for additional signal analysis modules
 # Perform the signal analysis with all tau ID algorithms in addition
 # to the "golden" analysis
-doAllTauIds = True #for QCD control plots
+doAllTauIds = False #for QCD control plots
 
 # Perform b tagging scanning
 doBTagScan = False
 
 # Perform the signal analysis with the JES variations in addition to
 # the "golden" analysis
-doJESVariation = False
+doJESVariation = True
 JESVariation = 0.03
 JESEtaVariation = 0.02
 JESUnclusteredMETVariation = 0.10
 
-# Do trigger parametrisation for MC and tau embedding. If set to False trigger will be applied automatically
-doTriggerParametrisation = False
 applyTriggerScaleFactor = True
 
 # Temporary switch for disabling prescales (produces tons of unnecessary output
@@ -52,11 +47,11 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source('PoolSource',
     duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
     fileNames = cms.untracked.vstring(
-    #"file:/media/disk/attikis/PATTuples/v17/pattuple_v17_Run2011A_May10ReReco_9_1_ZS7.root"     
-    "file:/media/disk/attikis/PATTuples/v17/pattuple_v17_QCD_Pt170to300_TuneZ2_Summer11_9_1_tKm.root"
+    #"file:/media/disk/attikis/PATTuples/v18/pattuple_v18_Run2011A_PromptReco_v4_AOD_166374_9_1_jHG.root"
+    "file:/media/disk/attikis/PATTuples/v18/pattuple_v18_TTJets_TuneZ2_Summer11_9_1_bfN.root"
     #
-    #"rfio:/castor/cern.ch/user/a/attikis/pattuples/testing/v17/pattuple_v17_Run2011A_May10ReReco_9_1_ZS7.root"
-    #"rfio:/castor/cern.ch/user/a/attikis/pattuples/testing/v17/pattuple_v17_QCD_Pt170to300_TuneZ2_Summer11_9_1_tKm.root"
+    #"rfio:/castor/cern.ch/user/a/attikis/pattuples/testing/v18/pattuple_v18_Run2011A_PromptReco_v4_AOD_166374_9_1_jHG.root"
+    #"rfio:/castor/cern.ch/user/a/attikis/pattuples/testing/v18/pattuple_v18_TTJets_TuneZ2_Summer11_9_1_bfN.root"
     #
     # dataVersion.getAnalysisDefaultFileCastor()
     # For testing in jade
@@ -94,6 +89,7 @@ addPrimaryVertexSelection(process, process.commonSequence)
 
 # Import default parameter set and make necessary tweaks
 import HiggsAnalysis.HeavyChHiggsToTauNu.HChSignalAnalysisParameters_cff as param
+param.overrideTriggerFromOptions(options)
 param.trigger.triggerSrc.setProcessName(dataVersion.getTriggerProcess())
 # Set tau selection mode (options: 'tauCandidateSelectionOnly', 'tauCandidateSelectionOnlyReversedRtau')
 # other options (use not recommended here): 'standard'
@@ -102,29 +98,17 @@ param.setAllTauSelectionOperatingMode('tauCandidateSelectionOnly')
 # Set tau sources to trigger matched tau collections
 param.setAllTauSelectionSrcSelectedPatTausTriggerMatched()
 
-# Set the triggers for trigger efficiency parametrisation
-#param.trigger.triggerTauSelection = param.tauSelectionHPSVeryLooseTauBased.clone( # VeryLoose
-param.trigger.triggerTauSelection = param.tauSelectionHPSTightTauBased.clone( # Tight
-  rtauCut = cms.untracked.double(0.0) # No rtau cut for trigger tau
-  )
-param.trigger.triggerMETSelection = param.MET.clone(
-  METCut = cms.untracked.double(0.0) # No MET cut for trigger MET
-)
-if (doTriggerParametrisation and not dataVersion.isData()):
-    # 2010 and 2011 scenarios
-    #param.setEfficiencyTriggersFor2010()
-    param.setEfficiencyTriggersFor2011()
-    # Settings for the configuration
-#    param.trigger.selectionType = cms.untracked.string("byParametrisation")
-
 # Trigger with scale factors (at the moment hard coded)
-if (applyTriggerScaleFactor and not dataVersion.isData()):
-    param.trigger.selectionType = cms.untracked.string("byTriggerBitApplyScaleFactor")
+if applyTriggerScaleFactor and dataVersion.isMC():
+    param.triggerEfficiencyScaleFactor.mode = "scaleFactor"
 
 
 # Set the data scenario for vertex/pileup weighting
-param.setVertexWeightFor2011() # Reweight by reconstructed vertices
-#param.setPileupWeightFor2011() # Reweight by true PU distribution 
+puweight = "Run2011A"
+if len(options.puWeightEra) > 0:
+    puweight = options.puWeightEra
+param.setPileupWeightFor2011(dataVersion, era=puweight) # Reweight by true PU distribution
+param.setDataTriggerEfficiency(dataVersion, era=puweight)
 
 #Reminder(from HChSignalAnalysisParameters_cff.py):
 #def setTriggerPileupFor2011(**kwargs):
@@ -136,15 +120,17 @@ param.setVertexWeightFor2011() # Reweight by reconstructed vertices
 #param.trigger.hltMetCut = 0.0 
 print "\nhltMetCut:", param.trigger.hltMetCut
 param.InvMassVetoOnJets.setTrueToUseModule = False
-# param.overrideTriggerFromOptions(options) => obsolete
 
 ##############################################################################
 process.QCDMeasurement = cms.EDProducer("HPlusQCDMeasurementProducer",
     trigger = param.trigger,
+    triggerEfficiencyScaleFactor = param.triggerEfficiencyScaleFactor,
     primaryVertexSelection = param.primaryVertexSelection,
     tauSelection = param.tauSelectionHPSTightTauBased,
     GlobalElectronVeto = param.GlobalElectronVeto,
+    NonIsolatedElectronVeto = param.NonIsolatedElectronVeto,
     GlobalMuonVeto = param.GlobalMuonVeto,
+    NonIsolatedMuonVeto = param.NonIsolatedMuonVeto,
     jetSelection = param.jetSelection,
     EvtTopology = param.EvtTopology,              ### only for histogramming reasons - does not affect analysis
     InvMassVetoOnJets = param.InvMassVetoOnJets,  ### only for histogramming reasons - does not affect analysis
@@ -153,12 +139,12 @@ process.QCDMeasurement = cms.EDProducer("HPlusQCDMeasurementProducer",
     fakeMETVeto = param.fakeMETVeto,
     topSelection = param.topSelection,
     forwardJetVeto = param.forwardJetVeto,
-    TriggerEmulationEfficiency = param.TriggerEmulationEfficiency,
     GenParticleAnalysis = param.GenParticleAnalysis,
     vertexWeight = param.vertexWeight,
     tauIsolationCalculator = cms.untracked.PSet(
     vertexSrc = cms.InputTag("offlinePrimaryVertices")
-    ) # needed for calculating isolation on the fly to determine which tau jet is most isolated
+    ), # needed for calculating isolation on the fly to determine which tau jet is most isolated
+    Tree = param.tree,
 )
 # Factorization (quick and dirty version)
 import HiggsAnalysis.HeavyChHiggsToTauNu.HChMetTableFactorization_cfi as mettables
@@ -171,6 +157,11 @@ mettableCoeff.METTableFactorizationCoefficients.factorizationSourceName = cms.un
 
 process.QCDMeasurement.factorization = mettables.METTableParameters
 process.QCDMeasurement.factorization.factorizationTables = mettableCoeff.METTableFactorizationCoefficients
+# Type 1 MET
+import HiggsAnalysis.HeavyChHiggsToTauNu.HChMetCorrection as MetCorrection
+(sequence, type1Met) = MetCorrection.addCorrectedMet(process, dataVersion, process.QCDMeasurement.tauSelection, process.QCDMeasurement.jetSelection)
+process.commonSequence *= sequence
+process.QCDMeasurement.MET.type1Src = type1Met
         
 # Prescale fetching done automatically for data
 if dataVersion.isData() and not disablePrescales:
@@ -181,7 +172,6 @@ if dataVersion.isData() and not disablePrescales:
     process.QCDMeasurement.prescaleSource = cms.untracked.InputTag("hplusPrescaleWeightProducer")
 
 # Print output
-print "\ndoTriggerParametrisation:", doTriggerParametrisation
 print "\nVertexWeight:", process.QCDMeasurement.vertexWeight
 print "\nTrigger:", process.QCDMeasurement.trigger
 print "\nPV Selection:", process.QCDMeasurement.primaryVertexSelection
@@ -197,7 +187,9 @@ print "TauSelection invMassCut:", process.QCDMeasurement.tauSelection.invMassCut
 print "TauSelection nprongs:", process.QCDMeasurement.tauSelection.nprongs
 print "\nMET:", process.QCDMeasurement.MET
 print "\nGlobalElectronVeto:", process.QCDMeasurement.GlobalElectronVeto
+print "\nNonIsolatedElectronVeto:", process.QCDMeasurement.NonIsolatedElectronVeto
 print "\nGlobalMuonVeto:", process.QCDMeasurement.GlobalMuonVeto
+print "\nNonIsolatedMuonVeto:", process.QCDMeasurement.NonIsolatedMuonVeto
 print "\nJetSelection:", process.QCDMeasurement.jetSelection
 print "\nbTagging: ", process.QCDMeasurement.bTagging
 print "\nFakeMETVeto:", process.QCDMeasurement.fakeMETVeto
@@ -214,8 +206,8 @@ process.QCDMeasurementCounters = cms.EDAnalyzer("HPlusEventCountAnalyzer",
     counterNames = cms.untracked.InputTag("QCDMeasurement", "counterNames"),
     counterInstances = cms.untracked.InputTag("QCDMeasurement", "counterInstances"),
     printMainCounter = cms.untracked.bool(True),
-    printSubCounters = cms.untracked.bool(True),
-    printAvailableCounters = cms.untracked.bool(False),
+#    printSubCounters = cms.untracked.bool(True),
+#    printAvailableCounters = cms.untracked.bool(False),
 )
 if len(additionalCounters) > 0:
     process.QCDMeasurementCounters.counters = cms.untracked.VInputTag([cms.InputTag(c) for c in additionalCounters])
@@ -251,7 +243,9 @@ process.QCDMeasurementPath = cms.Path(
 # Path. Then, in case PAT is run on the fly, the framework runs the
 # analysis module after PAT (and runs PAT only once).
 if doAllTauIds:
-    param.addTauIdAnalyses(process, "QCDMeasurement", process.QCDMeasurement, process.commonSequence, additionalCounters)
+    module = process.QCDMeasurement.clone()
+    module.Tree.fill = True #attikis (default is False)
+    param.addTauIdAnalyses(process, dataVersion, "QCDMeasurement", module, process.commonSequence, additionalCounters)
 
 
 ################################################################################
@@ -270,10 +264,14 @@ if doJESVariation:
     JESs = "%02d" % int(JESVariation*100)
     JESe = "%02d" % int(JESEtaVariation*100)
     JESm = "%02d" % int(JESUnclusteredMETVariation*100)
-    addJESVariationAnalysis(process, "QCDMeasurement", "JESPlus"+JESs+"eta"+JESe+"METPlus"+JESm, process.QCDMeasurement, additionalCounters, JESVariation, JESEtaVariation, JESUnclusteredMETVariation)
-    addJESVariationAnalysis(process, "QCDMeasurement", "JESMinus"+JESs+"eta"+JESe+"METPlus"+JESm, process.QCDMeasurement, additionalCounters, -JESVariation, JESEtaVariation, JESUnclusteredMETVariation)
-    addJESVariationAnalysis(process, "QCDMeasurement", "JESPlus"+JESs+"eta"+JESe+"METMinus"+JESm, process.QCDMeasurement, additionalCounters, JESVariation, JESEtaVariation, -JESUnclusteredMETVariation)
-    addJESVariationAnalysis(process, "QCDMeasurement", "JESMinus"+JESs+"eta"+JESe+"METMinus"+JESm, process.QCDMeasurement, additionalCounters, -JESVariation, JESEtaVariation, -JESUnclusteredMETVariation)
+    module = process.QCDMeasurement.clone()
+    module.Tree.fill = True
+    module.Tree.fillJetEnergyFractions = False # JES variation will make the fractions invalid
+
+    addJESVariationAnalysis(process, dataVersion, "QCDMeasurement", "JESPlus"+JESs+"eta"+JESe+"METPlus"+JESm, module, additionalCounters, JESVariation, JESEtaVariation, JESUnclusteredMETVariation)
+    addJESVariationAnalysis(process, dataVersion, "QCDMeasurement", "JESMinus"+JESs+"eta"+JESe+"METPlus"+JESm, module, additionalCounters, -JESVariation, JESEtaVariation, JESUnclusteredMETVariation)
+    addJESVariationAnalysis(process, dataVersion, "QCDMeasurement", "JESPlus"+JESs+"eta"+JESe+"METMinus"+JESm, module, additionalCounters, JESVariation, JESEtaVariation, -JESUnclusteredMETVariation)
+    addJESVariationAnalysis(process, dataVersion, "QCDMeasurement", "JESMinus"+JESs+"eta"+JESe+"METMinus"+JESm, module, additionalCounters, -JESVariation, JESEtaVariation, -JESUnclusteredMETVariation)
 
 # Print tau discriminators from one tau from one event. Note that if
 # the path below is commented, the discriminators are not printed.
