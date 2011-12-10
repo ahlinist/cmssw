@@ -1,6 +1,3 @@
-
-
-
 import FWCore.ParameterSet.Config as cms
 import sys
 process = cms.Process('Demo')
@@ -8,22 +5,24 @@ process = cms.Process('Demo')
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
-# We are getting the runnumber from the command line now. No need to edit this file.
+#RUNNUMBER = str(182690)
+RUNNUMBER = str(182694)
+# To enter run number on the command line uncomment:
 #print "Enter Runnumber: "
 #rn = sys.stdin.readline()
 #RUNNUMBER = int(rn.strip())
-#RUNNUMBER = int(rn.strip())
-#print "Running on: " + str(RUNNUMBER)
-RUNNUMBER = str(156965)
 
-#process.source = cms.Source("PoolSource",
+print "Running on: " + str(RUNNUMBER)
+
+# Input local data file:
 process.source = cms.Source("HcalTBSource",
     fileNames= cms.untracked.vstring(
-#        "file:/bigspool/USC_" + str(RUNNUMBER) + ".root",
-        "file:/tmp/jhirsch/USC_" + str(RUNNUMBER) + ".root",
+    #        "file:/bigspool/USC_" + str(RUNNUMBER) + ".root",
+    "file:/tmp/jhirsch/USC_" + str(RUNNUMBER) + ".root",
     ),
-    streams = cms.untracked.vstring('HCAL_Trigger', 'HCAL_SlowData','HCAL_DCC700')
+                            streams = cms.untracked.vstring('HCAL_Trigger', 'HCAL_SlowData','HCAL_DCC700')
 )
 
 process.tbunpacker = cms.EDFilter("HcalTBObjectUnpacker",
@@ -34,8 +33,9 @@ process.tbunpacker = cms.EDFilter("HcalTBObjectUnpacker",
     IncludeUnmatchedHits = cms.untracked.bool(False)
 )
 
+# Output histogram file (for analyzer) :
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string('/tmp/jhirsch/hf_' + str(RUNNUMBER) +'_nom.root')
+                                   fileName = cms.string('/tmp/jhirsch/local_data_r' + str(RUNNUMBER) +'.root')
                                    )
 
 process.hcal_db_producer = cms.ESProducer("HcalDbProducer",
@@ -43,13 +43,8 @@ process.hcal_db_producer = cms.ESProducer("HcalDbProducer",
     file = cms.untracked.string('')
 )
 
-process.plots = cms.EDAnalyzer("myHcalRecHitAna")
-
-
-
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = 'GR10_P_V2::All'
-process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
+# Add your analyzer here:
+process.plots = cms.EDAnalyzer("HcalPFGRecHitAna")
 
 process.hcalDigis = cms.EDProducer("HcalRawToDigi",
     FilterDataQuality = cms.bool(True),
@@ -72,12 +67,23 @@ process.hcalDigis = cms.EDProducer("HcalRawToDigi",
     ComplainEmptyData = cms.untracked.bool(True)
 )
 
-process.load("RecoLocalCalo.Configuration.RecoLocalCalo_cff")
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("RecoJets.Configuration.CaloTowersES_cfi")
+process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
+process.load("RecoLocalCalo.Configuration.hcalLocalReco_cff")
 
-#then you can have first last ts for reconstruction e.g.
-process.hfreco.firstSample  = 1
-process.hfreco.samplesToAdd = 6
-#process.load("L1Trigger.Configuration.L1DummyConfig_cff")
-#process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
-#process.l1GtUnpack.DaqGtInputTag = 'source'
-process.p = cms.Path(process.hcalDigis * process.hfreco * process.plots)
+# You might need to change global tag:
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = 'GR_R_42_V20::All'
+process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
+
+#------------------------------------------------------------
+# Define paths: DIGI, RECO
+#------------------------------------------------------------
+
+#process.DIGI = cms.Path(process.hcalDigis )
+#process.RECO = cms.Path(process.plots * process.hbheprereco  * process.horeco * process.hfreco )
+
+
+
+process.p = cms.Path(process.hcalDigis * process.hfreco * process.hbheprereco  * process.horeco * process.plots)
