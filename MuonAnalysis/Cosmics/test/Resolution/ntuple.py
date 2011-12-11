@@ -23,9 +23,10 @@ no_refits = False
 use_dt_meantimer = False
 segments_in_fit = False
 
-# Reset these before submitting jobs.
-dumps = debugdump = False
-run_events = None
+if 'dbg' not in sys.argv:
+    # Reset these before submitting jobs.
+    dumps = debugdump = False
+    run_events = None
 
 from_38x = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'TrackerAlignmentRcd': 'TrackerAlignment_GR10_v1_offline', 'TrackerAlignmentErrorRcd': 'TrackerAlignmentErrors_GR10_v1_offline', 'GlobalPositionRcd': 'GlobalAlignment_v2_offline', 'CSCAlignmentRcd': 'CSCAlignment_2009_v4_offline', 'DTAlignmentRcd': 'DTAlignment_2009_v4_offline'})
 nominal_muons = ('sqlite_file:Design.db', {'DTAlignmentRcd': 'DTAlignmentRcd', 'CSCAlignmentRcd': 'CSCAlignmentRcd'})
@@ -243,6 +244,7 @@ if not pp_reco_mode:
     reco_frag.remove(process.BeamHaloSummary) # needs the previous
 else:
     reco_frag = process.reconstruction
+reco_frag.remove(process.lumiProducer) # crashes on some lumis, don't care about this for cosmics
 
 # If specified, try the "meantimer" DT algo.
 if use_dt_meantimer:
