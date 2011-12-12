@@ -27,6 +27,7 @@ if require_tt25 and not require_rpc_good:
     print 'warning: require_tt25 and not require_rpc_good!'
 
 run_list = get_run_list(cosmics_or_collisions, dt_or_csc, require_pixels, require_rpc_good) #, min_run)
+#run_list = [r for r in run_list if r < 150000]
 
 cfg = cms.PSet(
     directory               = cms.string('UTpickedTracks'),
@@ -42,6 +43,7 @@ cfg = cms.PSet(
     use_unpropagated_values = cms.bool(True),
     pp_reco_mode            = cms.bool(False),
     force_run_list          = cms.vuint32(run_list),
+    force_event_list        = cms.vuint32(),
     require_tt25            = cms.bool(require_tt25),
     require_not_tt25        = cms.bool(require_not_tt25),
     copy_selected_events    = cms.bool(False),
