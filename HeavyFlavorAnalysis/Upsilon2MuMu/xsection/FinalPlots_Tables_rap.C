@@ -11,13 +11,13 @@ void XSSystTot_1S(){
   TFile *f = new TFile("TrigMinus_10ptbins_1Srho_rap_v2.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S1YieldEta");
-  TFile *f = new TFile("SigPDF_10ptbins_1Srho_rap.root");
+  TFile *f = new TFile("SigPDF_10ptbins_1Srho_rap_v2.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S1YieldEta");
-  TFile *f = new TFile("BgPDF_10ptbins_1Srho_rap.root");
+  TFile *f = new TFile("BgPDF_10ptbins_1Srho_rap_v2.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S1YieldEta");  
-  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TFile *f = new TFile("XSection1Sfinal.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldEta");    
   //TFile *f = new TFile("XSection_lhcb.root");
@@ -32,9 +32,12 @@ void XSSystTot_1S(){
   TFile *f = new TFile("3SRho_10ptbins_1Srho_rap.root");
   TH1D *S8;
   S8 = (TH1D*)gFile->Get("S1YieldEta");
-  TFile *f = new TFile("NoMSC_10ptbins_1Srho_rap.root");
+  TFile *f = new TFile("NoMSC_10ptbins_1Srho_rap_v3.root");
   TH1D *S9;
   S9 = (TH1D*)gFile->Get("S1YieldEta");  
+  TFile *f = new TFile("BinMigrationRap_1S.root");
+  TH1D *S10;
+  S10 = (TH1D*)gFile->Get("Eff_Cand");  
   TH1D *S100 = (TH1D*)S1->Clone(); 
   TH1D *S200 = (TH1D*)S1->Clone();
   S100->SetName("Ups1S_ratioh");
@@ -54,12 +57,14 @@ void XSSystTot_1S(){
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1 += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
     s1 += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s1 += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
     s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
     s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    //s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s1_ += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     cout << " dSigma(Y(1S))/d|y| = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
@@ -79,10 +84,12 @@ void XSSystTot_1S(){
     s0 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s0 += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
     s0 += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s0 += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //sig
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s0_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    //s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s0_ += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl_ratio[i-1] = TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y_ratio[i-1] = S5->GetBinContent(i);
@@ -124,8 +131,8 @@ void XSSystTot_1S(){
   gr_lhcb->Draw("AP");  
   
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
-  //TFile *f = new TFile("Final1S_rap_lhcb.root", "RECREATE");
   TFile *f = new TFile("Final1S_rap.root", "RECREATE");
+  //TFile *f = new TFile("Final1S_rap_lhcb.root", "RECREATE");
   gr->Write();
   gr_ratio->Write();
   gr_lhcb->Write();
@@ -133,7 +140,7 @@ void XSSystTot_1S(){
   S200->Write();
   
   // Table for 1S Xsection and Errors
-  double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.), msc(0.); 
+  double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.), msc(0.), binmig(0.); 
   ofstream OUT("1S_rap.tex");
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 1S_rap" << endl;
@@ -147,8 +154,9 @@ void XSSystTot_1S(){
     muid_l = TMath::Sqrt(S6->GetBinContent(x)*S6->GetBinContent(x))/S5->GetBinContent(x);
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_l = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x); 
-    tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + sig*sig + msc*msc);
-    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg + rho_l*rho_l);
+    binmig = TMath::Sqrt(S10->GetBinContent(x)*S10->GetBinContent(x))/S5->GetBinContent(x);
+    tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + sig*sig + msc*msc + binmig*binmig);
+    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg + rho_l*rho_l + msc*msc + binmig*binmig);
     OUT << Form("\\vdef{%iS_sigma%i_rap} {\\ensuremath{ {%.3f } } }",1, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i_rap} {\\ensuremath{ {%.3f } } }",1, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i_rap} {\\ensuremath{ {%.3f } } }",1, x, stat ) << endl;
@@ -162,6 +170,7 @@ void XSSystTot_1S(){
     OUT << Form("\\vdef{%iS_bgoversigma%i_rap} {\\ensuremath{ {%.3f } } }",1, x, bg ) << endl;
     OUT << Form("\\vdef{%iS_rhoLowoversigma%i_rap} {\\ensuremath{ {%.3f } } }",1, x, rho_l ) << endl;
     OUT << Form("\\vdef{%iS_mscoversigma%i_rap} {\\ensuremath{ {%.3f } } }",1, x, msc ) << endl;
+    OUT << Form("\\vdef{%iS_binmigoversigma%i_rap} {\\ensuremath{ {%.3f } } }",1, x, binmig ) << endl;
   }
   
   OUT.close();
@@ -176,13 +185,13 @@ void XSSystTot_2S(){
   TFile *f = new TFile("TrigMinus_10ptbins_2Srho_rap_v2.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S2YieldEta");
-  TFile *f = new TFile("SigPDF_10ptbins_2Srho_rap.root");
+  TFile *f = new TFile("SigPDF_10ptbins_2Srho_rap_v2.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S2YieldEta");
-  TFile *f = new TFile("BgPDF_10ptbins_2Srho_rap.root");
+  TFile *f = new TFile("BgPDF_10ptbins_2Srho_rap_v2.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S2YieldEta");  
-  TFile *f = new TFile("XSection2Srho_finalversion.root");
+  TFile *f = new TFile("XSection2Sfinal.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S2YieldEta");    
   TFile *f = new TFile("MuIDPlus_10ptbins_2Srho_rap_v2.root");
@@ -197,9 +206,12 @@ void XSSystTot_2S(){
   TFile *f = new TFile("1SRho_10ptbins_2Srho_rap.root");
   TH1D *S9;
   S9 = (TH1D*)gFile->Get("S2YieldEta");  
-  TFile *f = new TFile("NoMSC_10ptbins_2Srho_rap.root");
+  TFile *f = new TFile("NoMSC_10ptbins_2Srho_rap_v3.root");
   TH1D *S10;
   S10 = (TH1D*)gFile->Get("S2YieldEta");    
+  TFile *f = new TFile("BinMigrationRap_2S.root");
+  TH1D *S11;
+  S11 = (TH1D*)gFile->Get("Eff_Cand"); 
   TH1D *S100 = (TH1D*)S1->Clone(); 
   TH1D *S200 = (TH1D*)S1->Clone();
   S100->SetName("Ups2S_ratioh");
@@ -219,12 +231,14 @@ void XSSystTot_2S(){
     s1 += S9->GetBinContent(i)*S9->GetBinContent(i); //rho
     s1 += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s1 += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    s1 += S11->GetBinContent(i)*S11->GetBinContent(i); //binmig
     s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig    
     s1_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    //s1_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    s1_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    s1_ += S11->GetBinContent(i)*S11->GetBinContent(i); //binmig
     cout << " dSigma(Y(2S))/d|y| = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) <<  " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
@@ -244,10 +258,12 @@ void XSSystTot_2S(){
     s0 += S9->GetBinContent(i)*S9->GetBinContent(i); //rho
     s0 += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s0 += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    s0 += S11->GetBinContent(i)*S11->GetBinContent(i); //binmig
     s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s0_ += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
-    //s0_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    s0_ += S10->GetBinContent(i)*S10->GetBinContent(i); //msc
+    s0_ += S11->GetBinContent(i)*S11->GetBinContent(i); //binmig
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl_ratio[i-1] = TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y_ratio[i-1] = S5->GetBinContent(i);
@@ -283,7 +299,7 @@ void XSSystTot_2S(){
   S200->Write();
 
   // Table for 2S Xsection and Errors
-  double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.), rho_h(0.), msc(0.); 
+  double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.), rho_h(0.), msc(0.), binmig(0.); 
   ofstream OUT("2S_rap.tex");
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 2S_rap" << endl;
@@ -298,8 +314,9 @@ void XSSystTot_2S(){
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_l = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x);
     rho_h = TMath::Sqrt(S9->GetBinContent(x)*S9->GetBinContent(x))/S5->GetBinContent(x);
-    tot_h = TMath::Sqrt(((muid_h*muid_h) + (trig_h*trig_h) + (bg*bg) + (rho_h*rho_h) + (sig*sig) + (msc*msc)));
-    tot_l = TMath::Sqrt((muid_l*muid_l) + (trig_l*trig_l) + (sig*sig) + (bg*bg) + (rho_l*rho_l));
+    binmig = TMath::Sqrt(S11->GetBinContent(x)*S11->GetBinContent(x))/S5->GetBinContent(x);
+    tot_h = TMath::Sqrt(((muid_h*muid_h) + (trig_h*trig_h) + (bg*bg) + (rho_h*rho_h) + (sig*sig) + (msc*msc) + (binmig*binmig)));
+    tot_l = TMath::Sqrt((muid_l*muid_l) + (trig_l*trig_l) + (sig*sig) + (bg*bg) + (rho_l*rho_l) + (msc*msc) + (binmig*binmig));
     OUT << Form("\\vdef{%iS_sigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i_rap} {\\ensuremath{ {%.3f } } }",2, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, stat ) << endl;
@@ -314,6 +331,7 @@ void XSSystTot_2S(){
     OUT << Form("\\vdef{%iS_rhoLowoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, rho_l ) << endl;
     OUT << Form("\\vdef{%iS_rhoHighoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, rho_h ) << endl;
     OUT << Form("\\vdef{%iS_mscoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, msc ) << endl;
+    OUT << Form("\\vdef{%iS_binmigoversigma%i_rap} {\\ensuremath{ {%.3f } } }",2, x, binmig ) << endl;
   }
   
   OUT.close();
@@ -328,13 +346,13 @@ void XSSystTot_3S(){
   TFile *f = new TFile("TrigMinus_10ptbins_3Srho_rap_v2.root");
   TH1D *S2;
   S2 = (TH1D*)gFile->Get("S3YieldEta");
-  TFile *f = new TFile("SigPDF_10ptbins_3Srho_rap.root");
+  TFile *f = new TFile("SigPDF_10ptbins_3Srho_rap_v2.root");
   TH1D *S3;
   S3 = (TH1D*)gFile->Get("S3YieldEta");
-  TFile *f = new TFile("BgPDF_10ptbins_3Srho_rap.root");
+  TFile *f = new TFile("BgPDF_10ptbins_3Srho_rap_v2.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S3YieldEta");  
-  TFile *f = new TFile("XSection3Srho_finalversion.root");
+  TFile *f = new TFile("XSection3Sfinal.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S3YieldEta");    
   TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_rap_v2.root");
@@ -346,9 +364,12 @@ void XSSystTot_3S(){
   TFile *f = new TFile("1SRho_10ptbins_3Srho_rap.root");
   TH1D *S8;
   S8 = (TH1D*)gFile->Get("S3YieldEta");
-  TFile *f = new TFile("NoMSC_10ptbins_3Srho_rap.root");
+  TFile *f = new TFile("NoMSC_10ptbins_3Srho_rap_v3.root");
   TH1D *S9;
-  S9 = (TH1D*)gFile->Get("S3YieldEta");  
+  S9 = (TH1D*)gFile->Get("S3YieldEta");
+  TFile *f = new TFile("BinMigrationRap_3S.root");
+  TH1D *S10;
+  S10 = (TH1D*)gFile->Get("Eff_Cand"); 
   TH1D *S100 = (TH1D*)S1->Clone(); 
   TH1D *S200 = (TH1D*)S1->Clone();
   S100->SetName("Ups3S_ratioh");
@@ -367,12 +388,14 @@ void XSSystTot_3S(){
     s1 += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1 += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
     s1 += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s1 += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     s1  += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s1_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s1_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
     s1_ += S6->GetBinContent(i)*S6->GetBinContent(i); //Muid
     s1_ += S7->GetBinContent(i)*S7->GetBinContent(i); //Trig
-    //s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s1_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s1_ += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     cout << " dSigma(Y(3S))/d|y| = "  << S5->GetBinContent(i) << " + " << TMath::Sqrt(s1) << " - " << TMath::Sqrt(s1_) << endl;
     e5 += TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
     e5_ += TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)))*S5->GetBinWidth(i);
@@ -392,9 +415,11 @@ void XSSystTot_3S(){
     s0 += S8->GetBinContent(i)*S8->GetBinContent(i); //rho
     s0 += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig
     s0 += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s0 += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     s0_ += S3->GetBinContent(i)*S3->GetBinContent(i); //Sig    
     s0_ += S4->GetBinContent(i)*S4->GetBinContent(i); //bg
-    //s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s0_ += S9->GetBinContent(i)*S9->GetBinContent(i); //msc
+    s0_ += S10->GetBinContent(i)*S10->GetBinContent(i); //binmig
     Errh_ratio[i-1] = TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl_ratio[i-1] = TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y_ratio[i-1] = S5->GetBinContent(i);
@@ -431,7 +456,7 @@ void XSSystTot_3S(){
   S200->Write();
   
   // Table for 3S Xsection and Errors
-  double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_h(0.), bg(0.), msc(0.); 
+  double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_h(0.), bg(0.), msc(0.), binmig(0.); 
   ofstream OUT("3S_rap.tex");
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 3S_rap" << endl;
@@ -445,8 +470,9 @@ void XSSystTot_3S(){
     muid_l = TMath::Sqrt(S6->GetBinContent(x)*S6->GetBinContent(x))/S5->GetBinContent(x);
     trig_l = TMath::Sqrt(S7->GetBinContent(x)*S7->GetBinContent(x))/S5->GetBinContent(x);  
     rho_h = TMath::Sqrt(S8->GetBinContent(x)*S8->GetBinContent(x))/S5->GetBinContent(x); 
-    tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + rho_h*rho_h + sig*sig + msc*msc);
-    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg);
+    binmig = TMath::Sqrt(S10->GetBinContent(x)*S10->GetBinContent(x))/S5->GetBinContent(x);
+    tot_h = TMath::Sqrt(muid_h*muid_h + trig_h*trig_h + bg*bg + rho_h*rho_h + sig*sig + msc*msc + binmig*binmig);
+    tot_l = TMath::Sqrt(muid_l*muid_l + trig_l*trig_l + sig*sig + bg*bg + msc*msc + binmig*binmig);
     OUT << Form("\\vdef{%iS_sigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, S5->GetBinContent(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_toterror%i_rap} {\\ensuremath{ {%.3f } } }",3, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
     OUT << Form("\\vdef{%iS_statoversigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, stat ) << endl;
@@ -460,6 +486,7 @@ void XSSystTot_3S(){
     OUT << Form("\\vdef{%iS_bgoversigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, bg ) << endl;
     OUT << Form("\\vdef{%iS_rhoHighoversigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, rho_h ) << endl;
     OUT << Form("\\vdef{%iS_mscoversigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, msc ) << endl;
+    OUT << Form("\\vdef{%iS_binmigoversigma%i_rap} {\\ensuremath{ {%.3f } } }",3, x, binmig ) << endl;
   }
   
   OUT.close();
@@ -480,7 +507,7 @@ void XSSystPol_1S(){
   TFile *f = new TFile("XSection_1Srho_HelPl.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S1YieldEta");  
-  TFile *f = new TFile("XSection1Srho_finalversion.root");
+  TFile *f = new TFile("XSection1Sfinal.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldEta");    
     
@@ -518,7 +545,7 @@ void XSSystPol_2S(){
   TFile *f = new TFile("XSection_2Srho_HelPl.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S2YieldEta");  
-  TFile *f = new TFile("XSection2Srho_finalversion.root");
+  TFile *f = new TFile("XSection2Sfinal.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S2YieldEta");    
     
@@ -556,7 +583,7 @@ void XSSystPol_3S(){
   TFile *f = new TFile("XSection_3Srho_HelPl.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S3YieldEta");  
-  TFile *f = new TFile("XSection3Srho_finalversion.root");
+  TFile *f = new TFile("XSection3Sfinal.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S3YieldEta");    
     
@@ -613,6 +640,7 @@ void Overlay(){
   legge = legg->AddEntry(S3, "#Upsilon(3S)","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c1->SaveAs("Overlay_log_rap.pdf");
+  
 }
 
 void Ratio_unpol(){
@@ -723,8 +751,6 @@ void Ratio_pol(){
   S3h = (TH1D*)gFile->Get("Ups3S_ratioh");
   S3l = (TH1D*)gFile->Get("Ups3S_ratiol");   
   
-  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
-  TH1D *S5; S5 = (TH1D*)gFile->Get("S1YieldEta");
   TFile *f = new TFile("XSection_1Srho_HelMi.root");
   TH1D *S1HelMi; S1HelMi = (TH1D*)gFile->Get("S1YieldEta");  
   TFile *f = new TFile("XSection_1Srho_HelPl.root");
