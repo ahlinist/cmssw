@@ -523,7 +523,7 @@ void XSSystPol_1S(){
   TFile *f = new TFile("XSection_1Srho_HelPl.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S1YieldPt");  
-  TFile *f = new TFile("XSection1Sfinal.root");
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_1Srho.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldPt");    
     
@@ -561,7 +561,7 @@ void XSSystPol_2S(){
   TFile *f = new TFile("XSection_2Srho_HelPl.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S2YieldPt");  
-  TFile *f = new TFile("XSection2Sfinal.root");
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_2Srho.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S2YieldPt");    
     
@@ -599,7 +599,7 @@ void XSSystPol_3S(){
   TFile *f = new TFile("XSection_3Srho_HelPl.root");
   TH1D *S4;
   S4 = (TH1D*)gFile->Get("S3YieldPt");  
-  TFile *f = new TFile("XSection3Sfinal.root");
+  TFile *f = new TFile("Syst/10ptbins/Rho/XSection_10ptbins_3Srho.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S3YieldPt");    
     
