@@ -390,7 +390,7 @@ void XSSystTot_3S(){
   double s0(0.), s0_(0.);
   double Errh_ratio[10]; double Errl_ratio[10]; double y_ratio[10]; 
   //double Errh_ratio[9]; double Errl_ratio[9]; double y_ratio[9]; 
-  for (int i = 1; i <= S1->GetNbinsX()-1; ++i) {
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinContent(i); //Muid
     s1 += S2->GetBinContent(i)*S2->GetBinContent(i); //Trig
