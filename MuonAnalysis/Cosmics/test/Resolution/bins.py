@@ -97,8 +97,8 @@ def make_bins(bin_by, bin_extra=None):
         runs = bin_extra
         bins = []
         for run in runs:
-            bin  = Bin('pT1020run%i'   % run, min_pt=10,  max_pt=20,  diff_scales=(  2., 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            bin2 = Bin('pT100200run%i' % run, min_pt=100, max_pt=200, diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
+            bin  = Bin('pT1020run%i'   % run, min_pt=10,  max_pt=20,  diff_scales=(  2., 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5))
+            bin2 = Bin('pT100200run%i' % run, min_pt=100, max_pt=200, diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. ))
             for b in (bin, bin2):
                 b.run_bin = run
                 bins.append(b)
