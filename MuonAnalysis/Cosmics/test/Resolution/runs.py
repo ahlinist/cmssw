@@ -83,22 +83,22 @@ if __name__ == '__main__':
         for run in newruns10:
             print run, sorted(n[run])
         sys.exit(0)
+    elif 'make_lists' in sys.argv:
+        from datetime import datetime
+        from gzip import open as gzip_open
+        from MuonAnalysis.Cosmics.runregistry import RunRegistryHelper
 
-    from datetime import datetime
-    from gzip import open as gzip_open
-    from MuonAnalysis.Cosmics.runregistry import RunRegistryHelper
+        epoch = min_time = datetime(2010, 2, 1)
+        rrh = RunRegistryHelper(gzip_open('download.xml.gz')) # Get this from the run registry Table->Get Data->Generate... then Table->Get Data->Export->XML (all).
 
-    epoch = min_time = datetime(2010, 2, 1)
-    rrh = RunRegistryHelper(gzip_open('download.xml.gz')) # Get this from the run registry Table->Get Data->Generate... then Table->Get Data->Export->XML (all).
+        kinds = [
+            ('cosmics', ['Cosmic10', 'Cosmics10', 'Cosmics11']),
+            ('commissioning', ['BeamCommissioning10', 'BeamCommisioning10', 'Commissioning', 'Commissioining10', 'Commisioning10', 'Commissioning10', 'Commissioning11']), # "commissioning" is hard to spell
+            ('collisions', ['Collisions10', 'PostCollisions10', 'Collisions11']),
+            ]
 
-    kinds = [
-        ('cosmics', ['Cosmic10', 'Cosmics10', 'Cosmics11']),
-        ('commissioning', ['BeamCommissioning10', 'BeamCommisioning10', 'Commissioning', 'Commissioining10', 'Commisioning10', 'Commissioning10', 'Commissioning11']), # "commissioning" is hard to spell
-        ('collisions', ['Collisions10', 'PostCollisions10', 'Collisions11']),
-        ]
-
-    for kind_label, kind_groups in kinds:
-        for det in ['dt', 'csc', 'strip', 'pix', 'rpc']:
-            runs = rrh.get_good_runs([det.upper()], min_time, kind_groups)
-            print '%s_runs_%s = set(%s)' % (kind_label, det, repr(runs).replace(' ', ''))
-        print
+        for kind_label, kind_groups in kinds:
+            for det in ['dt', 'csc', 'strip', 'pix', 'rpc']:
+                runs = rrh.get_good_runs([det.upper()], min_time, kind_groups)
+                print '%s_runs_%s = set(%s)' % (kind_label, det, repr(runs).replace(' ', ''))
+            print
