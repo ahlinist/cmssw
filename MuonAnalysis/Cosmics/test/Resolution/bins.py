@@ -65,17 +65,17 @@ def make_bins(bin_by, bin_extra=None):
             Bin('pT1020',     abscissa=13.792, min_pt=10.,   max_pt=20.,    diff_scales=(  2., 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
             Bin('pT2030',     abscissa=24.044, min_pt=20.,   max_pt=30.,    diff_scales=(  5., 0.003,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
             Bin('pT3040',     abscissa=34.125, min_pt=30.,   max_pt=40.,    diff_scales=(  7., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            Bin('pT4050',     abscissa=44.166, min_pt=40.,   max_pt=50.,    diff_scales=( 10., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.15, 0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
+            Bin('pT4050',     abscissa=44.166, min_pt=40.,   max_pt=50.,    diff_scales=( 10., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
             Bin('pT5075',     abscissa=60.380, min_pt=50.,   max_pt=75.,    diff_scales=( 12., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.15, 0.15, 0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
-            Bin('pT75100',    abscissa=85.751, min_pt=75.,   max_pt=100.,   diff_scales=( 25., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.2,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
-            Bin('pT100200',   abscissa=135.94, min_pt=100.,  max_pt=200.,   diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.4,  0.4,  0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
-            Bin('pT200350',   abscissa=256.07, min_pt=200.,  max_pt=350.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.6,  0.6,  0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
-            Bin('pT3502000',  abscissa=579.36, min_pt=350.,  max_pt=2000.,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(1.0,  1.0,  0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pT75100',    abscissa=85.751, min_pt=75.,   max_pt=100.,   diff_scales=( 25., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.15, 0.15, 0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
+            Bin('pT100200',   abscissa=135.94, min_pt=100.,  max_pt=200.,   diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
+            Bin('pT200350',   abscissa=256.07, min_pt=200.,  max_pt=350.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pT3502000',  abscissa=579.36, min_pt=350.,  max_pt=2000.,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
         ]
 
         bins += [
             Bin('pTall',      use_by_bin=False,                             diff_scales=(  3., 0.005,  0.003, 0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            Bin('pTover2000', use_by_bin=False, min_pt=2000., max_pt=1e99,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(1.0,  1.0,  0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pTover2000', use_by_bin=False, min_pt=2000., max_pt=1e99,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(2.0,  2.0,  0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
             ]
 
     elif bin_by in ['dxy', 'dz']:
@@ -97,8 +97,8 @@ def make_bins(bin_by, bin_extra=None):
         runs = bin_extra
         bins = []
         for run in runs:
-            bin  = Bin('pT1002000run%i' % run, min_pt=100, max_pt=2000, diff_scales=(500, 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(1,    1,    0.005, 0.005, 2, 2),   pull_scales=(10, 10, 10, 10, 5,   5  ))
-            bin2 = Bin('pTallrun%i'     % run, min_pt=  0, max_pt=2000, diff_scales=(  3, 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2, 2),   pull_scales=( 5,  5,  5,  5, 3.5, 3.5))
+            bin  = Bin('pT1020run%i'   % run, min_pt=10,  max_pt=20,  diff_scales=(  2., 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
+            bin2 = Bin('pT100200run%i' % run, min_pt=100, max_pt=200, diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
             for b in (bin, bin2):
                 b.run_bin = run
                 bins.append(b)
