@@ -14,7 +14,7 @@ def core_gaussian(hist, factor, i=[0]):
     i[0] += 1
     return f
 
-def fit_gaussian(hist, factor=None, draw=False, cache=[]):
+def fit_gaussian(hist, factor=None, draw=False, likelihood=False, cache=[]):
     """Fit a Gaussian to the histogram, and return a dict with fitted
     parameters and errors. If factor is supplied, fit only to range in
     hist.mean +/- factor * hist.rms.
@@ -24,6 +24,9 @@ def fit_gaussian(hist, factor=None, draw=False, cache=[]):
         opt = 'qr'
     else:
         opt = 'qr0'
+
+    if likelihood:
+        opt += 'l'
 
     if factor is not None:
         fcn = core_gaussian(hist, factor)
@@ -42,7 +45,7 @@ def fit_gaussian(hist, factor=None, draw=False, cache=[]):
 class plot_saver:
     i = 0
     
-    def __init__(self, plot_dir=None, html=True, log=True, root=True, pdf=False, pdf_log=False, C=False, C_log=False, size=(820,630)):
+    def __init__(self, plot_dir=None, html=True, log=True, root=True, pdf=False, pdf_log=False, C=False, C_log=False, size=(820,630), index_fn='index.html'):
         self.c = ROOT.TCanvas('c%i' % plot_saver.i, '', *size)
         plot_saver.i += 1
         self.saved = []
@@ -54,6 +57,7 @@ class plot_saver:
         self.pdf_log = pdf_log
         self.C = C
         self.C_log = C_log
+        self.index_fn = index_fn
 
     def __del__(self):
         self.write_index()
@@ -64,9 +68,16 @@ class plot_saver:
     def write_index(self):
         if not self.saved or not self.html:
             return
-        html = open(os.path.join(self.plot_dir, 'index.html'), 'wt')
+        html = open(os.path.join(self.plot_dir, self.index_fn), 'wt')
         html.write('<html><body><pre>\n')
-        for i, (fn, log, root, pdf, pdf_log, C, C_log) in enumerate(self.saved):
+        html.write('<a href="..">.. (parent directory)</a>\n')
+        for i, save in enumerate(self.saved):
+            if type(save) == str:
+                # this is just a directory link
+                html.write('<a href="%s">%10i%32s%s</a>\n' % (save, i, 'change directory: ', save))
+                continue
+
+            fn, log, root, pdf, pdf_log, C, C_log = save
             bn = os.path.basename(fn)
             html.write('<a href="#%s">%10i</a> ' % (self.anchor_name(fn), i))
             if log:
@@ -96,7 +107,10 @@ class plot_saver:
             html.write('  <a href="%s">%s</a>' % (bn, bn))
             html.write('\n')
         html.write('<br><br>')
-        for i, (fn, log, root, pdf, pdf_log, C, C_log) in enumerate(self.saved):
+        for i, save in enumerate(self.saved):
+            if type(save) == str:
+                continue # skip dir entries
+            fn, log, root, pdf, pdf_log, C, C_log = save
             bn = os.path.basename(fn)
             html.write('<h4 id="%s">%s</h4><br>\n' % (self.anchor_name(fn), bn.replace('.png', '')))
             if log:
@@ -114,6 +128,11 @@ class plot_saver:
         if plot_dir is not None:
             os.system('mkdir -p %s' % self.plot_dir)
 
+    def save_dir(self, n):
+        if self.plot_dir is None:
+            raise ValueError('save_dir called before plot_dir set!')
+        self.saved.append(n)
+                    
     def save(self, n, log=None, root=None, pdf=None, pdf_log=None, C=None, C_log=None):
         log = self.log if log is None else log
         root = self.root if root is None else root
@@ -235,6 +254,8 @@ def tdr_style(_cache=[]):
     s.SetPaperSize(20.,20.)
 
     s.cd()
+
+    ROOT.gErrorIgnoreLevel = 1001 # Suppress TCanvas::SaveAs messages.
 
 __all__ = [
     'ROOT',
