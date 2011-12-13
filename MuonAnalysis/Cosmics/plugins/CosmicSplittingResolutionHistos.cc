@@ -309,8 +309,7 @@ struct Bin {
     }
 
     const double ref_eta = -log(tan(nt->ref_theta/2));
-    const double aeta = fabs(ref_eta);
-    if (aeta < min_eta || aeta > max_eta) {
+    if (ref_eta < min_eta || ref_eta > max_eta) {
       if (debug) *debug << "failed: eta: " << ref_eta << " min_eta: " << min_eta << " max_eta: " << max_eta << "\n";
       return false;
     }
