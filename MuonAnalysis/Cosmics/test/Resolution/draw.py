@@ -7,6 +7,24 @@ tdr_style()
 ROOT.gStyle.SetOptStat(111111)
 ROOT.gStyle.SetOptFit(1111)
 
+def fit_histo(h, hist_name, draw=False, likelihood=False):
+    if 'P' in hist_name: # pull
+        factor = 3/(h.GetRMS() if h.GetRMS() > 0 else 1) # fix to mean +/- 3
+    elif 'R' in hist_name:
+        factor = 1.5 # mean +/- 1.5 * rms
+    else:
+        raise NotImplementedError('fit_histo with hist_name %s' % hist_name)
+    return fit_gaussian(h, factor, draw, likelihood)
+
+def get_histo_stat(h, hist_name, stat):
+    if stat == 'rms':
+        return h.GetRMS(), h.GetRMSError()
+    elif stat == 'mean':
+        return h.GetMean(), h.GetMeanError()
+    elif stat == 'sigma':
+        return fit_histo(h, hist_name)['sigma']
+    raise NotImplementedError('get_curve for %s' % stat)
+                   
 class Drawer:
     tracks = [
         'Global',
@@ -35,27 +53,18 @@ class Drawer:
     def __init__(self, filename):
         self.file = ROOT.TFile(filename)
 
-    def get_histo(self, bin_name, track, quantity, histogram):
-        return self.file.histos.Get(bin_name).Get(track).Get(quantity).Get(histogram)
+    def get_histo(self, bin_name, track, quantity, hist_name):
+        return self.file.histos.Get(bin_name).Get(track).Get(quantity).Get(hist_name)
 
-    def fit_histo(self, histogram, h, draw=True, likelihood=False):
-        if 'P' in histogram: # pull
-            factor = 3/h.GetRMS() # fix to mean +/- 3
-        elif 'R' in histogram:
-            factor = 1.5 # mean +/- 1.5 * rms
-        else:
-            raise NotImplementedError('fit_histo with histogram %s' % histogram)
-        return fit_gaussian(h, factor, draw, likelihood)
-
-    def fit_histos(self, track, quantity, histogram, bin_by='pt'):
+    def draw_histos(self, track, quantity, hist_name, bin_by='pt'):
         hs = []
         for bin in make_bins(bin_by):
-            h = self.get_histo(bin.name, track, quantity, histogram)
-            self.fit_histo(histogram, h)
+            h = self.get_histo(bin.name, track, quantity, hist_name)
+            fit_histo(h, hist_name)
             hs.append((bin.name, h))
         return hs
             
-    def get_curve(self, track, quantity, histogram, stat, bin_by='pt'):
+    def get_curve(self, track, quantity, hist_name, stat, bin_by='pt'):
         x = []
         y = []
         exl = []
@@ -71,20 +80,8 @@ class Drawer:
             exl.append(abscissa - lower)
             exh.append(upper - abscissa)
 
-            h = self.get_histo(bin.name, track, quantity, histogram)
-            fit_result = self.fit_histo(histogram, h)
-            
-            if stat == 'rms':
-                value = h.GetRMS()
-                error = h.GetRMSError()
-            elif stat == 'mean':
-                value = h.GetMean()
-                error = h.GetMeanError()
-            elif stat == 'sigma':
-                value, error = fit_result['sigma']
-            else:
-                raise NotImplementedError('get_curve for %s' % stat)
-
+            h = self.get_histo(bin.name, track, quantity, hist_name)
+            value, error = get_histo_stat(h, hist_name, stat)
             y.append(value)
             ey.append(error)
 
@@ -96,8 +93,8 @@ class Drawer:
 
         return ROOT.TGraphAsymmErrors(len(x), x, y, exl, exh, ey, ey)
 
-    def overlay_curves(self, tracks, quantity, histogram, stat, ymin, ymax):
-        curves = [(track, self.get_curve(track, quantity, histogram, stat)) for track in tracks]
+    def overlay_curves(self, tracks, quantity, hist_name, stat, ymin, ymax):
+        curves = [(track, self.get_curve(track, quantity, hist_name, stat)) for track in tracks]
 
         first = True
         for track, curve in curves:
@@ -115,39 +112,40 @@ class Drawer:
 
         return curves
 
+if __name__ == '__main__':
+    fn = sys.argv[1]
+    fn_name = fn.replace('.histos', '').replace('.root', '')
+    plot_path = os.path.join('plots/cosmicres', fn_name)
 
-fn = sys.argv[1]
-fn_name = fn.replace('.histos', '').replace('.root', '')
-plot_path = os.path.join('plots/cosmicres', fn_name)
+    drawer = Drawer(fn)
 
-drawer = Drawer(fn)
-for histogram in ['upperR1lower', 'upperPlower']:
-    for track in drawer.tracks:
-        ps = plot_saver(os.path.join(plot_path, histogram, track))
-        for bin_name, h in drawer.fit_histos(track, 'qinvpt', histogram):
-            h.Draw()
-            ps.save(bin_name)
+    for hist_name in ['upperR1lower', 'upperPlower']:
+        for track in drawer.tracks:
+            ps = plot_saver(os.path.join(plot_path, hist_name, track))
+            for bin_name, h in drawer.draw_histos(track, 'qinvpt', hist_name):
+                h.Draw()
+                ps.save(bin_name)
 
-ps = plot_saver(plot_path, log=False)
-d = drawer.file.histos.Get('copied_histograms')
-d.Get('track_multiplicity').Draw('hist text00')
-ps.save('track_multiplicity', log=True)
-d.Get('muon_multiplicity').Draw('hist text00')
-ps.save('muon_multiplicity', log=True)
-d.Get('errors').Draw('hist text00')
-ps.save('ntuple_errors')
-drawer.file.histos.Get('errors').Draw('hist text00')
-ps.save('histo_errors')
+    ps = plot_saver(plot_path, log=False)
+    d = drawer.file.histos.Get('copied_histograms')
+    d.Get('track_multiplicity').Draw('hist text00')
+    ps.save('track_multiplicity', log=True)
+    d.Get('muon_multiplicity').Draw('hist text00')
+    ps.save('muon_multiplicity', log=True)
+    d.Get('errors').Draw('hist text00')
+    ps.save('ntuple_errors')
+    drawer.file.histos.Get('errors').Draw('hist text00')
+    ps.save('histo_errors')
 
-ps.save_dir('upperR1lower')
-ps.save_dir('upperPlower')
+    ps.save_dir('upperR1lower')
+    ps.save_dir('upperPlower')
 
-ps.c.SetLogx(1)
-curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperR1lower', 'rms', 0, 0.18)
-ps.save('res_rms')
-curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperR1lower', 'sigma', 0, 0.08)
-ps.save('res_sigma')
-curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperPlower',  'sigma', 0.5, 2.5)
-ps.save('pull_sigma')
-curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperPlower',  'mean', -0.2, 0.8)
-ps.save('pull_mean')
+    ps.c.SetLogx(1)
+    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperR1lower', 'rms', 0, 0.18)
+    ps.save('res_rms')
+    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperR1lower', 'sigma', 0, 0.08)
+    ps.save('res_sigma')
+    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperPlower',  'sigma', 0.5, 2.5)
+    ps.save('pull_sigma')
+    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperPlower',  'mean', -0.2, 0.8)
+    ps.save('pull_mean')
