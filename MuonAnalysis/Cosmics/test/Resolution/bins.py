@@ -79,16 +79,14 @@ def make_bins(bin_by, bin_extra=None):
             Bin('pTover2000', use_by_bin=False, min_pt=2000., max_pt=1e99,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(2.0,  2.0,  0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
             ]
 
-    elif bin_by in ['dxy', 'dz']:
+    elif bin_by in ['eta', 'phi', 'dxy', 'dz']:
         if bin_extra is None:
-            raise ValueError('for bin_by=dxy or dz, bin_extra must be (nbins, bin_max)')
-        nbins, bin_max = bin_extra
-
-        raw_bins = [i*float(bin_max)/nbins for i in xrange(nbins+1)]
+            raise ValueError('for bin_by=eta, dxy, or dz, bin_extra must be list of bin edges, including lowest and highest')
+        raw_bins = bin_extra
         bins = []
-        for i in xrange(nbins):
-            bin  = Bin('pT1002000%s%i' % (bin_by, i), min_pt=100, max_pt=2000, diff_scales=(500, 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(1,    1,    0.005, 0.005, 2, 2),   pull_scales=(10, 10, 10, 10, 5,   5  ))
-            bin2 = Bin('pTall%s%i'     % (bin_by, i), min_pt=  0, max_pt=2000, diff_scales=(  3, 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2, 2),   pull_scales=( 5,  5,  5,  5, 3.5, 3.5))
+        for i in xrange(len(raw_bins)-1):
+            bin  = Bin('pT1020%s%i'   % (bin_by, i), min_pt=10,  max_pt=20,  diff_scales=(  2., 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5))
+            bin2 = Bin('pT100200%s%i' % (bin_by, i), min_pt=100, max_pt=200, diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. ))
             for b in (bin, bin2):
                 setattr(b, 'min_%s' % bin_by, raw_bins[i])
                 setattr(b, 'max_%s' % bin_by, raw_bins[i+1])
