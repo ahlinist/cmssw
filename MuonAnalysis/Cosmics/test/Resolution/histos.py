@@ -46,6 +46,7 @@ cfg = cms.PSet(
     force_event_list        = cms.vuint32(),
     require_tt25            = cms.bool(require_tt25),
     require_not_tt25        = cms.bool(require_not_tt25),
+    min_bfield              = cms.double(3.7),
     copy_selected_events    = cms.bool(False),
     )
 
