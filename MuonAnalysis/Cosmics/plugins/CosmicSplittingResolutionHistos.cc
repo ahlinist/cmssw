@@ -132,7 +132,7 @@ struct Bin {
   bool flip_upper_charge;       // Whether to flip the charge of the upper tracks.
 
   // The cut parameters.
-  int      nbins_scale;
+  unsigned nbins_scale;
   unsigned run_bin;
   double   min_pt;
   double   max_pt;
@@ -282,7 +282,7 @@ struct Bin {
 
     // Make a histogram of events/run. Again, just do it for TkOnly as
     // it will be the same for the rest of the tracks.
-    if (ref_ok && run_bin > 0) {
+    if (ref_ok && run_bin == 0) {
       const size_t n = runs_seen.size();
       edm::Service<TFileService> fs;
       TH1I* h = fs->make<TH1I>(TString(name.c_str()) + "_runs_seen", "", n, 0, n);
