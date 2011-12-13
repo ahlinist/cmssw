@@ -478,6 +478,9 @@ private:
   // barrel RPC cosmic trigger in collisions menu).
   const bool require_tt25;
   const bool require_not_tt25;
+  // Check magnetic field strength to make sure we're using muons
+  // reconstructed correctly.
+  const double min_bfield;
 
   // End of cuts. Since we select <5% of events, useful to be able to
   // get a copy of the ntuple with just those selected.
@@ -490,7 +493,7 @@ private:
   // Keep track of how many events fail the cut sequence at which cut
   // ("error").
   TH1F* errors;
-  enum error_code { error_none, error_bad_run, error_bad_event, error_tt25, error_wrong_sample, error_propagation, error_prop_mc,
+  enum error_code { error_none, error_bad_run, error_bfield, error_bad_event, error_tt25, error_wrong_sample, error_propagation, error_prop_mc,
 		    error_muon_hits, error_pixels, error_strips, error_tpfms_station, error_dt, error_csc, error_tksta_dphi,
 		    error_last };
 
@@ -533,6 +536,7 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
     force_event_list(cfg.getParameter<std::vector<unsigned> >("force_event_list")),
     require_tt25(cfg.getParameter<bool>("require_tt25")),
     require_not_tt25(cfg.getParameter<bool>("require_not_tt25")),
+    min_bfield(cfg.getParameter<double>("min_bfield")),
     copy_selected_events(cfg.getParameter<bool>("copy_selected_events"))
 {
   if (force_event_list.size() % 3 != 0)
@@ -556,6 +560,7 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
   errors = fs->make<TH1F>("errors", "", error_last, 0, error_last);
   errors->GetXaxis()->SetBinLabel(1 + error_none,                "none");
   errors->GetXaxis()->SetBinLabel(1 + error_bad_run,             "bad_run");
+  errors->GetXaxis()->SetBinLabel(1 + error_bfield,              "bfield");
   errors->GetXaxis()->SetBinLabel(1 + error_bad_event,           "bad_event");
   errors->GetXaxis()->SetBinLabel(1 + error_tt25,                "tt25");
   errors->GetXaxis()->SetBinLabel(1 + error_wrong_sample,        "wrong_sample");
@@ -650,6 +655,9 @@ CosmicSplittingResolutionHistos::error_code CosmicSplittingResolutionHistos::cut
 
   if (!is_mc && run_is_bad(nt->run))
     return error_bad_run;
+
+  if (nt->bzat0 < min_bfield)
+    return error_bfield;
 
   if (event_is_bad(nt->run, nt->lumi, nt->event))
     return error_bad_event;
