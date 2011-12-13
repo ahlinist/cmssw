@@ -60,7 +60,6 @@ for bin in ['pT1020', 'pT100200']:
 
                     too_low, too_high = save_outside.get(plot_name, (-1e9,1e9))
                     if value < too_low or value > too_high:
-                        print plot_name, '(%.4f, %.4f)' % (too_low, too_high), run, value
                         to_save.append((h, run, plot_name, value))
                                                          
                     byrun.SetBinContent(i+1, value)
@@ -73,4 +72,5 @@ for bin in ['pT1020', 'pT100200']:
 
 for h, run, plot_name, value in to_save:
     h.Draw()
+    h.GetListOfFunctions()[0].Draw('same')
     ps.save('%s_%i_%.5f' % (plot_name, run, value))
