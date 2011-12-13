@@ -132,6 +132,7 @@ struct Bin {
   bool flip_upper_charge;       // Whether to flip the charge of the upper tracks.
 
   // The cut parameters.
+  int      nbins_scale;
   unsigned run_bin;
   double   min_pt;
   double   max_pt;
@@ -196,6 +197,7 @@ struct Bin {
       name(pset.getParameter<std::string>("name")),
       ref_ok(track == tk_tkonly)
   {
+    nbins_scale      = getOptionalTrackedParameter<unsigned>(pset, "nbins_scale",           1);
     run_bin          = getOptionalTrackedParameter<unsigned>(pset, "run_bin",               0);
     min_pt           = getOptionalTrackedParameter<double>  (pset, "min_pt",                0);
     max_pt           = getOptionalTrackedParameter<double>  (pset, "max_pt",             2000);
@@ -233,29 +235,29 @@ struct Bin {
       mod_res_v(pull_scales, 15);
     }
 
-    h_chi2dof      = fac.Create("chi2dof",      100,  0, 10);
+    h_chi2dof      = fac.Create("chi2dof",      100/nbins_scale,  0, 10);
     h_pixel_hits   = fac.Create("pixelhits",     10,  0, 10);
     h_strip_hits   = fac.Create("striphits",     25,  0, 25);
     h_pixel_layers = fac.Create("pixellayers",    5,  0,  5);
     h_strip_layers = fac.Create("striplayers",   15,  0, 15);
     h_muon_hits    = fac.Create("muonhits",      55,  0, 55);
     h_charge       = fac.Create("charge",         3, -1,  2, 3, -3, 3);
-    h_pt           = fac.Create("pt",           200, min_pt, max_pt, 100, -diff_scales[0], diff_scales[0], -res_scales[0], res_scales[0], -pull_scales[0], pull_scales[0]);
-    h_inv_pt       = fac.Create("invpt",        200, 0, 5/min_pt,    100, -diff_scales[1], diff_scales[1], -res_scales[1], res_scales[1], -pull_scales[1], pull_scales[1]);
-    h_qpt          = fac.Create("qpt",          200, min_pt, max_pt, 100, -diff_scales[0], diff_scales[0], -res_scales[0], res_scales[0], -pull_scales[0], pull_scales[0]);
-    h_qinv_pt      = fac.Create("qinvpt",       200, 0, 5/min_pt,    100, -diff_scales[1], diff_scales[1], -res_scales[1], res_scales[1], -pull_scales[1], pull_scales[1]);
-    h_theta        = fac.Create("theta",        200, 0, 3.15,        100, -diff_scales[2], diff_scales[2], -res_scales[2], res_scales[2], -pull_scales[2], pull_scales[2]);
-    h_phi          = fac.Create("phi",          200, -3.15, 3.15,    100, -diff_scales[3], diff_scales[3], -res_scales[3], res_scales[3], -pull_scales[3], pull_scales[3]);
-    h_dxy          = fac.Create("dxy",          200, -0.1, 0.1,      100, -diff_scales[4], diff_scales[4], -res_scales[4], res_scales[4], -pull_scales[4], pull_scales[4]);
-    h_dz           = fac.Create("dz",           200, -0.3, 0.3,      100, -diff_scales[5], diff_scales[5], -res_scales[5], res_scales[5], -pull_scales[5], pull_scales[5]);
+    h_pt           = fac.Create("pt",           200/nbins_scale, min_pt, max_pt, 100/nbins_scale, -diff_scales[0], diff_scales[0], -res_scales[0], res_scales[0], -pull_scales[0], pull_scales[0]);
+    h_inv_pt       = fac.Create("invpt",        200/nbins_scale, 0, 5/min_pt,    100/nbins_scale, -diff_scales[1], diff_scales[1], -res_scales[1], res_scales[1], -pull_scales[1], pull_scales[1]);
+    h_qpt          = fac.Create("qpt",          200/nbins_scale, min_pt, max_pt, 100/nbins_scale, -diff_scales[0], diff_scales[0], -res_scales[0], res_scales[0], -pull_scales[0], pull_scales[0]);
+    h_qinv_pt      = fac.Create("qinvpt",       200/nbins_scale, 0, 5/min_pt,    100/nbins_scale, -diff_scales[1], diff_scales[1], -res_scales[1], res_scales[1], -pull_scales[1], pull_scales[1]);
+    h_theta        = fac.Create("theta",        200/nbins_scale, 0, 3.15,        100/nbins_scale, -diff_scales[2], diff_scales[2], -res_scales[2], res_scales[2], -pull_scales[2], pull_scales[2]);
+    h_phi          = fac.Create("phi",          200/nbins_scale, -3.15, 3.15,    100/nbins_scale, -diff_scales[3], diff_scales[3], -res_scales[3], res_scales[3], -pull_scales[3], pull_scales[3]);
+    h_dxy          = fac.Create("dxy",          200/nbins_scale, -0.1, 0.1,      100/nbins_scale, -diff_scales[4], diff_scales[4], -res_scales[4], res_scales[4], -pull_scales[4], pull_scales[4]);
+    h_dz           = fac.Create("dz",           200/nbins_scale, -0.3, 0.3,      100/nbins_scale, -diff_scales[5], diff_scales[5], -res_scales[5], res_scales[5], -pull_scales[5], pull_scales[5]);
 
     // Only bother to make the reference histograms once.
     if (ref_ok) {
-      h_ref_pt  = bindir.make<TH1F>("ref_pt",  "", 200, 0, 2000);
-      h_ref_eta = bindir.make<TH1F>("ref_eta", "", 200, -3, 3);
-      h_ref_phi = bindir.make<TH1F>("ref_phi", "", 200, -3.15, 3.15);
-      h_ref_dxy = bindir.make<TH1F>("ref_dxy", "", 200, -40, 40);
-      h_ref_dz  = bindir.make<TH1F>("ref_dz",  "", 200, -40, 40);
+      h_ref_pt  = bindir.make<TH1F>("ref_pt",  "", 200/nbins_scale, 0, 2000);
+      h_ref_eta = bindir.make<TH1F>("ref_eta", "", 200/nbins_scale, -3, 3);
+      h_ref_phi = bindir.make<TH1F>("ref_phi", "", 200/nbins_scale, -3.15, 3.15);
+      h_ref_dxy = bindir.make<TH1F>("ref_dxy", "", 200/nbins_scale, -40, 40);
+      h_ref_dz  = bindir.make<TH1F>("ref_dz",  "", 200/nbins_scale, -40, 40);
     }
     else
       h_ref_pt = h_ref_eta = h_ref_phi = h_ref_dxy = h_ref_dz = 0;
