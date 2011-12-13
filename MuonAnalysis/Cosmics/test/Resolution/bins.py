@@ -16,6 +16,7 @@ class Bin:
     min_dz  = 0.
     max_dz  = 100.
     run_bin = 0
+    nbins_scale = 1
     
     def __init__(self, name, **kwargs):
         self.name = name
@@ -101,6 +102,7 @@ def make_bins(bin_by, bin_extra=None):
             bin2 = Bin('pT100200run%i' % run, min_pt=100, max_pt=200, diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. ))
             for b in (bin, bin2):
                 b.run_bin = run
+                b.nbins_scale = 5
                 bins.append(b)
 
     for b in bins:
