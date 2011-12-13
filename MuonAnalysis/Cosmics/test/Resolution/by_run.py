@@ -8,9 +8,27 @@ min_run = -1
 max_run = 1e99
 min_events = 20
 
+yaxes = {
+    ('pT1020',   'upperR1lower', 'rms'):   ( 0,     0.03),
+    ('pT1020',   'upperR1lower', 'mean'):  (-0.01,  0.01),
+    ('pT1020',   'upperR1lower', 'sigma'): ( 0,     0.25),
+    ('pT1020',   'upperPlower',  'rms'):   ( 0,     2),
+    ('pT1020',   'upperPlower',  'mean'):  (-1.2,   1.2),
+    ('pT1020',   'upperPlower',  'sigma'): ( 0,    20),
+    ('pT100200', 'upperR1lower', 'rms'):   ( 0.01,  0.05),
+    ('pT100200', 'upperR1lower', 'mean'):  (-0.02,  0.02),
+    ('pT100200', 'upperR1lower', 'sigma'): ( 0,     0.5),
+    ('pT100200', 'upperPlower',  'rms'):   ( 0.5,   2.2),
+    ('pT100200', 'upperPlower',  'mean'):  (-1,     1),
+    ('pT100200', 'upperPlower',  'sigma'): ( 0,    20),
+    }
+
 save_outside = {
-    'pT1020_TkOnly_qinvpt_upperR1lower_rms':   (0.0075, 0.0125),
-    'pT1020_TkOnly_qinvpt_upperR1lower_sigma': (0,      0.03),
+#    'pT1020_TkOnly_qinvpt_upperR1lower_rms':   (0.0075, 0.0125),
+#    'pT1020_TkOnly_qinvpt_upperR1lower_mean':  (-0.006, 0.006),
+#    'pT1020_TkOnly_qinvpt_upperR1lower_sigma': (0,      0.03),
+#    'pT1020_TkOnly_qinvpt_upperPlower_sigma':  (0,      4),
+#    'pT1020_Picky_qinvpt_upperR1lower_sigma':  (0,      0.03),
     }
 
 ps = plot_saver('plots/by_run')
@@ -65,6 +83,10 @@ for bin in ['pT1020', 'pT100200']:
                     byrun.SetBinContent(i+1, value)
                     byrun.SetBinError(i+1, error)
                     byrun.GetXaxis().SetBinLabel(i+1, str(run))
+
+                key = bin, hist_name, stat
+                if yaxes.has_key(key):
+                    byrun.GetYaxis().SetRangeUser(*yaxes[key])
 
                 byrun.Draw()
                 byrun.Fit('pol1', 'q')
