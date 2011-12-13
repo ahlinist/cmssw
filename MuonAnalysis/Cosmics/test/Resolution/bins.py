@@ -32,7 +32,7 @@ class Bin:
                        # are cms types. To replace, they must be
                        # native python types.
             else:
-                if type(v) == type(0) and k == 'run_bin':
+                if type(v) == type(0):
                     nv = cms.uint32(v)
                 elif type(v) == type(0.):
                     nv = cms.double(v)
