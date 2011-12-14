@@ -243,7 +243,8 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
   }
   std::vector<uint> counts(points.size(),0);
   
-  TrackerHitAssociator * associator= new TrackerHitAssociator(iEvent);
+  TrackerHitAssociator * associator= 0;
+  if (!iEvent.isRealData()) associator=new TrackerHitAssociator(iEvent);
   
   //implement one method
   edm::Handle<SiPixelRecHitCollection> pixelHits;
@@ -276,12 +277,14 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
 	if (mag < epsilon_) 
 	  { 
 	    fill.push_back(pxIt->cluster());
-	    std::vector<PSimHit> simHits = associator->associateHit(*pxIt);
-	    std::stringstream text;
-	    text<<" kill a pixel at: "<<dPxIt->id()<<", "<<tPoint<<" using "<<points[iR];
-	    for (uint ips=0;ips!=simHits.size();++ips)	      
-	      text<<"\n\t[P] pType: "<<simHits[ips].particleType()<<", pId: "<<simHits[ips].trackId() <<", process: "<<simHits[ips].processType()<<", event: "<<simHits[ips].eventId().rawId();
-	    edm::LogError("ReadFileIn")<<text.str();
+	    if (associator){
+	      std::vector<PSimHit> simHits = associator->associateHit(*pxIt);
+	      std::stringstream text;
+	      text<<" kill a pixel at: "<<dPxIt->id()<<", "<<tPoint<<" using "<<points[iR];
+	      for (uint ips=0;ips!=simHits.size();++ips)	      
+		text<<"\n\t[P] pType: "<<simHits[ips].particleType()<<", pId: "<<simHits[ips].trackId() <<", process: "<<simHits[ips].processType()<<", event: "<<simHits[ips].eventId().rawId();
+	      edm::LogError("ReadFileIn")<<text.str();
+	    }
 	    counts[iR]++;
 	    masked=true;
 	    break;
@@ -312,12 +315,14 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
 	  {                  
 	    toMaskStr[stIt->stereoHit()->geographicalId()].insert(stIt->stereoHit()->cluster()); 
 	    toMaskStr[stIt->monoHit()->geographicalId()].insert(stIt->monoHit()->cluster());
-	    std::stringstream text;
-	    text<<" kill a strip at: "<<dStIt->id()<<"="<<stIt->stereoHit()->geographicalId().rawId()<<"+"<<stIt->monoHit()->geographicalId().rawId()<<" "<<tPoint<<" using "<<points[iR];
-	    std::vector<PSimHit> simHits = associator->associateHit(*stIt);
-	    for (uint ips=0;ips!=simHits.size();++ips)	 
-	      text<<"\n\t[M] pType: "<<simHits[ips].particleType()<<", pId: "<<simHits[ips].trackId() <<", process: "<<simHits[ips].processType()<<", event: "<<simHits[ips].eventId().rawId();
-	    edm::LogError("ReadFileIn")<<text.str();
+	    if (associator){
+	      std::stringstream text;
+	      text<<" kill a strip at: "<<dStIt->id()<<"="<<stIt->stereoHit()->geographicalId().rawId()<<"+"<<stIt->monoHit()->geographicalId().rawId()<<" "<<tPoint<<" using "<<points[iR];
+	      std::vector<PSimHit> simHits = associator->associateHit(*stIt);
+	      for (uint ips=0;ips!=simHits.size();++ips)	 
+		text<<"\n\t[M] pType: "<<simHits[ips].particleType()<<", pId: "<<simHits[ips].trackId() <<", process: "<<simHits[ips].processType()<<", event: "<<simHits[ips].eventId().rawId();
+	      edm::LogError("ReadFileIn")<<text.str();
+	    }
 	    counts[iR]++;
 	    masked=true;
 	    break;         
@@ -335,7 +340,8 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
     for (std::set< SiStripRecHit1D::ClusterRef >::iterator topush = itskiped->second.begin();
 	 topush!=itskiped->second.end();++topush)   fill.push_back(*topush); 
   }
-  delete associator;
+  if (associator)
+    delete associator;
   
   std::stringstream text;
   uint notused=0;
@@ -370,7 +376,8 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 {
 
   //cheater
-  TrackerHitAssociator * associator= new TrackerHitAssociator(iEvent);
+  TrackerHitAssociator * associator=0;
+  if (!iEvent.isRealData())  associator= new TrackerHitAssociator(iEvent);
 
   std::vector<fastRecHit> fastHits;
   fastHits.reserve(1000);
@@ -453,52 +460,63 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       recHits.push_back( peak->elements_[iH]->hit_->hit()->clone());
 
       //cheat
-      std::vector<PSimHit> simHits = associator->associateHit(*peak->elements_[iH]->hit_->hit());
-      text<<" Kill a hit (by using it in the track candidate) at: "<<peak->elements_[iH]->hit_->geographicalId().rawId();
-      for (uint ips=0;ips!=simHits.size();++ips)
-	text<<"\n\t[P] pType: "<<simHits[ips].particleType()
-	    <<", pId: "<<simHits[ips].trackId() 
-	    <<", process: "<<simHits[ips].processType()
-	    <<", event: "<<simHits[ips].eventId().rawId();
-      text<<"\n";
+      if (associator){
+	std::vector<PSimHit> simHits = associator->associateHit(*peak->elements_[iH]->hit_->hit());
+	text<<" Kill a hit (by using it in the track candidate) at: "<<peak->elements_[iH]->hit_->geographicalId().rawId();
+	for (uint ips=0;ips!=simHits.size();++ips)
+	  text<<"\n\t[P] pType: "<<simHits[ips].particleType()
+	      <<", pId: "<<simHits[ips].trackId() 
+	      <<", process: "<<simHits[ips].processType()
+	      <<", event: "<<simHits[ips].eventId().rawId();
+	text<<"\n";
+      }
+      LogDebug("LooperMethod")<<text.str();
     }
-    LogDebug("LooperMethod")<<text.str();
     
-    // make a state from the helix state on the surface of the first hit.
-    TrackCharge charge=1; //from the helix direction
-    GlobalPoint point=peak->elements_.front()->hit_->globalPosition();
-    GlobalVector direction; //given R~1/pT and pZ from helix pas.
-    
-    FreeTrajectoryState fts( GlobalTrajectoryParameters(point,
-							direction,
-							charge,
-							magField.product()),
-			     CartesianTrajectoryError());
-    TrajectoryStateOnSurface onDet(fts,*peak->elements_.front()->hit_->surface());
-    
-    //    TrajectoryStateOnSurface onDet=prop->propagate(fts,peak->elements_.front()->det()->surface());
-    //    if (!onDet.isValid()){
-    //      edm::LogError("LooperMethod")<<"failed to get the helix state on det";
-    //      continue;
-    //    }
-    
-    PTrajectoryStateOnDet* state= TrajectoryStateTransform().persistentState(onDet,
-									     peak->elements_.front()->hit_->geographicalId().rawId());
-    
-    // this require a seed to work.
-    TrajectorySeed seed;
-    
-    //make track candidate for all of them
-    prod_.tcOut->push_back(TrackCandidate(recHits,
-					  seed,
-					  *state));
-    
+    if (makeTC_){
+      // make a state from the helix state on the surface of the first hit.
+      TrackCharge charge=1; //from the helix direction
+      GlobalPoint point=peak->elements_.front()->hit_->globalPosition();
+      GlobalVector direction; //given R~1/pT and pZ from helix pas.
+      
+      FreeTrajectoryState fts( GlobalTrajectoryParameters(point,
+							  direction,
+							  charge,
+							  magField.product()),
+			       CartesianTrajectoryError());
+      TrajectoryStateOnSurface onDet;
+      if (true){
+	onDet=TrajectoryStateOnSurface(fts,*peak->elements_.front()->hit_->surface());
+      }
+      /*
+	else{
+	onDet=prop->propagate(fts,peak->elements_.front()->det()->surface());
+	if (!onDet.isValid()){
+	edm::LogError("LooperMethod")<<"failed to get the helix state on det";
+	continue;
+	}
+	}
+      */
+      
+      PTrajectoryStateOnDet* state= TrajectoryStateTransform().persistentState(onDet,
+									       peak->elements_.front()->hit_->geographicalId().rawId());
+      
+      // this require a seed to work.
+      TrajectorySeed seed;
+      
+      //make track candidate for all of them
+      prod_.tcOut->push_back(TrackCandidate(recHits,
+					    seed,
+					    *state));
+    }//insert track candidate
     //and mask 
     tomask.insert(tomask.end(),peak->elements_.begin(),peak->elements_.end());
 
   }
+  
+  if (associator)
+    delete associator;
 
-  delete associator;
   //do not output the shit out
   prod_.tcOut->clear();
   

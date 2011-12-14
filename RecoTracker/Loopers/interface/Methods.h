@@ -47,12 +47,14 @@ namespace LooperClusterRemoverMethod {
       pixelRecHits_=iConfig.getParameter<edm::InputTag>("pixelRecHits");
       stripRecHits_=iConfig.getParameter<edm::InputTag>("stripRecHits");
       collectorConf_=iConfig.getParameter<edm::ParameterSet>("collector");
+      makeTC_=iConfig.getParameter<bool>("makeTrackCandidates");
     };
     void run(edm::Event&, const edm::EventSetup&,
 	     LooperClusterRemover::products &);
     
     edm::InputTag pixelRecHits_,stripRecHits_;
     edm::ParameterSet collectorConf_;
+    bool makeTC_;
   };
 
   class ReadFileIn : public Method{
