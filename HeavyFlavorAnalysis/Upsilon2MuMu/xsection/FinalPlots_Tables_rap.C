@@ -20,7 +20,7 @@ void XSSystTot_1S(){
   TFile *f = new TFile("XSection1Sfinal.root");
   TH1D *S5;
   S5 = (TH1D*)gFile->Get("S1YieldEta");    
-  //TFile *f = new TFile("XSection_lhcb.root");
+  //TFile *f = new TFile("XSection1S_0_2_4_0_16.root");
   //TH1D *S55;
   //S55 = (TH1D*)gFile->Get("S1YieldEta");   
   TFile *f = new TFile("MuIDPlus_10ptbins_1Srho_rap_v2.root");
@@ -77,7 +77,7 @@ void XSSystTot_1S(){
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
-    //y[i-1] = S55->GetBinContent(i);
+    //y[i-1] = S55->GetBinContent(i); // lhcb
     s1=0; s1_=0;
     
     /// For Ratio Calculation
