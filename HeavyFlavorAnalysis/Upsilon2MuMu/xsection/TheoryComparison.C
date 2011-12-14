@@ -158,8 +158,6 @@ void CSM3S(){
 }
 
 
-
-
 void NRQCD(){
   
   gStyle->SetOptStat(00000000000);
