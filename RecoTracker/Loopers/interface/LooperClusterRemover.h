@@ -17,7 +17,7 @@
 //
 // Original Author:  Jean-Roch Vlimant,40 3-A28,+41227671209,
 //         Created:  Wed Aug  3 12:12:46 CEST 2011
-// $Id$
+// $Id: LooperClusterRemover.h,v 1.1 2011/11/30 13:42:32 vlimant Exp $
 //
 //
 
@@ -41,6 +41,7 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
 
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
+#include "DataFormats/Common/interface/ContainerMask.h"
 
 //
 // class declaration
@@ -52,14 +53,18 @@ namespace LooperClusterRemoverMethod {
 
 class LooperClusterRemover : public edm::EDProducer {
    public:
+      typedef edm::ContainerMask<edmNew::DetSetVector<SiPixelCluster> > PixelMaskContainer;
+      typedef edm::ContainerMask<edmNew::DetSetVector<SiStripCluster> > StripMaskContainer;
+
       explicit LooperClusterRemover(const edm::ParameterSet&);
       ~LooperClusterRemover();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
       struct products{
-	std::auto_ptr<edmNew::DetSetVector<SiPixelClusterRefNew> > removedPixelClsuterRefs;
-	std::auto_ptr<edmNew::DetSetVector<SiStripRecHit1D::ClusterRef> > removedStripClsuterRefs;
+
+	std::vector<bool> collectedPixels;
+	std::vector<bool> collectedStrips;
 	std::auto_ptr<TrackCandidateCollection> tcOut;
       };
 
@@ -72,9 +77,12 @@ class LooperClusterRemover : public edm::EDProducer {
       virtual void endRun(edm::Run&, edm::EventSetup const&);
       virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
       virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+      void reset(edm::Event&);
+      void put(edm::Event& iEvent);
 
       products prod_;
       LooperClusterRemoverMethod::Method * method_;
+      edm::InputTag pixelClusters_,stripClusters_;
 
 };
 

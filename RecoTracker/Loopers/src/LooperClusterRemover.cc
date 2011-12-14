@@ -9,11 +9,13 @@
 //
 LooperClusterRemover::LooperClusterRemover(const edm::ParameterSet& iConfig)
 {
-   //register your products
-
+  //essentially this could be taken from the provenance, but whatever...
+  stripClusters_ = iConfig.getParameter<edm::InputTag>("stripClusters");
+  pixelClusters_ = iConfig.getParameter<edm::InputTag>("pixelClusters");
+  
    //produce the mask of looper clusters
-   produces<edmNew::DetSetVector<SiPixelClusterRefNew> >();
-   produces<edmNew::DetSetVector<SiStripRecHit1D::ClusterRef> >();
+   produces<edm::ContainerMask<edmNew::DetSetVector<SiPixelCluster> > >();
+   produces<edm::ContainerMask<edmNew::DetSetVector<SiStripCluster> > >();
 
    std::string whichOne = iConfig.getParameter<std::string>("algo");
    if (whichOne=="EveryNMethod")
@@ -50,25 +52,48 @@ LooperClusterRemover::~LooperClusterRemover()
 // member functions
 //
 
+void LooperClusterRemover::reset(edm::Event& iEvent){
+  edm::Handle<edmNew::DetSetVector<SiStripCluster> > stripClusters;
+  iEvent.getByLabel(stripClusters_, stripClusters);
+  edm::Handle<edmNew::DetSetVector<SiPixelCluster> > pixelClusters;
+  iEvent.getByLabel(pixelClusters_, pixelClusters);
+  
+  prod_.tcOut.reset(new TrackCandidateCollection());
+  prod_.collectedPixels.resize(pixelClusters->dataSize()); fill(prod_.collectedPixels.begin(), prod_.collectedPixels.end(), false);
+  prod_.collectedStrips.resize(stripClusters->dataSize()); fill(prod_.collectedStrips.begin(), prod_.collectedStrips.end(), false);
+}
+
+void LooperClusterRemover::put(edm::Event& iEvent){
+  edm::Handle<edmNew::DetSetVector<SiStripCluster> > stripClusters;
+  iEvent.getByLabel(stripClusters_, stripClusters);
+  edm::Handle<edmNew::DetSetVector<SiPixelCluster> > pixelClusters;
+  iEvent.getByLabel(pixelClusters_, pixelClusters);
+
+  std::auto_ptr<PixelMaskContainer> removedPixelClusterMask(
+      new PixelMaskContainer(edm::RefProd<edmNew::DetSetVector<SiPixelCluster> >(pixelClusters),prod_.collectedPixels));
+  std::auto_ptr<StripMaskContainer> removedStripClusterMask(
+      new StripMaskContainer(edm::RefProd<edmNew::DetSetVector<SiStripCluster> >(stripClusters),prod_.collectedStrips));
+
+  iEvent.put(removedPixelClusterMask);
+  iEvent.put(removedStripClusterMask);
+  iEvent.put( prod_.tcOut );
+}
 // ------------ method called to produce the data  ------------
 void
 LooperClusterRemover::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   //final products
-  prod_.removedPixelClsuterRefs.reset(new edmNew::DetSetVector<SiPixelClusterRefNew>());
-  prod_.removedStripClsuterRefs.reset(new edmNew::DetSetVector<SiStripRecHit1D::ClusterRef>());
-  prod_.tcOut.reset(new TrackCandidateCollection());
+  reset(iEvent);
   method_->run(iEvent,iSetup,
 	       prod_);
-  
-  edm::LogError("LooperClusterRemover")<<" rejecting pixels on "<<prod_.removedPixelClsuterRefs->size()<<" modules\n"
-				       <<" rejecting strip on "<<prod_.removedStripClsuterRefs->size()<<" modules\n"
+  unsigned int nP=0,nS=0;
+  for (unsigned int i=0;i!=prod_.collectedPixels.size();++i)    if (prod_.collectedPixels[i]) ++nP;
+  for (unsigned int i=0;i!=prod_.collectedStrips.size();++i)    if (prod_.collectedStrips[i]) ++nS;
+
+  edm::LogError("LooperClusterRemover")<<" rejecting "<<nP<<" pixels out of: "<<prod_.collectedPixels.size()<<"\n"
+				       <<" rejecting "<<nS<<" stripd out of: "<<prod_.collectedStrips.size()<<"\n"
 				       <<" making "<<prod_.tcOut->size()<<" track candidated";
-  
-  //put the product in the event
-  iEvent.put( prod_.removedPixelClsuterRefs );
-  iEvent.put( prod_.removedStripClsuterRefs );
-  iEvent.put( prod_.tcOut );
+  put(iEvent);
 }
 
 // ------------ method called once each job just before starting event loop  ------------

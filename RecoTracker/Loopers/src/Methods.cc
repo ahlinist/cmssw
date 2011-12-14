@@ -75,7 +75,6 @@ void LooperClusterRemoverMethod::FractionOfTruth::run(edm::Event& iEvent, const 
 
   for ( SiPixelRecHitCollection::const_iterator dPxIt=pixelHits->begin();
         dPxIt!=pixelHits->end();++dPxIt) {
-    edmNew::DetSetVector<SiPixelClusterRefNew>::FastFiller fill(*prod_.removedPixelClsuterRefs, dPxIt->id());
     for (SiPixelRecHitCollection::DetSet::const_iterator pxIt=dPxIt->begin();
          pxIt!=dPxIt->end();++pxIt) {
       //determine whether this a pixel from a true looper
@@ -100,14 +99,12 @@ void LooperClusterRemoverMethod::FractionOfTruth::run(edm::Event& iEvent, const 
 	//	if (simHits[ips].processType() == 2) rejected=true;
 	//	if (abs(simHits[ips].particleType()) == 211) rejected=true;
       }
-      if (rejected) fill.push_back(pxIt->cluster());
+      if (rejected) prod_.collectedPixels[pxIt->cluster().key()]=true;
     }
-    if (fill.empty()) fill.abort();
   }
 
   edm::Handle<SiStripMatchedRecHit2DCollection> matchedHits;
   iEvent.getByLabel(stripRecHits_,matchedHits);
-  std::map<uint32_t,std::set<SiStripRecHit1D::ClusterRef> > toMaskStr;
   
   for (SiStripMatchedRecHit2DCollection::const_iterator dStIt=matchedHits->begin();
        dStIt!=matchedHits->end();++dStIt){
@@ -133,19 +130,12 @@ void LooperClusterRemoverMethod::FractionOfTruth::run(edm::Event& iEvent, const 
 	}
       }
       if (rejected) {
-	toMaskStr[stIt->stereoHit()->geographicalId()].insert(stIt->stereoHit()->cluster()); 
-	toMaskStr[stIt->monoHit()->geographicalId()].insert(stIt->monoHit()->cluster());
+	prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true;
+	prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
       }
     }
   }  
   
-  //make the strip masking eventually
-  for (std::map<uint32_t, std::set<SiStripRecHit1D::ClusterRef > >::iterator itskiped= toMaskStr.begin();
-       itskiped!= toMaskStr.end();++itskiped){ 
-    edmNew::DetSetVector<SiStripRecHit1D::ClusterRef>::FastFiller fill(*prod_.removedStripClsuterRefs, itskiped->first);
-    for (std::set< SiStripRecHit1D::ClusterRef >::iterator topush = itskiped->second.begin();
-	 topush!=itskiped->second.end();++topush)   fill.push_back(*topush); 
-  }
   delete associator;  
 }
 
@@ -165,38 +155,28 @@ void LooperClusterRemoverMethod::EveryNMethod::run(edm::Event& iEvent, const edm
   unsigned int countMe=0;
   for ( SiPixelRecHitCollection::const_iterator dPxIt=pixelHits->begin();
 	dPxIt!=pixelHits->end();++dPxIt)  {
-      edmNew::DetSetVector<SiPixelClusterRefNew>::FastFiller fill(*prod_.removedPixelClsuterRefs, dPxIt->id());
     for (SiPixelRecHitCollection::DetSet::const_iterator pxIt=dPxIt->begin();
 	 pxIt!=dPxIt->end();++pxIt) {
       if (countMe++==everyNPixel_){
 	countMe=0;
 	//fill in a ref to mask
-	fill.push_back(pxIt->cluster());
+	prod_.collectedPixels[pxIt->cluster().key()]=true;
       }
     }
-    if (fill.empty()) fill.abort();
   }
 
-  std::map<uint32_t,std::set<SiStripRecHit1D::ClusterRef> > toMaskStr;
   for (SiStripMatchedRecHit2DCollection::const_iterator dStIt=matchedHits->begin();
        dStIt!=matchedHits->end();++dStIt){
     for (SiStripMatchedRecHit2DCollection::DetSet::const_iterator stIt=dStIt->begin();
 	 stIt!=dStIt->end();++stIt){
       if (countMe++==everyNPixel_){
 	countMe=0;
-	toMaskStr[stIt->stereoHit()->geographicalId()].insert(stIt->stereoHit()->cluster()); 
-	toMaskStr[stIt->monoHit()->geographicalId()].insert(stIt->monoHit()->cluster());
+	prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true; 
+	prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
       }
     }
   }
 
-  //make the strip masking eventually
-  for (std::map<uint32_t, std::set<SiStripRecHit1D::ClusterRef > >::iterator itskiped= toMaskStr.begin();
-       itskiped!= toMaskStr.end();++itskiped){ 
-    edmNew::DetSetVector<SiStripRecHit1D::ClusterRef>::FastFiller fill(*prod_.removedStripClsuterRefs, itskiped->first);
-    for (std::set< SiStripRecHit1D::ClusterRef >::iterator topush = itskiped->second.begin();
-	 topush!=itskiped->second.end();++topush)   fill.push_back(*topush); 
-  }
 }
 
 struct classcomp {
@@ -260,7 +240,6 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
 
   for ( SiPixelRecHitCollection::const_iterator dPxIt=pixelHits->begin();
 	dPxIt!=pixelHits->end();++dPxIt)  {
-      edmNew::DetSetVector<SiPixelClusterRefNew>::FastFiller fill(*prod_.removedPixelClsuterRefs, dPxIt->id());
     for (SiPixelRecHitCollection::DetSet::const_iterator pxIt=dPxIt->begin();
 	 pxIt!=dPxIt->end();++pxIt) {
 
@@ -276,7 +255,7 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
 	if (mag<closest) closest=mag;
 	if (mag < epsilon_) 
 	  { 
-	    fill.push_back(pxIt->cluster());
+	    prod_.collectedPixels[pxIt->cluster().key()]=true;
 	    if (associator){
 	      std::vector<PSimHit> simHits = associator->associateHit(*pxIt);
 	      std::stringstream text;
@@ -292,10 +271,8 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
       }
       if (!masked && closest!=100) edm::LogError("ReadFileIn")<<"closest point to pixel "<<tPoint<<" was at:"<<closest;
     }
-    if (fill.empty()) fill.abort();
   }
   
-  std::map<uint32_t,std::set<SiStripRecHit1D::ClusterRef> > toMaskStr;
 
   for (SiStripMatchedRecHit2DCollection::const_iterator dStIt=matchedHits->begin();
        dStIt!=matchedHits->end();++dStIt){
@@ -313,8 +290,8 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
 	if (mag<closest) closest=mag;
 	if (mag < epsilon_)                     
 	  {                  
-	    toMaskStr[stIt->stereoHit()->geographicalId()].insert(stIt->stereoHit()->cluster()); 
-	    toMaskStr[stIt->monoHit()->geographicalId()].insert(stIt->monoHit()->cluster());
+	    prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true; 
+	    prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
 	    if (associator){
 	      std::stringstream text;
 	      text<<" kill a strip at: "<<dStIt->id()<<"="<<stIt->stereoHit()->geographicalId().rawId()<<"+"<<stIt->monoHit()->geographicalId().rawId()<<" "<<tPoint<<" using "<<points[iR];
@@ -333,15 +310,7 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
   }  
 
 
-  //make the strip masking eventually
-  for (std::map<uint32_t, std::set<SiStripRecHit1D::ClusterRef > >::iterator itskiped= toMaskStr.begin();
-       itskiped!= toMaskStr.end();++itskiped){ 
-    edmNew::DetSetVector<SiStripRecHit1D::ClusterRef>::FastFiller fill(*prod_.removedStripClsuterRefs, itskiped->first);
-    for (std::set< SiStripRecHit1D::ClusterRef >::iterator topush = itskiped->second.begin();
-	 topush!=itskiped->second.end();++topush)   fill.push_back(*topush); 
-  }
-  if (associator)
-    delete associator;
+  if (associator)    delete associator;
   
   std::stringstream text;
   uint notused=0;
@@ -380,7 +349,6 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   if (!iEvent.isRealData())  associator= new TrackerHitAssociator(iEvent);
 
   std::vector<fastRecHit> fastHits;
-  fastHits.reserve(1000);
 
   //implement one method
   edm::Handle<SiPixelRecHitCollection> pixelHits;
@@ -410,6 +378,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
     iSetup.get<TrackingComponentsRecord>().get(prop_,prop);
   */
 
+  fastHits.reserve(pixelHits->dataSize()+matchedHits->dataSize());
   for ( SiPixelRecHitCollection::const_iterator dPxIt=pixelHits->begin();
 	dPxIt!=pixelHits->end();++dPxIt)  {
     for (SiPixelRecHitCollection::DetSet::const_iterator pxIt=dPxIt->begin();
@@ -418,7 +387,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
     }
   }
   
-
+		   
   for (SiStripMatchedRecHit2DCollection::const_iterator dStIt=matchedHits->begin();
        dStIt!=matchedHits->end();++dStIt){
     for (SiStripMatchedRecHit2DCollection::DetSet::const_iterator stIt=dStIt->begin();
@@ -444,7 +413,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 
   //then parse the peaks: mask and make track candidates
   std::list<fastRecHit*> tomask;
-  prod_.tcOut->reserve(collector.peaks_.size());
+  if (makeTC_)  prod_.tcOut->reserve(collector.peaks_.size());
   for(std::vector<aCell*>::iterator iPeak=collector.peak_begin();
       iPeak!=collector.peak_end();++iPeak){
     aCell * peak=*iPeak;
@@ -517,36 +486,32 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   if (associator)
     delete associator;
 
-  //do not output the shit out
-  prod_.tcOut->clear();
-  
-  LogDebug("LooperMethod")<<"total of "<<tomask.size()<<" hits to be masked, but duplicates"<<std::endl;
-  tomask.sort(); //by pointer adress
-  tomask.unique(); //there are duplicates for sure
-  //make the masks per detId
-  tomask.sort(sortByDetId); //by detid to be able to fill the DetSetVector
-  LogDebug("LooperMethod")<<"there are "<<tomask.size()<<" hits to be masked"<<std::endl;
+  /*
+    LogDebug("LooperMethod")<<"total of "<<tomask.size()<<" hits to be masked, but duplicates"<<std::endl;
+    tomask.sort(); //by pointer adress
+    tomask.unique(); //there are duplicates for sure
+    //make the masks per detId
+    tomask.sort(sortByDetId); //by detid to be able to fill the DetSetVector
+  */
+  LogDebug("LooperMethod")<<"there are "<<tomask.size()<<" hits to be masked, with duplicates, which does not matter"<<std::endl;
 
   uint lastId=0;
   std::list<fastRecHit*>::iterator iMask=tomask.begin();
 
-  std::map<uint32_t,std::set<SiStripRecHit1D::ClusterRef> > toMaskStr;
-
   while(iMask!=tomask.end()){
     lastId=(*iMask)->id_;
+    
     LogDebug("LooperMethod")<<"new module: "<<lastId<<std::endl;
     uint subdetId = DetId(lastId).subdetId();
     if (subdetId==PixelSubdetector::PixelBarrel || subdetId==PixelSubdetector::PixelEndcap)
       {
 	LogDebug("LooperMethod")<<" in the pixel case"<<std::endl;
-	edmNew::DetSetVector<SiPixelClusterRefNew>::FastFiller fill(*prod_.removedPixelClsuterRefs, lastId);
 	while((*iMask)->id_==lastId && iMask!=tomask.end()){
 	  const SiPixelRecHit * pH=static_cast<const SiPixelRecHit *>((*iMask)->hit_->hit());
 	  LogTrace("LooperMethod")<<"actively masking:" <<pH<<std::endl;
-	  fill.push_back(pH->cluster());
+	  prod_.collectedPixels[pH->cluster().key()]=true;
 	  ++iMask;
 	}
-	if (fill.empty()) fill.abort();
       }//pixel case
     else{
       LogDebug("LooperMethod")<<" in the strip case"<<std::endl;      
@@ -555,26 +520,17 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 	const SiStripMatchedRecHit2D * mH=dynamic_cast<const SiStripMatchedRecHit2D *>((*iMask)->hit_->hit());
 	if (!mH){
 	  edm::LogError("LooperMethod")<<" not casting back to a 2d rechit. probably projected on the way"<<std::endl;
+	  assert(0==1);
 	  continue;
 	}
 	LogTrace("LooperMethod")<<"actively masking:" <<mH<<std::endl;
-	toMaskStr[mH->stereoHit()->geographicalId()].insert(mH->stereoHit()->cluster());
-	toMaskStr[mH->monoHit()->geographicalId()].insert(mH->monoHit()->cluster());
+	prod_.collectedStrips[mH->stereoHit()->cluster().key()]=true;
+	prod_.collectedStrips[mH->monoHit()->cluster().key()]=true;
 	++iMask;
       }
     }//strip case
   }//loop on hits to mask
   
-
-  //make the strip masking eventually
-  for (std::map<uint32_t, std::set<SiStripRecHit1D::ClusterRef > >::iterator itskiped= toMaskStr.begin();
-       itskiped!= toMaskStr.end();++itskiped){ 
-    edmNew::DetSetVector<SiStripRecHit1D::ClusterRef>::FastFiller fill(*prod_.removedStripClsuterRefs, itskiped->first);
-    for (std::set< SiStripRecHit1D::ClusterRef >::iterator topush = itskiped->second.begin();
-	 topush!=itskiped->second.end();++topush)   fill.push_back(*topush); 
-  }
-  
-  //DONE
 
 }
 
@@ -609,20 +565,19 @@ void LooperClusterRemoverMethod::PerJet:: run(edm::Event&iEvent, const edm::Even
   bool doStrip=iEvent.getByLabel(stripRecHits_,matchedHits);
 
 
-  std::map<uint32_t,std::set<SiPixelClusterRefNew> > toMaskPxl;
-  std::map<uint32_t,std::set<SiStripRecHit1D::ClusterRef> > toMaskStr;
-
-  edm::Handle<edmNew::DetSetVector<SiPixelClusterRefNew> > previousPxlMask;
-  edm::Handle<edmNew::DetSetVector<SiStripRecHit1D::ClusterRef> > previousStrMask;
+  edm::Handle<LooperClusterRemover::PixelMaskContainer> oldPxlMask;
+  edm::Handle<LooperClusterRemover::StripMaskContainer> oldStrMask;
 
   edm::ESHandle<TransientTrackingRecHitBuilder> builder;
   iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",builder);
 
 
   //register what is the previous masking
-  iEvent.getByLabel(previousMask_,previousPxlMask);
-  for (edmNew::DetSetVector<SiPixelClusterRefNew>::const_iterator itOld=previousPxlMask->begin();
-       itOld!=previousPxlMask->end();++itOld) toMaskPxl[itOld->detId()].insert(itOld->begin(),itOld->end());
+  iEvent.getByLabel(previousMask_,oldPxlMask);
+  oldPxlMask->copyMaskTo(prod_.collectedPixels);
+  iEvent.getByLabel(previousMask_,oldStrMask);
+  oldStrMask->copyMaskTo(prod_.collectedStrips);
+  
 
   if (doPix){
   //  uint seen=0,reject=0;
@@ -635,7 +590,7 @@ void LooperClusterRemoverMethod::PerJet:: run(edm::Event&iEvent, const edm::Even
       //      seen++;
       if (!inZone(h_jets,h)){
 	//mask it
-	toMaskPxl[dPxIt->id()].insert(pxIt->cluster());
+	prod_.collectedPixels[pxIt->cluster().key()]=true;
 	//	reject++;
       }
     }
@@ -643,20 +598,6 @@ void LooperClusterRemoverMethod::PerJet:: run(edm::Event&iEvent, const edm::Even
   //  std::cout<<" from "<<seen<<" reject "<<reject<<std::endl;
   }
   
-  //and eventually making the mask
-  for (std::map<uint32_t, std::set< SiPixelRecHit::ClusterRef  > >::iterator itskiped= toMaskPxl.begin();
-       itskiped!= toMaskPxl.end();++itskiped){
-    edmNew::DetSetVector<SiPixelClusterRefNew>::FastFiller fill(*prod_.removedPixelClsuterRefs, itskiped->first);
-    for (std::set< SiPixelRecHit::ClusterRef  >::iterator topush = itskiped->second.begin();
-	 topush!=itskiped->second.end();++topush)   fill.push_back(*topush);
-  }
-
-
-
-  iEvent.getByLabel(previousMask_,previousStrMask);
-
-  for (edmNew::DetSetVector<SiStripRecHit1D::ClusterRef>::const_iterator itOld=previousStrMask->begin();               
-       itOld!=previousStrMask->end();++itOld) toMaskStr[itOld->detId()].insert(itOld->begin(),itOld->end());
 
   if (doStrip){  
   //  seen=0;reject=0;	
@@ -670,21 +611,13 @@ void LooperClusterRemoverMethod::PerJet:: run(edm::Event&iEvent, const edm::Even
       if (!inZone(h_jets,h)){
 	//mask it        
 	//	reject++;
-	toMaskStr[stIt->stereoHit()->geographicalId()].insert(stIt->stereoHit()->cluster());
-	toMaskStr[stIt->monoHit()->geographicalId()].insert(stIt->monoHit()->cluster());
+	prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true;
+	prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
       }
     }
   }
 
   //  std::cout<<" from "<<seen<<" reject "<<reject<<std::endl;
-  }
-
-  //and eventually making the mask 
-  for (std::map<uint32_t, std::set<SiStripRecHit1D::ClusterRef > >::iterator itskiped= toMaskStr.begin();
-       itskiped!= toMaskStr.end();++itskiped){ 
-    edmNew::DetSetVector<SiStripRecHit1D::ClusterRef>::FastFiller fill(*prod_.removedStripClsuterRefs, itskiped->first);
-    for (std::set< SiStripRecHit1D::ClusterRef >::iterator topush = itskiped->second.begin();
-	 topush!=itskiped->second.end();++topush)   fill.push_back(*topush); 
   }
 
 }
