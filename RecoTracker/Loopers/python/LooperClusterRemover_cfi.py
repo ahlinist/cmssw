@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 loopersMask = cms.EDProducer("LooperClusterRemover",
+                             pixelClusters = cms.InputTag("siPixelClusters"),
+                             stripClusters = cms.InputTag("siStripClusters"),
                              #algo = cms.string("ReadFileIn"),
                              algo = cms.string("LooperMethod"),
                              pixelRecHits = cms.InputTag("siPixelRecHits"),
