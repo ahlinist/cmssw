@@ -734,7 +734,7 @@ void Ratio_unpol(){
     
    s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
    s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
-      
+   
    term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
    term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
    term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
