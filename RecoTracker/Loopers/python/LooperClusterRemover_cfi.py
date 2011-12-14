@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 loopersMask = cms.EDProducer("LooperClusterRemover",
-                             algo = cms.string("ReadFileIn"),
+                             #algo = cms.string("ReadFileIn"),
+                             algo = cms.string("LooperMethod"),
                              pixelRecHits = cms.InputTag("siPixelRecHits"),
                              stripRecHits = cms.InputTag("siStripMatchedRecHits","matchedRecHit"),
                              ##   for reading a masking file in
@@ -12,6 +13,7 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                              ##   for method with skipping every N
                              everyNPixel = cms.uint32(5),
                              ##   for the method with looper analysis in 2D histogramming
+                             makeTrackCandidates = cms.bool(False),
                              collector = cms.PSet(
                                 xAxis = cms.vdouble(34, 1/65., 1/1.5),
                                 invertX = cms.bool(True), 
