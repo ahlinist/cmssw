@@ -11,6 +11,8 @@ user =cms.Sequence( siPixelRecHits+
                     loopersMask)
 
 def adapt(process):
+    if not hasattr(process,"mix"):
+        process.mix = cms.EDProducer("DummyModule")
     ##function from a RAW file
     #cmsDriver.py looper -s RAW2DIGI,RECO --customise RecoTracker/Loopers/Adapter.<any>
     ##function from a RECO file
@@ -19,6 +21,7 @@ def adapt(process):
     process.reconstruction_step.replace(process.siStripMatchedRecHits,
                                         process.siStripMatchedRecHits+
                                         process.offlineBeamSpot+
+                                        process.mix+
                                         process.loopersMask)
     process.pixellayertriplets.BPix.skipClusters = cms.InputTag('loopersMask')
     process.pixellayertriplets.FPix.skipClusters = cms.InputTag('loopersMask')
