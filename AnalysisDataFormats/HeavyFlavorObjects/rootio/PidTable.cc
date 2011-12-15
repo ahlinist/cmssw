@@ -1145,3 +1145,12 @@ void PidTable::drawPass(const char *s, double fmin, double fmax) {
   h->Draw(s);
 }
 
+// ----------------------------------------------------------------------
+void PidTable::shiftPmax(double oldMax, double newMax) {
+
+  TIter next(fDataVector); PidData *iTable;
+  while ((iTable = (PidData*)next())) {
+    if (iTable->getPmax() > oldMax) iTable->setPmax(newMax); 
+  }
+
+}

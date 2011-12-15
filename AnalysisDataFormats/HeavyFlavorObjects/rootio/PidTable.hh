@@ -69,6 +69,7 @@ public:
   TH2D*    get2dHist(const char *hname, const char *title, int mode = 0);
   void     setEffAndErrMode(int mode = 0);
   void     recalculate();
+  void     shiftPmax(double oldMax, double newMax); 
   TIter    next() {return TIter(fDataVector);} 
   
   TString  getHistName() {return fHistName;}
