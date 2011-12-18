@@ -33,12 +33,21 @@ for text in re.split(r"crab:  Version \d+\.\d+\.\d+ running on", multiStatus):
     head, dataset = os.path.split(path)
     if dataset == "":
         head, dataset = os.path.split(head)
+    print "DATASET=%s" % dataset
 
     ## Get the total number of jobs
     m = re.search(r"crab:   (\d+) Total Jobs", text)
-    if not m:
-        raise RuntimeError, 'Couldn\'t parse "Total Jobs"'
-    totalJobs = int(m.groups()[0])
+    if m:
+        totalJobs = int(m.groups()[0])
+    else:
+        ## Couldn't parse Total Jobs
+        m = re.search(r'[Ee]rror', text)
+        if m:
+            print '## Error retrieving status.'
+            print
+            continue
+        else:
+            raise RuntimeError, 'Couldn\'t parse source.'
 
     toResubmit = []
     exitCodeSummary = {}
@@ -65,14 +74,23 @@ for text in re.split(r"crab:  Version \d+\.\d+\.\d+ running on", multiStatus):
         print "##   %s aborted: %s" % (nJobs, jobList)
 
     if toResubmit:
+        ## Get the filename of the log file
         version = 1
         while os.path.exists(os.path.join(dataset, "log/resubmit_%d.out" % version)):
             version = version + 1
-        log = os.path.join(dataset, "log/resubmit_%d.out" % version)
-        print """nohup crab -c %s \\
-        -resubmit %s \\
-        >& %s &
-        """ % (dataset, ",".join(toResubmit), log)
+        log = "log/resubmit_%d.out" % version
+        ## Get the dir name for the directory with the outputs
+        version = 1
+        while os.path.exists(os.path.join(dataset, 
+                                          "res/Submission_%d" % version)):
+            version = version + 1
+        resDir = "res/Submission_%d" % version
+        ## Print the submission commands    
+        print """DATASET=%s
+        mkdir $DATASET/%s && \\
+        mv $DATASET/res/*.* $DATASET/%s && \\
+        nohup crab -c $DATASET -resubmit %s >& $DATASET/%s &
+        """ % (dataset, resDir, resDir, ",".join(toResubmit), log)
 
     ## Get the working directory
     workdirRE = re.compile(r"^\s*working directory\s+(/.+)", re.MULTILINE)
@@ -119,6 +137,7 @@ for text in re.split(r"crab:  Version \d+\.\d+\.\d+ running on", multiStatus):
                 print "##   %s" % pattern
             else:
                 print "## WARNING: %s: published %d of %d jobs!" % (dataset, publishedJobs, totalJobs)
+    print
 
 ## Summary
 toPublish.sort()
