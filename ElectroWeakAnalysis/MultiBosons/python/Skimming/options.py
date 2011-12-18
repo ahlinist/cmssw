@@ -69,6 +69,12 @@ options.register("applyCollisionDataCleaningToMC",
     VarParsing.varType.bool,         # bool, string, int, or float
     "Apply the collision data cleaning to MC?")
 
+options.register("doPhotonReReco",
+    False, # default value
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.bool,         # bool, string, int, or float
+    "Do the photon re-reconstruction for the Dimuon skim type?")
+
 options.register("isPOWHEG",
                  False, # default value
                  VarParsing.multiplicity.singleton, # singleton or list
