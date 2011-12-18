@@ -292,14 +292,15 @@ elif options.skimType == "Dimuon":
         process.load(basePath + "dimuonSkimFilterSequence_cff")
         process.skimFilterSequence += process.dimuonSkimFilterSequence
 
-    ## Add the photon re-reco.
-    addPhotonReReco(process, options.isAOD)
-    ## Now change the photon reco to much looser settings.
-    process.photonCore.minSCEt = 4.0
-    process.photons.minSCEtBarrel = 4.0
-    process.photons.minSCEtEndcap = 4.0
-    process.photons.maxHoverEBarrel = 1.0
-    process.photons.maxHoverEEndcap = 1.0
+    ## Add the photon re-reco?
+    if options.doPhotonReReco:
+        addPhotonReReco(process, options.isAOD)
+        ## Now change the photon reco to much looser settings.
+        process.photonCore.minSCEt = 4.0
+        process.photons.minSCEtBarrel = 4.0
+        process.photons.minSCEtEndcap = 4.0
+        process.photons.maxHoverEBarrel = 1.0
+        process.photons.maxHoverEEndcap = 1.0
 
     ## Remove the pi0 discriminator
     ## (currently doesn't work with extremely loose photons)
