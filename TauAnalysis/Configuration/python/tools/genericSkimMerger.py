@@ -22,6 +22,9 @@ inputFileNames = sys.argv[(2+argument_offset):]
 
 process = cms.Process('MERGE')
 
+process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 def fix_file_name(file):
@@ -45,8 +48,6 @@ process.Out = cms.OutputModule("PoolOutputModule",
     cms.PSet(
         outputCommands = cms.untracked.vstring(
             'keep *',
-            'drop *_patMuonPFTauPairsHPS_*_*',      # CV: temporarily drop diTau objects, because diTau data-format changes
-            'drop *_patMuonPFTauPairsHPSpTaNC_*_*',                           
             'drop GenFilterInfo_*_*_*' # CV: drop GenFilterInfo objects,
                                        #     because they cause segmentation violation of merge jobs run in CMSSW_4_2_x (2011/07/10)
         )
