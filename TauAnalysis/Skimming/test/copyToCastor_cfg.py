@@ -44,11 +44,13 @@ dummyEventSelection = cms.untracked.PSet(
     )
 )
 
-process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",                                              
+process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",
+    #tauAnalysisEventContent,
+    AODSIMEventContent,                                  
     fileName = cms.untracked.string(
         #'/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/debug/debugTauIdEffMeasSample_data_all_2011Feb03bV2_RECO.root'
         #'/data1/veelken/CMSSW_4_2_x/skims/skimGenZtoMuTauWithinAcc_Ztautau_2011Jun30v2_AOD.root'
-        'ppMuXpt15.root'
+        'minBias_Z2_AOD.root'                                                
     ),
     maxSize = cms.untracked.int32(1000000000)                                                
 )
