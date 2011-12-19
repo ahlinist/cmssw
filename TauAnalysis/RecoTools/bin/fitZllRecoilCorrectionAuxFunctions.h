@@ -52,6 +52,8 @@ TGraphAsymmErrors* makeGraph_mean_or_rms(const std::string& name, const std::str
 
     TString histogramName_u_proj = Form("%s_py_%i", histogram_u->GetName(), iBin);
     TH1D* histogram_u_proj = histogram_u->ProjectionY(histogramName_u_proj.Data(), iBin, iBin, "e");
+    // CV: skip qT bins with limited event statistics
+    if ( !(histogram_u_proj->GetEntries() >= 100) ) continue;
 
     double y = 0.;
     double yErr = 0.;
@@ -88,9 +90,6 @@ TGraphAsymmErrors* makeGraph_rms(const std::string& name, const std::string& tit
 TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::string& title, 
 					  const TH2* histogram_uParl, const TH1* histogram_qT)
 {
-  //std::cout << "<makeGraph_uParl_div_qT>:" << std::endl;
-  //std::cout << " histogram_uParl = " << histogram_uParl << ", name = " << histogram_uParl->GetName() << std::endl;
-
   const TAxis* xAxis = histogram_uParl->GetXaxis();
   int numBins = xAxis->GetNbins();
 
@@ -112,11 +111,12 @@ TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::st
 
     TString histogramName_uParl_proj = Form("%s_py_%i", histogram_uParl->GetName(), iBin);
     TH1D* histogram_uParl_proj = histogram_uParl->ProjectionY(histogramName_uParl_proj.Data(), iBin, iBin, "e");
-    
+    // CV: skip qT bins with limited event statistics
+    if ( !(histogram_uParl_proj->GetEntries() >= 100) ) continue;
+
     if ( x > 0. ) {
       double y = -histogram_uParl_proj->GetMean()/x;      
       double yErr = histogram_uParl_proj->GetMeanError()/x;
-      //std::cout << "x = " << x << ", y = " << y << std::endl;
       graph->SetPoint(iBin - 1, x, y);      
       graph->SetPointError(iBin - 1, xErrDown, xErrUp, yErr, yErr);
     }
@@ -131,17 +131,13 @@ TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::st
 
 TF1* fitGraph_uParl_div_qT(const std::string& name, TGraph* graph, double xMin = 0., double xMax = 300.)
 {
-  //std::cout << "<fitGraph_uParl_div_qT>:" << std::endl;
   TF1* f = new TF1(name.data(), "[0]*0.5*(1.0 - TMath::Erf(-[1]*TMath::Power(x, [2])))", xMin, xMax);
   f->SetLineWidth(0);
   f->SetParameter(0, 1.0);
   f->SetParameter(1, 5.e-2);
   f->SetParameter(2, 1.0);
-  TGraph* dummyGraph = (TGraph*)graph->Clone();
+  TGraph* dummyGraph = (TGraph*)graph->Clone(); // CV: fit 'dummyGraph', to avoid TF1 getting attached to 'graph' object
   dummyGraph->Fit(f, "E");
-  //std::cout << "p0 = " << f->GetParameter(0) << " +/- " << f->GetParError(0) << std::endl;
-  //std::cout << "p1 = " << f->GetParameter(1) << " +/- " << f->GetParError(1) << std::endl;
-  //std::cout << "p2 = " << f->GetParameter(2) << " +/- " << f->GetParError(2) << std::endl;
   return f;
 }
 
@@ -152,7 +148,7 @@ TF1* fitGraph_uParl_mean(const std::string& name, TGraph* graph, double xMin = 0
   f->SetParameter(0, -1.0);
   f->SetParameter(1,  5.e-2);
   f->SetParameter(2,  1.0);
-  TGraph* dummyGraph = (TGraph*)graph->Clone();
+  TGraph* dummyGraph = (TGraph*)graph->Clone(); // CV: fit 'dummyGraph', to avoid TF1 getting attached to 'graph' object
   dummyGraph->Fit(f, "E");
   return f;
 }
@@ -164,7 +160,7 @@ TF1* fitGraph_uParl_rms(const std::string& name, TGraph* graph, double xMin = 0.
   f->SetParameter(0, 10.);
   f->SetParameter(1,  5.e-2);
   f->SetParameter(2,  0.);
-  TGraph* dummyGraph = (TGraph*)graph->Clone();
+  TGraph* dummyGraph = (TGraph*)graph->Clone(); // CV: fit 'dummyGraph', to avoid TF1 getting attached to 'graph' object
   dummyGraph->Fit(f, "E");
   return f;
 }
@@ -176,7 +172,8 @@ TF1* fitGraph_uPerp_rms(const std::string& name, TGraph* graph, double xMin = 0.
   f->SetParameter(0, 10.);
   f->SetParameter(1,  5.e-2);
   f->SetParameter(2,  0.);
-  graph->Fit(f, "E");
+  TGraph* dummyGraph = (TGraph*)graph->Clone(); // CV: fit 'dummyGraph', to avoid TF1 getting attached to 'graph' object
+  dummyGraph->Fit(f, "E");
   return f;
 }
 
@@ -328,91 +325,6 @@ TGraphAsymmErrors* makeGraph_sysUncertainty(const TGraphAsymmErrors* graph_centr
   return graph;
 }
 
-/*
-TGraphAsymmErrors* makeGraph_sysUncertainty(const TGraphAsymmErrors* graph_central_value, 
-					    const std::vector<TGraphAsymmErrors*>& graphs_sysUncertainty, 
-					    bool center_on_central_value, bool divide_by_central_value)
-{
-  assert((graphs_sysUncertainty.size() % 2) == 0);
-  int numSysUncertainties = (graphs_sysUncertainty.size() / 2);
-
-  int numPoints = -1;
-  for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
-    const TGraphAsymmErrors* graph_i = graphs_sysUncertainty[iSysUncertainty];
-    if ( numPoints == -1 ) numPoints = graph_i->GetN();
-    else assert(graph_i->GetN() == numPoints);
-  }
-
-  for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
-
-    double x = 0.;
-    double y = 0.;
-
-    double yErrMin2 = 0.;
-    double yErrMax2 = 0.;
-
-    for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
-      const TGraphAsymmErrors* graphUp = graphs_sysUncertainty[2*iSysUncertainty];
-      assert(graphUp->GetN() == numPoints);
-      double xUp, yUp;
-      graphUp->GetPoint(iPoint, xUp, yUp);
-      double yErrUp_high = graphUp->GetErrorYhigh(iPoint); 
-      double yErrUp_low = graphUp->GetErrorYlow(iPoint); 
-      
-      const TGraphAsymmErrors* graphDown = graphs_sysUncertainty[2*iSysUncertainty + 1];
-      assert(graphDown->GetN() == numPoints);
-      double xDown, yDown;
-      graphDown->GetPoint(iPoint, xDown, yDown);
-      double yErrDown_high = graphDown->GetErrorYhigh(iPoint); 
-      double yErrDown_low = graphDown->GetErrorYlow(iPoint); 
-
-      double x_ref = 0.5*(xUp + xDown);
-
-//--- find point of 'graph_central_value'
-//    matching point of 'graphUp' closest in x
-//   (do not assume that both graphs have the same binning)
-      Double_t y_central_value = 0.;
-      Double_t yErrUp_central_value = 0.;
-      Double_t yErrDown_central_value = 0.;
-      Double_t dxMin = 1.e+6; 
-      for ( int iPoint_central_value = 0; iPoint_central_value < graph_central_value->GetN(); ++iPoint_central_value ) {
-	Double_t x_i, y_i;
-	graph_ref->GetPoint(iPoint_central_value, x_i, y_i);
-	
-	Double_t dx = x_i - x_ref;
-	if ( TMath::Abs(dx) < dxMin ) {
-	  y_central_value = y_i;
-	  yErrUp_central_value = graph_central_value->GetErrorYhigh(iPoint_central_value);
-	  yErrDown_central_value = graph_central_value->GetErrorYlow(iPoint_central_value);
-	  dxMin = TMath::Abs(dx);
-	}
-      }
-      
-      x += x_ref;
-      y += y_central_value;
-
-      double yMin = TMath::Min(yUp + yErrUp_high, yDown + yErrDown_high);
-      double yMax = TMath::Max(yUp - yErrUp_low, yDown - yErrDown_low);
-      if ( yMin < y_central_value ) yErrMin2 += square(y_central_value - yMin);
-      if ( yMax > y_central_value ) yErrMax2 += square(yMax - y_central_value);
-    }
-
-    x /= numSysUncertainties;
-    y /= numSysUncertainties;
-
-    double yErrMin = TMath::Sqrt(yErrMin2);
-    double yErrMax = TMath::Sqrt(yErrMax2);
-
-    if ( !center_on_central_value ) graph->SetPoint(iPoint, x, y);
-    else graph->SetPoint(iPoint, x, 0.);
-    if ( !divide_by_central_value ) graph->SetPointError(iPoint, xErrDown, xErrUp, yErrMin, yErrMax);
-    else if ( y != 0. ) graph->SetPointError(iPoint, xErrDown, xErrUp, yErrMin/TMath::Abs(y), yErrMax/TMath::Abs(y));
-  }
-  
-  return graph;
-}
-*/
-
 //
 //-------------------------------------------------------------------------------
 //
@@ -420,12 +332,6 @@ TGraphAsymmErrors* makeGraph_sysUncertainty(const TGraphAsymmErrors* graph_centr
 TGraphAsymmErrors* makeGraph_diff(const TGraphAsymmErrors* graph, const TGraphAsymmErrors* graph_ref,
 				  bool addRefErr, bool divideByRef)
 {
-  //std::cout << "<makeGraph_diff>:" << std::endl;
-  //std::cout << " graph = " << graph << ", name = " << graph->GetName() << std::endl;
-  //std::cout << " graph_ref = " << graph_ref << ", name = " << graph_ref->GetName() << std::endl;
-  //std::cout << " addRefErr = " << addRefErr << std::endl;
-  //std::cout << " divideByRef = " << divideByRef << std::endl;
-
 //--- take binning of 'graph_diff' from 'graph'
   int numPoints = graph->GetN();
   TGraphAsymmErrors* graph_diff = new TGraphAsymmErrors(numPoints);
@@ -437,8 +343,6 @@ TGraphAsymmErrors* makeGraph_diff(const TGraphAsymmErrors* graph, const TGraphAs
     Double_t xErrDown = graph->GetErrorXlow(iPoint);
     Double_t yErrUp = graph->GetErrorYhigh(iPoint);
     Double_t yErrDown = graph->GetErrorYlow(iPoint);
-
-    //std::cout << "x = " << x << ", y = " << y << std::endl;
 
 //--- find point of 'graph_ref'
 //    matching point of 'graph' closest in x
@@ -459,8 +363,6 @@ TGraphAsymmErrors* makeGraph_diff(const TGraphAsymmErrors* graph, const TGraphAs
 	dxMin = TMath::Abs(dx);
       }
     }
-
-    //std::cout << "y_ref = " << y_ref << ", dxMin = " << dxMin << std::endl;
 
     Double_t y_diff = 0.;
     Double_t yErrUp2_diff = 0.;
@@ -656,7 +558,7 @@ void drawZllRecoilFitResult(
 
   double legendX1 = legendX0 + 0.30;
   double legendY1 = ( graph_fitErr_sysUncertainty_top ) ?
-    legendY0 + 0.330 : legendY0 + 0.285;
+    legendY0 + 0.330 : legendY0 + 0.275;
   TLegend legend(legendX0, legendY0, legendX1, legendY1, "", "brNDC"); 
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
@@ -669,8 +571,8 @@ void drawZllRecoilFitResult(
   
   TPaveText* plotLabel_text = 0;
   if ( plotLabel != "" ) {
-    double plotLabelX0 = ( legendX0 < 0.50 ) ? 0.64 : 0.19;
-    double plotLabelY0 = 0.83;
+    double plotLabelX0 = ( legendX0 < 0.50 ) ? 0.64 : 0.15;
+    double plotLabelY0 = 0.86;
     plotLabel_text = new TPaveText(plotLabelX0, plotLabelY0, plotLabelX0 + 0.25, plotLabelY0 + 0.06, "NDC");
     plotLabel_text->SetBorderSize(0);
     plotLabel_text->SetFillColor(0);
@@ -832,20 +734,22 @@ void drawData_vs_MCcomparison(
     graph_line->Draw("L");
   }
 
-  if ( graph_mcErr_sysUncertainty_top ) {
-    graph_mcErr_sysUncertainty_top->SetMarkerStyle(20);
-    graph_mcErr_sysUncertainty_top->SetMarkerSize(1);
-    graph_mcErr_sysUncertainty_top->SetMarkerColor(1);
-    graph_mcErr_sysUncertainty_top->SetLineColor(1);
-    graph_mcErr_sysUncertainty_top->SetLineWidth(1);
-    graph_mcErr_sysUncertainty_top->Draw("P");
-  }
-
   graph_mc->SetMarkerStyle(24);
   graph_mc->SetMarkerSize(1);
   graph_mc->SetMarkerColor(1);
   graph_mc->SetLineColor(1);
   graph_mc->SetLineWidth(1);
+
+  if ( graph_mcErr_sysUncertainty_top ) {
+    //cloneStyleOptions(graph_mcErr_sysUncertainty_top, graph_mc);
+    //graph_mcErr_sysUncertainty_top->Draw("P");
+    graph_mcErr_sysUncertainty_top->SetLineColor(396);
+    graph_mcErr_sysUncertainty_top->SetLineWidth(0);
+    graph_mcErr_sysUncertainty_top->SetFillColor(396);
+    graph_mcErr_sysUncertainty_top->SetFillStyle(1001);
+    graph_mcErr_sysUncertainty_top->Draw("2");
+  }
+
   graph_mc->Draw("P");
 
   graph_data->SetMarkerStyle(20);
@@ -857,7 +761,7 @@ void drawData_vs_MCcomparison(
 
   double legendX1 = legendX0 + 0.30;
   double legendY1 = ( graph_mcErr_sysUncertainty_top ) ?
-    legendY0 + 0.340 : legendY0 + 0.285;
+    legendY0 + 0.240 : legendY0 + 0.185;
   TLegend legend(legendX0, legendY0, legendX1, legendY1, "", "brNDC"); 
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
@@ -867,8 +771,8 @@ void drawData_vs_MCcomparison(
 
   TPaveText* plotLabel_text = 0;
   if ( plotLabel != "" ) {
-    double plotLabelX0 = ( legendX0 < 0.50 ) ? 0.64 : 0.19;
-    double plotLabelY0 = 0.83;
+    double plotLabelX0 = ( legendX0 < 0.50 ) ? 0.64 : 0.15;
+    double plotLabelY0 = 0.86;
     plotLabel_text = new TPaveText(plotLabelX0, plotLabelY0, plotLabelX0 + 0.25, plotLabelY0 + 0.06, "NDC");
     plotLabel_text->SetBorderSize(0);
     plotLabel_text->SetFillColor(0);
@@ -911,7 +815,8 @@ void drawData_vs_MCcomparison(
 
   if ( graph_mcErr_sysUncertainty_bottom ) {
     cloneStyleOptions(graph_mcErr_sysUncertainty_bottom, graph_mcErr_sysUncertainty_top);
-    graph_mcErr_sysUncertainty_bottom->Draw("P");
+    //graph_mcErr_sysUncertainty_bottom->Draw("P");
+    graph_mcErr_sysUncertainty_bottom->Draw("2");
   }
   
   cloneStyleOptions(graph_diff, graph_data);

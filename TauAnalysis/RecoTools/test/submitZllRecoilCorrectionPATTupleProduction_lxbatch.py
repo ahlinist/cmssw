@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v4_3'
+version = 'v4_7'
 
 samples = {
     'Data_runs160329to163869' : {
@@ -49,6 +49,18 @@ samples = {
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
+    'simZplusJets_Summer11' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZplusJets_Summer11/DoubleMu_v2/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    ##'simZplusJets_Fall11' : {
+    ##    'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZplusJets_Fall11/DoubleMu_v2/',
+    ##    'numInputFilesPerJob' : 3,
+    ##    'HLTprocessName' : 'HLT',
+    ##    'isMC' : True
+    ##},
     'simWW' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWW/DoubleMu_v2/',
         'numInputFilesPerJob' : 3,
@@ -90,6 +102,8 @@ samplesToAnalyze = [
     'Data_runs172620to175770',
     'Data_runs175832to180252',
     'simDYtoMuMu',
+    'simZplusJets_Summer11',
+    ##'simZplusJets_Fall11', # CV: needs new pile-up reweighting target for Fall'11 samples
     'simWW',
     'simWZ',
     'simZZ',

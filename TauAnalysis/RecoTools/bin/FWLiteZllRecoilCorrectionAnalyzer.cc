@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.8 2011/11/04 09:39:19 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.9 2011/11/06 13:26:44 veelken Exp $
  *
  */
 
@@ -30,6 +30,7 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidateFwd.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
@@ -85,6 +86,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfgZllRecoilCorrectionAnalyzer = cfg.getParameter<edm::ParameterSet>("ZllRecoilCorrectionAnalyzer");
 
   edm::InputTag srcZllCandidates = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcZllCandidates");
+  edm::InputTag srcMuons = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMuons");
 
   edm::InputTag srcJets = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcJets");
   edm::InputTag srcMEt = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMEt");
@@ -306,10 +308,13 @@ int main(int argc, char* argv[])
 	    
       if ( !bestZllCandidate ) continue;
 
-      edm::Handle<std::vector<pat::Jet> > jets;
+      edm::Handle<pat::MuonCollection> muons;
+      evt.getByLabel(srcMuons, muons);
+      
+      edm::Handle<pat::JetCollection> jets;
       evt.getByLabel(srcJets, jets);
 
-      edm::Handle<std::vector<pat::MET> > met;
+      edm::Handle<pat::METCollection> met;
       evt.getByLabel(srcMEt, met);
   
       if ( met->size() != 1 ) 
@@ -319,18 +324,18 @@ int main(int argc, char* argv[])
       const pat::MET& rawMEt = (*met->begin());
 
       histogramsBeforeGenPUreweight->fillHistograms(
-        *bestZllCandidate, *jets, rawMEt, vtxMultiplicity, rhoNeutral, 1.0);
+	*bestZllCandidate, *muons, *jets, rawMEt, *vertices, rhoNeutral, 1.0);
       histogramsBeforeAddPUreweight->fillHistograms(
-        *bestZllCandidate, *jets, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight);
+        *bestZllCandidate, *muons, *jets, rawMEt, *vertices, rhoNeutral, genPUreweight);
       histogramsBeforeZllRecoilCorr->fillHistograms(
-        *bestZllCandidate, *jets, rawMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
+        *bestZllCandidate, *muons, *jets, rawMEt, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
-      if ( bestZllCandidate->pt() > 150. ) {
-	std::cout << "run = " << evt.id().run() << "," 
-		  << " ls = " << evt.luminosityBlock() << ", event = " << evt.id().event() << ":" << std::endl;
-	
-	if ( selEventsFile ) (*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
-      }
+      //if ( bestZllCandidate->pt() > 150. ) {
+      //  std::cout << "run = " << evt.id().run() << "," 
+      //  	    << " ls = " << evt.luminosityBlock() << ", event = " << evt.id().event() << ":" << std::endl;
+      //	
+      //  if ( selEventsFile ) (*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
+      //}
       
       pat::MET mcToDataCorrMEt(rawMEt);
       if ( isMC_signal && corrAlgorithm ) {
@@ -341,7 +346,7 @@ int main(int argc, char* argv[])
 	mcToDataCorrMEt = corrAlgorithm->buildZllCorrectedMEt(rawMEt, rawMEt.genMET()->p4(), bestZllCandidate->p4());
       }
       histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
-        *bestZllCandidate, *jets, mcToDataCorrMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
+        *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
       pat::MET absCalibMEt(rawMEt);
       if ( ZllRecoilCorrParameter_data ) {
@@ -356,7 +361,7 @@ int main(int argc, char* argv[])
 	absCalibMEt.setP4(math::XYZTLorentzVector(absCalibMEtPx, absCalibMEtPy, 0., absCalibMEtPt));
       }
       histogramsAfterZllRecoilAbsCalib->fillHistograms(
-        *bestZllCandidate, *jets, absCalibMEt, vtxMultiplicity, rhoNeutral, genPUreweight*addPUreweight);
+        *bestZllCandidate, *muons, *jets, absCalibMEt, *vertices, rhoNeutral, genPUreweight*addPUreweight);
     }
 
 //--- close input file

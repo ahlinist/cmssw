@@ -6,11 +6,11 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 
 import os
 
-version = 'v4_3'
+version = 'v4_7'
 
 inputFilePath = '/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
-outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_2' % version
+outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 
 samplesToAnalyze = {
     'Data_2011RunA' : {
@@ -28,16 +28,27 @@ samplesToAnalyze = {
         ],
         'isMC' : False
     },
-    'simDYtoMuMu' : {
+    ##'simDYtoMuMu' : {
+    ##    'samples' : [
+    ##        'simDYtoMuMu'
+    ##    ],
+    ##    'allEvents_DBS' : RECO_SAMPLES['Zmumu_powheg']['events_processed'],
+    ##    'xSection' : RECO_SAMPLES['Zmumu_powheg']['x_sec'],
+    ##    'isMC' : True,
+    ##    'Type' : 'Signal',
+    ##    'applyRhoNeutralReweighting' : True,
+    ##    'scaleFactor' : 1.
+    ##},
+    'simZplusJets' : {
         'samples' : [
-            'simDYtoMuMu'
+            'simZplusJets_Summer11'
         ],
-        'allEvents_DBS' : RECO_SAMPLES['Zmumu_powheg']['events_processed'],
-        'xSection' : RECO_SAMPLES['Zmumu_powheg']['x_sec'],
+        'allEvents_DBS' : RECO_SAMPLES['ZplusJets_madgraph']['events_processed'],
+        'xSection' : RECO_SAMPLES['ZplusJets_madgraph']['x_sec'],
         'isMC' : True,
         'Type' : 'Signal',
         'applyRhoNeutralReweighting' : True,
-        'scaleFactor' : 1. # 1.8/7.64
+        'scaleFactor' : 0.5 # scale factor to match Z-peak in di-muon mass spectrum
     },
     'simWW' : {
        'samples' : [
@@ -48,7 +59,7 @@ samplesToAnalyze = {
        'isMC' : True,
        'Type' : 'Background',
        'applyRhoNeutralReweighting' : False,
-       'scaleFactor' : 1. # 1./334.4
+       'scaleFactor' : 1.
     },
     'simWZ' : {
        'samples' : [
@@ -59,7 +70,7 @@ samplesToAnalyze = {
        'isMC' : True,
        'Type' : 'Background',
        'applyRhoNeutralReweighting' : False,
-        'scaleFactor' : 1. # 1./58.8
+        'scaleFactor' : 1.
     },
     'simZZ' : {
        'samples' : [
@@ -70,7 +81,7 @@ samplesToAnalyze = {
        'isMC' : True,
        'Type' : 'Background',
        'applyRhoNeutralReweighting' : False,
-        'scaleFactor' : 1. # 1./29.7
+        'scaleFactor' : 1.
     },
     'simTTplusJets' : {
         'samples' : [
@@ -81,7 +92,7 @@ samplesToAnalyze = {
         'isMC' : True,
         'Type' : 'Background',
         'applyRhoNeutralReweighting' : False,
-        'scaleFactor' : 1. # 1.2/169.8
+        'scaleFactor' : 1.
     },
     'simQCD' : {
         'samples' : [
@@ -92,12 +103,15 @@ samplesToAnalyze = {
         'isMC' : True,
         'Type' : 'Background',
         'applyRhoNeutralReweighting' : False,
-        'scaleFactor' : 1. # 1./7774.6
+        'scaleFactor' : 1.
     }
 }
 
-runPeriod = '2011RunA'
-#runPeriod = '2011RunB'
+#runPeriod = '2011RunA'
+runPeriod = '2011RunB'
+
+#maxEvents = 25000
+maxEvents = -1
 
 intLumiData = None
 hltPaths = None
@@ -124,7 +138,7 @@ if runPeriod == '2011RunA':
     }
 elif runPeriod == '2011RunB':
     samplesToAnalyze['Data'] = samplesToAnalyze['Data_2011RunB']
-    intLumiData = 2027.9 # runs 175860-179411 
+    intLumiData = 2.53e+3 # runs 175860-180252 
     hltPaths = {
         'Data' : [
             'HLT_Mu17_Mu8_v7',
@@ -210,12 +224,12 @@ metOptions = {
             },
             'smMC' : {
                 'central'    : 'smearedPatJets',
-                'jetEnUp'    : 'smearedPatJets',
-                'jetEnDown'  : 'smearedPatJets',
-                'jetResUp'   : 'smearedPatJets',
-                'jetResDown' : 'smearedPatJets',
-                ##'unclEnUp'   : 'smearedPatJets',
-                ##'unclEnDown' : 'smearedPatJets'
+                'jetEnUp'    : 'shiftedPatJetsEnUp',
+                'jetEnDown'  : 'shiftedPatJetsEnDown',
+                'jetResUp'   : 'smearedPatJetsResUp',
+                'jetResDown' : 'smearedPatJetsResDown',
+                #'unclEnUp'   : 'smearedPatJets',
+                #'unclEnDown' : 'smearedPatJets'
             }
         },
         'srcMEt' : {
@@ -228,8 +242,8 @@ metOptions = {
                 'jetEnDown'  : 'patPFMetJetEnDown',
                 'jetResUp'   : 'patPFMetJetResUp',
                 'jetResDown' : 'patPFMetJetResDown',
-                ##'unclEnUp'   : 'patPFMetUnclusteredEnUp',
-                ##'unclEnDown' : 'patPFMetUnclusteredEnDown'
+                #'unclEnUp'   : 'patPFMetUnclusteredEnUp',
+                #'unclEnDown' : 'patPFMetUnclusteredEnDown'
             }
         }
     },
@@ -240,12 +254,12 @@ metOptions = {
             },
             'smMC' : {
                 'central'    : 'smearedPatJets',
-                'jetEnUp'    : 'smearedPatJets',
-                'jetEnDown'  : 'smearedPatJets',
-                'jetResUp'   : 'smearedPatJets',
-                'jetResDown' : 'smearedPatJets',
-                ##'unclEnUp'   : 'smearedPatJets',
-                ##'unclEnDown' : 'smearedPatJets'
+                'jetEnUp'    : 'shiftedPatJetsEnUp',
+                'jetEnDown'  : 'shiftedPatJetsEnDown',
+                'jetResUp'   : 'smearedPatJetsResUp',
+                'jetResDown' : 'smearedPatJetsResDown',
+                #'unclEnUp'   : 'smearedPatJets',
+                #'unclEnDown' : 'smearedPatJets'
             }
         },
         'srcMEt' : {
@@ -258,8 +272,8 @@ metOptions = {
                 'jetEnDown'  : 'patType1CorrectedPFMetJetEnDown',
                 'jetResUp'   : 'patType1CorrectedPFMetJetResUp',
                 'jetResDown' : 'patType1CorrectedPFMetJetResDown',
-                ##'unclEnUp'   : 'patType1CorrectedPFMetUnclusteredEnUp',
-                ##'unclEnDown' : 'patType1CorrectedPFMetUnclusteredEnDown'
+                #'unclEnUp'   : 'patType1CorrectedPFMetUnclusteredEnUp',
+                #'unclEnDown' : 'patType1CorrectedPFMetUnclusteredEnDown'
             }
         }
     },
@@ -270,12 +284,12 @@ metOptions = {
             },                
             'smMC' : {
                 'central'    : 'smearedPatJets',
-                'jetEnUp'    : 'smearedPatJets',
-                'jetEnDown'  : 'smearedPatJets',
-                'jetResUp'   : 'smearedPatJets',
-                'jetResDown' : 'smearedPatJets',
-                ##'unclEnUp'   : 'smearedPatJets',
-                ##'unclEnDown' : 'smearedPatJets'
+                'jetEnUp'    : 'shiftedPatJetsEnUp',
+                'jetEnDown'  : 'shiftedPatJetsEnDown',
+                'jetResUp'   : 'smearedPatJetsResUp',
+                'jetResDown' : 'smearedPatJetsResDown',
+                #'unclEnUp'   : 'smearedPatJets',
+                #'unclEnDown' : 'smearedPatJets'
             }
         },    
         'srcMEt' : {
@@ -288,8 +302,8 @@ metOptions = {
                 'jetEnDown'  : 'patType1p2CorrectedPFMetJetEnDown',
                 'jetResUp'   : 'patType1p2CorrectedPFMetJetResUp',
                 'jetResDown' : 'patType1p2CorrectedPFMetJetResDown',
-                ##'unclEnUp'   : 'patType1p2CorrectedPFMetUnclusteredEnUp',
-                ##'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
+                #'unclEnUp'   : 'patType1p2CorrectedPFMetUnclusteredEnUp',
+                #'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
             }
         }
     }
@@ -335,7 +349,7 @@ for metOptionName in metOptions.keys():
             for central_or_shift in srcMEt.keys():
                 retVal_produceZllRecoilNtuples = \
                   buildConfigFile_produceZllRecoilNtuples(
-                    sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+                    maxEvents, sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
                     central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType])
 
                 if retVal_produceZllRecoilNtuples is None:
@@ -394,7 +408,7 @@ for metOptionName in metOptions.keys():
         for central_or_shift in srcMEt.keys():
             retVal_FWLiteZllRecoilCorrectionAnalyzer = \
               buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-                sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+                maxEvents, sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
                 central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
                 None, intLumiData)
 
@@ -568,10 +582,10 @@ samplesToAnalyze = %s
 metOptions = %s
 
 buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-  '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %i)
+  %i, '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %i)
 """ % (str(samplesToAnalyze),
        str(metOptions),
-       sampleName, metOptionName, inputFilePath, outputFilePath,
+       maxEvents, sampleName, metOptionName, inputFilePath, outputFilePath,
        central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['central']['outputFileName'],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal][central_or_shift]['outputFileName'],
