@@ -14,8 +14,8 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
-isMC = True
-##isMC = False
+##isMC = True
+isMC = False
 
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
@@ -28,7 +28,8 @@ else:
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data2/veelken/CMSSW_4_2_x/skims/TauTriggerStudy/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/tauIdEffSample_Ztautau_powheg_2011Jul23_RECO_9_1_n5R.root'
+        ##'file:/data2/veelken/CMSSW_4_2_x/skims/TauTriggerStudy/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/tauIdEffSample_Ztautau_powheg_2011Jul23_RECO_9_1_n5R.root'
+        'file:/data1/veelken/CMSSW_4_2_x/skims/skim_data_SingleMu_Run2011A_PromptReco_v4_chunk_93_5651.root'
     )
 )
 
