@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import re
 import sys
 import subprocess
@@ -7,6 +8,7 @@ import shlex
 import time
 
 import TauAnalysis.Configuration.userRegistry as reg
+import TauAnalysis.Configuration.tools.castor as castor
 
 #--------------------------------------------------------------------------------
 # Find duplicate files resulting from failing crab jobs or
@@ -63,65 +65,84 @@ else:
     mode = 'local'
 
 if jobId is None:
-    reg.overrideJobId(channel, '2011Jul06') # CV: need to overwrite this in order to match Mauro's filenames
+    reg.overrideJobId(channel, '2011Oct30') # CV: need to overwrite this in order to match Mauro's filenames
     jobId = reg.getJobId(channel)
 print(" jobId = %s" % jobId)
 
-commandLine = '%s %s' % (options['executable_ls'][mode], castorFilePath)
-args = shlex.split(commandLine)
-retval = subprocess.Popen(args, stdout = subprocess.PIPE)
-#retval.wait()
+if mode == 'castor':
+    files = [ file_info for file_info in castor.nslsl(castorFilePath) ]
+else:
+    commandLine = '%s %s' % (options['executable_ls'][mode], castorFilePath)
+    args = shlex.split(commandLine)
+    retval = subprocess.Popen(args, stdout = subprocess.PIPE)
+    #retval.wait()
 
-files = retval.stdout.read().split('\n')
-#print(" files = %s" % files)
+    files = retval.stdout.read().split('\n')
+    #print(" files = %s" % files)
 
 fileName_regex = r"(?P<fileName_base>[a-zA-Z0-9_]+)_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root"
 fileName_matcher = re.compile(fileName_regex)
 
 fileNamesAndProperties_dict = {}
 
+print("--> found %i file" % len(files))
+
 for file in files:
+
+    fileName = None
+    if mode == 'castor':
+        fileName = file['file']
+    else:
+        fileName = file
+            
     # skip files from different submissions
-    if file.find(jobId) == -1:
+    if fileName.find(jobId) == -1:
 	continue
 
-    if not fileName_matcher.match(file):
+    if not fileName_matcher.match(fileName):
         continue
 
-    fileName = castorFilePath + '/' + file
-    fileName = fileName.replace('//', '/')
     # skip entry referring to castorFilePath directory 
-    if len(fileName) > (len(castorFilePath) + 1):
-        commandLine = '%s -l %s' % (options['executable_ls'][mode], fileName)
-        args = shlex.split(commandLine)
-        retval = subprocess.Popen(args, stdout = subprocess.PIPE)
+    if len(fileName) > 1:
 
-        fileInfos = retval.stdout.read().split('\n')
+        fileSize = None
+        date_and_time = None
+        
+        if mode == 'castor':
+            fileSize = file['size']
+            date_and_time = file['time']
+        else:
+            commandLine = '%s -l %s' % (options['executable_ls'][mode], os.path.join(castorFilePath, fileName))
+            args = shlex.split(commandLine)
+            retval = subprocess.Popen(args, stdout = subprocess.PIPE)
 
-        for fileInfo in fileInfos:
-            items = fileInfo.split()
-            #print("items: %s" % items)
+            fileInfos = retval.stdout.read().split('\n')
 
-            if len(items) > 5:
-                fileSize = int(items[4])
-                #print(" fileSize = %i" %  fileSize)
+            for fileInfo in fileInfos:
+                items = fileInfo.split()
+                #print("items: %s" % items)
 
-                date_and_time = time.mktime(time.strptime("%s %s %s" % (items[5], items[6], items[7]), "%b %d %H:%M"))
-                #print(" date_and_time = %f" % date_and_time)
+                if len(items) > 5:
+                    fileSize = int(items[4])
+                    date_and_time = time.mktime(time.strptime("%s %s %s" % (items[5], items[6], items[7]), "%b %d %H:%M"))
 
-                fileName_base = str(fileName_matcher.match(file).group('fileName_base'))
-                #print(" fileName_base = %s" %  fileName_base)
+        #print(" fileName = %s" %  fileName)
+        fileName_base = str(fileName_matcher.match(fileName).group('fileName_base'))
 
-                fileNameAndProperties_entry = {
-                    'fileName'      : fileName,
-                    'fileSize'      : fileSize,
-                    'date_and_time' : date_and_time
-                }
+        #print(" fileSize = %i" %  fileSize)
+        #print(" date_and_time = %f" % date_and_time)
+        #print(" fileName_base = %s" %  fileName_base)
 
-                if fileName_base not in fileNamesAndProperties_dict:
-                    fileNamesAndProperties_dict[fileName_base] = [ fileNameAndProperties_entry ]
-                else:
-                    fileNamesAndProperties_dict[fileName_base].append(fileNameAndProperties_entry)
+        fileNameAndProperties_entry = {
+            'fileName'      : os.path.join(castorFilePath, fileName),
+            'fileSize'      : fileSize,
+            'date_and_time' : date_and_time
+        }
+
+        if fileName_base not in fileNamesAndProperties_dict:
+            fileNamesAndProperties_dict[fileName_base] = [ fileNameAndProperties_entry ]
+        else:
+            fileNamesAndProperties_dict[fileName_base].append(fileNameAndProperties_entry)
 
 outputFile = open(outputFileName, "w")
 
@@ -142,4 +163,4 @@ for fileName_base, fileNameAndProperties_entry in fileNamesAndProperties_dict.it
 
 outputFile.close()
 
-print("execute 'cat duplicatefiles.list | xargs -n 1 rfrm' to delete duplicated files.")
+print("execute 'cat %s | xargs -n 1 rfrm' to delete duplicated files." % outputFileName)
