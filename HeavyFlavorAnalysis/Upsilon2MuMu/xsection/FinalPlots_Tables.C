@@ -127,7 +127,7 @@ void XSSystTot_1S(){
   gr_ratio->Draw("AP");  
   
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
-  TFile *f = new TFile("Final1S.root", "RECREATE");
+  TFile *f = new TFile("Final1S_deneme.root", "RECREATE");
   //TFile *f = new TFile("Final1S_0_2_0_50.root", "RECREATE");
   //TFile *f = new TFile("Final1S_0_2_0_30.root", "RECREATE");
   gr->Write();
@@ -137,7 +137,7 @@ void XSSystTot_1S(){
   
   // Table for 1S Xsection and Errors
   double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.), msc(0.), binmig(0.); 
-  ofstream OUT("1S.tex");
+  ofstream OUT("1S_deneme.tex");
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 1S" << endl;
   for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
@@ -779,11 +779,12 @@ void Ratio_UncTables(){
   
   // Table for 2S/1S Ratio and Errors
   double  sig_1s(0.), tot_h_1s(0.), tot_l_1s(0.), rho_h_1s(0.), bg_1s(0.), msc_1s(0.), binmig_1s(0.); 
+  
   double  sig_2s(0.), tot_h_2s(0.), tot_l_2s(0.), rho_h_2s(0.), rho_l_2s(0.), bg_2s(0.), msc_2s(0.), binmig_2s(0.); 
   double  sig_ratio(0.), tot_h_ratio(0.), tot_l_ratio(0.), rho_h_ratio(0.), rho_l_ratio(0.), bg_ratio(0.), msc_ratio(0.), binmig_ratio(0.); 
-  ofstream OUT("RatioUnc2Sto1S.tex");
-  OUT << "% ----------------------------------------------------------------------" << endl;
-  OUT << "% -- 2Sto1SS" << endl;
+  //ofstream OUT("RatioUnc2Sto1S.tex");
+  //OUT << "% ----------------------------------------------------------------------" << endl;
+  //OUT << "% -- 2Sto1SS" << endl;
   for ( int x = 1; x <= S5_1s->GetNbinsX(); ++x ){
     sig_1s = TMath::Sqrt(S3_1s->GetBinContent(x)*S3_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
     bg_1s = TMath::Sqrt(S4_1s->GetBinContent(x)*S4_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
@@ -802,42 +803,60 @@ void Ratio_UncTables(){
     tot_h_2s = TMath::Sqrt( bg_2s*bg_2s + rho_h_2s*rho_h_2s + sig_2s*sig_2s + msc_2s*msc_2s + binmig_2s*binmig_2s);
     tot_l_2s = TMath::Sqrt( sig_2s*sig_2s + bg_2s*bg_2s + rho_l_2s*rho_l_2s + msc_2s*msc_2s + binmig_2s*binmig_2s);    
     
-    sig_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((sig_1s*sig_1s)+(sig_2s*sig_2s));
-    bg_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((bg_1s*bg_1s)+(bg_2s*bg_2s));
-    msc_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((msc_1s*msc_1s)+(msc_2s*msc_2s));
-    binmig_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((binmig_1s*binmig_1s)+(binmig_2s*binmig_2s));
-    rho_h_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((rho_h_1s*rho_h_1s)+(rho_h_2s*rho_h_2s));
-    rho_l_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((rho_l_2s*rho_l_2s));
-    tot_h_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((tot_h_1s*tot_h_1s)+(tot_h_2s*tot_h_2s));
-    tot_l_ratio = (S5_2s->GetBinContent(x)/S5_1s->GetBinContent(x))*TMath::Sqrt((tot_l_1s*tot_l_1s)+(tot_l_2s*tot_l_2s));
-    cout << "sig_ratio = "<< sig_ratio <<endl;
-    cout << "bg_ratio = "<< bg_ratio <<endl; 
-    cout << "msc_ratio = "<< msc_ratio <<endl; 
-    cout << "binmig_ratio = "<< binmig_ratio <<endl;
-    cout << "rho_h_ratio = "<< rho_h_ratio <<endl;
-    cout << "rho_l_ratio = "<< rho_l_ratio <<endl;
-    cout << "tot_h_ratio = "<< tot_h_ratio <<endl;
-    cout << "tot_l_ratio = "<< tot_l_ratio <<endl;    
+    sig_ratio = TMath::Sqrt((sig_1s*sig_1s)+(sig_2s*sig_2s));
+    bg_ratio = TMath::Sqrt((bg_1s*bg_1s)+(bg_2s*bg_2s));
+    msc_ratio = TMath::Sqrt((msc_1s*msc_1s)+(msc_2s*msc_2s));
+    binmig_ratio = TMath::Sqrt((binmig_1s*binmig_1s)+(binmig_2s*binmig_2s));
+    rho_h_ratio = TMath::Sqrt((rho_h_1s*rho_h_1s)+(rho_h_2s*rho_h_2s));
+    rho_l_ratio = TMath::Sqrt((rho_l_2s*rho_l_2s));
+    tot_h_ratio = TMath::Sqrt((tot_h_1s*tot_h_1s)+(tot_h_2s*tot_h_2s));
+    tot_l_ratio = TMath::Sqrt((tot_l_1s*tot_l_1s)+(tot_l_2s*tot_l_2s));
+    //cout << "sig_ratio = "<< sig_ratio <<endl;
+    //cout << "bg_ratio = "<< bg_ratio <<endl; 
+    //cout << "msc_ratio = "<< msc_ratio <<endl; 
+    //cout << "binmig_ratio = "<< binmig_ratio <<endl;
+    //cout << "rho_h_ratio = "<< rho_h_ratio <<endl;
+    //cout << "rho_l_ratio = "<< rho_l_ratio <<endl;
+    //cout << "tot_h_ratio = "<< tot_h_ratio <<endl;
+    //cout << "tot_l_ratio = "<< tot_l_ratio <<endl;    
     
-    
-    //OUT << Form("\\vdef{%iS_toterror%i} {\\ensuremath{ {%.3f } } }",3, x, S5->GetBinError(x)*S5->GetBinWidth(x) ) << endl;
-    //OUT << Form("\\vdef{%iS_systHighoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, tot_h ) << endl;
-    //OUT << Form("\\vdef{%iS_systLowoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, tot_l ) << endl;
-    //OUT << Form("\\vdef{%iS_sigoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, sig ) << endl;
-    //OUT << Form("\\vdef{%iS_bgoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, bg ) << endl;
-    //OUT << Form("\\vdef{%iS_rhoHighoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, rho_h ) << endl;
-    //OUT << Form("\\vdef{%iS_mscoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, msc ) << endl;
-    //OUT << Form("\\vdef{%iS_binmigoversigma%i} {\\ensuremath{ {%.3f } } }",3, x, binmig ) << endl;
   }
   
-  OUT.close();
-
-  
-  
-  
-  
-  
-  
+  for ( int x = 1; x <= S5_1s->GetNbinsX(); ++x ){
+    sig_1s = TMath::Sqrt(S3_1s->GetBinContent(x)*S3_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
+    bg_1s = TMath::Sqrt(S4_1s->GetBinContent(x)*S4_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
+    msc_1s = TMath::Sqrt(S9_1s->GetBinContent(x)*S9_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
+    rho_h_1s = TMath::Sqrt(S8_1s->GetBinContent(x)*S8_1s->GetBinContent(x))/S5_1s->GetBinContent(x); 
+    binmig_1s = TMath::Sqrt(S10_1s->GetBinContent(x)*S10_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
+    tot_h_1s = TMath::Sqrt( bg_1s*bg_1s + rho_h_1s*rho_h_1s + sig_1s*sig_1s + msc_1s*msc_1s + binmig_1s*binmig_1s);
+    tot_l_1s = TMath::Sqrt( sig_1s*sig_1s + bg_1s*bg_1s + msc_1s*msc_1s + binmig_1s*binmig_1s);
+    
+    sig_3s = TMath::Sqrt(S3_3s->GetBinContent(x)*S3_3s->GetBinContent(x))/S5_3s->GetBinContent(x);
+    bg_3s = TMath::Sqrt(S4_3s->GetBinContent(x)*S4_3s->GetBinContent(x))/S5_3s->GetBinContent(x);
+    msc_3s = TMath::Sqrt(S9_3s->GetBinContent(x)*S9_3s->GetBinContent(x))/S5_3s->GetBinContent(x);
+    rho_l_3s = TMath::Sqrt(S8_3s->GetBinContent(x)*S8_3s->GetBinContent(x))/S5_3s->GetBinContent(x); 
+    binmig_3s = TMath::Sqrt(S10_3s->GetBinContent(x)*S10_3s->GetBinContent(x))/S5_3s->GetBinContent(x);
+    tot_h_3s = TMath::Sqrt( bg_3s*bg_3s + sig_3s*sig_3s + msc_3s*msc_3s + binmig_3s*binmig_3s);
+    tot_l_3s = TMath::Sqrt( sig_3s*sig_3s + bg_3s*bg_3s + msc_3s*msc_3s + binmig_3s*binmig_3s + rho_l_3s*rho_l_3s);    
+    
+    sig_ratio = TMath::Sqrt((sig_1s*sig_1s)+(sig_3s*sig_3s));
+    bg_ratio = TMath::Sqrt((bg_1s*bg_1s)+(bg_3s*bg_3s));
+    msc_ratio = TMath::Sqrt((msc_1s*msc_1s)+(msc_3s*msc_3s));
+    binmig_ratio = TMath::Sqrt((binmig_1s*binmig_1s)+(binmig_3s*binmig_3s));
+    rho_h_ratio = TMath::Sqrt((rho_h_1s*rho_h_1s));
+    rho_l_ratio = TMath::Sqrt((rho_l_3s*rho_l_3s));
+    tot_h_ratio = TMath::Sqrt((tot_h_1s*tot_h_1s)+(tot_h_3s*tot_h_3s));
+    tot_l_ratio = TMath::Sqrt((tot_l_1s*tot_l_1s)+(tot_l_3s*tot_l_3s));
+    //cout << "sig_ratio = "<< sig_ratio <<endl;
+    //cout << "bg_ratio = "<< bg_ratio <<endl; 
+    //cout << "msc_ratio = "<< msc_ratio <<endl; 
+    //cout << "binmig_ratio = "<< binmig_ratio <<endl;
+    //cout << "rho_h_ratio = "<< rho_h_ratio <<endl;
+    //cout << "rho_l_ratio = "<< rho_l_ratio <<endl;
+    //cout << "tot_h_ratio = "<< tot_h_ratio <<endl;
+    //cout << "tot_l_ratio = "<< tot_l_ratio <<endl;    
+    
+  }
   
 }
 
@@ -872,6 +891,7 @@ void Ratio_unpol(){
    term31_h = term1_h+term3_h;
    e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
    e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+   
       
    term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
    term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
@@ -982,6 +1002,8 @@ void Ratio_pol(){
    term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
    term21_h = term1_h+term2_h+polterm1_h+polterm2_h;
    term31_h = term1_h+term3_h+polterm1_h+polterm3_h;
+   //cout << " TMath::Sqrt(polterm1_h+polterm2_h) = " << TMath::Sqrt(polterm1_h+polterm2_h) << endl;
+   //cout << " TMath::Sqrt(polterm1_h+polterm3_h) = " << TMath::Sqrt(polterm1_h+polterm3_h) << endl;
    e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
    e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
    
@@ -994,6 +1016,8 @@ void Ratio_pol(){
    term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
    term21_l = term1_l+term2_l+polterm1_l+polterm2_l;
    term31_l = term1_l+term3_l+polterm1_l+polterm3_l;
+   //cout << " TMath::Sqrt(polterm1_l+polterm2_l) = " << TMath::Sqrt(polterm1_l+polterm2_l) << endl;
+   //cout << " TMath::Sqrt(polterm1_l+polterm3_l) = " << TMath::Sqrt(polterm1_l+polterm3_l) << endl;
    e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
    e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
    
