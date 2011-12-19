@@ -26,6 +26,7 @@ muonHistManager = cms.PSet(
     ),
 
     pfCandidateSource = selectedPatMuonsPFRelIso.pfCandidateSource,
+    pfNoPileUpCandidateSource = cms.InputTag('pfNoPileUp'),
     
     #normalization = cms.string("muons"),
     normalization = cms.string("events"),

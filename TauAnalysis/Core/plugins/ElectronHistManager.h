@@ -34,7 +34,7 @@ class ElectronHistManager : public HistManagerBase
   double getElectronWeight(const pat::Electron&);
 
   void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*, double);
-  void fillElectronIsoHistograms(const pat::Electron&, const reco::PFCandidateCollection&, double);
+  void fillElectronIsoHistograms(const edm::Event&, const pat::Electron&, const reco::PFCandidateCollection&, double);
   void fillElectronIsoConeSizeDepHistograms(const pat::Electron&, double);
   void fillConversionHistograms(const pat::Electron&, edm::Handle<reco::TrackCollection>&, double, double );
 
@@ -43,6 +43,7 @@ class ElectronHistManager : public HistManagerBase
   edm::InputTag vertexSrc_;
   edm::InputTag jetSrc_;
   edm::InputTag pfCandidateSrc_;
+  edm::InputTag pfNoPileUpCandidateSrc_;
   edm::InputTag genParticleSrc_;
   edm::InputTag conversionPartnerTrackSrc_;
   edm::InputTag dcsTag_;

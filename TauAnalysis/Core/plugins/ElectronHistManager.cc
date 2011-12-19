@@ -83,20 +83,24 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
  
   if ( cfg.exists("pfCombIsoExtractor") ) {
-	edm::ParameterSet cfgPFCombIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfCombIsoExtractor");
-	pfCombIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFCombIsoExtractor);
+    edm::ParameterSet cfgPFCombIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfCombIsoExtractor");
+    pfCombIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFCombIsoExtractor);
+    pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
   }
   if ( cfg.exists("pfChargedHadronIsoExtractor") ) {
-	edm::ParameterSet cfgPFChargedHadronIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfChargedHadronIsoExtractor");
-	pfChargedHadronIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFChargedHadronIsoExtractor);
+    edm::ParameterSet cfgPFChargedHadronIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfChargedHadronIsoExtractor");
+    pfChargedHadronIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFChargedHadronIsoExtractor);
+    pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
   }
   if ( cfg.exists("pfNeutralHadronIsoExtractor") ) {
-	edm::ParameterSet cfgPFNeutralHadronIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfNeutralHadronIsoExtractor");
-	pfNeutralHadronIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFNeutralHadronIsoExtractor);
+    edm::ParameterSet cfgPFNeutralHadronIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfNeutralHadronIsoExtractor");
+    pfNeutralHadronIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFNeutralHadronIsoExtractor);
+    pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
   }
   if ( cfg.exists("pfPhotonIsoExtractor") ) {
-	edm::ParameterSet cfgPFPhotonIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfPhotonIsoExtractor");
-	pfPhotonIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFPhotonIsoExtractor);
+    edm::ParameterSet cfgPFPhotonIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfPhotonIsoExtractor");
+    pfPhotonIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFPhotonIsoExtractor);
+    pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
   }
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
@@ -410,7 +414,7 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
       if ( pIn > 0. ) hElectronBremsFraction_->Fill((pIn - pOut)/pIn, weight);
     }
     
-    fillElectronIsoHistograms(*patElectron, *pfCandidates, weight);
+    fillElectronIsoHistograms(evt, *patElectron, *pfCandidates, weight);
     hElectronDeltaRnearestJet_->Fill(getDeltaRnearestJet(patElectron->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillElectronIsoConeSizeDepHistograms(*patElectron, weight);
     
@@ -513,7 +517,8 @@ void ElectronHistManager::fillElectronHistograms(const pat::Electron& patElectro
   hElectronPhi->Fill(patElectron.phi(), weight);
 }
 
-void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElectron, const reco::PFCandidateCollection& pfCandidates, double weight)
+void ElectronHistManager::fillElectronIsoHistograms(const edm::Event& evt, 
+						    const pat::Electron& patElectron, const reco::PFCandidateCollection& pfCandidates, double weight)
 {
   //std::cout << "<ElectronHistManager::fillElectronIsoHistograms>:" << std::endl;
 
@@ -566,40 +571,47 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   hElectronPFGammaIsoPtRel_->Fill(patElectron.photonIso()/patElectron.pt(), weight);
   */
 
+  edm::Handle<reco::PFCandidateCollection> pfNoPileUpCandidates;
+  if ( pfNoPileUpCandidateSrc_.label() != "" ) evt.getByLabel(pfNoPileUpCandidateSrc_, pfNoPileUpCandidates);
+
   if ( pfChargedHadronIsoExtractor_ ) {
-	  double pfChargedHadronIso = 
-	    (*pfChargedHadronIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
-	  hElectronPFChargedHadronIsoPt_->Fill(pfChargedHadronIso, weight);
-	  hElectronPFChargedHadronIsoPtRel_->Fill(pfChargedHadronIso/patElectron.pt(), weight);
+    double pfChargedHadronIso = 
+      (*pfChargedHadronIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, 
+				      pfCandidates, *pfNoPileUpCandidates);
+    hElectronPFChargedHadronIsoPt_->Fill(pfChargedHadronIso, weight);
+    hElectronPFChargedHadronIsoPtRel_->Fill(pfChargedHadronIso/patElectron.pt(), weight);
   }
   if ( pfNeutralHadronIsoExtractor_ ) {
-	  double pfNeutralHadronIso = 
-	    (*pfNeutralHadronIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
-	  hElectronPFNeutralHadronIsoPt_->Fill(pfNeutralHadronIso, weight);
-	  hElectronPFNeutralHadronIsoPtRel_->Fill(pfNeutralHadronIso/patElectron.pt(), weight);
+    double pfNeutralHadronIso = 
+      (*pfNeutralHadronIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, 
+				      pfCandidates, *pfNoPileUpCandidates);
+    hElectronPFNeutralHadronIsoPt_->Fill(pfNeutralHadronIso, weight);
+    hElectronPFNeutralHadronIsoPtRel_->Fill(pfNeutralHadronIso/patElectron.pt(), weight);
   }
   if ( pfPhotonIsoExtractor_ ) {
-	  double pfPhotonIso = 
-	    (*pfPhotonIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
-	  hElectronPFGammaIsoPt_->Fill(pfPhotonIso, weight);
-	  hElectronPFGammaIsoPtRel_->Fill(pfPhotonIso/patElectron.pt(), weight);
+    double pfPhotonIso = 
+      (*pfPhotonIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, 
+			       pfCandidates, *pfNoPileUpCandidates);
+    hElectronPFGammaIsoPt_->Fill(pfPhotonIso, weight);
+    hElectronPFGammaIsoPtRel_->Fill(pfPhotonIso/patElectron.pt(), weight);
   }
   if ( pfCombIsoExtractor_ ) {
-	  double pfCombIso = 
-	    (*pfCombIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
-	  hElectronPFCombIsoPt_->Fill(pfCombIso, weight);
-	  hElectronPFCombIsoPtRel_->Fill(pfCombIso/patElectron.pt(), weight);
-
-	  if ( isValidRef(patElectron.superCluster()) ) {
-		  if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) { 
-			  hElectronPFCombIsoPtBarrel_->Fill(pfCombIso, weight);
-			  hElectronPFCombIsoPtRelBarrel_->Fill(pfCombIso/patElectron.pt(), weight);
-		  }
-		  if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) {
-			  hElectronPFCombIsoPtEndcap_->Fill(pfCombIso, weight);
-			  hElectronPFCombIsoPtRelEndcap_->Fill(pfCombIso/patElectron.pt(), weight);
-		  }
-	  }
+    double pfCombIso = 
+      (*pfCombIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, 
+			     pfCandidates, *pfNoPileUpCandidates);
+    hElectronPFCombIsoPt_->Fill(pfCombIso, weight);
+    hElectronPFCombIsoPtRel_->Fill(pfCombIso/patElectron.pt(), weight);
+    
+    if ( isValidRef(patElectron.superCluster()) ) {
+      if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) { 
+	hElectronPFCombIsoPtBarrel_->Fill(pfCombIso, weight);
+	hElectronPFCombIsoPtRelBarrel_->Fill(pfCombIso/patElectron.pt(), weight);
+      }
+      if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) {
+	hElectronPFCombIsoPtEndcap_->Fill(pfCombIso, weight);
+	hElectronPFCombIsoPtRelEndcap_->Fill(pfCombIso/patElectron.pt(), weight);
+      }
+    }
   }
  
   if ( makeIsoPtCtrlHistograms_ ) {

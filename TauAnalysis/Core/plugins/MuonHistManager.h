@@ -34,7 +34,7 @@ class MuonHistManager : public HistManagerBase
   double getMuonWeight(const pat::Muon&);
 
   void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*, double);
-  void fillMuonIsoHistograms(const pat::Muon&, const reco::PFCandidateCollection&, double);
+  void fillMuonIsoHistograms(const edm::Event&, const pat::Muon&, const reco::PFCandidateCollection&, double);
   void fillMuonIsoConeSizeDepHistograms(const pat::Muon&, double);
 
 //--- configuration parameters
@@ -43,6 +43,7 @@ class MuonHistManager : public HistManagerBase
   edm::InputTag beamSpotSrc_;
   edm::InputTag jetSrc_;
   edm::InputTag pfCandidateSrc_;
+  edm::InputTag pfNoPileUpCandidateSrc_;
   edm::InputTag genParticleSrc_;
 
   bool requireGenMuonMatch_;

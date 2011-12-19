@@ -81,6 +81,7 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   if ( cfg.exists("pfCombIsoExtractor") ) {
     edm::ParameterSet cfgPFCompIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfCombIsoExtractor");
     pfCombIsoExtractor_ = new PATMuonPFIsolationExtractor(cfgPFCompIsoExtractor);
+    pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
   }
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
@@ -373,7 +374,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
     double segmentCompatibility = muon::segmentCompatibility(*patMuon);
     hMuonSegmentCompatibility_->Fill(segmentCompatibility, weight);
 
-    fillMuonIsoHistograms(*patMuon, *pfCandidates, weight);
+    fillMuonIsoHistograms(evt, *patMuon, *pfCandidates, weight);
     hMuonDeltaRnearestJet_->Fill(getDeltaRnearestJet(patMuon->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillMuonIsoConeSizeDepHistograms(*patMuon, weight);
   }
@@ -452,7 +453,8 @@ void MuonHistManager::fillMuonHistograms(const pat::Muon& patMuon,
   hMuonPhi->Fill(patMuon.phi(), weight);
 }
 
-void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, const reco::PFCandidateCollection& pfCandidates, double weight)
+void MuonHistManager::fillMuonIsoHistograms(const edm::Event& evt, 
+					    const pat::Muon& patMuon, const reco::PFCandidateCollection& pfCandidates, double weight)
 {
   //std::cout << "<MuonHistManager::fillMuonIsoHistograms>:" << std::endl;
 
@@ -491,8 +493,12 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, const reco
   hMuonPFGammaIsoPt_->Fill(patMuon.photonIso(), weight);
   hMuonPFGammaIsoPtRel_->Fill(patMuon.photonIso()/patMuon.pt(), weight);
 
-  if ( pfCombIsoExtractor_ ) {
-    double pfCombIso = (*pfCombIsoExtractor_)(patMuon, ParticlePFIsolationExtractor<pat::Muon>::kDirP4, pfCandidates);
+  if ( pfCombIsoExtractor_ ) { 
+    edm::Handle<reco::PFCandidateCollection> pfNoPileUpCandidates;
+    evt.getByLabel(pfNoPileUpCandidateSrc_, pfNoPileUpCandidates);
+    double pfCombIso = 
+      (*pfCombIsoExtractor_)(patMuon, ParticlePFIsolationExtractor<pat::Muon>::kDirP4, 
+			     pfCandidates, *pfNoPileUpCandidates);
     hMuonPFCombIsoPt_->Fill(pfCombIso, weight);
     hMuonPFCombIsoPtRel_->Fill(pfCombIso/patMuon.pt(), weight);
   }

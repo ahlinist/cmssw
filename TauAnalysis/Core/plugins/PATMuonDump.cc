@@ -35,6 +35,7 @@ PATMuonDump::PATMuonDump(const edm::ParameterSet& cfg)
     edm::ParameterSet cfgPFIsolationExtractor = cfg.getParameter<edm::ParameterSet>("muonPFIsoExtractor");
     pfIsolationExtractor_ = new ParticlePFIsolationExtractor<pat::Muon>(cfgPFIsolationExtractor);
     pfIsoCandSource_ = cfg.getParameter<edm::InputTag>("muonPFIsoCandSource");
+    pfNoPileUpCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfNoPileUpCandidateSource");
   }
 }
 
@@ -105,8 +106,11 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     if ( pfIsolationExtractor_ ) {
       edm::Handle<reco::PFCandidateCollection> pfCandidates;
       evt.getByLabel(pfIsoCandSource_, pfCandidates);
-      *outputStream_ << " pfIso = " << (*pfIsolationExtractor_)(*patMuon, ParticlePFIsolationExtractor<pat::Muon>::kDirP4, 
-								*pfCandidates, vertices, beamSpot) << std::endl;
+      edm::Handle<reco::PFCandidateCollection> pfNoPileUpCandidates;
+      evt.getByLabel(pfNoPileUpCandidateSrc_, pfNoPileUpCandidates);
+      *outputStream_ << " pfIso = " 
+		     << (*pfIsolationExtractor_)(*patMuon, ParticlePFIsolationExtractor<pat::Muon>::kDirP4, 
+						 *pfCandidates, *pfNoPileUpCandidates) << std::endl;
     }
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patMuon->vertex(), outputStream_);
