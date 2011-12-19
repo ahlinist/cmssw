@@ -73,7 +73,7 @@ void XSSystTot_1S(){
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
-    S5->SetBinError(i,err5); 
+    //S5->SetBinError(i,err5); 
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
@@ -247,7 +247,7 @@ void XSSystTot_2S(){
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
-    S5->SetBinError(i,err5);
+    //S5->SetBinError(i,err5);
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
@@ -404,7 +404,7 @@ void XSSystTot_3S(){
     s2 += TMath::Sqrt(s1)*S5->GetBinWidth(i);
     s2_ += TMath::Sqrt(s1_)*S5->GetBinWidth(i);
     err5 = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
-    S5->SetBinError(i,err5);
+    //S5->SetBinError(i,err5);
     Errh[i-1] = TMath::Sqrt((s1)+(S5->GetBinError(i)*S5->GetBinError(i)));
     Errl[i-1] = TMath::Sqrt((s1_)+(S5->GetBinError(i)*S5->GetBinError(i)));
     y[i-1] = S5->GetBinContent(i);
