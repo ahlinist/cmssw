@@ -47,10 +47,19 @@ userSettings = {
         'current' : {
             'HiggsToElecMu'     : '2011Oct06ii',
             'muonIsoPATtuple'   : '2011Oct10v5',
-            'ZtoMuTau'          : '2011Sep09', 
+            'ZtoMuTau'          : '2011Sep09',
             'ZtoMuTau_tauIdEff' : '2011Oct30'
+            #'ZtoMuTau_tauIdEff' : '2011Dec15'
         },
         'jobs' : {
+            '2011Dec15' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Dec15/",
+                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Dec15/"
+                }
+            },
             '2011Oct30' : {
                 'ZtoMuTau_tauIdEff' : {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/",
