@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 import copy
 
+from PhysicsTools.PatAlgos.tools.coreTools import *
 from PhysicsTools.PatAlgos.tools.jetTools import *
 from PhysicsTools.PatUtils.tools.metUncertaintyTools import runMEtUncertainties
 
@@ -19,11 +20,11 @@ def filterTightWenuCandidates(process, isMC):
     process.wenuHLTFilter = process.hltHighLevel.clone(
         TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT"),
         HLTPaths = cms.vstring([
-            # single electron triggers (2011 Run B and Summer'11 MC)
-            'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1',
             # single electron triggers (2011 Run B)
+            'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v7',
             'HLT_Ele25_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_v5',
             # single electron triggers (Summer'11 MC)
+	    'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1',
             'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2',
         ]),
         throw = cms.bool(False)
@@ -122,6 +123,11 @@ def filterTightWenuCandidates(process, isMC):
     process.patElectrons.addGenMatch = cms.bool(False)
     process.patElectrons.embedHighLevelSelection = cms.bool(True)
     process.patElectrons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beamspot (not event vertex)
+
+    if not isMC:
+        # remove MC matching from standard PAT sequences
+	removeMCMatching(process, ["All"], outputInProcess = False)
+	process.patDefaultSequence.remove(process.patJetPartonMatch)
 
     # select tight electrons, no isolation cuts applied
     process.selectedElectronsWP80 = cms.EDFilter("PATElectronSelector",
