@@ -14,9 +14,8 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
                            # Pre-scale and factorize samples
                            ana_defs = None, plot_defs = None, plotters = None,
                            use_job_report = False,
-                           useCastor = True
-                           ):
-
+                           useCastor = True):
+    
     # check that channel, samples, inputFilePath, outputFilePath, tmpFilePath and jobId
     # parameters are defined and non-empty
     if channel is None:
