@@ -123,6 +123,8 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
 	       double mcToDataScaleFactor,
 	       std::vector<double>& errUp2MC_smSum, std::vector<double>& errDown2MC_smSum)
 {
+  std::cout << "<addSysErr>:" << std::endl;
+
   assert(sysShiftsUp.size() == sysShiftsDown.size());
 
   size_t numSysShifts = sysShiftsUp.size();
@@ -143,6 +145,9 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
       double value_sysShiftUp   = meMC_sysShiftUp->GetBinContent(iBin);
       double value_sysShiftDown = meMC_sysShiftDown->GetBinContent(iBin);
 
+      std::cout << "bin = " << iBin << ": central = " << value_central << "," 
+		<< " " << sysShiftUp << " = " << value_sysShiftUp << ", " << sysShiftDown << " = " << value_sysShiftDown << std::endl;
+      
       double value_max = TMath::Max(value_sysShiftUp, value_sysShiftDown);
       if ( value_max > value_central ) errUp2MC_smSum[iBin - 1]   += square(value_max - value_central); 
       double value_min = TMath::Min(value_sysShiftUp, value_sysShiftDown);
@@ -184,12 +189,16 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
 	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
     TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, mcScaleFactors, variable.meName_);
     if ( !meMC_bgr->GetSumw2N() ) meMC_bgr->Sumw2();
-    if ( !meMC_bgrSum ) meMC_bgrSum = (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data());
+    if ( !meMC_bgrSum ) {
+      meMC_bgrSum = (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data());
+      if ( !meMC_bgrSum->GetSumw2N() ) meMC_bgrSum->Sumw2();
+    }
     else meMC_bgrSum->Add(meMC_bgr);
   }
   if ( meMC_bgrSum ) meMC_bgrSum->SetFillColor(46);
 
   TH1* meMC_smSum = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smSum").data());
+  if ( !meMC_smSum->GetSumw2N() ) meMC_smSum->Sumw2();
   if ( meMC_bgrSum ) meMC_smSum->Add(meMC_bgrSum);
 
   double mcToDataScaleFactor = 1.;
@@ -203,13 +212,20 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
 
   std::vector<double> errUp2MC_smSum(meData->GetNbinsX());
   std::vector<double> errDown2MC_smSum(meData->GetNbinsX());
+  std::cout << "adding systematic uncertainties for signal..." << std::endl;
   addSysErr(inputFile, variable, directoryMC_signal, mcScaleFactors,
 	    meMC_signal_cloned, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
   for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
 	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
+    std::cout << "adding systematic uncertainties for " << (*directoryMC_bgr) << " background..." << std::endl;
     TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, mcScaleFactors, variable.meName_);
+    TH1* meMC_bgr_cloned = ( scaleMCtoData ) ?
+      (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data()) : meMC_bgr;
+    if ( !meMC_bgr_cloned->GetSumw2N() ) meMC_bgr_cloned->Sumw2();
+    meMC_bgr_cloned->Scale(mcToDataScaleFactor);
     addSysErr(inputFile, variable, *directoryMC_bgr, mcScaleFactors,
-	      meMC_bgr, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+	      meMC_bgr_cloned, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+    if ( meMC_bgr_cloned != meMC_bgr ) delete meMC_bgr_cloned;
   }
 
   TH1* meMC_smErr = 0;
@@ -642,11 +658,11 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUperpResolutionData_, f_uPerp_rms_data,
 			 "Data", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
-			 outputFileName, "uParlResolutionFitData");
+			 outputFileName, "uPerpResolutionFitData");
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUperpResolutionMC_, f_uPerp_rms_mc,
 			 "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
-			 outputFileName, "uParlResolutionFitMC",
+			 outputFileName, "uPerpResolutionFitMC",
 			 &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_, &f_uPerp_rms_mcSysUncertainties);
 
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 

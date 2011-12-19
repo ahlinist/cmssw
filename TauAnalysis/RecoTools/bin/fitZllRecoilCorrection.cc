@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.11 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.10 2011/11/22 10:04:51 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.11 2011/12/01 15:42:00 veelken Exp $
  *
  */
 
@@ -47,179 +47,6 @@
 
 typedef std::vector<std::string> vstring;
 
-void showControlPlot(TCanvas* canvas, 
-		     TH1* dummyHistogram, 
-		     TGraphAsymmErrors* graph, const std::string& legendEntry, double legendX0, double legendY0,
-		     TGraph* graph_fit, TGraphAsymmErrors* graph_fitErr, 
-		     bool showIdLine, bool showConstLine, const std::string& yAxisLabel, double yMin, double yMax, double yDiffMax, 
-		     const std::string& outputFileName, const std::string& outputFileLabel)
-{
-  canvas->SetLogy(false);
-  canvas->Clear();
-  canvas->SetLeftMargin(0.12);
-  canvas->SetBottomMargin(0.12);
-
-  TPad* topPad = new TPad("topPad", "topPad", 0.00, 0.35, 1.00, 1.00);
-  topPad->SetFillColor(10);
-  topPad->SetTopMargin(0.04);
-  topPad->SetLeftMargin(0.15);
-  topPad->SetBottomMargin(0.03);
-  topPad->SetRightMargin(0.05);
-
-  TPad* bottomPad = new TPad("bottomPad", "bottomPad", 0.00, 0.00, 1.00, 0.35);
-  bottomPad->SetFillColor(10);
-  bottomPad->SetTopMargin(0.02);
-  bottomPad->SetLeftMargin(0.15);
-  bottomPad->SetBottomMargin(0.24);
-  bottomPad->SetRightMargin(0.05);
-
-  canvas->cd();
-  topPad->Draw();
-  topPad->cd();
-
-  TH1* dummyHistogram_top = (TH1*)dummyHistogram->Clone("dummyHistogram_top");
-
-  TAxis* xAxis_top = dummyHistogram_top->GetXaxis();
-  xAxis_top->SetLabelColor(10);
-  xAxis_top->SetTitleColor(10);
-    
-  TAxis* yAxis_top = dummyHistogram_top->GetYaxis();
-  yAxis_top->SetTitle(yAxisLabel.data());
-  yAxis_top->SetTitleOffset(1.20);
-  yAxis_top->SetTitleSize(0.06);
-
-  dummyHistogram_top->SetTitle("");
-  dummyHistogram_top->SetStats(false);
-  dummyHistogram_top->SetMaximum(yMax);
-  dummyHistogram_top->SetMinimum(yMin);
-  dummyHistogram_top->SetMarkerColor(1);
-  dummyHistogram_top->SetMarkerStyle(20);
-  dummyHistogram_top->Draw("axis");
-
-  graph_fitErr->SetLineColor(2);
-  graph_fitErr->SetLineWidth(0);
-  graph_fitErr->SetFillColor(46);
-  graph_fitErr->SetFillStyle(3002);
-  graph_fitErr->Draw("3");
-
-  graph_fit->SetLineColor(2);
-  graph_fit->SetLineWidth(2);
-  graph_fit->Draw("L");
-
-  if ( showIdLine || showConstLine ) {
-    int numPoints = graph_fit->GetN();
-    TGraph* graph_line = new TGraph(numPoints);
-    for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
-      Double_t x, y;
-      graph_fit->GetPoint(iPoint, x, y);
-      if      ( showIdLine    ) graph_line->SetPoint(iPoint, x,  -x);
-      else if ( showConstLine ) graph_line->SetPoint(iPoint, x, 1.0);
-      else assert(0);
-    }
-    graph_line->SetLineColor(8);
-    graph_line->SetLineWidth(1);
-    graph_line->Draw("L");
-  }
-
-  graph->SetMarkerStyle(20);
-  graph->SetMarkerSize(1);
-  graph->SetMarkerColor(1);
-  graph->SetLineColor(1);
-  graph->SetLineWidth(1);
-  graph->Draw("P");
-
-  TLegend legend(legendX0, legendY0, legendX0 + 0.30, legendY0 + 0.285, "", "brNDC"); 
-  legend.SetBorderSize(0);
-  legend.SetFillColor(0);
-  legend.AddEntry(graph,        legendEntry.data(), "p");
-  legend.AddEntry(graph_fit,    "Fit",              "l");
-  legend.AddEntry(graph_fitErr, "Fit Uncertainty",  "f");
-  legend.Draw();
-
-  canvas->cd();
-  bottomPad->Draw();
-  bottomPad->cd();
-
-  int numPoints = graph->GetN();
-  TGraphAsymmErrors* graphDiff = new TGraphAsymmErrors(numPoints);
-  for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
-    Double_t x, xErrUp, xErrDown, y, yErr;
-    graph->GetPoint(iPoint, x, y);
-    xErrUp = graph->GetErrorXhigh(iPoint);
-    xErrDown = graph->GetErrorXlow(iPoint);
-    yErr = graph->GetErrorY(iPoint);
-
-    int numPoints_fit = graph_fit->GetN();
-    Double_t y_fit_matched = 0.;
-    Double_t yErr_fit_matched = 1.e+6;
-    Double_t dxMin = 1.e+6;
-    for ( int iPoint_fit = 0; iPoint_fit < numPoints_fit; ++iPoint_fit ) {
-      Double_t x_fit, y_fit;
-      graph_fit->GetPoint(iPoint_fit, x_fit, y_fit);
-      Double_t dx = x_fit - x;
-      if ( TMath::Abs(dx) < dxMin ) {
-	y_fit_matched = y_fit;
-	yErr_fit_matched = graph_fitErr->GetErrorY(iPoint_fit);
-	dxMin = TMath::Abs(dx);
-      }
-    }
-
-    //std::cout << "x = " << x << " (dxMin = " << dxMin << "): y = " << y << ", y_fit_matched = " << y_fit_matched << std::endl;
-
-    Double_t yErr_diff = TMath::Sqrt(square(yErr) + square(yErr_fit_matched));
-    
-    graphDiff->SetPoint(iPoint, x, y - y_fit_matched);
-    graphDiff->SetPointError(iPoint, xErrDown, xErrUp, yErr_diff, yErr_diff);
-  }
-
-  TH1* dummyHistogram_bottom = (TH1*)dummyHistogram->Clone("dummyHistogram_bottom");
-
-  TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
-  xAxis_bottom->SetTitle("q_{T} / GeV");
-  xAxis_bottom->SetTitleOffset(1.20);
-  xAxis_bottom->SetTitleSize(0.08);
-  xAxis_bottom->SetLabelOffset(0.02);
-  xAxis_bottom->SetLabelSize(0.08);
-  xAxis_bottom->SetTickLength(0.055);
-
-  TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
-  yAxis_bottom->SetTitle("Measured - Fit");
-  yAxis_bottom->SetTitleOffset(0.85);
-  yAxis_bottom->SetNdivisions(505);
-  yAxis_bottom->CenterTitle();
-  yAxis_bottom->SetTitleSize(0.08);
-  yAxis_bottom->SetLabelSize(0.08);
-  yAxis_bottom->SetTickLength(0.04);
-
-  dummyHistogram_bottom->SetTitle("");
-  dummyHistogram_bottom->SetStats(false);
-  dummyHistogram_bottom->SetMaximum(+yDiffMax);
-  dummyHistogram_bottom->SetMinimum(-yDiffMax);
-  dummyHistogram_bottom->SetMarkerColor(1);
-  dummyHistogram_bottom->SetMarkerStyle(20);
-  dummyHistogram_bottom->Draw("axis");
-
-  graphDiff->SetMarkerStyle(20);
-  graphDiff->SetMarkerSize(1);
-  graphDiff->SetMarkerColor(1);
-  graphDiff->SetLineColor(1);
-  graphDiff->SetLineWidth(1);
-  graphDiff->Draw("P");
-
-  canvas->Update();
-
-  size_t idx = outputFileName.find_last_of("_cfi.py");
-  std::string outputFileName_plot = std::string(outputFileName, 0, idx - (strlen("_cfi.py") - 1));
-  outputFileName_plot.append("_").append(outputFileLabel);
-  canvas->Print(std::string(outputFileName_plot).append(".png").data());
-  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
-
-  delete dummyHistogram_top;
-  delete topPad;
-  delete dummyHistogram_bottom;
-  delete bottomPad;
-}
-
 void makeControlPlots(TH1* dummyHistogram,
 		      TGraphAsymmErrors* graph_uParl_mean, TF1* f_uParl_mean,
 		      TGraphAsymmErrors* graph_uParl_div_qT_mean, TF1* f_uParl_div_qT_mean, 
@@ -228,43 +55,6 @@ void makeControlPlots(TH1* dummyHistogram,
 		      TGraphAsymmErrors* graph_uPerp_rms, TF1* f_uPerp_rms,
 		      bool isData, const std::string& outputFileName)
 {
-  TAxis* xAxis = dummyHistogram->GetXaxis();
-  double xMin = xAxis->GetXmin();
-  double xMax = xAxis->GetXmax();
-  double dx = 1.;
-
-  TGraphAsymmErrors* graph_uParlFit = 
-    makeGraph_fitValue("graph_uParlFit", "", 
-		       f_uParl_mean, xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uParlFitErr = 
-    makeGraph_fitUncertainty("graph_uParlFitErr", "", 
-			     f_uParl_mean, makeFitUncertaintyFunctions(f_uParl_mean), xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uParl_div_qTfit =
-    makeGraph_fitValue("graph_uParl_div_qTfit", "",
-		       f_uParl_div_qT_mean, xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uParl_div_qTfitErr = 
-    makeGraph_fitUncertainty("graph_uParl_div_qTfitErr", "", 
-			     f_uParl_div_qT_mean, makeFitUncertaintyFunctions(f_uParl_div_qT_mean), xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uParl_rmsFit =
-    makeGraph_fitValue("graph_uParl_rmsFit", "", 
-		       f_uParl_rms, xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uParl_rmsFitErr = 
-    makeGraph_fitUncertainty("graph_uParl_rmsFitErr", "", 
-			     f_uParl_rms, makeFitUncertaintyFunctions(f_uParl_rms), xMin, xMax, dx);
-  
-  TGraphAsymmErrors* graph_uPerpFit = 
-    makeGraph_fitValue("graph_uPerpFit", "", 
-		       f_uPerp_mean, xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uPerpFitErr = 
-    makeGraph_fitUncertainty("graph_uPerpFitErr", "", 
-			     f_uPerp_mean, makeFitUncertaintyFunctions(f_uPerp_mean), xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uPerp_rmsFit =
-    makeGraph_fitValue("graph_uPerp_rmsFit", "", 
-		       f_uPerp_rms, xMin, xMax, dx);
-  TGraphAsymmErrors* graph_uPerp_rmsFitErr = 
-    makeGraph_fitUncertainty("graph_uPerp_rmsFitErr", "", 
-			     f_uPerp_rms, makeFitUncertaintyFunctions(f_uPerp_rms), xMin, xMax, dx);
-
   TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 1000);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
@@ -274,27 +64,22 @@ void makeControlPlots(TH1* dummyHistogram,
 
   std::string legendEntry = ( isData ) ? "Data" : "Simulation";
 
-  showControlPlot(canvas, 
-		  dummyHistogram, graph_uParl_mean, legendEntry, 0.64, 0.665, graph_uParlFit, graph_uParlFitErr,     
-		  true, false, "u_{#parallel} / GeV", -600., +100., 10.,
-		  outputFileName, "uParl_mean");
-  showControlPlot(canvas, 
-		  dummyHistogram, graph_uParl_div_qT_mean, legendEntry, 0.64, 0.165, graph_uParl_div_qTfit, graph_uParl_div_qTfitErr,     
-		  false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, 0.10,
-		  outputFileName, "uParl_div_qT_mean");
-  showControlPlot(canvas, 
-		  dummyHistogram, graph_uParl_rms, legendEntry,  0.19, 0.64, graph_uParl_rmsFit, graph_uParl_rmsFitErr, 
-		  false, false, "rms(u_{#parallel} ) / GeV", 0., 50., 10., 
-		  outputFileName, "uParl_rms");
-  showControlPlot(canvas, 
-		  dummyHistogram, graph_uPerp_mean, legendEntry, 0.64, 0.665, graph_uPerpFit, graph_uPerpFitErr,     
-		  false, false, "u_{#perp}  / GeV", -25., +25., 2.5,
-		  outputFileName, "uPerp_mean");
-  showControlPlot(canvas, 
-		  dummyHistogram, graph_uPerp_rms, legendEntry, 0.19, 0.64, graph_uPerp_rmsFit, graph_uPerp_rmsFitErr, 
-		  false, false, "rms(u_{#perp}  ) / GeV", 0., 50., 10.,
-		  outputFileName, "uPerp_rms");
-  
+  drawZllRecoilFitResult(canvas, dummyHistogram, "", graph_uParl_mean, f_uParl_mean,
+			 legendEntry, 0.64, 0.665, true, false, "u_{#parallel} / GeV", -600., +100., false, 10.,
+			 outputFileName, "uParl_mean");
+  drawZllRecoilFitResult(canvas, dummyHistogram, "", graph_uParl_div_qT_mean, f_uParl_div_qT_mean, 
+			 legendEntry, 0.64, 0.165, false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			 outputFileName, "uParl_div_qT_mean");
+  drawZllRecoilFitResult(canvas, dummyHistogram, "", graph_uParl_rms, f_uParl_rms,
+			 legendEntry,  0.19, 0.64, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
+			 outputFileName, "uParl_rms");
+  drawZllRecoilFitResult(canvas, dummyHistogram, "", graph_uPerp_mean, f_uPerp_mean,
+			 legendEntry, 0.64, 0.665, false, false, "u_{#perp}  / GeV", -25., +25., false, 2.5,
+			 outputFileName, "uPerp_mean");
+  drawZllRecoilFitResult(canvas, dummyHistogram, "", graph_uPerp_rms, f_uPerp_rms,
+			 legendEntry, 0.19, 0.64, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
+			 outputFileName, "uPerp_rms");
+
   delete canvas;
 }
 
@@ -376,19 +161,19 @@ int main(int argc, char* argv[])
   }
 
   TGraphAsymmErrors* graph_uParl_mean = 
-    makeGraph_mean("graph_uParl_mean", "<u_{parl}> as function of q_{T}", histogram_uParl, histogram_qT);
+    makeGraph_mean("graph_uParl_mean", "<u_{#parallel} > as function of q_{T}", histogram_uParl, histogram_qT);
   TGraphAsymmErrors* graph_uParl_div_qT_mean = 
-    makeGraph_uParl_div_qT("graph_uParl_div_qT_mean", "<u_{parl}>/q_{T} as function of q_{T}", histogram_uParl, histogram_qT);
+    makeGraph_uParl_div_qT("graph_uParl_div_qT_mean", "<u_{#parallel} >/q_{T} as function of q_{T}", histogram_uParl, histogram_qT);
   TGraphAsymmErrors* graph_uParl_rms = 
-    makeGraph_rms("graph_uParl_rms", "rms(u_{perp} - d + k*q_{T}) as function of q_{T}", histogram_uParl, histogram_qT);
+    makeGraph_rms("graph_uParl_rms", "RMS(u_{#perp}  ) as function of q_{T}", histogram_uParl, histogram_qT);
   TGraphAsymmErrors* graph_uPerp_mean = 
-    makeGraph_mean("graph_uPerp_mean", "<u_{parl}> as function of q_{T}", histogram_uPerp, histogram_qT);
+    makeGraph_mean("graph_uPerp_mean", "<u_{#parallel} > as function of q_{T}", histogram_uPerp, histogram_qT);
   TGraphAsymmErrors* graph_uPerp_rms =  
-    makeGraph_rms("graph_uPerp_rms", "rms(u_{perp}) as function of q_{T}", histogram_uPerp, histogram_qT);
+    makeGraph_rms("graph_uPerp_rms", "RMS(u_{#perp}  ) as function of q_{T}", histogram_uPerp, histogram_qT);
 
   std::cout << "starting uParl fit..." << std::endl;
   TF1* f_uParl_mean = fitGraph_uParl_mean("f_uParl_mean", graph_uParl_mean, 0., 500.);
-  TF1* f_uParl_div_qT_mean = fitGraph_uParl_dix_qT("f_uParl_div_qT_mean", graph_uParl_div_qT_mean, 0., 500.);
+  TF1* f_uParl_div_qT_mean = fitGraph_uParl_div_qT("f_uParl_div_qT_mean", graph_uParl_div_qT_mean, 0., 500.);
   TF1* f_uParl_rms = fitGraph_uParl_rms("f_uParl_rms", graph_uParl_rms, 0., 500.);
 
   std::cout << "starting uPerp fit..." << std::endl;
@@ -414,15 +199,18 @@ int main(int argc, char* argv[])
   fitResults.print(std::cout);
 
   fitResults.writePythonConfig(outputFileName);
-
+  
   TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", 50, 0., 500.);
+  size_t idx = outputFileName.find_last_of("_cfi.py");
+  std::string outputFileName_plots = std::string(outputFileName, 0, idx - (strlen("_cfi.py") - 1));
+  outputFileName_plots.append(".pdf");
   makeControlPlots(dummyHistogram,
 		   graph_uParl_mean, f_uParl_mean,
 		   graph_uParl_div_qT_mean, f_uParl_div_qT_mean, 
 		   graph_uParl_rms, f_uParl_rms,
 		   graph_uPerp_mean, f_uPerp_mean,
 		   graph_uPerp_rms, f_uPerp_rms,
-		   isData, outputFileName);
+		   isData, outputFileName_plots);
 
   int numEvents_processed = tree->GetEntries();
 

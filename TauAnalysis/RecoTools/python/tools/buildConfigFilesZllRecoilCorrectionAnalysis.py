@@ -35,7 +35,8 @@ def getPATtupleFileNames(sampleNames, inputFilePath):
     return (inputFileNames_matched, fwliteInput_fileNames) 
 #--------------------------------------------------------------------------------
 
-def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+def buildConfigFile_produceZllRecoilNtuples(maxEvents,
+                                            sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
                                             central_or_shift, srcMEt, srcJets, hltPaths, srcWeights):
 
     """Build cfg.py file to run FWLiteZllRecoilCorrectionNtupleProducer macro on PAT-tuples,
@@ -84,7 +85,7 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring(),
     
-    maxEvents = cms.int32(-1),
+    maxEvents = cms.int32(%i),
     
     outputEvery = cms.uint32(1000)
 )
@@ -113,7 +114,7 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
     srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
 %s
 )
-""" % (fwliteInput_fileNames, outputFileName_full, directory, 
+""" % (maxEvents, fwliteInput_fileNames, outputFileName_full, directory, 
        srcMEt, srcJets, hltPaths_string, srcWeights_string, addPUreweight_string)
 
     configFileName = "produceZllRecoilCorrectionNtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, central_or_shift)
@@ -200,7 +201,8 @@ process.fitZllRecoilCorrection = cms.PSet(
 
     return retVal
 
-def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
+def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
+                                                      sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
                                                       central_or_shift, srcMEt, srcJets, hltPaths, srcWeights, 
                                                       ZllRecoilCorrectionParameterFileNames, intLumiData):
 
@@ -293,7 +295,7 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring(),
     
-    maxEvents = cms.int32(-1),
+    maxEvents = cms.int32(%i),
     
     outputEvery = cms.uint32(1000)
 )
@@ -313,6 +315,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 %s
 
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
+    srcMuons = cms.InputTag('patMuons'), # CV: pat::Muon collection contains 'goodMuons' only
     srcMEt = cms.InputTag('%s'),
     srcJets = cms.InputTag('%s'),
 
@@ -335,7 +338,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     
     intLumiData = cms.double(%f)
 )
-""" % (fwliteInput_fileNames, outputFileName_full, directory,
+""" % (maxEvents, fwliteInput_fileNames, outputFileName_full, directory,
        processType, recoZllRecoilCorrectionParameters_string,
        srcMEt, srcJets, hltPaths_string, srcWeights_string, addPUreweight_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
@@ -455,15 +458,43 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
         ),
         cms.PSet(
             meName = cms.string('metProjParlZ'),
-            xAxisTitle = cms.string('u_{1}^{miss} / GeV')
+            xAxisTitle = cms.string('u_{#parallel} / GeV')
         ),
         cms.PSet(
             meName = cms.string('metProjPerpZ'),
-            xAxisTitle = cms.string('u_{2}^{miss} / GeV')
+            xAxisTitle = cms.string('u_{#perp}  / GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('numJetsRawPtGt10'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{raw} > 10 GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('numJetsRawPtGt15'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{raw} > 15 GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('numJetsRawPtGt20'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{raw} > 20 GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('numJetsCorrPtGt10'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{corr} > 10 GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('numJetsCorrPtGt15'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{corr} > 15 GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('numJetsCorrPtGt20'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{corr} > 20 GeV')
         ),
         cms.PSet(
             meName = cms.string('numVertices'),
             xAxisTitle = cms.string('rec. Vertex Multiplicity')
+        ),
+        cms.PSet(
+            meName = cms.string('vertexZ'),
+            xAxisTitle = cms.string('z_{vtx} / cm')
         ),
         cms.PSet(
             meName = cms.string('rhoNeutral'),
