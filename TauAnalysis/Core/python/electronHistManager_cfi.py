@@ -34,6 +34,7 @@ electronHistManager = cms.PSet(
 	),
 
 	pfCandidateSource = selectedPatElectronsForElecTauIso.pfCandidateSource,
+        pfNoPileUpCandidateSource = cms.InputTag('pfNoPileUp'),
 
 	#normalization = cms.string("electrons"),
 	normalization = cms.string("events"),

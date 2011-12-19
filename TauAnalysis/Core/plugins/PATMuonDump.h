@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: PATMuonDump.h,v 1.2 2011/02/18 11:32:31 veelken Exp $
+ * $Id: PATMuonDump.h,v 1.3 2011/04/11 09:53:45 veelken Exp $
  *
  */
 
@@ -44,6 +44,7 @@ class PATMuonDump : public ObjectDumpBase
 
   ParticlePFIsolationExtractor<pat::Muon>* pfIsolationExtractor_; 
   edm::InputTag pfIsoCandSource_;
+  edm::InputTag pfNoPileUpCandidateSrc_;
 };
 
 #endif  
