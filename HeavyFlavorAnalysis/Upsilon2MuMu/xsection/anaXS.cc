@@ -1049,16 +1049,16 @@ void anaXS::makeAllDATA(int channel) {
     
     //table(fS1YieldPt, "anan");
     //plot_RapInt();
-    //plot_PtInt();
+    plot_PtInt();
     
-    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    GetAnaEff(); 
-    GetPreSelEff();
-    GetTrackEff();
-    GetMuIDEff(2);
-    GetTrigEff(2);
-    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    //FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    //GetAnaEff(); 
+    //GetPreSelEff();
+    //GetTrackEff();
+    //GetMuIDEff(2);
+    //GetTrigEff(2);
+    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -1308,7 +1308,10 @@ void anaXS::plot_PtInt(){
   f10->FixParameter(0, f13->GetParameter(5)*scale); f10->FixParameter(1, f13->GetParameter(6)*scale); f10->FixParameter(2, f13->GetParameter(2));
   f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(8));
   f10->SetLineColor(4);
-  h->Fit(f10,"+");  
+  h->Fit(f10,"+"); 
+  f0->FixParameter(0, f13->GetParameter(9)); f0->FixParameter(1, f13->GetParameter(10));
+  f0->SetLineColor(6);
+  h->Fit(f0,"+");   
   legg = new TLegend(0.6,0.8,0.6,0.8);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
   legg->SetHeader(Form("|y^{#Upsilon}| < 2.4",etamin , etamax));
@@ -1338,6 +1341,9 @@ void anaXS::plot_PtInt(){
   f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(8));
   f10->SetLineColor(4);
   h1->Fit(f10,"+");
+  f0->FixParameter(0, f13->GetParameter(9)); f0->FixParameter(1, f13->GetParameter(10));
+  f0->SetLineColor(6);
+  h1->Fit(f0,"+"); 
   legg = new TLegend(0.6,0.8,0.6,0.8);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
   legg->SetHeader(Form("|y^{#Upsilon}| < 0.4",etamin , etamax));
