@@ -127,7 +127,7 @@ void XSSystTot_1S(){
   gr_ratio->Draw("AP");  
   
   cout << " Y(1S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_  << ")"  <<  endl;
-  TFile *f = new TFile("Final1S_deneme.root", "RECREATE");
+  TFile *f = new TFile("Final1S.root", "RECREATE");
   //TFile *f = new TFile("Final1S_0_2_0_50.root", "RECREATE");
   //TFile *f = new TFile("Final1S_0_2_0_30.root", "RECREATE");
   gr->Write();
@@ -137,7 +137,7 @@ void XSSystTot_1S(){
   
   // Table for 1S Xsection and Errors
   double muid_h(0.), trig_h(0.), sig(0.), muid_l(0.), trig_l(0.), tot_h(0.), tot_l(0.), stat(0.), rho_l(0.), bg(0.), msc(0.), binmig(0.); 
-  ofstream OUT("1S_deneme.tex");
+  ofstream OUT("1S.tex");
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- 1S" << endl;
   for ( int x = 1; x <= S5->GetNbinsX(); ++x ){
@@ -170,7 +170,7 @@ void XSSystTot_1S(){
   }
   
   OUT.close();
-  
+   
 }
 
 void XSSystTot_2S(){
@@ -339,7 +339,7 @@ void XSSystTot_2S(){
   }
   
   OUT.close();
-   
+  
 }
 
 void XSSystTot_3S(){
@@ -361,7 +361,7 @@ void XSSystTot_3S(){
   S5 = (TH1D*)gFile->Get("S3YieldPt");    
   //TFile *f = new TFile("XSection3S_0_2_0_50.root");
   //TFile *f = new TFile("XSection3S_0_2_0_30.root");
-  ///TH1D *S55;
+  //TH1D *S55;
   //S55 = (TH1D*)gFile->Get("S3YieldPt");    
   TFile *f = new TFile("MuIDPlus_10ptbins_3Srho_v2.root");
   TH1D *S6;
@@ -662,51 +662,150 @@ void Overlay(){
 
 double f_fit(double *x, double *par) {
   
-  Double_t fitval =  TMath::Power(x[0], par[0]);
+  Double_t fitval = TMath::Power(par[0] + par[1]*x[0] + par[2]*x[0]*x[0], -1);
+  return fitval;
+    
+}
+
+double f_fit2(double *x, double *par) {
+  
+  Double_t fitval = par[0]*TMath::Exp(-par[1]*x[0] + par[2]*x[0]*x[0]);
   return fitval;
     
 }
 
 
-void Overlay_Fit(){
+void Fit_CSM1S(){
   
   gStyle->SetOptStat(00000000000);
-  TFile *f = new TFile("Final1S.root");
-  TGraphAsymmErrors *S1;
-  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
-  TFile *f = new TFile("Final2S.root");
-  TGraphAsymmErrors *S2;
-  S2 = (TGraphAsymmErrors*)gFile->Get("Ups2S");
-  TFile *f = new TFile("Final3S.root");
-  TGraphAsymmErrors *S3;
-  S3 = (TGraphAsymmErrors*)gFile->Get("Ups3S");  
+  float scale=1.0/0.5; //the feed down fraction factor 
+
+  float Nlo_pt[9]={3,5,10,15,20,25,30,35,40};
+  float Nlo_pt_err[9]={0,0,0,0,0,0,0,0,0};
+  float Nlo_high[9]={0.34,0.205, 0.024,0.0033,0.00066,0.000135,0.000045,0.000014,0.0000053};
+  float Nlo_low[9] ={0.135,0.083,0.011,0.00175, 0.00033, 0.000075,0.000025,0.0000085,0.0000035};
+  float Nlo_mean[9];
+  float Nlo_error[9];
+  for (int i=0; i<9; i++){
+    Nlo_mean[i]=(Nlo_high[i]+Nlo_low[i])/2.0;
+    Nlo_error[i]=(Nlo_high[i]-Nlo_low[i])/2.0;
+    Nlo_mean[i]=Nlo_mean[i]*scale;
+    Nlo_error[i]=Nlo_error[i]*scale;
+  }
+  TGraphErrors* NLO = new TGraphErrors(9,Nlo_pt,Nlo_mean,Nlo_pt_err,Nlo_error);
+  
+  float NNlo_pt[8]={5,10,15,20,25,30,35,40};
+  float NNlo_pt_err[8]={0,0,0,0,0,0,0,0};
+  float NNlo_high[8]={0.51, 0.104, 0.0189, 0.0048, 0.00128,  0.00039, 0.000138, 0.000060};
+  float NNlo_low[8] ={0.087,0.0132,0.0027,0.00062,0.000163,0.000061,0.0000217,0.0000077};
+  float NNlo_mean[8];
+  float NNlo_error[8];
+  for (int i=0; i<8; i++){
+    NNlo_mean[i]=(NNlo_high[i]+NNlo_low[i])/2.0;
+    NNlo_error[i]=(NNlo_high[i]-NNlo_low[i])/2.0;
+    NNlo_mean[i]=NNlo_mean[i]*scale;
+    NNlo_error[i]=NNlo_error[i]*scale;
+  }
+  TGraphErrors* NNLO = new TGraphErrors(8,NNlo_pt,NNlo_mean,NNlo_pt_err,NNlo_error);
     
-  f0 = new TF1("f0", f_fit, 10., 20., 1);
-  f0->ReleaseParameter(0); 
-  f0->SetParLimits(0, -3, -1);
-  //f0->FixParameter(0, -1.7);
-  S1->Fit(f0);
-    
+  f0 = new TF1("f0", f_fit, 5., 50., 3);
+  //NNLO->Fit(f0);
+  
+  f1 = new TF1("f0", f_fit2, 5., 50., 3);
+  f1->SetParameters(0.5, -0.03, -0.009);
+  //f1->FixParameter(0, 0.5); f1->FixParameter(1, -0.03); f1->FixParameter(2, -0.009);
+  NNLO->Fit(f1);  
+  double err = f1->GetParError(0);
+  f1->FixParameter(0, f1->GetParameter(0)+err); f1->FixParameter(1, f1->GetParameter(1)); f1->FixParameter(2, f1->GetParameter(2));
+  f1->SetLineColor(2);
+  NNLO->Fit(f1,"+");
+  f1->FixParameter(0, f1->GetParameter(0)-1.75*err); f1->FixParameter(1, f1->GetParameter(1)); f1->FixParameter(2, f1->GetParameter(2));
+  f1->SetLineColor(3);
+  NNLO->Fit(f1,"+");  
   TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
   c1->SetLogy();
-  S1->SetLineColor(1); S1->SetMarkerColor(1); S2->SetLineColor(2); S2->SetMarkerColor(2); S3->SetLineColor(4); S3->SetMarkerColor(4);
-  S1->SetMarkerStyle(20); S2->SetMarkerStyle(21); S3->SetMarkerStyle(22);
-  S1->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
-  S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
-  S1->SetTitle("");
-  S1->SetMinimum(0.0001);
-  S1->SetMaximum(1.5);
-  S1->Draw("AP");
-  S2->Draw("P");
-  S3->Draw("P");
+  NNLO->SetLineColor(1); 
+  NNLO->SetMarkerStyle(20); 
+  NNLO->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  NNLO->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  NNLO->SetTitle("");
+  NNLO->SetMinimum(0.000005);
+  NNLO->SetMaximum(1.5);
+  NNLO->Draw("AP");
   legg = new TLegend(0.5,0.6,0.7,0.8);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("");
-  legge = legg->AddEntry(S1, "#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(S2, "#Upsilon(2S)","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(S3, "#Upsilon(3S)","p"); legge->SetTextColor(kBlue);
+  legge = legg->AddEntry(NNLO, "#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
   legg->Draw();
-  c1->SaveAs("Overlay_log_fit.pdf");
+  c1->SaveAs("Fit_CSM1S.pdf");
+}
+
+
+void Fit_CSM3S(){
+  
+  float scale=1.0; //the feed down fraction factor 
+
+  float Nlo_pt[9]={3,5,10,15,20,25,30,35,40};
+  float Nlo_pt_err[9]={0,0,0,0,0,0,0,0,0};
+  float Nlo_high[9]={0.1088,0.0656, 0.00768,0.001056,0.0002112,0.0000432,0.0000144,0.00000448,0.000001696};
+  float Nlo_low[9] ={0.0432,0.02656,0.00352,0.00056, 0.0001056, 0.000024,0.000008,0.00000272,0.00000112};
+  float Nlo_mean[9];
+  float Nlo_error[9];
+  for (int i=0; i<9; i++){
+    Nlo_mean[i]=(Nlo_high[i]+Nlo_low[i])/2.0;
+    Nlo_error[i]=(Nlo_high[i]-Nlo_low[i])/2.0;
+    Nlo_mean[i]=Nlo_mean[i]*scale;
+    Nlo_error[i]=Nlo_error[i]*scale;
+  }
+  TGraphErrors* NLO = new TGraphErrors(9,Nlo_pt,Nlo_mean,Nlo_pt_err,Nlo_error);
+  
+  float NNlo_pt[8]={5,10,15,20,25,30,35,40};
+  float NNlo_pt_err[8]={0,0,0,0,0,0,0,0};
+  float NNlo_high[8]={0.1632, 0.03328, 0.006048, 0.001536, 0.0004096,  0.0001248, 0.00004416, 0.0000192};
+  float NNlo_low[8] ={0.02784,0.004224,0.000864,0.0001984,0.00005216,0.00001952,0.000006944,0.000002464};
+  float NNlo_mean[8];
+  float NNlo_error[8];
+  for (int i=0; i<8; i++){
+    NNlo_mean[i]=(NNlo_high[i]+NNlo_low[i])/2.0;
+    NNlo_error[i]=(NNlo_high[i]-NNlo_low[i])/2.0;
+    NNlo_mean[i]=NNlo_mean[i]*scale;
+    NNlo_error[i]=NNlo_error[i]*scale;
+  }
+  TGraphErrors* NNLO = new TGraphErrors(8,NNlo_pt,NNlo_mean,NNlo_pt_err,NNlo_error);
+  
+  f0 = new TF1("f0", f_fit, 5., 50., 3);
+  //NNLO->Fit(f0);
+  
+  f1 = new TF1("f0", f_fit2, 5., 50., 3);
+  f1->SetParameters(0.5, -0.03, -0.009);
+  //f1->FixParameter(0, 0.5); f1->FixParameter(1, -0.03); f1->FixParameter(2, -0.009);
+  NNLO->Fit(f1);  
+  double err = f1->GetParError(0);
+  f1->FixParameter(0, f1->GetParameter(0)+err); f1->FixParameter(1, f1->GetParameter(1)); f1->FixParameter(2, f1->GetParameter(2));
+  f1->SetLineColor(2);
+  NNLO->Fit(f1,"+");
+  f1->ReleaseParameter(0); f1->ReleaseParameter(1); f1->ReleaseParameter(2);
+  f1->FixParameter(0, f1->GetParameter(0)-1.75*err); f1->FixParameter(1, f1->GetParameter(1)); f1->FixParameter(2, f1->GetParameter(2));
+  f1->SetLineColor(3);
+  NNLO->Fit(f1,"+");
+    
+  TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
+  c1->SetLogy();
+  NNLO->SetLineColor(1); 
+  NNLO->SetMarkerStyle(20); 
+  NNLO->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  NNLO->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  NNLO->SetTitle("");
+  NNLO->SetMinimum(0.000001);
+  NNLO->SetMaximum(1.5);
+  NNLO->Draw("AP");
+  legg = new TLegend(0.5,0.6,0.7,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(NNLO, "#Upsilon(3S)" ,"p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c1->SaveAs("Fit_CSM3S.pdf");
+  
 }
 
 void Ratio_UncTables(){
