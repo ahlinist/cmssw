@@ -674,6 +674,31 @@ double f_fit2(double *x, double *par) {
     
 }
 
+void CSM_values(){
+  
+  double x[9]= {5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25, 40};
+  double value(0);
+  for (int i=0; i<9; i++){
+    
+    value = 7.867*TMath::Exp(-0.38573*x[i] + 0.00278*x[i]*x[i]);
+    cout << " 1S high value for  " << x[i] << " = "  << value  << endl;
+    
+    value = 0.92572*TMath::Exp(-0.38573*x[i] + 0.00278*x[i]*x[i]);
+    cout << " 1S low value for  " << x[i] << " = "  << value  << endl;    
+  
+  } 
+    
+  for (int i=0; i<9; i++){  
+  
+    value = 1.2511*TMath::Exp(-0.38573*x[i] + 0.00278*x[i]*x[i]);
+    cout << " 3S high value for  " << x[i] << " = "  << value  << endl;
+    
+    value = 0.1588*TMath::Exp(-0.38573*x[i] + 0.00278*x[i]*x[i]);
+    cout << " 3S low value for  " << x[i] << " = "  << value  << endl;    
+    
+  }
+  
+}
 
 void Fit_CSM1S(){
   
