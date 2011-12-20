@@ -29,7 +29,7 @@ void CSM(){
   }
   TGraphErrors* NLO = new TGraphErrors(9,Nlo_pt,Nlo_mean,Nlo_pt_err,Nlo_error);
   
-  float NNlo_pt[8]={5,10,15,20,25,30,35,40};
+  /*float NNlo_pt[8]={5,10,15,20,25,30,35,40};
   float NNlo_pt_err[8]={0,0,0,0,0,0,0,0};
   float NNlo_high[8]={0.51, 0.104, 0.0189, 0.0048, 0.00128,  0.00039, 0.000138, 0.000060};
   float NNlo_low[8] ={0.087,0.0132,0.0027,0.00062,0.000163,0.000061,0.0000217,0.0000077};
@@ -42,6 +42,22 @@ void CSM(){
     NNlo_error[i]=NNlo_error[i]*scale;
   }
   TGraphErrors* NNLO = new TGraphErrors(8,NNlo_pt,NNlo_mean,NNlo_pt_err,NNlo_error);
+  */
+  
+  /// Values are taken from the fit
+  float NNlo_pt[9]={5.72, 8.92, 11.30, 14.32, 17.73 , 22.06, 27.16, 36.25, 40.};
+  float NNlo_pt_err[9]={0,0,0,0,0,0,0,0,0};
+  float NNlo_high[9]={0.948625, 0.314478, 0.143547, 0.055526, 0.0201931, 0.00613554, 0.00172412, 0.00025687,0.000133886 };
+  float NNlo_low[9] ={0.111626, 0.0370051, 0.0168913, 0.00653382, 0.00237615, 0.000721976, 0.000202879, 0.0000302262, 0.0000157545};
+  float NNlo_mean[9];
+  float NNlo_error[9];
+  for (int i=0; i<9; i++){
+    NNlo_mean[i]=(NNlo_high[i]+NNlo_low[i])/2.0;
+    NNlo_error[i]=(NNlo_high[i]-NNlo_low[i])/2.0;
+    NNlo_mean[i]=NNlo_mean[i];
+    NNlo_error[i]=NNlo_error[i];
+  }
+  TGraphErrors* NNLO = new TGraphErrors(9,NNlo_pt,NNlo_mean,NNlo_pt_err,NNlo_error);
   
   TCanvas *c2 = new TCanvas();//"c1","title",800,600);
   TH1F *frame = gPad->DrawFrame(0,0.000005,40,2);
@@ -106,7 +122,7 @@ void CSM3S(){
   }
   TGraphErrors* NLO = new TGraphErrors(9,Nlo_pt,Nlo_mean,Nlo_pt_err,Nlo_error);
   
-  float NNlo_pt[8]={5,10,15,20,25,30,35,40};
+  /*float NNlo_pt[8]={5,10,15,20,25,30,35,40};
   float NNlo_pt_err[8]={0,0,0,0,0,0,0,0};
   float NNlo_high[8]={0.1632, 0.03328, 0.006048, 0.001536, 0.0004096,  0.0001248, 0.00004416, 0.0000192};
   float NNlo_low[8] ={0.02784,0.004224,0.000864,0.0001984,0.00005216,0.00001952,0.000006944,0.000002464};
@@ -119,6 +135,24 @@ void CSM3S(){
     NNlo_error[i]=NNlo_error[i]*scale;
   }
   TGraphErrors* NNLO = new TGraphErrors(8,NNlo_pt,NNlo_mean,NNlo_pt_err,NNlo_error);
+  */  
+  
+  
+  /// Values are taken from the fit 
+  float NNlo_pt[9]={5.72, 8.92, 11.30, 14.32, 17.73 , 22.06, 27.16, 36.25, 40.};
+  float NNlo_pt_err[9]={0,0,0,0,0,0,0,0,0};
+  float NNlo_high[9]={0.150861, 0.0500119, 0.0228285, 0.00883038, 0.00321133, 0.000975743, 0.000274189, 0.0000408503, 0.000021292};
+  float NNlo_low[9] ={0.0191486, 0.00634793, 0.00289758, 0.00112083, 0.000407609, 0.000123849, 0.0000348023, 0.00000518506, 0.00000270256};
+  float NNlo_mean[9];
+  float NNlo_error[9];
+  for (int i=0; i<9; i++){
+    NNlo_mean[i]=(NNlo_high[i]+NNlo_low[i])/2.0;
+    NNlo_error[i]=(NNlo_high[i]-NNlo_low[i])/2.0;
+    NNlo_mean[i]=NNlo_mean[i];
+    NNlo_error[i]=NNlo_error[i];
+  }
+  TGraphErrors* NNLO = new TGraphErrors(9,NNlo_pt,NNlo_mean,NNlo_pt_err,NNlo_error);
+
   
   TCanvas *c2 = new TCanvas();//"c1","title",800,600);
   TH1F *frame = gPad->DrawFrame(0,0.00001,40,0.2);
