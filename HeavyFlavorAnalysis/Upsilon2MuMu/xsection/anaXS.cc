@@ -1279,7 +1279,7 @@ void anaXS::plot_RapInt(){
 
 void anaXS::plot_PtInt(){
   
-  TH1D *h, *h1;
+  TH1D *h, *h1, *h2;
   int   n; 
   char searchString12[2000];
   float etamin, etamax;
@@ -1350,6 +1350,44 @@ void anaXS::plot_PtInt(){
   legg->Draw();
   c102->SaveAs("0_0.4_MassFitv2.pdf");  
   
+  
+  TCanvas *c103 = new TCanvas("c103", "c103", 800, 600);
+  h2 = &(fS1Vector[41]);
+  h2->SetMinimum(0.);
+  h2->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+  h2->GetXaxis()->SetTitleSize(0.04);
+  h2->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
+  h2->GetYaxis()->SetTitleSize(0.04);
+  h2->GetYaxis()->SetTitleOffset(1.25);
+  h2->SetTitle("");
+  setFunctionParameters(h2, f13, 6, 3);
+  h2->Fit(f13);
+  double r(1.0592); // 2s to 1s ratio
+  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+  f13->FixParameter(5, f13->GetParameter(0)*r);
+  f13->FixParameter(6, f13->GetParameter(1)*r);
+  h2->Fit(f13);
+  f10->FixParameter(0, f13->GetParameter(0)); f10->FixParameter(1, f13->GetParameter(1)); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(4));
+  f10->SetLineColor(2);
+  h2->Fit(f10,"+");
+  f10->FixParameter(0, f13->GetParameter(5)); f10->FixParameter(1, f13->GetParameter(6)); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(7));
+  f10->SetLineColor(3);
+  h2->Fit(f10,"+");
+  f10->FixParameter(0, f13->GetParameter(5)*scale); f10->FixParameter(1, f13->GetParameter(6)*scale); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(8));
+  f10->SetLineColor(4);
+  h2->Fit(f10,"+"); 
+  f0->FixParameter(0, f13->GetParameter(9)); f0->FixParameter(1, f13->GetParameter(10));
+  f0->SetLineColor(6);
+  h2->Fit(f0,"+");
+  legg = new TLegend(0.6,0.8,0.6,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
+  //legg->SetHeader(Form("|y^{#Upsilon}| < 0.4",etamin , etamax));
+  legg->Draw();
+  c103->SaveAs("ForcedMassFit.pdf"); 
+    
 }
 
 void anaXS::plot_PtInt_MC(){
