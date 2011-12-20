@@ -700,6 +700,47 @@ void CSM_values(){
   
 }
 
+void Fit_1S(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S.root");
+  TGraphAsymmErrors *S1;
+  S1 = (TGraphAsymmErrors*)gFile->Get("Ups1S");
+  
+  
+  f0 = new TF1("f0", f_fit, 5., 50., 3);
+  //S1->Fit(f0);
+  
+  f1 = new TF1("f0", f_fit2, 5., 50., 3);
+  f1->SetParameters(0.5, -0.03, -0.009);
+  //f1->FixParameter(0, 0.5); f1->FixParameter(1, -0.03); f1->FixParameter(2, -0.009);
+  S1->Fit(f1,"R");  
+  double err = f1->GetParError(0);
+  f1->FixParameter(0, f1->GetParameter(0)+err); f1->FixParameter(1, f1->GetParameter(1)); f1->FixParameter(2, f1->GetParameter(2));
+  f1->SetLineColor(2);
+  //S1->Fit(f1,"+");
+  f1->FixParameter(0, f1->GetParameter(0)-1.75*err); f1->FixParameter(1, f1->GetParameter(1)); f1->FixParameter(2, f1->GetParameter(2));
+  f1->SetLineColor(3);
+  //S1->Fit(f1,"+");  
+  TCanvas *c1 = new TCanvas("c1", "c1", 800,600);
+  c1->SetLogy();
+  S1->SetLineColor(1); 
+  S1->SetMarkerStyle(20); 
+  S1->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S1->GetYaxis()->SetTitle("d#sigma/dp_{T}#times Br(#mu#mu)");
+  S1->SetTitle("");
+  S1->SetMinimum(0.000005);
+  S1->SetMaximum(1.5);
+  S1->Draw("AP");
+  legg = new TLegend(0.5,0.6,0.7,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S1, "#Upsilon(1S)" ,"p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c1->SaveAs("Fit_1S.pdf");
+  
+}
+
 void Fit_CSM1S(){
   
   gStyle->SetOptStat(00000000000);
