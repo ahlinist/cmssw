@@ -293,9 +293,9 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_10ptbins_ClosureTest.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups3s.xsReader_3S.24ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
-      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_MSCMinus.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_noMSC.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion_EffAmpMuIDMinus.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -1283,6 +1283,7 @@ void anaXS::plot_PtInt(){
   int   n; 
   char searchString12[2000];
   float etamin, etamax;
+  double scale(1.033);
   gStyle->SetOptStat(0000000000000); 
   gStyle->SetOptFit(00000000000000);
   TCanvas *c101 = new TCanvas("c101", "c101", 800, 600);
@@ -1296,11 +1297,23 @@ void anaXS::plot_PtInt(){
   h->SetTitle("");
   setFunctionParameters(h, f13, 6, 0);
   h->Fit(f13);
+  f10->FixParameter(0, f13->GetParameter(0)); f10->FixParameter(1, f13->GetParameter(1)); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(4));
+  f10->SetLineColor(2);
+  h->Fit(f10,"+");
+  f10->FixParameter(0, f13->GetParameter(5)); f10->FixParameter(1, f13->GetParameter(6)); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(7));
+  f10->SetLineColor(3);
+  h->Fit(f10,"+");
+  f10->FixParameter(0, f13->GetParameter(5)*scale); f10->FixParameter(1, f13->GetParameter(6)*scale); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(8));
+  f10->SetLineColor(4);
+  h->Fit(f10,"+");  
   legg = new TLegend(0.6,0.8,0.6,0.8);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
   legg->SetHeader(Form("|y^{#Upsilon}| < 2.4",etamin , etamax));
   legg->Draw();
-  c101->SaveAs("MassFit.pdf");
+  c101->SaveAs("MassFitv2.pdf");
   
   TCanvas *c102 = new TCanvas("c102", "c102", 800, 600);
   h1 = &(fS12Vector[1]);
@@ -1313,11 +1326,23 @@ void anaXS::plot_PtInt(){
   h1->SetTitle("");
   setFunctionParameters(h, f13, 6, 0);
   h1->Fit(f13);
+  f10->FixParameter(0, f13->GetParameter(0)); f10->FixParameter(1, f13->GetParameter(1)); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(4));
+  f10->SetLineColor(2);
+  h1->Fit(f10,"+");
+  f10->FixParameter(0, f13->GetParameter(5)); f10->FixParameter(1, f13->GetParameter(6)); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(7));
+  f10->SetLineColor(3);
+  h1->Fit(f10,"+");
+  f10->FixParameter(0, f13->GetParameter(5)*scale); f10->FixParameter(1, f13->GetParameter(6)*scale); f10->FixParameter(2, f13->GetParameter(2));
+  f10->FixParameter(3, f13->GetParameter(3)); f10->FixParameter(4, f13->GetParameter(8));
+  f10->SetLineColor(4);
+  h1->Fit(f10,"+");
   legg = new TLegend(0.6,0.8,0.6,0.8);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
   legg->SetHeader(Form("|y^{#Upsilon}| < 0.4",etamin , etamax));
   legg->Draw();
-  c102->SaveAs("0_0.4_MassFit.pdf");  
+  c102->SaveAs("0_0.4_MassFitv2.pdf");  
   
 }
 
@@ -5349,8 +5374,21 @@ void anaXS::FITUpsilon(int mode){
       h = &(fS1Vector[i]);
       h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
       if (h->GetSumOfWeights() > 50.) {
+	GetBinCenters(h->GetName(), eta, pt); 
+	cout << "/////" << endl;
+	cout << eta << "  " << pt << endl;
+	nbin = fS1Yield->FindBin(eta, pt); 
+	cout << nbin  << endl;
 	setFunctionParameters(h, f14, 7, 3);
 	h->Fit(f14, fopt.c_str());
+	double r(1.0592); // 2s to 1s ratio
+	if ( nbin == 21 ){
+	  f14->SetParameters( f14->GetParameter(0), f14->GetParameter(1), f14->GetParameter(2), f14->GetParameter(3), f14->GetParameter(4) , f14->GetParameter(5), f14->GetParameter(6), f14->GetParameter(7), f14->GetParameter(8), f14->GetParameter(9), f14->GetParameter(10));
+	  f14->SetParameter(11, f14->GetParameter(11));
+	  f14->FixParameter(5, f14->GetParameter(0)*r);
+	  f14->FixParameter(6, f14->GetParameter(1)*r);
+	  h->Fit(f14, fopt.c_str());
+	}
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
 	Status = gMinuit->fCstatu.Data();
@@ -5601,8 +5639,20 @@ void anaXS::FITUpsilon(int mode){
       h = &(fS1Vector[i]);
       h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
       if (h->GetSumOfWeights() > 50.) {
+	GetBinCenters(h->GetName(), eta, pt); 
+	cout << "/////" << endl;
+	cout << eta << "  " << pt << endl;
+	nbin = fS1Yield->FindBin(eta, pt); 
+	cout << nbin  << endl;
 	setFunctionParameters(h, f2, 2, 0);
 	h->Fit(f2, fopt.c_str());
+	double r(1.0592); // 2s to 1s ratio
+	if ( nbin == 21 ){
+	  f2->SetParameters( f2->GetParameter(0), f2->GetParameter(1), f2->GetParameter(2), f2->GetParameter(3), f2->GetParameter(4) , f2->GetParameter(5), f2->GetParameter(6), f2->GetParameter(7), f2->GetParameter(8));
+	  f2->FixParameter(4, f2->GetParameter(1)*r);
+	  f2->FixParameter(5, f2->GetParameter(2)*r);
+	  h->Fit(f2, fopt.c_str());
+	}
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
 	Status = gMinuit->fCstatu.Data();
@@ -5771,7 +5821,7 @@ void anaXS::FITUpsilon(int mode){
   if ( mode == 1 ){
     
     int PRINT(1); 
-    double PRINTX(0.5);
+    double PRINTX(0.01);
         
     TH1D *h; 
     
@@ -5808,6 +5858,9 @@ void anaXS::FITUpsilon(int mode){
     TH2D *hMean2S = new TH2D("hMean2S","hMean2S", fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());  
     TH2D *hEntries = new TH2D("hEntries","hEntries", fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()); 
     
+    TH1D *hchisq = new TH1D("hchisq","hchisq", 30, 0., 3.);
+    
+    
     for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
       
       // -- positive charge
@@ -5815,8 +5868,28 @@ void anaXS::FITUpsilon(int mode){
       h = &(fS1Vector[i]);
       h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
       if (h->GetSumOfWeights() > 50.) {
+	GetBinCenters(h->GetName(), eta, pt); 
+	cout << "/////" << endl;
+	cout << eta << "  " << pt << endl;
+	nbin = fS1Yield->FindBin(eta, pt); 
+	cout << nbin  << endl;
 	setFunctionParameters(h, f13, 6, 3);
 	h->Fit(f13, fopt.c_str());
+	double r(1.0592); // 2s to 1s ratio
+	//if ( nbin == 21 || nbin == 11 || nbin == 22 || nbin == 43 || nbin == 73 || nbin == 76 ){ // is for NoMSC syst unc estimation
+	if ( nbin == 21 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  f13->FixParameter(5, f13->GetParameter(0)*r);
+	  f13->FixParameter(6, f13->GetParameter(1)*r);
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	//if ( nbin == 13 ){
+	//f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	//f13->FixParameter(5, f13->GetParameter(0)*r);
+	//f13->FixParameter(6, f13->GetParameter(1)*r);
+	//h->Fit(f13, fopt.c_str());
+	//}
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
 	Status = gMinuit->fCstatu.Data();
@@ -5830,8 +5903,6 @@ void anaXS::FITUpsilon(int mode){
 	///////////////
 	if ( status == -1 || status == 0 ){
 	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
-	  //f13->FixParameter(5, f13->GetParameter(0)*(10.02/9.46) );
-	  //f13->FixParameter(6, f13->GetParameter(1)*(10.02/9.46) );
 	  h->Fit(f13, fopt.c_str());
 	}
 	
@@ -5881,6 +5952,9 @@ void anaXS::FITUpsilon(int mode){
 	}	
 	///////////////
 	cout << status << endl;	
+	
+	cout << "f13->GetChisquare() = " << f13->GetChisquare() << endl;
+	//if (eta > 1.6) hchisq->Fill(f13->GetChisquare()/93.);
 	
 	// Ups 1S
 	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
@@ -5966,10 +6040,22 @@ void anaXS::FITUpsilon(int mode){
       nbin = fS1Yield->FindBin(eta, pt); 
       cout << nbin  << endl;
       fS1Yield->SetBinContent(nbin, yield_1S); 
+      //if ( nbin == 62 )  fS1Yield->SetBinContent(nbin, yield_1S+50);
+      //if ( nbin == 70 )  fS1Yield->SetBinContent(nbin, yield_1S-20);
       fS1Yield->SetBinError(nbin, yieldE_1S);
       fS2Yield->SetBinContent(nbin, yield_2S); 
+      //if ( nbin == 11 )  fS2Yield->SetBinContent(nbin, yield_2S+530);
+      //if ( nbin == 43 )  fS2Yield->SetBinContent(nbin, yield_2S-10);
+      //if ( nbin == 22 )  fS2Yield->SetBinContent(nbin, yield_2S+50);
+      //if ( nbin == 73 )  fS2Yield->SetBinContent(nbin, yield_2S+3);
+      //if ( nbin == 62 )  fS2Yield->SetBinContent(nbin, yield_2S+15);
       fS2Yield->SetBinError(nbin, yieldE_2S);
       fS3Yield->SetBinContent(nbin, yield_3S); 
+      //if ( nbin == 11 )  fS3Yield->SetBinContent(nbin, yield_3S+160);
+      //if ( nbin == 76 )  fS3Yield->SetBinContent(nbin, yield_3S-5);
+      //if ( nbin == 43 )  fS3Yield->SetBinContent(nbin, yield_3S-5);
+      //if ( nbin == 22 )  fS3Yield->SetBinContent(nbin, yield_3S+50);
+      //if ( nbin == 62 )  fS3Yield->SetBinContent(nbin, yield_3S+15);
       fS3Yield->SetBinError(nbin, yieldE_3S);
       hSigma1S->SetBinContent(nbin, sig1);
       hSigma1S->SetBinError(nbin, sigE1);
@@ -6010,6 +6096,7 @@ void anaXS::FITUpsilon(int mode){
     hMean1S->Write();
     hMean2S->Write();
     hEntries->Write();
+    hchisq->Write();
     c1->Clear();
     cout << "YieldTot1S = " << YieldTot << "+/-" << TMath::Sqrt(YieldTotE) << endl;
     cout << "YieldTot2S = " << YieldTot2S << "+/-" << TMath::Sqrt(YieldTot2SE) << endl;
@@ -6324,7 +6411,7 @@ void anaXS::FITUpsilon(int mode){
       c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
     
-    TFile *f = new TFile("SigmaDATA_PtInt.root", "RECREATE");
+    TFile *f = new TFile("SigmaDATA_PtInt_v2.root", "RECREATE");
     hSigma1S->Write();
     hSigma2S->Write();
     hMean1S->Write();
@@ -7693,6 +7780,8 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     f->ReleaseParameter(9); 
     f->ReleaseParameter(10);         
     
+    int Bin(-1);
+    
     if ( par == 1 ){
       TFile *f1 = new TFile("FitParametersMC_1D_PtInt_3SBin.root");
       TH1D *falpha_1D_ptInt;
@@ -7766,6 +7855,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
 	cout << "etamin = "<< etamin << "etamax = " << etamax << endl;
 	GetBinCenters(h->GetName(), eta, pt); 
 	bin = falpha->FindBin(eta, pt);
+	Bin = bin;
 	cout << "bin = " << bin << endl;
 	alpha1 = falpha->GetBinContent(bin);
 	n1 = fn->GetBinContent(bin);
@@ -7814,8 +7904,8 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     f->SetParameters(c0, c1, c2, c3, c4, c5, c6, c7, c8, p0, p1);     
     f->SetParLimits(0, 9.410, 9.510); 
     f->SetParLimits(1, 0.06, 0.14); // 0.14 ->0.18
-    f->SetParLimits(2, 1., 2.8);
-    f->SetParLimits(3, 1., 200.);
+    //f->SetParLimits(2, 1., 2.8);
+    //f->SetParLimits(3, 1., 200.);
     //f->FixParameter(2, 1.9);
     //f->FixParameter(3, 1.6);    
     if ( par > 0 ) {
@@ -7944,7 +8034,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
 	alpha1 = falpha->GetBinContent(bin);
 	n1 = fn->GetBinContent(bin);
 	if ( (bin == 21) || (bin == 43) || (bin == 53) || (bin == 20) || (bin == 22) || (bin == 35) || (bin == 45) || (bin == 14)) {
-	  fix = true;
+	  //fix = true;
 	}
 	//////
 	//alpha1 += falpha->GetBinError(bin)/4;
