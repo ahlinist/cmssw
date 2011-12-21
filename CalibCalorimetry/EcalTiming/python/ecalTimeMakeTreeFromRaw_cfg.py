@@ -23,7 +23,9 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = 'CRAFT_ALL_V12::All'
 #process.GlobalTag.globaltag = 'GR_R_35X_V8A::All'
 #process.GlobalTag.globaltag = 'GR_R_42_V2::All'
-process.GlobalTag.globaltag = 'GR_P_V22::All'
+#process.GlobalTag.globaltag = 'GR_P_V22::All'
+#this one works in 44x:
+process.GlobalTag.globaltag = 'GR_P_V27::All'
 
 # Trigger
 process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerScalesConfig_cff")
@@ -57,72 +59,72 @@ process.ecalGlobalUncalibRecHit.doEEtimeCorrection = cms.bool(True)
 import RecoEcal.EgammaClusterProducers.multi5x5ClusteringSequence_cff
 
 # 3x3 clustering for barrel
-process.multi5x5BasicClustersTimePi0Barrel =  RecoEcal.EgammaClusterProducers.multi5x5BasicClusters_cfi.multi5x5BasicClusters.clone(
-    # which regions should be clusterized
-    doEndcap = cms.bool(False),
-    doBarrel = cms.bool(True),
-
-    # gfwork: this is standard, can go away 
-    barrelHitProducer = cms.string('ecalRecHit'),
-    barrelHitCollection = cms.string('EcalRecHitsEB'),
-    endcapHitProducer = cms.string('ecalRecHit'),
-    endcapHitCollection = cms.string('EcalRecHitsEE'),
-    
-    IslandBarrelSeedThr = cms.double(0.5),   # barrelSeedThreshold
-    IslandEndcapSeedThr = cms.double(1.0),   # endcapSeedThreshold
-
-    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
-    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters'),
-    clustershapecollectionEE = cms.string('multi5x5EndcapShape'),
-    clustershapecollectionEB = cms.string('multi5x5BarrelShape'),
-    barrelShapeAssociation = cms.string('multi5x5BarrelShapeAssoc'),
-    endcapShapeAssociation = cms.string('multi5x5EndcapShapeAssoc'),
-    )
+#process.multi5x5BasicClustersTimePi0Barrel =  RecoEcal.EgammaClusterProducers.multi5x5BasicClusters_cfi.multi5x5BasicClusters.clone(
+#    # which regions should be clusterized
+#    doEndcap = cms.bool(False),
+#    doBarrel = cms.bool(True),
+#
+#    # gfwork: this is standard, can go away 
+#    barrelHitProducer = cms.string('ecalRecHit'),
+#    barrelHitCollection = cms.string('EcalRecHitsEB'),
+#    endcapHitProducer = cms.string('ecalRecHit'),
+#    endcapHitCollection = cms.string('EcalRecHitsEE'),
+#    
+#    IslandBarrelSeedThr = cms.double(0.5),   # barrelSeedThreshold
+#    IslandEndcapSeedThr = cms.double(1.0),   # endcapSeedThreshold
+#
+#    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
+#    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters'),
+#    clustershapecollectionEE = cms.string('multi5x5EndcapShape'),
+#    clustershapecollectionEB = cms.string('multi5x5BarrelShape'),
+#    barrelShapeAssociation = cms.string('multi5x5BarrelShapeAssoc'),
+#    endcapShapeAssociation = cms.string('multi5x5EndcapShapeAssoc'),
+#    )
 
 
 # 3x3 clustering for endcap
-process.multi5x5BasicClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.multi5x5BasicClusters_cfi.multi5x5BasicClusters.clone(
-    # which regions should be clusterized
-    doEndcap = cms.bool(True),
-    doBarrel = cms.bool(False),
-
-    barrelHitProducer = cms.string('ecalRecHit'),
-    barrelHitCollection = cms.string('EcalRecHitsEB'),
-    endcapHitProducer = cms.string('ecalRecHit'),
-    endcapHitCollection = cms.string('EcalRecHitsEE'),
-    
-    IslandBarrelSeedThr = cms.double(0.5),              # endcapSeedThreshold
-    IslandEndcapSeedThr = cms.double(1.0),             # barrelSeedThreshold
-
-    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
-    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters'),
-    clustershapecollectionEE = cms.string('multi5x5EndcapShape'),
-    clustershapecollectionEB = cms.string('multi5x5BarrelShape'),
-    barrelShapeAssociation = cms.string('multi5x5BarrelShapeAssoc'),
-    endcapShapeAssociation = cms.string('multi5x5EndcapShapeAssoc'),
-    )
-
-
-# super clustering for the ECAL BARREL, staring from multi5x5 3x3 clusters
-process.multi5x5SuperClustersTimePi0Barrel =  RecoEcal.EgammaClusterProducers.multi5x5SuperClusters_cfi.multi5x5SuperClusters.clone(
-    doBarrel = cms.bool(True),
-    doEndcaps = cms.bool(False),
-    barrelClusterProducer = cms.string('multi5x5BasicClustersTimePi0Barrel'),
-    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
-    endcapClusterProducer = cms.string('multi5x5BasicClustersTimePi0Endcap'),
-    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters')
- )
+#process.multi5x5BasicClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.multi5x5BasicClusters_cfi.multi5x5BasicClusters.clone(
+#    # which regions should be clusterized
+#    doEndcap = cms.bool(True),
+#    doBarrel = cms.bool(False),
+#
+#    barrelHitProducer = cms.string('ecalRecHit'),
+#    barrelHitCollection = cms.string('EcalRecHitsEB'),
+#    endcapHitProducer = cms.string('ecalRecHit'),
+#    endcapHitCollection = cms.string('EcalRecHitsEE'),
+#    
+#    IslandBarrelSeedThr = cms.double(0.5),              # endcapSeedThreshold
+#    IslandEndcapSeedThr = cms.double(1.0),             # barrelSeedThreshold
+#
+#    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
+#    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters'),
+#    clustershapecollectionEE = cms.string('multi5x5EndcapShape'),
+#    clustershapecollectionEB = cms.string('multi5x5BarrelShape'),
+#    barrelShapeAssociation = cms.string('multi5x5BarrelShapeAssoc'),
+#    endcapShapeAssociation = cms.string('multi5x5EndcapShapeAssoc'),
+#    )
 
 
-# super clustering for the ECAL ENDCAP, staring from multi5x5 3x3 clusters
-process.multi5x5SuperClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.multi5x5SuperClusters_cfi.multi5x5SuperClusters.clone(
-    doBarrel = cms.bool(False),
-    doEndcaps = cms.bool(True),
-    barrelClusterProducer = cms.string('multi5x5BasicClustersTimePi0Barrel'),
-    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
-    endcapClusterProducer = cms.string('multi5x5BasicClustersTimePi0Endcap'),
-    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters')
- )
+## super clustering for the ECAL BARREL, staring from multi5x5 3x3 clusters
+#process.multi5x5SuperClustersTimePi0Barrel =  RecoEcal.EgammaClusterProducers.multi5x5SuperClusters_cfi.multi5x5SuperClusters.clone(
+#    doBarrel = cms.bool(True),
+#    doEndcaps = cms.bool(False),
+#    barrelClusterProducer = cms.string('multi5x5BasicClustersTimePi0Barrel'),
+#    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
+#    endcapClusterProducer = cms.string('multi5x5BasicClustersTimePi0Endcap'),
+#    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters')
+# )
+
+
+## super clustering for the ECAL ENDCAP, staring from multi5x5 3x3 clusters
+#process.multi5x5SuperClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.multi5x5SuperClusters_cfi.multi5x5SuperClusters.clone(
+#    doBarrel = cms.bool(False),
+#    doEndcaps = cms.bool(True),
+#    barrelClusterProducer = cms.string('multi5x5BasicClustersTimePi0Barrel'),
+#    barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
+#    endcapClusterProducer = cms.string('multi5x5BasicClustersTimePi0Endcap'),
+#    endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters')
+# )
 
 
 
@@ -137,8 +139,8 @@ process.ecalTimeTree.runNum = 999999
 #process.ecalTimeTree.endcapSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Endcap","multi5x5EndcapSuperClusters")
 #process.ecalTimeTree.barrelBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelBasicClusters")
 #process.ecalTimeTree.endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapBasicClusters")
-process.ecalTimeTree.barrelClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelShapeAssoc")
-process.ecalTimeTree.endcapClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapShapeAssoc") 
+#process.ecalTimeTree.barrelClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelShapeAssoc")
+#process.ecalTimeTree.endcapClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapShapeAssoc") 
 # use full rechit collection, while from AOD reducedEcalRecHitsEx collections are assumed
 process.ecalTimeTree.barrelEcalRecHitCollection = cms.InputTag("ecalRecHit","EcalRecHitsEB")
 process.ecalTimeTree.endcapEcalRecHitCollection = cms.InputTag("ecalRecHit","EcalRecHitsEE")
@@ -148,7 +150,7 @@ process.load("RecoVertex.Configuration.RecoVertex_cff")
 
 process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2))
 
 import RecoEcal.Configuration.RecoEcal_cff
 
