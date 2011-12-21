@@ -11,7 +11,7 @@ ecalTimeTree = cms.EDAnalyzer("EcalTimeTreeMaker",
 
     # SUPER and BASIC cluster collections come from AOD (no longer in-house made 3x3's)
     barrelBasicClusterCollection = cms.InputTag("hybridSuperClusters","hybridBarrelBasicClusters"),
-    endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClusters","multi5x5EndcapBasicClusters"),
+    endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClustersCleaned","multi5x5EndcapBasicClusters"),
     barrelSuperClusterCollection = cms.InputTag("correctedHybridSuperClusters",""),
     endcapSuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower",""),
 
