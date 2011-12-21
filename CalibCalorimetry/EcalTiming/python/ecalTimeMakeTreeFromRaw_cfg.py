@@ -164,7 +164,7 @@ process.p = cms.Path(
     process.ecalLocalRecoSequence *
     process.ecalClusters *
     process.vertexreco *
-    process.dumpEvContent  *
+    #process.dumpEvContent  *
     process.ecalTimeTree
     )
 
