@@ -24,7 +24,6 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = 'GR_R_35X_V8A::All'
 #process.GlobalTag.globaltag = 'GR_R_42_V2::All'
 #process.GlobalTag.globaltag = 'GR_P_V22::All'
-#this one works in 44x:
 process.GlobalTag.globaltag = 'GR_P_V27::All'
 
 # Trigger
@@ -135,10 +134,6 @@ process.ecalTimeTree.fileName = 'EcalTimeTree'
 process.ecalTimeTree.muonCollection = cms.InputTag("muons")
 process.ecalTimeTree.runNum = 999999
 # gfworks: replathese names
-#process.ecalTimeTree.barrelSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Barrel","multi5x5BarrelSuperClusters")
-#process.ecalTimeTree.endcapSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Endcap","multi5x5EndcapSuperClusters")
-#process.ecalTimeTree.barrelBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelBasicClusters")
-#process.ecalTimeTree.endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapBasicClusters")
 #process.ecalTimeTree.barrelClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelShapeAssoc")
 #process.ecalTimeTree.endcapClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapShapeAssoc") 
 # use full rechit collection, while from AOD reducedEcalRecHitsEx collections are assumed
@@ -167,14 +162,9 @@ process.p = cms.Path(
     process.ckftracks *
     process.ecalPreshowerDigis *
     process.ecalLocalRecoSequence *
-    # put aside the privately made 3x3, use standard clustering sequence instead
-    #process.multi5x5BasicClustersTimePi0Barrel *
-    #process.multi5x5BasicClustersTimePi0Endcap *
-    #process.multi5x5SuperClustersTimePi0Barrel *
-    #process.multi5x5SuperClustersTimePi0Endcap *
-    #process.dumpEvContent  *
     process.ecalClusters *
     process.vertexreco *
+    process.dumpEvContent  *
     process.ecalTimeTree
     )
 
@@ -205,6 +195,7 @@ process.source = cms.Source(
     inputCommands = cms.untracked.vstring('keep *'
                                           ,'drop EcalRecHitsSorted_*_*_RECO' # drop hfRecoEcalCandidate as remade in this process
                                           , 'drop recoSuperClusters_*_*_RECO' # drop hfRecoEcalCandidate as remade in this process
+                                          , 'drop recoCaloClusters_*_*_RECO'
                                           )
 
 
