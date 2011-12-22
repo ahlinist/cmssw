@@ -127,10 +127,10 @@ private:
   // FTS <-> parameters
   void getFromFTS(const FreeTrajectoryState& fts,
                   Hep3Vector& p3, Hep3Vector& r3,
-                  int& charge, AlgebraicSymMatrix66& cov);
+                  int& charge);
 
   FreeTrajectoryState getFromCLHEP(const Hep3Vector& p3, const Hep3Vector& r3,
-                                   int charge, const AlgebraicSymMatrix66& cov,
+                                   int charge,
                                    const MagneticField* field);
 
   // chi2 functions (calculate chi2)
