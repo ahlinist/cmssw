@@ -564,8 +564,11 @@ _inclusion_ranges = {
 if _USE_BARI_XSEC:
     verbose = False
     if verbose: print "Updating samples to use Bari xsections"
+    import os
     import re
-    import TauAnalysis.Configuration.tools.mssm_xsec as mssm_xsec
+    from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
+    _FILE_NAME = os.path.join(os.environ['CMSSW_BASE'], 'src/HiggsAnalysis/HiggsToTauTau/data', 'out.mhmax_7_nnlo.root')
+    helper = mssm_xsec_tools(_FILE_NAME)
     matcher = re.compile(r"(?P<isBB>bb)*A(?P<massA>\d*)")
     higgs_samples = [ sample for sample in SAMPLES_TO_ANALYZE if
                      matcher.match(sample) ]
@@ -578,7 +581,7 @@ if _USE_BARI_XSEC:
                 sample, mass)
         # Lookup the XSec etc, if we haven't already
         mssm_info = higgs_lookups.setdefault(
-            (mass, TAN_BETA), mssm_xsec.query(mass, TAN_BETA))
+            (mass, TAN_BETA), helper.query(mass, TAN_BETA))
         # Determine if samples is bb or glu-glu
         production_mechanism = (match.group('isBB') and 'santander' or 'ggF')
         # Compute the total cross section, using multiple higgs if necessary
@@ -590,7 +593,7 @@ if _USE_BARI_XSEC:
                 br = higgs_dict['BR']
                 # Get the cross section in picobarns
                 xsec = (higgs_dict['xsec'][production_mechanism]
-                        /mssm_xsec.picobarns)
+                        /helper.unit_pb)
                 if verbose:
                     print "--- %s contributes (BR*xsec) %0.2f * %0.2fpb = %0.2f" % (
                         higgs_type, br, xsec, br*xsec)
