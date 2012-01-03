@@ -23,8 +23,8 @@ static const char* desc =
 "=====================================================================\n"
 "                                                                     \n"
 "Prerequisites:                                                       \n"
-"                ROOT version 5.30.00 or higher                       \n"
-"                ROOT version 5.30.03 or higher recommended           \n"
+"                ROOT version 5.30.03 or higher                       \n"
+"                ROOT version 5.32.00 or higher recommended (required for CLs)\n"
 "                                                                     \n"
 "                                                                     \n"
 "                                                                     \n"
@@ -146,6 +146,7 @@ static const char* desc =
 #include "RooStats/PointSetInterval.h"
 #include "RooStats/ConfidenceBelt.h"
 #include "RooStats/ProposalHelper.h"
+#include "RooStats/SequentialProposal.h"
 #include "RooStats/HybridCalculator.h"
 #include "RooStats/FrequentistCalculator.h"
 #include "RooStats/ToyMCSampler.h"
@@ -917,17 +918,23 @@ MCMCInterval * CL95Calc::GetMcmcInterval(double conf_level,
 					       PrintLevel(-1),
 					       Warnings(0),
 					       PrintEvalErrors(-1));
+  /*
   ProposalHelper ph;
   ph.SetVariables((RooArgSet&)fit->floatParsFinal());
   ph.SetCovMatrix(fit->covarianceMatrix());
   ph.SetUpdateProposalParameters(kTRUE); // auto-create mean vars and add mappings
   ph.SetCacheSize(100);
   ProposalFunction* pf = ph.GetProposalFunction();
+  */
+
+  // this proposal function seems fairly robust
+  SequentialProposal sp(10.0);
   
   MCMCCalculator mcmc( *data, SbModel );
   mcmc.SetConfidenceLevel(conf_level);
   mcmc.SetNumIters(n_iter);          // Metropolis-Hastings algorithm iterations
-  mcmc.SetProposalFunction(*pf);
+  //mcmc.SetProposalFunction(*pf);
+  mcmc.SetProposalFunction(sp);
   mcmc.SetNumBurnInSteps(n_burn); // first N steps to be ignored as burn-in
   mcmc.SetLeftSideTailFraction(left_side_tail_fraction);
   mcmc.SetNumBins(n_bins);
@@ -945,6 +952,18 @@ void CL95Calc::makeMcmcPosteriorPlot( std::string filename ){
   MCMCIntervalPlot plot(*mcInt);
   plot.Draw();
   c1.SaveAs(filename.c_str());
+  
+  // Markov chain scatter plots
+  if (ws->var("nsig_nuis")){
+    TCanvas c2("c2");
+    plot.DrawChainScatter(*ws->var("xsec"),*ws->var("nsig_nuis"));
+    c2.SaveAs("scatter_mcmc_poi_vs_nsig_nuis.png");
+  }
+  if (ws->var("nbkg")){
+    TCanvas c3("c3");
+    plot.DrawChainScatter(*ws->var("xsec"),*ws->var("nbkg"));
+    c3.SaveAs("scatter_mcmc_poi_vs_nbkg.png");
+  }
   
   return;
 }
@@ -1145,7 +1164,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		<< ws->var("xsec")->getMax() << "]" << std::endl;
 
       //prepare Bayesian Markov Chain MC Calulator
-      mcInt = GetMcmcInterval(0.95, 50000, 100, 0.0, 40);
+      mcInt = GetMcmcInterval(0.95, 1000000, 500, 0.0, 40);
       upper_limit = printMcmcUpperLimit();
     }
     else if (method.find("plr") != std::string::npos){
