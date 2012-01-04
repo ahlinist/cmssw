@@ -679,7 +679,11 @@ void PidTable::combine(PidTable &b) {
   while ((iTable = (PidData*)next())) {
     PidData *pData = b.getData(iTable->getPctr(), iTable->getTctr(), iTable->getFctr());
     if (pData) {
-      iTable->combine(pData->getPass(), pData->getTot());
+      if (pData->getPass() > -1) {
+	iTable->combine(pData->getPass(), pData->getTot());
+      } else {	
+	iTable->merge(pData);
+      }
       if (iTable->getE() < fMinEff) fMinEff = iTable->getE();
       if (iTable->getE() > fMaxEff) fMaxEff = iTable->getE();
       if (iTable->getS() < fMinErr) fMinErr = iTable->getS();

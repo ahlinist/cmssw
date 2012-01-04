@@ -209,6 +209,7 @@ void PidData::merge(PidData *other) {
   } else if ((_s > 0.) && (erro > 0.)) {
     e = (_e/(_s*_s) + effo/(erro*erro)) / (1./(_s*_s) + 1./(erro*erro));
     s = 1./TMath::Sqrt(1./(_s*_s) + 1./(erro*erro));
+    //    cout << "eff1 = " << _e << " + eff2 = " << effo << " -> " << e << endl;
   } else {
     //    cout << "_s or erro == 0" << endl;
   }
