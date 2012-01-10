@@ -349,7 +349,7 @@ def fitATGCExpectedYields(ws,cfg,section):
             print obs_mc.GetName(),' > ',str(bins[len(bins)-2])
             sigObj.Draw(par2Name+'_grid:'+par1Name+'_grid >> theBaseData_'+section+'_'+str(i),
                         weight.GetName()+'*('+cfg.get(section,'obsVar')+#
-                        ' > ' + str(binMin)+')','goff')
+                        ' > ' + str(bins[len(bins)-2])+')','goff')
 
         for k in range(1,nGridParBins+1):
             for l in range(1,nGridParBins+1):
