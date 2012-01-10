@@ -43,11 +43,37 @@ jobname, extra_alca = 'newtknewmu', [new_tk, new_tk_def, new_muons]
 #jobname, extra_alca = 'newtknewmunewmuapes', [new_tk, new_tk_def, new_muons, new_muon_apes]
 #jobname, extra_alca = 'from173665', [from_173665]
 
-#is_mc = True
-#global_tag = 'COSMC_42_PEAK::All'
-#global_tag = 'COSMC_42_DECO::All'
-#jobname, dataset_id = 'mcglobaltag', 2
-#files = ['file:/uscms/home/tucker/nobackup/cosmicmc/superPointing_p100_deconv.root']
+is_mc = True
+if is_mc:
+    dataset_id = 3
+    run_events = None
+global_tag = 'START44_V9B::All'
+mc_strips_peak_mode = ('frontier://FrontierProd/CMS_COND_31X_STRIP', {'SiStripNoisesRcd': 'SiStripNoise_PeakMode_TickCorr_v2_mc'})
+mc_strips_deco_mode = ('frontier://FrontierProd/CMS_COND_31X_STRIP', {'SiStripNoisesRcd': 'SiStripNoise_DecoMode_TickCorr_v2_mc'})
+mc_cosmic_trigger = ('frontier://FrontierProd/CMS_COND_31X_L1T', {'L1MuCSCTFConfigurationRcd': 'L1MuCSCTFConfiguration_key-70511_mc', 'L1MuDTTFMasksRcd': 'L1MuDTTFMasks_key-dttf11_RS_080_mc', 'L1MuDTTFParametersRcd': 'L1MuDTTFParameters_key-dttf11_TSC_08_17_bot_mc', 'L1RPCBxOrConfigRcd': 'L1RPCBxOrConfig_key-LHC7_BOTTOM_mc', 'L1RPCConeDefinitionRcd': 'L1RPCConeDefinition_key-LHC7_BOTTOM_mc', 'L1RPCConfigRcd': 'L1RPCConfig_key-LHC7_BOTTOM_mc', 'L1RPCHsbConfigRcd': 'L1RPCHsbConfig_key-LHC7_BOTTOM_mc'})
+mc_ideal_ali = [
+    ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {
+        'CSCAlignmentRcd': 'CSCIdealGeometry310me42_mc',
+        'CSCAlignmentErrorRcd': 'CSCIdealGeometryErrors310me42_mc',
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_31X_FROM21X', {
+        'DTAlignmentRcd': 'DTIdealGeometry200_mc',
+        'DTAlignmentErrorRcd': 'DTIdealGeometryErrors200_mc',
+        'TrackerAlignmentRcd': 'TrackerIdealGeometry210_mc',
+        'TrackerAlignmentErrorRcd': 'TrackerIdealGeometryErrors210_mc'
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_zero'}),
+    ]
+
+jobname, dataset_id, extra_alca = 'MC500PeakV9B', 3, [mc_strips_peak_mode, mc_cosmic_trigger]
+jobname, dataset_id, extra_alca = 'MC500PeakIdealAliOnly',  3, [mc_strips_peak_mode, mc_cosmic_trigger] + mc_ideal_ali
+global_tag = 'MC_44_V9B::All'
+jobname, dataset_id, extra_alca = 'MC500PeakIdeal',  3, [mc_strips_peak_mode, mc_cosmic_trigger]
+
+max_events = 5
+files = ['/store/mc/Summer11/TKCosmics_p500_PEAK/GEN-SIM-RAW/COSMC_42_PEAK-v1/0023/FC83D03F-C805-E111-8886-00238BBD7656.root']
 
 if segments_in_fit:
     jobname += 'segsinfit'
@@ -68,7 +94,6 @@ scheduler = %(scheduler)s
 
 [CMSSW]
 datasetpath = %(datasetpath)s
-%(dbs_url)s
 pset = ntuple.py
 get_edm_output = 1
 %(job_control)s
@@ -85,34 +110,43 @@ total_number_of_events = -1
 events_per_job = 1000
 '''
 
-    additional_input_files = [connect.replace('sqlite_file:', '') for connect, rcds in extra_alca if 'sqlite_file' in connect]
-    additional_input_files = 'additional_input_files = ' + ', '.join(additional_input_files) if additional_input_files else ''
-
-    datasets = [
-        ('SPCommissioning10v3', '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO'),
-        ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'),
-        ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'),
-        ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'),
-        ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'),
-        ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
-        ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
-        ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
-        ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'),
-        ]
-
-    if 'highpt2010_only' in sys.argv:
-        jobname += 'highpt2010only'
-        datasets = datasets[:4]
-        job_control = '''
+    job_control_highpt2010 = '''
 lumi_mask = highpt2010.json
 split_by_lumi = 1
 lumis_per_job = 100
 total_number_of_lumis = -1
 '''
 
+    scheduler = 'condor'
+    
+    additional_input_files = [connect.replace('sqlite_file:', '') for connect, rcds in extra_alca if 'sqlite_file' in connect]
+    additional_input_files = 'additional_input_files = ' + ', '.join(additional_input_files) if additional_input_files else ''
+
+    if is_mc:
+        datasets = {
+            1: [('P10',  '/TKCosmics_p10_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW')],
+            2: [('P100', '/TKCosmics_p100_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW')],
+            3: [('P500', '/TKCosmics_p500_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW')],
+            }[dataset_id]
+    else:
+        datasets = [
+            ('SPCommissioning10v3', '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO'),
+            ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'),
+            ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'),
+            ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'),
+            ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'),
+            ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
+            ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
+            ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
+            ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'),
+            ]
+
+        if 'highpt2010_only' in sys.argv:
+            jobname += 'highpt2010only'
+            datasets = datasets[:4]
+            job_control = job_control_highpt2010
+
     for working, datasetpath in datasets:
-        scheduler = 'condor' if 'SP' in working else 'glite'
-        dbs_url = 'dbs_url = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet' if 'tucker' in datasetpath else ''
         open('crab.cfg', 'wt').write(crab_cfg % locals())
         os.system('crab -create -submit')
 
@@ -174,7 +208,7 @@ else:
         process.standAloneMuons.STATrajBuilderParameters.BWFilterParameters.MuonTrajectoryUpdatorParameters.Granularity = 0
 
 if is_mc:
-    process.load('SimGeneral.TrackingAnalysis.Playback_cfi')
+    process.load('SimGeneral.MixingModule.mixNoPU_cfi')
     process.load('SimGeneral.TrackingAnalysis.trackingParticles_cfi')
     process.load('Configuration.StandardSequences.RawToDigi_cff')
 else:
