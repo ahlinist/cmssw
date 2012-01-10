@@ -34,30 +34,26 @@ void MakeWorkspace( void ){
   RooWorkspace * pWs = new RooWorkspace("myWS");
   
   // observable: number of events
-  pWs->factory( "n[0]" );
+  pWs->factory( "n[0.0]" );
 
   // integrated luminosity
-  //pWs->factory( "lumi[4900.0]" );
-  pWs->factory( "lumi_nom[4900.0]" );
-  pWs->factory( "alpha_lumi[1.0,0.0,2.0]" );
+  pWs->factory( "lumi_nom[5000.0]" );
+  pWs->factory( "alpha_lumi[1.0,0.7,1.3]" );
   pWs->factory( "prod::lumi(lumi_nom,alpha_lumi)" );
 
   // cross section - parameter of interest
-  pWs->factory( "xsec[0.001,0,0.1]" );
+  pWs->factory( "xsec[0.001,0.0,0.1]" );
 
   // selection efficiency * acceptance
-  //pWs->factory( "efficiency[0]" );
   pWs->factory( "efficiency_nom[0.1]" );
   pWs->factory( "alpha_efficiency[1.0,0.5,1.5]" );
   pWs->factory( "prod::efficiency(efficiency_nom,alpha_efficiency)" );
 
   // signal yield
-  //pWs->factory( "nsig[0,0,100]" );
   pWs->factory( "prod::nsig(lumi,xsec,efficiency)" );
 
   // background yield
-  //pWs->factory( "nbkg[10]" );
-  pWs->factory( "nbkg_nom[10]" );
+  pWs->factory( "nbkg_nom[10.0]" );
   pWs->factory( "alpha_nbkg[1.0, 0.5, 1.5]" );
   pWs->factory( "prod::nbkg(nbkg_nom,alpha_lumi,alpha_nbkg)" );
 
@@ -72,15 +68,15 @@ void MakeWorkspace( void ){
 
   // systematics for integrated luminosity
   pWs->factory( "lumi_kappa[1.045]" );
-  pWs->factory( "Lognormal::ln_lumi(alpha_lumi,1,lumi_kappa)" );
+  pWs->factory( "Lognormal::ln_lumi(glob_lumi[1.0,0.75,1.25],alpha_lumi,lumi_kappa)" );
 
   // systematics for signal efficiency
-  pWs->factory( "efficiency_kappa[1.1]" );
-  pWs->factory( "Lognormal::ln_efficiency(alpha_efficiency,1,efficiency_kappa)" );
+  pWs->factory( "efficiency_kappa[1.10]" );
+  pWs->factory( "Lognormal::ln_efficiency(glob_efficiency[1.0,0.5,1.5],alpha_efficiency,efficiency_kappa)" );
 
   // systematics for background rate
-  pWs->factory( "nbkg_kappa[1.045]" );
-  pWs->factory( "Lognormal::ln_nbkg(alpha_nbkg,1,nbkg_kappa)" );
+  pWs->factory( "nbkg_kappa[1.10]" );
+  pWs->factory( "Lognormal::ln_nbkg(glob_nbkg[1.0,0.5,1.5],alpha_nbkg,nbkg_kappa)" );
 
   // model with systematics
   pWs->factory( "PROD::model(model_core,ln_lumi,ln_efficiency,ln_nbkg)" );
@@ -91,7 +87,7 @@ void MakeWorkspace( void ){
   obs.add(*pObs);
 
   // create the dataset
-  pObs->setVal(10); // this is your observed data: you counted ten events
+  pObs->setVal(10); // this is your observed data: we counted ten events
   RooDataSet * data = new RooDataSet("data", "data", obs);
   data->add( *pObs );
 
@@ -100,9 +96,9 @@ void MakeWorkspace( void ){
 
   // create set of global observables
   RooArgSet globalObs("global_obs");
-  globalObs.add( *pWs->var("lumi_nom") );
-  globalObs.add( *pWs->var("efficiency_nom") );
-  globalObs.add( *pWs->var("nbkg_nom") );
+  globalObs.add( *pWs->var("glob_lumi") );
+  globalObs.add( *pWs->var("glob_efficiency") );
+  globalObs.add( *pWs->var("glob_nbkg") );
 
   // create set of parameters of interest (POI)
   RooArgSet poi("poi");
@@ -124,9 +120,25 @@ void MakeWorkspace( void ){
   sbHypo.SetNuisanceParameters( nuis );
   sbHypo.SetPriorPdf( *pWs->pdf("prior") ); // this is optional
 
+  // fix constants - probably redundant but just in case
+  pWs->var("lumi_nom")->setConstant(true);
+  pWs->var("efficiency_nom")->setConstant(true);
+  pWs->var("nbkg_nom")->setConstant(true);
+  pWs->var("lumi_kappa")->setConstant(true);
+  pWs->var("efficiency_kappa")->setConstant(true);
+  pWs->var("nbkg_kappa")->setConstant(true);
+  RooArgSet fixed("fixed");
+  fixed.add( *pWs->var("lumi_nom") );
+  fixed.add( *pWs->var("efficiency_nom") );
+  fixed.add( *pWs->var("nbkg_nom") );
+  fixed.add( *pWs->var("lumi_kappa") );
+  fixed.add( *pWs->var("efficiency_kappa") );
+  fixed.add( *pWs->var("nbkg_kappa") );
+  
   // set parameter snapshot that corresponds to the best fit to data
   RooAbsReal * pNll = sbHypo.GetPdf()->createNLL( *data );
-  RooAbsReal * pProfile = pNll->createProfile( RooArgSet() );
+  //RooAbsReal * pProfile = pNll->createProfile( RooArgSet() );
+  RooAbsReal * pProfile = pNll->createProfile( globalObs ); // do not profile global observables
   pProfile->getVal(); // this will do fit and set POI and nuisance parameters to fitted values
   RooArgSet * pPoiAndNuisance = new RooArgSet("poiAndNuisance");
   pPoiAndNuisance->add(*sbHypo.GetNuisanceParameters());
@@ -135,6 +147,8 @@ void MakeWorkspace( void ){
   delete pProfile;
   delete pNll;
   delete pPoiAndNuisance;
+
+  pWs->var("lumi_nom")->Print();
 
   // import S+B ModelConfig into workspace
   pWs->import( sbHypo );
@@ -148,7 +162,11 @@ void MakeWorkspace( void ){
   // it is useful to understand how this block of code works
   // but you can also use it as a recipe to make a parameter snapshot
   pNll = bHypo.GetPdf()->createNLL( *data );
-  pProfile = pNll->createProfile( poi );
+  RooArgSet poiAndGlobalObs("poiAndGlobalObs");
+  poiAndGlobalObs.add( poi );
+  poiAndGlobalObs.add( globalObs );
+  //pProfile = pNll->createProfile( poi );
+  pProfile = pNll->createProfile( poiAndGlobalObs ); // do not profile POI and global observables
   ((RooRealVar *)poi.first())->setVal( 0 );  // set xsec=0 here
   pProfile->getVal(); // this will do fit and set nuisance parameters to profiled values
   pPoiAndNuisance = new RooArgSet( "poiAndNuisance" );
