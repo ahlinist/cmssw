@@ -1,9 +1,9 @@
-// CMSDAS_PileupReweight.h
+// CMSDAS_PileupStudy.h
 // Description: A basic analyzer for pileup reweighting studies
 // Author: Mike Hildreth
 // Date: January 8, 2012
 
-#include "PhysicsTools/Examples/interface/CMSDAS_PileupReweight.h"
+#include "PhysicsTools/Examples/interface/CMSDAS_PileupStudy.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -15,7 +15,7 @@
 
 #include <TH1D.h>
 
-CMSDAS_PileupReweight::CMSDAS_PileupReweight(edm::ParameterSet const& params) :
+CMSDAS_PileupStudy::CMSDAS_PileupStudy(edm::ParameterSet const& params) :
   edm::EDAnalyzer(),
   vertexSrc_(params.getParameter<edm::InputTag>("vertexSrc"))
 {
@@ -23,22 +23,12 @@ CMSDAS_PileupReweight::CMSDAS_PileupReweight(edm::ParameterSet const& params) :
   edm::Service<TFileService> fs;
 
   // setup histograms
-  TNPUInTime_ = fs->make<TH1D>("TNPUInTime","Input No. in-time pileup interactions",40,0.,40.);
-  TNPUTrue_ = fs->make<TH1D>("TNPUTrue","Input True pileup interactions",40,0.,40.);
-  RWTTrue_ = fs->make<TH1D>("RWTTrue","Reweighted True pileup interactions",40,0.,40.);
-  RWTInTime_ = fs->make<TH1D>("RWTInTime","Reweighted in-time pileup interactions",40,0.,40.);
+  TNPUInTime_ = fs->make<TH1D>("TNPUInTime","No. in-time pileup interactions",40,0.,40.);
+  TNPUTrue_ = fs->make<TH1D>("TNPUTrue","True pileup interactions",40,0.,40.);
   TNVTX_ = fs->make<TH1D>("TNVTX","No. reconstructed vertices",40,0.,40.);
-  WGT_ = fs->make<TH1D>("WGT","Event weight",50,0.,10.);
-
-  // initialize 1-D reweighting
-  LumiWeights_ = edm::LumiReWeighting("/uscms_data/d2/mikeh/work/CMSDAS/Fall2011_MCdist_finebin.root",
-				      "/uscms_data/d2/mikeh/work/CMSDAS/Data_May10ReReco_Pileup.root",
-				      "F2011exp",
-				      "pileup");
-
 }
 
-void CMSDAS_PileupReweight::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup) {
+void CMSDAS_PileupStudy::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
@@ -60,16 +50,8 @@ void CMSDAS_PileupReweight::analyze(const edm::Event & iEvent, const edm::EventS
     }
   }
 
-  double MyWeight = LumiWeights_.weight( npT );
-
   TNPUTrue_->Fill(npT);
-  TNPUInTime_->Fill(npIT);
-
-  WGT_->Fill(MyWeight);
-  RWTTrue_->Fill(npT, MyWeight);
-  RWTInTime_->Fill(npIT, MyWeight);
-
-  //Now that we know what the event weight is, we can fill any MC histogram correctly
+  TNPUInTime_->Fill(npIT);  
 
   edm::Handle< std::vector<reco::Vertex> > vertices_h;
   iEvent.getByLabel(vertexSrc_, vertices_h);
@@ -105,11 +87,11 @@ void CMSDAS_PileupReweight::analyze(const edm::Event & iEvent, const edm::EventS
     ++NVtx;
   }
 
-  TNVTX_->Fill(float(NVtx)-1, MyWeight);  // subtract primary interaction
+  TNVTX_->Fill(float(NVtx));
   return;
 }
 
-void CMSDAS_PileupReweight::endJob() {
+void CMSDAS_PileupStudy::endJob() {
 }
 
-DEFINE_FWK_MODULE(CMSDAS_PileupReweight);
+DEFINE_FWK_MODULE(CMSDAS_PileupStudy);

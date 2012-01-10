@@ -1,26 +1,25 @@
-// CMSDAS_PileupReweight.h
+// CMSDAS_PileupStudy.h
 // Description: A basic analyzer for pileup reweighting studies
 // Author: Mike Hildreth
 // Date: January 8, 2012
 
-#ifndef __CMSDAS_PILEUPREWEIGHT_H__
-#define __CMSDAS_PILEUPREWEIGHT_H__
+#ifndef __CMSDAS_PILEUPSTUDY_H__
+#define __CMSDAS_PILEUPSTUDY_H__
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 
 #include <string>
 
 class TH1D;
 
-class CMSDAS_PileupReweight : public edm::EDAnalyzer {
+class CMSDAS_PileupStudy : public edm::EDAnalyzer {
  public:
-  CMSDAS_PileupReweight(const edm::ParameterSet &);
+  CMSDAS_PileupStudy(const edm::ParameterSet &);
   void analyze( const edm::Event& , const edm::EventSetup& );
-  virtual ~CMSDAS_PileupReweight() {}
+  virtual ~CMSDAS_PileupStudy() {}
   virtual void beginJob() {}
   virtual void endJob(void);
   
@@ -30,17 +29,11 @@ class CMSDAS_PileupReweight : public edm::EDAnalyzer {
   // Parameters
   edm::InputTag vertexSrc_;
 
-  edm::LumiReWeighting LumiWeights_;
-
-
   // histograms
 
   TH1D* TNPUInTime_;
   TH1D* TNPUTrue_;
-  TH1D* RWTInTime_;
-  TH1D* RWTTrue_;
   TH1D* TNVTX_;
-  TH1D* WGT_;
 
 };
 
