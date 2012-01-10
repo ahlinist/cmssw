@@ -29,6 +29,12 @@ class RunRegistryHelper:
 
     def group_name(self, run):
         return run.find('GROUP_NAME').text
+
+    def l1_key(self, run):
+        return run.find('L1KEY').text
+
+    def hlt_key(self, run):
+        return run.find('HLTKEY').text
     
     def is_good(self, cmps, subdet):
         for cmp in cmps:
