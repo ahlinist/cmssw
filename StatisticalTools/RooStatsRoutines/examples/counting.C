@@ -12,6 +12,9 @@ RooStats exercise at CMSDAS-2012:
 
 #include "TCanvas.h"
 #include "RooWorkspace.h"
+#include "RooAbsReal.h"
+#include "RooRealVar.h"
+#include "RooArgSet.h"
 #include "RooArgList.h"
 #include "RooDataSet.h"
 #include "RooPlot.h"
@@ -64,6 +67,8 @@ void MakeWorkspace( void ){
   // Core model: Poisson probability with mean signal+bkg
   pWs->factory( "Poisson::model_core(n,yield)" );
 
+  // define Bayesian prior PDF for POI
+  pWs->factory( "Uniform::prior(xsec)" );
 
   // systematics for integrated luminosity
   pWs->factory( "lumi_kappa[1.045]" );
@@ -80,13 +85,85 @@ void MakeWorkspace( void ){
   // model with systematics
   pWs->factory( "PROD::model(model_core,ln_lumi,ln_efficiency,ln_nbkg)" );
 
+  // create set of observables (will need it for datasets and ModelConfig later)
+  RooRealVar * pObs = pWs->var("n"); // get the pointer to the observable
+  RooArgSet obs("observables");
+  obs.add(*pObs);
+
+  // create the dataset
+  pObs->setVal(10); // this is your observed data: you counted ten events
+  RooDataSet * data = new RooDataSet("data", "data", obs);
+  data->add( *pObs );
+
+  // import dataset into workspace
+  pWs->import(*data);
+
+  // create set of global observables
+  RooArgSet globalObs("global_obs");
+  globalObs.add( *pWs->var("lumi_nom") );
+  globalObs.add( *pWs->var("efficiency_nom") );
+  globalObs.add( *pWs->var("nbkg_nom") );
+
+  // create set of parameters of interest (POI)
+  RooArgSet poi("poi");
+  poi.add( *pWs->var("xsec") );
+  
+  // create set of nuisance parameters
+  RooArgSet nuis("nuis");
+  nuis.add( *pWs->var("alpha_lumi") );
+  nuis.add( *pWs->var("alpha_efficiency") );
+  nuis.add( *pWs->var("alpha_nbkg") );
+
+  // create signal+background Model Config
+  RooStats::ModelConfig sbHypo("SbHypo");
+  sbHypo.SetWorkspace( *pWs );
+  sbHypo.SetPdf( *pWs->pdf("model") );
+  sbHypo.SetObservables( obs );
+  sbHypo.SetGlobalObservables( globalObs );
+  sbHypo.SetParametersOfInterest( poi );
+  sbHypo.SetNuisanceParameters( nuis );
+  sbHypo.SetPriorPdf( *pWs->pdf("prior") ); // this is optional
+
+  // set parameter snapshot that corresponds to the best fit to data
+  RooAbsReal * pNll = sbHypo.GetPdf()->createNLL( *data );
+  RooAbsReal * pProfile = pNll->createProfile( RooArgSet() );
+  pProfile->getVal(); // this will do fit and set POI and nuisance parameters to fitted values
+  RooArgSet * pPoiAndNuisance = new RooArgSet("poiAndNuisance");
+  pPoiAndNuisance->add(*sbHypo.GetNuisanceParameters());
+  pPoiAndNuisance->add(*sbHypo.GetParametersOfInterest());
+  sbHypo.SetSnapshot(*pPoiAndNuisance);
+  delete pProfile;
+  delete pNll;
+  delete pPoiAndNuisance;
+
+  // import S+B ModelConfig into workspace
+  pWs->import( sbHypo );
+
+  // create background-only Model Config from the S+B one
+  RooStats::ModelConfig bHypo = sbHypo;
+  bHypo.SetName("BHypo");
+  bHypo.SetWorkspace(*pWs);
+
+  // set parameter snapshot for bHypo, setting xsec=0
+  // it is useful to understand how this block of code works
+  // but you can also use it as a recipe to make a parameter snapshot
+  pNll = bHypo.GetPdf()->createNLL( *data );
+  pProfile = pNll->createProfile( poi );
+  ((RooRealVar *)poi.first())->setVal( 0 );  // set xsec=0 here
+  pProfile->getVal(); // this will do fit and set nuisance parameters to profiled values
+  pPoiAndNuisance = new RooArgSet( "poiAndNuisance" );
+  pPoiAndNuisance->add( nuis );
+  pPoiAndNuisance->add( poi );
+  bHypo.SetSnapshot(*pPoiAndNuisance);
+  delete pProfile;
+  delete pNll;
+  delete pPoiAndNuisance;
+
+  // import model config into workspace
+  pWs->import( bHypo );
+
   // print out the workspace contents
   pWs->Print();
-
-
-
-  //
-
 
   // save workspace to file
   pWs -> SaveAs("workspace.root");
