@@ -38,6 +38,23 @@ def runCommand(commandLine):
     args = shlex.split(commandLine)
     retVal = subprocess.Popen(args, stdout = subprocess.PIPE)
     retVal.wait()
+    return retVal.stdout.readlines()
+
+def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.csh', tmpOutputFileName = 'crabSitter_tmp.out'):
+    # CV: crab is implemented in python and seems to cause problem when called directly from python;
+    #     wrap 'crab -status' command into simple shell script
+    print(commandLine)
+    tmpShellScriptFile = open(tmpShellScriptFileName, "w")
+    tmpShellScriptFile.write("#!/bin/csh -f\n")
+    tmpShellScriptFile.write("%s >&! %s\n" % (commandLine, tmpOutputFileName))
+    tmpShellScriptFile.close()
+    subprocess.call('chmod +x %s' % tmpShellScriptFileName, shell = True)
+    subprocess.call('./%s' % tmpShellScriptFileName, shell = True)
+    subprocess.call('rm %s' % tmpShellScriptFileName, shell = True)
+    tmpOutputFile = open(tmpOutputFileName, "r")
+    retVal = tmpOutputFile.readlines()
+    tmpOutputFile.close()
+    subprocess.call('rm %s' % tmpOutputFileName, shell = True)
     return retVal
 
 jobStatus_dict = {}
@@ -79,7 +96,7 @@ time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed
 
 shellScriptCommands = []
 
-crabJobs = runCommand('%s %s' % (executable_ls, crabFilePath)).stdout.readlines()
+crabJobs = runCommand('%s %s' % (executable_ls, crabFilePath))
 for crabJob in crabJobs:
     crabJob_match = jobName_matcher.match(crabJob)
     if crabJob_match:
@@ -95,35 +112,9 @@ for crabJob in crabJobs:
         #print("channel = %s" % channel)
         
         jobIds_force_resubmit = []
+        outputFiles_to_delete = []
         
-        #crabStatus = runCommand('%s -status -c %s' % (executable_crab, crabJob))
-        #crabStatus_lines = crabStatus.stdout.readlines()
-        
-        crabStatus_lines = \
-"""
-crab:  Version 2.7.9 running on Tue Jan 10 10:28:47 2012 CET (09:28:47 UTC)
-
-crab:   1012 Total Jobs 
- >>>>>>>>> 51 Jobs Submitted 
-	List of jobs Submitted: 87-137 
- >>>>>>>>> 162 Jobs Ready 
-	List of jobs Ready: 501-572,659-748 
- >>>>>>>>> 353 Jobs Scheduled 
-	List of jobs Scheduled: 1-86,225-395,483-487,924-1012 
- >>>>>>>>> 1 Jobs Aborted
-	You can resubmit them specifying JOB numbers: crab -resubmit <List of jobs>
-	List of jobs: 847-848 
- >>>>>>>>> 444 Jobs Done
-	Jobs terminated: retrieve them with: crab -getoutput <List of jobs>
-	List of jobs: 138-224,396-482,488-491,493-500,573-658,749-846,849-923 
-
-crab:  You can also follow the status of this task on :
-	CMS Dashboard: http://dashb-cms-job-task.cern.ch/taskmon.html#task=veelken_crabdirProduceFakeRatePATtuple_PPmuXptGt20Mu15_WplusJets_patV2_1_6gdr08
-	Your task name is: veelken_crabdirProduceFakeRatePATtuple_PPmuXptGt20Mu15_WplusJets_patV2_1_6gdr08 
-
-Log file is /tmp/veelken/crab/crabdirProduceFakeRatePATtuple_PPmuXptGt20Mu15_WplusJets_patV2_1/log/crab.log
-
-""".split('\n')
+        crabStatus_lines = runCommand_via_shell('%s -status -c %s' % (executable_crab, os.path.join(crabFilePath, crabJob)))
 
         # read path and name of output file from crab config file
         crabConfigFileName = os.path.join(crabFilePath, crabJob, 'share/crab.cfg')
@@ -161,9 +152,11 @@ Log file is /tmp/veelken/crab/crabdirProduceFakeRatePATtuple_PPmuXptGt20Mu15_Wpl
         if not (outputFilePath.endswith('/') or outputFilePath_suffix.startswith('/')):
             outputFilePath += '/'
         outputFilePath += outputFilePath_suffix
+        if not outputFilePath.endswith('/'):
+            outputFilePath += '/'
         print("outputFilePath = %s" % outputFilePath)
-        outputFileNames = [ file_info['file'] for file_info in castor.nslsl(outputFilePath) ]
-
+        outputFileInfos = [ outputFileInfo for outputFileInfo in castor.nslsl(outputFilePath) ]
+        
         # check if job got aborted or stuck in state 'Submitted', 'Ready' or 'Scheduled' for more than one day
         isMatched_status = False
         for crabStatus_line in crabStatus_lines:
@@ -190,7 +183,7 @@ Log file is /tmp/veelken/crab/crabdirProduceFakeRatePATtuple_PPmuXptGt20Mu15_Wpl
                             jobId_last = int(multipleJobs_match.group('jobId_last'))
                             #print("jobId: first = %i, last = %i" % (jobId_first, jobId_last))
                             jobIds.extend(range(jobId_first, jobId_last + 1))
-                        elif sshellScriptCommandsingleJob_match:
+                        elif singleJob_match:
                             jobId = int(singleJob_match.group('jobId'))
                             #print("jobId = '%i'" % jobId)
                             jobIds.append(jobId)
@@ -206,23 +199,42 @@ Log file is /tmp/veelken/crab/crabdirProduceFakeRatePATtuple_PPmuXptGt20Mu15_Wpl
                         elif jobStatus in [ 'Submitted', 'Ready', 'Scheduled' ]:
                             # check if status has not changed for more than one day,
                             # in which case assume that crab job got "stuck" and resubmit it
-                            lastJobStatus, lastJobStatusChange_time = jobStatus_dict[crabJob][jobId_string]
-                            if (current_time - lastJobStatusChange_time) > time_limit:
-                                print("Info: jobId = %i got stuck in state '%s' --> resubmitting it" % (jobId, jobStatus))
-                                jobIds_force_resubmit.append(jobId)
+                            if jobStatus_dict[crabJob].has_key(jobId_string):
+                                lastJobStatus, lastJobStatusChange_time = jobStatus_dict[crabJob][jobId_string]
+                                if (current_time - lastJobStatusChange_time) > time_limit:
+                                    print("Info: jobId = %i got stuck in state '%s' --> resubmitting it" % (jobId, jobStatus))
+                                    jobIds_force_resubmit.append(jobId)
                         elif jobStatus in [ 'Done' ]:
-                            outputFileNames_matched = []
-                            for outputFileName in outputFileNames_matched:
-                                outputFileName_match = outputFileName_matcher.match(outputFileName)
+                            outputFileInfos_matched = []
+                            for outputFileInfo in outputFileInfos:
+                                outputFileName_match = outputFileName_matcher.match(outputFileInfo['file'])
                                 if outputFileName_match:
                                     outputFileJobId = outputFileName_match.group('jobId')
                                     if outputFileJobId == jobId_string:
-                                        outputFileNames_matched.append(outputFileName)
-                            if len(outputFileNames_matched) == 0:
+                                        outputFileInfos_matched.append(outputFileInfo)
+                            if len(outputFileInfos_matched) == 0:
                                 print("Info: jobId = %i produced no output file --> resubmitting it" % jobId)
                                 jobIds_force_resubmit.append(jobId)
-                            elif len(outputFileNames_matched) > 1:
-                                print("Warning: jobId = %i produced multiple output files = %s !!" % (jobId, outputFileNames_matched))
+                            elif len(outputFileInfos_matched) > 1:
+                                print("Warning: jobId = %i produced multiple output files = %s !!" \
+                                      % (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfo_matched ]))
+                                # keep file with maximum size;
+                                # in case multiple files have the same size, keep the newest one
+                                outputFileName_keep = None
+                                fileSize_keep = None
+                                date_and_time_keep = None
+                                for outputFileInfo in outputFileInfo_matched:
+                                    outputFileName = outputFileInfo['file']
+                                    fileSize = outputFileInfo['fileSize']
+                                    date_and_time = outputFileInfo['date_and_time']
+                                    if not outputFileName_keep or fileSize > fileSize_keep or \
+                                       (fileSize == fileSize_keep and date_and_time > date_and_time_keep):
+                                        outputFileName_keep = outputFileName
+                                        fileSize_keep = fileSize
+                                        date_and_time_keep = outputFileName
+                                for outputFileInfo in outputFileInfo_matched:                                    
+                                    if outputFileInfo['file'] != outputFileName_keep:
+                                        outputFiles_to_delete.append(outputFileInfo['path'])
                             
                         # update job status dictionary
                         if jobStatus_dict[crabJob].has_key(jobId_string):
@@ -246,7 +258,11 @@ Log file is /tmp/veelken/crab/crabdirProduceFakeRatePATtuple_PPmuXptGt20Mu15_Wpl
               (executable_crab, ",".join([ "%i" % jobId for jobId in jobIds_force_resubmit ]), os.path.join(crabFilePath, crabJob))
             shellScriptCommands.append(commandLine)
 
-        print("\n")
+        for outputFileName in outputFiles_to_delete:
+            commandLine = 'rfrm %s' % outputFileName
+            shellScriptCommands.append(commandLine)              
+
+        print("")
 
 #write shell script to resubmit crab jobs
 shellScriptFileName = 'crabSitter.csh'
@@ -254,8 +270,8 @@ shellScriptFile = open(shellScriptFileName, "w")
 shellScriptFile.write("#!/bin/csh -f\n")
 for shellScriptCommand in shellScriptCommands:
     shellScriptFile.write("%s\n" % shellScriptCommand)
-shellScriptFile.close()    
-runCommand('chmod +x %s' % shellScriptFileName)
+shellScriptFile.close()
+subprocess.call('chmod +x %s' % shellScriptFileName, shell = True)
 
 #print(jobStatus_dict)
 
