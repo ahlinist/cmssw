@@ -19,12 +19,23 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                              collector = cms.PSet(
                                 xAxis = cms.vdouble(34, 1/65., 1/1.5),
                                 invertX = cms.bool(True), 
+<<<<<<< LooperClusterRemover_cfi.py
+                                nPhi = cms.uint32(60),
+                                peakAbove= cms.uint32(4),
+                                RBound=cms.double(30), #maximum radius of looper's helix
+                                linkPoints=cms.bool(True),
+=======
                                 nPhi = cms.uint32(60),
                                 peakAbove= cms.uint32(4),
                                 RBound=cms.double(30.), #maximum radius of looper's helix
                                 linkPoints=cms.bool(False),
+>>>>>>> 1.4
                                 annularCut = cms.double(2),
+<<<<<<< LooperClusterRemover_cfi.py
+                                symetryTopologySelection = cms.bool(True),
+=======
                                 symetryTopologySelection = cms.uint32(2),
+>>>>>>> 1.4
                                 maxZForTruncation = cms.double(20),
                                 offEdge = cms.int32(0),
                                 deltaSlopeCut = cms.double(0.1),
