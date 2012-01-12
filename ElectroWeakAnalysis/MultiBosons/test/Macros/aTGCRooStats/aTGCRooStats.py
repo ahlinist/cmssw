@@ -311,8 +311,8 @@ def fitATGCExpectedYields(ws,cfg,section):
     par2GridMax = cfg.getfloat(section,'par2GridMax')
     par1GridMin = cfg.getfloat(section,'par1GridMin')
     par2GridMin = cfg.getfloat(section,'par2GridMin')
-    par1PadSize = (par1GridMax-par1GridMin)/(2*nGridParBins-1)
-    par2PadSize = (par2GridMax-par2GridMin)/(2*nGridParBins-1)
+    par1PadSize = (par1GridMax-par1GridMin)/(2*nGridParBins-2)
+    par2PadSize = (par2GridMax-par2GridMin)/(2*nGridParBins-2)
     par1GridMax = par1GridMax + par1PadSize #add padding to put values at bin centers, assuming evently spaced points
     par2GridMax = par2GridMax + par2PadSize
     par1GridMin = par1GridMin - par1PadSize #add padding to put values at bin centers, assuming evently spaced points
