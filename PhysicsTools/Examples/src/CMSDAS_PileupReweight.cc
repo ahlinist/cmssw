@@ -29,6 +29,7 @@ CMSDAS_PileupReweight::CMSDAS_PileupReweight(edm::ParameterSet const& params) :
   RWTInTime_ = fs->make<TH1D>("RWTInTime","Reweighted in-time pileup interactions",40,0.,40.);
   TNVTX_ = fs->make<TH1D>("TNVTX","No. reconstructed vertices",40,0.,40.);
   WGT_ = fs->make<TH1D>("WGT","Event weight",50,0.,10.);
+  WeightVsNint_ = fs->make<TProfile>("WeightVsNint","Event weight vs N_int",50,0.,50.,0.,10.);
 
   // initialize 1-D reweighting
   LumiWeights_ = edm::LumiReWeighting("/uscms_data/d2/mikeh/work/CMSDAS/Fall2011_MCdist_finebin.root",
@@ -64,10 +65,13 @@ void CMSDAS_PileupReweight::analyze(const edm::Event & iEvent, const edm::EventS
 
   TNPUTrue_->Fill(npT);
   TNPUInTime_->Fill(npIT);
+  WeightVsNint_->Fill(npT,MyWeight);
 
   WGT_->Fill(MyWeight);
   RWTTrue_->Fill(npT, MyWeight);
   RWTInTime_->Fill(npIT, MyWeight);
+
+
 
   //Now that we know what the event weight is, we can fill any MC histogram correctly
 

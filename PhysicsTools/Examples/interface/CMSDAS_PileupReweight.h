@@ -10,11 +10,12 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
-
+#include "TProfile.h"
 
 #include <string>
 
 class TH1D;
+
 
 class CMSDAS_PileupReweight : public edm::EDAnalyzer {
  public:
@@ -41,6 +42,8 @@ class CMSDAS_PileupReweight : public edm::EDAnalyzer {
   TH1D* RWTTrue_;
   TH1D* TNVTX_;
   TH1D* WGT_;
+  TProfile* WeightVsNint_;
+
 
 };
 
