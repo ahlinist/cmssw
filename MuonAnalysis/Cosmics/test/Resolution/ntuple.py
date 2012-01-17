@@ -1,166 +1,145 @@
 #!/usr/bin/env python
 
-import sys, os, FWCore.ParameterSet.Config as cms
-from copy import deepcopy
+import argparse, copy, sys, os
+from pprint import pprint
 
-########################################################################################
+################################################################################
 
-require_pixels = False
-pp_reco_mode = False
-global_tag = 'GR_R_44_V12::All'
-is_mc = False
-dataset_id = 0
-num_refits = 4
-extra_alca = []
-dumps = True
-debugdump = True
-run_events = None
-max_events = -1
-no_edm_output = True
-files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RAW-RECO/399_fromv3_CosmicTP-v1/0000/62816537-0A3E-E011-8CC3-0030487E54B7.root']
-run_events = [(128899, 74158848)]
-no_refits = False
-use_dt_meantimer = False
-segments_in_fit = False
+# Parse options.
 
-if 'dbg' not in sys.argv:
-    # Reset these before submitting jobs.
-    dumps = debugdump = False
-    run_events = None
+# Options are prefixed with / instead of - or -- because cmsRun eats
+# options starting with dashes, and even throws an error when it finds
+# one it doesn't recognize.
+parser = argparse.ArgumentParser(prefix_chars='/', description='CosmicSplittingResolution ntuple maker')
+# Consume cmsRun arguments like -j and the python script filename.
+parser.add_argument('cmsrunargs', nargs='*')
 
-from_38x = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'TrackerAlignmentRcd': 'TrackerAlignment_GR10_v1_offline', 'TrackerAlignmentErrorRcd': 'TrackerAlignmentErrors_GR10_v1_offline', 'GlobalPositionRcd': 'GlobalAlignment_v2_offline', 'CSCAlignmentRcd': 'CSCAlignment_2009_v4_offline', 'DTAlignmentRcd': 'DTAlignment_2009_v4_offline'})
-nominal_muons = ('sqlite_file:Design.db', {'DTAlignmentRcd': 'DTAlignmentRcd', 'CSCAlignmentRcd': 'CSCAlignmentRcd'})
-new_tk = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'TrackerAlignmentRcd': 'TrackerAlignment_GR10_v5_offline', 'GlobalPositionRcd': 'GlobalAlignment_v4_offline'})
-new_tk_def = ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_v1_offline'})
-new_muons = ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {'DTAlignmentRcd': 'DTAlignment_2009_v5_offline', 'CSCAlignmentRcd': 'CSCAlignment_2009_v6_offline'})
-new_muon_apes = ('sqlite_file:initialMuonAlignment_DT-Aug11_CSC-Aug12_SetAPE.db', {'DTAlignmentErrorRcd': 'DTAlignmentErrorRcd', 'CSCAlignmentErrorRcd': 'CSCAlignmentErrorRcd'})
-from_173665 = ('sqlite_file:alignments_FT_R_44_V9_173665.db', dict((x, x+'JMT') for x in ['GlobalPositionRcd', 'TrackerAlignmentRcd', 'TrackerAlignmentErrorRcd', 'DTAlignmentRcd', 'DTAlignmentErrorRcd', 'CSCAlignmentRcd', 'CSCAlignmentErrorRcd']))
+group = parser.add_argument_group('Interactive+batch options (controlling the reconstruction and event selection)')
+group.add_argument('/alca-set', default='NewTkNewMu',
+                   help='The alignment/calibration configuration. This should be the name of a set of records found in alcas.py, used to set up the global tag and extra alignment/calibration records. Default is %(default)s.')
+group.add_argument('/pp-reco-mode', action='store_true', default=False,
+                   help='Instead of cosmic reconstruction (default), use collisions reconstruction.')
+group.add_argument('/require-pixels', action='store_true', default=False,
+                   help='Only save events with tracks having pixel hits (default is also to save events with pixel-less tracks).')
+group.add_argument('/num-refits', type=int, default=4,
+                   help='The total number of iterations to do in the track refits. Default is %(default)s.')
+group.add_argument('/no-refits', action='store_true', default=False,
+                   help='Disable extra iterations of the refits.')
+group.add_argument('/use-dt-meantimer', action='store_true', default=False,
+                   help='Use the DT meantimer segment reconstruction (disabled by default).')
+group.add_argument('/segments-in-fit', action='store_true', default=False,
+                   help='Use CSC/DT segments in the muon global fits (default is to use individual hits).')
+group.add_argument('/edm-output', action='store_true', default=False,
+                   help='Write out (and retrieve in batch mode) the EDM ROOT file (default is to just get the ntuple).')
 
-#jobname, extra_alca = 'globaltag', []
-#jobname, extra_alca = 'asMUO10004', [from_38x]
-#jobname, extra_alca = 'newtknominalmu', [new_tk, new_tk_def, nominal_muons]
-jobname, extra_alca = 'newtknewmu', [new_tk, new_tk_def, new_muons]
-#jobname, extra_alca = 'newtknewmunewmuapes', [new_tk, new_tk_def, new_muons, new_muon_apes]
-#jobname, extra_alca = 'from173665', [from_173665]
+group = parser.add_argument_group('Interactive-only options (controlling the files/events run over, and debugging output)')
+group.add_argument('/is-mc', action='store_true', default=False,
+                   help='Specified input file is MC (data assumed by default).')
+group.add_argument('/debug', action='store_true', default=False,
+                   help='Turn on the debug dumps (off by default).')
+group.add_argument('/run-event', metavar='run,event', action='append', dest='run_events',
+                   help='Run over a particular run,event only (use all events in input by default).')
+group.add_argument('/max-events', type=int, default=-1,
+                   help='Maximum events to process during interactive running (default %(default)s).')
+group.add_argument('/file', action='append', dest='files',
+                   help='Add an input file for interactive running.')
+group.add_argument('/dataset-id', type=int, default=0,
+                   help='The dataset id stored in each ntuple entry.')
+group.add_argument('/foo', action='store_true', default=False,
+                   help='bar!')
 
-is_mc = True
-if is_mc:
-    dataset_id = 3
-    run_events = None
-global_tag = 'START44_V9B::All'
-mc_strips_peak_mode = ('frontier://FrontierProd/CMS_COND_31X_STRIP', {'SiStripNoisesRcd': 'SiStripNoise_PeakMode_TickCorr_v2_mc'})
-mc_strips_deco_mode = ('frontier://FrontierProd/CMS_COND_31X_STRIP', {'SiStripNoisesRcd': 'SiStripNoise_DecoMode_TickCorr_v2_mc'})
-mc_cosmic_trigger = ('frontier://FrontierProd/CMS_COND_31X_L1T', {'L1MuCSCTFConfigurationRcd': 'L1MuCSCTFConfiguration_key-70511_mc', 'L1MuDTTFMasksRcd': 'L1MuDTTFMasks_key-dttf11_RS_080_mc', 'L1MuDTTFParametersRcd': 'L1MuDTTFParameters_key-dttf11_TSC_08_17_bot_mc', 'L1RPCBxOrConfigRcd': 'L1RPCBxOrConfig_key-LHC7_BOTTOM_mc', 'L1RPCConeDefinitionRcd': 'L1RPCConeDefinition_key-LHC7_BOTTOM_mc', 'L1RPCConfigRcd': 'L1RPCConfig_key-LHC7_BOTTOM_mc', 'L1RPCHsbConfigRcd': 'L1RPCHsbConfig_key-LHC7_BOTTOM_mc'})
-mc_ideal_ali = [
-    ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {
-        'CSCAlignmentRcd': 'CSCIdealGeometry310me42_mc',
-        'CSCAlignmentErrorRcd': 'CSCIdealGeometryErrors310me42_mc',
-        }
-     ),
-    ('frontier://FrontierProd/CMS_COND_31X_FROM21X', {
-        'DTAlignmentRcd': 'DTIdealGeometry200_mc',
-        'DTAlignmentErrorRcd': 'DTIdealGeometryErrors200_mc',
-        'TrackerAlignmentRcd': 'TrackerIdealGeometry210_mc',
-        'TrackerAlignmentErrorRcd': 'TrackerIdealGeometryErrors210_mc'
-        }
-     ),
-    ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_zero'}),
-    ]
+group = parser.add_argument_group('Batch options (controlling the submitter script)')
+group.add_argument('/batch-name', default='',
+                   help='The name for the batch of jobs. If not specified, it is determined from the other options, mainly alca_set.')
+group.add_argument('/submit-mc', action='store_true', default=False,
+                   help='Submit jobs using MC samples.')
+group.add_argument('/submit-data', action='store_true', default=False,
+                   help='Submit jobs using real data.')
+group.add_argument('/submit-highpt2010only', action='store_true', default=False,
+                   help='Submit only those jobs using the selected list of lumisections having high-pT cosmics for 2010 data. Implies /submit-data.')
 
-jobname, dataset_id, extra_alca = 'MC500PeakV9B', 3, [mc_strips_peak_mode, mc_cosmic_trigger]
-jobname, dataset_id, extra_alca = 'MC500PeakIdealAliOnly',  3, [mc_strips_peak_mode, mc_cosmic_trigger] + mc_ideal_ali
-global_tag = 'MC_44_V9B::All'
-jobname, dataset_id, extra_alca = 'MC500PeakIdeal',  3, [mc_strips_peak_mode, mc_cosmic_trigger]
+options = parser.parse_args()
 
-max_events = 5
-files = ['/store/mc/Summer11/TKCosmics_p500_PEAK/GEN-SIM-RAW/COSMC_42_PEAK-v1/0023/FC83D03F-C805-E111-8886-00238BBD7656.root']
+################################################################################
 
-if segments_in_fit:
-    jobname += 'segsinfit'
+# Batch job overrides will be put here by the submitting script. Don't
+# touch the next comment line!
 
-print 'configuring config:'
-for var in ['dumps', 'debugdump', 'dataset_id', 'global_tag', 'run_events', 'max_events', 'num_refits', 'extra_alca', 'no_edm_output', 'pp_reco_mode', 'require_pixels', 'no_refits', 'use_dt_meantimer', 'segments_in_fit', 'jobname']:
-    print '%20s: %s' % (var, repr(eval(var)))
+# xyzzy.
 
-########################################################################################
+################################################################################
 
-if __name__ == '__main__' and 'submit' in sys.argv:
-    assert not dumps and not debugdump and not run_events
+# Finalize the options after including any overrides, and do some
+# basic checks of consistency.
 
-    crab_cfg = '''
-[CRAB]
-jobtype = cmssw
-scheduler = %(scheduler)s
+# Determine the extra_alca from alca_set and pull it in from
+# alcas.py. Do a basic check on the values retrieved: raise an
+# exception if there is a duplicate for a particular record name.
+import alcas
+options.global_tag, options.extra_alca = getattr(alcas, options.alca_set, ('',None))
+if options.extra_alca is None:
+    raise ValueError('alca_set %s not found in alcas.py' % options.alca_set)
+rcds_seen = set()
+for connect, rcds in options.extra_alca:
+    for rcd, tag in rcds.iteritems():
+        if rcd in rcds_seen:
+            raise ValueError('multiple extra_alca entries for rcd %s' % rcd)
+        rcds_seen.add(rcd)
 
-[CMSSW]
-datasetpath = %(datasetpath)s
-pset = ntuple.py
-get_edm_output = 1
-%(job_control)s
+if options.foo:
+    options.debug = True
+    options.files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RAW-RECO/399_fromv3_CosmicTP-v1/0000/62816537-0A3E-E011-8CC3-0030487E54B7.root']
+    options.run_events = [(128899, 74158848)]
 
-[USER]
-ui_working_dir = crab/crab_cosmicssplittingres_%(jobname)s_%(working)s
-return_data = 1
-%(additional_input_files)s
-'''
+options.dumps = options.debugdump = options.debug
 
-    job_control = '''
-split_by_event = 1
-total_number_of_events = -1
-events_per_job = 1000
-'''
+if not options.files:
+    options.files = []
 
-    job_control_highpt2010 = '''
-lumi_mask = highpt2010.json
-split_by_lumi = 1
-lumis_per_job = 100
-total_number_of_lumis = -1
-'''
+# If not overriden, make up the batch_name out of alca_set and other options.
+if not options.batch_name:
+    options.batch_name = options.alca_set
+    if options.pp_reco_mode:
+        options.batch_name += 'PPReco'
+    if options.require_pixels:
+        options.batch_name += 'PixReq'
+    if options.num_refits != 4:
+        options.batch_name += '%iRefits' % options.num_refits
+        if options.no_refits:
+            raise ValueError('cannot specify a different number of refits and not to refit at the same time')
+    if options.no_refits:
+        options.batch_name += 'NoRefits'
+    if options.use_dt_meantimer:
+        options.batch_name += 'DTMeanTimer'
+    if options.segments_in_fit:
+        options.batch_name += 'SegsInFit'
+    if options.edm_output:
+        options.batch_name += 'EDMOut'
 
-    scheduler = 'condor'
-    
-    additional_input_files = [connect.replace('sqlite_file:', '') for connect, rcds in extra_alca if 'sqlite_file' in connect]
-    additional_input_files = 'additional_input_files = ' + ', '.join(additional_input_files) if additional_input_files else ''
+# Figure out the submitter options.
+options.submit = options.submit_mc or options.submit_data
+if options.submit_highpt2010only:
+    options.submit_data = True
 
-    if is_mc:
-        datasets = {
-            1: [('P10',  '/TKCosmics_p10_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW')],
-            2: [('P100', '/TKCosmics_p100_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW')],
-            3: [('P500', '/TKCosmics_p500_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW')],
-            }[dataset_id]
-    else:
-        datasets = [
-            ('SPCommissioning10v3', '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO'),
-            ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'),
-            ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'),
-            ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'),
-            ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'),
-            ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
-            ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
-            ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
-            ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'),
-            ]
+# Advertise options.
 
-        if 'highpt2010_only' in sys.argv:
-            jobname += 'highpt2010only'
-            datasets = datasets[:4]
-            job_control = job_control_highpt2010
+print 'CosmicSplittingResolutionFilter options:'
+for key in sorted(vars(options)):
+    if key == 'extra_alca':
+        continue
+    print key.ljust(50), repr(getattr(options, key))
+print 'extra_alca:'
+pprint(options.extra_alca)
 
-    for working, datasetpath in datasets:
-        open('crab.cfg', 'wt').write(crab_cfg % locals())
-        os.system('crab -create -submit')
+################################################################################
 
-    os.system('rm crab.cfg')
-    sys.exit(0)
+import FWCore.ParameterSet.Config as cms
 
-########################################################################################
-
-# Build the process, configured by the flags at the top of this file.
+# Build the process, configured by the above options.
 proc_name = 'CosmicSplittingResolution'
 process = cms.Process(proc_name)
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(max_events))
-process.source = cms.Source('PoolSource', fileNames = cms.untracked.vstring('file:pat.root'))
-process.source = cms.Source('PoolSource', fileNames = cms.untracked.vstring(*files))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(options.max_events))
+process.source = cms.Source('PoolSource', fileNames = cms.untracked.vstring(*options.files))
 from Configuration.EventContent.EventContent_cff import RAWEventContent
 process.source.inputCommands = cms.untracked.vstring('drop *')
 process.source.inputCommands.extend(RAWEventContent.outputCommands)
@@ -173,15 +152,15 @@ process.source.inputCommands.extend([
     ])
 process.source.dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
 
-if run_events:
-    process.source.eventsToProcess = cms.untracked.VEventRange(*[cms.untracked.EventRange(x[0],x[-1],x[0],x[-1]) for x in run_events])
+if options.run_events:
+    process.source.eventsToProcess = cms.untracked.VEventRange(*[cms.untracked.EventRange(x[0],x[-1],x[0],x[-1]) for x in options.run_events])
 
 # The output ntuple will go in this root file.
 process.TFileService = cms.Service('TFileService', fileName=cms.string('resolution_ntuple.root'))
 
 # Slick way to attach a bunch of different alignment records.
 from MuonAnalysis.Cosmics.CMSSWTools import set_preferred_alignment
-for i, (connect, rcds) in enumerate(extra_alca):
+for i, (connect, rcds) in enumerate(options.extra_alca):
     set_preferred_alignment(process, 'extraAlignment%i' % i, connect, **rcds)
 
 # Some extra stuff needed for the strip conditions.
@@ -196,25 +175,25 @@ process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = global_tag
+process.GlobalTag.globaltag = options.global_tag
 
-if not pp_reco_mode:
+if not options.pp_reco_mode:
     process.load('Configuration.StandardSequences.ReconstructionCosmics_cff')
-    if segments_in_fit:
+    if options.segments_in_fit:
         process.cosmicMuons.TrajectoryBuilderParameters.BackwardMuonTrajectoryUpdatorParameters.Granularity = 0
 else:
     process.load('Configuration.StandardSequences.Reconstruction_cff')
-    if segments_in_fit:
+    if options.segments_in_fit:
         process.standAloneMuons.STATrajBuilderParameters.BWFilterParameters.MuonTrajectoryUpdatorParameters.Granularity = 0
 
-if is_mc:
+if options.is_mc:
     process.load('SimGeneral.MixingModule.mixNoPU_cfi')
     process.load('SimGeneral.TrackingAnalysis.trackingParticles_cfi')
     process.load('Configuration.StandardSequences.RawToDigi_cff')
 else:
     process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
 
-if not no_edm_output:
+if options.edm_output:
     process.out = cms.OutputModule('PoolOutputModule', fileName = cms.untracked.string('edm.root'))
     process.outp = cms.EndPath(process.out)
 
@@ -222,8 +201,8 @@ process.load('FWCore.MessageLogger.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.MessageLogger.suppressWarning.append('castorDigis')
 
-if dumps:
-    if debugdump:
+if options.dumps:
+    if options.debugdump:
         process.MessageLogger.cerr.threshold = 'DEBUG'
         process.MessageLogger.debugModules = cms.untracked.vstring('UTstmTPFMS1', 'UTstmGlobal1', 'cosmicMuons', 'globalCosmicMuons')
         #process.MessageLogger.debugModules = cms.untracked.vstring('STstmTPFMS1', 'STstmTPFMS2', 'STstmTPFMS3', 'STstmTPFMS4', 'STstmGlobal1', 'STstmGlobal2', 'STstmGlobal3', 'STstmGlobal4')
@@ -240,7 +219,7 @@ if dumps:
 # Stuff we need for refits.
 
 # For refitting tracker tracks.
-if not pp_reco_mode:
+if not options.pp_reco_mode:
     from RecoTracker.TrackProducer.TrackRefitterP5_cfi import TrackRefitterP5
     track_refitter = TrackRefitterP5.clone()
 else:
@@ -257,7 +236,7 @@ muon_refitter.RefitterParameters.RescaleErrorFactor = cms.double(10)
 #muon_refitter.RefitterParameters.RefitRPCHits = False
 #muon_refitter.RefitterParameters.Propagator = 'SteppingHelixPropagatorAny'
 
-if not pp_reco_mode:
+if not options.pp_reco_mode:
     muon_refitter.RefitterParameters.PropDirForCosmics = cms.bool(True)
     from RecoMuon.TrackingTools.MuonTrackLoader_cff import MuonUpdatorAtVertexAnyDirection
     muon_refitter.TrackLoaderParameters = cms.PSet(
@@ -271,7 +250,7 @@ if not pp_reco_mode:
     )
 
 # Configure the right set of reconstruction paths.
-if not pp_reco_mode:
+if not options.pp_reco_mode:
     reco_frag = process.reconstructionCosmics
     reco_frag.remove(process.egammarecoCosmics_woElectrons) # this causes crashes, we don't use it anyway
     reco_frag.remove(process.CSCHaloData) # crashes in segments_in_fit mode
@@ -281,13 +260,13 @@ else:
 reco_frag.remove(process.lumiProducer) # crashes on some lumis, don't care about this for cosmics
 
 # If specified, try the "meantimer" DT algo.
-if use_dt_meantimer:
+if options.use_dt_meantimer:
     while reco_frag.remove(process.dt4DSegments):
         pass
     process.load('RecoLocalMuon.DTSegment.dt4DSegments_MTPatternReco4D_LinearDriftFromDBLoose_cfi')
     reco_frag.replace(process.dt1DRecHits, process.dt1DRecHits * process.dt4DSegments)
 
-########################################################################################
+################################################################################
 
 # Set up to use multiple kinds of input in one job. E.g. "UT" mode
 # works from "unsplit" tracks, which is the 2-leg recontruction
@@ -297,7 +276,7 @@ if use_dt_meantimer:
 
 output_paths = []
 
-if pp_reco_mode:
+if options.pp_reco_mode:
     label_names = {
         'PP': ('generalTracks',                        'globalMuons',             'muons'),
         }
@@ -318,7 +297,7 @@ for reco_kind in label_names.keys():
     def get_proc_name(c=None):
         if c is not None:
             return c
-        if no_refits:
+        if options.no_refits:
             return ''
         else:
             return proc_name
@@ -345,23 +324,23 @@ for reco_kind in label_names.keys():
     
     # tev_refit_start_label determines what the tpfms and picky refits
     # start from, and is passed into CosmicSplittingResolution but not used.
-    tev_refit_start_label = kind_tag('stmGlobal%i' % num_refits)
+    tev_refit_start_label = kind_tag('stmGlobal%i' % options.num_refits)
 
     # ref_track_label is used to pick the reference track, used
     # e.g. to bin by pT.
-    if no_refits:
+    if options.no_refits:
         # Not refitting, so just use the original track as-is.
         ref_track_label = split_track_label
     elif split_tracks_mode:
         # Use the refit version of splittedTracksP5.
-        ref_track_label = kind_tag('stmUnsplit%i' % num_refits)
+        ref_track_label = kind_tag('stmUnsplit%i' % options.num_refits)
     else:
         # Use the refit version of ctfWithMaterialTracksP5LHCNavigation.
-        ref_track_label = kind_tag('stmTkOnly%i' % num_refits)
+        ref_track_label = kind_tag('stmTkOnly%i' % options.num_refits)
 
     refit_labels = cms.VInputTag()
     for nick in tracks_to_refit:
-        for i in xrange(num_refits):
+        for i in xrange(options.num_refits):
             refit_labels.append(kind_tag('stm%s%i' % (nick, i+1)))
 
     # We refit each track N times (N=4 by default). Some "fancy" code
@@ -379,14 +358,14 @@ for reco_kind in label_names.keys():
 
     def refit_it(module, name, first_from, is_tracker_only=False):
         refits = []
-        for i in xrange(num_refits):
+        for i in xrange(options.num_refits):
             if i == 0:
                 tag_src = first_from
             else:
                 tag_src = kind_tag('stm%s%i' % (name, i))
 
             tag_dst = kind_tag('stm%s%i' % (name, i + 1))
-            match_tag = deepcopy(tag_dst)
+            match_tag = copy.deepcopy(tag_dst)
 
             refit_obj = module.clone()
 
@@ -446,7 +425,7 @@ for reco_kind in label_names.keys():
             base_name = 'stmMatch%s%i'
 
         comp_obj = cms.EDProducer('T2TMapComposer',
-            map_tags = cms.VInputTag(*[kind_tag(base_name % (name, i+1)) for i in xrange(num_refits)])
+            map_tags = cms.VInputTag(*[kind_tag(base_name % (name, i+1)) for i in xrange(options.num_refits)])
         )
 
         tag = kind_tag('refitMap%s' % name)
@@ -462,7 +441,7 @@ for reco_kind in label_names.keys():
     # Run just local cosmic reco and cosmic muon reco, then run our
     # refits.
     sobj = process.RawToDigi * reco_frag * refits
-    if is_mc:
+    if options.is_mc:
         sobj = process.mix * process.mergedtruth * sobj
     myrecocosmics = kindly_process('myrecocosmics', cms.Sequence(sobj))
 
@@ -470,10 +449,10 @@ for reco_kind in label_names.keys():
     # parameters.
     pickedTracks = kindly_process('pickedTracks',
                                   cms.EDFilter('CosmicSplittingResolutionFilter',
-                                               is_mc                     = cms.bool(is_mc),
-                                               dataset_id                = cms.uint32(dataset_id),
+                                               is_mc                     = cms.bool(options.is_mc),
+                                               dataset_id                = cms.uint32(options.dataset_id),
                                                use_split_tracks          = cms.bool(split_tracks_mode),
-                                               use_pp_reco               = cms.bool(pp_reco_mode),
+                                               use_pp_reco               = cms.bool(options.pp_reco_mode),
                                                gen_muon_label            = cms.InputTag('genParticles'),
                                                split_muon_label          = split_muon_label,
                                                ref_track_label           = ref_track_label,
@@ -487,15 +466,15 @@ for reco_kind in label_names.keys():
                                                sigma_switch_pt_threshold = cms.double(200),
                                                max_delta_phi             = cms.double(0.1),
                                                max_delta_theta           = cms.double(0.05),
-                                               require_pixels            = cms.bool(require_pixels),
-                                               no_refits                 = cms.bool(no_refits),
+                                               require_pixels            = cms.bool(options.require_pixels),
+                                               no_refits                 = cms.bool(options.no_refits),
                                                )
                                   )
 
     # If we're instructed not to do any extra refitting (other than
     # the original TeV refits), undo all the stuff done above. Easier
     # to define and forget rather than conditionally define :)
-    if no_refits:
+    if options.no_refits:
         to_run = pickedTracks
         pickedTracks.ref_track_label = cms.InputTag('cosmictrackfinderP5' if split_tracks_mode else 'ctfWithMaterialTracksP5LHCNavigation')
         pickedTracks.global_map_label = cms.InputTag('tevMuons', 'default')
@@ -509,14 +488,14 @@ for reco_kind in label_names.keys():
     path_obj, path_name = kindly_process('recoonlypath', cms.Path(to_run), return_name=True)
     output_paths.append(path_name)
 
-########################################################################################
+################################################################################
 
-if hasattr(process, 'out') and not no_edm_output:
+if hasattr(process, 'out') and options.edm_output:
     # The ntuple maker is an EDFilter, so it selects events that
     # were written into the ntuple.
     process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
 
-if dumps and False:
+if options.dumps and False:
     from Test.Tests.tools import vinputtagize
     process.EventDump = cms.EDAnalyzer('EventDump', use_cout = cms.untracked.bool(True))
     if not pp_reco_mode:
@@ -536,4 +515,147 @@ if dumps and False:
     process.ped = cms.Path(process.EventDump)
     #process.Tracer = cms.Service('Tracer')
                         
-# Done!
+# Done configuring the process.
+    
+################################################################################
+
+# The job-submitting code.
+
+if __name__ == '__main__' and options.submit:
+    # We're configured as a particular batch by now, and we have
+    # multiple datasets to submit jobs on. For each, we'll write out a
+    # crab.cfg and a copy of this config.py file, tailored to the
+    # settings for this batch, plus overrides for the particular
+    # dataset (e.g. setting dataset_id or peak/deco mode depending on
+    # the MC sample). Then, we submit.
+
+    # First, snippets for the crab.cfg.
+    crab_cfg = '''
+[CRAB]
+jobtype = cmssw
+scheduler = %(scheduler)s
+
+[CMSSW]
+datasetpath = %(dataset_path)s
+pset = %(new_py_fn)s
+get_edm_output = 1
+%(job_control)s
+
+[USER]
+ui_working_dir = crab/crab_cosmicsplittingres_%(batch_name)s_%(sample_name)s
+return_data = 1
+%(additional_input_files)s
+'''
+
+    # For data, don't bother splitting by LS; instead run 1000 events
+    # per job. This is low enough not to use too much memory and
+    # crash.
+    job_control_data = '''
+split_by_event = 1
+total_number_of_events = -1
+events_per_job = 1000
+'''
+    
+    # MC is much better behaved (LS merging is trivial), so up the
+    # events/job.
+    job_control_mc = job_control_data.replace('1000', '10000') 
+
+    # For tests, option to run just on a few LS that contained high-pT
+    # muons in 2010 cosmic dataset.
+    job_control_highpt2010only = '''
+lumi_mask = highpt2010.json
+split_by_lumi = 1
+lumis_per_job = 100
+total_number_of_lumis = -1
+'''
+
+    # Submitting jobs just locally on FNAL LPC (may set scheduler
+    # based on the individual datasets below in future).
+    scheduler = 'condor'
+
+    # Based on the extra_alca, determine what files we need to ship
+    # off (those pointed at by sqlite_file: connect strings).
+    additional_input_files = [connect.replace('sqlite_file:', '') for connect, rcds in options.extra_alca if 'sqlite_file' in connect]
+    additional_input_files = 'additional_input_files = ' + ', '.join(additional_input_files) if additional_input_files else ''
+
+    # Figure out what to write to the new config.py, which starts as a
+    # copy of the present file. First, split this file at the magic
+    # string (hope you didn't touch it) and add the overrides.
+    new_py_start, new_py_end = open('test.py').read().split('# xyzzy.\n')
+    for k,v in vars(options).iteritems():
+        new_py_start += 'options.%s = %r\n' % (k,v)
+
+    # In the new config, disable submission to prevent a loop, and
+    # turn off stuff that is for interactive jobs only and would mess
+    # up the batch jobs.
+    new_py_start += '''
+options.submit = False
+options.dumps = options.debugdump = False
+options.run_events = None
+'''
+
+    # The new-config.py writing will be the same for data and MC
+    # except for a few different lines; here's a function to handle
+    # that.
+    new_py_fn = 'test_crab.py'
+    def write_new_py(*extra_lines):
+        new_py_f = open(new_py_fn, 'wt')
+        new_py_f.write(new_py_start)
+        for line in extra_lines:
+            new_py_f.write(line + '\n')
+        new_py_f.write(new_py_end)
+        new_py_f.close()
+
+    # Ditto for job submission. The crab.cfg template above gets
+    # filled in by the variables in the options dict, overridden by
+    # locals() calls.
+    def submit(locs):
+        opt_dict = copy.copy(vars(options))
+        opt_dict.update(locs)
+        open('crab.cfg', 'wt').write(crab_cfg % opt_dict)
+        if options.submit_debug:
+            os.system('diff %s %s' % new_py_fn.replace('_crab', ''), new_py_fn)
+            os.system('cat crab.cfg')
+            raw_input('submit?')
+        os.system('crab -create -submit')
+
+    # Define the datasets and submit the jobs for data and/or MC.
+    
+    if options.submit_mc:
+        job_control = job_control_mc
+        datasets = [
+            ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
+            ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
+            ('P500Peak', 3, '/TKCosmics_p100_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
+            ]
+        
+        for sample_name, dataset_id, dataset_path in datasets:
+            # Here we do MC-only lines.
+            write_new_py('options.dataset_id = %i' % dataset_id,
+                         'options.is_mc = True')
+            submit(locals())
+
+    if options.submit_data:
+        job_control = job_control_data
+        datasets = [
+            ('SPCommissioning10v3', '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO'),
+            ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'),
+            ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'),
+            ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'),
+            ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'),
+            ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
+            ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
+            ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
+            ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'),
+            ]
+
+        if options.submit_highpt2010only:
+            job_control = job_control_highpt2010only
+            datasets = datasets[:4]
+
+        for sample_name, dataset_path in datasets:
+            # No data-only lines for now, as the defaults are all set for data.
+            write_new_py()
+            submit(locals())
+
+    os.system('rm -f crab.cfg %s' % new_py_fn)
