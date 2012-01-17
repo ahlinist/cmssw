@@ -6,59 +6,58 @@ import argparse, copy, sys, os
 
 # Parse options.
 
-# Our options are prefixed with / instead of - or -- because cmsRun eats
+# Our options are prefixed with + instead of - or -- because cmsRun eats
 # options starting with dashes, and even throws an error when it finds
 # one it doesn't recognize.
-parser = argparse.ArgumentParser(prefix_chars='/', description='CosmicSplittingResolutionFilter (ntuple maker)')
+parser = argparse.ArgumentParser(prefix_chars='+', description='CosmicSplittingResolutionFilter (ntuple maker)')
 # Consume cmsRun arguments like -j and the python script filename
 # (argparse will treat them as positionals since they don't start with
-# /).
+# +).
 parser.add_argument('cmsrunargs', nargs='*')
 
 group = parser.add_argument_group('Interactive+batch options (controlling the reconstruction and event selection)')
-group.add_argument('/alca-set', default='NewTkNewMu',
+group.add_argument('+alca-set', default='NewTkNewMu',
                    help='The alignment/calibration configuration. This should be the name of a set of records found in alcas.py, used to set up the global tag and extra alignment/calibration records. Default is %(default)s.')
-group.add_argument('/pp-reco-mode', action='store_true',
+group.add_argument('+pp-reco-mode', action='store_true',
                    help='Instead of cosmic reconstruction (default), use collisions reconstruction.')
-group.add_argument('/require-pixels', action='store_true',
+group.add_argument('+require-pixels', action='store_true',
                    help='Only save events with tracks having pixel hits (default is also to save events with pixel-less tracks).')
-group.add_argument('/num-refits', type=int, default=4,
+group.add_argument('+num-refits', type=int, default=4,
                    help='The total number of iterations to do in the track refits. Default is %(default)s.')
-group.add_argument('/no-refits', action='store_true',
+group.add_argument('+no-refits', action='store_true',
                    help='Disable extra iterations of the refits.')
-group.add_argument('/use-dt-meantimer', action='store_true',
+group.add_argument('+use-dt-meantimer', action='store_true',
                    help='Use the DT meantimer segment reconstruction (disabled by default).')
-group.add_argument('/segments-in-fit', action='store_true',
+group.add_argument('+segments-in-fit', action='store_true',
                    help='Use CSC/DT segments in the muon global fits (default is to use individual hits).')
-group.add_argument('/edm-output', action='store_true',
+group.add_argument('+edm-output', action='store_true',
                    help='Write out (and retrieve in batch mode) the EDM ROOT file (default is to just get the ntuple).')
 
 group = parser.add_argument_group('Interactive-only options (controlling the files/events run over, and debugging output)')
-group.add_argument('/is-mc', action='store_true',
+group.add_argument('+is-mc', action='store_true',
                    help='Specified input file is MC (data assumed by default).')
-group.add_argument('/debug', action='store_true',
+group.add_argument('+debug', action='store_true',
                    help='Turn on the debug dumps (off by default).')
-group.add_argument('/run-event', metavar='run,event', action='append', dest='run_events',
+group.add_argument('+foo', action='store_true', help=argparse.SUPPRESS)
+group.add_argument('+run-event', metavar='run,event', action='append', dest='run_events',
                    help='Run over a particular run,event only (use all events in input by default).')
-group.add_argument('/max-events', type=int, default=-1,
+group.add_argument('+max-events', type=int, default=-1,
                    help='Maximum events to process during interactive running (default %(default)s).')
-group.add_argument('/file', metavar='FILE', action='append', dest='files',
+group.add_argument('+file', metavar='FILE', action='append', dest='files',
                    help='Add an input file for interactive running.')
-group.add_argument('/dataset-id', type=int, default=0,
+group.add_argument('+dataset-id', type=int, default=0,
                    help='The dataset id stored in each ntuple entry.')
-group.add_argument('/foo', action='store_true',
-                   help='bar!')
 
 group = parser.add_argument_group('Batch options (controlling the submitter script)')
-group.add_argument('/batch-name', default='',
+group.add_argument('+batch-name', default='',
                    help='The name for the batch of jobs. If not specified, it is determined from the other options, mainly alca_set.')
-group.add_argument('/submit-mc', action='store_true',
+group.add_argument('+submit-mc', action='store_true',
                    help='Submit jobs using MC samples.')
-group.add_argument('/submit-data', action='store_true',
+group.add_argument('+submit-data', action='store_true',
                    help='Submit jobs using real data.')
-group.add_argument('/submit-highpt2010only', action='store_true',
-                   help='Submit only those jobs using the selected list of lumisections having high-pT cosmics for 2010 data. Implies /submit-data.')
-group.add_argument('/submit-debug', action='store_true',
+group.add_argument('+submit-highpt2010only', action='store_true',
+                   help='Submit only those jobs using the selected list of lumisections having high-pT cosmics for 2010 data. Implies +submit-data.')
+group.add_argument('+submit-debug', action='store_true',
                    help='Debug the batch submission.')
 options = parser.parse_args()
 
