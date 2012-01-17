@@ -24,7 +24,14 @@ channelInfo = cms.PSet(
     finalLumi = cms.untracked.double(14.5),
     MTWCut = cms.untracked.double(50.0),#Default 50.0 GeV
     loosePtCut = cms.untracked.double(30.0),#Default 30.0 GeV
+<<<<<<< SingleTopRootPlizer_cfi.py
+    RelIsoCut = cms.untracked.double(0.125),
+    mcPUFile = cms.untracked.string("pileupdistr_TChannel.root"),
+    puHistoName = cms.untracked.string("pileUpDumper/PileUpTChannel"),
+
+=======
     RelIsoCut = cms.untracked.double(0.1)
+>>>>>>> 1.9
     ),
 
 
@@ -71,7 +78,7 @@ TreesMu = TreesEle.clone(
         originalEvents = cms.untracked.double(480000),
         finalLumi = cms.untracked.double(14.5),
         MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
-        RelIsoCut = cms.untracked.double(0.05),
+        RelIsoCut = cms.untracked.double(0.15),
         ),
     leptonsEta = cms.InputTag("nTupleMuons","tightMuonsEta"),  
     leptonsPt = cms.InputTag("nTupleMuons","tightMuonsPt"),  
