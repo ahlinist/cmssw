@@ -65,7 +65,7 @@ countLeptonsNoOverlap = cms.EDFilter("CandOrCounterNoOverlap",
                             )
 
 
-countLeptons = cms.EDFilter("CandOrCounter",
+countLeptons = cms.EDFilter("SingleTopLeptonCounter",
                             
                             looseMuons = cms.InputTag("looseMuons"),
                             looseElectrons = cms.InputTag("looseElectrons"),
