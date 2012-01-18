@@ -4,7 +4,7 @@ process = cms.Process("RCTVAL")
 
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'GR09_H_V25::All' #PUT LATEST GLOBAL TAG HERE 
+process.GlobalTag.globaltag = 'GR_R_42_V24::All' #PUT LATEST GLOBAL TAG HERE 
 
 # UNCOMMENT THIS LINE TO RUN ON SETTINGS FROM THE DATABASE
 # IF WE ARE TESTING THE RCT  WE DONT WANT THE DATABASE
@@ -12,7 +12,7 @@ process.GlobalTag.globaltag = 'GR09_H_V25::All' #PUT LATEST GLOBAL TAG HERE
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-
+    '/store/data/Run2011A/MinimumBias/RAW-RECO/ValSkim-08Nov2011-v1/0000/006A22F4-190F-E111-9A37-001A92810AB6.root'    
     )
 )
 
