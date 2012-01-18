@@ -4,7 +4,7 @@ process = cms.Process("RCTVAL")
 
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'GR09_R_34X_V4::All' #PUT LATEST GLOBAL TAG HERE 
+process.GlobalTag.globaltag = 'GR09_H_V25::All' #PUT LATEST GLOBAL TAG HERE 
 
 # UNCOMMENT THIS LINE TO RUN ON SETTINGS FROM THE DATABASE
 # IF WE ARE TESTING THE RCT  WE DONT WANT THE DATABASE
