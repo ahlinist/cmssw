@@ -100,7 +100,11 @@ void XSSystTot_1S(){
     S100->SetBinContent(i, S5->GetBinContent(i));
     S200->SetBinContent(i, S5->GetBinContent(i));
     S100->SetBinError(i, TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i))));
-    S200->SetBinError(i, TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i))));    
+    S200->SetBinError(i, TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i))));   
+    //S100->SetBinError(i, TMath::Sqrt((s0)));
+    //S200->SetBinError(i, TMath::Sqrt((s0_)));
+    //S100->SetBinError(i, TMath::Sqrt((S5->GetBinError(i)*S5->GetBinError(i))));
+    //S200->SetBinError(i, TMath::Sqrt((S5->GetBinError(i)*S5->GetBinError(i))));       
     s0=0;s0_=0;
   }
   
@@ -270,7 +274,11 @@ void XSSystTot_2S(){
     S100->SetBinContent(i, S5->GetBinContent(i));
     S200->SetBinContent(i, S5->GetBinContent(i));
     S100->SetBinError(i, TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i))));
-    S200->SetBinError(i, TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i))));    
+    S200->SetBinError(i, TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i))));
+    //S100->SetBinError(i, TMath::Sqrt((s0)));
+    //S200->SetBinError(i, TMath::Sqrt((s0_)));
+    //S100->SetBinError(i, TMath::Sqrt((S5->GetBinError(i)*S5->GetBinError(i))));
+    //S200->SetBinError(i, TMath::Sqrt((S5->GetBinError(i)*S5->GetBinError(i))));
     s0=0;s0_=0;
   }
  
@@ -438,8 +446,13 @@ void XSSystTot_3S(){
     
     S100->SetBinContent(i, S5->GetBinContent(i));
     S200->SetBinContent(i, S5->GetBinContent(i));
-    S100->SetBinError(i, TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i))));
-    S200->SetBinError(i, TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i))));    
+    //S100->SetBinError(i, TMath::Sqrt((s0)+(S5->GetBinError(i)*S5->GetBinError(i))));
+    //S200->SetBinError(i, TMath::Sqrt((s0_)+(S5->GetBinError(i)*S5->GetBinError(i))));   
+    //S100->SetBinError(i, TMath::Sqrt((s0)));
+    //S200->SetBinError(i, TMath::Sqrt((s0_)));
+    S100->SetBinError(i, TMath::Sqrt((S5->GetBinError(i)*S5->GetBinError(i))));
+    S200->SetBinError(i, TMath::Sqrt((S5->GetBinError(i)*S5->GetBinError(i))));
+    
     s0=0;s0_=0;	
     
   }
@@ -465,7 +478,7 @@ void XSSystTot_3S(){
   gr_ratio->Draw("AP");
   
   cout << " Y(3S) 1Srho Xsection = "  << s5 << " + " << s2 << " ("  << e5  << ")" << " - " << s2_ << " ("  << e5_ << ")" <<  endl;
-  TFile *f = new TFile("Final3S.root", "RECREATE");
+  TFile *f = new TFile("Final3S_stat.root", "RECREATE");
   //TFile *f = new TFile("Final3S_0_2_0_50.root", "RECREATE");
   //TFile *f = new TFile("Final3S_0_2_0_30.root", "RECREATE");
   gr->Write();
@@ -1026,30 +1039,33 @@ void Ratio_UncTables(){
   
   // Table for 2S/1S Ratio and Errors
   double  sig_1s(0.), tot_h_1s(0.), tot_l_1s(0.), rho_h_1s(0.), bg_1s(0.), msc_1s(0.), binmig_1s(0.); 
-  
+  double  stat_1s(0.), stat_2s(0.), stat_ratio(0.); 
   double  sig_2s(0.), tot_h_2s(0.), tot_l_2s(0.), rho_h_2s(0.), rho_l_2s(0.), bg_2s(0.), msc_2s(0.), binmig_2s(0.); 
   double  sig_ratio(0.), tot_h_ratio(0.), tot_l_ratio(0.), rho_h_ratio(0.), rho_l_ratio(0.), bg_ratio(0.), msc_ratio(0.), binmig_ratio(0.); 
   //ofstream OUT("RatioUnc2Sto1S.tex");
   //OUT << "% ----------------------------------------------------------------------" << endl;
   //OUT << "% -- 2Sto1SS" << endl;
   for ( int x = 1; x <= S5_1s->GetNbinsX(); ++x ){
+    stat_1s = TMath::Sqrt(S5_1s->GetBinError(x)*S5_1s->GetBinError(x))/S5_1s->GetBinContent(x); 
     sig_1s = TMath::Sqrt(S3_1s->GetBinContent(x)*S3_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
     bg_1s = TMath::Sqrt(S4_1s->GetBinContent(x)*S4_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
     msc_1s = TMath::Sqrt(S9_1s->GetBinContent(x)*S9_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
-    rho_h_1s = TMath::Sqrt(S8_1s->GetBinContent(x)*S8_1s->GetBinContent(x))/S5_1s->GetBinContent(x); 
+    rho_h_1s = TMath::Sqrt(S8_1s->GetBinContent(x)*S8_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
     binmig_1s = TMath::Sqrt(S10_1s->GetBinContent(x)*S10_1s->GetBinContent(x))/S5_1s->GetBinContent(x);
-    tot_h_1s = TMath::Sqrt( bg_1s*bg_1s + rho_h_1s*rho_h_1s + sig_1s*sig_1s + msc_1s*msc_1s + binmig_1s*binmig_1s);
-    tot_l_1s = TMath::Sqrt( sig_1s*sig_1s + bg_1s*bg_1s + msc_1s*msc_1s + binmig_1s*binmig_1s);
+    tot_h_1s = TMath::Sqrt( bg_1s*bg_1s + rho_h_1s*rho_h_1s + sig_1s*sig_1s + msc_1s*msc_1s + binmig_1s*binmig_1s + stat_1s*stat_1s);
+    tot_l_1s = TMath::Sqrt( sig_1s*sig_1s + bg_1s*bg_1s + msc_1s*msc_1s + binmig_1s*binmig_1s + stat_1s*stat_1s);
     
+    stat_2s = TMath::Sqrt(S5_2s->GetBinError(x)*S5_2s->GetBinError(x))/S5_2s->GetBinContent(x);
     sig_2s = TMath::Sqrt(S3_2s->GetBinContent(x)*S3_2s->GetBinContent(x))/S5_2s->GetBinContent(x);
     bg_2s = TMath::Sqrt(S4_2s->GetBinContent(x)*S4_2s->GetBinContent(x))/S5_2s->GetBinContent(x);
     msc_2s = TMath::Sqrt(S10_2s->GetBinContent(x)*S10_2s->GetBinContent(x))/S5_2s->GetBinContent(x);
-    rho_l_2s = TMath::Sqrt(S8_2s->GetBinContent(x)*S8_2s->GetBinContent(x))/S5_2s->GetBinContent(x); 
-    rho_h_2s = TMath::Sqrt(S9_2s->GetBinContent(x)*S9_2s->GetBinContent(x))/S5_2s->GetBinContent(x); 
+    rho_l_2s = TMath::Sqrt(S8_2s->GetBinContent(x)*S8_2s->GetBinContent(x))/S5_2s->GetBinContent(x);
+    rho_h_2s = TMath::Sqrt(S9_2s->GetBinContent(x)*S9_2s->GetBinContent(x))/S5_2s->GetBinContent(x);
     binmig_2s = TMath::Sqrt(S11_2s->GetBinContent(x)*S11_2s->GetBinContent(x))/S5_2s->GetBinContent(x);
-    tot_h_2s = TMath::Sqrt( bg_2s*bg_2s + rho_h_2s*rho_h_2s + sig_2s*sig_2s + msc_2s*msc_2s + binmig_2s*binmig_2s);
-    tot_l_2s = TMath::Sqrt( sig_2s*sig_2s + bg_2s*bg_2s + rho_l_2s*rho_l_2s + msc_2s*msc_2s + binmig_2s*binmig_2s);    
+    tot_h_2s = TMath::Sqrt( bg_2s*bg_2s + rho_h_2s*rho_h_2s + sig_2s*sig_2s + msc_2s*msc_2s + binmig_2s*binmig_2s + stat_2s*stat_2s);
+    tot_l_2s = TMath::Sqrt( sig_2s*sig_2s + bg_2s*bg_2s + rho_l_2s*rho_l_2s + msc_2s*msc_2s + binmig_2s*binmig_2s + stat_2s*stat_2s);    
     
+    stat_ratio = TMath::Sqrt((stat_1s*stat_1s)+(stat_2s*stat_2s));
     sig_ratio = TMath::Sqrt((sig_1s*sig_1s)+(sig_2s*sig_2s));
     bg_ratio = TMath::Sqrt((bg_1s*bg_1s)+(bg_2s*bg_2s));
     msc_ratio = TMath::Sqrt((msc_1s*msc_1s)+(msc_2s*msc_2s));
@@ -1058,14 +1074,16 @@ void Ratio_UncTables(){
     rho_l_ratio = TMath::Sqrt((rho_l_2s*rho_l_2s));
     tot_h_ratio = TMath::Sqrt((tot_h_1s*tot_h_1s)+(tot_h_2s*tot_h_2s));
     tot_l_ratio = TMath::Sqrt((tot_l_1s*tot_l_1s)+(tot_l_2s*tot_l_2s));
-    //cout << "sig_ratio = "<< sig_ratio <<endl;
-    //cout << "bg_ratio = "<< bg_ratio <<endl; 
-    //cout << "msc_ratio = "<< msc_ratio <<endl; 
-    //cout << "binmig_ratio = "<< binmig_ratio <<endl;
-    //cout << "rho_h_ratio = "<< rho_h_ratio <<endl;
-    //cout << "rho_l_ratio = "<< rho_l_ratio <<endl;
-    //cout << "tot_h_ratio = "<< tot_h_ratio <<endl;
-    //cout << "tot_l_ratio = "<< tot_l_ratio <<endl;    
+    
+    cout << "stat_ratio = "<< stat_ratio <<endl;
+    cout << "sig_ratio = "<< sig_ratio <<endl;
+    cout << "bg_ratio = "<< bg_ratio <<endl; 
+    cout << "msc_ratio = "<< msc_ratio <<endl; 
+    cout << "binmig_ratio = "<< binmig_ratio <<endl;
+    cout << "rho_h_ratio = "<< rho_h_ratio <<endl;
+    cout << "rho_l_ratio = "<< rho_l_ratio <<endl;
+    cout << "tot_h_ratio = "<< tot_h_ratio <<endl;
+    cout << "tot_l_ratio = "<< tot_l_ratio <<endl;    
     
   }
   
@@ -1188,12 +1206,198 @@ void Ratio_unpol(){
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- Ratios_unpol" << endl;
   for ( int x = 1; x <= S1h->GetNbinsX(); ++x ){
-    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol} {\\ensuremath{ {%.2f } } }",2 ,1, x, s21[x-1] ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
-    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol} {\\ensuremath{ {%.2f } } }",3 ,1, x, s31[x-1] ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol} {\\ensuremath{ {%.3f } } }",2 ,1, x, s21[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol} {\\ensuremath{ {%.3f } } }",3 ,1, x, s31[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
+  }
+  
+  OUT.close();
+  
+}
+
+void Ratio_unpol_stat(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S_stat.root");
+  TH1D *S1h; TH1D *S1l;
+  S1h = (TH1D*)gFile->Get("Ups1S_ratioh");
+  S1l = (TH1D*)gFile->Get("Ups1S_ratiol");
+  TFile *f = new TFile("Final2S_stat.root");
+  TH1D *S2h; TH1D *S2l;
+  S2h = (TH1D*)gFile->Get("Ups2S_ratioh");
+  S2l = (TH1D*)gFile->Get("Ups2S_ratiol");  
+  TFile *f = new TFile("Final3S_stat.root");
+  TH1D *S3h; TH1D *S3l;
+  S3h = (TH1D*)gFile->Get("Ups3S_ratioh");
+  S3l = (TH1D*)gFile->Get("Ups3S_ratiol");   
+  
+  double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
+  double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
+  double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
+    
+   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+   
+   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+   term21_h = term1_h+term2_h;
+   term31_h = term1_h+term3_h;
+   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+   
+      
+   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+   term21_l = term1_l+term2_l;
+   term31_l = term1_l+term3_l;
+   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+   
+   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+   cout << endl;
+  }  
+  
+  double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
+  double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
+  double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
+
+  S21 = new TGraphAsymmErrors(10,xbin,s21,xl,xh,e21_l,e21_h);
+  S21->SetName("Ups1S_2S");
+  S21->SetMarkerColor(2);
+  S21->SetMarkerStyle(21);
+    
+  S31 = new TGraphAsymmErrors(10,xbin,s31,xl,xh,e31_l,e31_h);
+  S31->SetName("Ups1S_3S");
+  S31->SetMarkerColor(4);
+  S31->SetMarkerStyle(22);
+    
+  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S21->GetYaxis()->SetTitle("Ratio");
+  S21->SetTitle("");
+  S21->SetMinimum(0.);
+  S21->SetMaximum(1.);
+  S21->Draw("AP");
+  S31->Draw("P");
+  legg = new TLegend(0.1,0.6,0.5,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  //c1->SaveAs("Ratio_unpol_stat.pdf");
+  
+  
+  // Table for Ratios
+  ofstream OUT("Ratios_unpol_stat.tex");
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- Ratios_unpol_stat" << endl;
+  for ( int x = 1; x <= S1h->GetNbinsX(); ++x ){
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol_stat} {\\ensuremath{ {%.3f } } }",2 ,1, x, s21[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol_stat} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol_stat} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol_stat} {\\ensuremath{ {%.3f } } }",3 ,1, x, s31[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol_stat} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol_stat} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
+  }
+  
+  OUT.close();
+  
+}
+
+void Ratio_unpol_syst(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S_syst.root");
+  TH1D *S1h; TH1D *S1l;
+  S1h = (TH1D*)gFile->Get("Ups1S_ratioh");
+  S1l = (TH1D*)gFile->Get("Ups1S_ratiol");
+  TFile *f = new TFile("Final2S_syst.root");
+  TH1D *S2h; TH1D *S2l;
+  S2h = (TH1D*)gFile->Get("Ups2S_ratioh");
+  S2l = (TH1D*)gFile->Get("Ups2S_ratiol");  
+  TFile *f = new TFile("Final3S_syst.root");
+  TH1D *S3h; TH1D *S3l;
+  S3h = (TH1D*)gFile->Get("Ups3S_ratioh");
+  S3l = (TH1D*)gFile->Get("Ups3S_ratiol");   
+  
+  double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
+  double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
+  double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
+    
+   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+   
+   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+   term21_h = term1_h+term2_h;
+   term31_h = term1_h+term3_h;
+   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+   
+      
+   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+   term21_l = term1_l+term2_l;
+   term31_l = term1_l+term3_l;
+   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+   
+   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+   cout << endl;
+  }  
+  
+  double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
+  double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
+  double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
+
+  S21 = new TGraphAsymmErrors(10,xbin,s21,xl,xh,e21_l,e21_h);
+  S21->SetName("Ups1S_2S");
+  S21->SetMarkerColor(2);
+  S21->SetMarkerStyle(21);
+    
+  S31 = new TGraphAsymmErrors(10,xbin,s31,xl,xh,e31_l,e31_h);
+  S31->SetName("Ups1S_3S");
+  S31->SetMarkerColor(4);
+  S31->SetMarkerStyle(22);
+    
+  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S21->GetYaxis()->SetTitle("Ratio");
+  S21->SetTitle("");
+  S21->SetMinimum(0.);
+  S21->SetMaximum(1.);
+  S21->Draw("AP");
+  S31->Draw("P");
+  legg = new TLegend(0.1,0.6,0.5,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  //c1->SaveAs("Ratio_unpol_stat.pdf");
+  
+  
+  // Table for Ratios
+  ofstream OUT("Ratios_unpol_syst.tex");
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- Ratios_unpol_syst" << endl;
+  for ( int x = 1; x <= S1h->GetNbinsX(); ++x ){
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol_syst} {\\ensuremath{ {%.3f } } }",2 ,1, x, s21[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol_syst} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol_syst} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_unpol_syst} {\\ensuremath{ {%.3f } } }",3 ,1, x, s31[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol_syst} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol_syst} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
   }
   
   OUT.close();
@@ -1308,12 +1512,132 @@ void Ratio_pol(){
   OUT << "% ----------------------------------------------------------------------" << endl;
   OUT << "% -- Ratios_pol" << endl;
   for ( int x = 1; x <= S1h->GetNbinsX(); ++x ){
-    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol} {\\ensuremath{ {%.2f } } }",2 ,1, x, s21[x-1] ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol} {\\ensuremath{ {%.2f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
-    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol} {\\ensuremath{ {%.2f } } }",3 ,1, x, s31[x-1] ) << endl;
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
-    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol} {\\ensuremath{ {%.2f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol} {\\ensuremath{ {%.3f } } }",2 ,1, x, s21[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol} {\\ensuremath{ {%.3f } } }",3 ,1, x, s31[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
+  }
+  
+  OUT.close();
+  
+}
+
+
+void Ratio_pol_only(){
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Final1S.root");
+  TH1D *S1h; TH1D *S1l;
+  S1h = (TH1D*)gFile->Get("Ups1S_ratioh");
+  S1l = (TH1D*)gFile->Get("Ups1S_ratiol");
+  TFile *f = new TFile("Final2S.root");
+  TH1D *S2h; TH1D *S2l;
+  S2h = (TH1D*)gFile->Get("Ups2S_ratioh");
+  S2l = (TH1D*)gFile->Get("Ups2S_ratiol");  
+  TFile *f = new TFile("Final3S.root");
+  TH1D *S3h; TH1D *S3l;
+  S3h = (TH1D*)gFile->Get("Ups3S_ratioh");
+  S3l = (TH1D*)gFile->Get("Ups3S_ratiol");   
+  
+  TFile *f = new TFile("XSection_1Srho_HelMi.root");
+  TH1D *S1HelMi; S1HelMi = (TH1D*)gFile->Get("S1YieldPt");  
+  TFile *f = new TFile("XSection_1Srho_HelPl.root");
+  TH1D *S1HelPl; S1HelPl = (TH1D*)gFile->Get("S1YieldPt");   
+  TFile *f = new TFile("XSection_2Srho_HelMi.root");
+  TH1D *S2HelMi; S2HelMi = (TH1D*)gFile->Get("S2YieldPt");  
+  TFile *f = new TFile("XSection_2Srho_HelPl.root");
+  TH1D *S2HelPl; S2HelPl = (TH1D*)gFile->Get("S2YieldPt");   
+  TFile *f = new TFile("XSection_3Srho_HelMi.root");
+  TH1D *S3HelMi; S3HelMi = (TH1D*)gFile->Get("S3YieldPt");  
+  TFile *f = new TFile("XSection_3Srho_HelPl.root");
+  TH1D *S3HelPl; S3HelPl = (TH1D*)gFile->Get("S3YieldPt"); 
+    
+  
+  double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
+  double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
+  double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  double polterm1_h(0.), polterm2_h(0.), polterm3_h(0.), polterm1_l(0.), polterm2_l(0.), polterm3_l(0.);
+  for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
+    
+   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+   
+   polterm1_h = ((S1h->GetBinContent(i)-S1HelPl->GetBinContent(i))/S1h->GetBinContent(i)) * ((S1h->GetBinContent(i)-S1HelPl->GetBinContent(i))/S1h->GetBinContent(i));
+   polterm2_h = ((S2h->GetBinContent(i)-S2HelPl->GetBinContent(i))/S2h->GetBinContent(i)) * ((S2h->GetBinContent(i)-S2HelPl->GetBinContent(i))/S2h->GetBinContent(i));
+   polterm3_h = ((S3h->GetBinContent(i)-S3HelPl->GetBinContent(i))/S3h->GetBinContent(i)) * ((S3h->GetBinContent(i)-S3HelPl->GetBinContent(i))/S3h->GetBinContent(i));
+   
+   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+   term21_h = polterm1_h+polterm2_h;
+   term31_h = polterm1_h+polterm3_h;
+   //cout << " TMath::Sqrt(polterm1_h+polterm2_h) = " << TMath::Sqrt(polterm1_h+polterm2_h) << endl;
+   //cout << " TMath::Sqrt(polterm1_h+polterm3_h) = " << TMath::Sqrt(polterm1_h+polterm3_h) << endl;
+   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+   
+   polterm1_l = ((S1h->GetBinContent(i)-S1HelMi->GetBinContent(i))/S1h->GetBinContent(i)) * ((S1h->GetBinContent(i)-S1HelMi->GetBinContent(i))/S1h->GetBinContent(i));
+   polterm2_l = ((S2h->GetBinContent(i)-S2HelMi->GetBinContent(i))/S2h->GetBinContent(i)) * ((S2h->GetBinContent(i)-S2HelMi->GetBinContent(i))/S2h->GetBinContent(i));
+   polterm3_l = ((S3h->GetBinContent(i)-S3HelMi->GetBinContent(i))/S3h->GetBinContent(i)) * ((S3h->GetBinContent(i)-S3HelMi->GetBinContent(i))/S3h->GetBinContent(i));
+   
+   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+   term21_l = polterm1_l+polterm2_l;
+   term31_l = polterm1_l+polterm3_l;
+   //cout << " TMath::Sqrt(polterm1_l+polterm2_l) = " << TMath::Sqrt(polterm1_l+polterm2_l) << endl;
+   //cout << " TMath::Sqrt(polterm1_l+polterm3_l) = " << TMath::Sqrt(polterm1_l+polterm3_l) << endl;
+   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+   
+   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+   cout << endl;
+  }  
+  
+  double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
+  double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
+  double xh[10] = {0.73, 1.05, 2.28, 1.08, 1.70, 1.68, 2.27, 2.94, 2.84, 13.75};
+  
+  S21 = new TGraphAsymmErrors(10,xbin,s21,xl,xh,e21_l,e21_h);
+  S21->SetName("Ups1S_2S");
+  S21->SetMarkerColor(2);
+  S21->SetMarkerStyle(21);
+    
+  S31 = new TGraphAsymmErrors(10,xbin,s31,xl,xh,e31_l,e31_h);
+  S31->SetName("Ups1S_3S");
+  S31->SetMarkerColor(4);
+  S31->SetMarkerStyle(22);
+    
+  S21->GetXaxis()->SetTitle("p_{T}^{#Upsilon}(GeV/c)");
+  S21->GetYaxis()->SetTitle("Ratio");
+  S21->SetTitle("");
+  S21->SetMinimum(0.);
+  S21->SetMaximum(1.);
+  S21->Draw("AP");
+  S31->Draw("P");
+  legg = new TLegend(0.1,0.6,0.5,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("");
+  legge = legg->AddEntry(S21, "#Upsilon(2S)/#Upsilon(1S)" ,"p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S31, "#Upsilon(3S)/#Upsilon(1S)","p"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  //c1->SaveAs("Ratio_pol.pdf");
+  
+  
+  // Table for Ratios
+  ofstream OUT("Ratios_pol_only.tex");
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- Ratios_pol" << endl;
+  for ( int x = 1; x <= S1h->GetNbinsX(); ++x ){
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol_only} {\\ensuremath{ {%.3f } } }",2 ,1, x, s21[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol_only} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYhigh(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol_only} {\\ensuremath{ {%.3f } } }",2 ,1, x, S21->GetErrorYlow(x-1) ) << endl;
+    OUT << Form("\\vdef{%iSover%iS__bin%iContent_pol_only} {\\ensuremath{ {%.3f } } }",3 ,1, x, s31[x-1] ) << endl;
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_pol_only} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
+    OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_pol_only} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
   }
   
   OUT.close();
