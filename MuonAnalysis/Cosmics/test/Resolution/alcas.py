@@ -169,6 +169,8 @@ MCIdealAli2 = [
 ################################################################################
 
 GlobalTag          = 'GR_R_44_V12::All', []
+GTMay10            = 'GR_R_44_V12::All', asMay10
+GT42Prompt         = 'GR_R_44_V12::All', as42Prompt
 NewTkNominalMu     = 'GR_R_44_V12::All', NewTk + NominalMu
 NewTkNewMu         = 'GR_R_44_V12::All', NewTk + NewMu
 NewTkNewMuWithAPEs = 'GR_R_44_V12::All', NewTk + NewMu + NewMuAPEs
