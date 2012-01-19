@@ -585,23 +585,23 @@ total_number_of_lumis = -1
     # Figure out what to write to the new config.py, which starts as a
     # copy of the present file. First, split this file at the magic
     # string (hope you didn't touch it) and add the overrides.
-    new_py_start, new_py_end = open('test.py').read().split('# xyzzy.\n')
+    new_py_start, new_py_end = open('ntuple.py').read().split('# xyzzy.\n')
     for k,v in vars(options).iteritems():
-        new_py_start += 'options.%s = %r\n' % (k,v)
+        if not k.startswith('submit'):
+            new_py_start += 'options.%s = %r\n' % (k,v)
 
     # In the new config, disable submission to prevent a loop, and
     # turn off stuff that is for interactive jobs only and would mess
     # up the batch jobs.
     new_py_start += '''
-options.submit = False
-options.dumps = options.debugdump = False
+options.debug = options.dumps = options.debugdump = False
 options.run_events = None
 '''
 
     # The new-config.py writing will be the same for data and MC
     # except for a few different lines; here's a function to handle
     # that.
-    new_py_fn = 'test_crab.py'
+    new_py_fn = 'ntuple_crab.py'
     def write_new_py(*extra_lines):
         new_py_f = open(new_py_fn, 'wt')
         new_py_f.write(new_py_start)
@@ -618,7 +618,7 @@ options.run_events = None
         opt_dict.update(locs)
         open('crab.cfg', 'wt').write(crab_cfg % opt_dict)
         if options.submit_debug:
-            os.system('diff %s %s' % new_py_fn.replace('_crab', ''), new_py_fn)
+            os.system('diff %s %s' % (new_py_fn.replace('_crab', ''), new_py_fn))
             os.system('cat crab.cfg')
             raw_input('submit?')
         os.system('crab -create -submit')
@@ -630,7 +630,7 @@ options.run_events = None
         datasets = [
             ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
             ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
-            ('P500Peak', 3, '/TKCosmics_p100_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
+            ('P500Peak', 3, '/TKCosmics_p500_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
             ]
         
         for sample_name, dataset_id, dataset_path in datasets:
@@ -662,4 +662,4 @@ options.run_events = None
             write_new_py()
             submit(locals())
 
-    os.system('rm -f crab.cfg %s' % new_py_fn)
+    os.system('rm -f crab.cfg %s %s' % (new_py_fn, new_py_fn.replace('.py', '.pyc'))
