@@ -13,6 +13,40 @@ asMUO10004 = [
      )
     ]
 
+asMay10 = [
+    ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {
+        'GlobalPositionRcd': 'GlobalAlignment_v3_offline',
+        'TrackerAlignmentRcd': 'TrackerAlignment_GR10_v4_offline',
+        'TrackerAlignmentErrorRcd': 'TrackerAlignmentErrors_GR10_v2_offline',
+        'CSCAlignmentRcd': 'CSCAlignment_2009_v5_offline',
+        'CSCAlignmentErrorRcd': 'CSCAlignmentError_2009_v3_offline',
+        'DTAlignmentRcd': 'DTAlignment_2009_v4_offline',
+        'DTAlignmentErrorRcd': 'DTAlignmentError_2009_v4_offline',
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {
+        'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_zero'
+        }
+     )
+    ]
+
+as42Prompt = [
+    ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {
+        'GlobalPositionRcd': 'GlobalAlignment_2009_v2_express',
+        'TrackerAlignmentRcd': 'TrackerAlignment_2009_v1_prompt',
+        'TrackerAlignmentErrorRcd': 'TrackerAlignmentErr_2009_v2_express',
+        'CSCAlignmentRcd': 'CSCAlignment_2009_v2_express',
+        'CSCAlignmentErrorRcd': 'CSCAlignmentError_2009_v1_express',
+        'DTAlignmentRcd': 'DTAlignment_2009_v1_express',
+        'DTAlignmentErrorRcd': 'DTAlignmentError_2009_v1_express',
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {
+        'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_zero'
+        }
+     )
+    ]
+
 NominalMu = [
     ('sqlite_file:Design.db', {
         'DTAlignmentRcd': 'DTAlignmentRcd',
@@ -106,10 +140,28 @@ MCIdealAli = [
         }
      ),
     ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {
-        'TrackerSurfaceDeformationRcd':
-        'TrackerSurfaceDeformations_zero'
+        'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_zero'
         }
      ),
+    ]
+
+MCIdealAli2 = [
+    ('frontier://FrontierProd/CMS_COND_31X_FROM21X', {
+        'DTT0Rcd': 't0Fake_20X_Sept15_mc',
+        }
+     ),
+    ('frontier://PromptProd/CMS_COND_31X_DT', {
+        'DTTtrigRcd': 'DTTtrig_IDEAL_cosmics_V01_mc'
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_31X_RPC', {
+        'RPCStripNoisesRcd': 'RPCStripNoises_v1_mc'
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_31X_STRIP', {
+        'SiStripApvGainRcd': 'SiStripApvGain_RealisticMCSim_v2_mc',
+        }
+     )
     ]
 
 ################################################################################
@@ -125,3 +177,4 @@ MCCosTrgPeakStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode
 MCCosTrgDecoStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsDecoMode
 MCCosTrgPeakIdealAli = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli
 MCCosTrgPeakMCV9B    = 'MC_44_V9B::All',   MCCosmicTrigger + MCStripsPeakMode
+MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCIdealAli2
