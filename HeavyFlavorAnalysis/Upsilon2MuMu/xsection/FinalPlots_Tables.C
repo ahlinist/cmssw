@@ -1144,32 +1144,40 @@ void Ratio_unpol(){
   double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
   double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
   double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  
+  double tot1s(0.), tot2s(0.), tot3s(0.), totratio21(0.), totratio31(0.);
+    
   for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
     
-   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
-   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+    tot1s += S1h->GetBinContent(i); tot2s += S2h->GetBinContent(i); tot3s += S3h->GetBinContent(i); 
+    
+    s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+    s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
    
-   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
-   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
-   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
-   term21_h = term1_h+term2_h;
-   term31_h = term1_h+term3_h;
-   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
-   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+    term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+    term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+    term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+    term21_h = term1_h+term2_h;
+    term31_h = term1_h+term3_h;
+    e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+    e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
    
       
-   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
-   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
-   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
-   term21_l = term1_l+term2_l;
-   term31_l = term1_l+term3_l;
-   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
-   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
-   
-   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
-   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
-   cout << endl;
+    term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+    term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+    term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+    term21_l = term1_l+term2_l;
+    term31_l = term1_l+term3_l;
+    e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+    e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+    
+    cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+    cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+    cout << endl;
+    
   }  
+  
+  totratio21 = tot2s/tot1s;  totratio31 = tot3s/tot1s; 
   
   double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
   double xl[10] = {1.27, 0.95, 1.72, 0.92, 1.30, 1.32, 1.73, 2.06, 2.16, 6.25};
@@ -1214,6 +1222,8 @@ void Ratio_unpol(){
     OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
   }
   
+  OUT << Form("\\vdef{%iSover%iS__totContent_unpol} {\\ensuremath{ {%.3f } } }",2 ,1, totratio21 ) << endl;
+  OUT << Form("\\vdef{%iSover%iS__totContent_unpol} {\\ensuremath{ {%.3f } } }",3 ,1, totratio31 ) << endl;
   OUT.close();
   
 }
@@ -1237,31 +1247,32 @@ void Ratio_unpol_stat(){
   double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
   double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
   double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  
   for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
     
-   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
-   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
-   
-   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
-   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
-   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
-   term21_h = term1_h+term2_h;
-   term31_h = term1_h+term3_h;
-   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
-   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
-   
-      
-   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
-   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
-   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
-   term21_l = term1_l+term2_l;
-   term31_l = term1_l+term3_l;
-   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
-   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
-   
-   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
-   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
-   cout << endl;
+    s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+    s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+    
+    term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+    term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+    term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+    term21_h = term1_h+term2_h;
+    term31_h = term1_h+term3_h;
+    e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+    e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+    
+    
+    term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+    term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+    term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+    term21_l = term1_l+term2_l;
+    term31_l = term1_l+term3_l;
+    e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+    e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+    
+    cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+    cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+    cout << endl;
   }  
   
   double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
@@ -1306,7 +1317,6 @@ void Ratio_unpol_stat(){
     OUT << Form("\\vdef{%iSover%iS_bin%iErrorHigh_unpol_stat} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYhigh(x-1) ) << endl; 
     OUT << Form("\\vdef{%iSover%iS_bin%iErrorLow_unpol_stat} {\\ensuremath{ {%.3f } } }",3 ,1, x, S31->GetErrorYlow(x-1) ) << endl;
   }
-  
   OUT.close();
   
 }
@@ -1330,31 +1340,32 @@ void Ratio_unpol_syst(){
   double s21[10]; double s31[10]; double e21_h[10]; double e31_h[10]; double e21_l[10]; double e31_l[10];
   double term1_h(0.), term2_h(0.),term3_h(0.), term21_h(0.), term31_h(0.);
   double term1_l(0.), term2_l(0.),term3_l(0.), term21_l(0.), term31_l(0.);
+  
   for (int i = 1; i <= S1h->GetNbinsX(); ++i) {
     
-   s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
-   s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
-   
-   term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
-   term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
-   term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
-   term21_h = term1_h+term2_h;
-   term31_h = term1_h+term3_h;
-   e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
-   e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
-   
-      
-   term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
-   term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
-   term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
-   term21_l = term1_l+term2_l;
-   term31_l = term1_l+term3_l;
-   e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
-   e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
-   
-   cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
-   cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
-   cout << endl;
+    s21[i-1] = S2h->GetBinContent(i)/S1h->GetBinContent(i);
+    s31[i-1] = S3h->GetBinContent(i)/S1h->GetBinContent(i);
+    
+    term1_h = (S1h->GetBinError(i)/S1h->GetBinContent(i))*(S1h->GetBinError(i)/S1h->GetBinContent(i));
+    term2_h = (S2h->GetBinError(i)/S2h->GetBinContent(i))*(S2h->GetBinError(i)/S2h->GetBinContent(i));
+    term3_h = (S3h->GetBinError(i)/S3h->GetBinContent(i))*(S3h->GetBinError(i)/S3h->GetBinContent(i));
+    term21_h = term1_h+term2_h;
+    term31_h = term1_h+term3_h;
+    e21_h[i-1] = s21[i-1]*TMath::Sqrt(term21_h);
+    e31_h[i-1] = s31[i-1]*TMath::Sqrt(term31_h);
+    
+    
+    term1_l = (S1l->GetBinError(i)/S1l->GetBinContent(i))*(S1l->GetBinError(i)/S1l->GetBinContent(i));
+    term2_l = (S2l->GetBinError(i)/S2l->GetBinContent(i))*(S2l->GetBinError(i)/S2l->GetBinContent(i));
+    term3_l = (S3l->GetBinError(i)/S3l->GetBinContent(i))*(S3l->GetBinError(i)/S3l->GetBinContent(i));
+    term21_l = term1_l+term2_l;
+    term31_l = term1_l+term3_l;
+    e21_l[i-1] = s21[i-1]*TMath::Sqrt(term21_l);
+    e31_l[i-1] = s31[i-1]*TMath::Sqrt(term31_l);   
+    
+    cout << e21_h[i-1] << endl; cout << e21_l[i-1] << endl;
+    cout << e31_h[i-1] << endl; cout << e31_l[i-1] << endl;
+    cout << endl;
   }  
   
   double xbin[10] = {1.27, 2.95, 5.72, 8.92, 11.30, 14.32, 17.73, 22.06, 27.16, 36.25};
