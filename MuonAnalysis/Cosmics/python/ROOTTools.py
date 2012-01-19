@@ -257,10 +257,20 @@ def tdr_style(_cache=[]):
 
     ROOT.gErrorIgnoreLevel = 1001 # Suppress TCanvas::SaveAs messages.
 
+def ttree_iterator(tree, return_tree=False):
+    for jentry in xrange(tree.GetEntriesFast()):
+        if tree.LoadTree(jentry) < 0: break
+        if tree.GetEntry(jentry) <= 0: continue
+        if return_tree:
+            yield jentry, tree
+        else:
+            yield jentry
+
 __all__ = [
     'ROOT',
     'core_gaussian',
     'fit_gaussian',
     'plot_saver',
     'tdr_style',
+    'ttree_iterator',
     ]
