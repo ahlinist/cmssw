@@ -10,6 +10,11 @@ process.GlobalTag.globaltag = 'GR_R_42_V24::All' #PUT LATEST GLOBAL TAG HERE
 # IF WE ARE TESTING THE RCT  WE DONT WANT THE DATABASE
 #process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource', 'GlobalTag')
 
+
+process.load("DQMServices.Core.DQM_cfg")
+process.load("DQMServices.Components.DQMEnvironment_cfi")
+
+
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
     '/store/data/Run2011A/MinimumBias/RAW-RECO/ValSkim-08Nov2011-v1/0000/006A22F4-190F-E111-9A37-001A92810AB6.root'    
@@ -21,9 +26,18 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 
 process.rctVal = cms.EDAnalyzer('RctValidation',
-                egamma = cms.InputTag('rctDigis'),
-                genEGamma = cms.InputTag("crap"), ##IF YOU DO EFFICIENCY PUT HERE THE GOOD OBJECTS
-                directory = cms.string("L1TEMU/RCTRelVal/photons")
+                ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
+                hcalTPGs = cms.InputTag("hcalDigis"),
+                rctEGamma = cms.InputTag('gctDigis'),
+                gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
+                                          cms.InputTag('gctDigis','nonIsoEm')
+                ),                          
+                genEGamma = cms.InputTag("crap"), ##PUT YOUR REF OBJECTS HERE
+                directory = cms.string("L1T/RCTPhotons/test"),
+                outputFileName = cms.untracked.string("analysis.root"),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
+                gammaThreshold = cms.untracked.double(2.)              
 )                               
 
 
