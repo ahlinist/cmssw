@@ -11,7 +11,7 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
-
+#include "FWCore/Framework/interface/EventSetup.h"
 class HcalTPGValidation : public edm::EDAnalyzer {
    public:
       explicit HcalTPGValidation(const edm::ParameterSet&);
