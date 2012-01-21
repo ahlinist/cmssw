@@ -81,7 +81,6 @@ options.global_tag, options.extra_alca = getattr(alcas, options.alca_set, ('',No
 if options.extra_alca is None:
     raise ValueError('alca_set %s not found in alcas.py' % options.alca_set)
 rcds_seen = set()
-print options.extra_alca
 for connect, rcds in options.extra_alca:
     for rcd, tag in rcds.iteritems():
         if rcd in rcds_seen:
