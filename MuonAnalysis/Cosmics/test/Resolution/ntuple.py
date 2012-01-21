@@ -59,7 +59,10 @@ group.add_argument('+submit-highpt2010only', action='store_true',
                    help='Submit only those jobs using the selected list of lumisections having high-pT cosmics for 2010 data. Implies +submit-data.')
 group.add_argument('+submit-debug', action='store_true',
                    help='Debug the batch submission.')
+group.add_argument('+submit-only', metavar='DATASET_NAME', action='append',
+                   help='Only submit dataset %metavar (may specify multiple times).')
 options = parser.parse_args()
+#print options ; raise 1
 
 ################################################################################
 
@@ -614,6 +617,9 @@ options.run_events = None
     # filled in by the variables in the options dict, overridden by
     # locals() calls.
     def submit(locs):
+        if options.submit_only and sample_name not in options.submit_only:
+            print 'skipping', sample_name
+            return
         opt_dict = copy.copy(vars(options))
         opt_dict.update(locs)
         open('crab.cfg', 'wt').write(crab_cfg % opt_dict)
