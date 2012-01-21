@@ -164,6 +164,23 @@ MCIdealAli2 = [
      )
     ]
 
+MCStart42 = [
+    ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {
+        'GlobalPositionRcd': 'IdealGeometry',
+        'TrackerAlignmentRcd': 'TrackerAlignment_2010Realistic_mc',
+        'TrackerAlignmentErrorRcd': 'TrackerAlignmentErrors_2010Realistic_mc',
+        'CSCAlignmentRcd': 'CSCCRAFTScenario310me42_v2_mc',
+        'CSCAlignmentErrorRcd': 'CSCAlignmentErrorAPE0_3xy_mc',
+        'DTAlignmentRcd': 'DTAlignmentRcd_CRAFT08Realistic-noME13_3XY_v1_mc',
+        'DTAlignmentErrorRcd': 'DTAlignmentErrorAPE0_3xy_mc',
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {
+        'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_zero'
+        }
+     ),
+    ]
+
 ################################################################################
 # Some appropriate combinations of the above.
 ################################################################################
@@ -180,3 +197,4 @@ MCCosTrgDecoStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsDecoMode
 MCCosTrgPeakIdealAli = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli
 MCCosTrgPeakMCV9B    = 'MC_44_V9B::All',   MCCosmicTrigger + MCStripsPeakMode
 MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCIdealAli2
+MCCosTrgPeakStart42 = MCCosmicTrigger + MCStripsPeakMode + MCStart42
