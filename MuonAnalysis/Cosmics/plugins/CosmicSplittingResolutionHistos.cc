@@ -27,16 +27,21 @@ struct Loader {
   double mc_charge, mc_pt, mc_inv_pt, mc_qpt, mc_qinv_pt, mc_theta, mc_phi, mc_dxy, mc_dz;
   int tmr_choice[2], pmc_choice[2];
 
+  // Return a weight for the given dataset id (0 = data, 1-3 = MC with
+  // p>10, p>100, and p>500).
+  static double get_weight(unsigned id) {
+    static const double weights[4] = { 1., 1., 0.1375, 0.007983 };
+    assert(id < 4);
+    return weights[id];  
+  }
+
   Loader(const CosmicSplittingResolutionNtuple* nt,
 	 int track,                    // Which set of tracks to use, e.g. TPFMS.
 	 track_pos use_in_staglb,      // Which standalone track to compare, upper or lower.
 	 bool use_unpropagated_values, // Whether to use the propagated values.
 	 bool flip_upper_charge) {     // Whether to flip the charge of the upper tracks.
 
-    // The relative weights for: data, MC p>10, MC p>100, MC p>500.
-    static const double weights[4] = { 1., 1., 0.1375, 0.007983 };
-    assert(nt->id <= 3);
-    weight = weights[nt->id];
+    weight = get_weight(nt->id);
 
     // Most of the time we straightforwardly take upper (j=0) and
     // lower (j=1) pairs.
@@ -258,6 +263,11 @@ struct Bin {
       h_ref_phi = bindir.make<TH1F>("ref_phi", "", 200/nbins_scale, -3.15, 3.15);
       h_ref_dxy = bindir.make<TH1F>("ref_dxy", "", 200/nbins_scale, -40, 40);
       h_ref_dz  = bindir.make<TH1F>("ref_dz",  "", 200/nbins_scale, -40, 40);
+      h_ref_pt ->Sumw2();
+      h_ref_eta->Sumw2();
+      h_ref_phi->Sumw2();
+      h_ref_dxy->Sumw2();
+      h_ref_dz ->Sumw2();
     }
     else
       h_ref_pt = h_ref_eta = h_ref_phi = h_ref_dxy = h_ref_dz = 0;
@@ -281,8 +291,9 @@ struct Bin {
     delete h_dz;
 
     // Make a histogram of events/run. Again, just do it for TkOnly as
-    // it will be the same for the rest of the tracks.
-    if (ref_ok && run_bin == 0) {
+    // it will be the same for the rest of the tracks. Don't do it for
+    // MC, as the histograms will be entirely uninteresting.
+    if (ref_ok && run_bin == 0 && !is_mc) {
       const size_t n = runs_seen.size();
       edm::Service<TFileService> fs;
       TH1I* h = fs->make<TH1I>(TString(name.c_str()) + "_runs_seen", "", n, 0, n);
@@ -374,17 +385,20 @@ struct Bin {
     // JMTBAD expose this
     static const bool only_lower_in_staglb = true;
 
-    if (runs_seen.find(nt->run) == runs_seen.end())
-      runs_seen[nt->run] = 1;
-    else
-      runs_seen[nt->run] += 1;
+    if (!is_mc) {
+      if (runs_seen.find(nt->run) == runs_seen.end())
+	runs_seen[nt->run] = 1;
+      else
+	runs_seen[nt->run] += 1;
+    }
 
     if (ref_ok) {
-      h_ref_pt->Fill(nt->ref_pt);
-      h_ref_eta->Fill(-log(tan(nt->ref_theta / 2)));
-      h_ref_phi->Fill(nt->ref_phi);
-      h_ref_dxy->Fill(nt->ref_dxy);
-      h_ref_dz->Fill(nt->ref_dz);
+      double w = Loader::get_weight(nt->id);
+      h_ref_pt->Fill(nt->ref_pt, w);
+      h_ref_eta->Fill(-log(tan(nt->ref_theta / 2)), w);
+      h_ref_phi->Fill(nt->ref_phi, w);
+      h_ref_dxy->Fill(nt->ref_dxy, w);
+      h_ref_dz->Fill(nt->ref_dz, w);
     }
 
     for (int j = 0; j < 2; ++j) {
