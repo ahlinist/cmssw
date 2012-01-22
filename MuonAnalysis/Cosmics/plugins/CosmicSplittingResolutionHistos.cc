@@ -34,7 +34,7 @@ struct Loader {
 	 bool flip_upper_charge) {     // Whether to flip the charge of the upper tracks.
 
     // The relative weights for: data, MC p>10, MC p>100, MC p>500.
-    static const double weights[4] = { 1., 1., 0.203727501481, 0.0214584596516 };
+    static const double weights[4] = { 1., 1., 0.1375, 0.007983 };
     assert(nt->id <= 3);
     weight = weights[nt->id];
 
