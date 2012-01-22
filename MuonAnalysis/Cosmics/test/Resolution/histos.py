@@ -6,6 +6,7 @@ from runs import get_run_list
 
 ########################################################################################
 
+is_mc = False
 dt_or_csc = 'dt'
 cosmics_or_collisions = 'cosmics'
 require_pixels = True
@@ -26,12 +27,15 @@ if require_tt25 and require_not_tt25:
 if require_tt25 and not require_rpc_good:
     print 'warning: require_tt25 and not require_rpc_good!'
 
-run_list = get_run_list(cosmics_or_collisions, dt_or_csc, require_pixels, require_rpc_good) #, min_run)
+if not is_mc:
+    run_list = get_run_list(cosmics_or_collisions, dt_or_csc, require_pixels, require_rpc_good) #, min_run) if not is_mc else []
+else:
+    run_list = []
 #run_list = [r for r in run_list if r < 150000]
 
 cfg = cms.PSet(
     directory               = cms.string('UTpickedTracks'),
-    is_mc                   = cms.bool(False),
+    is_mc                   = cms.bool(is_mc),
     filename                = cms.string(fn),
     min_muon_hits           = cms.int32(0),
     min_pixel_layers        = cms.int32(min_pixel_layers if require_pixels else 0),
