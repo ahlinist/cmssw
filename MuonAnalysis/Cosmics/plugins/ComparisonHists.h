@@ -211,7 +211,7 @@ public:
     if (err) {
       if (h_pull)   h_pull  ->Fill(pull,   weight);
       if (h_pull02) h_pull02->Fill(pull02, weight);
-      if (h_pull12) h_pull02->Fill(pull12, weight);
+      if (h_pull12) h_pull12->Fill(pull12, weight);
     }
   }
 
