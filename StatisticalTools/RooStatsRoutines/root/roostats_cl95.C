@@ -1207,7 +1207,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       GetPlrInterval(0.95);
       upper_limit = pPlrInt->UpperLimit( *ws->var("xsec") );
       //Double_t upper_range = ((double)(int)(4.0 * upper_limit*100.0))/100.0; // round to ~1% precision
-      Double_t upper_range = 4.0 * upper_limit;
+      Double_t upper_range = 2.0 * upper_limit;
 
       // debug output
       std::cout << legend
@@ -1224,7 +1224,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		      0, // calculator type, 0-freq, 1-hybrid
 		      3, // test statistic, 0-lep, 1-tevatron, 2-PL, 3-PL 1-sided
 		      true, // useCls
-		      10, // npoints in the scan
+		      50, // npoints in the scan
 		      0, // poimin: use default is poimin >= poimax
 		      upper_range,
 		      1000,// ntoys
@@ -1842,7 +1842,7 @@ LimitResult roostats_clm(Double_t ilum, Double_t slum,
 
 bool plotHypoTestResult = false; 
 bool useProof = false;
-bool optimize = false;
+bool optimize = true;
 //bool optimize = true;
 bool writeResult = false;
 int nworkers = 1;
@@ -2031,15 +2031,21 @@ HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName
                                       int ntoys, bool useCls ) 
 {
 
+
   //std::cout << "Running HypoTestInverter on the workspace " << w->GetName() << std::endl;
 
    //w->Print();
 
    RooAbsData * data = w->data(dataName); 
+
    if (!data) { 
       Error("StandardHypoTestDemo","Not existing data %s",dataName);
       return 0;
    }
+
+   RooAbsData::defaultStorageType = RooAbsData::Vector;
+   data->convertToVectorStore() ;
+
    //else 
    //  std::cout << "Using data set " << dataName << std::endl;
 
@@ -2125,6 +2131,7 @@ HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName
    // FIXME: experimental optimization
    if (optimize){
      profll.SetReuseNLL(true);
+     profll.SetStrategy(0);
      //slrts.setReuseNLL(true);
      //profll.SetStrategy(0);
    }
