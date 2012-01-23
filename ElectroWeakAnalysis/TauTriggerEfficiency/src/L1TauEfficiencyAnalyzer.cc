@@ -368,7 +368,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   // 1st event : Book as many branches as trigger paths provided in the input...
   if (l1GTRR.isValid() and l1GTOMRec.isValid()) {  
     const DecisionWord& gtDecisionWord = l1GTRR->decisionWord();
-    const unsigned int numberTriggerBits(gtDecisionWord.size());
+    //    const unsigned int numberTriggerBits(gtDecisionWord.size());
 
     const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  l1GTOMRec->gtObjectMap();
     for(size_t i=0; i<l1Bits.size(); ++i) {
