@@ -194,3 +194,5 @@ MCCosTrgDecoStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsDecoMode
 MCCosTrgPeakIdealAli = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli
 MCCosTrgPeakMCV9B    = 'MC_44_V9B::All',   MCCosmicTrigger + MCStripsPeakMode
 MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCIdealAli2
+
+MCCOSMC42PEAK = 'COSMC_42_PEAK::All', []
