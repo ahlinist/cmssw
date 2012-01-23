@@ -175,6 +175,7 @@ struct Bin {
 
   bool ref_ok; // = track == tk_tkonly. If so, fill the below histograms.
   // Simple histos of the reference track quantities.
+  TH1F* h_ref_p_unweighted;
   TH1F* h_ref_p;
   TH1F* h_ref_pt;
   TH1F* h_ref_eta;
@@ -259,6 +260,7 @@ struct Bin {
 
     // Only bother to make the reference histograms once.
     if (ref_ok) {
+      h_ref_p_unweighted = bindir.make<TH1F>("ref_p_unweighted",   "", 200/nbins_scale, 0, 2000);
       h_ref_p   = bindir.make<TH1F>("ref_p",   "", 200/nbins_scale, 0, 2000);
       h_ref_pt  = bindir.make<TH1F>("ref_pt",  "", 200/nbins_scale, 0, 2000);
       h_ref_eta = bindir.make<TH1F>("ref_eta", "", 200/nbins_scale, -3, 3);
@@ -272,7 +274,7 @@ struct Bin {
       h_ref_dz ->Sumw2();
     }
     else
-      h_ref_p = h_ref_pt = h_ref_eta = h_ref_phi = h_ref_dxy = h_ref_dz = 0;
+      h_ref_p_unweighted = h_ref_p = h_ref_pt = h_ref_eta = h_ref_phi = h_ref_dxy = h_ref_dz = 0;
   }
 
   ~Bin() {
@@ -395,8 +397,10 @@ struct Bin {
     }
 
     if (ref_ok) {
-      double w = Loader::get_weight(nt->id);
-      h_ref_p->Fill(nt->ref_pt/sin(nt->ref_theta), w);
+      const double ref_p = nt->ref_pt/sin(nt->ref_theta);
+      h_ref_p_unweighted->Fill(ref_p);
+      const double w = Loader::get_weight(nt->id);
+      h_ref_p->Fill(ref_p, w);
       h_ref_pt->Fill(nt->ref_pt, w);
       h_ref_eta->Fill(-log(tan(nt->ref_theta / 2)), w);
       h_ref_phi->Fill(nt->ref_phi, w);
