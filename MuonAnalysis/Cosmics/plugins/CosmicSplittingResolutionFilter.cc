@@ -763,6 +763,28 @@ bool CosmicSplittingResolutionFilter::filter(edm::Event& event, const edm::Event
     }
   }
 
+  // Check for the pairs of tracks sharing hits. (In unsplit tracks
+  // mode, this should always be 0.) Don't cut, but just save the
+  // count.
+  for (int i = 0; i < n_tracks; ++i) {
+    std::map<unsigned, unsigned short> hits_seen;
+    for (int j = 0; j < 2; ++j) {
+      for (int k = 0; k < int(tracks[i][j]->recHitsSize()); ++k) {
+        unsigned id = tracks[i][j]->recHit(k)->geographicalId().rawId();
+        if (hits_seen.find(id) == hits_seen.end())
+          hits_seen[id] = 1;
+        else
+          hits_seen[id]++;
+      }
+    }
+    
+    nt->shared_hits[i] = 0;
+    for (std::map<unsigned, unsigned short>::const_iterator it = hits_seen.begin(), ite = hits_seen.end(); it != ite; ++it) {
+      if (it->second > 1)
+	nt->shared_hits[i] += 1;
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////
 
   // Passed selection -- fill the rest of the ntuple.
