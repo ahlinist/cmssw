@@ -27,6 +27,7 @@ void write_to_tree(TTree* tree, CosmicSplittingResolutionNtuple* nt) {
   branch_it(tree, "run", &nt->run, "run/i");
   branch_it(tree, "lumi", &nt->lumi, "lumi/i");
   branch_it(tree, "event", &nt->event, "event/i");
+  branch_it(tree, "shared_hits", nt->shared_hits, "shared_hits[%i]/s");
   branch_it(tree, "prop_pos", nt->prop_pos, "prop_pos[%i][2][3]/F");
   branch_it(tree, "inner_pos", nt->inner_pos, "inner_pos[%i][2][3]/F");
   branch_it(tree, "outer_pos", nt->outer_pos, "outer_pos[%i][2][3]/F");
@@ -114,6 +115,7 @@ void read_from_tree(TTree* tree, CosmicSplittingResolutionNtuple* nt) {
   tree->SetBranchAddress("run", &nt->run);
   tree->SetBranchAddress("lumi", &nt->lumi);
   tree->SetBranchAddress("event", &nt->event);
+  tree->SetBranchAddress("shared_hits", nt->shared_hits);
   tree->SetBranchAddress("prop_pos", nt->prop_pos);
   tree->SetBranchAddress("inner_pos", nt->inner_pos);
   tree->SetBranchAddress("outer_pos", nt->outer_pos);

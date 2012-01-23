@@ -32,7 +32,9 @@ struct CosmicSplittingResolutionNtuple {
   unsigned run;
   unsigned lumi;
   unsigned event;
-    
+
+  ushort shared_hits[n_tracks];
+
   float prop_pos[n_tracks][n_track_pos][3];
   float inner_pos[n_tracks][n_track_pos][3];
   float outer_pos[n_tracks][n_track_pos][3];
