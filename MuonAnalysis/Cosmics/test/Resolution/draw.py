@@ -60,7 +60,7 @@ class Drawer:
         hs = []
         for bin in make_bins(bin_by):
             h = self.get_histo(bin.name, track, quantity, hist_name)
-            fit_histo(h, hist_name)
+            fit_histo(h, hist_name, draw=True)
             hs.append((bin.name, h))
         return hs
             
