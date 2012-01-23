@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.66 2011/09/20 10:14:05 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.67 2011/09/23 14:14:25 mkortela Exp $
 //
 //
 
@@ -258,7 +258,7 @@ void TTEffAnalyzer::fillHLTinfo(const edm::Event& iEvent){
     return;
   }
   else {
-    size_t ntrigs = hltresults->size();
+    //    size_t ntrigs = hltresults->size();
     const edm::TriggerNames& triggerNames = iEvent.triggerNames(*hltresults);
 
     for(size_t i=0; i<hltBits.size(); ++i) {
