@@ -508,13 +508,14 @@ if hasattr(process, 'out') and options.edm_output:
     # were written into the ntuple.
     process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
 
-if options.dumps and False:
+if options.dumps and options.foo:
     from Test.Tests.tools import vinputtagize
     process.EventDump = cms.EDAnalyzer('EventDump', use_cout = cms.untracked.bool(True))
-    if not pp_reco_mode:
+    if not options.pp_reco_mode:
         process.EventDump.track_labels = vinputtagize([
             'cosmicMuons',
             'globalCosmicMuons',
+            'UTstmTkOnly1',
             'UTstmTPFMS1',
             'UTstmPicky1',
             ])
