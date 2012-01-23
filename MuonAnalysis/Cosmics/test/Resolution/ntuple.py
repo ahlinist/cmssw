@@ -60,7 +60,7 @@ group.add_argument('+submit-highpt2010only', action='store_true',
 group.add_argument('+submit-debug', action='store_true',
                    help='Debug the batch submission.')
 group.add_argument('+submit-only', metavar='DATASET_NAME', action='append',
-                   help='Only submit dataset %metavar (may specify multiple times).')
+                   help='Only submit dataset %(metavar)s (may specify multiple times).')
 options = parser.parse_args()
 #print options ; raise 1
 
@@ -90,10 +90,16 @@ for connect, rcds in options.extra_alca:
             raise ValueError('multiple extra_alca entries for rcd %s' % rcd)
         rcds_seen.add(rcd)
 
+delattr(options, 'cmsrunargs')
+
 if options.foo:
     options.debug = True
     options.files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RAW-RECO/399_fromv3_CosmicTP-v1/0000/62816537-0A3E-E011-8CC3-0030487E54B7.root']
     options.run_events = [(128899, 74158848)]
+
+if options.run_events:
+    options.run_events = [x.split(',') for x in options.run_events]
+    options.run_events = [(int(r),int(e)) for r,e in options.run_events]
 
 options.dumps = options.debugdump = options.debug
 
