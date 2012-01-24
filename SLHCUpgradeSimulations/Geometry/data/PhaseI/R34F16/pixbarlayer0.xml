@@ -2,8 +2,8 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="pixbarlayer0.xml" eval="true">
- <Constant name="Ladders"           value="12"/>
- <Constant name="CoolDist"          value="3.0*cm"/>
+ <Constant name="Ladders"           value="16"/>
+ <Constant name="CoolDist"          value="3.4*cm"/>
  <Constant name="CoolRadius"        value="0.0900*cm"/>
  <Constant name="LadderOffset"        value="0.225*cm"/>
  <Constant name="Cool1Offset"        value="0.83*cm"/>
