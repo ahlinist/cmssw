@@ -89,8 +89,9 @@ void ElecTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iS
 
   elecTauDump_->print(iEvent, iSetup);
 
-  if( doGenInfo_ )
-  	printZeeInfo(iEvent);
+  // disable for running on PAT
+  //if( doGenInfo_ )
+  	//rintZeeInfo(iEvent);
 
   printMissingEtInfo(iEvent);
 
