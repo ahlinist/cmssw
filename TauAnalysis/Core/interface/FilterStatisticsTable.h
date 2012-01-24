@@ -97,7 +97,7 @@ class FilterStatisticsTable
   void update(const GenericAnalyzer_namespace::filterResults_type&, const GenericAnalyzer_namespace::filterResults_type&, 
 	      const GenericAnalyzer_namespace::eventWeights_type&, const GenericAnalyzer_namespace::eventWeights_type&);
 
-  void print(std::ostream&, unsigned = 42, unsigned = 19) const;
+  void print(std::ostream&, unsigned = 44, unsigned = 19) const;
 
   std::vector<std::string> extractFilterTitleColumn() const;
   std::vector<double> extractColumn(const std::string&, bool) const;

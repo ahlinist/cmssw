@@ -223,7 +223,7 @@ void DQMDumpFilterStatisticsTables::endJob()
       columnLabels.push_back(process);
     }
 
-    printSummaryTable(std::cout, 42, 18, *columnSummaryTable, columnLabels, refFilterTitleColumn, table, numFilters, numProcesses);
+    printSummaryTable(std::cout, 44, 24, *columnSummaryTable, columnLabels, refFilterTitleColumn, table, numFilters, numProcesses);
   }
 }
 
