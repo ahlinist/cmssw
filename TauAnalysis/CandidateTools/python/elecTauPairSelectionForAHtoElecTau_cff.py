@@ -8,13 +8,16 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
 #---------------------------------------------------------------------------------------------------
 # produce opposite- and same-sign collections of electron + tau-jet pairs passing selection criteria
+# for MSSM Higgs search
 #---------------------------------------------------------------------------------------------------
 
 selectedElecTauPairsForAHtoElecTauAntiOverlapVeto = copy.deepcopy(selectedElecTauPairsAntiOverlapVeto)
 
 selectedElecTauPairsForAHtoElecTauMt1MET= copy.deepcopy(selectedElecTauPairsMt1MET)
+selectedElecTauPairsForAHtoElecTauMt1MET.cut = cms.string('mt1MET < 4000.')
 
 selectedElecTauPairsForAHtoElecTauPzetaDiff = copy.deepcopy(selectedElecTauPairsPzetaDiff)
+selectedElecTauPairsForAHtoElecTauPzetaDiff.cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.')
 
 selectedElecTauPairsForAHtoElecTauZeroCharge = copy.deepcopy(selectedElecTauPairsZeroCharge)
 

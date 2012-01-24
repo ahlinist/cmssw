@@ -93,4 +93,5 @@ elecTauPairProdConfiguratorLooseElectronIsolation = objProdConfigurator(
                 
 produceElecTauPairsLooseElectronIsolation = elecTauPairProdConfiguratorLooseElectronIsolation.configure(pyNameSpace = locals())
 
-produceElecTauPairsAll = cms.Sequence( produceElecTauPairs * produceElecTauPairsLooseElectronIsolation )
+produceElecTauPairsAll = cms.Sequence( produceElecTauPairs )
+        #* produceElecTauPairsLooseElectronIsolation )
