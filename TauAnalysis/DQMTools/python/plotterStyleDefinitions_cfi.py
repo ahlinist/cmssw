@@ -539,6 +539,11 @@ drawOption_Zee = drawOption_Zee_stacked
 drawOption_Zee.fillStyle = 1001
 drawOption_ZeePlusJets = drawOption_Zee
 
+drawOption_EW_stacked = copy.deepcopy(drawOption_green_stacked)
+drawOption_EW_separate = copy.deepcopy(drawOption_green_separate)
+drawOption_EW = drawOption_EW_stacked
+drawOption_EW.fillStyle = 1001
+
 drawOption_Zmumu_stacked = copy.deepcopy(drawOption_darkBlue_stacked)
 drawOption_Zmumu_separate = copy.deepcopy(drawOption_darkBlue_separate)
 drawOption_Zmumu = drawOption_Zmumu_stacked
