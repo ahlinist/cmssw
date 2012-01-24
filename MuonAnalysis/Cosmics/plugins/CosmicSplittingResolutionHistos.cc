@@ -460,6 +460,9 @@ public:
 private:
   // Whether we're running on MC or data. JMTBAD take from ntuple?
   const bool is_mc;
+  // Whether to check for "wrong" MC sample (i.e. only take 10<p<100 GeV
+  // events from id=1, 100<p<500 GeV events from id=2, etc.)
+  const bool check_for_wrong_sample;
   // The path to the ROOT file with the ntuple.
   const std::string filename;
   // The directory in the ROOT file in which the ntuple (TTree) exists.
@@ -542,6 +545,7 @@ private:
 
 CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::ParameterSet& cfg)
   : is_mc(cfg.getParameter<bool>("is_mc")),
+    check_for_wrong_sample(cfg.getParameter<bool>("check_for_wrong_sample")),
     filename(cfg.getParameter<std::string>("filename")),
     directory(cfg.getParameter<std::string>("directory")),
     min_muon_hits(cfg.getParameter<int>("min_muon_hits")),
@@ -689,7 +693,7 @@ CosmicSplittingResolutionHistos::error_code CosmicSplittingResolutionHistos::cut
   if (require_not_tt25 && nt->tt25)
     return error_tt25;
 
-  if (is_mc) {
+  if (is_mc && check_for_wrong_sample) {
     double unprop_mc_p = nt->unprop_mc_pt/sin(nt->unprop_mc_theta);
     if ((nt->id == mc_10 && unprop_mc_p > 100) || (nt->id == mc_100 && unprop_mc_p > 500))
       return error_wrong_sample;
