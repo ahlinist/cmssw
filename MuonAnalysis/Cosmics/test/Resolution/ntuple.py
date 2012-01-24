@@ -45,6 +45,8 @@ group.add_argument('+max-events', type=int, default=-1,
                    help='Maximum events to process during interactive running (default %(default)s).')
 group.add_argument('+file', metavar='FILE', action='append', dest='files',
                    help='Add an input file for interactive running.')
+group.add_argument('+filelist', metavar='TEXT_FILE',
+                   help='Use the filenames listed in TEXT_FILE as input.')
 group.add_argument('+dataset-id', type=int, default=0,
                    help='The dataset id stored in each ntuple entry.')
 
@@ -105,6 +107,12 @@ options.dumps = options.debugdump = options.debug
 
 if not options.files:
     options.files = []
+
+if options.filelist:
+    for line in open(options.filelist):
+        line = line.strip()
+        if line.endswith('.root'):
+            options.files.append(line)
 
 for i, fn in enumerate(options.files):
     if not fn.startswith('file:') and not fn.startswith('/store') and os.path.isfile(fn):
@@ -492,6 +500,7 @@ for reco_kind in label_names.keys():
     # the original TeV refits), undo all the stuff done above. Easier
     # to define and forget rather than conditionally define :)
     if options.no_refits:
+        process.source.inputCommands = ['keep *']
         to_run = pickedTracks
         pickedTracks.ref_track_label = cms.InputTag('cosmictrackfinderP5' if split_tracks_mode else 'ctfWithMaterialTracksP5LHCNavigation')
         pickedTracks.global_map_label = cms.InputTag('tevMuons', 'default')
