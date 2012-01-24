@@ -30,6 +30,8 @@ parser.add_argument('+max-run', type=int, default=999999,
                     help='For data, drop all runs below MIN_RUN.')
 parser.add_argument('+is-mc', action='store_true',
                     help='Specified input file is MC (data assumed by default).')
+parser.add_argument('+no-wrong-sample', action='store_false', dest='check_for_wrong_sample',
+                    help='Do not check for "wrong" sample, i.e. use all MC events regardless of dataset id.')
 #JMTBAD the rest
 options = parser.parse_args()
 
@@ -67,6 +69,7 @@ if not options.is_mc:
 cfg = cms.PSet(
     directory               = cms.string('UTpickedTracks'),
     is_mc                   = cms.bool(options.is_mc),
+    check_for_wrong_sample  = cms.bool(options.check_for_wrong_sample),
     filename                = cms.string(options.input_fn),
     min_muon_hits           = cms.int32(0),
     min_pixel_layers        = cms.int32(min_pixel_layers if require_pixels else 0),
