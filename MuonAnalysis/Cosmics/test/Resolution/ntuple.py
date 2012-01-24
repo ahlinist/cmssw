@@ -127,9 +127,9 @@ if not options.batch_name:
         options.batch_name += 'EDMOut'
 
 # Figure out the submitter options.
-options.submit = options.submit_mc or options.submit_data
 if options.submit_highpt2010only:
     options.submit_data = True
+options.submit = options.submit_mc or options.submit_data
 
 # Advertise options.
 
@@ -671,6 +671,8 @@ options.run_events = None
             datasets = datasets[:4]
 
         for sample_name, dataset_path in datasets:
+            if options.submit_highpt2010only:
+                sample_name += 'HighPt2010'
             # No data-only lines for now, as the defaults are all set for data.
             write_new_py()
             submit(locals())
