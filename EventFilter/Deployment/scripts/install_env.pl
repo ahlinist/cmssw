@@ -19,7 +19,7 @@ print "python path requested: $python\n";
 if($python)
 {
     print "creating python module clones at $python\n";
-    `linkFUpython.pl $envfile $python`;
+    `linkFUpython.sh $envfile $python`;
 }
 else
 {
