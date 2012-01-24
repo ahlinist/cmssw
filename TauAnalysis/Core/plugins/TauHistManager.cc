@@ -146,7 +146,7 @@ void TauHistManager::bookHistogramsImp()
 //--- book histograms for Pt, eta and phi distributions
 //    of tau-jets passing all id. and isolation selections
   bookTauHistograms(hTauPt_, hTauEta_, hTauPhi_, "Tau");
-  hTauPtVsEta_ = book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
+  hTauPtVsEta_ = book2D("TauPtVsEta", "TauPtVsEta", 24, -2.5, +2.5, 30, 0., 150.);
   hTauCharge_ = book1D("TauCharge", "Tau Charge (#Sigma Tracks in Signal Cone)", 11, -5.5, +5.5);
   hTauJetRadius_ = book1D("TauJetRadius", "Tau jet-Radius", 51, -0.005, +0.505);
   hTauJetRadiusPtProfile_ = bookProfile1D("TauJetRadiusPtProfile", "Tau jet-Radius vs. P_{T}", 30, 0., 150.);
@@ -734,7 +734,7 @@ void TauHistManager::bookTauHistograms(MonitorElement*& hTauPt, MonitorElement*&
   hTauPt = book1D(hTauPtName, hTauPtName, 75, 0., 150.);
 
   std::string hTauEtaName = std::string(histoSetName).append("Eta");
-  hTauEta = book1D(hTauEtaName, hTauEtaName, 60, -3., +3.);
+  hTauEta = book1D(hTauEtaName, hTauEtaName, 60, -2.5, +2.5);
 
   std::string hTauPhiName = std::string(histoSetName).append("Phi");
   hTauPhi = book1D(hTauPhiName, hTauPhiName, 36, -TMath::Pi(), +TMath::Pi());
