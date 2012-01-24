@@ -34,9 +34,6 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
 
   typedef VBFCompositePtrCandidateT1T2MEtEventT3<T1,T2,T3> VBFEventType;
   typedef std::vector<VBFEventType> VBFEventCollection;
-  typedef CompositePtrCandidateT1T2MEt<T1,T2> diTauType;
-  typedef edm::View<diTauType> diTauView;
-  typedef edm::Ptr<diTauType> diTauPtr;
   typedef edm::View<T3> jetView;
   typedef edm::Ptr<T3> jetPtr;
 
@@ -46,14 +43,8 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
   {
     srcTagJets_          = cfg.getParameter<edm::InputTag>("srcTagJets");
     srcCentralJets_      = cfg.getParameter<edm::InputTag>("srcCentralJets");
-    srcDiTaus_           = cfg.getParameter<edm::InputTag>("srcDiTaus");
-
-    dEtaMinTagJet_       = cfg.getParameter<double>("dEtaMinTagJet");
-    massMinTagJet_       = cfg.getParameter<double>("massMinTagJet");
-    dRmin12TagJet_       = cfg.getParameter<double>("dRmin12TagJet");
 
     etaMarginCentralJet_ = cfg.getParameter<double>("etaMarginCentralJet");
-    dRmin12CentralJet_   = cfg.getParameter<double>("dRmin12CentralJet");
 
     produces<VBFEventCollection>("");
   }
@@ -61,60 +52,33 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
   
  private:
 
-  void produce(edm::Event& evt, const edm::EventSetup& es)
-  {
+  void produce(edm::Event& evt, const edm::EventSetup& es) {
     edm::Handle<jetView> tagJetCollection;
     evt.getByLabel(srcTagJets_, tagJetCollection);
 
     edm::Handle<jetView> centralJetCollection;
     evt.getByLabel(srcCentralJets_, centralJetCollection);
 
-    edm::Handle<diTauView> diTauCollection;
-    evt.getByLabel(srcDiTaus_, diTauCollection);
-
     std::auto_ptr<VBFEventCollection> vbfEventCollection(new VBFEventCollection());
 
-    for ( unsigned idxDiTau = 0, numDiTaus = diTauCollection->size(); 
-	  idxDiTau < numDiTaus; ++idxDiTau ) {
-      diTauPtr diTau = diTauCollection->ptrAt(idxDiTau);
-      
-      for ( unsigned idxTagJet1 = 0, numTagJets1 = tagJetCollection->size(); 
-	    idxTagJet1 < numTagJets1; ++idxTagJet1 ) {
-	jetPtr tagJet1 = tagJetCollection->ptrAt(idxTagJet1);
-	
-	if ( deltaR(tagJet1->p4(), diTau->leg1()->p4()) < dRmin12TagJet_ ||
-	     deltaR(tagJet1->p4(), diTau->leg2()->p4()) < dRmin12TagJet_ ) continue;
+    for ( unsigned idxTagJet1 = 0, numTagJets1 = tagJetCollection->size(); idxTagJet1 < numTagJets1; ++idxTagJet1 ) {
+      jetPtr tagJet1 = tagJetCollection->ptrAt(idxTagJet1);
+      for ( unsigned idxTagJet2 = idxTagJet1 + 1, numTagJets2 = tagJetCollection->size(); idxTagJet2 < numTagJets2; 
+	  ++idxTagJet2 ) {
+	jetPtr tagJet2 = tagJetCollection->ptrAt(idxTagJet2);
 
-	for ( unsigned idxTagJet2 = idxTagJet1 + 1, numTagJets2 = tagJetCollection->size(); 
-	      idxTagJet2 < numTagJets2; ++idxTagJet2 ) {
-	  jetPtr tagJet2 = tagJetCollection->ptrAt(idxTagJet2);
+	double tagJetEtaMin   = TMath::Min(tagJet1->eta(), tagJet2->eta());
+	double tagJetEtaMax   = TMath::Max(tagJet1->eta(), tagJet2->eta());
 
-	  if ( deltaR(tagJet2->p4(), diTau->leg1()->p4()) < dRmin12TagJet_ ||
-	       deltaR(tagJet2->p4(), diTau->leg2()->p4()) < dRmin12TagJet_ ) continue;
-	  
-	  double tagJetEtaMin   = TMath::Min(tagJet1->eta(), tagJet2->eta());
-	  double tagJetEtaMax   = TMath::Max(tagJet1->eta(), tagJet2->eta());
-	  double tagJetDeltaEta = tagJetEtaMax - tagJetEtaMin;
-	  double tagJetMass     = (tagJet1->p4() + tagJet2->p4()).mass();
+	std::vector<jetPtr> centralJets;
+	for ( unsigned idxCentralJet = 0, numCentralJets = centralJetCollection->size(); idxCentralJet < numCentralJets; 
+	    ++idxCentralJet ) {
+	  jetPtr centralJet = centralJetCollection->ptrAt(idxCentralJet);
 
-	  if ( tagJetDeltaEta > dEtaMinTagJet_ && tagJetMass > massMinTagJet_ ) {
-	    std::vector<jetPtr> centralJets;
-	    
-	    for ( unsigned idxCentralJet = 0, numCentralJets = centralJetCollection->size(); 
-		  idxCentralJet < numCentralJets; ++idxCentralJet ) {
-	      jetPtr centralJet = centralJetCollection->ptrAt(idxCentralJet);
-	      
-	      if ( centralJet->eta() < (tagJetEtaMax - etaMarginCentralJet_) &&
-		   centralJet->eta() > (tagJetEtaMin + etaMarginCentralJet_) ) {
-		bool isDiTauOverlap = false;
-		for ( typename diTauView::const_iterator diTau = diTauCollection->begin();
-		      diTau != diTauCollection->end(); ++diTau ) {
-		  if ( deltaR(centralJet->p4(), diTau->leg1()->p4()) < dRmin12CentralJet_ ||
-		       deltaR(centralJet->p4(), diTau->leg2()->p4()) < dRmin12CentralJet_ ) isDiTauOverlap = true;
-		}
-		
-		if ( !isDiTauOverlap ) centralJets.push_back(centralJet);
-	      }
+	  if ( centralJet->eta() < (tagJetEtaMax - etaMarginCentralJet_) &&
+	      centralJet->eta() > (tagJetEtaMin + etaMarginCentralJet_) ) {
+	    centralJets.push_back(centralJet);
+	  }
 
 //--- sort central jets in order of decreasing Pt
 //   (use -Pt as key in multimap to get descending ordering)
@@ -132,14 +96,11 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
 //--- sort tag jets in order of decreasing Pt  
 	      jetPtr highPtTagJet = ( tagJet1->pt() > tagJet2->pt() ) ? tagJet1 : tagJet2;
 	      jetPtr lowPtTagJet  = ( tagJet1->pt() > tagJet2->pt() ) ? tagJet2 : tagJet1;
-	      VBFEventType vbfEvent(highPtTagJet, lowPtTagJet, diTau, centralJets_sorted);
+	      VBFEventType vbfEvent(highPtTagJet, lowPtTagJet, centralJets_sorted);
 	      vbfEventCollection->push_back(vbfEvent);
 	    }
 	  }
 	}
-      }
-    }
-
     evt.put(vbfEventCollection);
   }
 
