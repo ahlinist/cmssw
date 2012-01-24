@@ -1,14 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 import copy
+from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
 #--------------------------------------------------------------------------------  
 # produce collections of electron + tau-jet pairs passing selection criteria
+# for SM Higgs seach
 #--------------------------------------------------------------------------------
 
 # require electron and tau-jet to be separated in eta-phi,
 # in order to ensure that both do not refer to one and the same physical particle
 selectedElecTauPairsAntiOverlapVeto = cms.EDFilter("PATElecTauPairSelector",
-    cut = cms.string('dR12 > 0.5'),
+    cut = cms.string('dR12 > 0.3'),
     filter = cms.bool(False)
 )
 
@@ -21,7 +23,7 @@ selectedElecTauPairsMt1MET = cms.EDFilter("PATElecTauPairSelector",
 # require missing transverse momentum to point
 # in the direction of visible tau decay products
 selectedElecTauPairsPzetaDiff = cms.EDFilter("PATElecTauPairSelector",
-    cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.'),
+    cut = cms.string('(pZeta - 1.5*pZetaVis) > -2000.'),
     filter = cms.bool(False)
 )
 
@@ -37,19 +39,31 @@ selectedElecTauPairsNonZeroCharge = cms.EDFilter("PATElecTauPairSelector",
     filter = cms.bool(False)
 )
 
-# require electron and tau to be back-to-back
-#
-# NOTE:
-#  (1) this cut is introduced into the cut-flow as a place-holder only,
-#      to be used as backup in case MET cannot be relied upon in the early data
-#  (2) in case the cut on electron-tau-jet acoplanarity is applied
-#      there will be no events left for which the invariant e + tau mass
-#      can be reonstructed by collinear approximation
-#selectedElecTauPairsAcoplanarity12 = cms.EDFilter("PATElecTauPairSelector",
-#    cut = cms.string('cos(dPhi12) > -1.01'),
-#    #cut = cms.string('cos(dPhi12) < -0.95'),                                            
-#    filter = cms.bool(False)
-#)
+# configure production sequence
+patElecTauPairSelConfiguratorOS = objSelConfigurator(
+    [ selectedElecTauPairsAntiOverlapVeto,
+      selectedElecTauPairsMt1MET,
+      selectedElecTauPairsPzetaDiff,
+      selectedElecTauPairsZeroCharge ],
+    src = "allElecTauPairs",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsOS = patElecTauPairSelConfiguratorOS.configure(pyNameSpace = locals())
+
+patElecTauPairSelConfiguratorSS = objSelConfigurator(
+    [ selectedElecTauPairsNonZeroCharge ],
+    src = "selectedElecTauPairsPzetaDiffCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsSS = patElecTauPairSelConfiguratorSS.configure(pyNameSpace = locals())
+
+selectElecTauPairs = cms.Sequence( selectElecTauPairsOS * selectElecTauPairsSS)
+
+
 
 # define additional collections of electron + tau-jet candidates
 # with loose track and ECAL isolation applied on electron leg
@@ -59,8 +73,6 @@ selectedElecTauPairsNonZeroCharge = cms.EDFilter("PATElecTauPairSelector",
 
 selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsAntiOverlapVeto)
 
-#selectedElecTauPairsAcoplanarity12LooseElectronIsolation = copy.deepcopy(selectedElecTauPairsAcoplanarity12)
-
 selectedElecTauPairsMt1METlooseElectronIsolation = copy.deepcopy(selectedElecTauPairsMt1MET)
 
 selectedElecTauPairsPzetaDiffLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsPzetaDiff)
@@ -68,3 +80,27 @@ selectedElecTauPairsPzetaDiffLooseElectronIsolation = copy.deepcopy(selectedElec
 selectedElecTauPairsZeroChargeLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsZeroCharge)
 
 selectedElecTauPairsNonZeroChargeLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsZeroCharge)
+
+patElecTauPairSelConfiguratorLooseElectronIsolationOS = objSelConfigurator(
+    [ selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation,
+      selectedElecTauPairsMt1METlooseElectronIsolation,
+      selectedElecTauPairsPzetaDiffLooseElectronIsolation,
+      selectedElecTauPairsZeroChargeLooseElectronIsolation ],
+    src = "allElecTauPairsLooseElectronIsolation",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsLooseElectronIsolationOS = patElecTauPairSelConfiguratorLooseElectronIsolationOS.configure(pyNameSpace = locals())
+
+patElecTauPairSelConfiguratorLooseElectronIsolationSS = objSelConfigurator(
+    [ selectedElecTauPairsNonZeroChargeLooseElectronIsolation ],
+    src = "selectedElecTauPairsPzetaDiffLooseElectronIsolationCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsLooseElectronIsolationSS = patElecTauPairSelConfiguratorLooseElectronIsolationSS.configure(pyNameSpace = locals())
+
+selectElecTauPairsLooseElectronIsolation = cms.Sequence( selectElecTauPairsLooseElectronIsolationOS * selectElecTauPairsLooseElectronIsolationSS)
+
