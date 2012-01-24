@@ -8,10 +8,10 @@ from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
 #--------------------------------------------------------------------------------
 
 allVBFEventHypothesesForAHtoMuTau = cms.EDProducer("PATMuTauPairVBFEventProducer",
-    srcTagJets          = cms.InputTag('selectedPatTagJetsForVBFEt20Cumulative'),
-    srcCentralJets      = cms.InputTag('selectedPatCentralJetsForVBFEt15Cumulative'),
+    srcTagJets          = cms.InputTag('selectedPatJetsForAHtoMuTauJetTagCumulative'),
+    srcCentralJets      = cms.InputTag('selectedPatJetsForAHtoMuTauJetTagCumulative'),
                                        
-    srcDiTaus           = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
+    srcDiTaus           = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative'),
                                            
     dEtaMinTagJet       = cms.double(2.5),
     massMinTagJet       = cms.double(250.),
@@ -28,17 +28,3 @@ vbfEventProdConfiguratorForAHtoMuTau = objProdConfigurator(
 
 produceVBFEventHypothesesForAHtoMuTau = \
   vbfEventProdConfiguratorForAHtoMuTau.configure(pyNameSpace = locals())
-
-allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = allVBFEventHypothesesForAHtoMuTau.clone(
-    srcDiTaus = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative')
-)
-
-vbfEventProdConfiguratorForAHtoMuTauLooseMuonIsolation = objProdConfigurator(
-    allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation,
-    pyModuleName = __name__
-)
-
-produceVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = \
-  vbfEventProdConfiguratorForAHtoMuTauLooseMuonIsolation.configure(pyNameSpace = locals())
-
-

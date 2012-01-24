@@ -19,12 +19,17 @@ selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphere = cms.EDFilter("PATM
 )
 
 selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35 = cms.EDFilter("PATMuTauPairVBFEventSelector",
-    cut = cms.string('dEta > 3.5'),
+    cut = cms.string('dEta > 4.0'),
     filter = cms.bool(False)
 )
 
 selectedVBFEventHypothesesForAHtoMuTauTagJetMass350 = cms.EDFilter("PATMuTauPairVBFEventSelector",
-    cut = cms.string('mjj > 350'),
+    cut = cms.string('mjj > 400'),
+    filter = cms.bool(False)
+)
+
+selectedVBFEventHypothesesForAHtoMuTau3rdJetVeto = cms.EDFilter("PATMuTauPairVBFEventSelector",
+    cut = cms.string('centralJets.size < 1'),
     filter = cms.bool(False)
 )
 
@@ -32,41 +37,11 @@ vbfEventHypothesesSelConfiguratorForAHtoMuTau = objSelConfigurator(
     [ selectedVBFEventHypothesesForAHtoMuTauTagJetEt30,
       selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphere,
       selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35,
-      selectedVBFEventHypothesesForAHtoMuTauTagJetMass350 ],
+      selectedVBFEventHypothesesForAHtoMuTauTagJetMass350,
+      selectedVBFEventHypothesesForAHtoMuTau3rdJetVeto ],
     src = "allVBFEventHypothesesForAHtoMuTau",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
 selectVBFEventHypothesesForAHtoMuTau = vbfEventHypothesesSelConfiguratorForAHtoMuTau.configure(pyNameSpace = locals())
-
-# define additional collections of VBF event hypotheses for muon + tau-jet candidates
-# with loose track and ECAL isolation applied on muon leg
-# (NOTE: to be used for the purpose of factorizing efficiencies
-#        of muon isolation from other event selection criteria,
-#        in order to avoid problems with limited Monte Carlo statistics)
-
-selectedVBFEventHypothesesForAHtoMuTauTagJetEt30LooseMuonIsolation = \
-  copy.deepcopy(selectedVBFEventHypothesesForAHtoMuTauTagJetEt30)
-
-selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphereLooseMuonIsolation = \
-  copy.deepcopy( selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphere)
-
-selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35LooseMuonIsolation = \
-  copy.deepcopy(selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35)
-
-selectedVBFEventHypothesesForAHtoMuTauTagJetMass350LooseMuonIsolation = \
-  copy.deepcopy( selectedVBFEventHypothesesForAHtoMuTauTagJetMass350)
-
-vbfEventHypothesesSelConfiguratorForAHtoMuTauLooseMuonIsolation = objSelConfigurator(
-    [ selectedVBFEventHypothesesForAHtoMuTauTagJetEt30LooseMuonIsolation,
-      selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphereLooseMuonIsolation,
-      selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35LooseMuonIsolation,
-      selectedVBFEventHypothesesForAHtoMuTauTagJetMass350LooseMuonIsolation ],
-    src = "allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation",
-    pyModuleName = __name__,
-    doSelIndividual = True
-)
-
-selectVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = \
-  vbfEventHypothesesSelConfiguratorForAHtoMuTauLooseMuonIsolation.configure(pyNameSpace = locals())
