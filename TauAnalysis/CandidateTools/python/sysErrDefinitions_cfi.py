@@ -74,6 +74,17 @@ elecTauPairSystematics = {
     "sysJetEnDown"               : cms.InputTag('allElecTauPairsSysJetEnDown')
 }
 
+elecTauPairVBFEventSystematics = {
+    "sysElectronEnUp"            : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysElectronEnUp'),
+    "sysElectronEnDown"          : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysElectronEnDown'),
+    "sysTauJetEnUp"              : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysTauJetEnUp'),
+    "sysTauJetEnDown"            : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysTauJetEnDown'),
+    "sysJetEnUp"                 : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysJetEnUp'),
+    "sysJetEnDown"               : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysJetEnDown'),
+#    "sysZllRecoilCorrectionUp"   : cms.InputTag('allVBFEventHypothesesForAHtoElecTauZllRecoilCorrectedSysUp'),
+#    "sysZllRecoilCorrectionDown" : cms.InputTag('allVBFEventHypothesesForAHtoElecTauZllRecoilCorrectedSysDown')
+}
+
 elecTauPairSystematicsLooseElectronIsolation = {
     "sysElectronEnUp"            : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronEnUp'),
     "sysElectronEnDown"          : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronEnDown'),
