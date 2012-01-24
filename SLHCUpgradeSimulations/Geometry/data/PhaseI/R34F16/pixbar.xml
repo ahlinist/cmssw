@@ -42,9 +42,9 @@
  <Constant name="Shield4Rout"       value="[FlangeRout]"/>
  <Constant name="ShieldAL_T"        value="0.005*cm"/>
  <Constant name="ShieldKevlar_T"    value="0.025*cm"/>
- <Constant name="FlangeRin"         value="2.500*cm"/> <!-- 3.400*cm for 16 faces opt-->
+ <Constant name="FlangeRin"         value="3.400*cm"/> <!-- 2.500*cm for 12 faces opt-->
  <Constant name="FlangeRout"        value="18.980*cm"/>
- <Constant name="FlangeR12"         value="4.900*cm"/> <!-- 5.3500*cm for 16 faces opt-->
+ <Constant name="FlangeR12"         value="5.350*cm"/> <!-- 4.900*cm for 12 faces opt-->
  <Constant name="FlangeR23"         value="8.850*cm"/>
  <Constant name="FlangeR34"         value="13.450*cm"/>
  <Constant name="FlangeT_Airex"     value="0.400*cm"/>
@@ -53,9 +53,9 @@
  <Constant name="FlangeZ"           value="27.22*cm"/>
  <Constant name="FlangeHCT"         value="0.528*cm"/>
 
- <Constant name="CableSignal1Rin"          value="3.00*cm"/>
- <Constant name="CableSignal1T1"           value="0.00335*cm"/>
- <Constant name="CableSignal1T2"           value="0.02088*cm"/>
+ <Constant name="CableSignal1Rin"          value="3.900*cm"/>
+ <Constant name="CableSignal1T1"           value="0.00515*cm"/>
+ <Constant name="CableSignal1T2"           value="0.02469*cm"/>
  <Constant name="CableSignal2Rin"          value="6.800*cm"/>
  <Constant name="CableSignal2T1"           value="0.0114*cm"/>
  <Constant name="CableSignal2T2"           value="0.03135*cm"/>
@@ -84,9 +84,9 @@
  <Constant name="CableSignal1Z2"          value="[CableSignal1Z1]+[CableSignal1T1]"/>
  <Constant name="CableSignal1Z3"          value="[CableSignal1Z1]+[CableSignal1T2]"/>
 
- <Constant name="CablePower1Rin"          value="3.00*cm"/>
- <Constant name="CablePower1T1"           value="0.0098*cm"/>
- <Constant name="CablePower1T2"           value="0.0611*cm"/>
+ <Constant name="CablePower1Rin"          value="3.900*cm"/>
+ <Constant name="CablePower1T1"           value="0.0151*cm"/>
+ <Constant name="CablePower1T2"           value="0.0724*cm"/>
  <Constant name="CablePower2Rin"          value="6.800*cm"/>
  <Constant name="CablePower2T1"           value="0.0334*cm"/>
  <Constant name="CablePower2T2"           value="0.09185*cm"/>
@@ -143,21 +143,21 @@
  <Constant name="Cable1Z2"          value="[Cable1Z1]+[Cable1T]"/>
  <Constant name="Cable0Z1"          value="[Cable1Z1]+[CableT]"/>
 -->
- <Constant name="Cool1Rin"          value="3.0*cm"/>
+ <Constant name="Cool1Rin"          value="3.90*cm"/>
  <Constant name="Cool2Rin"          value="6.80*cm"/>
  <Constant name="Cool3Rin"          value="10.90*cm"/>
  <Constant name="Cool4Rin"          value="16.00*cm"/>
  <Constant name="CoolRout"          value="18.70*cm"/>
- <Constant name="Cool1DRZp"            value="0.195*cm"/>
- <Constant name="Cool1DRZm"            value="0.245*cm"/>
+ <Constant name="Cool1DRZp"            value="0.201*cm"/>
+ <Constant name="Cool1DRZm"            value="0.254*cm"/>
  <Constant name="Cool2DRZp"            value="0.178*cm"/>
  <Constant name="Cool2DRZm"            value="0.240*cm"/>
  <Constant name="Cool3DRZp"            value="0.170*cm"/>
  <Constant name="Cool3DRZm"            value="0.227*cm"/>
  <Constant name="Cool4DRZp"            value="0.1685*cm"/>
  <Constant name="Cool4DRZm"            value="0.221*cm"/>
- <Constant name="CoolRadialDZp"            value="0.00439*cm"/>
- <Constant name="CoolRadialDZm"            value="0.00365*cm"/>
+ <Constant name="CoolRadialDZp"            value="0.00442*cm"/>
+ <Constant name="CoolRadialDZm"            value="0.0037*cm"/>
  <Constant name="CoolT"             value="0.050*cm"/>
  <Constant name="CoolZ"             value="[FlangeZ]+[FlangeT]/2+[CoolT]/2"/>
  <Constant name="CoolRadialZp"       value="[CoolZ]+[CoolT]/2+[CoolRadialDZp]/2"/>
