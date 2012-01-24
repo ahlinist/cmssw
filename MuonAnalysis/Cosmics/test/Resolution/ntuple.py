@@ -106,6 +106,10 @@ options.dumps = options.debugdump = options.debug
 if not options.files:
     options.files = []
 
+for i, fn in enumerate(options.files):
+    if not fn.startswith('file:') and not fn.startswith('/store') and os.path.isfile(fn):
+        options.files[i] = 'file:' + fn
+
 # If not overriden, make up the batch_name out of alca_set and other options.
 if not options.batch_name:
     options.batch_name = options.alca_set
