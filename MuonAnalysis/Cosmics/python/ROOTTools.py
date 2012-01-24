@@ -204,8 +204,6 @@ def tdr_style(_cache=[]):
     s.SetHistLineStyle(0)
     s.SetHistLineWidth(1)
     s.SetEndErrorSize(2)
-#    s.SetErrorMarker(20)
-    s.SetErrorX(0.)
     s.SetMarkerStyle(20)
     s.SetOptFit(1)
     s.SetFitFormat("5.4g")
