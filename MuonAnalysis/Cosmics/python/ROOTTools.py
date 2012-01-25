@@ -1,8 +1,63 @@
 import sys, os
+from array import array
 sys.argv.append('-b')       # Start ROOT in batch mode;
 import ROOT; ROOT.TCanvas   # make sure libGui gets initialized while '-b' is specified;
 assert sys.argv[-1] == '-b' # and don't mess up sys.argv.
 sys.argv.pop()
+
+def binomial_clopper_pearson(n_on, n_tot, alpha=1-0.6827, equal_tailed=True):
+    if equal_tailed:
+        alpha_min = alpha/2
+    else:
+        alpha_min = alpha
+
+    lower = 0
+    upper = 1
+
+    if n_on > 0:
+        lower = ROOT.Math.beta_quantile(alpha_min, n_on, n_tot - n_on + 1)
+    if n_tot - n_on > 0:
+        upper = ROOT.Math.beta_quantile_c(alpha_min, n_on + 1, n_tot - n_on)
+
+    if n_on == 0 and n_tot == 0:
+        return 0, lower, upper
+    else:
+        return float(n_on)/n_tot, lower, upper
+
+def binomial_divide(h1, h2, confint=binomial_clopper_pearson):
+    nbins = h1.GetNbinsX()
+    xax = h1.GetXaxis()
+    if h2.GetNbinsX() != nbins: # or xax2.GetBinLowEdge(1) != xax.GetBinLowEdge(1) or xax2.GetBinLowEdge(nbins) != xax.GetBinLowEdge(nbins):
+        raise ValueError('incompatible histograms to divide')
+    x = []
+    y = []
+    exl = []
+    exh = []
+    eyl = []
+    eyh = []
+    xax = h1.GetXaxis()
+    for ibin in xrange(1, nbins+1):
+        s,t = h1.GetBinContent(ibin), h2.GetBinContent(ibin)
+        if t == 0:
+            assert(s == 0)
+            continue
+
+        p_hat = float(s)/t
+        rat, a,b = confint(s,t)
+        #print ibin, s, t, a, b
+
+        _x  = xax.GetBinCenter(ibin)
+        _xw = xax.GetBinWidth(ibin)/2
+        
+        x.append(_x)
+        exl.append(_xw)
+        exh.append(_xw)
+
+        y.append(p_hat)
+        eyl.append(p_hat - a)
+        eyh.append(b - p_hat)
+    eff = ROOT.TGraphAsymmErrors(len(x), *[array('d', obj) for obj in (x,y,exl,exh,eyl,eyh)])
+    return eff
 
 def core_gaussian(hist, factor, i=[0]):
     """Make a Gaussian TF1 with range set to hist.mean +/- factor *
@@ -293,6 +348,8 @@ def ttree_iterator(tree, return_tree=False):
 
 __all__ = [
     'ROOT',
+    'binomial_clopper_pearson',
+    'binomial_divide',
     'core_gaussian',
     'differentiate_stat_box',
     'fit_gaussian',
