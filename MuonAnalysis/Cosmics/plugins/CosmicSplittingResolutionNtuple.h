@@ -3,8 +3,6 @@
 
 #include "TTree.h"
 
-#define COSMICSPLITTINGRESOLUTION_NTUPLE_VERSION 19
-
 // The possible values of dataset_id in
 // CosmicSplittingResolutionFilter. Used to distinguish data and the three
 // different bins of simulation.
