@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     if (input_tree->LoadTree(jentry) < 0) break;
     if (input_tree->GetEntry(jentry) <= 0) continue;
 
-    if (!cut(nt))
+    if (!cut(nt, 0, 0, 0))
       output_tree->Fill();
   }
 
