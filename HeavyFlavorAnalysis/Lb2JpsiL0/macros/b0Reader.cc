@@ -1,3 +1,4 @@
+#define TAUCALCULATION_PATCH
 #include "b0Reader.hh"
 #include "../../Bs2MuMu/interface/HFMasses.hh"
 
@@ -9,6 +10,7 @@
 #include <fstream>
 #include <stdexcept>
 #include "Lb2JpsiL0_utils.h"
+#include "DecayMap.hh"
 
 using std::cout;
 using std::endl;
@@ -20,32 +22,39 @@ using std::vector;
 // ----------------------------------------------------------------------
 
 //==========================================================================
-class findDaughters
+class findDaughtersB0
 {
 public:
-    findDaughters() : nDaughters(0) {};
-    findDaughters(TGenCand* curParticle, TAna01Event* fpEvt) : nDaughters(0)
+    findDaughtersB0() : nDaughters(0) {};
+    findDaughtersB0(TGenCand* curParticle, TAna01Event* fpEvt) : nDaughters(0)
     {
         strDaughters = "";
-        strDauGrdau = toString(abs(curParticle->fID)) + " -> ";
+        strDauGrdau = toString(TMath::Abs(curParticle->fID)) + " -> ";
         //strDauGrdau = "";
         const int nGenCands(fpEvt->nGenCands());
         mother = curParticle;
-        if(mother->fDau1 > -1 && mother->fDau1 < nGenCands && mother->fDau2 > -1 && mother->fDau2 < nGenCands && mother->fDau1 < mother->fDau2)
+        if(mother->fDau1 > -1 && mother->fDau1 < nGenCands && mother->fDau2 > -1 && mother->fDau2 < nGenCands && mother->fDau1 <= mother->fDau2)
         {
+	    // special case of K0:
+	    // in some generators a K0 decays to Ks. For the list the particles of Ks are interesting, not the K0
+	    if (TMath::Abs(mother->fID)==311 && mother->fDau1==mother->fDau2)
+	    {
+		TGenCand* K0 = fpEvt->getGenCand(mother->fDau1);
+		if (TMath::Abs(K0->fID)==310) mother = K0;
+	    }
             nDaughters = 0;
             nDauGrdau = 0;
             for(int dauit=mother->fDau1; dauit<=mother->fDau2; dauit++)
             {
                 // <= is ok because fDau2 is id of last daughter in list
                 TGenCand *gcDau = fpEvt->getGenCand(dauit);
-                const unsigned int id = abs(gcDau->fID);
+                const unsigned int id = TMath::Abs(gcDau->fID);
                 // check if these particles come from the right mother
                 if(gcDau->fMom1==mother->fNumber&&gcDau->fMom2==mother->fNumber)
                 {
                     nDaughters++;
                     strDaughters += toString(id) + " ";
-                    findDaughters grdau(gcDau,fpEvt);
+                    findDaughtersB0 grdau(gcDau,fpEvt);
                     strDauGrdau += toString(id) + " (" + grdau.getDaughters() + ") " ;
                     strDauGrdaus += toString(id) + " (" + grdau.getDauGrdau() + ") " ;
                     nDauGrdau += grdau.getNDaughters();
@@ -159,7 +168,6 @@ void b0Reader::eventProcessing()
     if (fIsMC) doGenLevelStuff();
 
     // do some trigger stuff
-    doL1stuff();
     doHLTstuff();
 
     // init something
@@ -234,6 +242,7 @@ void b0Reader::eventProcessing()
     }
 
     if (fIsMC && fIsSig) fGenTree->Fill();
+    //if (fIsMC) fGenTree->Fill();
     return;
 }
 
@@ -622,14 +631,29 @@ bool b0Reader::doCandFitStuff(const CheckedB0Cand &clc)
 
     // ctau - written as dist/p*m as this is numerically more stable than using
     // the TLorentzVector::Gamma() functions to write beta*gamma
-    fct3dB0 = tacCur->fTau3d; // tacCur->fVtx.fD3d / tacCur->fPlab.Mag() * MLAMBDA_B;
+    //fct3dB0 = tacCur->fTau3d; // tacCur->fVtx.fD3d / tacCur->fPlab.Mag() * MLAMBDA_B;
+    fct3dB0 = tacCur->fVtx.fD3d / tacCur->fPlab.Mag() * tacCur->fMass / TMath::Ccgs() * ( tacCur->fTau3d <0 ? -1. : 1.); // FRANK patch: Test mit aktuell gemessener Masse
+    //fct3dB0 = tacCur->fVtx.fD3d / tacCur->fPlab.Mag() * MB_0 / TMath::Ccgs(); // FRANK patch: Test mit aktuell gemessener Masse
+    //cout << "tacCur->fTau3d: " << tacCur->fTau3d << " fct3dB0: " << fct3dB0 << " ratio: " << tacCur->fTau3d / fct3dB0 << endl;
+    //cout << "tacCur->fVtx.fD3d: " << tacCur->fVtx.fD3d << " tacCur->fPlab.Mag(): " << tacCur->fPlab.Mag() << " TMath::Ccgs(): " << TMath::Ccgs();
+    //cout << " mass: " << MB_0 << " " << tacCur->fMass << endl;
     fct3dB0E = tacCur->fTau3dE; // tacCur->fVtx.fD3dE / tacCur->fPlab.Mag() * MLAMBDA_B; // Ok, error not yet final. Will need error of |p|
     fct3dKs = tacKs->fTau3d; // tacKs->fVtx.fD3d / tacKs->fPlab.Mag() * MLAMBDA_0;
     fct3dKsE = tacKs->fTau3dE; // tacKs->fVtx.fD3dE / tacKs->fPlab.Mag() * MLAMBDA_0;
+#ifdef TAUCALCULATION_PATCH
+    // this patches the wrongly calculated lifetime errors in the NTuple with the errors scaled from the flightlength
+    fct3dB0E = fd3EB0 / fd3B0 * fct3dB0;
+    fct3dKsE = fd3EKs / fd3Ks * fct3dKs;
+#endif
     fctxyB0 = tacCur->fTauxy;
     fctxyB0E = tacCur->fTauxyE;
     fctxyKs = tacKs->fTauxy;
     fctxyKsE = tacKs->fTauxyE;
+#ifdef TAUCALCULATION_PATCH
+    // this patches the wrongly calculated lifetime errors in the NTuple with the errors scaled from the flightlength
+    fctxyB0E = fdxyEB0 / fdxyB0 * fctxyB0;
+    fctxyKsE = fdxyEKs / fdxyKs * fctxyKs;
+#endif
 
     // vertex positions
     fvxB0 = tacCur->fVtx.fPoint.x();
@@ -722,21 +746,59 @@ bool b0Reader::doTruthMatchingB0(const TAnaTrack *Mu1, const TAnaTrack *Mu2, con
     {
         TGenCand *gcMu1 = fpEvt->getGenCand(giMu1);
 	TGenCand *gcMu1Mom = fpEvt->getGenCand(gcMu1->fMom1);
+	TGenCand *gcMu1MomMom = fpEvt->getGenCand(gcMu1Mom->fMom1);
         TGenCand *gcMu2 = fpEvt->getGenCand(giMu2);
 	TGenCand *gcMu2Mom = fpEvt->getGenCand(gcMu2->fMom1);
+	TGenCand *gcMu2MomMom = fpEvt->getGenCand(gcMu2Mom->fMom1);
         TGenCand *gcPion1 = fpEvt->getGenCand(giPi1);
 	TGenCand *gcPion1Mom = fpEvt->getGenCand(gcPion1->fMom1);
+	TGenCand *gcPion1MomMom = fpEvt->getGenCand(gcPion1Mom->fMom1);
+	TGenCand *gcPion1MomMomMom = fpEvt->getGenCand(gcPion1MomMom->fMom1);
         TGenCand *gcPion2 = fpEvt->getGenCand(giPi2);
-	TGenCand *gcPion2Mom = fpEvt->getGenCand(gcPion2->fMom1);
+	TGenCand *gcPion2Mom= fpEvt->getGenCand(gcPion2->fMom1);
+	TGenCand *gcPion2MomMom = fpEvt->getGenCand(gcPion2Mom->fMom1);
+	TGenCand *gcPion2MomMomMom = fpEvt->getGenCand(gcPion2MomMom->fMom1);
 
+	// first stage of check: are the tracks correctly identified?
         ret = (TMath::Abs(gcMu1->fID) == 13
-	       && TMath::Abs(gcMu1Mom->fID) == 443
                && TMath::Abs(gcMu2->fID) == 13
-	       && TMath::Abs(gcMu2Mom->fID) == 443
                && TMath::Abs(gcPion1->fID) == 211
+               && TMath::Abs(gcPion2->fID) == 211);
+	if (!ret && fVerbose>1) cout << "Truth matching failed at stage 1 (tracks do not match)" << endl;
+	if (!ret) return ret;
+
+	// second stage: are they from the correct ancestors?
+	ret = (ret
+	       && TMath::Abs(gcMu1Mom->fID) == 443
+	       && TMath::Abs(gcMu2Mom->fID) == 443
                && TMath::Abs(gcPion1Mom->fID) == 310
-               && TMath::Abs(gcPion2->fID) == 211
 	       && TMath::Abs(gcPion2Mom->fID) == 310);
+	if (!ret && fVerbose>1) cout << "Truth matching failed at stage 2 (tracks have wrong ancestors)" << endl;
+	if (!ret) return ret;
+
+	// thirs stage: do particles from same vtx really come from same ancestor?
+	ret = (ret
+		&& gcMu1Mom->fNumber == gcMu2Mom->fNumber
+		&& gcPion1Mom->fNumber == gcPion2Mom->fNumber);
+	if (!ret && fVerbose>1) cout << "Truth matching failed at stage 3 (tracks do not come from same ancestors)" << endl;
+	if (!ret) return ret;
+
+	// fourth stage: do the J/psi tracks come from the same B0?
+	ret = (ret
+	    && TMath::Abs(gcMu1MomMom->fID) == 511
+	    && TMath::Abs(gcMu2MomMom->fID) == 511
+	    && gcMu1MomMom->fNumber == gcMu2MomMom->fNumber);
+	if (!ret && fVerbose>1) cout << "Truth matching failed at stage 4 (J/psi tracks do not come from same B0)" << endl;
+	if (!ret) return ret;
+
+	// fifth stage: do the Ks tracks come from the same B0?
+	// Here we have to skip one ancestor as the sequence is B0 -> K0 -> Ks -> pipi (511 -> 311 -> 310 -> 211 211)
+	ret = (ret
+		&& TMath::Abs(gcPion1MomMomMom->fID) == 511
+		&& TMath::Abs(gcPion2MomMomMom->fID) == 511
+		&& gcPion1MomMomMom->fNumber == gcPion2MomMomMom->fNumber);
+	if (!ret && fVerbose>1) cout << "Truth matching failed at stage 5 (Ks tracks do not come from same B0)" << endl;
+	if (ret && fVerbose>1) cout << "Truth matching succesful" << endl;
 
         if (fVerbose > 5)
         {
@@ -753,203 +815,191 @@ bool b0Reader::doTruthMatchingB0(const TAnaTrack *Mu1, const TAnaTrack *Mu2, con
 // ----------------------------------------------------------------------
 void b0Reader::doGenLevelStuff()
 {
-    /* To be adjusted
+    fmapRef1Gen = fgmapRef1Gen = fmapRef2Gen = fgmapRef2Gen = -1;
+    fIsSig = false;
     // Do some generator level stuff
     const int nGenCands(fpEvt->nGenCands());
     for(int gcit=0; gcit!=nGenCands; gcit++)
     {
-        TGenCand *gc5122 = fpEvt->getGenCand(gcit);
-        if (511==abs(gc5122->fID) || 521==abs(gc5122->fID) || 513==abs(gc5122->fID) || 523==abs(gc5122->fID))
+        TGenCand *gcCur = fpEvt->getGenCand(gcit);
+        if(511==TMath::Abs(gcCur->fID))
         {
-            findDaughters fd(gc5122,fpEvt);
-        }
-        if(511==abs(gc5122->fID))
-        {
+            findDaughtersB0 fd(gcCur,fpEvt);
+	    // skip if we are at a B0 that does not decay into our channel, i.e. another one or one which oscillates to the interesting one
+	    if ("511 -> 443 (13 13 ) 311 (211 211 ) "!=fd.getDauGrdau()) continue;
+            fIsSig = true;
 	    // some kinematic variables for comparison with reco
-	    fptgenlb = gc5122->fP.Pt();
-	    fmgenlb = gc5122->fMass;
-	    fphigenlb = gc5122->fP.Phi();
-	    fetagenlb = gc5122->fP.Eta();
-	    fygenlb = gc5122->fP.Rapidity();
+	    fptgenB0 = gcCur->fP.Pt();
+	    fmgenB0 = gcCur->fMass;
+	    fphigenB0 = gcCur->fP.Phi();
+	    fetagenB0 = gcCur->fP.Eta();
+	    fygenB0 = gcCur->fP.Rapidity();
 
             // reset tree variables
-            fgmlb = fgmlbsw = fgmKs = fgmKssw = 9999;
-            fgptpr = fgptpi = fgptmu1 = fgptmu2 = 9999;
-            fgetapr = fgetapi = fgetamu1 = fgetamu2 = 9999;
-            fgphipr = fgphipi = fgphimu1 = fgphimu2 = 9999;
-            fgpmu1 = fgpmu2 = fgppr = fgppi = 9999;
+            fgmB0 = fgmB0sw = fgmKs = fgmKssw = 9999;
+            fgptpi1 = fgptpi2 = fgptmu1 = fgptmu2 = 9999;
+            fgetapi1 = fgetapi2 = fgetamu1 = fgetamu2 = 9999;
+            fgphipi1 = fgphipi2 = fgphimu1 = fgphimu2 = 9999;
+            fgpmu1 = fgpmu2 = fgppi1 = fgppi2 = 9999;
             fgptKs = fgpKs = 9999;
-            fgdRprpi = fgdRmumu = fgdRKslb = 9999;
-            fganprpi = fganmumu = fganKsjp = 9999;
+            fgdRpipi = fgdRmumu = fgdRKsB0 = 9999;
+            fganpipi = fganmumu = fganKsjp = 9999;
+	    fctB0truth = fd3dB0truth = fdxyB0truth = fpB0truth = fptB0truth = 9999;
             fgnDaughters = fgnGrandDaughters = fgmapRef1Gen = -1;
+	    fgctB0 = 9999;
             // analyse the decay and extract some data to store in the tree
-            findDaughters fd(gc5122,fpEvt);
-            fIsSig = ("5122 -> 443 (13 13 ) 3122 (211 2212 ) "==fd.getDauGrdau()) ? 1 : 0;
             fnDaughters = fgnDaughters = fd.getNDaughters();
             fnGrandDaughters = fgnGrandDaughters = fd.getNDauGrdau();
             fmapRef1Gen = fgmapRef1Gen = myDecayMap1Gen.getPos(fd.getDaughters());
             fmapRef2Gen = fgmapRef2Gen = myDecayMap2Gen.getPos(fd.getDauGrdau());
             // now extract some kinematic data
-            TLorentzVector tlvGenJp, tlvGenKs, tlvGenPr, tlvGenPi, tlvGenMu1, tlvGenMu2, tlvGenLambda0, tlvGenLambdaB;
-            TVector3 tv3PV, tv3LbV, tv3KsV;
-            if (fIsSig)
-            {
-                tv3PV = gc5122->fV; // vertices in candblock denote where the particle was produced
-                for(int gcDauit=gc5122->fDau1; gcDauit<=gc5122->fDau2; gcDauit++)
-                {
-                    TGenCand* gcDau=fpEvt->getGenCand(gcDauit);
-                    if(443==abs(gcDau->fID))
-                    {
-                        tv3LbV = gcDau->fV;
-                        fgvxlb = tv3LbV.x();
-                        fgvylb = tv3LbV.y();
-                        fgvzlb = tv3LbV.z();
-                        fgvrlb = tv3LbV.XYvector().Mod();
-                        // ct. Observe that Lb is in gc5122
-                        fgctlb = (tv3LbV-tv3PV).Mag() / gc5122->fP.Vect().Mag() * MLAMBDA_B;
-                        unsigned int mucounter(0);
-                        tlvGenJp=gcDau->fP;
-                        for(int gcGrDauit=gcDau->fDau1; gcGrDauit<=gcDau->fDau2; gcGrDauit++)
-                        {
-                            TGenCand* gcGrDau=fpEvt->getGenCand(gcGrDauit);
-                            if(13==abs(gcGrDau->fID)&&gcGrDau->fMom1==gcDau->fNumber&&gcGrDau->fMom2==gcDau->fNumber)
-                            {
-                                mucounter++;
-                                if (mucounter==1) tlvGenMu1=gcGrDau->fP;
-                                if (mucounter==2) tlvGenMu2=gcGrDau->fP;
-                            }
-                        }
-                        if(mucounter>=2)
-                        {
-                            fgptmu1 = tlvGenMu1.Pt();
-                            fgptmu2 = tlvGenMu2.Pt();
-                            fgpmu1 = tlvGenMu1.P();
-                            fgpmu2 = tlvGenMu2.P();
-                            fgetamu1 = tlvGenMu1.Eta();
-                            fgetamu2 = tlvGenMu2.Eta();
-                            fgphimu1 = tlvGenMu1.Phi();
-                            fgphimu2 = tlvGenMu2.Phi();
-                            fgdRmumu = tlvGenMu1.DeltaR(tlvGenMu2);
-                            fganmumu = tlvGenMu1.Angle(tlvGenMu2.Vect());
-                        }
-                    }
-                    if(3122==abs(gcDau->fID))
-                    {
-                        tlvGenKs=gcDau->fP;
-                        bool prFound(false), piFound(false);
-                        for(int gcGrDauit=gcDau->fDau1; gcGrDauit<=gcDau->fDau2; gcGrDauit++)
-                        {
-                            TGenCand* gcGrDau=fpEvt->getGenCand(gcGrDauit);
-                            if(!prFound&&2212==abs(gcGrDau->fID)&&gcGrDau->fMom1==gcDau->fNumber&&gcGrDau->fMom2==gcDau->fNumber)
-                            {	// in case we have more than one pr we get the first
-                                tlvGenPr=gcGrDau->fP;
-                                prFound=true;
+            TLorentzVector tlvGenJp, tlvGenKs, tlvGenPi1, tlvGenPi2, tlvGenMu1, tlvGenMu2, tlvGenKshort, tlvGenB0;
+            TVector3 tv3PV, tv3B0V, tv3KsV;
+	    // vertices in candblock denote where the particle was produced.
+	    tv3PV = getProdVtx(gcCur, 511); // this gets the production vertex of the first B0 in case of mixing
+	    // now search for the daughters of the B0
+	    for(int gcDauit=gcCur->fDau1; gcDauit<=gcCur->fDau2; gcDauit++)
+	    {
+		TGenCand* gcDau=fpEvt->getGenCand(gcDauit);
+		if(443==TMath::Abs(gcDau->fID))
+		{
+		    tv3B0V = gcDau->fV;
+		    fgvxB0 = tv3B0V.x();
+		    fgvyB0 = tv3B0V.y();
+		    fgvzB0 = tv3B0V.z();
+		    fgvrB0 = tv3B0V.XYvector().Mod();
+		    // ct. Observe that Lb is in gcCur
+		    fgpB0 = fpB0truth = gcCur->fP.Vect().Mag();
+		    fgptB0 = fptB0truth = gcCur->fP.Vect().Perp();
+		    fgd3dB0 = fd3dB0truth = (tv3B0V-tv3PV).Mag();
+		    //fgctB0 = (tv3B0V-tv3PV).Mag() / gcCur->fP.Vect().Mag() * MB_0 / TMath::Ccgs();
+		    fctB0truth = fgctB0 = fgd3dB0 / fgpB0 * MB_0 / TMath::Ccgs();
+		    fdxyB0truth = (tv3B0V-tv3PV).Perp();
+		    unsigned int mucounter(0);
+		    tlvGenJp=gcDau->fP;
+		    for(int gcGrDauit=gcDau->fDau1; gcGrDauit<=gcDau->fDau2; gcGrDauit++)
+		    {
+			TGenCand* gcGrDau=fpEvt->getGenCand(gcGrDauit);
+			if(13==TMath::Abs(gcGrDau->fID)&&gcGrDau->fMom1==gcDau->fNumber&&gcGrDau->fMom2==gcDau->fNumber)
+			{
+			    mucounter++;
+			    if (mucounter==1) tlvGenMu1=gcGrDau->fP;
+			    if (mucounter==2) tlvGenMu2=gcGrDau->fP;
+			}
+		    }
+		    if(mucounter>=2)
+		    {
+			fgptmu1 = tlvGenMu1.Pt();
+			fgptmu2 = tlvGenMu2.Pt();
+			fgpmu1 = tlvGenMu1.P();
+			fgpmu2 = tlvGenMu2.P();
+			fgetamu1 = tlvGenMu1.Eta();
+			fgetamu2 = tlvGenMu2.Eta();
+			fgphimu1 = tlvGenMu1.Phi();
+			fgphimu2 = tlvGenMu2.Phi();
+			fgdRmumu = tlvGenMu1.DeltaR(tlvGenMu2);
+			fganmumu = tlvGenMu1.Angle(tlvGenMu2.Vect());
+		    }
+		}
+		if(311==TMath::Abs(gcDau->fID))
+		{
+		    // The K0 needs to decay into a Ks
+		    TGenCand* gcDauDau=fpEvt->getGenCand(gcDau->fDau1);
+		    tlvGenKs=gcDauDau->fP;
+		    bool pi1Found(false), pi2Found(false);
+		    for(int gcGrDauit=gcDauDau->fDau1; gcGrDauit<=gcDauDau->fDau2; gcGrDauit++)
+		    {
+			TGenCand* gcGrDau=fpEvt->getGenCand(gcGrDauit);
+			if(!pi2Found&&211==TMath::Abs(gcGrDau->fID)&&gcGrDau->fMom1==gcDauDau->fNumber&&gcGrDau->fMom2==gcDauDau->fNumber)
+			{	// in case we have more than one pr we get the first
+			    if (!pi1Found)
+			    {
+				pi1Found = true;
+				tlvGenPi1=gcGrDau->fP;
+				// fill in data for the Ks decay vertex
+				tv3KsV = gcGrDau->fV;
+				fgvxKs = tv3KsV.x();
+				fgvyKs = tv3KsV.y();
+				fgvzKs = tv3KsV.z();
+				fgvrKs = tv3KsV.XYvector().Mod();
+				// ct. Observe that Ks is in gcDauDau
+				fgctKs = (tv3KsV-tv3PV).Mag() / gcDauDau->fP.Vect().Mag() * MKSHORT / TMath::Ccgs();
+			    }
+			    else
+			    {
+				pi2Found = true;
+				tlvGenPi2=gcGrDau->fP;
+			    }
 
-                                // fill in data for the Ks decay vertex
-                                tv3KsV = gcGrDau->fV;
-                                fgvxKs = tv3KsV.x();
-                                fgvyKs = tv3KsV.y();
-                                fgvzKs = tv3KsV.z();
-                                fgvrKs = tv3KsV.XYvector().Mod();
-                                // ct. Observe that Ks is in gcDau
-                                fgctKs = (tv3KsV-tv3PV).Mag() / gcDau->fP.Vect().Mag() * MLAMBDA_0;
-                            }
-                            if(!piFound&&211==abs(gcGrDau->fID)&&gcGrDau->fMom1==gcDau->fNumber&&gcGrDau->fMom2==gcDau->fNumber)
-                            {	// in case we have more than one pi we get the first
-                                tlvGenPi=gcGrDau->fP;
-                                piFound=true;
-                            }
-                        }
-                        if(prFound&&piFound) // we have a pr and a pi
-                        {
-                            fgptpr = tlvGenPr.Pt();
-                            fgppr = tlvGenPr.P();
-                            fgetapr = tlvGenPr.Eta();
-                            fgphipr = tlvGenPr.Phi();
+			}
+		    }
+		    if(pi1Found&&pi2Found) // we have a pr and a pi
+		    {
+			fgptpi1 = tlvGenPi1.Pt();
+			fgppi1 = tlvGenPi1.P();
+			fgetapi1 = tlvGenPi1.Eta();
+			fgphipi1 = tlvGenPi1.Phi();
 
-                            fgptpi = tlvGenPi.Pt();
-                            fgppi = tlvGenPi.P();
-                            fgetapi = tlvGenPi.Eta();
-                            fgphipi = tlvGenPi.Phi();
+			fgptpi2 = tlvGenPi2.Pt();
+			fgppi2 = tlvGenPi2.P();
+			fgetapi2 = tlvGenPi2.Eta();
+			fgphipi2 = tlvGenPi2.Phi();
 
-                            fgdRprpi = tlvGenPr.DeltaR(tlvGenPi);
-                            fganprpi = tlvGenPr.Angle(tlvGenPi.Vect());
-                            // make a Ks
-                            tlvGenLambda0 = tlvGenPr + tlvGenPi;
-                            fgmKs = tlvGenLambda0.M();
-                            fgptKs = tlvGenLambda0.Pt();
-                            fgpKs = tlvGenLambda0.P();
-                            // make a Ks with swapped mass assumptions for pr and pi
-                            TLorentzVector tlvGenPrAsPi, tlvGenPiAsPr;
-                            tlvGenPrAsPi.SetVectM(tlvGenPr.Vect(),MPION);
-                            tlvGenPiAsPr.SetVectM(tlvGenPi.Vect(),MPROTON);
-                            const TLorentzVector tlvGenLambdaSwapped=tlvGenPrAsPi+tlvGenPiAsPr;
-                            fgmKssw = tlvGenLambdaSwapped.M();
-                            // make a Lb
-                            tlvGenLambdaB = tlvGenLambda0+tlvGenJp;
-                            fgmlb = tlvGenLambdaB.M();
-			    fgptlb = tlvGenLambdaB.Pt();
-			    fgetalb = tlvGenLambdaB.Eta();
-			    fgylb = tlvGenLambdaB.Rapidity();
-                            const TLorentzVector tlvGenLambdaBSwapped = tlvGenLambdaSwapped+tlvGenJp;
-                            fgmlbsw = tlvGenLambdaBSwapped.M();
+			fgdRpipi = tlvGenPi1.DeltaR(tlvGenPi2);
+			fganpipi = tlvGenPi1.Angle(tlvGenPi2.Vect());
+			// make a Ks
+			tlvGenKshort = tlvGenPi1 + tlvGenPi2;
+			fgmKs = tlvGenKshort.M();
+			fgptKs = tlvGenKshort.Pt();
+			fgpKs = tlvGenKshort.P();
+			// make a Ks with swapped mass assumptions for pr and pi
+			/*
+			TLorentzVector tlvGenPrAsPi, tlvGenPiAsPr;
+			tlvGenPrAsPi.SetVectM(tlvGenPr.Vect(),MPION);
+			tlvGenPiAsPr.SetVectM(tlvGenPi.Vect(),MPROTON);
+			const TLorentzVector tlvGenLambdaSwapped=tlvGenPrAsPi+tlvGenPiAsPr;
+			fgmKssw = tlvGenLambdaSwapped.M();
+			*/
+			// make a Lb
+			tlvGenB0 = tlvGenKshort+tlvGenJp;
+			fgmB0 = tlvGenB0.M();
+			//fgptB0 = tlvGenB0.Pt();
+			fgetaB0 = tlvGenB0.Eta();
+			fgyB0 = tlvGenB0.Rapidity();
+			//const TLorentzVector tlvGenLambdaBSwapped = tlvGenLambdaSwapped+tlvGenJp;
+			//fgmlbsw = tlvGenLambdaBSwapped.M();
 
-                            //
-                            //if (fgmKs>2) fpEvt->dumpGenBlock();
-                        }
-                    }
-                    fgdRKslb = tlvGenJp.DeltaR(tlvGenLambda0);
-                    fganKsjp = tlvGenJp.Angle(tlvGenLambda0.Vect());
-                    fganKslb = tlvGenLambdaB.Angle(tlvGenLambda0.Vect());
-                    const double anKsmu1 = tlvGenLambda0.Angle(tlvGenMu1.Vect());
-                    const double anKsmu2 = tlvGenLambda0.Angle(tlvGenMu2.Vect());
-                    fganKsmumin = anKsmu1<anKsmu2 ? anKsmu1 : anKsmu2;
-                    fganKsmuPt = tlvGenMu1.Pt() > tlvGenMu2.Pt() ? anKsmu1 : anKsmu2;
-                }
-            }
+			//
+			//if (fgmKs>2) fpEvt->dumpGenBlock();
+		    }
+		}
+		fgdRKsB0 = tlvGenJp.DeltaR(tlvGenKshort);
+		fganKsjp = tlvGenJp.Angle(tlvGenKshort.Vect());
+		fganKsB0 = tlvGenB0.Angle(tlvGenKshort.Vect());
+		const double anKsmu1 = tlvGenKshort.Angle(tlvGenMu1.Vect());
+		const double anKsmu2 = tlvGenKshort.Angle(tlvGenMu2.Vect());
+		fganKsmumin = anKsmu1<anKsmu2 ? anKsmu1 : anKsmu2;
+		fganKsmuPt = tlvGenMu1.Pt() > tlvGenMu2.Pt() ? anKsmu1 : anKsmu2;
+	    }
         }
-    }
-*/
-}
-
-void b0Reader::doL1stuff()
-{
-    fL1TDMu0 = fL1TDMu3 = false;
-    fL1TMuBH = fL1TMu0 = fL1TMu3 = fL1TMu5 = fL1TMu7 = fL1TMu10 = fL1TMu14 = fL1TMu20 = false;
-    for(int i=0; i!=NL1T; i++)
-    {
-	const std::string name = fpEvt->fL1TNames[i].Data();
-	//const double prescale = fpEvt->fL1TPrescale[i];
-	const bool result = fpEvt->fL1TResult[i];
-	const bool error = fpEvt->fL1TError[i];
-	//cout << name << " - prescale: " << prescale << " result: " << result << " error: " << error << endl;
-	if (result && !error)
-	{
-	    if ("L1_DoubleMuOpen"== name) fL1TDMu0 = true;
-	    if ("L1_DoubleMu3"== name) fL1TDMu3 = true;
-	    if ("L1_SingleMuBeamHalo"== name) fL1TMuBH = true;
-	    if ("L1_SingleMu0"== name) fL1TMu0 = true;
-	    if ("L1_SingleMu3"== name) fL1TMu3 = true;
-	    if ("L1_SingleMu5"== name) fL1TMu5 = true;
-	    if ("L1_SingleMu7"== name) fL1TMu7 = true;
-	    if ("L1_SingleMu10"== name) fL1TMu10 = true;
-	    if ("L1_SingleMu14"== name) fL1TMu14 = true;
-	    if ("L1_SingleMu20"== name) fL1TMu20 = true;
-	}
     }
 }
 
 void b0Reader::doHLTstuff()
 {
-    fHLTqrk = false;
-    fHLTDMu0 = fHLTDMu3jp = false;
-    fHLTMu0TkMu0jp = false;
-    fHLTMu0jp = false;
-    fHLTDMu6p5BarJp = fHLTDMu6p5JpDis = fHLTDMu6p5Jp = fHLTMu5L2Mu2Jpsi = fHLTMu5Tr2Jpsi = fHLTMu5Tr7Jpsi = false;
-    fHLTpreDMu6p5BarJp = fHLTpreDMu6p5JpDis = fHLTpreDMu6p5Jp = fHLTpreMu5L2Mu2Jpsi = fHLTpreMu5Tr2Jpsi = fHLTpreMu5Tr7Jpsi = 0;
-    fHLTDMu10BarJp = fHLTDMu7JpDis = false;
-    fHLTpreDMu10BarJp = fHLTpreDMu7JpDis = 0;
+    fHLTDMu3jp = fHLTDMu6p5Jp = fHLTDMu0Jp = fHLTDMu0JpNoVtx = false;
+    fHLTDMu6p5BarJp = fHLTDMu10BarJp = fHLTDMu13BarJp = false;
+    fHLTDMu3p5JpDis = fHLTDMu6p5JpDis = fHLTDMu7JpDis = fHLTDMu4JpDis = fHLTDMu5JpDis = false;
+    fHLTDMu0 = fHLTMu0TkMu0jp = fHLTMu0jp = fHLTMu5L2Mu2Jpsi = fHLTMu5Tr2Jpsi = fHLTMu5Tr7Jpsi = false;
+    fHLTSingleIsoMu = fHLTSingleL1Mu = fHLTSingleL2Mu = fHLTSingleHLTMu = false;
     fHLTokJpsi = fHLTokBarrelJpsi = fHLTokDisplJpsi = false;
+    fHLTmatch = fHLTSingleMu = fHLTqrk = false;
+
+    fHLTpreDMu3jp = fHLTpreDMu6p5Jp = fHLTpreDMu0Jp = fHLTpreDMu0JpNoVtx = 0;
+    fHLTpreDMu6p5BarJp = fHLTpreDMu10BarJp = fHLTpreDMu13BarJp = 0;
+    fHLTpreDMu3p5JpDis = fHLTpreDMu6p5JpDis = fHLTpreDMu7JpDis = fHLTpreDMu4JpDis = fHLTpreDMu5JpDis = 0;
+    fHLTpreqrk = 0;
+
     for(int i=0; i!=NHLT; i++)
     {
 	const std::string name = fpEvt->fHLTNames[i].Data();
@@ -958,59 +1008,85 @@ void b0Reader::doHLTstuff()
 	const bool wasrun = fpEvt->fHLTWasRun[i];
 	const bool result = fpEvt->fHLTResult[i];
 	const bool error = fpEvt->fHLTError[i];
+	//if (name == "HLT_DoubleMu3p5_Jpsi_Displaced_v2")
+	//cout << "HLT " << i << ": " << name << " result: " << result << " wasrun: " << wasrun << " prescale: " << prescale << " error: " << error << endl;
 	//cout << name << " - wasrun: " << wasrun << " prescale: " << prescale << " result: " << result << " error: " << error << endl;
-	if (result && wasrun &&!error)
+	if (result && wasrun && !error)
 	{
-	    // Quarkonium triggers
-	    if ("HLT_DoubleMu0_Quarkonium_v1" == name) fHLTqrk = true;
-	    if ("HLT_DoubleMu3_Quarkonium_v1" == name) fHLTqrk = true;
-	    if ("HLT_DoubleMu3_Quarkonium_v2" == name) fHLTqrk = true;
+	    // Inclusive Jpsi triggers
+	    if (name.find("HLT_DoubleMu3_Jpsi_v")           !=std::string::npos) { fHLTDMu3jp      = true; fHLTpreDMu3jp      = prescale; }
+	    if (name.find("HLT_Dimuon6p5_Jpsi_v")           !=std::string::npos) { fHLTDMu6p5Jp    = true; fHLTpreDMu6p5Jp    = prescale; }
+	    if (name.find("HLT_Dimuon0_Jpsi_v")             !=std::string::npos) { fHLTDMu0Jp      = true; fHLTpreDMu0Jp      = prescale; }
+	    if (name.find("HLT_Dimuon0_Jpsi_NoVertexing_v") !=std::string::npos) { fHLTDMu0JpNoVtx = true; fHLTpreDMu0JpNoVtx = prescale; }
+	    fHLTokJpsi = (fHLTDMu3jp || fHLTDMu6p5Jp || fHLTDMu0Jp || fHLTDMu0JpNoVtx);
+
+	    // Inclusive Jpsi triggers in barrel
+	    if (name.find("HLT_Dimuon6p5_Barrel_Jpsi")      !=std::string::npos) { fHLTDMu6p5BarJp = true; fHLTpreDMu6p5BarJp = prescale; }
+	    if (name.find("HLT_Dimuon10_Jpsi_Barrel")       !=std::string::npos) { fHLTDMu10BarJp  = true; fHLTpreDMu10BarJp = prescale; }
+	    if (name.find("HLT_Dimuon13_Jpsi_Barrel")       !=std::string::npos) { fHLTDMu13BarJp  = true; fHLTpreDMu13BarJp = prescale; }
+	    fHLTokBarrelJpsi = (fHLTDMu6p5BarJp || fHLTDMu10BarJp || fHLTDMu13BarJp);
+
+	    // Displaced Jpsi triggers
+	    if (name.find("HLT_Dimuon3p5_Jpsi_Displaced")   !=std::string::npos) { fHLTDMu3p5JpDis = true; fHLTpreDMu3p5JpDis = prescale; }
+	    if (name.find("HLT_DoubleMu3p5_Jpsi_Displaced") !=std::string::npos) { fHLTDMu3p5JpDis = true; fHLTpreDMu3p5JpDis = prescale; } // which spelling is correct?
+	    if (name.find("HLT_Dimuon6p5_Jpsi_Displaced")   !=std::string::npos) { fHLTDMu6p5JpDis = true; fHLTpreDMu6p5JpDis = prescale; }
+	    if (name.find("HLT_Dimuon7_Jpsi_Displaced")     !=std::string::npos) { fHLTDMu7JpDis   = true; fHLTpreDMu7JpDis = prescale; }
+	    if (name.find("HLT_DoubleMu4_Jpsi_Displaced")   !=std::string::npos) { fHLTDMu4JpDis   = true; fHLTpreDMu4JpDis = prescale; }
+	    if (name.find("HLT_DoubleMu5_Jpsi_Displaced")   !=std::string::npos) { fHLTDMu5JpDis   = true; fHLTpreDMu5JpDis = prescale; }
+	    fHLTokDisplJpsi = (fHLTDMu3p5JpDis || fHLTDMu6p5JpDis || fHLTDMu7JpDis || fHLTDMu4JpDis || fHLTDMu5JpDis);
+
+	    // legacy trigger information, for backwards compatibility with 2010 only.
+	    if (name.find("Quarkonium")                     !=std::string::npos) { fHLTqrk = true; fHLTpreqrk = prescale; }
 	    // DoubleMu triggers (usually prescaled)
-	    if ("HLT_DoubleMu0"          == name) fHLTDMu0 = true;
+	    if ("HLT_DoubleMu0" == name) fHLTDMu0 = true;
 	    // Jpsi triggers
-	    if ("HLT_Mu0_TkMu0_Jpsi"     == name) fHLTMu0TkMu0jp = true;
-	    if ("HLT_DoubleMu3_Jpsi_v1" == name) fHLTDMu3jp = true;
-	    if ("HLT_DoubleMu3_Jpsi_v2" == name) fHLTDMu3jp = true;
+	    if ("HLT_Mu0_TkMu0_Jpsi" == name) fHLTMu0TkMu0jp = true;
 	    // Jpsi with OST
-	    if ("HLT_Mu0_TkMu0_OST_Jpsi" == name) fHLTMu0jp = true;
-	    if ("HLT_Mu0_TkMu0_OST_Jpsi_Tight_v1" == name) fHLTMu0jp = true;
-	    if ("HLT_Mu0_TkMu0_OST_Jpsi_Tight_v2" == name) fHLTMu0jp = true;
-	    if ("HLT_Mu0_TkMu0_OST_Jpsi_Tight_v3" == name) fHLTMu0jp = true;
+	    if (name.find("HLT_Mu0_TkMu0_OST_Jpsi")    !=std::string::npos) fHLTMu0jp = true;
 	    // triggers from Run2011A v2 on
-	    if ("HLT_Dimuon0_Jpsi_v1" == name) { fHLTDMu0Jp = true; fHLTpreDMu0Jp= prescale; }
-	    if ("HLT_Dimuon6p5_Barrel_Jpsi_v1" == name) { fHLTDMu6p5BarJp = true; fHLTpreDMu6p5BarJp = prescale; }
-	    if ("HLT_Dimuon6p5_Jpsi_Displaced_v1" == name)  { fHLTDMu6p5JpDis = true; fHLTpreDMu6p5JpDis = prescale; }
-	    if ("HLT_Dimuon6p5_Jpsi_v1" == name)  { fHLTDMu6p5Jp = true; fHLTpreDMu6p5Jp = prescale; }
-	    if ("HLT_Mu5_L2Mu2_Jpsi_v3" == name)  { fHLTMu5L2Mu2Jpsi = true; fHLTpreMu5L2Mu2Jpsi = prescale; }
-	    if ("HLT_Mu5_Track2_Jpsi_v2" == name)  { fHLTMu5Tr2Jpsi = true; fHLTpreMu5Tr2Jpsi = prescale; }
-	    if ("HLT_Mu7_Track7_Jpsi_v3" == name)  { fHLTMu5Tr7Jpsi = true; fHLTpreMu5Tr7Jpsi = prescale; }
-	    // triggers from Run2011A v4 on
-	    if ("HLT_Dimuon10_Jpsi_Barrel_v1" == name) { fHLTDMu10BarJp = true; fHLTpreDMu10BarJp = prescale; }
-	    if ("HLT_Dimuon10_Jpsi_Barrel_v2" == name) { fHLTDMu10BarJp = true; fHLTpreDMu10BarJp = prescale; }
-	    if ("HLT_Dimuon7_Jpsi_Displaced_v1" == name)  { fHLTDMu7JpDis = true; fHLTpreDMu7JpDis = prescale; }
-	    if ("HLT_Dimuon7_Jpsi_Displaced_v2" == name)  { fHLTDMu7JpDis = true; fHLTpreDMu7JpDis = prescale; }
+	    if ("HLT_Mu5_L2Mu2_Jpsi_v3" == name)  fHLTMu5L2Mu2Jpsi = true;
+	    if ("HLT_Mu5_Track2_Jpsi_v2" == name) fHLTMu5Tr2Jpsi = true;
+	    if ("HLT_Mu7_Track7_Jpsi_v3" == name) fHLTMu5Tr7Jpsi = true;
+
+	    // A big OR of single Mu triggers for efficiency studies
+	    // Put as many triggers as possible to collect as much events as possible
+	    // --- isolated Mu triggers
+	    if (name.find("HLT_IsoMu12_v")    !=std::string::npos) fHLTSingleIsoMu = true;
+	    if (name.find("HLT_IsoMu15_v")    !=std::string::npos) fHLTSingleIsoMu = true;
+	    if (name.find("HLT_IsoMu17_v")    !=std::string::npos) fHLTSingleIsoMu = true;
+	    if (name.find("HLT_IsoMu24_v")    !=std::string::npos) fHLTSingleIsoMu = true;
+	    if (name.find("HLT_IsoMu30_v")    !=std::string::npos) fHLTSingleIsoMu = true;
+	    // --- L1 based triggers
+	    if (name.find("HLT_L1SingleMu10_v") !=std::string::npos) fHLTSingleL1Mu = true;
+	    if (name.find("HLT_L1SingleMu20_v") !=std::string::npos) fHLTSingleL1Mu = true;
+	    // --- L2 based triggers
+	    if (name.find("HLT_L2Mu10_v") !=std::string::npos) fHLTSingleL2Mu = true;
+	    if (name.find("HLT_L2Mu20_v") !=std::string::npos) fHLTSingleL2Mu = true;
+	    // --- HLT single mu triggers
+	    if (name.find("HLT_Mu3_v")   !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu5_v")   !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu8_v")   !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu12_v")  !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu15_v")  !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu20_v")  !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu24_v")  !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu30_v")  !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu40_v")  !=std::string::npos) fHLTSingleHLTMu = true;
+	    if (name.find("HLT_Mu100_v") !=std::string::npos) fHLTSingleHLTMu = true;
+	    // --- and here the big OR
+	    fHLTSingleMu = (fHLTSingleIsoMu || fHLTSingleL1Mu || fHLTSingleL2Mu || fHLTSingleHLTMu);
 	    // a run number dependent summary result -- final decision -- CAUTION! They do/can not take prescales into account!!!!
 	    if (!fIsMC)
 	    {
 		if (fRun >= 140058 && fRun < 147196) fHLTokJpsi = fHLTDMu0; // Run2010A
 		else if (fRun >= 146428 && fRun <= 149294) fHLTokJpsi = fHLTMu0jp; // Run2010B
 		else if (fRun >= 160405 && fRun <= 163261) fHLTokJpsi = fHLTDMu3jp; // Run2011A_v1
-		else if (fRun >= 163270 && fRun <= 163869 )  // Run2011A_v2
-		{
-		    fHLTokJpsi = (fHLTDMu6p5Jp || fHLTDMu0Jp);
-		    fHLTokBarrelJpsi = fHLTDMu6p5BarJp;
-		    fHLTokDisplJpsi = fHLTDMu6p5JpDis;
-		}
-		else if (fRun >= 165088) // Run2011A_v4
-		{
-		    fHLTokJpsi = fHLTDMu0Jp;
-		    fHLTokBarrelJpsi = fHLTDMu10BarJp;
-		    fHLTokDisplJpsi = fHLTDMu7JpDis;
-		}
 	    }
 	    else
 	    {
-		fHLTokJpsi = fHLTMu0jp; // to be adjusted depending on the version of CMSSW used for MC
+		// to be adjusted depending on the version of CMSSW used for MC
+		// fHLTokJpsi = fHLTMu0jp; // MC for 2010
+		fHLTokJpsi = fHLTDMu3jp; // official MC production 2011
 	    }
 	}
     }
@@ -1041,12 +1117,13 @@ void b0Reader::doTriggerMatching()
 	tto = fpEvt->getTrgObj(i);
 	if (fVerbose > 5) cout << "i: " << i << " ";
 	if (fVerbose > 5) tto->dump();
-	//if (fRun >= 164924) cout << fRun << ": " << tto->fLabel << tto->fP.DeltaR(tlvMu1) << ":" << tto->fP.DeltaR(tlvMu2) << endl;
+	// if (fRun >= 164924) cout << fRun << ": " << tto->fLabel << tto->fP.DeltaR(tlvMu1) << ":" << tto->fP.DeltaR(tlvMu2) << endl;
 	// the label changes according to datataking era, so we need to distinguish them
 	if ( (fRun <  160405 && tto->fLabel == "hltMu0TkMuJpsiTrackMassFiltered:HLT::")
 	  || (fRun >= 160405 && fRun < 163270 && tto->fLabel == "hltDoubleMu3QuarkoniumL3Filtered:HLT::")
 	  || (fRun >= 163270 && fRun < 164237 && (tto->fLabel == "hltDimuon6p5JpsiDisplacedL3Filtered:HLT::" || tto->fLabel == "hltDimuon6p5JpsiL3Filtered:HLT::" || tto->fLabel == "hltDimuon6p5BarrelJpsiL3Filtered:HLT::"))
-	  || (fRun >= 164924 && (tto->fLabel == "hltJpsiDisplacedL3Filtered:HLT::" || tto->fLabel == "hltBarrelJpsiL3Filtered:HLT::")))
+	  || (fRun >= 164924 && (tto->fLabel == "hltJpsiDisplacedL3Filtered:HLT::" || tto->fLabel == "hltBarrelJpsiL3Filtered:HLT::"))
+	  || (fRun >= 164924 && (tto->fLabel == "hltDisplacedmumuFilterDoubleMu4Jpsi:HLT::" || tto->fLabel == "hltDoubleMu4BarrelBsL3Filtered:HLT::")))
 	{
 	    const double deltaR1 = tto->fP.DeltaR(tlvMu1);
 	    const double deltaR2 = tto->fP.DeltaR(tlvMu2);
@@ -1361,6 +1438,12 @@ void b0Reader::bookReducedTree()
     fTree->Branch("ctxyKs",    &fctxyKs,    "ctxyKs/D");
     fTree->Branch("ctxyKsE",   &fctxyKsE,   "ctxyKsE/D");
 
+    fTree->Branch("ctB0truth", &fctB0truth, "ctB0truth/D");
+    fTree->Branch("d3dB0truth", &fd3dB0truth, "d3dB0truth/D");
+    fTree->Branch("dxyB0truth", &fdxyB0truth, "dxyB0truth/D");
+    fTree->Branch("pB0truth", &fpB0truth, "pB0truth/D");
+    fTree->Branch("ptB0truth", &fptB0truth, "ptB0truth/D");
+
     fTree->Branch("PvLip",   &fPvLip,   "PvLip/D");
     fTree->Branch("PvLipE",  &fPvLipE,  "PvLipE/D");
     fTree->Branch("PvLip2",  &fPvLip2,  "PvLip2/D");
@@ -1422,44 +1505,47 @@ void b0Reader::bookReducedTree()
     fTree->Branch("Sphipi2",  &fSphipi2,  "Sphipi2/D");
 
     // Trigger info
-    fTree->Branch("L1TDMu0", &fL1TDMu0, "L1TDMu0/O");
-    fTree->Branch("L1TDMu3", &fL1TDMu3, "L1TDMu3/O");
-    fTree->Branch("L1TMuBH", &fL1TMuBH, "L1TMuBH/O");
-    fTree->Branch("L1TMu0",  &fL1TMu0,  "L1TMu0/O");
-    fTree->Branch("L1TMu3",  &fL1TMu3,  "L1TMu3/O");
-    fTree->Branch("L1TMu5",  &fL1TMu5,  "L1TMu5/O");
-    fTree->Branch("L1TMu7",  &fL1TMu7,  "L1TMu7/O");
-    fTree->Branch("L1TMu10", &fL1TMu10, "L1TMu10/O");
-    fTree->Branch("L1TMu14", &fL1TMu14, "L1TMu14/O");
-    fTree->Branch("L1TMu20", &fL1TMu20, "L1TMu20/O");
-
     fTree->Branch("HLTqrk", &fHLTqrk, "HLTqrk/O");
-    fTree->Branch("HLTDMu0", &fHLTDMu0, "HLTDMu0/O");
     fTree->Branch("HLTDMu3jp", &fHLTDMu3jp, "HLTDMu3jp/O");
-    fTree->Branch("HLTMu0TkMu0jp",   &fHLTMu0TkMu0jp,   "HLTMu0TkMu0jp/O");
+    fTree->Branch("HLTDMu6p5Jp", &fHLTDMu6p5Jp, "HLTDMu6p5Jp/O");
+    fTree->Branch("HLTDMu0Jp", &fHLTDMu0Jp, "HLTDMu0Jp/O");
+    fTree->Branch("HLTDMu0JpNoVtx", &fHLTDMu0JpNoVtx, "HLTDMu0JpNoVtx/O");
+    fTree->Branch("HLTDMu6p5BarJp", &fHLTDMu6p5BarJp, "HLTDMu6p5BarJp/O");
+    fTree->Branch("HLTDMu10BarJp", &fHLTDMu10BarJp, "HLTDMu10BarJp/O");
+    fTree->Branch("HLTDMu13BarJp", &fHLTDMu13BarJp, "HLTDMu13BarJp/O");
+    fTree->Branch("HLTDMu3p5JpDis", &fHLTDMu3p5JpDis, "HLTDMu3p5JpDis/O");
+    fTree->Branch("HLTDMu6p5JpDis", &fHLTDMu6p5JpDis, "HLTDMu6p5JpDis/O");
+    fTree->Branch("HLTDMu7JpDis", &fHLTDMu7JpDis, "HLTDMu7JpDis/O");
+    fTree->Branch("HLTDMu4JpDis", &fHLTDMu4JpDis, "HLTDMu4JpDis/O");
+    fTree->Branch("HLTDMu5JpDis", &fHLTDMu5JpDis, "HLTDMu5JpDis/O");
+    fTree->Branch("HLTDMu0", &fHLTDMu0, "HLTDMu0/O");
+    fTree->Branch("HLTMu0TkMu0jp", &fHLTMu0TkMu0jp, "HLTMu0TkMu0jp/O");
     fTree->Branch("HLTMu0jp", &fHLTMu0jp, "HLTMu0jp/O");
+    fTree->Branch("HLTMu5L2Mu2Jpsi", &fHLTMu5L2Mu2Jpsi, "HLTMu5L2Mu2Jpsi/O");
+    fTree->Branch("HLTMu5Tr2Jpsi", &fHLTMu5Tr2Jpsi, "HLTMu5Tr2Jpsi/O");
+    fTree->Branch("HLTMu5Tr7Jpsi", &fHLTMu5Tr7Jpsi, "HLTMu5Tr7Jpsi/O");
+    fTree->Branch("HLTSingleMu", &fHLTSingleMu, "HLTSingleMu/O");
+    fTree->Branch("HLTSingleIsoMu", &fHLTSingleIsoMu, "HLTSingleIsoMu/O");
+    fTree->Branch("HLTSingleL1Mu", &fHLTSingleL1Mu, "HLTSingleL1Mu/O");
+    fTree->Branch("HLTSingleL2Mu", &fHLTSingleL2Mu, "HLTSingleL2Mu/O");
+    fTree->Branch("HLTSingleHLTMu", &fHLTSingleHLTMu, "HLTSingleHLTMu/O");
+    fTree->Branch("HLTokJpsi", &fHLTokJpsi, "HLTokJpsi/O");
+    fTree->Branch("HLTokBarrelJpsi", &fHLTokBarrelJpsi, "HLTokBarrelJpsi/O");
+    fTree->Branch("HLTokDisplJpsi", &fHLTokDisplJpsi, "HLTokDisplJpsi/O");
 
-    fTree->Branch("HLTDMu6p5BarJp", &fHLTDMu6p5BarJp, "HLTDMu6p5BarJp/O"); // Dimuon6p5_Barrel_Jpsi_v1
-    fTree->Branch("HLTDMu6p5JpDis", &fHLTDMu6p5JpDis, "HLTDMu6p5JpDis/O"); // Dimuon6p5_Jpsi_Displaced_v1
-    fTree->Branch("HLTDMu6p5Jp", &fHLTDMu6p5Jp, "HLTDMu6p5Jp/O"); // Dimuon6p5_Jpsi_v1
-    fTree->Branch("HLTMu5L2Mu2Jpsi", &fHLTMu5L2Mu2Jpsi, "HLTMu5L2Mu2Jpsi/O"); // Mu5_L2Mu2_Jpsi_v3
-    fTree->Branch("HLTMu5Tr2Jpsi", &fHLTMu5Tr2Jpsi, "HLTMu5Tr2Jpsi/O"); // Mu5_Track2_Jpsi_v2
-    fTree->Branch("HLTMu5Tr7Jpsi", &fHLTMu5Tr7Jpsi, "HLTMu5Tr7Jpsi/O"); // Mu7_Track7_Jpsi_v3
-    fTree->Branch("HLTDMu10BarJp", &fHLTDMu10BarJp, "HLTDMu10BarJp/O"); // Dimuon10_Barrel_Jpsi_v1
-    fTree->Branch("HLTDMu7JpDis", &fHLTDMu7JpDis, "HLTDMu7JpDis/O"); // Dimuon7_Jpsi_Displaced_v1
-
-    fTree->Branch("HLTpreDMu6p5BarJp", &fHLTpreDMu6p5BarJp, "HLTpreDMu6p5BarJp/I"); // Dimuon6p5_Barrel_Jpsi_v1
-    fTree->Branch("HLTpreDMu6p5JpDis", &fHLTpreDMu6p5JpDis, "HLTpreDMu6p5JpDis/I"); // Dimuon6p5_Jpsi_Displaced_v1
-    fTree->Branch("HLTpreDMu6p5Jp", &fHLTpreDMu6p5Jp, "HLTpreDMu6p5Jp/I"); // Dimuon6p5_Jpsi_v1
-    fTree->Branch("HLTpreMu5L2Mu2Jpsi", &fHLTpreMu5L2Mu2Jpsi, "HLTpreMu5L2Mu2Jpsi/I"); // Mu5_L2Mu2_Jpsi_v3
-    fTree->Branch("HLTpreMu5Tr2Jpsi", &fHLTpreMu5Tr2Jpsi, "HLTpreMu5Tr2Jpsi/I"); // Mu5_Track2_Jpsi_v2
-    fTree->Branch("HLTpreMu5Tr7Jpsi", &fHLTpreMu5Tr7Jpsi, "HLTpreMu5Tr7Jpsi/I"); // Mu7_Track7_Jpsi_v3
-    fTree->Branch("HLTpreDMu10BarJp", &fHLTpreDMu10BarJp, "HLTpreDMu10BarJp/I"); // Dimuon6p5_Barrel_Jpsi_v1
-    fTree->Branch("HLTpreDMu7JpDis", &fHLTpreDMu7JpDis, "HLTpreDMu7JpDis/I"); // Dimuon6p5_Jpsi_Displaced_v1
-
-    fTree->Branch("HLTokJpsi", &fHLTokJpsi, "HLTokJpsi/O"); // OR of all triggers ever run for Jpsi
-    fTree->Branch("HLTokBarrelJpsi", &fHLTokBarrelJpsi, "HLTokBarrelJpsi/O"); // OR of all triggers for Jpsi in barrel
-    fTree->Branch("HLTokDisplJpsi", &fHLTokDisplJpsi, "HLTokDisplJpsi/O"); // OR of all triggers for displaced Jpsi
+    fTree->Branch("HLTpreqrk", &fHLTpreqrk, "HLTpreqrk/I");
+    fTree->Branch("HLTpreDMu3jp", &fHLTpreDMu3jp, "HLTpreDMu3jp/I");
+    fTree->Branch("HLTpreDMu6p5Jp", &fHLTpreDMu6p5Jp, "HLTpreDMu6p5Jp/I");
+    fTree->Branch("HLTpreDMu0Jp", &fHLTpreDMu0Jp, "HLTpreDMu0Jp/I");
+    fTree->Branch("HLTpreDMu0JpNoVtx", &fHLTpreDMu0JpNoVtx, "HLTpreDMu0JpNoVtx/I");
+    fTree->Branch("HLTpreDMu6p5BarJp", &fHLTpreDMu6p5BarJp, "HLTpreDMu6p5BarJp/I");
+    fTree->Branch("HLTpreDMu10BarJp", &fHLTpreDMu10BarJp, "HLTpreDMu10BarJp/I");
+    fTree->Branch("HLTpreDMu13BarJp", &fHLTpreDMu13BarJp, "HLTpreDMu13BarJp/I");
+    fTree->Branch("HLTpreDMu3p5JpDis", &fHLTpreDMu3p5JpDis, "HLTpreDMu3p5JpDis/I");
+    fTree->Branch("HLTpreDMu6p5JpDis", &fHLTpreDMu6p5JpDis, "HLTpreDMu6p5JpDis/I");
+    fTree->Branch("HLTpreDMu7JpDis", &fHLTpreDMu7JpDis, "HLTpreDMu7JpDis/I");
+    fTree->Branch("HLTpreDMu4JpDis", &fHLTpreDMu4JpDis, "HLTpreDMu4JpDis/I");
+    fTree->Branch("HLTpreDMu5JpDis", &fHLTpreDMu5JpDis, "HLTpreDMu5JpDis/I");
 
     fTree->Branch("HLTmatch", &fHLTmatch, "HLTmatch/O");
 
@@ -1489,6 +1575,7 @@ void b0Reader::bookReducedTree()
     fGenTree->Branch("nRef1G",  &fgmapRef1Gen,"nRef1G/I");
     fGenTree->Branch("nRef2G",  &fgmapRef2Gen,"nRef2G/I");
     fGenTree->Branch("hasCand", &fghasCand,"hasCand/I");
+    fGenTree->Branch("isSig",   &fIsSig,   "isSig/I");
 
     // Lambda_b
     fGenTree->Branch("mB0",     &fgmB0,    "gmB0/D");
@@ -1501,7 +1588,9 @@ void b0Reader::bookReducedTree()
     fGenTree->Branch("vzB0",    &fgvzB0,   "vzB0/D");
     fGenTree->Branch("vrB0",    &fgvrB0,   "vrB0/D");
     fGenTree->Branch("ctB0",    &fgctB0,   "ctB0/D");
+    fGenTree->Branch("d3dB0",   &fgd3dB0,  "d3dB0/D");
 
+    fGenTree->Branch("pB0",     &fgpB0,    "pB0/D");
     fGenTree->Branch("ptB0",    &fgptB0,   "ptB0/D");
     fGenTree->Branch("etaB0",   &fgetaB0,  "etaB0/D");
     fGenTree->Branch("yB0",     &fgyB0,    "yB0/D");
@@ -1667,3 +1756,17 @@ void b0Reader::readCuts(TString filename, int dump)
     if (dump)  cout << "------------------------------------" << endl;
 
 }
+
+// ----------------------------------------------------------------------
+// a recursive retriever for B0, as B0 may come from another B0 due to oscillation
+TVector3 b0Reader::getProdVtx(TGenCand* gc, int pid)
+{
+    TVector3 ret = gc->fV;
+    for(int gcMomIt=gc->fMom1; gcMomIt<=gc->fMom2; gcMomIt++)
+    {
+	TGenCand *gcCur = fpEvt->getGenCand(gcMomIt);
+	if (TMath::Abs(gcCur->fID) == pid) ret = getProdVtx(gcCur, pid);
+    }
+    return ret;
+}
+

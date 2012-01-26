@@ -67,7 +67,6 @@ public:
     bool doCandStuff(const CheckedB0Cand &clc);
     bool doCandFitStuff(const CheckedB0Cand &clc);
     bool doTruthMatchingB0(const TAnaTrack *Mu1, const TAnaTrack *Mu2, const TAnaTrack *Pi1, const TAnaTrack *Pi2, const TVector3 &vtx);
-    void doL1stuff();
     void doHLTstuff();
     void doTriggerMatching();
     void doEfficiencies();
@@ -76,6 +75,7 @@ public:
     int  getCandId(const TAnaCand *tac, const int id, int pos);
     CheckedB0Cand getCheckedB0Cand(const TAnaCand *tac);
     double square(double v) { return v*v; };
+    TVector3 getProdVtx(TGenCand* gc, int pid);
 
     template <typename T> void setCut(T &var, std::string value)
     {
@@ -143,6 +143,7 @@ public:
     double fd3B0, fd3Ks, fd3jp;    // 3d distance
     double fd3EB0, fd3EKs, fd3Ejp;
     double fct3dB0, fct3dB0E, fct3dKs, fct3dKsE; // ct3dau
+    double fctB0truth, fd3dB0truth, fdxyB0truth, fpB0truth, fptB0truth;
     double fctxyB0, fctxyB0E, fctxyKs, fctxyKsE; // ctxyau
     double fbtB0x, fbtB0y, fbtB0z; // beta vector
     double fbtKsx, fbtKsy, fbtKsz;
@@ -182,8 +183,8 @@ public:
     double fgphipi1, fgphipi2, fgphimu1, fgphimu2;
     double fgpmu1, fgpmu2, fgppi1, fgppi2, fgpKs;
     double fgvxKs, fgvyKs, fgvzKs, fgvrKs, fgctKs;
-    double fgvxB0, fgvyB0, fgvzB0, fgvrB0, fgctB0;
-    double fgptB0, fgetaB0, fgyB0;
+    double fgvxB0, fgvyB0, fgvzB0, fgvrB0, fgctB0, fgd3dB0;
+    double fgpB0, fgptB0, fgetaB0, fgyB0;
     double fgdRpipi, fgdRmumu, fgdRKsB0;
     double fganpipi, fganmumu, fganKsB0, fganKsjp;
     double fganKsmumin, fganKsmuPt;
@@ -195,18 +196,21 @@ public:
     DecayMap myDecayMap2Gen;
 
     // for trigger stuff
-    bool fL1TDMu0, fL1TDMu3;
-    bool fL1TMuBH, fL1TMu0, fL1TMu3, fL1TMu5, fL1TMu7, fL1TMu10, fL1TMu14, fL1TMu20;
-
-    bool fHLTqrk;
-    bool fHLTDMu0;
-    bool fHLTMu0TkMu0jp;
-    bool fHLTDMu3jp;
-    bool fHLTMu0jp;
-    bool fHLTDMu6p5BarJp, fHLTDMu6p5JpDis, fHLTDMu6p5Jp, fHLTMu5L2Mu2Jpsi, fHLTMu5Tr2Jpsi, fHLTMu5Tr7Jpsi;
-    int fHLTpreDMu6p5BarJp, fHLTpreDMu6p5JpDis, fHLTpreDMu6p5Jp, fHLTpreMu5L2Mu2Jpsi, fHLTpreMu5Tr2Jpsi, fHLTpreMu5Tr7Jpsi;
-    bool fHLTDMu10BarJp, fHLTDMu7JpDis, fHLTDMu0Jp;
-    int fHLTpreDMu10BarJp, fHLTpreDMu7JpDis, fHLTpreDMu0Jp;
+    // inclusive Jpsi triggers
+    bool fHLTDMu3jp, fHLTDMu6p5Jp, fHLTDMu0Jp, fHLTDMu0JpNoVtx;
+    int fHLTpreDMu3jp, fHLTpreDMu6p5Jp, fHLTpreDMu0Jp, fHLTpreDMu0JpNoVtx;
+    // inclusive Jpsi triggers barrel
+    bool fHLTDMu6p5BarJp, fHLTDMu10BarJp, fHLTDMu13BarJp;
+    int fHLTpreDMu6p5BarJp, fHLTpreDMu10BarJp, fHLTpreDMu13BarJp;
+    // displaced triggers
+    bool fHLTDMu3p5JpDis, fHLTDMu6p5JpDis, fHLTDMu7JpDis, fHLTDMu4JpDis, fHLTDMu5JpDis;
+    int fHLTpreDMu3p5JpDis, fHLTpreDMu6p5JpDis, fHLTpreDMu7JpDis, fHLTpreDMu4JpDis, fHLTpreDMu5JpDis;
+    //legacy triggers for compatibility with old code
+    bool fHLTqrk; int fHLTpreqrk;
+    bool fHLTDMu0, fHLTMu0TkMu0jp, fHLTMu0jp, fHLTMu5L2Mu2Jpsi, fHLTMu5Tr2Jpsi, fHLTMu5Tr7Jpsi;
+    // single mu triggers for efficiencies
+    bool fHLTSingleMu; // big or of the following triggers
+    bool fHLTSingleIsoMu, fHLTSingleL1Mu, fHLTSingleL2Mu, fHLTSingleHLTMu;
 
     // summary trigger results
     bool fHLTokJpsi, fHLTokBarrelJpsi, fHLTokDisplJpsi;
