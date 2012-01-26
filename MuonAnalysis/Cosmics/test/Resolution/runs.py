@@ -24,7 +24,10 @@ collisions_runs_rpc = set([132440,132442,132569,132572,132596,132597,132598,1325
 
 def get_run_list(run_types, muon_subdet, require_pixels=True, require_rpc=False, min_run=0):
     if type(run_types) not in (list, tuple):
-        run_types = tuple(run_types)
+        if run_types == 'any':
+            run_types = ('cosmics', 'collisions', 'commissioning')
+        else:
+            run_types = (run_types,)
 
     runs_dt    = set()
     runs_csc   = set()
