@@ -5,7 +5,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
 
 #include <TTree.h>
 
@@ -43,11 +43,11 @@ void HLTJetEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSe
 
 	reset();
 
-	edm::Handle<reco::CaloJetCollection> hltjetHandle;
+	edm::Handle<reco::PFJetCollection> hltjetHandle;
         iEvent.getByLabel(HLTJetSource, hltjetHandle);
 
 	int index = 0;
-	for(reco::CaloJetCollection::const_iterator i = hltjetHandle->begin();
+	for(reco::PFJetCollection::const_iterator i = hltjetHandle->begin();
 	    i!= hltjetHandle->end() && index < njets; ++i){
 		jetpt[index]  = i->pt();
 		jeteta[index] = i->eta();
