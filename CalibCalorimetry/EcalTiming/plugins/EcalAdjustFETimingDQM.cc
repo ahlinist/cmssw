@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.9 2011/11/13 11:25:42 franzoni Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.10 2011/11/14 22:22:23 franzoni Exp $
 //
 //
 // ***************************************************************************************
@@ -150,8 +150,8 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
   // initialize geometry and array of tt times
   Numbers::initGeometry(iSetup,true);
-  float ttAvgTimesEB[EBDetId::MAX_SM][68];
-  int ttNumEntriesEB[EBDetId::MAX_SM][68];
+  float ttAvgTimesEB[EBDetId::MAX_SM][70];
+  int ttNumEntriesEB[EBDetId::MAX_SM][70];
   float ttAvgTimesEE[numEEsm][maxNumCCUinFed];
   int ttNumEntriesEE[numEEsm][maxNumCCUinFed];
   for(int i=0; i<EBDetId::MAX_SM; ++i)
