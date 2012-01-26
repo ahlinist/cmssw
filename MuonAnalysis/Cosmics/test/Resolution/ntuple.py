@@ -63,6 +63,8 @@ group.add_argument('+submit-debug', action='store_true',
                    help='Debug the batch submission.')
 group.add_argument('+submit-only', metavar='DATASET_NAME', action='append',
                    help='Only submit dataset %(metavar)s (may specify multiple times).')
+group.add_argument('+submit-grid', action='store_true',
+                   help='Submit jobs to the grid instead of locally.')
 options = parser.parse_args()
 #print options ; raise 1
 
@@ -582,6 +584,13 @@ split_by_event = 1
 total_number_of_events = -1
 events_per_job = 1000
 '''
+
+    # Build a loose run list that is the superset of any run list we
+    # might want to apply later: require STRIP & (DT | CSC), for any
+    # run type.
+    import runs
+    data_runs = runs.get_run_list(run_types='any', muon_subdet='either', require_pixels=False)
+    job_control_data += 'runselection = %s\n' % ','.join(str(i) for i in data_runs)
     
     # MC is much better behaved (LS merging is trivial), so up the
     # events/job.
@@ -598,7 +607,7 @@ total_number_of_lumis = -1
 
     # Submitting jobs just locally on FNAL LPC (may set scheduler
     # based on the individual datasets below in future).
-    scheduler = 'condor'
+    scheduler = 'condor' if not options.submit_grid else 'glite'
 
     # Based on the extra_alca, determine what files we need to ship
     # off (those pointed at by sqlite_file: connect strings).
