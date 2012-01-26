@@ -40,6 +40,7 @@ class Drawer:
         'TPFMS':  ROOT.kGreen+1,
         'Picky':  ROOT.kOrange+8, 
         'TuneP':  ROOT.kBlack,
+        'StAlone':ROOT.kPink,
         }
 
     markers = {
@@ -48,6 +49,7 @@ class Drawer:
         'TPFMS':   22,
         'Picky':   27,
         'TuneP':   23,
+        'StAlone': 26,
         }
 
     def __init__(self, filename):
