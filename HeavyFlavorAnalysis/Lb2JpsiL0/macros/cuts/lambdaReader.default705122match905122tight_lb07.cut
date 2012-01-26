@@ -1,0 +1,21 @@
+# Which cand to select as lb
+CUTLbCandidate      705122
+CUTLbCandidateFit   905122
+# Mu id
+CUTMuId1        4 # ask for Global muons
+CUTMuId2        4
+# Cuts on Jpsi
+CUTptmuMin      2.99
+CUTmjpWindow    0.11
+CUTptjpMin      6.4
+# Cuts on Lambda0
+CUTml0Window    0.006
+CUTptl0Min      2.15
+CUTptpGTptpi    1
+CUTptprMin      1.75
+CUTptpiMin      0.25
+# steer decayMaps
+CUTReadDecayMaps   0 # 1:true, 0: false
+CUTPrintDecayMaps  0 # 1:true, 0: false
+CUTDecayMap1 decamap1sorted.out
+CUTDecayMap2 decamap2sorted.out
