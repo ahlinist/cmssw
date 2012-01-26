@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = True
+isData = False
 runL1Emulator = True
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -50,8 +50,8 @@ if(isData):
 else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-	"file:TTEffSkim.root"
-#	"file:/tmp/slehti/skim_1.root"
+#	"file:TTEffSkim.root"
+	"file:/tmp/slehti/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_160_1_OZG.root"
 	)
     )
 
@@ -60,7 +60,7 @@ if (isData):
     process.GlobalTag.globaltag = 'GR_H_V24::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
-    process.GlobalTag.globaltag = 'START42_V15B::All'
+    process.GlobalTag.globaltag = 'START44_V12::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
@@ -136,7 +136,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 	MHTJetThreshold		= cms.double(20.),
 
 #	HLTJetSource            = cms.InputTag("hltAntiKT5CaloJets"), #uncorrected
-	HLTJetSource            = cms.InputTag("hltAntiKT5L2L3CorrCaloJets"), #corrected
+#	HLTJetSource            = cms.InputTag("hltAntiKT5L2L3CorrCaloJets"), #corrected
+	HLTJetSource		= cms.InputTag("hltAntiKT5PFJets"), # used for jet, not for tau
 	HLTNJets		= cms.int32(4),
 
 	L1extraTauJetSource			= cms.InputTag("l1extraParticles", "Tau"),
@@ -266,7 +267,7 @@ process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
 
 process.runTTEffAna = cms.Path(process.commonSequence)
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
-process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
+#process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 #if doTTEffShrinkingConePFTau:
 #    process.runTTEffAna += process.TTEffAnalysisHLTCaloTau
@@ -343,10 +344,10 @@ if runL1Emulator:
     setL1Emu(process.TTEffAnalysisHLTPFTauTightHPSHighPurityL1Emu)
     process.runTTEffAnaHighPurity *= process.TTEffAnalysisHLTPFTauTightHPSHighPurityL1Emu
 
-#process.o1 = cms.OutputModule("PoolOutputModule",
-#    outputCommands = cms.untracked.vstring("keep *"),
-#    fileName = cms.untracked.string('cmssw.root')
-#)
+process.o1 = cms.OutputModule("PoolOutputModule",
+    outputCommands = cms.untracked.vstring("keep *"),
+    fileName = cms.untracked.string('cmssw.root')
+)
 #process.outpath = cms.EndPath(process.o1)
 
 process.HLTPFTauSequence+= process.hltPFTausTightIso
@@ -359,7 +360,7 @@ process.schedule = cms.Schedule(process.DoHLTJets,
 				process.runMETCleaning,
                                 process.L1simulation_step,
 				process.runTTEffAna,
-                                process.runTTEffAnaHighPurity
+#                                process.runTTEffAnaHighPurity
 #				,process.outpath
 )
 
