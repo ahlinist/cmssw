@@ -30,5 +30,5 @@ print "removing $libdir/.edmplugincache\n";
 my $resp = `rm -f $libdir/.edmplugincache`;
 print "$resp\n";
 print "here 1\n";
-$resp = `EdmPluginRefresh`;
+$resp = `edmPluginRefresh`;
 print $resp;
