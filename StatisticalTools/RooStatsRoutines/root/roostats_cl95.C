@@ -5,112 +5,108 @@ static const char* desc =
 "|                                                                    \n"
 "| Standard c++ routine for 95% C.L. limit calculation                \n"
 "| for cross section in a 'counting experiment'                       \n"
-"| Fully backwards-compatible with the CL95 macro                     \n"
 "|                                                                    \n"
-"| also known as 'CL95 with RooStats'                                 \n"
-"|                                                                    \n"
-"|\033[1m Gena Kukartsev, Stefan Schmitz, Gregory Schott       \033[0m\n"
+"|\033[1m Gena Kukartsev                                       \033[0m\n"
 "|\033[1m Lorenzo Moneta (CLs core)                            \033[0m\n"
 "|\033[1m Michael Segala (Feldman-Cousins)                     \033[0m\n"
+"|\033[1m Stefan Schmitz, Gregory Schott                       \033[0m\n"
 "|                                                                    \n"
-"| July  2010: first version                                          \n"
-"| March 2011: restructuring, interface change, expected limits       \n"
-"| May 2011:   added expected limit median,                           \n"
-"|             68%, 95% quantile bands and actual coverage            \n"
-"| July 2011:  added CLs observed and expected limits                 \n"
-"|             added option to run using Feldman Cousins              \n"
+"| For more information, see                                          \n"
+"|                                                                    \n"
+"|       https://twiki.cern.ch/twiki/bin/view/CMS/RooStatsCl95        \n"
 "|                                                                    \n"
 "=====================================================================\n"
-"                                                                     \n"
-"Prerequisites:                                                       \n"
-"                ROOT version 5.30.03 or higher                       \n"
-"                ROOT version 5.32.00 or higher recommended (required for CLs)\n"
-"                                                                     \n"
-"                                                                     \n"
-"                                                                     \n"
-"The code should be compiled in ROOT:                                 \n"
-"                                                                     \n"
-"root -l                                                              \n"
-"                                                                     \n"
-".L roostats_cl95.C+                                                  \n"
-"                                                                     \n"
-"Usage:                                                               \n"
-" Double_t             limit = roostats_cl95(ilum, slum, eff, seff, bck, sbck, n, gauss = false, nuisanceModel, method, plotFileName, seed); \n"
-" LimitResult expected_limit = roostats_clm(ilum, slum, eff, seff, bck, sbck, ntoys, nuisanceModel, method, seed); \n"
-" Double_t     average_limit = roostats_cla(ilum, slum, eff, seff, bck, sbck, nuisanceModel, method, seed); \n"
-"                                                                     \n"
-" LimitResult limit = roostats_limit(ilum, slum, eff, seff, bck, sbck, n, gauss = false, nuisanceModel, method, plotFileName, seed); \n"
-" Double_t obs_limit = limit.GetObservedLimit();                      \n"
-" Double_t exp_limit = limit.GetExpectedLimit();                      \n"
-" Double_t exp_up    = limit.GetOneSigmaHighRange();                  \n"
-" Double_t exp_down  = limit.GetOneSigmaLowRange();                   \n"
-" Double_t exp_2up   = limit.GetTwoSigmaHighRange();                  \n"
-" Double_t exp_2down = limit.GetTwoSigmaLowRange();                   \n"
-"                                                                     \n"
-"Inputs:                                                              \n"
-"       ilum          - Nominal integrated luminosity (pb^-1)         \n"
-"       slum          - Absolute error on the integrated luminosity   \n"
-"       eff           - Nominal value of the efficiency times         \n"
-"                       acceptance (in range 0 to 1)                  \n"
-"       seff          - Absolute error on the efficiency times        \n"
-"                       acceptance                                    \n"
-"       bck           - Nominal value of the background estimate      \n"
-"       sbck          - Absolute error on the background              \n"
-"       n             - Number of observed events (not used for the   \n"
-"                       expected limit)                               \n"
-"       ntoys         - Number of pseudoexperiments to perform for    \n"
-"                       expected limit calculation)                   \n"
-"       gauss         - if true, use Gaussian statistics for signal   \n"
-"                       instead of Poisson; automatically false       \n"
-"                       for n = 0.                                    \n"
-"                       Always false for expected limit calculations  \n"
-"       nuisanceModel - distribution function used in integration over\n"
-"                       nuisance parameters:                          \n"
-"                       0 - Gaussian (default), 1 - lognormal,        \n"
-"                       2 - gamma;                                    \n"
-"                       (automatically 0 when gauss == true)          \n"
-"       method        - method of statistical inference:              \n"
-"                       \"bayesian\"  - Bayesian with numeric         \n"
-"                                       integration (default),        \n"
-"                       \"mcmc\"      - another implementation of     \n"
-"                                       Bayesian, not optimized,      \n"
-"                                       to be used for cross checks   \n"
-"                                       only!                         \n"
-"                       \"cls\"       - CLs observed limit. We suggest\n"
-"                                       using the dedicated interface \n"
-"                                       roostats_limit() instead        \n"
-"                       \"fc\"        - Feldman Cousins with numeric  \n"
-"                                     integration,                    \n"
-"                       \"workspace\" - only create workspace and save\n"
-"                                     to file, no interval calculation\n"
-"       plotFileName  - file name for the control plot to be created  \n"
-"                       file name extension will define the format,   \n"
-"                       <plot_cl95.pdf> is the default value,         \n"
-"                       specify empty string if you do not want       \n"
-"                       the plot to be created (saves time)           \n"
-"       seed          - seed for random number generation,            \n"
-"                       specify 0 for unique irreproducible seed      \n"
-"                                                                     \n"
-"                                                                     \n"
-"The statistics model in this routine: the routine addresses the task \n"
-"of a Bayesian evaluation of limits for a one-bin counting experiment \n"
-"with systematic uncertainties on luminosity and efficiency for the   \n"
-"signal and a global uncertainty on the expected background (implying \n"
-"no correlated error on the luminosity for signal and  background,    \n"
-"which will not be suitable for all use cases!). The observable is the\n"
-"measured number of events.                                           \n"
-"                                                                     \n"
-"For more details see                                                 \n"
-"        https://twiki.cern.ch/twiki/bin/view/CMS/RooStatsCl95        \n"
-"                                                                     \n"
-"\033[1m       Note!                                           \033[0m\n"
-"If you are running nonstandard ROOT environment, e.g. in CMSSW,      \n"
-"you need to make sure that the RooFit and RooStats header files      \n"
-"can be found since they might be in a nonstandard location.          \n"
-"                                                                     \n"
-"For CMSSW_4_2_0_pre8 and later, add the following line to your       \n"
-"rootlogon.C:                                                         \n"
-"      gSystem -> SetIncludePath( \"-I$ROOFITSYS/include\" );         \n";
+"                                                                     \n";
+//
+//
+//Prerequisites:                                                       
+//                ROOT version 5.32.00 or higher                       
+//                                                                     
+//                                                                     
+//                                                                     
+//The code should be compiled in ROOT:                                 
+//                                                                     
+//root -l                                                              
+//                                                                     
+//.L roostats_cl95.C+                                                  
+//                                                                     
+//Usage:                                                               
+// Double_t             limit = roostats_cl95(ilum, slum, eff, seff, bck, sbck, n, gauss = false, nuisanceModel, method, plotFileName, seed); 
+// LimitResult expected_limit = roostats_clm(ilum, slum, eff, seff, bck, sbck, ntoys, nuisanceModel, method, seed); 
+// Double_t     average_limit = roostats_cla(ilum, slum, eff, seff, bck, sbck, nuisanceModel, method, seed); 
+//                                                                     
+// LimitResult limit = roostats_limit(ilum, slum, eff, seff, bck, sbck, n, gauss = false, nuisanceModel, method, plotFileName, seed); 
+// Double_t obs_limit = limit.GetObservedLimit();                      
+// Double_t exp_limit = limit.GetExpectedLimit();                      
+// Double_t exp_up    = limit.GetOneSigmaHighRange();                  
+// Double_t exp_down  = limit.GetOneSigmaLowRange();                   
+// Double_t exp_2up   = limit.GetTwoSigmaHighRange();                  
+// Double_t exp_2down = limit.GetTwoSigmaLowRange();                   
+//                                                                     
+//Inputs:                                                              
+//       ilum          - Nominal integrated luminosity (pb^-1)         
+//       slum          - Absolute error on the integrated luminosity   
+//       eff           - Nominal value of the efficiency times         
+//                       acceptance (in range 0 to 1)                  
+//       seff          - Absolute error on the efficiency times        
+//                       acceptance                                    
+//       bck           - Nominal value of the background estimate      
+//       sbck          - Absolute error on the background              
+//       n             - Number of observed events (not used for the   
+//                       expected limit)                               
+//       ntoys         - Number of pseudoexperiments to perform for    
+//                       expected limit calculation)                   
+//       gauss         - if true, use Gaussian statistics for signal   
+//                       instead of Poisson; automatically false       
+//                       for n = 0.                                    
+//                       Always false for expected limit calculations  
+//       nuisanceModel - distribution function used in integration over
+//                       nuisance parameters:                          
+//                       0 - Gaussian (default), 1 - lognormal,        
+//                       2 - gamma;                                    
+//                       (automatically 0 when gauss == true)          
+//       method        - method of statistical inference:              
+//                       \"bayesian\"  - Bayesian with numeric         
+//                                       integration (default),        
+//                       \"mcmc\"      - another implementation of     
+//                                       Bayesian, not optimized,      
+//                                       to be used for cross checks   
+//                                       only!                         
+//                       \"cls\"       - CLs observed limit. We suggest
+//                                       using the dedicated interface 
+//                                       roostats_limit() instead        
+//                       \"fc\"        - Feldman Cousins with numeric  
+//                                     integration,                    
+//                       \"workspace\" - only create workspace and save
+//                                     to file, no interval calculation
+//       plotFileName  - file name for the control plot to be created  
+//                       file name extension will define the format,   
+//                       <plot_cl95.pdf> is the default value,         
+//                       specify empty string if you do not want       
+//                       the plot to be created (saves time)           
+//       seed          - seed for random number generation,            
+//                       specify 0 for unique irreproducible seed      
+//                                                                     
+//                                                                     
+//The statistics model in this routine: the routine addresses the task 
+//of a Bayesian evaluation of limits for a one-bin counting experiment 
+//with systematic uncertainties on luminosity and efficiency for the   
+//signal and a global uncertainty on the expected background (implying 
+//no correlated error on the luminosity for signal and  background,    
+//which will not be suitable for all use cases!). The observable is the
+//measured number of events.                                           
+//                                                                     
+//For more details see                                                 
+//        https://twiki.cern.ch/twiki/bin/view/CMS/RooStatsCl95        
+//                                                                     
+//\033[1m       Note!                                           \033[0m
+//If you are running nonstandard ROOT environment, e.g. in CMSSW,      
+//you need to make sure that the RooFit and RooStats header files      
+//can be found since they might be in a nonstandard location.          
+//                                                                     
+//For CMSSW_4_2_0_pre8 and later, add the following line to your       
+//rootlogon.C:                                                         
+//      gSystem -> SetIncludePath( \"-I$ROOFITSYS/include\" );
 
 
 #include <algorithm>
@@ -249,7 +245,7 @@ Double_t roostats_cla(Double_t ilum, Double_t slum,
 
 // ---> implementation below --------------------------------------------
 
-
+double confidenceLevel = 0.95;
 bool includeLumiSystIntoBkg = true;
 int verbosity = 3;
 int calculatorType = 0;    // 0-freq, 1-hybrid, 2-asymptotic
@@ -538,6 +534,12 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
 
   std::string _legend = "[CL95Calc::CheckInputs]: ";
 
+  // silence unused var warnings
+  (void)bck;
+  (void)n;
+  (void)gauss;
+  (void)nuisanceModel;
+
   int _status = 0;
 
   if (eff <= 0.0){
@@ -606,6 +608,9 @@ int CL95Calc::CreateSystTerm(std::string varName,
   // If extraVar is specified, its uncertainty gets multiplied
   // in, additionally to error
   //
+
+  // silence warnings about unused variables
+  (void)nuisanceModel;
 
   std::string sFactory;
 
@@ -953,6 +958,9 @@ MCMCInterval * CL95Calc::GetMcmcInterval(double conf_level,
 					       PrintLevel(-1),
 					       Warnings(0),
 					       PrintEvalErrors(-1));
+  // silence warnings about unused variables
+  (void)fit;
+
   /*
   ProposalHelper ph;
   ph.SetVariables((RooArgSet&)fit->floatParsFinal());
@@ -1179,7 +1187,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       bcalc = new BayesianCalculator(*data, SbModel);
       TString namestring = "mybc";
       bcalc->SetName(namestring);
-      bcalc->SetConfidenceLevel(0.95);
+      bcalc->SetConfidenceLevel(confidenceLevel);
       bcalc->SetLeftSideTailFraction(0.0);
       //bcalc->SetIntegrationType("ROOFIT");
       
@@ -1199,7 +1207,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		<< pWs->var("xsec")->getMax() << "]" << std::endl;
 
       //prepare Bayesian Markov Chain MC Calulator
-      mcInt = GetMcmcInterval(0.95, 1000000, 500, 0.0, 40);
+      mcInt = GetMcmcInterval(confidenceLevel, 1000000, 500, 0.0, 40);
       upper_limit = printMcmcUpperLimit();
     }
     else if (method.find("plr") != std::string::npos){
@@ -1209,7 +1217,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		<< pWs->var("xsec")->getMax() << "]" << std::endl;
 
       //prepare profile likelihood ratio Calulator
-      pPlrInt = GetPlrInterval(0.95);
+      pPlrInt = GetPlrInterval(confidenceLevel);
       upper_limit = pPlrInt->UpperLimit(*pWs->var("xsec"));
     }
     else if (method.find("cls") != std::string::npos){
@@ -1230,7 +1238,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       SbModel.LoadSnapshot();
 
       // estimate upper range boundary using quick PLR limit
-      GetPlrInterval(0.95);
+      GetPlrInterval(confidenceLevel);
       upper_limit = pPlrInt->UpperLimit( *pWs->var("xsec") );
       //Double_t upper_range = ((double)(int)(4.0 * upper_limit*100.0))/100.0; // round to ~1% precision
       Double_t upper_range = 2.0 * upper_limit;
@@ -1279,7 +1287,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
     else if (method.find("fc") != std::string::npos){
 
       int Nbins = 1;
-      float conf_int = 0.95;
+      float conf_int = confidenceLevel;
       float ULprecision = 0.1;
       bool UseAdaptiveSampling = true;
       bool CreateConfidenceBelt = true;
@@ -2345,7 +2353,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
 //   RooStats::ModelConfig * _mc = sbModel;
 //   RooAbsData * _d = w->data("asimovData");
 //   RooStats::ProfileLikelihoodCalculator plc(*_d, *_mc);
-//   plc.SetConfidenceLevel(0.95);
+//   plc.SetConfidenceLevel(confidenceLevel);
 //   RooStats::LikelihoodInterval * pPlrInt = plc.GetInterval();
 //   Double_t _poimax = pPlrInt->UpperLimit( *w->var("xsec") );
 //   std::cout << "POIMAX!!!!!!!!!!!!!*******************: "
@@ -2538,7 +2546,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
   
   
    HypoTestInverter calc(*hc);
-   calc.SetConfidenceLevel(0.95);
+   calc.SetConfidenceLevel(confidenceLevel);
   
   
    calc.UseCLs(useCLs);
