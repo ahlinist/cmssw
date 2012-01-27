@@ -1379,6 +1379,8 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
 			   Double_t bck, Double_t sbck,
 			   Int_t nit, Int_t nuisanceModel,
 			   std::string method ){
+
+  std::string _legend = "[CL95Calc::clm()]: ";
   
   MakeWorkspace( ilum, slum,
 		 eff, seff,
@@ -1410,8 +1412,26 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
   std::map<Int_t,Double_t> cached_limit;
   for (Int_t i = 0; i < nit; i++)
     {
+      std::cout << std::endl << _legend
+		<< "Pseudoexperiment # " << i+1 
+		<< " / " << nit << std::endl;
       // throw random nuisance parameter (bkg yield)
-      Double_t bmean = GetRandom("syst_nbkg", "nbkg");
+      //Double_t bmean = GetRandom("syst_nbkg", "nbkg");
+      Double_t _beta_lumi = GetRandom("constr_lumi", "beta_lumi");
+      Double_t _beta_nbkg = GetRandom("constr_nbkg", "beta_nbkg");
+      Double_t _nbkg_kappa = pWs->var("nbkg_kappa")->getVal();
+      Double_t _lumi_kappa = pWs->var("lumi_kappa")->getVal();
+      Double_t _alpha_nbkg = pow(_nbkg_kappa,_beta_nbkg);
+      Double_t _alpha_lumi = pow(_lumi_kappa,_beta_lumi);
+      Double_t _nbkg_nom = pWs->var("nbkg_nom")->getVal();
+      Double_t bmean;
+      if (includeLumiSystIntoBkg){
+	bmean = _nbkg_nom*_alpha_lumi*_alpha_nbkg;
+      }
+      else{
+	bmean = _nbkg_nom*_alpha_nbkg;
+      }
+      
 
       std::cout << "[roostats_clm]: generatin pseudo-data with bmean = " << bmean << std::endl;
       Int_t n = r.Poisson(bmean);
