@@ -37,11 +37,6 @@ def looperTracks(process):
     #usually cmsDriver.py looper -s RECO --customise RecoTracker/Loopers/Adapter.<any>
     if not hasattr(process,'loopersMask'):
         adapt(process)
-    import RecoTracker.TrackProducer.TrackProducer_cfi
-    process.loopersTracks = RecoTracker.TrackProducer.TrackProducer_cfi.TrackProducer.clone(
-        src = 'loopersMask',
-        AlgorithmName = cms.string('iter10'),
-        )
     process.reconstruction_step.replace(process.loopersMask,
                                         process.loopersMask+process.loopersTracks)
     return (process)

@@ -15,13 +15,19 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                              ##   for method with skipping every N
                              everyNPixel = cms.uint32(5),
                              ##   for the method with looper analysis in 2D histogramming
-                             makeTrackCandidates = cms.bool(False),
+                             makeTrackCandidates = cms.bool(True),
+                             maskWithNoTC = cms.bool(False),
+                             SeedCreatorPSet = cms.PSet(
+                               ComponentName = cms.string('SeedFromConsecutiveHitsCreator'),
+                               SeedMomentumForBOFF = cms.double(5.0),
+                               propagator = cms.string('PropagatorWithMaterialWithLoops')
+                               ),
                              collector = cms.PSet(
                                 xAxis = cms.vdouble(34, 1/65., 1/1.5),
                                 invertX = cms.bool(True), 
                                 nPhi = cms.uint32(60),
                                 peakAbove= cms.uint32(4),
-                                RBound=cms.double(30), #maximum radius of looper's helix
+                                RBound=cms.double(60), #maximum radius of looper's helix
                                 linkPoints=cms.bool(True),
                                 annularCut = cms.double(2),
                                 symetryTopologySelection = cms.uint32(2),
@@ -32,3 +38,17 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                                 )
                              )
 
+from TrackingTools.MaterialEffects.Propagators_cff import MaterialPropagator
+MaterialPropagatorWithLoops = MaterialPropagator.clone(
+    ComponentName = "PropagatorWithMaterialWithLoops",
+    MaxDPhi = 100.0
+    )
+
+from RecoTracker.TrackProducer.TrackProducer_cfi import TrackProducer
+loopersTracks = TrackProducer.clone(
+    src = 'loopersMask',
+    AlgorithmName = cms.string('iter10'),
+    Propagator = "PropagatorWithMaterialWithLoops"
+    )
+
+    

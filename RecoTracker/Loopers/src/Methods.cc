@@ -41,7 +41,9 @@
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 
-
+#include "DataFormats/TrajectorySeed/interface/TrajectorySeed.h"
+#include "RecoTracker/TkTrackingRegions/interface/GlobalTrackingRegion.h"
+#include "RecoTracker/TkSeedingLayers/interface/SeedingHitSet.h"
 
 void LooperClusterRemoverMethod::FractionOfTruth::run(edm::Event& iEvent, const edm::EventSetup& iSetup,
 						      LooperClusterRemover::products &prod_)
@@ -362,6 +364,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   GlobalPoint bs(beamSpot->position().x(),
 		 beamSpot->position().y(),
 		 beamSpot->position().z());		 
+
   
   //get the products
   iEvent.getByLabel(pixelRecHits_,pixelHits);
@@ -373,10 +376,6 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 
   edm::ESHandle<MagneticField> magField;
   iSetup.get<IdealMagneticFieldRecord>().get(magField);
-  /*
-    edm::ESHandle<Propagator> prop;
-    iSetup.get<TrackingComponentsRecord>().get(prop_,prop);
-  */
 
   fastHits.reserve(pixelHits->dataSize()+matchedHits->dataSize());
   for ( SiPixelRecHitCollection::const_iterator dPxIt=pixelHits->begin();
@@ -411,24 +410,88 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   //make the peaks
   collector.makePeaks();
 
-  //then parse the peaks: mask and make track candidates
-  std::list<fastRecHit*> tomask;
-  if (makeTC_)  prod_.tcOut->reserve(collector.peaks_.size());
+  TrajectorySeedCollection  seedCollection;
+  if (makeTC_){
+    prod_.tcOut->reserve(collector.peaks_.size());
+    seedCollection.reserve(collector.peaks_.size());
+  }
+
+  unsigned int nMasked=0;
+
   for(std::vector<aCell*>::iterator iPeak=collector.peak_begin();
       iPeak!=collector.peak_end();++iPeak){
     aCell * peak=*iPeak;
 
     LogDebug("LooperMethod")<<" A peak cell has: "<<peak->count()<<" elements"<<std::endl;
-
     edm::OwnVector<TrackingRecHit> recHits;
-    recHits.reserve(peak->count());
+    SeedingHitSet forSeedCreator;
+
+    bool goodToMask=true;
+
+    if (makeTC_){
+      goodToMask=false; //until we made a TC out of it
+      recHits.reserve(peak->count());
+      for (uint iH=0;iH!=peak->count();++iH){
+	recHits.push_back( peak->elements_[iH]->hit_->hit()->clone());
+	//put only two hits to create the seed
+	if (forSeedCreator.size()<2) forSeedCreator.add(peak->elements_[iH]->hit_);
+      }
+
+      //from the first and second hits, get an estimate of the  ~z origine for the seed creator
+      GlobalTrackingRegion region (0.050, /* pt min */
+				   bs, /*zExtrapolation,*/
+				   0.5, /* origine radius */
+				   5 /* orignine half length */
+				   );
+      // make a state from the helix state on the surface of the first hit.
+      const TrajectorySeed * newSeed = aCreator->trajectorySeed(seedCollection,
+								forSeedCreator,
+								region,iSetup);
+      if (newSeed){
+	const PTrajectoryStateOnDet & state=newSeed->startingState();
+	prod_.tcOut->push_back(TrackCandidate(recHits,
+					      *newSeed,
+					      state));
+	goodToMask=true;
+      }
+      else{
+	edm::LogWarning("NoSeed")<<"no seed could be made from the hit set, so no TC added";
+      }
+    }//insert track candidate
+    
     // copy the hits in the given order (already in increasing z |z| lowest first)
+    if (goodToMask || maskWithNoTC_){
     std::stringstream text;
     text<<peak->printElements()<<"\n";
     for (uint iH=0;iH!=peak->count();++iH){
-      recHits.push_back( peak->elements_[iH]->hit_->hit()->clone());
+      //do the masking
+      uint subdetId = DetId(peak->elements_[iH]->id_).subdetId();
+      if (subdetId==PixelSubdetector::PixelBarrel || subdetId==PixelSubdetector::PixelEndcap)
+	{
+	  LogDebug("LooperMethod")<<" in the pixel case"<<std::endl;
+	  const SiPixelRecHit * pH=static_cast<const SiPixelRecHit *>(peak->elements_[iH]->hit_->hit());
+	  LogTrace("LooperMethod")<<"actively masking:" <<pH<<std::endl;
+	  if (!prod_.collectedPixels[pH->cluster().key()])	  nMasked++;
+	  prod_.collectedPixels[pH->cluster().key()]=true;
+	}//pixel case
+      else{
+	LogDebug("LooperMethod")<<" in the strip case"<<std::endl;      
+	//so far so good
+	const SiStripMatchedRecHit2D * mH=dynamic_cast<const SiStripMatchedRecHit2D *>(peak->elements_[iH]->hit_->hit());
+	if (!mH){
+	  edm::LogError("LooperMethod")<<" not casting back to a 2d rechit. probably projected on the way"<<std::endl;
+	  assert(0==1);
+	  continue;
+	}
+	LogTrace("LooperMethod")<<"actively masking:" <<mH<<std::endl;
+	if (!prod_.collectedStrips[mH->stereoHit()->cluster().key()]) nMasked++;
+	if (!prod_.collectedStrips[mH->monoHit()->cluster().key()]) nMasked++;
+	prod_.collectedStrips[mH->stereoHit()->cluster().key()]=true;
+	prod_.collectedStrips[mH->monoHit()->cluster().key()]=true;
+      }//strip case
 
-      //cheat
+
+      //cheat, just for display
       if (associator){
 	std::vector<PSimHit> simHits = associator->associateHit(*peak->elements_[iH]->hit_->hit());
 	text<<" Kill a hit (by using it in the track candidate) at: "<<peak->elements_[iH]->hit_->geographicalId().rawId();
@@ -441,96 +504,16 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       }
       LogDebug("LooperMethod")<<text.str();
     }
-    
-    if (makeTC_){
-      // make a state from the helix state on the surface of the first hit.
-      TrackCharge charge=1; //from the helix direction
-      GlobalPoint point=peak->elements_.front()->hit_->globalPosition();
-      GlobalVector direction; //given R~1/pT and pZ from helix pas.
-      
-      FreeTrajectoryState fts( GlobalTrajectoryParameters(point,
-							  direction,
-							  charge,
-							  magField.product()),
-			       CartesianTrajectoryError());
-      TrajectoryStateOnSurface onDet;
-      if (true){
-	onDet=TrajectoryStateOnSurface(fts,*peak->elements_.front()->hit_->surface());
-      }
-      /*
-	else{
-	onDet=prop->propagate(fts,peak->elements_.front()->det()->surface());
-	if (!onDet.isValid()){
-	edm::LogError("LooperMethod")<<"failed to get the helix state on det";
-	continue;
-	}
-	}
-      */
-      
-      PTrajectoryStateOnDet* state= TrajectoryStateTransform().persistentState(onDet,
-									       peak->elements_.front()->hit_->geographicalId().rawId());
-      
-      // this require a seed to work.
-      TrajectorySeed seed;
-      
-      //make track candidate for all of them
-      prod_.tcOut->push_back(TrackCandidate(recHits,
-					    seed,
-					    *state));
-    }//insert track candidate
-    //and mask 
-    tomask.insert(tomask.end(),peak->elements_.begin(),peak->elements_.end());
+    }//good to mask
 
-  }
+  }//loop on peaks
   
-  if (associator)
-    delete associator;
+  if (associator)    delete associator;
 
-  /*
-    LogDebug("LooperMethod")<<"total of "<<tomask.size()<<" hits to be masked, but duplicates"<<std::endl;
-    tomask.sort(); //by pointer adress
-    tomask.unique(); //there are duplicates for sure
-    //make the masks per detId
-    tomask.sort(sortByDetId); //by detid to be able to fill the DetSetVector
-  */
-  LogDebug("LooperMethod")<<"there are "<<tomask.size()<<" hits to be masked, with duplicates, which does not matter"<<std::endl;
-
-  uint lastId=0;
-  std::list<fastRecHit*>::iterator iMask=tomask.begin();
-
-  while(iMask!=tomask.end()){
-    lastId=(*iMask)->id_;
-    
-    LogDebug("LooperMethod")<<"new module: "<<lastId<<std::endl;
-    uint subdetId = DetId(lastId).subdetId();
-    if (subdetId==PixelSubdetector::PixelBarrel || subdetId==PixelSubdetector::PixelEndcap)
-      {
-	LogDebug("LooperMethod")<<" in the pixel case"<<std::endl;
-	while((*iMask)->id_==lastId && iMask!=tomask.end()){
-	  const SiPixelRecHit * pH=static_cast<const SiPixelRecHit *>((*iMask)->hit_->hit());
-	  LogTrace("LooperMethod")<<"actively masking:" <<pH<<std::endl;
-	  prod_.collectedPixels[pH->cluster().key()]=true;
-	  ++iMask;
-	}
-      }//pixel case
-    else{
-      LogDebug("LooperMethod")<<" in the strip case"<<std::endl;      
-      //so far so good
-      while((*iMask)->id_==lastId && iMask!=tomask.end()){
-	const SiStripMatchedRecHit2D * mH=dynamic_cast<const SiStripMatchedRecHit2D *>((*iMask)->hit_->hit());
-	if (!mH){
-	  edm::LogError("LooperMethod")<<" not casting back to a 2d rechit. probably projected on the way"<<std::endl;
-	  assert(0==1);
-	  continue;
-	}
-	LogTrace("LooperMethod")<<"actively masking:" <<mH<<std::endl;
-	prod_.collectedStrips[mH->stereoHit()->cluster().key()]=true;
-	prod_.collectedStrips[mH->monoHit()->cluster().key()]=true;
-	++iMask;
-      }
-    }//strip case
-  }//loop on hits to mask
-  
+  if (makeTC_)
+    edm::LogError("LooperMethod")<<collector.nPeaks() <<" loopers identified, leading to "<<prod_.tcOut->size()<<" track candidates, containing " <<nMasked<<" hits to be masked, with duplicates, which does not matter"<<std::endl;
+  else
+    edm::LogError("LooperMethod")<<collector.nPeaks() <<" loopers identified, leading to "<<nMasked<<" hits to be masked, with duplicates, which does not matter"<<std::endl;
 
 }
 

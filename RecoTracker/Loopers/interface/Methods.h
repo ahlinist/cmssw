@@ -4,6 +4,9 @@
 #include <fstream>
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h"
+#include "RecoTracker/TkSeedGenerator/interface/SeedCreator.h"
+#include "RecoTracker/TkSeedGenerator/interface/SeedCreatorFactory.h"
+
 
 namespace LooperClusterRemoverMethod {
 
@@ -26,12 +29,9 @@ namespace LooperClusterRemoverMethod {
   class FractionOfTruth : public Method{
   public:
     //takes in list of rechits, associated to MC truth and rejects a fraction of loopers.
-    //    edm::ParameterSet associatorConf_;
-    //    TrackerHitAssociator  * associator_;
     edm::InputTag pixelRecHits_,stripRecHits_;
     double fractionOfTruth_;
     FractionOfTruth(const edm::ParameterSet& iConfig){
-      //      associatorConf_ = iConfig.getParameter<edm::ParameterSet>("associatorConf");
       pixelRecHits_=iConfig.getParameter<edm::InputTag>("pixelRecHits");
       stripRecHits_=iConfig.getParameter<edm::InputTag>("stripRecHits");
       fractionOfTruth_=iConfig.getParameter<double>("fraction");
@@ -48,6 +48,12 @@ namespace LooperClusterRemoverMethod {
       stripRecHits_=iConfig.getParameter<edm::InputTag>("stripRecHits");
       collectorConf_=iConfig.getParameter<edm::ParameterSet>("collector");
       makeTC_=iConfig.getParameter<bool>("makeTrackCandidates");
+      if (makeTC_){
+	const edm::ParameterSet & sC=iConfig.getParameter<edm::ParameterSet>("SeedCreatorPSet");
+	aCreator = SeedCreatorFactory::get()->create( sC.getParameter<std::string>("ComponentName"),
+						      sC);
+	maskWithNoTC_=iConfig.getParameter<bool>("maskWithNoTC");
+      }else aCreator=0;						      
     };
     void run(edm::Event&, const edm::EventSetup&,
 	     LooperClusterRemover::products &);
@@ -55,6 +61,10 @@ namespace LooperClusterRemoverMethod {
     edm::InputTag pixelRecHits_,stripRecHits_;
     edm::ParameterSet collectorConf_;
     bool makeTC_;
+    SeedCreator * aCreator;
+    ~LooperMethod(){
+      if (makeTC_) delete aCreator;
+    }
   };
 
   class ReadFileIn : public Method{
