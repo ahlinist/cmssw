@@ -15,5 +15,6 @@
 <use   name="MagneticField/Engine"/>
 <use   name="TrackingTools/TrajectoryState"/>
 
-
+<use   name="RecoTracker/TkSeedGenerator"/>
+<use   name="RecoTracker/TkTrackingRegions"/>
 <flags EDM_PLUGIN="1"/>
