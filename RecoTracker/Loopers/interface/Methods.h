@@ -53,7 +53,10 @@ namespace LooperClusterRemoverMethod {
 	aCreator = SeedCreatorFactory::get()->create( sC.getParameter<std::string>("ComponentName"),
 						      sC);
 	maskWithNoTC_=iConfig.getParameter<bool>("maskWithNoTC");
-      }else aCreator=0;						      
+      }else {
+	aCreator=0;						      
+	maskWithNoTC_=false;
+      }
     };
     void run(edm::Event&, const edm::EventSetup&,
 	     LooperClusterRemover::products &);
@@ -61,6 +64,7 @@ namespace LooperClusterRemoverMethod {
     edm::InputTag pixelRecHits_,stripRecHits_;
     edm::ParameterSet collectorConf_;
     bool makeTC_;
+    bool maskWithNoTC_;
     SeedCreator * aCreator;
     ~LooperMethod(){
       if (makeTC_) delete aCreator;
