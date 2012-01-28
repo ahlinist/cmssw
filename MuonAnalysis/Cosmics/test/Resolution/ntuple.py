@@ -32,6 +32,8 @@ group.add_argument('+segments-in-fit', action='store_true',
                    help='Use CSC/DT segments in the muon global fits (default is to use individual hits).')
 group.add_argument('+edm-output', action='store_true',
                    help='Write out (and retrieve in batch mode) the EDM ROOT file (default is to just get the ntuple).')
+group.add_argument('+edm-output-all', action='store_true',
+                   help='Ignore the event selection when writing the EDM output file.')
 
 group = parser.add_argument_group('Interactive-only options (controlling the files/events run over, and debugging output)')
 group.add_argument('+is-mc', action='store_true',
@@ -558,7 +560,7 @@ for reco_kind in label_names.keys():
 
 ################################################################################
 
-if hasattr(process, 'out') and options.edm_output:
+if hasattr(process, 'out') and options.edm_output and not options.edm_output_all:
     # The ntuple maker is an EDFilter, so it selects events that
     # were written into the ntuple.
     process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
@@ -570,9 +572,11 @@ if options.dumps and options.foo:
         process.EventDump.track_labels = vinputtagize([
             'cosmicMuons',
             'globalCosmicMuons',
+            'UTstmGlobal1',
             'UTstmTkOnly1',
             'UTstmTPFMS1',
             'UTstmPicky1',
+            'UTstmDYT1',
             ])
     else:
         process.EventDump.track_labels = vinputtagize([
