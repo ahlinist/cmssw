@@ -38,8 +38,10 @@ group.add_argument('+is-mc', action='store_true',
                    help='Specified input file is MC (data assumed by default).')
 group.add_argument('+debug', action='store_true',
                    help='Turn on the debug dumps (off by default).')
+group.add_argument('+debug-data-event', metavar=('RUN','LUMI','EVENT'), nargs=3, type=int,
+                   help='Run debug dumps on the event specified, retrieving the filename from DBS.')
 group.add_argument('+foo', action='store_true', help=argparse.SUPPRESS)
-group.add_argument('+run-event', metavar='run,event', action='append', dest='run_events',
+group.add_argument('+run-event', metavar='RUN,EVENT', action='append', dest='run_events',
                    help='Run over a particular run,event only (use all events in input by default).')
 group.add_argument('+max-events', type=int, default=-1,
                    help='Maximum events to process during interactive running (default %(default)s).')
@@ -101,9 +103,47 @@ if options.foo:
     options.files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RAW-RECO/399_fromv3_CosmicTP-v1/0000/62816537-0A3E-E011-8CC3-0030487E54B7.root']
     options.run_events = [(128899, 74158848)]
 
+def get_dataset(run):
+    run = int(run)
+    if 126948 <= run <= 131510:
+        return '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO'
+    elif 131511 <= run <= 135802:
+        return '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'
+    elif 135808 <= run <= 144431:
+        return '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'
+    elif 144461 <= run <= 149927:
+        return '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'
+    elif 160329 <= run <= 164428:
+        return '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'
+    elif 165358 <= run <= 169715:
+        return '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'
+    elif 169717 <= run <= 172789:
+        return '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'
+    elif 172791 <= run <= 175784:
+        return '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'
+    elif 175788 <= run <= 180827:
+        return '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'
+    else:
+        raise ValueError('dunno how to do run %i' % run)
+
+if options.debug_data_event:
+    run, lumi, event = options.debug_data_event
+    print run, lumi, event
+    dataset = get_dataset(run)
+    print dataset
+    output = os.popen('dbs search --query="find file where dataset=%s and run=%s and lumi=%s"' % (dataset, run, lumi)).read()
+    print repr(output)
+    filename = [x for x in output.split('\n') if x.endswith('.root')][0]
+    print filename
+    options.debug = True
+    options.files = [filename]
+    options.run_events = [(run, event)]
+
 if options.run_events:
-    options.run_events = [x.split(',') for x in options.run_events]
-    options.run_events = [(int(r),int(e)) for r,e in options.run_events]
+    for i, x in options.run_events:
+        if type(x) == str:
+            r,e = x.split(',')
+            options.run_events[i] = (int(r), int(e))
 
 options.dumps = options.debugdump = options.debug
 
@@ -700,3 +740,4 @@ options.run_events = None
             submit(locals())
 
     os.system('rm -f crab.cfg %s %s' % (new_py_fn, new_py_fn.replace('.py', '.pyc')))
+
