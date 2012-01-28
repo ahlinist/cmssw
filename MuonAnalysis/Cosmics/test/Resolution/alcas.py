@@ -181,6 +181,7 @@ MCStart42 = [
 # Some appropriate combinations of the above.
 ################################################################################
 
+GlobalTag42        = 'GR_R_42_V13::All', []
 GlobalTag          = 'GR_R_44_V12::All', []
 GTMay10            = 'GR_R_44_V12::All', asMay10
 GT42Prompt         = 'GR_R_44_V12::All', as42Prompt
