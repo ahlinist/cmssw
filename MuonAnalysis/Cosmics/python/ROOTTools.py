@@ -92,9 +92,10 @@ def fit_gaussian(hist, factor=None, draw=False, likelihood=False, cache=[]):
         fcn = hist.GetFunction('gaus')
         
     return {
+        'fcn': fcn,
         'constant': (fcn.GetParameter(0), fcn.GetParError(0)),
         'mu':       (fcn.GetParameter(1), fcn.GetParError(1)),
-        'sigma':    (fcn.GetParameter(2), fcn.GetParError(2))
+        'sigma':    (fcn.GetParameter(2), fcn.GetParError(2)),
         }
 
 def differentiate_stat_box(hist, movement=1, new_color=None):
@@ -262,6 +263,7 @@ def tdr_style(_cache=[]):
     s = ROOT.TStyle("tdrStyle", "Style for P-TDR")
     _cache.append(s)
 
+    s.SetFillColor(ROOT.kWhite)
     s.SetCanvasBorderMode(0)
     s.SetCanvasColor(ROOT.kWhite)
     s.SetCanvasDefH(600)
