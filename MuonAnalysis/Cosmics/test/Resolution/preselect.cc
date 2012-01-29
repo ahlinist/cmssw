@@ -51,6 +51,12 @@ int main(int argc, char** argv) {
 
   write_to_tree(output_tree, nt);
 
+  selection sel(nt);
+  sel.min_pixel_layers = 0;
+  sel.min_strip_layers = 0;
+  sel.no_csc_allowed = false;
+  sel.only_2011 = true;
+
   printf("\nEvent loop:\n");
   long jentry;
   for (jentry = 0; jentry < input_tree->GetEntriesFast(); ++jentry) {
@@ -62,7 +68,7 @@ int main(int argc, char** argv) {
     if (input_tree->LoadTree(jentry) < 0) break;
     if (input_tree->GetEntry(jentry) <= 0) continue;
 
-    if (!cut(nt, 0, 0, 0))
+    if (!sel.cut())
       output_tree->Fill();
   }
 
