@@ -26,6 +26,8 @@ parser.add_argument('--min-pixel-layers', type=int, default=1,
                     help='Require MIN_PIXEL_LAYERS pixel layers on every track (except standalone). Default is %(default)s.')
 parser.add_argument('--min-strip-layers', type=int, default=8,
                     help='Require MIN_STRIP_LAYERS strip layers on every track (except standalone). Default is %(default)s.')
+parser.add_argument('--min-muon-hits', type=int, default=0,
+                    help='Require MIN_MUON_HITS muon hits on every track (except tracker-only). Default is %(default)s.')
 parser.add_argument('--max-dxy', type=float,
                     help='Require tracks to have impact parameter |dxy| < MAX_DXY.')
 parser.add_argument('--max-dz', type=float,
@@ -53,7 +55,7 @@ f = ROOT.TFile(options.filename)
 t = f.Get('t') 
 
 # Apply a base selection: default is the same as for the resolution study.
-base_cut = make_cut_string(min_pixel_layers=options.min_pixel_layers, min_strip_layers=options.min_strip_layers, max_dxy=options.max_dxy, max_dz=options.max_dz, no_csc_allowed=True)
+base_cut = make_cut_string(min_pixel_layers=options.min_pixel_layers, min_strip_layers=options.min_strip_layers, max_dxy=options.max_dxy, max_dz=options.max_dz, no_csc_allowed=True, min_muon_hits=options.min_muon_hits)
 
 # Choose which is the tag track and which is the probe track.
 tag_track, probe_track = (lower, upper) if options.tag_lower else (upper, lower)
