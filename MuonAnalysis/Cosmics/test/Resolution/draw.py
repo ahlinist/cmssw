@@ -23,24 +23,41 @@ def get_histo_stat(h, hist_name, stat):
         return h.GetMean(), h.GetMeanError()
     elif stat == 'sigma':
         return fit_histo(h, hist_name)['sigma']
-    raise NotImplementedError('get_curve for %s' % stat)
+    elif stat == 'under':
+        return h.GetBinContent(0), h.GetBinError(0)
+    elif stat == 'over':
+        return h.GetBinContent(h.GetNbinsX()+1), h.GetBinError(h.GetNbinsX()+1)
+    elif stat == 'out':
+        u,ue = get_histo_stat(h, hist_name, 'under')
+        o,oe = get_histo_stat(h, hist_name, 'over')
+        return u+o, (u**2+o**2)**0.5
+    raise NotImplementedError('get_histo_stat for %s' % stat)
                    
 class Drawer:
     tracks = [
         'Global',
-        'TkOnly',
         'TPFMS',
+        'TkOnly',
         'Picky',
         'TuneP'
         ]
+
+    nice_names = {
+        'Global': 'Global',
+        'TkOnly': 'Tracker-only',
+        'TPFMS': 'TPFMS',
+        'Picky': 'Picky',
+        'TuneP': 'Tune P',
+        'StAlone': 'Standalone'
+        }
     
     colors = {
         'Global': ROOT.kBlue,
         'TkOnly': ROOT.kRed,
         'TPFMS':  ROOT.kGreen+1,
-        'Picky':  ROOT.kOrange+8, 
+        'Picky':  ROOT.kViolet-7,
         'TuneP':  ROOT.kBlack,
-        'StAlone':ROOT.kPink,
+        'StAlone':ROOT.kMagenta,
         }
 
     markers = {
@@ -52,6 +69,40 @@ class Drawer:
         'StAlone': 26,
         }
 
+    x_titles = {
+        'pt': 'ref. p_{T} (GeV)'
+        }
+
+    y_titles = {
+        ('qinvpt', 'upperR1lower', 'rms'):   'rms (q/p_{T} rel. residual)',
+        ('qinvpt', 'upperPlower',  'rms'):   'rms (q/p_{T} pull)',
+        ('qinvpt', 'upperR1lower', 'sigma'): 'Width of q/p_{T} rel. residual',
+        ('qinvpt', 'upperPlower',  'sigma'): 'Width of q/p_{T} pull',
+        ('qinvpt', 'upperPlower',  'mean'):  'mean (q/p_{T} pull)',
+        }
+    
+    root_cache = []
+    
+    @classmethod
+    def make_legend(cls, pos, tracks):
+        l = ROOT.TLegend(*pos)
+        l.SetTextFont(42)
+        l.SetShadowColor(ROOT.kWhite)
+        for t in tracks:
+            e = ROOT.TLegendEntry()
+            cls.root_cache.append(e)
+            e.SetMarkerStyle(cls.markers[t])
+            e.SetMarkerColor(cls.colors[t])
+            e.SetLineColor(cls.colors[t])
+            l.AddEntry(e, cls.nice_names[t], 'lpe')
+        return l
+
+    @classmethod
+    def draw_legend(cls, pos, tracks):
+        l = cls.make_legend(pos, tracks)
+        cls.root_cache.append(l)
+        l.Draw()
+
     def __init__(self, filename):
         self.file = ROOT.TFile(filename)
 
@@ -61,17 +112,13 @@ class Drawer:
     def draw_histos(self, track, quantity, hist_name, bin_by='pt'):
         hs = []
         for bin in make_bins(bin_by):
-            h = self.get_histo(bin.name, track, quantity, hist_name)
-            fit_histo(h, hist_name, draw=True)
-            hs.append((bin.name, h))
+            hist = self.get_histo(bin.name, track, quantity, hist_name)
+            res = fit_histo(hist, hist_name, draw=True)
+            hs.append((bin, hist, res))
         return hs
             
     def get_curve(self, track, quantity, hist_name, stat, bin_by='pt'):
-        x = []
-        y = []
-        exl = []
-        exh = []
-        ey = []
+        x, y, exl, exh, ey = [], [], [], [], []
 
         for bin in make_bins(bin_by):
             if not bin.use_by_bin:
@@ -87,30 +134,25 @@ class Drawer:
             y.append(value)
             ey.append(error)
 
-        x = array('d', x)
-        y = array('d', y)
-        exl = array('d', exl)
-        exh = array('d', exh)
-        ey = array('d', ey)
-
-        return ROOT.TGraphAsymmErrors(len(x), x, y, exl, exh, ey, ey)
+        g = ROOT.TGraphAsymmErrors(len(x), *[array('d', z) for z in (x,y,exl,exh,ey,ey)])
+        g.SetTitle(';%s;%s' % (self.x_titles.get(bin_by, 'FIXME'), self.y_titles.get((quantity, hist_name, stat), 'FIXME')))
+        g.GetYaxis().SetLabelSize(0.04)
+        g.GetXaxis().SetLabelOffset(0.002)
+        g.GetYaxis().SetTitleOffset(1.1)
+        return g
 
     def overlay_curves(self, tracks, quantity, hist_name, stat, ymin, ymax):
         curves = [(track, self.get_curve(track, quantity, hist_name, stat)) for track in tracks]
 
-        first = True
+        drawopt = 'AP'
         for track, curve in curves:
             curve.SetLineColor(self.colors[track])
             curve.SetMarkerColor(self.colors[track])
             curve.SetMarkerStyle(self.markers[track])
             curve.SetMinimum(ymin)
             curve.SetMaximum(ymax)
-            if first:
-                drawopt = 'AP'
-                first = False
-            else:
-                drawopt = 'P same'
             curve.Draw(drawopt)
+            drawopt = 'P same'
 
         return curves
 
@@ -124,11 +166,14 @@ if __name__ == '__main__':
     for hist_name in ['upperR1lower', 'upperPlower']:
         for track in drawer.tracks:
             ps = plot_saver(os.path.join(plot_path, hist_name, track))
-            for bin_name, h in drawer.draw_histos(track, 'qinvpt', hist_name):
-                h.Draw()
-                ps.save(bin_name)
+            for bin, hist, res in drawer.draw_histos(track, 'qinvpt', hist_name):
+                hist.Draw()
+                if bin.use_by_bin and res['fcn'].GetProb() < 0.03:
+                    print 'check fit: prob for %s %s %s is %s' % (hist_name, track, bin.name, res['fcn'].GetProb())
+                ps.save(bin.name)
 
     ps = plot_saver(plot_path, log=False)
+
     d = drawer.file.histos.Get('copied_histograms')
     d.Get('track_multiplicity').Draw('hist text00')
     ps.save('track_multiplicity', log=True)
@@ -142,12 +187,23 @@ if __name__ == '__main__':
     ps.save_dir('upperR1lower')
     ps.save_dir('upperPlower')
 
+    ps.make_canvas((700,700))
     ps.c.SetLogx(1)
-    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperR1lower', 'rms', 0, 0.18)
+
+    tracks = ['Global', 'TkOnly', 'TuneP']
+    
+    curves = drawer.overlay_curves(tracks, 'qinvpt', 'upperR1lower', 'rms', 0, 0.18)
+    drawer.draw_legend((0.21,0.70,0.49,0.91), tracks)
     ps.save('res_rms')
-    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperR1lower', 'sigma', 0, 0.08)
+
+    curves = drawer.overlay_curves(tracks, 'qinvpt', 'upperR1lower', 'sigma', 0, 0.1)
+    drawer.draw_legend((0.21,0.70,0.49,0.91), tracks)
     ps.save('res_sigma')
-    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperPlower',  'sigma', 0.5, 2.5)
+
+    curves = drawer.overlay_curves(tracks, 'qinvpt', 'upperPlower',  'sigma', 0.5, 2.5)
+    drawer.draw_legend((0.21,0.70,0.49,0.91), tracks)
     ps.save('pull_sigma')
-    curves = drawer.overlay_curves(drawer.tracks, 'qinvpt', 'upperPlower',  'mean', -0.2, 0.8)
+
+    curves = drawer.overlay_curves(tracks, 'qinvpt', 'upperPlower',  'mean', -0.4, 1.0)
+    drawer.draw_legend((0.21,0.70,0.49,0.91), tracks)
     ps.save('pull_mean')
