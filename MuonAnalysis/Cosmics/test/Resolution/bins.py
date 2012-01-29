@@ -52,7 +52,7 @@ class Bin:
 
         a = getattr(self, 'min_' + self.main_var)
         b = getattr(self, 'max_' + self.main_var)
-        x = (b-a)/2 if self.abscissa is None else self.abscissa
+        x = (b+a)/2 if self.abscissa is None else self.abscissa
         
         return a,b,x
 
@@ -62,16 +62,18 @@ class Bin:
 def make_bins(bin_by, bin_extra=None):
     if bin_by == 'pt':
         bins = [
-            Bin('pT010',      abscissa=7.27  , min_pt=0.,    max_pt=10.,    diff_scales=(  1., 0.007,  0.01,  0.004, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            Bin('pT1020',     abscissa=13.792, min_pt=10.,   max_pt=20.,    diff_scales=(  2., 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            Bin('pT2030',     abscissa=24.044, min_pt=20.,   max_pt=30.,    diff_scales=(  5., 0.003,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            Bin('pT3040',     abscissa=34.125, min_pt=30.,   max_pt=40.,    diff_scales=(  7., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            Bin('pT4050',     abscissa=44.166, min_pt=40.,   max_pt=50.,    diff_scales=( 10., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
-            Bin('pT5075',     abscissa=60.380, min_pt=50.,   max_pt=75.,    diff_scales=( 12., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.15, 0.15, 0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
-            Bin('pT75100',    abscissa=85.751, min_pt=75.,   max_pt=100.,   diff_scales=( 25., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.15, 0.15, 0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
-            Bin('pT100200',   abscissa=135.94, min_pt=100.,  max_pt=200.,   diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
-            Bin('pT200350',   abscissa=256.07, min_pt=200.,  max_pt=350.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
-            Bin('pT3502000',  abscissa=579.36, min_pt=350.,  max_pt=2000.,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pT010',      abscissa=7.27, min_pt=0.,    max_pt=10.,    diff_scales=(  1., 0.007,  0.01,  0.004, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
+            Bin('pT1020',     abscissa=13.8, min_pt=10.,   max_pt=20.,    diff_scales=(  2., 0.005,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
+            Bin('pT2030',     abscissa=24.0, min_pt=20.,   max_pt=30.,    diff_scales=(  5., 0.003,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
+            Bin('pT3040',     abscissa=34.1, min_pt=30.,   max_pt=40.,    diff_scales=(  7., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
+            Bin('pT4050',     abscissa=44.2, min_pt=40.,   max_pt=50.,    diff_scales=( 10., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
+            Bin('pT5075',     abscissa=60.4, min_pt=50.,   max_pt=75.,    diff_scales=( 12., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.15, 0.15, 0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
+            Bin('pT75100',    abscissa=85.8, min_pt=75.,   max_pt=100.,   diff_scales=( 25., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.15, 0.15, 0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 5.,  5. )),
+            Bin('pT100150',   abscissa=121., min_pt=100.,  max_pt=150.,   diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
+            Bin('pT150200',   abscissa=172., min_pt=150.,  max_pt=200.,   diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
+            Bin('pT200350',   abscissa=256., min_pt=200.,  max_pt=350.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pT350500',   abscissa=411., min_pt=350.,  max_pt=500.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pT5002000',  abscissa=755., min_pt=500.,  max_pt=2000.,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
         ]
 
         bins += [
