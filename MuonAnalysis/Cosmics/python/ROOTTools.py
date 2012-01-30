@@ -98,6 +98,24 @@ def fit_gaussian(hist, factor=None, draw=False, likelihood=False, cache=[]):
         'sigma':    (fcn.GetParameter(2), fcn.GetParError(2)),
         }
 
+def detree(t, branches='run:lumi:event', cut='', xform=lambda x: tuple(int(y) for y in x)):
+    """Dump specified branches from tree into a list of tuples, via an
+    ascii file. By default all vars are converted into integers. The
+    xform parameter specifies the function transforming the tuple of
+    strings into the desired format."""
+    
+    tmp_fn = os.tmpnam()
+    t.GetPlayer().SetScanRedirect(True)
+    t.GetPlayer().SetScanFileName(tmp_fn)
+    t.Scan(branches, cut, 'colsize=50')
+    t.GetPlayer().SetScanRedirect(False)
+    l = len(branches.split(':')) + 2
+    ret = []
+    for line in open(tmp_fn):
+        if ' * ' in line and 'Row' not in line:
+            ret.append(xform(line.split('*')[2:l]))
+    return ret
+
 def differentiate_stat_box(hist, movement=1, new_color=None):
     """Move hist's stat box and change its line/text color. If
     movement is just an int, that number specifies how many units to
@@ -129,8 +147,7 @@ class plot_saver:
     i = 0
     
     def __init__(self, plot_dir=None, html=True, log=True, root=True, pdf=False, pdf_log=False, C=False, C_log=False, size=(820,630), index_fn='index.html'):
-        self.c = ROOT.TCanvas('c%i' % plot_saver.i, '', *size)
-        plot_saver.i += 1
+        self.make_canvas(size)
         self.saved = []
         self.html = html
         self.set_plot_dir(plot_dir)
@@ -145,6 +162,10 @@ class plot_saver:
     def __del__(self):
         self.write_index()
 
+    def make_canvas(self, size):
+        self.c = ROOT.TCanvas('c%i' % plot_saver.i, '', *size)
+        plot_saver.i += 1
+        
     def anchor_name(self, fn):
         return fn.replace('.', '_').replace('/', '_')
     
@@ -353,6 +374,7 @@ __all__ = [
     'binomial_clopper_pearson',
     'binomial_divide',
     'core_gaussian',
+    'detree',
     'differentiate_stat_box',
     'fit_gaussian',
     'plot_saver',
