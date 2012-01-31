@@ -4,11 +4,17 @@
 
 asMUO10004 = [
     ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {
+        'GlobalPositionRcd': 'GlobalAlignment_v2_offline',
         'TrackerAlignmentRcd': 'TrackerAlignment_GR10_v1_offline',
         'TrackerAlignmentErrorRcd': 'TrackerAlignmentErrors_GR10_v1_offline',
-        'GlobalPositionRcd': 'GlobalAlignment_v2_offline',
         'CSCAlignmentRcd': 'CSCAlignment_2009_v4_offline',
+        'CSCAlignmentErrorRcd': 'CSCAlignmentError_2009_v3_offline',
         'DTAlignmentRcd': 'DTAlignment_2009_v4_offline'
+        'DTAlignmentErrorRcd': 'DTAlignmentError_2009_v4_offline',
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {
+        'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_zero'
         }
      )
     ]
@@ -177,14 +183,22 @@ MCStart42 = [
      ),
     ]
 
+MCFixedDTTTrig = [
+    ('frontier://FrontierPrep/CMS_COND_DT', {
+        'DTTtrigRcd': ('DTTtrig_cosmics_mc_prep_V01', 'cosmics'),
+        }
+     )
+    ]
+
 ################################################################################
 # Some appropriate combinations of the above.
 ################################################################################
 
-GlobalTag42        = 'GR_R_42_V13::All', []
-GlobalTag          = 'GR_R_44_V12::All', []
-GTMay10            = 'GR_R_44_V12::All', asMay10
-GT42Prompt         = 'GR_R_44_V12::All', as42Prompt
+GlobalTag          = 'GR_R_42_V13::All', []
+GTMUO10004         = 'GR_R_42_V13::All', asMUO10004
+GTMay10            = 'GR_R_42_V13::All', asMay10
+GT42Prompt         = 'GR_R_42_V13::All', as42Prompt
+
 NewTkNominalMu     = 'GR_R_44_V12::All', NewTk + NominalMu
 NewTkNewMu         = 'GR_R_44_V12::All', NewTk + NewMu
 NewTkNewMuWithAPEs = 'GR_R_44_V12::All', NewTk + NewMu + NewMuAPEs
@@ -196,4 +210,6 @@ MCCosTrgPeakIdealAli = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + 
 MCCosTrgPeakMCV9B    = 'MC_44_V9B::All',   MCCosmicTrigger + MCStripsPeakMode
 MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCIdealAli2
 
-MCCOSMC42PEAK = 'COSMC_42_PEAK::All', []
+MCCosMC42Peak           = 'COSMC_42_PEAK::All', []
+MCCosMC42PeakFixed      = 'COSMC_42_PEAK::All', MCFixedDTTTrig
+MCCosMC42PeakFixedIdeal = 'COSMC_42_PEAK::All', MCFixedDTTTrig + MCIdealAli
