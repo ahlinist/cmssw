@@ -106,6 +106,7 @@ void write_to_tree(TTree* tree, CosmicSplittingResolutionNtuple* nt) {
   branch_it(tree, "choice_tunep", nt->choice_tunep, "choice_tunep[2]/s");
   branch_it(tree, "tt25", &nt->tt25, "tt25/O");
   branch_it(tree, "bzat0", &nt->bzat0, "bzat0/F");
+  branch_it(tree, "peak_mode", &nt->peak_mode, "peak_mode/O");
 
   tree->SetAlias("ref_eta", "-log(tan(ref_theta / 2))");
 }
@@ -194,4 +195,5 @@ void read_from_tree(TTree* tree, CosmicSplittingResolutionNtuple* nt) {
   tree->SetBranchAddress("choice_tunep", nt->choice_tunep);
   tree->SetBranchAddress("tt25", &nt->tt25);
   tree->SetBranchAddress("bzat0", &nt->bzat0);
+  tree->SetBranchAddress("peak_mode", &nt->peak_mode);
 }
