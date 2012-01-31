@@ -24,7 +24,7 @@ parser.add_argument('+input-directory', default='UTpickedTracks',
                     help='In the input ROOT file, the directory the ntuple TTree "t" is in. Default is "%(default)s".')
 parser.add_argument('+output-fn',
                     help='Override the output filename. (Default is to write to the current directory a file with basename the same as the input, but ending in .histos.root.)')
-parser.add_argument('+run-type', action='append', dest='run_types', default=['cosmics'], choices='cosmics collisions commissioning'.split(),
+parser.add_argument('+run-type', action='append', dest='run_types', choices='cosmics collisions commissioning'.split(),
                     help='For data, include runs of type TYPE. (May be specified more than once; default is %(default)s.)')
 parser.add_argument('+require-rpc-good', action='store_true',
                     help='In the run selection, require RPC subdetector marked as good in DQM.')
@@ -67,6 +67,9 @@ options.input_fn = options.input_fn[0]
 
 if not options.output_fn:
     options.output_fn = os.path.basename(options.input_fn).replace('.root', '.histos.root')
+
+if not options.run_types:
+    options.run_types = ['cosmics']
 
 options.require_pixels = options.min_pixel_layers > 0
 
