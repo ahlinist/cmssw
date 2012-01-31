@@ -130,6 +130,8 @@ struct CosmicSplittingResolutionNtuple {
   bool tt25;
 
   float bzat0;
+
+  bool peak_mode; // false == deconvolution
 };
 
 void write_to_tree (TTree*, CosmicSplittingResolutionNtuple*);

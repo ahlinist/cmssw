@@ -5,6 +5,8 @@
 #include "TH1F.h"
 #include "TTree.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "CondFormats/DataRecord/interface/SiStripCondDataRecords.h"
+#include "CondFormats/SiStripObjects/interface/SiStripLatency.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
@@ -364,6 +366,10 @@ bool CosmicSplittingResolutionFilter::filter(edm::Event& event, const edm::Event
   setup.get<IdealMagneticFieldRecord>().get(magfield);
   static const GlobalPoint p(0,0,0);
   nt->bzat0 = magfield->inTesla(p).z();
+
+  edm::ESHandle<SiStripLatency> apvlat;
+  setup.get<SiStripLatencyRcd>().get(apvlat);
+  nt->peak_mode = apvlat->singleReadOutMode();
 
   std::ostringstream out;
 
