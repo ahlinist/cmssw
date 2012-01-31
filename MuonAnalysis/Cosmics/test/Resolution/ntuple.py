@@ -705,9 +705,9 @@ options.run_events = None
     if options.submit_mc:
         job_control = job_control_mc
         datasets = [
-            ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
-            ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
-            ('P500Peak', 3, '/TKCosmics_p500_PEAK/Summer11-COSMC_42_PEAK-v1/GEN-SIM-RAW'),
+            ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v2/GEN-SIM-RAW-RECO'),
+            ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v3/GEN-SIM-RAW-RECO'),
+            ('P500Peak', 3, '/TKCosmics_p500_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v2/GEN-SIM-RAW-RECO'),
             ]
         
         for sample_name, dataset_id, dataset_path in datasets:
