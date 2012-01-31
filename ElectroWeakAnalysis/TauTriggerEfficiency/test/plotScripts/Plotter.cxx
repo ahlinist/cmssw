@@ -13,10 +13,11 @@
 
 #include <string>
 #include <stdint.h>
+#include <cmath>
 
 class Plotter {
 public:
-  Plotter(TString filename="tteffAnalysis.root", TString treename="TTEffTree", TString pickEventsFile = ""){
+  Plotter(TString filename="tteffAnalysis.root", TString treename="TTEffTree" /*, TString pickEventsFile = ""*/ ){
     init();
     chain = new TChain(treename);
     chain->AddFile(filename);
@@ -30,10 +31,9 @@ public:
     delete inFile;
   };
 
-  TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection);
-  TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2);
-  TGraph2D *DrawHistogram2D(const char* varexp, const TCut& selection, const TCut& selection2);
-  TH1 *DrawDistribution(const char* varexp, const TCut& selection);
+  TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection, const TString& weight="");
+  TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2, const TString& weight="");
+  TH1 *DrawDistribution(const char* varexp, const TCut& selection, const TString& weight="");
   void SetXTitle(const char* title) {plotXtitle   = title;}
   void SetYTitle(const char* title) {plotYtitle   = title;}
   void SetFileName(TString name){plotFileName = name;}
@@ -41,6 +41,8 @@ public:
   void SetSave(bool s) {save = s;}
   int GetNEvents(const TCut& selection = "");
   int GetNEventsWithNJets(const TCut&,int,double,double,bool jetEtaCut = false);
+
+  TChain *getChain() { return chain; }
 
 private:
   void init(){
@@ -62,7 +64,13 @@ private:
   bool save;
 };
 
-TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& selection){
+TString applyWeight(const TCut& selection, const TString& weight) {
+  if(weight == "")
+    return selection.GetTitle();
+  return weight+"*("+selection.GetTitle()+")";
+}
+
+TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TString& weight){
   //  TCanvas *c = new TCanvas();
   // c->cd();
 
@@ -70,28 +78,28 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
 
   std::string s_varexp(varexp);
 
-  size_t posbegin = s_varexp.find(">>");
-  size_t posend   = s_varexp.find("(", posbegin);
+  //size_t posbegin = s_varexp.find(">>");
+  //size_t posend   = s_varexp.find("(", posbegin);
+  //  s_varexp = s_varexp.substr(0,posbegin+2) + "hden" + s_varexp.substr(posend,s_varexp.length()-posend);
 
-  s_varexp = s_varexp.substr(0,posbegin+2) + "hden" + s_varexp.substr(posend,s_varexp.length()-posend);
+  //  const char* varexp2 = s_varexp.c_str();
 
-  const char* varexp2 = s_varexp.c_str();
-
-  chain->Draw(varexp1,selection,"e");
-  chain->Draw(varexp2,"","h");
+  chain->Draw(varexp1, applyWeight(selection, weight), "e");
+  //  chain->Draw(varexp2,"","h");
 
   TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
-  TH1F *hden = (TH1F*)gDirectory->Get("hden");
+  //  TH1F *hden = (TH1F*)gDirectory->Get("hden");
 
   hnum->SetStats(0);
   hnum->SetTitle("");
 
-  TGraphAsymmErrors* heff = new TGraphAsymmErrors(hnum,hden);
-  heff -> BayesDivide(hnum,hden);
+//  TGraphAsymmErrors* heff = new TGraphAsymmErrors(hnum,hden);
+  TGraphAsymmErrors* heff = new TGraphAsymmErrors(hnum);
+//  heff -> BayesDivide(hnum,hden);
   heff -> GetXaxis()->SetTitle(plotXtitle);
   heff -> GetYaxis()->SetTitle(plotYtitle);
-  heff ->SetMinimum(0);
-  heff ->SetMaximum(1.1);
+//  heff ->SetMinimum(0);
+//  heff ->SetMaximum(1.1);
   heff -> SetMarkerColor(kBlack);
   heff -> SetMarkerSize(1.);
   heff -> SetLineWidth(1);
@@ -109,7 +117,7 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
 }
 
 
-TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2){
+TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2, const TString& weight) {
 
   const char* varexp1 = varexp;
 
@@ -120,8 +128,11 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
 
   const char* varexp2 = s_varexp.c_str();
 
-  chain->Draw(varexp1,selection&&selection2,"e");
-  chain->Draw(varexp2,selection2,"h");
+  //std::cout << applyWeight(selection&&selection2, weight) << std::endl;
+  //std::cout << applyWeight(selection2, weight) << std::endl;
+
+  chain->Draw(varexp1, applyWeight(selection&&selection2, weight), "e");
+  chain->Draw(varexp2, applyWeight(selection2, weight), "e");
 
   TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
   TH1F *hden = (TH1F*)gDirectory->Get("hden");
@@ -129,8 +140,10 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   hnum->SetStats(0);
   hnum->SetTitle("");
 
-  TGraphAsymmErrors* heff = new TGraphAsymmErrors(hnum,hden);
-  heff -> BayesDivide(hnum,hden);
+  //std::cout << hnum->GetBinLowEdge(1) << ": " << hnum->GetBinContent(1) << " " << hden->GetBinContent(1) << std::endl;
+
+  TGraphAsymmErrors* heff = new TGraphAsymmErrors(hnum,hden /*,"cl=0.683 b(1,1) mode" */);
+  //heff -> BayesDivide(hnum,hden);
   heff -> GetXaxis()->SetTitle(plotXtitle);
   heff -> GetYaxis()->SetTitle(plotYtitle);
   //heff ->SetMinimum(0);
@@ -152,23 +165,20 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   return heff;
 }
 
-TGraph2D *DrawHistogram2D(const char* varexp, const TCut& selection, const TCut& selection2){
-
-}
-
-TH1 *Plotter::DrawDistribution(const char* varexp, const TCut& selection){
+TH1 *Plotter::DrawDistribution(const char* varexp, const TCut& selection, const TString& weight) {
 
   const char* varexp1 = varexp;
-  chain->Draw(varexp1,selection);
-  TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
+  chain->Draw(varexp1, applyWeight(selection, weight));
+  //TH1F *hnum1 = (TH1F*)gDirectory->Get("hnum");
+  TH1 *hnum1 = chain->GetHistogram();
 
-  hnum->SetStats(0);
-  hnum->SetTitle("");
-  hnum->Sumw2();
+  hnum1->SetStats(0);
+  hnum1->SetTitle("");
+  hnum1->Sumw2();
 
-  hnum -> GetXaxis()->SetTitle(plotXtitle);
-  hnum -> GetYaxis()->SetTitle(plotYtitle);
-  hnum -> Draw("HIST");
+  hnum1 -> GetXaxis()->SetTitle(plotXtitle);
+  hnum1 -> GetYaxis()->SetTitle(plotYtitle);
+  hnum1 -> Draw("HIST");
 
   if(save) {
     if(format != "")
@@ -176,7 +186,7 @@ TH1 *Plotter::DrawDistribution(const char* varexp, const TCut& selection){
     else
       gPad->SaveAs(plotFileName);
   }
-  return hnum;
+  return hnum1;
 }
 /*
 TTree* Plotter::pickEvents(TString fPickEvents,TTree* intree){
@@ -250,7 +260,7 @@ int Plotter::GetNEventsWithNJets(const TCut& selection,int njcut,double tauPt,do
         float L1JetEt,HLTJet3Pt,HLTJet4Pt;
         float HLTJet1Eta,HLTJet2Eta,HLTJet3Eta,HLTJet4Eta;
         float L2JetEt,L2ECALIsolationEt,l25Pt,l25IsoPtSum,l25EcalIsoEtSum;
-        uint32_t l25Depth;
+        //uint32_t l25Depth;
 	bool matchedToL2Jet,foundTracksInJet,tauTagHasTracks,matchedToHLTPFTau,l25PFTauLeadTrkIsValid;
     
         chain->SetBranchAddress("run",&run);
