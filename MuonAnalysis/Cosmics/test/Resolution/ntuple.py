@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(prefix_chars='+', description='CosmicSplittingR
 parser.add_argument('cmsrunargs', nargs='*')
 
 group = parser.add_argument_group('Interactive+batch options (controlling the reconstruction and event selection)')
-group.add_argument('+alca-set', default='NewTkNewMu',
+group.add_argument('+alca-set', default='GTMay10',
                    help='The alignment/calibration configuration. This should be the name of a set of records found in alcas.py, used to set up the global tag and extra alignment/calibration records. Default is %(default)s.')
 group.add_argument('+pp-reco-mode', action='store_true',
                    help='Instead of cosmic reconstruction (default), use collisions reconstruction.')
@@ -526,7 +526,7 @@ for reco_kind in label_names.keys():
                                                global_map_label          = kind_tag('refitMapGlobal'),
                                                tpfms_map_label           = kind_tag('refitMapTPFMS'),
                                                picky_map_label           = kind_tag('refitMapPicky'),
-                                               dyt_map_label             = kind_tag('stmDYT1'), # As noted above, don't use the 4-time-refitted DYT yet.
+                                               dyt_map_label             = kind_tag('refitMapTPFMS'), # Don't use DYT for now. Just copy TPFMS to avoid changing the code.
                                                trackeronly_map_label     = kind_tag('refitMapTkOnly'),
                                                tmr_cut                   = cms.double(4),
                                                n_sigma_switch            = cms.double(2),
