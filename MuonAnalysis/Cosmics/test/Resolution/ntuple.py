@@ -102,8 +102,6 @@ delattr(options, 'cmsrunargs')
 
 if options.foo:
     options.debug = True
-    options.files = ['file:/uscms/home/tucker/nobackup/store/data/Commissioning10/Cosmics/RAW-RECO/399_fromv3_CosmicTP-v1/0000/62816537-0A3E-E011-8CC3-0030487E54B7.root']
-    options.run_events = [(128899, 74158848)]
 
 def get_dataset(run):
     run = int(run)
@@ -142,7 +140,7 @@ if options.debug_data_event:
     options.run_events = [(run, event)]
 
 if options.run_events:
-    for i, x in options.run_events:
+    for i,x in enumerate(options.run_events):
         if type(x) == str:
             r,e = x.split(',')
             options.run_events[i] = (int(r), int(e))
@@ -228,9 +226,9 @@ if options.run_events:
 process.TFileService = cms.Service('TFileService', fileName=cms.string('resolution_ntuple.root'))
 
 # Slick way to attach a bunch of different alignment records.
-from MuonAnalysis.Cosmics.CMSSWTools import set_preferred_alignment
+from MuonAnalysis.Cosmics.CMSSWTools import set_preferred_alca
 for i, (connect, rcds) in enumerate(options.extra_alca):
-    set_preferred_alignment(process, 'extraAlignment%i' % i, connect, **rcds)
+    set_preferred_alca(process, 'extraAlca%i' % i, connect, **rcds)
 
 # Some extra stuff needed for the strip conditions.
 for x in dir(process):
