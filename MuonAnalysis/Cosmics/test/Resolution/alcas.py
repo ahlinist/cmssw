@@ -9,7 +9,7 @@ asMUO10004 = [
         'TrackerAlignmentErrorRcd': 'TrackerAlignmentErrors_GR10_v1_offline',
         'CSCAlignmentRcd': 'CSCAlignment_2009_v4_offline',
         'CSCAlignmentErrorRcd': 'CSCAlignmentError_2009_v3_offline',
-        'DTAlignmentRcd': 'DTAlignment_2009_v4_offline'
+        'DTAlignmentRcd': 'DTAlignment_2009_v4_offline',
         'DTAlignmentErrorRcd': 'DTAlignmentError_2009_v4_offline',
         }
      ),
