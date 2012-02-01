@@ -12,9 +12,12 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
     process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
     # Calculate PF isolation of the muon
-    process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "muons", process.patMuons)
-    sequence += process.muonPFIsolationSequence
+    #process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "muons", process.patMuons)
+    #sequence += process.muonPFIsolationSequence
     
+    process.pfPileUpIso.PFCandidates = "particleFlow" # I don't know why I have to do this
+    process.pfNoPileUpIso.bottomCollection = "particleFlow"
+
     jetCorr = ["L1FastJet", "L2Relative", "L3Absolute"]
     if isData:
         jetCorr.append("L2L3Residual")
