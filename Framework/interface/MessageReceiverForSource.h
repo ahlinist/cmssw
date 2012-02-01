@@ -31,7 +31,7 @@ namespace edm {
          
       public:
          ///Takes the fd of the read and write socket for communication with parent
-         MessageReceiverForSource(int parentSocket);
+         MessageReceiverForSource(int parentSocket, int parentPipe);
          
          // ---------- const member functions ---------------------
          
@@ -65,6 +65,8 @@ namespace edm {
          
          // ---------- member data --------------------------------
          int m_parentSocket;
+         int m_parentPipe;
+         int m_maxFd;
          unsigned long m_startIndex;
          unsigned long m_numberOfConsecutiveIndices;
          unsigned long m_numberToSkip;
