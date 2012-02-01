@@ -15,6 +15,9 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
+#include<string>
+#include<vector>
+
 class TTree;
 
 class PFMHTEfficiencyAnalyzer {
@@ -32,9 +35,13 @@ class PFMHTEfficiencyAnalyzer {
 	edm::InputTag PFJetSource;
 	double MHTJetThreshold;
 
-        // Output tree and related variables
-        TTree *pfmhttree;
+        struct Value {
+          Value(const edm::InputTag& s, const std::string& b): src(s), branch(b), value(0) {}
+          edm::InputTag src;
+          std::string branch;
+          float value;
+        };
 
-	float hltPFMHT;
+        std::vector<Value> values;
 };
 #endif

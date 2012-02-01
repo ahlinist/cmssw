@@ -5,46 +5,36 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/METReco/interface/MET.h"
 
 #include <TTree.h>
 
 // Default constructor
-PFMHTEfficiencyAnalyzer::PFMHTEfficiencyAnalyzer():
-  pfmhttree(0){}
-
+PFMHTEfficiencyAnalyzer::PFMHTEfficiencyAnalyzer() {}
 
 PFMHTEfficiencyAnalyzer::~PFMHTEfficiencyAnalyzer(){}
 
 void PFMHTEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
-	PFJetSource = iConfig.getParameter<edm::InputTag>("PFJetSource");
-	MHTJetThreshold = iConfig.getParameter<double>("MHTJetThreshold");
+  edm::ParameterSet pset = iConfig.getParameter<edm::ParameterSet>("HLTPFMHTSources");
+  std::vector<std::string> names = pset.getParameterNames();
+  values.reserve(names.size());
+  for(size_t i=0; i<names.size(); ++i) {
+    values.push_back(Value(pset.getParameter<edm::InputTag>(names[i]), names[i]));
+  }
 
-  	pfmhttree = trigtree;
-
-  	// Setup branches
-  	pfmhttree->Branch("HLTPFMHT", &hltPFMHT);
+  // Setup branches
+  for(size_t i=0; i<values.size(); ++i) {
+    trigtree->Branch((std::string("HLTPFMHT_")+values[i].branch).c_str(), &(values[i].value));
+  }
 }
 
 void PFMHTEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+  for(size_t i=0; i<values.size(); ++i) {
+    edm::Handle<edm::View<reco::MET> > hmht;
+    iEvent.getByLabel(values[i].src, hmht);
 
-	hltPFMHT = 0.0;
-
-        double hx = 0,
-               hy = 0;
-
-	edm::Handle<edm::View<reco::PFJet> > hjets;
-	iEvent.getByLabel(PFJetSource, hjets);
-
-	edm::PtrVector<reco::PFJet> jets = hjets->ptrVector();
-	for(edm::PtrVector<reco::PFJet>::const_iterator iter = jets.begin(); iter != jets.end(); ++iter) {
-                edm::Ptr<reco::PFJet> iJet = *iter;
-		if(iJet->pt() < MHTJetThreshold) continue;
-                hx += iJet->px();
-                hy += iJet->py();
-        }
-
-	hltPFMHT = sqrt(hx*hx + hy*hy);
+    values[i].value = hmht->front().et();
+  }
 } 
 

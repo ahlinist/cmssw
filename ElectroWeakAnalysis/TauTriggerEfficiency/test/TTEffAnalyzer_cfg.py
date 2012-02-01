@@ -132,8 +132,11 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 	METSource		= cms.InputTag("pfMet"),
 	METCleaningSource	= cms.InputTag("HBHENoiseFilterResultProducer", "HBHENoiseFilterResult"),
 
-	PFJetSource		= cms.InputTag("ak5PFJets"),
-	MHTJetThreshold		= cms.double(20.),
+        HLTPFMHTSources = cms.PSet(
+             mht = cms.InputTag("hltPFMHTProducer"),
+             di30 = cms.InputTag("hltPFMHTDiPFJet30"),
+             di50 = cms.InputTag("hltPFMHTDiPFJet50"),
+        ),
 
 #	HLTJetSource            = cms.InputTag("hltAntiKT5CaloJets"), #uncorrected
 #	HLTJetSource            = cms.InputTag("hltAntiKT5L2L3CorrCaloJets"), #corrected
