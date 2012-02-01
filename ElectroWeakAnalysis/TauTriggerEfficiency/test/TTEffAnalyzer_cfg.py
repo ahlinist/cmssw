@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 isData = False
-runL1Emulator = True
+runL1Emulator = False
 hltType = "HLT"
 #hltType = "REDIGI38X"
 
@@ -51,7 +51,7 @@ else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
 #	"file:TTEffSkim.root"
-	"file:/tmp/slehti/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_160_1_OZG.root"
+        "file:/tmp/slehti/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_160_1_OZG.root"
 	)
     )
 
@@ -112,6 +112,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 	PFTauElectronRejectionDiscriminator = cms.string("againstElectronMedium"),
 	PFTauDiscriminators     = cms.vstring(
             "againstMuonLoose",
+            "againstMuonMedium",
             "againstMuonTight",
             "againstElectronLoose",
             "againstElectronMedium",
@@ -120,6 +121,14 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
             "byLooseIsolation",
             "byMediumIsolation",
             "byTightIsolation",
+            "byVLooseIsolationDeltaBetaCorr",
+            "byLooseIsolationDeltaBetaCorr",
+            "byMediumIsolationDeltaBetaCorr",
+            "byTightIsolationDeltaBetaCorr",
+            "byVLooseCombinedIsolationDeltaBetaCorr",
+            "byLooseCombinedIsolationDeltaBetaCorr",
+            "byMediumCombinedIsolationDeltaBetaCorr",
+            "byTightCombinedIsolationDeltaBetaCorr",
         ),
         Counters                = cms.VInputTag(cms.InputTag("TTEffSkimCounterAllEvents"),
                                                 cms.InputTag("TTEffSkimCounterSavedEvents")
@@ -134,8 +143,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 
         HLTPFMHTSources = cms.PSet(
              mht = cms.InputTag("hltPFMHTProducer"),
-             di30 = cms.InputTag("hltPFMHTDiPFJet30"),
-             di50 = cms.InputTag("hltPFMHTDiPFJet50"),
+#             di30 = cms.InputTag("hltPFMHTDiPFJet30"),
+#             di50 = cms.InputTag("hltPFMHTDiPFJet50"),
         ),
 
 #	HLTJetSource            = cms.InputTag("hltAntiKT5CaloJets"), #uncorrected
@@ -354,12 +363,14 @@ process.o1 = cms.OutputModule("PoolOutputModule",
 #process.outpath = cms.EndPath(process.o1)
 
 process.HLTPFTauSequence+= process.hltPFTausTightIso
+process.DoMiscHLT = cms.Path(process.hltPFMHTProducer)
 process.schedule = cms.Schedule(process.DoHLTJets,
 #				process.DoHltMuon,
 				process.DoHLTPhoton,
 				process.DoHLTElectron,
 				process.DoHLTTau,
 				process.DoHLTMinBiasPixelTracks,
+                                process.DoMiscHLT,
 				process.runMETCleaning,
                                 process.L1simulation_step,
 				process.runTTEffAna,

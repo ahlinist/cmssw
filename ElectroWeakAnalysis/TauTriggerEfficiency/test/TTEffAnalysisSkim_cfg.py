@@ -71,6 +71,24 @@ process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 import ElectroWeakAnalysis.TauTriggerEfficiency.Pat as pat
 process.patSequence = pat.addPat(process, isData, False)
 
+# Remove printout
+process.makePatTaus.remove(process.tauGenJets)
+process.makePatTaus.remove(process.tauGenJetsSelectorAllHadrons)
+process.makePatTaus.remove(process.tauGenJetMatch)
+process.makePatTaus.remove(process.tauGenJetMatchHpsPFTau)
+process.patDefaultSequence.remove(process.tauGenJets)
+process.patDefaultSequence.remove(process.tauGenJetsSelectorAllHadrons)
+process.patDefaultSequence.remove(process.tauGenJetMatch)
+process.patDefaultSequence.remove(process.tauGenJetMatchHpsPFTau)
+del process.tauGenJets
+del process.tauGenJetsSelectorAllHadrons
+del process.tauGenJetMatch
+del process.tauGenJetMatchHpsPFTau
+process.patTaus.addGenJetMatch = False
+process.patTaus.embedGenJetMatch = False
+process.patTausHpsPFTau.addGenJetMatch = False
+process.patTausHpsPFTau.embedGenJetMatch = False
+
 
 import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
 process.PFTauSkimmed = zmutau.addSelection(process)
