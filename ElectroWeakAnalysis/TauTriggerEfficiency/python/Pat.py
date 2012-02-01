@@ -18,9 +18,12 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
     jetCorr = ["L1FastJet", "L2Relative", "L3Absolute"]
     if isData:
         jetCorr.append("L2L3Residual")
-        coreTools.removeMCMatching(process, ["All"], outputInProcess=False)
-    coreTools.removeCleaning(process, False)
-    coreTools.removeSpecificPATObjects(process, ["Electrons", "Photons", "METs"], False)
+#        coreTools.removeMCMatching(process, ["All"], outputInProcess=False)
+	coreTools.removeMCMatching(process, ["All"], outputModules = [])
+####    coreTools.removeCleaning(process, False)
+        coreTools.removeCleaning(process, outputModules = [])
+####    coreTools.removeSpecificPATObjects(process, ["Electrons", "Photons", "METs"], False)
+        coreTools.removeSpecificPATObjects(process, ["Electrons", "Photons", "METs"], outputModules = [])
     tauTools.addTauCollection(process, cms.InputTag('hpsPFTauProducer'),
                               algoLabel = "hps", typeLabel = "PFTau")
     jetTools.switchJetCollection(process, cms.InputTag('ak5PFJets'),   
@@ -31,7 +34,7 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
                                  genJetCollection = cms.InputTag("ak5GenJets"),
                                  doJetID      = False,
                                  jetIdLabel   = "ak5",
-                                 outputModule = "")
+                                 outputModules = [])
 
     # If the reference tau should be the old TTEff shrinking cone
     # if doTTEffShrinkingConePFTau:

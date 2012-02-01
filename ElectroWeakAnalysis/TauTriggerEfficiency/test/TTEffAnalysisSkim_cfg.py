@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = True
-doRECO = True
+isData = False
+doRECO = False
 
 process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
@@ -30,7 +30,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 if (isData):
     process.GlobalTag.globaltag = 'GR_R_42_V21::All'
 else:
-    process.GlobalTag.globaltag = 'START42_V15B::All'
+    process.GlobalTag.globaltag = 'START44_V12::All'
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(100)
@@ -83,7 +83,7 @@ process.TTEffSkimFilter = cms.Path(
         process.primaryVertexFilter * 
 	process.scrapping *
         process.patSequence *
-	process.PFTauSkimmed *
+####	process.PFTauSkimmed *
 	process.TTEffSkimCounterSavedEvents
 )
 
