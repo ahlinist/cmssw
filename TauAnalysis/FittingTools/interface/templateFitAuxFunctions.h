@@ -25,7 +25,7 @@ const std::string meOptionsCov = std::string(meOptionsSeparator).append("a1").ap
 
 double getSampledPull(double, double, double);
 
-void sampleHistogram_stat(const TH1*, TH1*, double = -1.);
+void sampleHistogram_stat(const TH1*, TH1*, double = -1., bool = false);
 void sampleHistogram_sys(TH1*, const TH1*, double, double, double, int);
 
 TArrayD getBinningInRange(const TAxis*, const TemplateFitAdapterBase::fitRangeEntryType* = 0);
