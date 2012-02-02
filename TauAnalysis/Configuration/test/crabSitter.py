@@ -27,7 +27,7 @@ print("<crabSitter>:")
 crabFilePath = '/tmp/veelken/crab'
 
 statusFileName = 'crabSitter.json'
-jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_1'
+jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_1'
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
@@ -98,11 +98,12 @@ shellScriptCommands = []
 
 crabJobs = runCommand('%s %s' % (executable_ls, crabFilePath))
 for crabJob in crabJobs:
+    print("crabJob = %s" % crabJob)
     crabJob_match = jobName_matcher.match(crabJob)
     if crabJob_match:
         
         crabJob = crabJob.replace('\n', '')
-        print("crabJob = %s" % crabJob)
+        print(" matched.")
         if not jobStatus_dict.has_key(crabJob):
             jobStatus_dict[crabJob] = {}
             
@@ -217,22 +218,22 @@ for crabJob in crabJobs:
                                 jobIds_force_resubmit.append(jobId)
                             elif len(outputFileInfos_matched) > 1:
                                 print("Warning: jobId = %i produced multiple output files = %s !!" \
-                                      % (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfo_matched ]))
+                                      % (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfos_matched ]))
                                 # keep file with maximum size;
                                 # in case multiple files have the same size, keep the newest one
                                 outputFileName_keep = None
                                 fileSize_keep = None
                                 date_and_time_keep = None
-                                for outputFileInfo in outputFileInfo_matched:
+                                for outputFileInfo in outputFileInfos_matched:
                                     outputFileName = outputFileInfo['file']
-                                    fileSize = outputFileInfo['fileSize']
-                                    date_and_time = outputFileInfo['date_and_time']
+                                    fileSize = outputFileInfo['size']
+                                    date_and_time = outputFileInfo['time']
                                     if not outputFileName_keep or fileSize > fileSize_keep or \
                                        (fileSize == fileSize_keep and date_and_time > date_and_time_keep):
                                         outputFileName_keep = outputFileName
                                         fileSize_keep = fileSize
-                                        date_and_time_keep = outputFileName
-                                for outputFileInfo in outputFileInfo_matched:                                    
+                                        date_and_time_keep = date_and_time
+                                for outputFileInfo in outputFileInfos_matched:                                    
                                     if outputFileInfo['file'] != outputFileName_keep:
                                         outputFiles_to_delete.append(outputFileInfo['path'])
                             
@@ -252,11 +253,19 @@ for crabJob in crabJobs:
                     
         # resubmit crab jobs which got aborted or stayed in 'Submitted', 'Ready' or 'Scheduled' state
         # for more than one day
-        #print("jobIds_force_resubmit = %s" % jobIds_force_resubmit)
+        print("jobIds_force_resubmit = %s" % jobIds_force_resubmit)
+        print("(%i jobs)" % len(jobIds_force_resubmit))
         if len(jobIds_force_resubmit) > 0:
-            commandLine = '%s -forceResubmit %s -c %s' % \
-              (executable_crab, ",".join([ "%i" % jobId for jobId in jobIds_force_resubmit ]), os.path.join(crabFilePath, crabJob))
-            shellScriptCommands.append(commandLine)
+            # resubmit crab jobs in groups of 500 jobs
+            # (500 = maximum number of jobs crab can handle in case jobs are submitted without using crab server)
+            numJobsPerResubmit = 500
+            for jobIndex in range(len(jobIds_force_resubmit)/numJobsPerResubmit + 1):
+                firstJob = jobIndex*numJobsPerResubmit
+                lastJob = (jobIndex + 1)*numJobsPerResubmit - 1
+                jobIds_force_resubmit_string = ",".join([ "%i" % jobId for jobId in jobIds_force_resubmit[firstJob:lastJob] ])
+                commandLine = '%s -forceResubmit %s -c %s' % \
+                  (executable_crab, jobIds_force_resubmit_string, os.path.join(crabFilePath, crabJob))
+                shellScriptCommands.append(commandLine)
 
         for outputFileName in outputFiles_to_delete:
             commandLine = 'rfrm %s' % outputFileName
