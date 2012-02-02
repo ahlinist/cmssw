@@ -54,7 +54,7 @@ double getSampledPull(double pullRMS, double pullMin, double pullMax)
   return fluctPull;
 }
 
-void sampleHistogram_stat(const TH1* origHistogram, TH1* fluctHistogram, double fluctHistogramNumEntries)
+void sampleHistogram_stat(const TH1* origHistogram, TH1* fluctHistogram, double fluctHistogramNumEntries, bool roundToInteger)
 {
 //--- fluctuate bin-contents by Gaussian distribution
 //    with zero mean and standard deviation given by bin-errors
@@ -69,13 +69,15 @@ void sampleHistogram_stat(const TH1* origHistogram, TH1* fluctHistogram, double 
 
     double fluctPull = getSampledPull(1., -5., +5.);
     double fluctBinContent = origBinContent + fluctPull*origBinError;
+    if ( roundToInteger ) fluctBinContent = TMath::Nint(fluctBinContent);
+    double fluctBinError = TMath::Sqrt(TMath::Abs(fluctBinContent));
 
-    //std::cout << "iBin = " << iBin << ": origBinContent = " << origBinContent << ","
+    //std::cout << " iBin = " << iBin << ": origBinContent = " << origBinContent << ","
     //          << " fluctPull = " << fluctPull
     //	        << " --> fluctBinContent = " << fluctBinContent << std::endl;
     
     fluctHistogram->SetBinContent(iBin, fluctBinContent);
-    fluctHistogram->SetBinError(iBin, origBinError);
+    fluctHistogram->SetBinError(iBin, fluctBinError);
   }
 
   double fluctHistogramIntegral = getIntegral(fluctHistogram);
