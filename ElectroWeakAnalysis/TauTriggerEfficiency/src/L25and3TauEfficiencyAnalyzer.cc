@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.17 2011/09/27 09:09:21 mkortela Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.18 2012/02/02 07:00:09 mkortela Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -74,6 +74,8 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l25tree->Branch("l25NTrksIsoAll",&l25NTrksIsoAll);
   l25tree->Branch("l25NGammaIsoAll",&l25NGammaIsoAll);
   l25tree->Branch("l25Prong", &l25Prong);
+  l25tree->Branch("l25PFTauEt", &l25PFTauEt);
+  l25tree->Branch("l25PFTauPt", &l25PFTauPt);
   l25tree->Branch("primaryVertexIsValid", &primaryVertexIsValid);
   NMatchedToL2 = 0;
   NJetsWithTracks = 0;
@@ -120,6 +122,8 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
   l25NTrksIsoAll = 0;
   l25NGammaIsoAll = 0;
   l25Prong = 0;
+  l25PFTauEt = 0;
+  l25PFTauPt = 0;
   matchedToL2Jet = false;
   foundTracksInJet = false;
   matchedToHLTPFTau = false;
@@ -205,6 +209,8 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
         l25Pt = theLeadPFChargedCand->pt();
         l25InvPt = 1./l25Pt;
         l25Prong = theMatchedHLTPFtau.signalPFChargedHadrCands().size();
+        l25PFTauEt = theMatchedHLTPFtau.et();
+        l25PFTauPt = theMatchedHLTPFtau.pt();
         l25IsoPtSum = theMatchedHLTPFtau.isolationPFChargedHadrCandsPtSum();
         l25EcalIsoEtSum = theMatchedHLTPFtau.isolationPFGammaCandsEtSum();
 	l25NTrksIsoAll = theMatchedHLTPFtau.isolationPFChargedHadrCands().size();
