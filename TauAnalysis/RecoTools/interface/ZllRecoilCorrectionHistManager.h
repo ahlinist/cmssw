@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.7 2011/11/22 10:04:51 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.8 2011/12/19 14:13:43 veelken Exp $
  *
  */
 
@@ -40,7 +40,7 @@ class ZllRecoilCorrectionHistManager
   /// book and fill histograms
   void bookHistograms(TFileDirectory&);
   void fillHistograms(const reco::CompositeCandidate&, const std::vector<pat::Muon>&, 
-		      const std::vector<pat::Jet>&, const pat::MET&, const reco::VertexCollection&, double, double);
+		      const std::vector<pat::Jet>&, const pat::MET&, int, int, int, const reco::VertexCollection&, double, double);
   
   /// scale all bin-contents/bin-errors by factor given as function argument
   /// (to account for events lost, due to aborted skimming/crab or PAT-tuple production/lxbatch jobs)
@@ -91,6 +91,11 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramMEtL_;
   TH1* histogramMEtProjParlZ_;
   TH1* histogramMEtProjPerpZ_;
+  TH1* histogramMEtX_;
+  TH1* histogramMEtY_;
+
+  TH1* histogramUparl_;
+  TH1* histogramUperp_;
 
   TH2* histogramUparlDivQtVsQt_;
   TH2* histogramUparlVsQt_;
@@ -142,6 +147,10 @@ class ZllRecoilCorrectionHistManager
   std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumVtxBinned_;
 
   std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumJetsBinned_;
+
+  TH1* histogramNumPU_bxMinus1_;
+  TH1* histogramNumPU_bx0_;
+  TH1* histogramNumPU_bxPlus1_;
 
   TH1* histogramVtxMultiplicity_;
   TH1* histogramVtxZ_;

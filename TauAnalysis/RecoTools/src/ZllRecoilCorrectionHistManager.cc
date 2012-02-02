@@ -62,6 +62,12 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramMEtL_               = book1D(dir, "metL",               "E_{T}^{miss}",                            75,          0.0,        150.0);
   histogramMEtProjParlZ_       = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",           75,        -75.0,        +75.0);
   histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              50,        -50.0,        +50.0);
+  histogramMEtX_               = book1D(dir, "metX",               "E_{X}^{miss}",                            75,        -75.0,        +75.0);
+  histogramMEtY_               = book1D(dir, "metY",               "E_{Y}^{miss}",                            75,        -75.0,        +75.0);
+  
+
+  histogramUparl_              = book1D(dir, "uParl",              "u_{#parallel}",                          140,       -275.0,        +75.0);
+  histogramUperp_              = book1D(dir, "uPerp",              "u_{#perp}",                               50,        -50.0,        +50.0);
 
   const int qTnumBins = 34;
   double qTbinning[qTnumBins + 1] = { 
@@ -90,7 +96,7 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramsUvsQtNumVtxBinned_.push_back(
     new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", 12, -1));
 
-  for ( int iNumVtx = 1; iNumVtx <= 25; ++iNumVtx ) {
+  for ( int iNumVtx = 1; iNumVtx <= 35; ++iNumVtx ) {
     histogramsUvsQtNumVtxBinned_.push_back(
       new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", iNumVtx, iNumVtx));
   }
@@ -104,7 +110,11 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramsUvsQtNumJetsBinned_.push_back(
     new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJets",  3, -1));
   
-  histogramVtxMultiplicity_  = book1D(dir, "numVertices",        "Num. Vertices",                             25,         -0.5,         24.5);
+  histogramNumPU_bxMinus1_   = book1D(dir, "numPU_bxMinus1",     "Num. Pile-up interactions, BX = -1",        35,         -0.5,         34.5);
+  histogramNumPU_bx0_        = book1D(dir, "numPU_bx0",          "Num. Pile-up interactions, BX = 0",         35,         -0.5,         34.5);
+  histogramNumPU_bxPlus1_    = book1D(dir, "numPU_bxPlus1",      "Num. Pile-up interactions, BX = +1",        35,         -0.5,         34.5);
+
+  histogramVtxMultiplicity_  = book1D(dir, "numVertices",        "Num. Vertices",                             35,         -0.5,         34.5);
   histogramVtxZ_             = book1D(dir, "vertexZ",            "z_{vtx}",                                  100,        -25.,         +25.);
   histogramVtxRho_           = book1D(dir, "vertexRho",          "#rho_{vtx}",                               100,         -2.5,         +2.5);
   histogramRhoNeutral_       = book1D(dir, "rhoNeutral",         "#rho_{neutral}",                            50,          0. ,          12.);
@@ -113,6 +123,7 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 void ZllRecoilCorrectionHistManager::fillHistograms(
        const reco::CompositeCandidate& ZllCand, const std::vector<pat::Muon>& muons, 
        const std::vector<pat::Jet>& jets, const pat::MET& met, 
+       int numPU_bxMinus1, int numPU_bx0, int numPU_bxPlus1, 
        const reco::VertexCollection& vertices, double rhoNeutral, double evtWeight)
 {
   assert(ZllCand.numberOfDaughters() == 2);
@@ -229,11 +240,18 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     histogramMEtProjParlZ_->Fill(metProjParlZ, evtWeight);
     histogramMEtProjPerpZ_->Fill(metProjPerpZ, evtWeight);
 
+    histogramMEtX_->Fill(metPx, evtWeight);
+    histogramMEtY_->Fill(metPy, evtWeight);
+
     int errorFlag = 0;
     std::pair<double, double> uT = compMEtProjU(ZllCand.p4(), met.px(), met.py(), errorFlag);
     if ( !errorFlag ) {
       double uParl = uT.first;
       double uPerp = uT.second;
+
+      histogramUparl_->Fill(uParl, evtWeight);
+      histogramUperp_->Fill(uPerp, evtWeight);
+
       if ( qT > 0. ) histogramUparlDivQtVsQt_->Fill(qT, uParl/qT, evtWeight);
       histogramUparlVsQt_->Fill(qT, uParl, evtWeight);
       if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
@@ -264,6 +282,12 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	}
       }
     }
+  }
+
+  if ( numPU_bxMinus1 >= 0 && numPU_bx0 >= 0 && numPU_bxPlus1 >= 0 ) {
+    histogramNumPU_bxMinus1_->Fill(numPU_bxMinus1, evtWeight);
+    histogramNumPU_bx0_->Fill(numPU_bx0, evtWeight);
+    histogramNumPU_bxPlus1_->Fill(numPU_bxPlus1, evtWeight);
   }
 
   histogramVtxMultiplicity_->Fill(vtxMultiplicity, evtWeight);

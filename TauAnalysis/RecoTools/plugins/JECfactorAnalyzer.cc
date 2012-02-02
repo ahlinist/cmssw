@@ -326,13 +326,15 @@ void JECfactorAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es
     }
     FactorizedJetCorrector* jesCorrection = new FactorizedJetCorrector(jecParameters_correction);
 
-    std::vector<JetCorrectionUncertainty*> jesUncertainty; // index = level
+    std::vector<JetCorrectionUncertainty*> jesUncertainty_total; // index = level
+    std::vector<JetCorrectionUncertainty*> jesUncertainty_time;  // index = level
     std::vector<JetCorrectorParameters> jecParameters_uncertainty;
     for ( vstring::const_iterator corrLevel = levels_.begin();
 	  corrLevel != levels_.end(); ++corrLevel ) {
       //jecParameters_uncertainty.push_back((*jecParameterSet)[*corrLevel]);
       //jesUncertainty.push_back(new JetCorrectionUncertainty(jecParameters_uncertainty));
-      jesUncertainty.push_back(new JetCorrectionUncertainty((*jecParameterSet)["Uncertainty"]));
+      jesUncertainty_total.push_back(new JetCorrectionUncertainty((*jecParameterSet)["Uncertainty"]));
+      jesUncertainty_time.push_back(new JetCorrectionUncertainty((*jecParameterSet)["Time"]));
     }
   
     std::cout << "making plots for payload = " << (*payload) << std::endl;
@@ -360,7 +362,9 @@ void JECfactorAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es
 	    graph_correction->SetPoint(iPoint, pt, jecFactor);	  
 
 	    // evaluate uncertainty on jet energy correction factor
-	    double jecUncertainty = getJECuncertainty(jesUncertainty[corrLevelIndex], pt, eta);
+	    double jecUncertainty_total = getJECuncertainty(jesUncertainty_total[corrLevelIndex], pt, eta);
+	    double jecUncertainty_time = getJECuncertainty(jesUncertainty_time[corrLevelIndex], pt, eta);
+	    double jecUncertainty = TMath::Sqrt(square(jecUncertainty_total) - square(jecUncertainty_time));
 	    graph_uncertainty->SetPoint(iPoint, pt, jecFactor);
 	    graph_uncertainty->SetPointError(iPoint, pt, jecUncertainty);
 	  }
@@ -409,7 +413,9 @@ void JECfactorAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es
 	    graph_correction->SetPoint(iPoint, eta, jecFactor);	  
 
 	    // evaluate uncertainty on jet energy correction factor
-	    double jecUncertainty = getJECuncertainty(jesUncertainty[corrLevelIndex], pt, eta);
+	    double jecUncertainty_total = getJECuncertainty(jesUncertainty_total[corrLevelIndex], pt, eta);
+	    double jecUncertainty_time = getJECuncertainty(jesUncertainty_time[corrLevelIndex], pt, eta);
+	    double jecUncertainty = TMath::Sqrt(square(jecUncertainty_total) - square(jecUncertainty_time));
 	    graph_uncertainty->SetPoint(iPoint, eta, jecFactor);
 	    graph_uncertainty->SetPointError(iPoint, eta, jecUncertainty);
 	  }

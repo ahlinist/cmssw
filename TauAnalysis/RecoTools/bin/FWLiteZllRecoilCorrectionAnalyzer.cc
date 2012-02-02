@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.9 2011/11/06 13:26:44 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.10 2011/12/19 14:13:10 veelken Exp $
  *
  */
 
@@ -35,6 +35,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
@@ -95,6 +96,9 @@ int main(int argc, char* argv[])
   vstring hltPaths = cfgZllRecoilCorrectionAnalyzer.getParameter<vstring>("hltPaths");
 
   vInputTag srcWeights = cfgZllRecoilCorrectionAnalyzer.getParameter<vInputTag>("srcWeights");
+
+  edm::InputTag srcGenPileUpInfo = cfgZllRecoilCorrectionAnalyzer.exists("srcGenPileUpInfo") ?
+    cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcGenPileUpInfo") : edm::InputTag();
 
   edm::InputTag srcVertices = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcVertices");
   edm::InputTag srcRhoNeutral = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcRhoNeutral");
@@ -272,6 +276,25 @@ int main(int argc, char* argv[])
 
       if ( !isTriggered ) continue;
 
+      int numPU_bxMinus1 = -1;
+      int numPU_bx0      = -1;
+      int numPU_bxPlus1  = -1;
+      if ( srcGenPileUpInfo.label() != "" ) {
+	typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
+	edm::Handle<PileupSummaryInfoCollection> genPileUpInfos;
+	evt.getByLabel(srcGenPileUpInfo, genPileUpInfos);
+
+	for ( PileupSummaryInfoCollection::const_iterator genPileUpInfo = genPileUpInfos->begin();
+	      genPileUpInfo != genPileUpInfos->end(); ++genPileUpInfo ) {
+	  // CV: in-time PU is stored in getBunchCrossing = 0, 
+	  //    cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupInformation
+	  int bx = genPileUpInfo->getBunchCrossing();
+	  if      ( bx == -1 ) numPU_bxMinus1 = genPileUpInfo->getPU_NumInteractions();
+	  else if ( bx ==  0 ) numPU_bx0      = genPileUpInfo->getPU_NumInteractions();
+	  else if ( bx == +1 ) numPU_bxPlus1  = genPileUpInfo->getPU_NumInteractions();
+	}
+      }
+
       edm::Handle<reco::VertexCollection> vertices;
       evt.getByLabel(srcVertices, vertices);
       size_t vtxMultiplicity = vertices->size();
@@ -324,11 +347,11 @@ int main(int argc, char* argv[])
       const pat::MET& rawMEt = (*met->begin());
 
       histogramsBeforeGenPUreweight->fillHistograms(
-	*bestZllCandidate, *muons, *jets, rawMEt, *vertices, rhoNeutral, 1.0);
+	*bestZllCandidate, *muons, *jets, rawMEt, numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, 1.0);
       histogramsBeforeAddPUreweight->fillHistograms(
-        *bestZllCandidate, *muons, *jets, rawMEt, *vertices, rhoNeutral, genPUreweight);
+        *bestZllCandidate, *muons, *jets, rawMEt, numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight);
       histogramsBeforeZllRecoilCorr->fillHistograms(
-        *bestZllCandidate, *muons, *jets, rawMEt, *vertices, rhoNeutral, genPUreweight*addPUreweight);
+        *bestZllCandidate, *muons, *jets, rawMEt, numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
       //if ( bestZllCandidate->pt() > 150. ) {
       //  std::cout << "run = " << evt.id().run() << "," 
@@ -346,7 +369,7 @@ int main(int argc, char* argv[])
 	mcToDataCorrMEt = corrAlgorithm->buildZllCorrectedMEt(rawMEt, rawMEt.genMET()->p4(), bestZllCandidate->p4());
       }
       histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
-        *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, *vertices, rhoNeutral, genPUreweight*addPUreweight);
+        *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
       pat::MET absCalibMEt(rawMEt);
       if ( ZllRecoilCorrParameter_data ) {
@@ -361,7 +384,7 @@ int main(int argc, char* argv[])
 	absCalibMEt.setP4(math::XYZTLorentzVector(absCalibMEtPx, absCalibMEtPy, 0., absCalibMEtPt));
       }
       histogramsAfterZllRecoilAbsCalib->fillHistograms(
-        *bestZllCandidate, *muons, *jets, absCalibMEt, *vertices, rhoNeutral, genPUreweight*addPUreweight);
+        *bestZllCandidate, *muons, *jets, absCalibMEt, numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
     }
 
 //--- close input file

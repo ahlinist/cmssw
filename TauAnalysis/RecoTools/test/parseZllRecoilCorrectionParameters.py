@@ -33,8 +33,8 @@ central_or_shifts.extend(shifts)
 
 header_regex   = re.compile(r"\s*recoZllRecoilCorrectionParameters\s*=\s*cms.PSet\(\s*")
 varName_regex  = re.compile(r"\s*(?P<varName>[a-zA-Z0-9]+)\s*=\s*cms.PSet\(\s*")
-varValue_regex = re.compile(r"\s*value\s*=\s*cms.double\((?P<varValue>[0-9.e+-]+)\),*\s*")
-varError_regex = re.compile(r"\s*uncertainty\s*=\s*cms.double\((?P<varError>[0-9.e+-]+)\),*\s*")
+varValue_regex = re.compile(r"\s*value\s*=\s*cms.double\((?P<varValue>[0-9.eE\+\-]+)\),*\s*")
+varError_regex = re.compile(r"\s*uncertainty\s*=\s*cms.double\((?P<varError>[0-9.eE\+\-]+)\),*\s*")
 
 varValues = {}
 varErrors = {}

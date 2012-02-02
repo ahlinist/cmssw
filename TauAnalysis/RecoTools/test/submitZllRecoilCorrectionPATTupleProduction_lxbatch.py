@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v4_7'
+version = 'v4_9subTotalDataMCtype1PtThresholdEq20'
 
 samples = {
     'Data_runs160329to163869' : {
@@ -45,6 +45,12 @@ samples = {
     },
     'simDYtoMuMu' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'simDYtoMuMu_highPUscenario' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu_highPUscenario/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
@@ -102,6 +108,7 @@ samplesToAnalyze = [
     'Data_runs172620to175770',
     'Data_runs175832to180252',
     'simDYtoMuMu',
+    'simDYtoMuMu_highPUscenario',
     'simZplusJets_Summer11',
     ##'simZplusJets_Fall11', # CV: needs new pile-up reweighting target for Fall'11 samples
     'simWW',
@@ -120,6 +127,14 @@ executable_waitForLXBatchJobs = 'python %s/src/TauAnalysis/Configuration/python/
 executable_rfrm = '- rfrm' # CV: ignore error code returned by 'rfrm' in case file on castor does not exist
 executable_hadd = 'hadd -f'
 executable_shell = '/bin/csh'
+
+try:
+    castor.rfstat(outputFilePath)
+except RuntimeError:
+    # outputFilePath does not yet exist, create it
+    print "outputFilePath does not yet exist, creating it."
+    os.system("rfmkdir %s" % outputFilePath)
+    os.system("rfchmod 777 %s" % outputFilePath)
 
 if not os.path.isdir("lxbatch"):
     os.mkdir('lxbatch')

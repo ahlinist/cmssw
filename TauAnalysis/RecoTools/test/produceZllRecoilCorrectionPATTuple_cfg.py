@@ -34,6 +34,10 @@ isMC = True # use for MC
 ##isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2011 Data
 HLTprocessName = "HLT" # use for Summer'11 MC
+type1JetPtThreshold = 20.0 # increased jet Pt threshold to reduce sensitivity of Type 1 corrected MET to pile-up
+#type1JetPtThreshold = 10.0 # current default value recommended by JetMET POG
+#jetCorrUncertaintyTag = "Total"
+jetCorrUncertaintyTag = "SubTotalDataMC"
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -48,37 +52,10 @@ HLTprocessName = "HLT" # use for Summer'11 MC
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START42_V13::All')
+    process.GlobalTag.globaltag = cms.string('START42_V17::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_42_V20::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_42_V23::All')
 #--------------------------------------------------------------------------------    
-
-#--------------------------------------------------------------------------------
-#
-# configure Jet Energy Corrections
-#
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-process.jec = cms.ESSource("PoolDBESSource",
-    DBParameters = cms.PSet(
-        messageLevel = cms.untracked.int32(0)
-    ),
-    timetype = cms.string('runnumber'),
-    toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Jec11_V12_AK5PF'),
-            label  = cms.untracked.string('AK5PF')
-        ),
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Jec11_V12_AK5Calo'),
-            label  = cms.untracked.string('AK5Calo')
-        )
-    ),
-    connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11_V12_20111220.db')
-)
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
-#-------------------------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # compute neutral particle density for out-of-time pile-up reweighting
@@ -245,6 +222,27 @@ else:
     
     process.patTupleProductionSequence += process.patJetsNotOverlappingWithLeptonsForMEtUncertainty
     process.patTupleProductionSequence += process.producePatPFMETCorrections
+
+# set JEC uncertainty source to txt-file in all ShiftedPATJetProducer modules
+# and apply "SubTotalDataMC" uncertainties for Data-to-Monte Carlo comparisson
+# (= "Total" - ("PileUpPt" + "PileUpBias"))
+for processAttrName in dir(process):
+    processAttr = getattr(process, processAttrName)
+    if isinstance(processAttr, cms.EDProducer) and processAttr.type_() == "ShiftedPATJetProducer":
+        print "--> Setting JEC Uncertainty tag to '%s' in module: %s" % (jetCorrUncertaintyTag, processAttrName)
+        if hasattr(processAttr, "jetCorrPayloadName"):
+            delattr(processAttr, "jetCorrPayloadName")
+        setattr(processAttr, "jetCorrInputFileName", cms.FileInPath(
+          'JetMETCorrections/Type1MET/data/JEC11_V12_AK5PF_UncertaintySources.txt'))
+        setattr(processAttr, "jetCorrUncertaintyTag", cms.string(jetCorrUncertaintyTag))
+
+# set jet Pt threshold used for computing Type 1 MET corrections
+for processAttrName in dir(process):
+    processAttr = getattr(process, processAttrName)
+    if isinstance(processAttr, cms.EDProducer) and \
+      (processAttr.type_() == "PATPFJetMETcorrInputProducer" or processAttr.type_() == "PFJetMETcorrInputProducer"):
+        print "--> Setting Type 1 MET correction threshold to %1.1f GeV for module: %s" % (type1JetPtThreshold, processAttrName)
+        setattr(processAttr, "type1JetPtThreshold", cms.double(type1JetPtThreshold))
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
