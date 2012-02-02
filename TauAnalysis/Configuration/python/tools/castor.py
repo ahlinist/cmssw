@@ -19,10 +19,13 @@
 # date:   May 2006
 # @author: Sebastien Binet <binet@cern.ch>
 
-import datetime
+
 import commands
-import os
+import datetime
 import fnmatch
+import os
+import shlex
+import subprocess
 import time
 
 # Memoize calls to nslsl
@@ -41,7 +44,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -64,6 +67,10 @@ def nslsl(path):
         modified
         size (in bytes)
     '''
+
+    ##print "<castor::nsls>"
+    ##print " path = %s" % path
+    
     # Get path
 
     # CV: add trailing '/'
@@ -77,11 +84,18 @@ def nslsl(path):
     if path in _CACHE:
         yield _CACHE[path]
     else:
-        status,output = commands.getstatusoutput('nsls -l ' + directory)
+        nsls_args = shlex.split('nsls -l ' + directory)
+        nsls_command = subprocess.Popen(nsls_args, bufsize = -1, stdout = subprocess.PIPE)
+        nsls_command.poll()
+        status = nsls_command.returncode
+        #print "status = ", status
+        stdout, stderr = nsls_command.communicate()
+        #print "stdout = ", stdout
+        #status,stdout = commands.getstatusoutput('nsls -l ' + directory)
 
         if status == 256:
             raise IOError("Can't nsls -l on path: %s, it doesn't exist!" % path)
-        for line in output.splitlines():
+        for line in stdout.splitlines():
             fields = line.split()
             output = {
                 'permissions' : fields[0],
