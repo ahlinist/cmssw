@@ -17,9 +17,9 @@ SAMPLES_TO_ANALYZE = [
     'Ztautau_embedded_Run2011A_Aug05ReReco_v1',
     'Ztautau_embedded_Run2011A_PromptReco_v6',
     'Ztautau_embedded_Run2011B_PromptReco_v1',
-    #'qqZll',
-    #'DYmumuM10to20_pythia',
+    #'qqZll',    
     'Zmumu_pythia',
+    'DYmumuM10to20_powheg',
     'Zmumu_powheg',
     'ZplusJets_madgraph',
     'PPmuXptGt20Mu15',
@@ -311,6 +311,25 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
+    'DYmumuM10to20_powheg' : {
+        'datasetpath' : "/DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia/Fall11-PU_S6_START42_V14B-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 9821313,
+        'skim_eff' : 1.0,
+        'x_sec' : 2659.*(1666/1300)*_picobarns, # LO cross-section taken from
+                                                #  https://twiki.cern.ch/twiki/bin/view/CMS/ProductionReProcessingSpring10
+                                                # and scaled by NNLO/LO k-factor for M > 20 GeV
+        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zmumu,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
     'Zmumu_powheg' : {
         'datasetpath' : "/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
@@ -333,7 +352,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 36277961,
         'skim_eff' : 1.0,
-        'x_sec' : 3*1666*_picobarns,
+        'x_sec' : 3*1016*_picobarns, # Note: Madgraph samples are generated for M > 50 GeV
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
@@ -482,8 +501,9 @@ MERGE_SAMPLES = {
     },
     'ZmumuSum' : {
         'samples' : [
-            'Zmumu_pythia'
-            #'Zmumu_powheg'
+            #'Zmumu_pythia'
+            'DYmumuM10to20_powheg',
+            'Zmumu_powheg'
         ],
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
