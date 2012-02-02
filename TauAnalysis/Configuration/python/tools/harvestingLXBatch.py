@@ -66,11 +66,13 @@ def make_harvest_scripts(plot_regex, skim_regex,
     tmp_files_info = [x for x in castor_source(castor_output_directory)
                       if x['size']]
     tmp_files = set(x['file'] for x in tmp_files_info)
+    #print "tmp_files_info = %s" % tmp_files_info
 
     # Make a repository of info about our files
     all_files_dict = {}
     for file_info in input_files_info + tmp_files_info:
         all_files_dict[file_info['path']] = file_info
+    #print "all_files_dict = %s" % all_files_dict
 
     # Keep track of files that we put in tmp with these jobs and that we care
     # about.  We can stop caring about old files if after adding new files (i.e.
@@ -135,6 +137,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
             merge_jobs = jobtools.make_merge_dependency_tree(
                 "_".join([channel, sample, job_id]), plot_file_map[sample],
                 castor_output_directory, split = split)
+            #print "merge_jobs = %s" % merge_jobs
             # Only do work that hasn't been done before.  We can check and see
             # if the output of a given merge layer is already in the temp
             # directory.  As the filenames contain a suffix with the hash of the
@@ -147,6 +150,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 # Figure out how many files we need to build
                 layer_jobs_needed = []
                 for layer_job in layer:
+                    #print "layer_job = ", layer_job
                     # Check if we've already built this output file in the tmp
                     file_base_name = os.path.basename(layer_job[0])
                     needed = True
@@ -157,7 +161,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
                         output_m_time = all_files_dict[layer_job[0]]['time']
                         out_of_date = False
                         for input_file in layer_job[1]:
-                            if all_files_dict[input_file]['time'] > output_m_time:
+                            #print "input_file = ", input_file
+                            if not input_file in all_files_dict.keys() or all_files_dict[input_file]['time'] > output_m_time:
                                 print "File: %s is older than its dependency %s, rebuilding!" % (
                                     file_base_name, input_file)
                                 # Check if it's out of date
@@ -200,9 +205,12 @@ def make_harvest_scripts(plot_regex, skim_regex,
                     if not os.path.exists('lxbatch_log'):
                         os.makedirs('lxbatch_log')
                     def log_file_maker(job_hash):
-                        return os.path.join(
+                        log_fileName = os.path.join(
                             'lxbatch_log', "_".join(
                                 ['harvest', job_hash, 'layer_%i' % ilayer]) + '.log')
+                        # CV: delete log-files from previous job submissions
+                        os.system("rm -f %s" % log_fileName)
+                        return log_fileName
 
                     # Build the script                    
                     job_name, script = jobtools.make_bsub_script(
@@ -215,7 +223,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                             channel, sample,
                             "layer", str(ilayer),
                             "job", str(ijob)]))
-                    print "job_name = %s" % job_name
+                    #print "job_name = %s" % job_name
                     bsub_job_names.append(job_name)
                     
                     # Register our job
@@ -318,9 +326,13 @@ def make_harvest_scripts(plot_regex, skim_regex,
  
                 for ijob, (output_file, input_files) in enumerate(skim_merge_jobs):
                     def merge_log_file_maker(job_hash):
-                        return os.path.join(
+                        log_fileName = os.path.join(
                             'lxbatch_log', "_".join(
                                 ['merge', job_hash, 'job_%i' % ijob]) + '.log')
+                        # CV: delete log-files from previous job submissions
+                        os.system("rm -f %s" % log_fileName)
+                        return log_fileName
+
                     # Generate script contents
                     job_name, script = jobtools.make_bsub_script(
                         output_file,
