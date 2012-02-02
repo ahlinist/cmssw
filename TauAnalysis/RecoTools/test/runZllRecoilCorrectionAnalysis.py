@@ -6,7 +6,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 
 import os
 
-version = 'v4_7'
+version = 'v4_9subTotalDataMCtype1PtThresholdEq20'
 
 inputFilePath = '/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
@@ -48,7 +48,7 @@ samplesToAnalyze = {
         'isMC' : True,
         'Type' : 'Signal',
         'applyRhoNeutralReweighting' : True,
-        'scaleFactor' : 0.5 # scale factor to match Z-peak in di-muon mass spectrum
+        'scaleFactor' : 1.
     },
     'simWW' : {
        'samples' : [
@@ -228,8 +228,8 @@ metOptions = {
                 'jetEnDown'  : 'shiftedPatJetsEnDown',
                 'jetResUp'   : 'smearedPatJetsResUp',
                 'jetResDown' : 'smearedPatJetsResDown',
-                #'unclEnUp'   : 'smearedPatJets',
-                #'unclEnDown' : 'smearedPatJets'
+                'unclEnUp'   : 'smearedPatJets',
+                'unclEnDown' : 'smearedPatJets'
             }
         },
         'srcMEt' : {
@@ -242,8 +242,8 @@ metOptions = {
                 'jetEnDown'  : 'patPFMetJetEnDown',
                 'jetResUp'   : 'patPFMetJetResUp',
                 'jetResDown' : 'patPFMetJetResDown',
-                #'unclEnUp'   : 'patPFMetUnclusteredEnUp',
-                #'unclEnDown' : 'patPFMetUnclusteredEnDown'
+                'unclEnUp'   : 'patPFMetUnclusteredEnUp',
+                'unclEnDown' : 'patPFMetUnclusteredEnDown'
             }
         }
     },
@@ -258,8 +258,8 @@ metOptions = {
                 'jetEnDown'  : 'shiftedPatJetsEnDown',
                 'jetResUp'   : 'smearedPatJetsResUp',
                 'jetResDown' : 'smearedPatJetsResDown',
-                #'unclEnUp'   : 'smearedPatJets',
-                #'unclEnDown' : 'smearedPatJets'
+                'unclEnUp'   : 'smearedPatJets',
+                'unclEnDown' : 'smearedPatJets'
             }
         },
         'srcMEt' : {
@@ -272,8 +272,8 @@ metOptions = {
                 'jetEnDown'  : 'patType1CorrectedPFMetJetEnDown',
                 'jetResUp'   : 'patType1CorrectedPFMetJetResUp',
                 'jetResDown' : 'patType1CorrectedPFMetJetResDown',
-                #'unclEnUp'   : 'patType1CorrectedPFMetUnclusteredEnUp',
-                #'unclEnDown' : 'patType1CorrectedPFMetUnclusteredEnDown'
+                'unclEnUp'   : 'patType1CorrectedPFMetUnclusteredEnUp',
+                'unclEnDown' : 'patType1CorrectedPFMetUnclusteredEnDown'
             }
         }
     },
@@ -288,8 +288,8 @@ metOptions = {
                 'jetEnDown'  : 'shiftedPatJetsEnDown',
                 'jetResUp'   : 'smearedPatJetsResUp',
                 'jetResDown' : 'smearedPatJetsResDown',
-                #'unclEnUp'   : 'smearedPatJets',
-                #'unclEnDown' : 'smearedPatJets'
+                'unclEnUp'   : 'smearedPatJets',
+                'unclEnDown' : 'smearedPatJets'
             }
         },    
         'srcMEt' : {
@@ -302,8 +302,8 @@ metOptions = {
                 'jetEnDown'  : 'patType1p2CorrectedPFMetJetEnDown',
                 'jetResUp'   : 'patType1p2CorrectedPFMetJetResUp',
                 'jetResDown' : 'patType1p2CorrectedPFMetJetResDown',
-                #'unclEnUp'   : 'patType1p2CorrectedPFMetUnclusteredEnUp',
-                #'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
+                'unclEnUp'   : 'patType1p2CorrectedPFMetUnclusteredEnUp',
+                'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
             }
         }
     }

@@ -50,7 +50,7 @@ def buildConfigFile_produceZllRecoilNtuples(maxEvents,
         print("Sample %s has no input files --> skipping !!" % sampleName)
         return
     fwliteInput_fileNames = inputFileNames[1]
-
+    
     print(" building config file...")
 
     outputFileName = 'ZllRecoilCorrectionNtuple_%s_%s_%s.root' % (sampleName, metOptionName, central_or_shift)
@@ -141,7 +141,6 @@ def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName
 
     print "<buildConfigFile_fitZllRecoilNtuples>:"
     print " processing sample %s" % sampleName
-
 
     print(" building config file...")
 
@@ -258,6 +257,10 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
 
     hltPaths_string = make_inputFileNames_vstring(hltPaths)
     srcWeights_string = make_inputFileNames_vstring(srcWeights)
+
+    srcGenPileUpInfo = ""
+    if processType == "MC_signal" or processType == "MC_background":
+        srcGenPileUpInfo = "    srcGenPileUpInfo = cms.InputTag('addPileupInfo'),\n"
     
     allEvents_DBS = 0
     xSection = 0.
@@ -324,6 +327,8 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
     srcWeights = cms.VInputTag(%s),
 
+%s    
+
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
     srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
 %s
@@ -340,7 +345,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 )
 """ % (maxEvents, fwliteInput_fileNames, outputFileName_full, directory,
        processType, recoZllRecoilCorrectionParameters_string,
-       srcMEt, srcJets, hltPaths_string, srcWeights_string, addPUreweight_string,
+       srcMEt, srcJets, hltPaths_string, srcWeights_string, srcGenPileUpInfo, addPUreweight_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
 
     configFileName = "analyzeZllRecoilCorrectionPATtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, central_or_shift)
@@ -446,7 +451,11 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
         ),
         cms.PSet(
             meName = cms.string('ZllCandMass'),
-            xAxisTitle = cms.string('M_{#mu #mu}GeV')
+            xAxisTitle = cms.string('M_{#mu #mu} / GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('ZllCandPt'),
+            xAxisTitle = cms.string('q_{T} / GeV')
         ),
         cms.PSet(
             meName = cms.string('metS'),
@@ -458,10 +467,18 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
         ),
         cms.PSet(
             meName = cms.string('metProjParlZ'),
-            xAxisTitle = cms.string('u_{#parallel} / GeV')
+            xAxisTitle = cms.string('-(u_{#parallel} + q_{T}) / GeV')
         ),
         cms.PSet(
             meName = cms.string('metProjPerpZ'),
+            xAxisTitle = cms.string('u_{#perp}  / GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('uParl'),
+            xAxisTitle = cms.string('u_{#parallel} / GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('uPerp'),
             xAxisTitle = cms.string('u_{#perp}  / GeV')
         ),
         cms.PSet(
