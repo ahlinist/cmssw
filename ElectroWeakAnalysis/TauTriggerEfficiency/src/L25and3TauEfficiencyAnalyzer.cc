@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.16 2011/09/23 14:14:25 mkortela Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.17 2011/09/27 09:09:21 mkortela Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -36,43 +36,44 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   filterMaxDeltaZ = qualityCuts.getParameter<double>("maxDeltaZ");
   filterMinGammaEt = qualityCuts.getParameter<double>("minGammaEt");
 
-  l25tree->Branch("l25Eta", &l25Eta,"l25Eta/F" );
-  l25tree->Branch("l25Phi", &l25Phi,"l25Phi/F" );
-  l25tree->Branch("l25Et", &l25Et,"l25Et/F" );
-  l25tree->Branch("l25Pt", &l25Pt,"l25Pt/F" );
-  l25tree->Branch("l25PtLdgLoose",&l25PtLdgLoose,"l25PtLdgLoose/F");
-  l25tree->Branch("l25EtaLdgLoose",&l25EtaLdgLoose,"l25EtaLdgLoose/F");
-  l25tree->Branch("l25PhiLdgLoose",&l25PhiLdgLoose,"l25PhiLdgLoose/F");
-  l25tree->Branch("l25PtLdgJetDRLoose",&l25PtLdgJetDRLoose,"l25PtLdgJetDRLoose/F");
-  l25tree->Branch("l25InvPt", &l25InvPt,"l25InvPt/F" );
-  l25tree->Branch("matchedToL2Jet", &matchedToL2Jet,"matchedToL2Jet/B" );
-  l25tree->Branch("foundTracksInJet", &foundTracksInJet,"foundTracksInJet/B" );
-  l25tree->Branch("tauTagHasTracks", &tauTagHasTracks,"tauTagHasTracks/B" );
-  l25tree->Branch("matchedToHLTPFTau", &matchedToHLTPFTau,"matchedToHLTPFTau/B" );
-  l25tree->Branch("l25PFTauLeadTrkIsValid", &l25PFTauLeadTrkIsValid,"l25PFTauLeadTrkIsValid/B" );
-  l25tree->Branch("leadDepth1", &leadDepth1,"leadDepth1/B" );
-  l25tree->Branch("leadDepth2", &leadDepth2,"leadDepth2/B" );
-  l25tree->Branch("minDR", &minDR,"minDR/F" );
-  l25tree->Branch("bareEt", &bareEt,"bareEt/F" );
-  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_Ntrk0",&l25DefDisc_Trk5_IsoPtMin1_Ntrk0,"l25DefDisc_Trk5_IsoPtMin1_Ntrk0/B");
-  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_Ntrk1",&l25DefDisc_Trk5_IsoPtMin1_Ntrk1,"l25DefDisc_Trk5_IsoPtMin1_Ntrk1/B");
-  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0",&l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0,"l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0/B");
-  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1",&l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1,"l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1/B");
-  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin2_Ntrk0",&l25DefDisc_Trk5_IsoPtMin2_Ntrk0,"l25DefDisc_Trk5_IsoPtMin2_Ntrk0/B");
-  l25tree->Branch("l25IsoPtSum",&l25IsoPtSum,"l25IsoPtSum/F");
-  l25tree->Branch("l25IsoTrkNHits",&l25IsoTrkNHits,"l25IsoTrkNHits/I");
-  l25tree->Branch("l25IsoTrkChi2",&l25IsoTrkChi2,"l25IsoTrkChi2/F");
-  l25tree->Branch("l25IsoTrkPt",&l25IsoTrkPt,"l25IsoTrkPt/F");
-  l25tree->Branch("l25TrkIsoPtSum",&l25TrkIsoPtSum,"l25TrkIsoPtSum/F");
-  l25tree->Branch("l25EcalIsoEtSum",&l25EcalIsoEtSum,"l25EcalIsoEtSum/F");
-  l25tree->Branch("l25TrkIsoPtMax",&l25TrkIsoPtMax,"l25TrkIsoPtMax/F");
-  l25tree->Branch("l25EcalIsoEtMax",&l25EcalIsoEtMax,"l25EcalIsoEtMax/F");
-  l25tree->Branch("l25TrkIsoPtMaxAll",&l25TrkIsoPtMaxAll,"l25TrkIsoPtMaxAll/F");
-  l25tree->Branch("l25EcalIsoEtMaxAll",&l25EcalIsoEtMaxAll,"l25EcalIsoEtMaxAll/F");
-  l25tree->Branch("l25NTrksIso",&l25NTrksIso,"l25NTrksIso/I");
-  l25tree->Branch("l25NGammaIso",&l25NGammaIso,"l25NGammaIso/I"); 
-  l25tree->Branch("l25NTrksIsoAll",&l25NTrksIsoAll,"l25NTrksIsoAll/I");
-  l25tree->Branch("l25NGammaIsoAll",&l25NGammaIsoAll,"l25NGammaIsoAll/I"); 
+  l25tree->Branch("l25Eta", &l25Eta);
+  l25tree->Branch("l25Phi", &l25Phi);
+  l25tree->Branch("l25Et", &l25Et);
+  l25tree->Branch("l25Pt", &l25Pt);
+  l25tree->Branch("l25PtLdgLoose",&l25PtLdgLoose);
+  l25tree->Branch("l25EtaLdgLoose",&l25EtaLdgLoose);
+  l25tree->Branch("l25PhiLdgLoose",&l25PhiLdgLoose);
+  l25tree->Branch("l25PtLdgJetDRLoose",&l25PtLdgJetDRLoose);
+  l25tree->Branch("l25InvPt", &l25InvPt);
+  l25tree->Branch("matchedToL2Jet", &matchedToL2Jet);
+  l25tree->Branch("foundTracksInJet", &foundTracksInJet);
+  l25tree->Branch("tauTagHasTracks", &tauTagHasTracks);
+  l25tree->Branch("matchedToHLTPFTau", &matchedToHLTPFTau);
+  l25tree->Branch("l25PFTauLeadTrkIsValid", &l25PFTauLeadTrkIsValid);
+  l25tree->Branch("leadDepth1", &leadDepth1);
+  l25tree->Branch("leadDepth2", &leadDepth2);
+  l25tree->Branch("minDR", &minDR);
+  l25tree->Branch("bareEt", &bareEt);
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_Ntrk0",&l25DefDisc_Trk5_IsoPtMin1_Ntrk0);
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_Ntrk1",&l25DefDisc_Trk5_IsoPtMin1_Ntrk1);
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0",&l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0);
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1",&l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1);
+  l25tree->Branch("l25DefDisc_Trk5_IsoPtMin2_Ntrk0",&l25DefDisc_Trk5_IsoPtMin2_Ntrk0);
+  l25tree->Branch("l25IsoPtSum",&l25IsoPtSum);
+  l25tree->Branch("l25IsoTrkNHits",&l25IsoTrkNHits);
+  l25tree->Branch("l25IsoTrkChi2",&l25IsoTrkChi2);
+  l25tree->Branch("l25IsoTrkPt",&l25IsoTrkPt);
+  l25tree->Branch("l25TrkIsoPtSum",&l25TrkIsoPtSum);
+  l25tree->Branch("l25EcalIsoEtSum",&l25EcalIsoEtSum);
+  l25tree->Branch("l25TrkIsoPtMax",&l25TrkIsoPtMax);
+  l25tree->Branch("l25EcalIsoEtMax",&l25EcalIsoEtMax);
+  l25tree->Branch("l25TrkIsoPtMaxAll",&l25TrkIsoPtMaxAll);
+  l25tree->Branch("l25EcalIsoEtMaxAll",&l25EcalIsoEtMaxAll);
+  l25tree->Branch("l25NTrksIso",&l25NTrksIso);
+  l25tree->Branch("l25NGammaIso",&l25NGammaIso);
+  l25tree->Branch("l25NTrksIsoAll",&l25NTrksIsoAll);
+  l25tree->Branch("l25NGammaIsoAll",&l25NGammaIsoAll);
+  l25tree->Branch("l25Prong", &l25Prong);
   l25tree->Branch("primaryVertexIsValid", &primaryVertexIsValid);
   NMatchedToL2 = 0;
   NJetsWithTracks = 0;
@@ -118,6 +119,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
   l25NGammaIso = 0;
   l25NTrksIsoAll = 0;
   l25NGammaIsoAll = 0;
+  l25Prong = 0;
   matchedToL2Jet = false;
   foundTracksInJet = false;
   matchedToHLTPFTau = false;
@@ -200,8 +202,9 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       if(theLeadPFChargedCand.isNonnull()){
         NJetsWithTracks++;
         l25PFTauLeadTrkIsValid = 1;
-        l25Pt = theLeadPFChargedCand->pt() ;									
-        l25InvPt = 1./l25Pt ;								
+        l25Pt = theLeadPFChargedCand->pt();
+        l25InvPt = 1./l25Pt;
+        l25Prong = theMatchedHLTPFtau.signalPFChargedHadrCands().size();
         l25IsoPtSum = theMatchedHLTPFtau.isolationPFChargedHadrCandsPtSum();
         l25EcalIsoEtSum = theMatchedHLTPFtau.isolationPFGammaCandsEtSum();
 	l25NTrksIsoAll = theMatchedHLTPFtau.isolationPFChargedHadrCands().size();
