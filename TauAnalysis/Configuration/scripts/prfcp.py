@@ -22,14 +22,16 @@ RETURN CODES
 
 '''
 
-import sys
-import subprocess
+import random
 import shlex
+import subprocess
+import sys
+import time
 
 from_file = sys.argv[1]
 to_file = sys.argv[2]
 
-max_attempts = 5
+max_attempts = 10
 
 # Retry the rfcp job when you get these return codes
 retriable_return_codes = set([None, 2, 3, 16])
@@ -38,6 +40,8 @@ attempt = 0
 return_code = None
 
 print "<prfcp> %s %s" % (from_file, to_file)
+
+random.seed()
 
 while True:
     if return_code is not None:
@@ -50,5 +54,10 @@ while True:
         print "<prfcp> reached max number of attempts (%i), returning %i" % (
             max_attempts, return_code)
         break
+    # CV: wait for about 5 minutes, in order to prevent submitting too many castor request within too short time,
+    #     indicated by message
+    #       "stage_get: Maximum number of requests exceeded, you are only permitted to execute 3000 requests in 500 seconds"
+    #     in stdout log-files
+    time.sleep(random.randint(10, 500))
 
 sys.exit(return_code)
