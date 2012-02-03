@@ -111,6 +111,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
         PFTauMuonRejectionDiscriminator     = cms.string("againstMuonTight"),
 	PFTauElectronRejectionDiscriminator = cms.string("againstElectronMedium"),
 	PFTauDiscriminators     = cms.vstring(
+            "decayModeFinding",
             "againstMuonLoose",
             "againstMuonMedium",
             "againstMuonTight",

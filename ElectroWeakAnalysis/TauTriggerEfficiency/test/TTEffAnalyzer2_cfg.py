@@ -132,6 +132,7 @@ process.commonSequence *= process.goodPrimaryVertices
 process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         LoopingOver	        = cms.InputTag("selectedPatTausHpsPFTau"),
 	PFTauDiscriminators     = cms.vstring(
+            "decayModeFinding",
             "againstMuonLoose",
             "againstMuonMedium",
             "againstMuonTight",
