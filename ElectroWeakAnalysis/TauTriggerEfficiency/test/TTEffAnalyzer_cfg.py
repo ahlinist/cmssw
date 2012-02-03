@@ -249,10 +249,10 @@ def setHltToCalo(module):
     module.l25PtCutSource = "hltL25TauLeadingTrackPtCutSelector"
 
 # Reference is HPS tau
-process.TTEffAnalysisHLTCaloTauHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
-    outputFileName = "tteffAnalysis-hltcalotau-hpspftau.root",
-)
-setHltToCalo(process.TTEffAnalysisHLTCaloTauHPS)
+#process.TTEffAnalysisHLTCaloTauHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
+#    outputFileName = "tteffAnalysis-hltcalotau-hpspftau.root",
+#)
+#setHltToCalo(process.TTEffAnalysisHLTCaloTauHPS)
 
 process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
     l25PtCutSource = "hltPFTausTightIso",
