@@ -321,6 +321,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcMuons = cms.InputTag('patMuons'), # CV: pat::Muon collection contains 'goodMuons' only
     srcMEt = cms.InputTag('%s'),
     srcJets = cms.InputTag('%s'),
+    srcPFCandidates = cms.InputTag('particleFlow'),
 
     srcTrigger = cms.InputTag('TriggerResults::HLT'),
     hltPaths = cms.vstring(%s),

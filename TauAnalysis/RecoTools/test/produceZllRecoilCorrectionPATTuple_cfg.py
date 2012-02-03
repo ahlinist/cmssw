@@ -34,8 +34,8 @@ isMC = True # use for MC
 ##isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2011 Data
 HLTprocessName = "HLT" # use for Summer'11 MC
-type1JetPtThreshold = 20.0 # increased jet Pt threshold to reduce sensitivity of Type 1 corrected MET to pile-up
-#type1JetPtThreshold = 10.0 # current default value recommended by JetMET POG
+#type1JetPtThreshold = 20.0 # increased jet Pt threshold to reduce sensitivity of Type 1 corrected MET to pile-up
+type1JetPtThreshold = 10.0 # current default value recommended by JetMET POG
 #jetCorrUncertaintyTag = "Total"
 jetCorrUncertaintyTag = "SubTotalDataMC"
 #--------------------------------------------------------------------------------
@@ -223,19 +223,6 @@ else:
     process.patTupleProductionSequence += process.patJetsNotOverlappingWithLeptonsForMEtUncertainty
     process.patTupleProductionSequence += process.producePatPFMETCorrections
 
-# set JEC uncertainty source to txt-file in all ShiftedPATJetProducer modules
-# and apply "SubTotalDataMC" uncertainties for Data-to-Monte Carlo comparisson
-# (= "Total" - ("PileUpPt" + "PileUpBias"))
-for processAttrName in dir(process):
-    processAttr = getattr(process, processAttrName)
-    if isinstance(processAttr, cms.EDProducer) and processAttr.type_() == "ShiftedPATJetProducer":
-        print "--> Setting JEC Uncertainty tag to '%s' in module: %s" % (jetCorrUncertaintyTag, processAttrName)
-        if hasattr(processAttr, "jetCorrPayloadName"):
-            delattr(processAttr, "jetCorrPayloadName")
-        setattr(processAttr, "jetCorrInputFileName", cms.FileInPath(
-          'JetMETCorrections/Type1MET/data/JEC11_V12_AK5PF_UncertaintySources.txt'))
-        setattr(processAttr, "jetCorrUncertaintyTag", cms.string(jetCorrUncertaintyTag))
-
 # set jet Pt threshold used for computing Type 1 MET corrections
 for processAttrName in dir(process):
     processAttr = getattr(process, processAttrName)
@@ -284,7 +271,7 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_smearedPatJetsResUp_*_*',
             'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',
             'keep *_pfCandsNotInJet_*_*',
-            'keep *_pfType2Cands_*_*',                                
+            'keep *_particleFlow_*_*',                      
             'keep *_ak5PFJets_*_*',                             
             'keep *_patPFMet*_*_*',
             'keep *_patType1CorrectedPFMet*_*_*',
