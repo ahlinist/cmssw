@@ -40,13 +40,13 @@ public:
 	  VAL=(ped[0]+ped[1]+ped[2]+ped[3])/4.0;
           for(int i=0;i<4;i++){
             if(strcmp(subdet,"HB")==0){ 
-              hb[Eta+50][Phi][Depth][i]=ped[i];hb_rms[Eta+50][Phi][Depth][i]=ped[i]; shb[Eta+50][Phi][Depth]=Statistic; }
+              hb[Eta+50][Phi][Depth][i]=ped[i];hb_rms[Eta+50][Phi][Depth][i]=rms[i]; shb[Eta+50][Phi][Depth]=Statistic; }
             if(strcmp(subdet,"HE")==0){ 
-              he[Eta+50][Phi][Depth][i]=ped[i];he_rms[Eta+50][Phi][Depth][i]=ped[i]; she[Eta+50][Phi][Depth]=Statistic; }
+              he[Eta+50][Phi][Depth][i]=ped[i];he_rms[Eta+50][Phi][Depth][i]=rms[i]; she[Eta+50][Phi][Depth]=Statistic; }
             if(strcmp(subdet,"HO")==0){  
-              ho[Eta+50][Phi][Depth][i]=ped[i];ho_rms[Eta+50][Phi][Depth][i]=ped[i]; sho[Eta+50][Phi][Depth]=Statistic; }
+              ho[Eta+50][Phi][Depth][i]=ped[i];ho_rms[Eta+50][Phi][Depth][i]=rms[i]; sho[Eta+50][Phi][Depth]=Statistic; }
             if(strcmp(subdet,"HF")==0){ 
-              hf[Eta+50][Phi][Depth][i]=ped[i];hf_rms[Eta+50][Phi][Depth][i]=ped[i]; shf[Eta+50][Phi][Depth]=Statistic; }	   
+              hf[Eta+50][Phi][Depth][i]=ped[i];hf_rms[Eta+50][Phi][Depth][i]=rms[i]; shf[Eta+50][Phi][Depth]=Statistic; }	   
           }
         }
         f->Close(); 
@@ -99,10 +99,10 @@ void PreparePedestalTable(char *DetDiagFile,char *TableFile,float TH=0.2){
 char str[500],sd[10],id[20];
 int eta,phi,depth;
 float PED[4],RMS[4],PEDdd[4],RMSdd[4];
-   TH1F *hb=new TH1F("diff hb","diff hb",500,-3,3);
-   TH1F *he=new TH1F("diff he","diff he",500,-3,3);
-   TH1F *ho=new TH1F("diff ho","diff ho",500,-3,3);
-   TH1F *hf=new TH1F("diff hf","diff hf",500,-3,3);
+   TH1F *hb=new TH1F("diff hb","diff hb",1500,-3,3);
+   TH1F *he=new TH1F("diff he","diff he",1500,-3,3);
+   TH1F *ho=new TH1F("diff ho","diff ho",1500,-3,3);
+   TH1F *hf=new TH1F("diff hf","diff hf",1500,-3,3);
 
    PEDESTALS peds(DetDiagFile);
    FILE *tab=fopen(TableFile,"rt");
@@ -131,6 +131,7 @@ float PED[4],RMS[4],PEDdd[4],RMSdd[4];
              if(fabs(diff)>TH){
                 sprintf(str,"  %15d %15d %15d %15s %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f %8.5f   %s\n",
                    eta,phi,depth,sd,PEDdd[0],PEDdd[1],PEDdd[2],PEDdd[3],RMSdd[0],RMSdd[1],RMSdd[2],RMSdd[3],id);
+		   printf("%s\n",str);
 	     }
           }
        }
