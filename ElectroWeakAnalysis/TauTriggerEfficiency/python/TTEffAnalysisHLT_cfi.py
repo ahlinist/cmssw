@@ -21,3 +21,20 @@ openhltL25TauPixelSeeds.RegionFactoryPSet.RegionPSet.originHalfLength = cms.doub
 hltParticleFlowRecHitECAL.thresh_Cleaning = cms.double( 2.0 )
 hltPFTauLooseIsolationDiscriminator.qualityCuts.primaryVertexSrc = cms.InputTag( "hltPixelVertices" )
 hltPFTauLooseIsolationDiscriminator.qualityCuts.pvFindingAlgo = cms.string("highestWeightForLeadTrack")
+
+# Remove L2.5 calo tau reconstruction, from 44x tracking takes way too much time
+DoHLTTau.remove(TauOpenHLT)
+DoHLTTau.remove(OpenHLTL25TauTrackIsolation)
+DoHLTTau.remove(OpenHLTL25TauTrackReconstructionSequence)
+del TauOpenHLT
+del openhltL25TauConeIsolation
+del openhltL25TauJetTracksAssociator
+del openhltL25TauCtfWithMaterialTracks
+del openhltL25TauCkfTrackCandidates
+del openhltL25TauPixelSeeds
+del OpenHLTL25TauTrackIsolation
+del OpenHLTL25TauTrackReconstructionSequence
+
+# Add the isolation sequence
+DoHLTTau *= HLTPFTauMediumIsoSequence
+HLTPFTauMediumIsoSequence *= hltPFTauMediumIsoTrackPt20Discriminator
