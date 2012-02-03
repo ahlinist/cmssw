@@ -110,6 +110,17 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramsUvsQtNumJetsBinned_.push_back(
     new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJets",  3, -1));
   
+  histogramsMEtPhiAsymmetryVsQtBinned_.push_back(
+    new histogramsMEtPhiAsymmetryVsQtType(this,dir,  -1.,  25.));
+  histogramsMEtPhiAsymmetryVsQtBinned_.push_back(
+    new histogramsMEtPhiAsymmetryVsQtType(this,dir,  25.,  50.));
+  histogramsMEtPhiAsymmetryVsQtBinned_.push_back(
+    new histogramsMEtPhiAsymmetryVsQtType(this,dir,  50., 100.));
+  histogramsMEtPhiAsymmetryVsQtBinned_.push_back(
+    new histogramsMEtPhiAsymmetryVsQtType(this,dir, 100., 200.));
+  histogramsMEtPhiAsymmetryVsQtBinned_.push_back(
+    new histogramsMEtPhiAsymmetryVsQtType(this,dir, 200.,  -1.));
+
   histogramNumPU_bxMinus1_   = book1D(dir, "numPU_bxMinus1",     "Num. Pile-up interactions, BX = -1",        35,         -0.5,         34.5);
   histogramNumPU_bx0_        = book1D(dir, "numPU_bx0",          "Num. Pile-up interactions, BX = 0",         35,         -0.5,         34.5);
   histogramNumPU_bxPlus1_    = book1D(dir, "numPU_bxPlus1",      "Num. Pile-up interactions, BX = +1",        35,         -0.5,         34.5);
@@ -122,7 +133,10 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 
 void ZllRecoilCorrectionHistManager::fillHistograms(
        const reco::CompositeCandidate& ZllCand, const std::vector<pat::Muon>& muons, 
-       const std::vector<pat::Jet>& jets, const pat::MET& met, 
+       const std::vector<pat::Jet>& jets, const pat::MET& met,
+       const reco::Candidate::LorentzVector& p4HadEtaLt0, const reco::Candidate::LorentzVector& p4HadEtaGt0, 
+       const reco::Candidate::LorentzVector& p4PFChargedHadrons, const reco::Candidate::LorentzVector& p4PFNeutralHadrons, 
+       const reco::Candidate::LorentzVector& p4PFGammas, 
        int numPU_bxMinus1, int numPU_bx0, int numPU_bxPlus1, 
        const reco::VertexCollection& vertices, double rhoNeutral, double evtWeight)
 {
@@ -280,6 +294,34 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
 	  (*it)->histogramQt_->Fill(qT, evtWeight);
 	}
+      }
+    }
+
+    for ( std::vector<histogramsMEtPhiAsymmetryVsQtType*>::iterator it = histogramsMEtPhiAsymmetryVsQtBinned_.begin();
+	  it != histogramsMEtPhiAsymmetryVsQtBinned_.end(); ++it ) {
+      if ( ((*it)->qTmin_ <= 0. || qT > (*it)->qTmin_) &&
+	   ((*it)->qTmax_ <= 0. || qT < (*it)->qTmax_) ) {
+        (*it)->histogramMEtVsPhiZ_->Fill(ZllCand.phi(), met.pt());
+	
+	(*it)->histogramSumPFChargedHadronsVsPhiZ_->Fill(ZllCand.phi(), p4PFChargedHadrons.pt());
+	(*it)->histogramSumPFNeutralHadronsVsPhiZ_->Fill(ZllCand.phi(), p4PFNeutralHadrons.pt());
+	(*it)->histogramSumPFGammasVsPhiZ_->Fill(ZllCand.phi(), p4PFGammas.pt());
+
+	double sumHadEt = p4HadEtaLt0.Et() + p4HadEtaGt0.Et();
+	if ( p4HadEtaLt0.Et() > 0.75*sumHadEt ) {
+	  (*it)->histogramMEtVsPhiZforEtaHadLt0_->Fill(ZllCand.phi(), met.pt(), evtWeight);
+	  
+	  (*it)->histogramSumPFChargedHadronsVsPhiZforEtaHadLt0_->Fill(ZllCand.phi(), p4PFChargedHadrons.pt(), evtWeight);
+	  (*it)->histogramSumPFNeutralHadronsVsPhiZforEtaHadLt0_->Fill(ZllCand.phi(), p4PFNeutralHadrons.pt(), evtWeight);
+	  (*it)->histogramSumPFGammasVsPhiZforEtaHadLt0_->Fill(ZllCand.phi(), p4PFGammas.pt(), evtWeight);
+	} 
+	if ( p4HadEtaGt0.Et() > 0.75*sumHadEt ) {
+	  (*it)->histogramMEtVsPhiZforEtaHadGt0_->Fill(ZllCand.phi(), met.pt(), evtWeight);
+	  
+	  (*it)->histogramSumPFChargedHadronsVsPhiZforEtaHadGt0_->Fill(ZllCand.phi(), p4PFChargedHadrons.pt(), evtWeight);
+	  (*it)->histogramSumPFNeutralHadronsVsPhiZforEtaHadGt0_->Fill(ZllCand.phi(), p4PFNeutralHadrons.pt(), evtWeight);
+	  (*it)->histogramSumPFGammasVsPhiZforEtaHadGt0_->Fill(ZllCand.phi(), p4PFGammas.pt(), evtWeight);
+	} 
       }
     }
   }

@@ -6,7 +6,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 
 import os
 
-version = 'v4_9subTotalDataMCtype1PtThresholdEq20'
+version = 'v4_9subTotalDataMCtype1PtThresholdEq10'
 
 inputFilePath = '/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
@@ -199,24 +199,24 @@ metOptions = {
             }
         }
     },
-    'pfMEtTypeIpIIcorrected' : {
-        'srcJets' : {
-            'Data' : {
-                'central'    : 'patJets'
-            },
-            'smMC' : {
-                'central'    : 'patJets'
-            }
-        },
-        'srcMEt'  : {
-            'Data' : {
-                'central'    : 'patType1p2CorrectedPFMet'
-            },
-            'smMC' : {
-                'central'    : 'patType1p2CorrectedPFMetNoSmearing'
-            }
-        }
-    },
+    ##'pfMEtTypeIpIIcorrected' : {
+    ##    'srcJets' : {
+    ##        'Data' : {
+    ##            'central'    : 'patJets'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patJets'
+    ##        }
+    ##    },
+    ##    'srcMEt'  : {
+    ##        'Data' : {
+    ##            'central'    : 'patType1p2CorrectedPFMet'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patType1p2CorrectedPFMetNoSmearing'
+    ##        }
+    ##    }
+    ##},
     'pfMEtSmeared' : {
         'srcJets' : {
             'Data' : {
@@ -276,36 +276,36 @@ metOptions = {
                 'unclEnDown' : 'patType1CorrectedPFMetUnclusteredEnDown'
             }
         }
-    },
-    'pfMEtTypeIpIIcorrectedSmeared' : {
-        'srcJets' : {
-            'Data' : {
-                'central'    : 'patJets'
-            },                
-            'smMC' : {
-                'central'    : 'smearedPatJets',
-                'jetEnUp'    : 'shiftedPatJetsEnUp',
-                'jetEnDown'  : 'shiftedPatJetsEnDown',
-                'jetResUp'   : 'smearedPatJetsResUp',
-                'jetResDown' : 'smearedPatJetsResDown',
-                'unclEnUp'   : 'smearedPatJets',
-                'unclEnDown' : 'smearedPatJets'
-            }
-        },    
-        'srcMEt' : {
-            'Data' : {
-                'central'    : 'patType1p2CorrectedPFMet'
-            },
-            'smMC' : {
-                'central'    : 'patType1p2CorrectedPFMet',
-                'jetEnUp'    : 'patType1p2CorrectedPFMetJetEnUp',
-                'jetEnDown'  : 'patType1p2CorrectedPFMetJetEnDown',
-                'jetResUp'   : 'patType1p2CorrectedPFMetJetResUp',
-                'jetResDown' : 'patType1p2CorrectedPFMetJetResDown',
-                'unclEnUp'   : 'patType1p2CorrectedPFMetUnclusteredEnUp',
-                'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
-            }
-        }
+    ##},
+    ##'pfMEtTypeIpIIcorrectedSmeared' : {
+    ##    'srcJets' : {
+    ##        'Data' : {
+    ##            'central'    : 'patJets'
+    ##        },                
+    ##        'smMC' : {
+    ##            'central'    : 'smearedPatJets',
+    ##            'jetEnUp'    : 'shiftedPatJetsEnUp',
+    ##            'jetEnDown'  : 'shiftedPatJetsEnDown',
+    ##            'jetResUp'   : 'smearedPatJetsResUp',
+    ##            'jetResDown' : 'smearedPatJetsResDown',
+    ##            'unclEnUp'   : 'smearedPatJets',
+    ##            'unclEnDown' : 'smearedPatJets'
+    ##        }
+    ##    },    
+    ##    'srcMEt' : {
+    ##        'Data' : {
+    ##            'central'    : 'patType1p2CorrectedPFMet'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patType1p2CorrectedPFMet',
+    ##            'jetEnUp'    : 'patType1p2CorrectedPFMetJetEnUp',
+    ##            'jetEnDown'  : 'patType1p2CorrectedPFMetJetEnDown',
+    ##            'jetResUp'   : 'patType1p2CorrectedPFMetJetResUp',
+    ##            'jetResDown' : 'patType1p2CorrectedPFMetJetResDown',
+    ##            'unclEnUp'   : 'patType1p2CorrectedPFMetUnclusteredEnUp',
+    ##            'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
+    ##        }
+    ##    }
     }
 }
 
