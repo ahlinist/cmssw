@@ -78,25 +78,29 @@ def lfns_stdout(crab_dir):
         data = open(res_dir+file).read()
         if "JobExitCode=0" not in data:
             continue
+        plotsFile = None
+        skimFile = None
+        ntupleFile = None
         for line in open(res_dir+file):
-            if "output" in line:
+            if ".root" not in line:
                 continue
-            if " cms " in line:
-                continue
-            if " campus " in line:
-                continue
-            if "gplcms" in line:
-                continue
-            if "user" in line:
-                continue
-            if "absolute" in line:
-                continue
-            if "tarring" in line:
+            if "tarring file" not in line:
                 continue
             if "plots" in line:
-                #print line.rstrip('\n')
-                yield res_dir+line.rstrip('\n')
-                break
+                plotsFile = line[:line.find('root')+4]
+                plotsFile = plotsFile[13:].rstrip('\n')
+            if "final_events" in line:
+                skimFile = line[:line.find('root')+4]
+                skimFile = skimFile[13:].rstrip('\n')
+            if "Ntuple" in line:
+                ntupleFile = line[:line.find('root')+4]
+                ntupleFile = ntupleFile[13:].rstrip('\n')
+        if plotsFile is not None:
+            yield res_dir + plotsFile
+        if skimFile is not None:
+            yield res_dir + skimFile
+        if ntupleFile is not None:
+            yield res_dir + ntupleFile
      
 
 def map_lfn_to_castor(lfn):
