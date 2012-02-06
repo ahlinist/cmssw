@@ -38,3 +38,15 @@ del OpenHLTL25TauTrackReconstructionSequence
 # Add the isolation sequence
 DoHLTTau *= HLTPFTauMediumIsoSequence
 HLTPFTauMediumIsoSequence *= hltPFTauMediumIsoTrackPt20Discriminator
+
+# Do also global L2 jet clustering
+hltIconeJetGlobal = hltIconeTau1Regional.clone(
+    src = "hltTowerMakerForAll"
+)
+openhltL2TauGlobalIsolationProducer = openhltL2TauIsolationProducer.clone(
+    L2TauJetCollection = "hltIconeJetGlobal"
+)
+DoHLTTau *= (
+    hltIconeJetGlobal *
+    openhltL2TauGlobalIsolationProducer
+)
