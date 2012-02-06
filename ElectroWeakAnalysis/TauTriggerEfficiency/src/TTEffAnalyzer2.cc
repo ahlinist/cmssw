@@ -724,7 +724,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     l25TauLeadChargedHadrCandPt_.push_back(leadTrackPt);
     l25TauIsoChargedHadrCandPtMax_.push_back(isoTrackPtMax);
     l25TauIsoGammaCandEtMax_.push_back(isoGammaEtMax);
-    l25TauProng_.push_back(isoGammaEtMax);
+    l25TauProng_.push_back(prongs);
     for(size_t i=0; i<l25TauDiscriminators_.size(); ++i) {
       float value = -1;
       if(foundL25) {
