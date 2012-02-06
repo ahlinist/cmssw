@@ -182,6 +182,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "L1_SingleTauJet52", "L1_SingleJet68",
             "L1_SingleJet52_Central",
             "L1_Jet52_Central_ETM30",
+            "L1_TripleJet28_Central",
+            "L1_ETM30",
         ),
         HltResults              		= cms.InputTag("TriggerResults","",hltType),
         HltPaths = cms.vstring(
@@ -239,12 +241,16 @@ process.TTEffAnalysisHLTPFTauMediumHPS.L25Discriminators.MediumIso = cms.InputTa
 process.TTEffAnalysisHLTPFTauMediumHPS.L25Discriminators.TrackFinding = cms.InputTag("hltPFTauMediumIsoTrackFindingDiscriminator")
 process.TTEffAnalysisHLTPFTauMediumHPS.L25Discriminators.TrackPt20 = cms.InputTag("hltPFTauMediumIsoTrackPt20Discriminator")
 #process.TTEffAnalysisHLTPFTauTightHPS.L25Discriminators.MediumIso = cms.InputTag("hltPFTauMediumIsoIsolationDiscriminator")
-
+process.TTEffAnalysisHLTPFTauMediumHPSL2Global = process.TTEffAnalysisHLTPFTauHPS.clone(
+    L2AssociationCollection = "openhltL2TauGlobalIsolationProducer",
+    outputFileName = "tteffAnalysis-hltpftaumediuml2global-hpspftau.root"
+)
 
 process.runTTEffAna = cms.Path(process.commonSequence)
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
+process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
 
 # The high purity selection (mainly for H+)
 # process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
