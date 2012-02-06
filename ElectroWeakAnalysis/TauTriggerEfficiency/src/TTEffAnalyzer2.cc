@@ -330,8 +330,9 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   tree_->Branch("L25TauPhi", &l25TauPhi_);
   tree_->Branch("L25TauLeadChargedHadrCandExists", &l25TauLeadChargedHadrCandExists_);
   tree_->Branch("L25TauLeadChargedHadrCandPt", &l25TauLeadChargedHadrCandPt_);
-  tree_->Branch("L25TauIsoChargedHadrCandPtMax_", &l25TauIsoChargedHadrCandPtMax_);
-  tree_->Branch("L25TauIsoGammaCandEtMax_", &l25TauIsoGammaCandEtMax_);
+  tree_->Branch("L25TauIsoChargedHadrCandPtMax", &l25TauIsoChargedHadrCandPtMax_);
+  tree_->Branch("L25TauIsoGammaCandEtMax", &l25TauIsoGammaCandEtMax_);
+  tree_->Branch("L25TauProng", &l25TauProng_);
 
   for(size_t i=0; i<l25TauDiscriminators_.size(); ++i)
     tree_->Branch(("L25Tau_"+l25TauDiscriminators_[i].name).c_str(), &l25TauDiscriminators_[i].values);
