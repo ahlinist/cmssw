@@ -98,8 +98,6 @@ private:
     std::string name;
     bool value;
   };
-  std::vector<TriggerBit> l1Bits_;
-  std::vector<TriggerBit> hltBits_;
 
   struct MET {
     MET(const edm::InputTag& s, const std::string& n): src(s), name(n) {}
@@ -119,14 +117,12 @@ private:
     float et;
     float phi;
   };
-  std::vector<MET> METs_;
 
   struct Discriminator {
     Discriminator(const std::string& n): name(n) {}
     std::string name;
     std::vector<float> values;
   };
-  std::vector<Discriminator> PFTauDiscriminators_;
 
   struct L25Discriminator {
     L25Discriminator(const edm::InputTag& s, const std::string& n): src(s), name(n) {}
@@ -141,12 +137,17 @@ private:
   float nPU_;
   bool primaryVertexIsValid_;
   unsigned nGoodOfflinePV_;
+  std::vector<TriggerBit> l1Bits_;
+  std::vector<TriggerBit> hltBits_;
+  std::vector<MET> METs_;
+
   std::vector<float> PFTauPt_;
   std::vector<float> PFTauEt_;
   std::vector<float> PFTauEta_;
   std::vector<float> PFTauPhi_;
   std::vector<float> PFTauLeadChargedHadrCandPt_;
   std::vector<float> PFTauProng_;
+  std::vector<Discriminator> PFTauDiscriminators_;
   std::vector<float> PFTauJetMinDR_;
 
   std::vector<float> PFJetPt_;
@@ -155,17 +156,21 @@ private:
   float L1MET_;
   float L1MHT_;
 
-  // L1 per-tau
-  std::vector<bool> l1HasMatchedL1Jet_;
-  std::vector<bool> l1HasMatchedL1TauJet_;
-  std::vector<bool> l1HasMatchedL1CenJet_;
+  std::vector<bool> l1JetIsTau_;
   std::vector<float> l1JetPt_;
   std::vector<float> l1JetEt_;
   std::vector<unsigned> l1JetRank_;
   std::vector<float> l1JetEta_;
   std::vector<float> l1JetPhi_;
-  std::vector<unsigned> l1JetsInMatchingCone_;
-  std::vector<float> l1JetMatchDR_;
+
+  std::vector<int> PFTau_matchedL1_;
+  std::vector<unsigned> PFTau_l1JetsInMatchingCone_;
+  std::vector<float> PFTau_l1JetMatchDR_;
+
+  std::vector<int> PFJet_matchedL1_;
+  std::vector<unsigned> PFJet_l1JetsInMatchingCone_;
+  std::vector<float> PFJet_l1JetMatchDR_;
+
 
   // L2 per-tau
   std::vector<bool> l2HasMatchedL2Jet_;
@@ -297,16 +302,20 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   tree_->Branch("PFTauJetMinDR", &PFTauJetMinDR_);
   tree_->Branch("PFJetPt", &PFJetPt_);
 
-  tree_->Branch("hasMatchedL1Jet", &l1HasMatchedL1Jet_);
-  tree_->Branch("hasMatchedL1TauJet", &l1HasMatchedL1TauJet_);
-  tree_->Branch("hasMatchedL1CenJet", &l1HasMatchedL1CenJet_);
+  tree_->Branch("L1JetIsTau", &l1JetIsTau_);
   tree_->Branch("L1JetPt", &l1JetPt_);
   tree_->Branch("L1JetEt", &l1JetEt_);
   tree_->Branch("L1JetRank", &l1JetRank_);
   tree_->Branch("L1JetEta", &l1JetEta_);
   tree_->Branch("L1JetPhi", &l1JetPhi_);
-  tree_->Branch("L1JetsInMatchingCone", &l1JetsInMatchingCone_);
-  tree_->Branch("L1JetMatchDR", &l1JetMatchDR_);
+
+  tree_->Branch("PFTau_matchedL1", &PFTau_matchedL1_);
+  tree_->Branch("PFTau_l1JetsInMatchingCone_", &PFTau_l1JetsInMatchingCone_);
+  tree_->Branch("PFTau_l1JetMatchDR", &PFTau_l1JetMatchDR_);
+
+  tree_->Branch("PFJet_matchedL1", &PFJet_matchedL1_);
+  tree_->Branch("PFJet_l1JetsInMatchingCone_", &PFJet_l1JetsInMatchingCone_);
+  tree_->Branch("PFJet_l1JetMatchDR", &PFJet_l1JetMatchDR_);
 
   tree_->Branch("hasMatchedL2Jet", &l2HasMatchedL2Jet_);
   tree_->Branch("L2JetPt", &l2JetPt_);
@@ -356,7 +365,6 @@ void TTEffAnalyzer2::reset() {
   L1MET_ = 0;
   L1MHT_ = 0;
 
-
   PFTauPt_.clear();
   PFTauEt_.clear();
   PFTauEta_.clear();
@@ -366,19 +374,24 @@ void TTEffAnalyzer2::reset() {
   for(size_t i=0; i<PFTauDiscriminators_.size(); ++i)
     PFTauDiscriminators_[i].values.clear();
   PFTauJetMinDR_.clear();
+
   PFJetPt_.clear();
 
-  l1HasMatchedL1Jet_.clear();
-  l1HasMatchedL1TauJet_.clear();
-  l1HasMatchedL1CenJet_.clear();
+  l1JetIsTau_.clear();
   l1JetPt_.clear();
   l1JetEt_.clear();
   l1JetRank_.clear();
   l1JetEta_.clear();
   l1JetPhi_.clear();
   l1JetPhi_.clear();
-  l1JetsInMatchingCone_.clear();
-  l1JetMatchDR_.clear();
+
+  PFTau_matchedL1_.clear();
+  PFTau_l1JetsInMatchingCone_.clear();
+  PFTau_l1JetMatchDR_.clear();
+
+  PFJet_matchedL1_.clear();
+  PFJet_l1JetsInMatchingCone_.clear();
+  PFJet_l1JetMatchDR_.clear();
 
   l2HasMatchedL2Jet_.clear();
   l2JetPt_.clear();
@@ -439,22 +452,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     METs_[i].fill(iEvent);
   }
 
-  // Jets
-  edm::Handle<edm::View<reco::PFJet> > hjets;
-  iEvent.getByLabel(pfJetSrc_, hjets);
-  edm::PtrVector<reco::PFJet> selectedPFJets;
-  for(size_t i=0; i<hjets->size(); ++i) {
-    edm::Ptr<reco::PFJet> jet = hjets->ptrAt(i);
-    if(jet->pt() > 30 && // kinematics
-       std::abs(jet->eta()) < 2.4 && 
-       jet->numberOfDaughters() > 1 && jet->chargedEmEnergyFraction() < 0.99 &&
-       jet->neutralHadronEnergyFraction() < 0.99 && jet->neutralEmEnergyFraction() < 0.99 &&
-       jet->chargedHadronEnergyFraction() > 0 && jet->chargedMultiplicity() > 0) { // loose id
-      PFJetPt_.push_back(jet->pt());
-      selectedPFJets.push_back(jet);
-    }
-  }
-  
+
 
   // L1 event level stuff
   edm::Handle<l1extra::L1EtMissParticleCollection> hl1met;
@@ -482,6 +480,23 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::Handle<l1extra::L1JetParticleCollection> hl1cenjets;
   iEvent.getByLabel(l1TauSrc_, hl1taus);
   iEvent.getByLabel(l1CenSrc_, hl1cenjets);
+  l1extra::L1JetParticleCollection::const_iterator iJet;
+  for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet) {
+    l1JetIsTau_.push_back(true);
+    l1JetPt_.push_back(iJet->pt());
+    l1JetEt_.push_back(iJet->et());
+    l1JetRank_.push_back(iJet->gctJetCand()->rank());
+    l1JetEta_.push_back(iJet->eta());
+    l1JetPhi_.push_back(iJet->phi());
+  }
+  for(iJet = hl1cenjets->begin(); iJet != hl1cenjets->end(); ++iJet) {
+    l1JetIsTau_.push_back(false);
+    l1JetPt_.push_back(iJet->pt());
+    l1JetEt_.push_back(iJet->et());
+    l1JetRank_.push_back(iJet->gctJetCand()->rank());
+    l1JetEta_.push_back(iJet->eta());
+    l1JetPhi_.push_back(iJet->phi());
+  }
 
   // L2 stuff
   edm::Handle<reco::L2TauInfoAssociation> hl2TauAssoc; // association from L2 calo jets to tau info
@@ -498,6 +513,57 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   }
 
   primaryVertexIsValid_ = hvertices->size() > 0;
+
+
+  // Jets
+  edm::Handle<edm::View<reco::PFJet> > hjets;
+  iEvent.getByLabel(pfJetSrc_, hjets);
+  edm::PtrVector<reco::PFJet> selectedPFJets;
+  for(size_t i=0; i<hjets->size(); ++i) {
+    edm::Ptr<reco::PFJet> jet = hjets->ptrAt(i);
+    if(jet->pt() > 30 && // kinematics
+       std::abs(jet->eta()) < 2.4 && 
+       jet->numberOfDaughters() > 1 && jet->chargedEmEnergyFraction() < 0.99 &&
+       jet->neutralHadronEnergyFraction() < 0.99 && jet->neutralEmEnergyFraction() < 0.99 &&
+       jet->chargedHadronEnergyFraction() > 0 && jet->chargedMultiplicity() > 0) { // loose id
+      PFJetPt_.push_back(jet->pt());
+      selectedPFJets.push_back(jet);
+
+      // Matching to L1 jets
+      int l1JetIndex = 0;
+      int foundL1 = -1;
+      float jetMinDR = 99999999.;
+      double jetMaxEt = 0;
+      unsigned jetsInMatchingCone = 0;
+      for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet, ++l1JetIndex) {
+        double DR = deltaR(*iJet, *jet);
+        if(DR < l1JetMatchingCone_) {
+          ++jetsInMatchingCone;
+          if((l1SelectNearest_ && DR < jetMinDR) ||
+             (!l1SelectNearest_ && iJet->et() > jetMaxEt)) {
+            foundL1 = l1JetIndex;
+            jetMinDR = DR;
+            jetMaxEt = iJet->et();
+          }
+        }
+      }
+      for(iJet = hl1cenjets->begin(); iJet != hl1cenjets->end(); ++iJet, ++l1JetIndex) {
+        double DR = deltaR(*iJet, *jet);
+        if(DR < l1JetMatchingCone_) {
+          ++jetsInMatchingCone;
+          if((l1SelectNearest_ && DR < jetMinDR) ||
+             (!l1SelectNearest_ && iJet->et() > jetMaxEt)) {
+            foundL1 = l1JetIndex;
+            jetMinDR = DR;
+            jetMaxEt = iJet->et();
+          }
+        }
+      }
+      PFJet_matchedL1_.push_back(foundL1);
+      PFJet_l1JetsInMatchingCone_.push_back(jetsInMatchingCone);
+      PFJet_l1JetMatchDR_.push_back(jetMinDR);
+    }
+  }
 
   // Reference taus
   edm::Handle<edm::View<pat::Tau> > htaus;
@@ -523,64 +589,38 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     PFTauJetMinDR_.push_back(jetMinDR);
 
     // Matching to L1
-    const l1extra::L1JetParticle *foundL1 = 0;
-    bool hasMatchedL1TauJet = false;
-    bool hasMatchedL1CenJet = false;
+    int l1JetIndex = 0;
+    int foundL1 = -1;
     jetMinDR = 99999999.;
     double jetMaxEt = 0;
     unsigned jetsInMatchingCone = 0;
-    l1extra::L1JetParticleCollection::const_iterator iJet;
-    for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet) {
+    for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet, ++l1JetIndex) {
       double DR = deltaR(*iJet, tau);
       if(DR < l1JetMatchingCone_) {
         ++jetsInMatchingCone;
         if((l1SelectNearest_ && DR < jetMinDR) ||
            (!l1SelectNearest_ && iJet->et() > jetMaxEt)) {
-          foundL1 = &(*iJet);
-          hasMatchedL1TauJet = true;
+          foundL1 = l1JetIndex;
           jetMinDR = DR;
           jetMaxEt = iJet->et();
         }
       }
     }
-    for(iJet = hl1cenjets->begin(); iJet != hl1cenjets->end(); ++iJet) {
+    for(iJet = hl1cenjets->begin(); iJet != hl1cenjets->end(); ++iJet, ++l1JetIndex) {
       double DR = deltaR(*iJet, tau);
       if(DR < l1JetMatchingCone_) {
         ++jetsInMatchingCone;
         if((l1SelectNearest_ && DR < jetMinDR) ||
            (!l1SelectNearest_ && iJet->et() > jetMaxEt)) {
-          foundL1 = &(*iJet);
-          hasMatchedL1CenJet = true;
+          foundL1 = l1JetIndex;
           jetMinDR = DR;
           jetMaxEt = iJet->et();
         }
       }
     }
-    bool hasMatchedL1Jet = false;
-    float jetPt = 0;
-    float jetEt = 0;
-    unsigned jetRank = 0;
-    float jetEta = 0;
-    float jetPhi = 0;
-    if(foundL1) {
-      hasMatchedL1Jet = true;
-      jetPt = foundL1->pt(); 
-      jetEt = foundL1->et();
-      jetRank = foundL1->gctJetCand()->rank();
-      jetEta = foundL1->eta();
-      jetPhi = foundL1->phi();
-    }
-    l1HasMatchedL1Jet_.push_back(hasMatchedL1Jet);
-    l1HasMatchedL1TauJet_.push_back(hasMatchedL1TauJet);
-    l1HasMatchedL1CenJet_.push_back(hasMatchedL1CenJet);
-    l1JetPt_.push_back(jetPt);
-    l1JetEt_.push_back(jetEt);
-    l1JetRank_.push_back(jetRank);
-    l1JetEta_.push_back(jetEta);
-    l1JetPhi_.push_back(jetPhi);
-    l1JetsInMatchingCone_.push_back(jetsInMatchingCone);
-    l1JetMatchDR_.push_back(jetMinDR);
-
+    PFTau_matchedL1_.push_back(foundL1);
+    PFTau_l1JetsInMatchingCone_.push_back(jetsInMatchingCone);
+    PFTau_l1JetMatchDR_.push_back(jetMinDR);
 
     // Matching to L2
     const reco::CaloJet *foundL2 = 0;
@@ -595,10 +635,10 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
 
     bool hasMatchedL2Jet = false;
-    jetPt = 0;
-    jetEt = 0;
-    jetEta = 0;
-    jetPhi = 0;
+    float jetPt = 0;
+    float jetEt = 0;
+    float jetEta = 0;
+    float jetPhi = 0;
     if(foundL2) {
       hasMatchedL2Jet = true;
       jetPt = foundL2->pt();
