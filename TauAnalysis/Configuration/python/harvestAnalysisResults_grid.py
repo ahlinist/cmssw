@@ -73,14 +73,18 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
                     'crab', 'crabdir_run%s_%s_%s' % (channel, sample, jobId))
 
                 print "Getting output files from:", crab_dir
+                if not os.path.exists(crab_dir):
+                    continue
+
                 files_and_times.extend(
                     (None, file) 
                     for file in harvest_tools.crabdir_source_stdout(crab_dir))
                 
 
-
+    #print files_and_times
     plot_harvest_jobs = []
     skim_harvest_jobs = []
+    ntuple_harvest_jobs = []
 
     for sample in samples['SAMPLES_TO_ANALYZE']:
         print "Finding input files for", sample
@@ -98,15 +102,32 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
 
 
         plot_harvest_jobs.append( (sample, output_path, files_to_merge) )
+        
         # Get final event skims that need to be merged
-        event_files_to_merge = list(
-            'rfio:%s' % file for time, file in files_and_times
-            if file.find('final_events_%s_%s_%s_' %
+        if useCastor:
+            event_files_to_merge = list(
+                'rfio:%s' % file for time, file in files_and_times
+                if file.find('final_events_%s_%s_%s_' %
                          (channel, sample, jobId)) != -1)
+        else:
+            event_files_to_merge = list(
+                '%s' % file for time, file in files_and_times
+                if file.find('final_events_%s_%s_%s_' %
+                         (channel, sample, jobId)) != -1)
+
         skim_output_path = os.path.join(
             outputFilePath, "skim_%s_%s_%s.root" % (channel, sample, jobId))
         skim_harvest_jobs.append(
             (sample, skim_output_path, event_files_to_merge))
+
+        # Gen ntuple files that need to be merged
+        ntuple_files_to_merge = list(
+            '%s' % file for time, file in files_and_times
+            if file.find('diTauNtuple_%s_%s_%s_' % (channel, sample, jobId)) != -1)
+        ntuple_output_path = os.path.join(
+            outputFilePath, "ntuple_%s_%s_%s.root" % (channel, sample, jobId))
+        ntuple_harvest_jobs.append(
+            (sample, ntuple_output_path, ntuple_files_to_merge))
 
     print "Creating Makefile for histogram files"
     MakefileName = 'Makefile.harvest_%s_%s' % (channel, jobId)
@@ -118,6 +139,12 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
     skim_MakefileName = "Makefile.mergeSkims_%s_%s" % (channel, jobId)
     # Make merge_per_job absurdly high, so it doesn't create unnecessary layers.
     buildMakefile(skim_harvest_jobs, tmpFilePath, skim_MakefileName,
+                  merge_per_job = 1e9, harvest_tool = 'genericSkimMerger.py')
+
+    print "Creating Makefile for ntuple files"
+    ntuple_MakefileName = "Makefile.mergeNtuples_%s_%s" % (channel, jobId)
+    # Make merge_per_job absurdly high, so it doesn't create unnecessary layers.
+    buildMakefile(ntuple_harvest_jobs, tmpFilePath, ntuple_MakefileName,
                   merge_per_job = 1e9, harvest_tool = 'genericSkimMerger.py')
 
     print "Makefile built. In order to start harvesting, execute 'make -f %s -j 8 -k'" % MakefileName
