@@ -60,7 +60,8 @@ public:
   void fitUpsilon(int mode);
   void McpYields(); 
   void fillPidTables(int mode);
-
+  void examplefit(); 
+  
   void integerEntries(TH1D  *h);
   void validation();
   void projections(int mode);
