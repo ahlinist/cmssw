@@ -142,7 +142,40 @@ def differentiate_stat_box(hist, movement=1, new_color=None):
     s.SetX2NDC(x2 - (x2-x1)*m)
     s.SetY1NDC(y1 - (y2-y1)*n)
     s.SetY2NDC(y2 - (y2-y1)*n)
-    
+
+def integral(hist, xlo, xhi=None, return_error=False, include_last_bin=True):
+    """For the given histogram, return the integral of the bins
+    corresponding to the values xlo to xhi, along with its error if
+    not integral_only.
+    """
+
+    binlo = hist.FindBin(xlo) if xlo is not None else 0
+    binhi = hist.FindBin(xhi) if xhi is not None else hist.GetNbinsX()+1
+
+    if not include_last_bin:
+        binhi -= 1
+
+    sum = hist.Integral(binlo, binhi)
+    if not return_error:
+        return sum
+
+    wsq = 0
+    for i in xrange(binlo, binhi+1):
+        wsq += hist.GetBinError(i)**2
+    return sum, wsq**0.5
+
+def mkdir(dir, path):
+    """In newer versions of ROOT, TDirectory::mkdir will make a
+    hierarchy of directories if the path has slashes in it, but for
+    now it can't. Emulate this."""
+
+    for p in path.split('/'):
+        if p in [x.GetName() for x in dir.GetListOfKeys()] and dir.Get(p).Class().GetName() == 'TDirectoryFile':
+            dir = dir.Get(p)
+        else:
+            dir = dir.mkdir(p)
+    return dir
+
 class plot_saver:
     i = 0
     
@@ -177,8 +210,11 @@ class plot_saver:
         html.write('<a href="..">.. (parent directory)</a>\n')
         for i, save in enumerate(self.saved):
             if type(save) == str:
-                # this is just a directory link
-                html.write('<a href="%s">%10i%32s%s</a>\n' % (save, i, 'change directory: ', save))
+                if save == '__sep__':
+                    html.write('-'*80 + '\n')
+                else:
+                    # a directory link
+                    html.write('<a href="%s">%10i%32s%s</a>\n' % (save, i, 'change directory: ', save))
                 continue
 
             fn, log, root, pdf, pdf_log, C, C_log = save
@@ -213,6 +249,8 @@ class plot_saver:
         html.write('<br><br>')
         for i, save in enumerate(self.saved):
             if type(save) == str:
+                if save == '__sep__':
+                    html.write('<hr>\n')
                 continue # skip dir entries
             fn, log, root, pdf, pdf_log, C, C_log = save
             bn = os.path.basename(fn)
@@ -236,7 +274,10 @@ class plot_saver:
         if self.plot_dir is None:
             raise ValueError('save_dir called before plot_dir set!')
         self.saved.append(n)
-                    
+
+    def add_sep(self):
+        self.saved.append('__sep__')
+
     def save(self, n, log=None, root=None, pdf=None, pdf_log=None, C=None, C_log=None):
         log = self.log if log is None else log
         root = self.root if root is None else root
@@ -317,7 +358,6 @@ def tdr_style(_cache=[]):
     s.SetFuncWidth(1)
     s.SetOptDate(0)
     s.SetOptFile(0)
-    s.SetOptStat(0)
     s.SetStatColor(ROOT.kWhite)
     s.SetStatFont(42)
     s.SetStatFontSize(0.025)
@@ -360,6 +400,18 @@ def tdr_style(_cache=[]):
 
     ROOT.gErrorIgnoreLevel = 1001 # Suppress TCanvas::SaveAs messages.
 
+def tfile_iterator(dir, path='', pathsep='/'):
+    """An iterator to loop over all histograms in a file/dir, allowing
+    nested folders."""
+    for key in dir.GetListOfKeys():
+        obj = key.ReadObj()
+        subpath = path + (pathsep if path else '') + obj.GetName()
+        if obj.Class().GetName() == 'TDirectoryFile':
+            for yld in tfile_iterator(obj, subpath):
+                yield yld
+        else:
+            yield obj, subpath
+
 def ttree_iterator(tree, return_tree=False):
     for jentry in xrange(tree.GetEntriesFast()):
         if tree.LoadTree(jentry) < 0: break
@@ -377,7 +429,10 @@ __all__ = [
     'detree',
     'differentiate_stat_box',
     'fit_gaussian',
+    'integral',
+    'mkdir',
     'plot_saver',
     'tdr_style',
+    'tfile_iterator',
     'ttree_iterator',
     ]
