@@ -41,7 +41,9 @@ group.add_argument('+is-mc', action='store_true',
 group.add_argument('+debug', action='store_true',
                    help='Turn on the debug dumps (off by default).')
 group.add_argument('+debug-data-event', metavar=('RUN','LUMI','EVENT'), nargs=3, type=int,
-                   help='Run debug dumps on the event specified, retrieving the filename from DBS.')
+                   help='Run debug dumps on the data event specified, retrieving the filename from DBS.')
+group.add_argument('+debug-mc-event', metavar=('ID','LUMI','EVENT'), nargs=3, type=int,
+                   help='Run debug dumps on the MC event specified, retrieving the filename from DBS.')
 group.add_argument('+foo', action='store_true', help=argparse.SUPPRESS)
 group.add_argument('+run-event', metavar='RUN,EVENT', action='append', dest='run_events',
                    help='Run over a particular run,event only (use all events in input by default).')
@@ -103,34 +105,50 @@ delattr(options, 'cmsrunargs')
 if options.foo:
     options.debug = True
 
-def get_dataset(run):
-    run = int(run)
-    if 126948 <= run <= 131510:
-        return '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO'
-    elif 131511 <= run <= 135802:
-        return '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'
-    elif 135808 <= run <= 144431:
-        return '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'
-    elif 144461 <= run <= 149927:
-        return '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'
-    elif 160329 <= run <= 164428:
-        return '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'
-    elif 165358 <= run <= 169715:
-        return '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'
-    elif 169717 <= run <= 172789:
-        return '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'
-    elif 172791 <= run <= 175784:
-        return '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'
-    elif 175788 <= run <= 180827:
-        return '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'
-    else:
-        raise ValueError('dunno how to do run %i' % run)
+datasets_data = [
+    ('SPCommissioning10v3', '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO', 126948, 131510),
+    ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO', 131511, 135802),
+    ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO',               135808, 144431),
+    ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO',               144461, 149927),
+    ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO',       160329, 164428),
+    ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO',        165358, 169715),
+    ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO',        169717, 172789),
+    ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO',        172791, 175784),
+    ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO',        175788, 180827),
+    ]
 
-if options.debug_data_event:
-    run, lumi, event = options.debug_data_event
-    print run, lumi, event
-    dataset = get_dataset(run)
-    print dataset
+datasets_mc = [
+    ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v2/GEN-SIM-RAW-RECO'),
+    ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v3/GEN-SIM-RAW-RECO'),
+    ('P500Peak', 3, '/TKCosmics_p500_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v2/GEN-SIM-RAW-RECO'),
+    ]
+
+def get_dataset_data(run):
+    run = int(run)
+    for name, dataset, run_min, run_max in datasets_data:
+        if run_min <= run <= run_max:
+            return dataset
+    raise ValueError('dunno how to do run %i' % run)
+
+def get_dataset_mc(i):
+    i = int(i)
+    for name, id, dataset in datasets_mc:
+        if i == id:
+            return dataset
+    raise ValueError('dunno how to do id %i' % i)
+
+if options.debug_data_event or options.debug_mc_event:
+    if options.debug_data_event:
+        print 'debug_data_event:'
+        run, lumi, event = options.debug_data_event
+        id = 0
+        dataset = get_dataset_data(run)
+    else:
+        print 'debug_mc_event:'
+        id, lumi, event = options.debug_mc_event
+        run = 1
+        dataset = get_dataset_mc(id)
+    print id, run, lumi, event, dataset
     output = os.popen('dbs search --query="find file where dataset=%s and run=%s and lumi=%s"' % (dataset, run, lumi)).read()
     print repr(output)
     filename = [x for x in output.split('\n') if x.endswith('.root')][0]
@@ -566,6 +584,7 @@ if hasattr(process, 'out') and options.edm_output and not options.edm_output_all
 if options.dumps and options.foo:
     from Test.Tests.tools import vinputtagize
     process.EventDump = cms.EDAnalyzer('EventDump', use_cout = cms.untracked.bool(True))
+    process.EventDump.muon_labels = vinputtagize(['muons'])
     if not options.pp_reco_mode:
         process.EventDump.track_labels = vinputtagize([
             'cosmicMuons',
@@ -618,25 +637,17 @@ return_data = 1
 %(additional_input_files)s
 '''
 
-    # For data, don't bother splitting by LS; instead run 1000 events
-    # per job. This is low enough not to use too much memory and
-    # crash.
-    job_control_data = '''
+    job_control_mc = '''
 split_by_event = 1
 total_number_of_events = -1
-events_per_job = 1000
+events_per_job = 10000
 '''
 
-    # Build a loose run list that is the superset of any run list we
-    # might want to apply later: require STRIP & (DT | CSC), for any
-    # run type.
-    import runs
-    data_runs = runs.get_run_list(run_types='any', muon_subdet='either', require_pixels=False)
-    job_control_data += 'runselection = %s\n' % ','.join(str(i) for i in data_runs)
-    
-    # MC is much better behaved (LS merging is trivial), so up the
-    # events/job.
-    job_control_mc = job_control_data.replace('1000', '10000') 
+    job_control_data = '''
+total_number_of_lumis = -1
+lumis_per_job = 50
+lumi_mask = tmp.json
+'''
 
     # For tests, option to run just on a few LS that contained high-pT
     # muons in 2010 cosmic dataset.
@@ -704,42 +715,33 @@ options.run_events = None
     
     if options.submit_mc:
         job_control = job_control_mc
-        datasets = [
-            ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v2/GEN-SIM-RAW-RECO'),
-            ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v3/GEN-SIM-RAW-RECO'),
-            ('P500Peak', 3, '/TKCosmics_p500_PEAK/Summer11-SuperPointing-SPskimCosRECO-COSMC_42_PEAK-v2/GEN-SIM-RAW-RECO'),
-            ]
-        
-        for sample_name, dataset_id, dataset_path in datasets:
+        for sample_name, dataset_id, dataset_path in datasets_mc:
             # Here we do MC-only lines.
             write_new_py('options.dataset_id = %i' % dataset_id,
                          'options.is_mc = True')
             submit(locals())
 
     if options.submit_data:
-        job_control = job_control_data
-        datasets = [
-            ('SPCommissioning10v3', '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO'),
-            ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO'),
-            ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO'),
-            ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO'),
-            ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO'),
-            ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO'),
-            ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO'),
-            ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO'),
-            ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO'),
-            ]
-
         if options.submit_highpt2010only:
             job_control = job_control_highpt2010only
             datasets = datasets[:4]
+        else:
+            job_control = job_control_data
+            
+            # Build a loose run list that is the superset of any run list we
+            # might want to apply later: require STRIP & (DT | CSC), for any
+            # run type.
+            import runs
+            data_runs = runs.get_run_list(run_types='any', muon_subdet='either', require_pixels=False)
+            json = ['"%i": [[1,26296]]' % r for r in data_runs]
+            open('tmp.json', 'wt').write('{' + ', '.join(json) + '}')
+            lumi_mask = 'lumi_mask = tmp.json'
 
-        for sample_name, dataset_path in datasets:
+        for sample_name, dataset_path, run_min, run_max in datasets_data:
             if options.submit_highpt2010only:
                 sample_name += 'HighPt2010'
             # No data-only lines for now, as the defaults are all set for data.
             write_new_py()
             submit(locals())
 
-    os.system('rm -f crab.cfg %s %s' % (new_py_fn, new_py_fn.replace('.py', '.pyc')))
-
+    os.system('rm -f crab.cfg tmp.json %s %s' % (new_py_fn, new_py_fn.replace('.py', '.pyc')))
