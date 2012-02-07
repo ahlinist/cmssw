@@ -484,6 +484,8 @@ private:
   // Whether to check the delta phi between the tracker and standalone
   // tracks that went into the global fit.
   const bool check_tksta_dphi;
+  // Whether to check the counts of shared hits.
+  const bool check_shared_hits;
   // Whether to use the unpropagated values (both upper and lower
   // quantities taken from values at PCA) or the propagated ones
   // (lower track propagated to PCA of upper track). Almost
@@ -522,14 +524,14 @@ private:
 		    error_last };
 
   // Monitoring plots for track positions.
-  TH1I* h_global_upper_inner_pos_xy;
-  TH1I* h_global_upper_inner_pos_rz;
-  TH1I* h_global_upper_outer_pos_xy;
-  TH1I* h_global_upper_outer_pos_rz;
-  TH1I* h_global_lower_inner_pos_xy;
-  TH1I* h_global_lower_inner_pos_rz;
-  TH1I* h_global_lower_outer_pos_xy;
-  TH1I* h_global_lower_outer_pos_rz;
+  TH2I* h_global_upper_inner_pos_xy;
+  TH2I* h_global_upper_inner_pos_rz;
+  TH2I* h_global_upper_outer_pos_xy;
+  TH2I* h_global_upper_outer_pos_rz;
+  TH2I* h_global_lower_inner_pos_xy;
+  TH2I* h_global_lower_inner_pos_rz;
+  TH2I* h_global_lower_outer_pos_xy;
+  TH2I* h_global_lower_outer_pos_rz;
 
   // For debug dumps;
   std::ostringstream out;
@@ -611,14 +613,14 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
   errors->GetXaxis()->SetBinLabel(1 + error_tksta_dphi,          "tksta_dphi");
   errors->GetXaxis()->SetBinLabel(1 + error_shared_hits,         "shared_hits");
 
-  h_global_upper_inner_pos_xy = fs->make<TH1I>("h_global_upper_inner_pos_xy", "", 300, -750, 750, 300, -750, 750);
-  h_global_upper_outer_pos_xy = fs->make<TH1I>("h_global_upper_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
-  h_global_lower_inner_pos_xy = fs->make<TH1I>("h_global_lower_inner_pos_xy", "", 300, -750, 750, 300, -750, 750);
-  h_global_lower_outer_pos_xy = fs->make<TH1I>("h_global_lower_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
-  h_global_upper_inner_pos_rz = fs->make<TH1I>("h_global_upper_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
-  h_global_upper_outer_pos_rz = fs->make<TH1I>("h_global_upper_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
-  h_global_lower_inner_pos_rz = fs->make<TH1I>("h_global_lower_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
-  h_global_lower_outer_pos_rz = fs->make<TH1I>("h_global_lower_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_upper_inner_pos_xy = fs->make<TH2I>("h_global_upper_inner_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_upper_outer_pos_xy = fs->make<TH2I>("h_global_upper_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_lower_inner_pos_xy = fs->make<TH2I>("h_global_lower_inner_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_lower_outer_pos_xy = fs->make<TH2I>("h_global_lower_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_upper_inner_pos_rz = fs->make<TH2I>("h_global_upper_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_upper_outer_pos_rz = fs->make<TH2I>("h_global_upper_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_lower_inner_pos_rz = fs->make<TH2I>("h_global_lower_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_lower_outer_pos_rz = fs->make<TH2I>("h_global_lower_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
 
   // Load the tree, and branch to our ntuple object.
   tree = 0;
