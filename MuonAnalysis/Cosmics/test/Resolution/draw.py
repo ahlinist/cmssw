@@ -184,6 +184,16 @@ if __name__ == '__main__':
     drawer.file.histos.Get('errors').Draw('hist text00')
     ps.save('histo_errors')
 
+    for proj in ['xy', 'rz']:
+        for which in ['upper', 'lower']:
+            for end in ['inner', 'outer']:
+                n = 'h_global_%s_%s_pos_%s' % (which, end, proj)
+                h = drawer.file.histos.Get(n)
+                h.SetStats(0)
+                h.SetMarkerStyle(6)
+                h.Draw()
+                ps.save(n)
+
     ps.save_dir('upperR1lower')
     ps.save_dir('upperPlower')
 
