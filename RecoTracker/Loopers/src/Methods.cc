@@ -44,6 +44,7 @@
 #include "DataFormats/TrajectorySeed/interface/TrajectorySeed.h"
 #include "RecoTracker/TkTrackingRegions/interface/GlobalTrackingRegion.h"
 #include "RecoTracker/TkSeedingLayers/interface/SeedingHitSet.h"
+#include <iostream>
 
 void LooperClusterRemoverMethod::FractionOfTruth::run(edm::Event& iEvent, const edm::EventSetup& iSetup,
 						      LooperClusterRemover::products &prod_)
@@ -355,7 +356,8 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   //implement one method
   edm::Handle<SiPixelRecHitCollection> pixelHits;
   edm::Handle<SiStripMatchedRecHit2DCollection> matchedHits;
-  //  edm::Handle<SiStripRecHit2DCollection> rphiHits;
+  edm::Handle<SiStripRecHit2DCollection> rphiHits;
+  edm::Handle<SiStripRecHit2DCollection> stereoHits;
 
   edm::Handle<reco::BeamSpot> beamSpot;
   iEvent.getByLabel("offlineBeamSpot",beamSpot);
@@ -369,6 +371,10 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   //get the products
   iEvent.getByLabel(pixelRecHits_,pixelHits);
   iEvent.getByLabel(stripRecHits_,matchedHits);
+  if (useUnmatched_){
+    iEvent.getByLabel(rphiRecHits_,rphiHits);
+    iEvent.getByLabel(stereoRecHits_,stereoHits);
+  }
 
   edm::ESHandle<TransientTrackingRecHitBuilder> builder;
   iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",builder);
@@ -377,7 +383,11 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   edm::ESHandle<MagneticField> magField;
   iSetup.get<IdealMagneticFieldRecord>().get(magField);
 
-  fastHits.reserve(pixelHits->dataSize()+matchedHits->dataSize());
+  if (useUnmatched_)
+    fastHits.reserve(pixelHits->dataSize()+matchedHits->dataSize()+rphiHits->size()+stereoHits->size());
+  else
+    fastHits.reserve(pixelHits->dataSize()+matchedHits->dataSize());
+
   for ( SiPixelRecHitCollection::const_iterator dPxIt=pixelHits->begin();
 	dPxIt!=pixelHits->end();++dPxIt)  {
     for (SiPixelRecHitCollection::DetSet::const_iterator pxIt=dPxIt->begin();
@@ -394,6 +404,24 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       fastHits.push_back(fastRecHit(builder->build(&*stIt),bs));
     }
   }  
+
+  if (useUnmatched_){
+  for (SiStripRecHit2DCollection::const_iterator dStIt=rphiHits->begin();
+       dStIt!=rphiHits->end();++dStIt){
+    for (SiStripRecHit2DCollection::DetSet::const_iterator stIt=dStIt->begin(); 
+	 stIt!=dStIt->end();++stIt){
+      fastHits.push_back(fastRecHit(builder->build(&*stIt),bs,true));
+    }
+  }
+
+  for (SiStripRecHit2DCollection::const_iterator dStIt=stereoHits->begin();
+       dStIt!=stereoHits->end();++dStIt){
+    for (SiStripRecHit2DCollection::DetSet::const_iterator stIt=dStIt->begin(); 
+	 stIt!=dStIt->end();++stIt){
+      fastHits.push_back(fastRecHit(builder->build(&*stIt),bs,true));
+    }
+  }
+  }
 
   LogDebug("LooperMethod")<<"collected: "<< fastHits.size() <<" hits"<<std::endl;
   //initialize the aggregator
@@ -417,7 +445,8 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   }
 
   unsigned int nMasked=0;
-
+  std::ofstream positionsInHelix("positionsInHelix.txt");
+    
   for(std::vector<aCell*>::iterator iPeak=collector.peak_begin();
       iPeak!=collector.peak_end();++iPeak){
     aCell * peak=*iPeak;
@@ -427,6 +456,11 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
     SeedingHitSet forSeedCreator;
 
     bool goodToMask=true;
+
+    positionsInHelix<<" a looper with: "<<peak->count()<<" hits"<<std::endl;
+    for (uint iH=0;iH!=peak->count();++iH){
+      positionsInHelix<<peak->elements_[iH]->hit_->globalPosition()<<std::endl;
+    }
 
     if (makeTC_){
       goodToMask=false; //until we made a TC out of it
@@ -477,17 +511,30 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       else{
 	LogDebug("LooperMethod")<<" in the strip case"<<std::endl;      
 	//so far so good
-	const SiStripMatchedRecHit2D * mH=dynamic_cast<const SiStripMatchedRecHit2D *>(peak->elements_[iH]->hit_->hit());
-	if (!mH){
-	  edm::LogError("LooperMethod")<<" not casting back to a 2d rechit. probably projected on the way"<<std::endl;
-	  assert(0==1);
-	  continue;
+	if (peak->elements_[iH]->single_){
+	  const SiStripRecHit2D * rH=static_cast<const SiStripRecHit2D  *>(peak->elements_[iH]->hit_->hit());
+	  /*if (!rH){
+	    edm::LogError("LooperMethod")<<" not casting back to a 1d rechit. probably projected on the way"<<std::endl;
+	    assert(0==1);
+	    continue;
+	    }*/ //was verified that the static_cast <- dynamic_cast was always functionning
+	  LogTrace("LooperMethod")<<"actively masking:" <<rH<<std::endl;
+	  if (!prod_.collectedStrips[rH->cluster().key()]) nMasked++;
+	  prod_.collectedStrips[rH->cluster().key()]=true;
 	}
-	LogTrace("LooperMethod")<<"actively masking:" <<mH<<std::endl;
-	if (!prod_.collectedStrips[mH->stereoHit()->cluster().key()]) nMasked++;
-	if (!prod_.collectedStrips[mH->monoHit()->cluster().key()]) nMasked++;
-	prod_.collectedStrips[mH->stereoHit()->cluster().key()]=true;
-	prod_.collectedStrips[mH->monoHit()->cluster().key()]=true;
+	else{
+	  const SiStripMatchedRecHit2D * mH=dynamic_cast<const SiStripMatchedRecHit2D *>(peak->elements_[iH]->hit_->hit());
+	  /*	  if (!mH){
+	    edm::LogError("LooperMethod")<<" not casting back to a 2d rechit. probably projected on the way"<<std::endl;
+	    assert(0==1);
+	    continue;
+	    }*/ //was verified that the static_cast <- dynamic_cast was always functionning
+	  LogTrace("LooperMethod")<<"actively masking:" <<mH<<std::endl;
+	  if (!prod_.collectedStrips[mH->stereoHit()->cluster().key()]) nMasked++;
+	  if (!prod_.collectedStrips[mH->monoHit()->cluster().key()]) nMasked++;
+	  prod_.collectedStrips[mH->stereoHit()->cluster().key()]=true;
+	  prod_.collectedStrips[mH->monoHit()->cluster().key()]=true;
+	}
       }//strip case
 
 
@@ -515,6 +562,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   else
     edm::LogError("LooperMethod")<<collector.nPeaks() <<" loopers identified, leading to "<<nMasked<<" hits to be masked, with duplicates, which does not matter"<<std::endl;
 
+  positionsInHelix.close();
 }
 
 bool LooperClusterRemoverMethod::PerJet::inZone(edm::Handle<edm::View<reco::Candidate> > & h_jets,

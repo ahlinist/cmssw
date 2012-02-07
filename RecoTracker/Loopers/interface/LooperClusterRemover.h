@@ -17,7 +17,7 @@
 //
 // Original Author:  Jean-Roch Vlimant,40 3-A28,+41227671209,
 //         Created:  Wed Aug  3 12:12:46 CEST 2011
-// $Id: LooperClusterRemover.h,v 1.1 2011/11/30 13:42:32 vlimant Exp $
+// $Id: LooperClusterRemover.h,v 1.2 2011/12/14 17:29:43 vlimant Exp $
 //
 //
 
@@ -39,6 +39,7 @@
 
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
 
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
 #include "DataFormats/Common/interface/ContainerMask.h"
