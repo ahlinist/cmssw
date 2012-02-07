@@ -46,6 +46,9 @@ namespace LooperClusterRemoverMethod {
     LooperMethod(const edm::ParameterSet& iConfig){
       pixelRecHits_=iConfig.getParameter<edm::InputTag>("pixelRecHits");
       stripRecHits_=iConfig.getParameter<edm::InputTag>("stripRecHits");
+      useUnmatched_=iConfig.getParameter<bool>("useUnmatched");
+      rphiRecHits_=iConfig.getParameter<edm::InputTag>("rphiRecHits");
+      stereoRecHits_=iConfig.getParameter<edm::InputTag>("stereoRecHits");
       collectorConf_=iConfig.getParameter<edm::ParameterSet>("collector");
       makeTC_=iConfig.getParameter<bool>("makeTrackCandidates");
       if (makeTC_){
@@ -61,7 +64,8 @@ namespace LooperClusterRemoverMethod {
     void run(edm::Event&, const edm::EventSetup&,
 	     LooperClusterRemover::products &);
     
-    edm::InputTag pixelRecHits_,stripRecHits_;
+    bool useUnmatched_;
+    edm::InputTag pixelRecHits_,stripRecHits_,rphiRecHits_,stereoRecHits_;
     edm::ParameterSet collectorConf_;
     bool makeTC_;
     bool maskWithNoTC_;
