@@ -617,10 +617,10 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
   h_global_upper_outer_pos_xy = fs->make<TH2I>("h_global_upper_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
   h_global_lower_inner_pos_xy = fs->make<TH2I>("h_global_lower_inner_pos_xy", "", 300, -750, 750, 300, -750, 750);
   h_global_lower_outer_pos_xy = fs->make<TH2I>("h_global_lower_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
-  h_global_upper_inner_pos_rz = fs->make<TH2I>("h_global_upper_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
-  h_global_upper_outer_pos_rz = fs->make<TH2I>("h_global_upper_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
-  h_global_lower_inner_pos_rz = fs->make<TH2I>("h_global_lower_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
-  h_global_lower_outer_pos_rz = fs->make<TH2I>("h_global_lower_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_upper_inner_pos_rz = fs->make<TH2I>("h_global_upper_inner_pos_rz", "", 430, -1075, 1075, 320, -800, 800);
+  h_global_upper_outer_pos_rz = fs->make<TH2I>("h_global_upper_outer_pos_rz", "", 430, -1075, 1075, 320, -800, 800);
+  h_global_lower_inner_pos_rz = fs->make<TH2I>("h_global_lower_inner_pos_rz", "", 430, -1075, 1075, 320, -800, 800);
+  h_global_lower_outer_pos_rz = fs->make<TH2I>("h_global_lower_outer_pos_rz", "", 430, -1075, 1075, 320, -800, 800);
 
   // Load the tree, and branch to our ntuple object.
   tree = 0;
@@ -832,10 +832,10 @@ void CosmicSplittingResolutionHistos::analyze(const edm::Event&, const edm::Even
     h_global_lower_inner_pos_xy->Fill(nt->inner_pos[tk_global][lower][0], nt->inner_pos[tk_global][lower][1]);
     h_global_lower_outer_pos_xy->Fill(nt->outer_pos[tk_global][lower][0], nt->outer_pos[tk_global][lower][1]);
 
-    h_global_upper_inner_pos_rz->Fill(xy_to_r(nt->inner_pos[tk_global][upper][0], nt->inner_pos[tk_global][upper][1]), nt->inner_pos[tk_global][upper][2]);
-    h_global_upper_outer_pos_rz->Fill(xy_to_r(nt->outer_pos[tk_global][upper][0], nt->outer_pos[tk_global][upper][1]), nt->outer_pos[tk_global][upper][2]);
-    h_global_lower_inner_pos_rz->Fill(xy_to_r(nt->inner_pos[tk_global][lower][0], nt->inner_pos[tk_global][lower][1]), nt->inner_pos[tk_global][lower][2]);
-    h_global_lower_outer_pos_rz->Fill(xy_to_r(nt->outer_pos[tk_global][lower][0], nt->outer_pos[tk_global][lower][1]), nt->outer_pos[tk_global][lower][2]);
+    h_global_upper_inner_pos_rz->Fill(nt->inner_pos[tk_global][upper][2], xy_to_r(nt->inner_pos[tk_global][upper][0], nt->inner_pos[tk_global][upper][1]));
+    h_global_upper_outer_pos_rz->Fill(nt->outer_pos[tk_global][upper][2], xy_to_r(nt->outer_pos[tk_global][upper][0], nt->outer_pos[tk_global][upper][1]));
+    h_global_lower_inner_pos_rz->Fill(nt->inner_pos[tk_global][lower][2], xy_to_r(nt->inner_pos[tk_global][lower][0], nt->inner_pos[tk_global][lower][1]));
+    h_global_lower_outer_pos_rz->Fill(nt->outer_pos[tk_global][lower][2], xy_to_r(nt->outer_pos[tk_global][lower][0], nt->outer_pos[tk_global][lower][1]));
     
     if (copy_selected_events)
       events_used->Fill();
