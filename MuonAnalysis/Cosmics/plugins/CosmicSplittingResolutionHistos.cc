@@ -518,8 +518,18 @@ private:
   // ("error").
   TH1F* errors;
   enum error_code { error_none, error_bad_run, error_bfield, error_bad_event, error_tt25, error_wrong_sample, error_propagation, error_prop_mc,
-		    error_muon_hits, error_pixels, error_strips, error_tpfms_station, error_dt, error_csc, error_tksta_dphi,
+		    error_muon_hits, error_pixels, error_strips, error_tpfms_station, error_dt, error_csc, error_tksta_dphi, error_shared_hits,
 		    error_last };
+
+  // Monitoring plots for track positions.
+  TH1I* h_global_upper_inner_pos_xy;
+  TH1I* h_global_upper_inner_pos_rz;
+  TH1I* h_global_upper_outer_pos_xy;
+  TH1I* h_global_upper_outer_pos_rz;
+  TH1I* h_global_lower_inner_pos_xy;
+  TH1I* h_global_lower_inner_pos_rz;
+  TH1I* h_global_lower_outer_pos_xy;
+  TH1I* h_global_lower_outer_pos_rz;
 
   // For debug dumps;
   std::ostringstream out;
@@ -555,6 +565,7 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
     no_dt_allowed(cfg.getParameter<bool>("no_dt_allowed")),
     no_csc_allowed(cfg.getParameter<bool>("no_csc_allowed")),
     check_tksta_dphi(cfg.getParameter<bool>("check_tksta_dphi")),
+    check_shared_hits(cfg.getParameter<bool>("check_shared_hits")),
     use_unpropagated_values(cfg.getParameter<bool>("use_unpropagated_values")),
     pp_reco_mode(cfg.getParameter<bool>("pp_reco_mode")),
     force_run_list(cfg.getParameter<std::vector<unsigned> >("force_run_list")),
@@ -598,6 +609,16 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
   errors->GetXaxis()->SetBinLabel(1 + error_dt,                  "dt");
   errors->GetXaxis()->SetBinLabel(1 + error_csc,                 "csc");
   errors->GetXaxis()->SetBinLabel(1 + error_tksta_dphi,          "tksta_dphi");
+  errors->GetXaxis()->SetBinLabel(1 + error_shared_hits,         "shared_hits");
+
+  h_global_upper_inner_pos_xy = fs->make<TH1I>("h_global_upper_inner_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_upper_outer_pos_xy = fs->make<TH1I>("h_global_upper_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_lower_inner_pos_xy = fs->make<TH1I>("h_global_lower_inner_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_lower_outer_pos_xy = fs->make<TH1I>("h_global_lower_outer_pos_xy", "", 300, -750, 750, 300, -750, 750);
+  h_global_upper_inner_pos_rz = fs->make<TH1I>("h_global_upper_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_upper_outer_pos_rz = fs->make<TH1I>("h_global_upper_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_lower_inner_pos_rz = fs->make<TH1I>("h_global_lower_inner_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
+  h_global_lower_outer_pos_rz = fs->make<TH1I>("h_global_lower_outer_pos_rz", "", 430, -1075, 1075, 300, -750, 750);
 
   // Load the tree, and branch to our ntuple object.
   tree = 0;
@@ -775,7 +796,20 @@ CosmicSplittingResolutionHistos::error_code CosmicSplittingResolutionHistos::cut
       }
     }
 
+  // Don't allow upper, lower tracks to share hits.
+  if (check_shared_hits)
+    for (int i = 0; i < n_tracks; ++i)
+      if (nt->shared_hits[i])
+	return error_shared_hits;
+
   return error_none;
+}
+
+float xy_to_r(float x, float y) {
+  float r = sqrt(x*x + y*y);
+  if (y < 0)
+    r *= -1;
+  return r;
 }
 
 void CosmicSplittingResolutionHistos::analyze(const edm::Event&, const edm::EventSetup&) {
@@ -791,6 +825,16 @@ void CosmicSplittingResolutionHistos::analyze(const edm::Event&, const edm::Even
     if (e != error_none)
       continue;
 
+    h_global_upper_inner_pos_xy->Fill(nt->inner_pos[tk_global][upper][0], nt->inner_pos[tk_global][upper][1]);
+    h_global_upper_outer_pos_xy->Fill(nt->outer_pos[tk_global][upper][0], nt->outer_pos[tk_global][upper][1]);
+    h_global_lower_inner_pos_xy->Fill(nt->inner_pos[tk_global][lower][0], nt->inner_pos[tk_global][lower][1]);
+    h_global_lower_outer_pos_xy->Fill(nt->outer_pos[tk_global][lower][0], nt->outer_pos[tk_global][lower][1]);
+
+    h_global_upper_inner_pos_rz->Fill(xy_to_r(nt->inner_pos[tk_global][upper][0], nt->inner_pos[tk_global][upper][1]), nt->inner_pos[tk_global][upper][2]);
+    h_global_upper_outer_pos_rz->Fill(xy_to_r(nt->outer_pos[tk_global][upper][0], nt->outer_pos[tk_global][upper][1]), nt->outer_pos[tk_global][upper][2]);
+    h_global_lower_inner_pos_rz->Fill(xy_to_r(nt->inner_pos[tk_global][lower][0], nt->inner_pos[tk_global][lower][1]), nt->inner_pos[tk_global][lower][2]);
+    h_global_lower_outer_pos_rz->Fill(xy_to_r(nt->outer_pos[tk_global][lower][0], nt->outer_pos[tk_global][lower][1]), nt->outer_pos[tk_global][lower][2]);
+    
     if (copy_selected_events)
       events_used->Fill();
 
