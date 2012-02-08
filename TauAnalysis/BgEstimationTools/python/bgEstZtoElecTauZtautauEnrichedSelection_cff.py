@@ -209,6 +209,10 @@ from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import *
 jetsBgEstZtautauEnrichedEta = copy.deepcopy(selectedPatJetsForAHtoElecTauEta)
 jetsBgEstZtautauEnrichedEt = copy.deepcopy(selectedPatJetsForAHtoElecTauEt)
 jetsBgEstZtautauEnrichedAntiOverlapWithLeptonsVeto = copy.deepcopy(selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto)
+jetsBgEstZtautauEnrichedAntiOverlapWithLeptonsVeto.srcNotToBeFiltered = cms.VInputTag(
+        "electronsBgEstZtautauEnrichedTrkIPcumulative",
+        "tausBgEstZtautauEnrichedMuonVetoCumulative"),
+
 jetsBgEstZtautauEnrichedJetTag = copy.deepcopy(selectedPatJetsForAHtoElecTauJetTag)
 jetsBgEstZtautauEnrichedJetBtag = copy.deepcopy(selectedPatJetsForAHtoElecTauBtag)
 
