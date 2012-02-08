@@ -11,7 +11,7 @@ patMuonPFIsolationSelector = cms.PSet(
     #     need to be set if using rho (FastJet) pile-up corrections
     #rhoFastJetSource = cms.InputTag('kt6PFJets', 'rho'),
         
-    chargedHadronIso = cms.PSet(
+    chargedParticleIso = cms.PSet(
         ptMin = cms.double(1.0),        
         dRvetoCone = cms.double(-1.),
         dRisoCone = cms.double(0.4)
@@ -53,7 +53,7 @@ patElectronPFIsolationSelector = cms.PSet(
     #     need to be set if using rho (FastJet) pile-up corrections
     #rhoFastJetSource = cms.InputTag('kt6PFJets', 'rho'),
         
-    chargedHadronIso = cms.PSet(
+    chargedParticleIso = cms.PSet(
         ptMin = cms.double(0.),        
         dRvetoCone = cms.double(0.015), 
         dRisoCone = cms.double(0.4),

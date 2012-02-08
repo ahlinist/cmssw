@@ -20,7 +20,7 @@ muonHistManager = cms.PSet(
     skipPdgIdsGenParticleMatch = cms.vint32( 12, 14, 16 ),
 
     pfCombIsoExtractor = cms.PSet(
-        chargedHadronIso = selectedPatMuonsPFRelIso.chargedHadronIso,
+        chargedParticleIso = selectedPatMuonsPFRelIso.chargedParticleIso,
         neutralHadronIso = selectedPatMuonsPFRelIso.neutralHadronIso,
         photonIso = selectedPatMuonsPFRelIso.photonIso
     ),

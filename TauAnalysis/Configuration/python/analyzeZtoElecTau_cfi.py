@@ -177,31 +177,6 @@ evtSelGenPhaseSpace = cms.PSet(
     src = cms.InputTag('genPhaseSpaceCut')
 )
 
-# generator level selection of Z --> e + tau-jet events
-# passing basic acceptance and kinematic cuts
-# (NOTE: to be used for efficiency studies only !!)
-#genElectronCut = cms.PSet(
-#    pluginName = cms.string('genElectronCut'),
-#    pluginType = cms.string('BoolEventSelector'),
-#    src = cms.InputTag('isGenZtoElecTau')
-#)
-#genTauCut = cms.PSet(
-# (NOTE: to be used in case of Monte Carlo samples
-#        overlapping in simulated phase-space only !!)
-evtSelGenPhaseSpace = cms.PSet(
-    pluginName = cms.string('genPhaseSpaceCut'),
-    pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('genPhaseSpaceCut')
-)
-
-# generator level selection of Z --> e + tau-jet events
-# passing basic acceptance and kinematic cuts
-# (NOTE: to be used for efficiency studies only !!)
-#genElectronCut = cms.PSet(
-#    pluginName = cms.string('genElectronCut'),
-#    pluginType = cms.string('BoolEventSelector'),
-#    src = cms.InputTag('isGenZtoElecTau')
-#)
 #genTauCut = cms.PSet(
 #    pluginName = cms.string('genTauCut'),
 #    pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -445,12 +420,12 @@ elecTauEventDump = cms.PSet(
     pfCandidateSource = cms.InputTag('pfNoPileUp'),
     # un-comment to print PF-isolation sums
     pfCombIsoExtractor = cms.PSet(
-        chargedHadronIso = selectedPatElectronsForElecTauIso.chargedHadronIso,
+        chargedParticleIso = selectedPatElectronsForElecTauIso.chargedParticleIso,
         neutralHadronIso = selectedPatElectronsForElecTauIso.neutralHadronIso,
         photonIso = selectedPatElectronsForElecTauIso.photonIso
     ),
     pfChargedHadronIsoExtractor = cms.PSet(
-        chargedHadronIso = selectedPatElectronsForElecTauIso.chargedHadronIso
+        chargedParticleIso = selectedPatElectronsForElecTauIso.chargedParticleIso
     ),
     pfNeutralHadronIsoExtractor = cms.PSet(
         neutralHadronIso = selectedPatElectronsForElecTauIso.neutralHadronIso

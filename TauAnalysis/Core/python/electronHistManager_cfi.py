@@ -19,12 +19,12 @@ electronHistManager = cms.PSet(
 	skipPdgIdsGenParticleMatch = cms.vint32( 12, 14, 16 ),
 
 	pfCombIsoExtractor = cms.PSet(
-		chargedHadronIso = selectedPatElectronsForElecTauIso.chargedHadronIso,
+		chargedParticleIso = selectedPatElectronsForElecTauIso.chargedParticleIso,
 		neutralHadronIso = selectedPatElectronsForElecTauIso.neutralHadronIso,
 		photonIso = selectedPatElectronsForElecTauIso.photonIso
 	),
 	pfChargedHadronIsoExtractor = cms.PSet(
-		chargedHadronIso = selectedPatElectronsForElecTauIso.chargedHadronIso
+		chargedParticleIso = selectedPatElectronsForElecTauIso.chargedParticleIso
 	),
 	pfNeutralHadronIsoExtractor = cms.PSet(
 		neutralHadronIso = selectedPatElectronsForElecTauIso.neutralHadronIso
