@@ -45,3 +45,16 @@ vbfEventHypothesesSelConfiguratorForAHtoMuTau = objSelConfigurator(
 )
 
 selectVBFEventHypothesesForAHtoMuTau = vbfEventHypothesesSelConfiguratorForAHtoMuTau.configure(pyNameSpace = locals())
+
+vbfEventHypothesesSelConfiguratorForAHtoMuTauLooseMuonIsolation = objSelConfigurator(
+    [ selectedVBFEventHypothesesForAHtoMuTauTagJetEt30,
+      selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphere,
+      selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35,
+      selectedVBFEventHypothesesForAHtoMuTauTagJetMass350,
+      selectedVBFEventHypothesesForAHtoMuTau3rdJetVeto ],
+    src = "allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = vbfEventHypothesesSelConfiguratorForAHtoMuTauLooseMuonIsolation.configure(pyNameSpace = locals())
