@@ -326,17 +326,23 @@ def _setTriggerBits(process, triggerSelect, **kwargs):
             raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
     # change trigger paths to print in eventdump(s) and trigger histogram manager
     for processAttrName in dir(process):
-		processAttr = getattr(process, processAttrName)
-		if isinstance(processAttr, cms.EDAnalyzer):
-			if processAttr.type_() == "GenericAnalyzer":
-				if hasattr(processAttr, "analyzers"):
-					analyzerPlugins = getattr(processAttr, "analyzers")
-					for analyzerPlugin in analyzerPlugins:
-						_setattr_ifexists(analyzerPlugin, "hltPaths", cms.vstring(triggerSelect))
-				if hasattr(processAttr, "eventDumps"):
-					eventDumps = getattr(processAttr, "eventDumps")
-					for eventDump in eventDumps:
-						_setattr_ifexists(eventDump, "hltPathsToPrint", cms.vstring(triggerSelect))
+        processAttr = getattr(process, processAttrName)
+        if isinstance(processAttr, cms.EDAnalyzer):
+            if processAttr.type_() == "GenericAnalyzer":
+                if hasattr(processAttr, "analyzers"):
+                    analyzerPlugins = getattr(processAttr, "analyzers")
+                    for analyzerPlugin in analyzerPlugins:
+                        triggers = cms.vstring()
+                        if hasattr(analyzerPlugin,"hltPaths"):
+                            triggers.extend(triggerSelect)
+                        _setattr_ifexists(analyzerPlugin, "hltPaths", triggers)
+                if hasattr(processAttr, "eventDumps"):
+                    eventDumps = getattr(processAttr, "eventDumps")
+                    for eventDump in eventDumps:
+                        triggers = cms.vstring()
+                        if hasattr(eventDump,"hltPathsToPrint"):
+                            triggers.extend(triggerSelect)
+                        _setattr_ifexists(eventDump, "hltPathsToPrint", triggers)
 
 def _setNoSaveRunLumiEventNumbers(process, enable, **kwargs):
     ''' Set whether to turn off the saving of run/lumi/event numbers for events passing all selection '''
@@ -402,6 +408,25 @@ def _saveFinalEvents(process, save, **kwargs):
             print "WARNING: The pool output module already exists in the"\
                     " process, and it can't be disabled.  You need to remove"\
                     " it from the config"
+def _saveNtuple(process, enable, **kwargs):
+    ''' 
+    Save ntuple of event variables,
+    as defined in TauAnalysis/Configuration/python/tool/ntupleDefs_cfi.py
+    !! must not be used with EDM event saving (defined above) !!
+    '''
+    if enable:
+        # remove module for EDM event saving
+        process.p.remove(process.isRecAHtoElecTau)
+        process.p.remove(process.filterFinalEvents)
+
+        # run channel-specific stuff
+        import TauAnalysis.Configuration.tools.ntupleDefs_cfi as nTupleFunctions
+
+        ntuple_func_name = 'doNtuple%s' % (
+            kwargs['channel']
+        )
+        func = getattr(nTupleFunctions,ntuple_func_name)
+        func(process, channel = kwargs['channel'], sample = kwargs['sample'], id = kwargs['id'])
 
 def _disableDuplicateEvents(process, disable, **kwargs):
     if disable:
@@ -461,6 +486,7 @@ _METHOD_MAP = {
     'files' : _setInputFiles,
     'outputFile' : _setOutputFile,
     'saveFinalEvents' : _saveFinalEvents,
+    'saveNtuple' : _saveNtuple,
     'disableDuplicateCheck' : _disableDuplicateEvents,
     'processName' : _changeProcessName,
     'changeTauId' : _changeTauId,

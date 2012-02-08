@@ -22,7 +22,7 @@ ak5PFJetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PFJetAntiOverlapSelector",
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsTrkIPcumulative",
         "selectedPatMuonsTrkIPcumulative",
-        "selectedPatTausProngCumulative"
+        "selectedPatTausMuonVetoCumulative"
     ),
     dRmin = cms.double(0.5),
     filter = cms.bool(False)
@@ -33,7 +33,7 @@ pfUnclusteredCandidates = cms.EDFilter("PFCandidateAntiOverlapSelector",
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsTrkIPcumulative",
         "selectedPatMuonsTrkIPcumulative",
-        "selectedPatTausProngCumulative",
+        "selectedPatTausMuonVetoCumulative",
         "ak5PFJetsAntiOverlapWithLeptonsVeto"
     ),
     dRmin = cms.double(0.5),
@@ -97,16 +97,18 @@ from TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi import selectedPrimary
 producePatTupleZtoElecTauSpecific = cms.Sequence(
     #selectedPrimaryVerticesTrackPtSumGt10 +
     selectPatElectrons +
-    selectPatElectronsLooseIsolation +
-    selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation +
+    #selectPatElectronsLooseIsolation +
+    selectPatElectronsForElecTau +
+    #+ selectPatElectronsForElecTauLooseIsolation +
     selectPatTaus +
     selectPatTausForElecTau +
     selectPrimaryVertexForElecTauAll + 
     selectPatMuons +
     selectPatJets +
-    ak5PFJetsAntiOverlapWithLeptonsVeto + pfUnclusteredCandidates + pfMEtType1and2corrected + patPFtype1METs +
+    #    ak5PFJetsAntiOverlapWithLeptonsVeto + pfUnclusteredCandidates + pfMEtType1and2corrected + patPFtype1METs +
     produceElecTauPairsAll+
-    selectElecTauPairs + selectElecTauPairsLooseElectronIsolation +
+    selectElecTauPairs +
+    #+ selectElecTauPairsLooseElectronIsolation +
     produceElecTauPairZeeHypotheses +
     produceDiElecPairs
 )

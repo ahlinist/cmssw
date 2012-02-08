@@ -162,10 +162,19 @@ patTupleEventContent.outputCommands.extend(
       'keep *_patJets*_*_*' ]
 )
 
+#--------------------------------------------------------------------------------
+# required by electron ID MVA
+#--------------------------------------------------------------------------------
+patTupleEventContent.outputCommands.extend(
+    [ 'keep *_reducedEcalRecHitsEB_*_*',
+      'keep *_reducedEcalRecHitsEE_*_*',
+      'keep recoCaloClusters_*_*_*']
+)
 
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_caloEventShapeVars_*_*',
       'keep *_pfEventShapeVars_*_*',
+      'keep *_selectedPatJets_*_*',
       'keep *_pfNoPileUp_*_*',
       'keep *_addPileupInfo_*_*']
 )
