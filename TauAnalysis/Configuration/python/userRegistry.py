@@ -90,8 +90,30 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run36',
+        'current' : 'Run39',
         'jobs' : {
+            'Run39' : { # added: electron MVA-based ID, updated efficiency corrections
+               	'AHtoElecTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_8_patch7/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
+            'Run38' : { # re-run with tau lead trk pt cut at 5 GeV
+               	'AHtoElecTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_8_patch7/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
+            'Run37' : {
+               	'AHtoElecTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
+            # major reprocessing based on new cuts, etc
             'Run36' : {
                	'AHtoElecTau' : {
                     'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",

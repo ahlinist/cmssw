@@ -81,9 +81,45 @@ cfgBtagCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+# VBF event selection
+cfgVBFEventTag = cms.PSet(
+    pluginName = cms.string('vbfTagCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTauTagJetOpposHemisphereCumulative'),
+    src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTauTagJetOpposHemisphereIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgVBFEventDEta35 = cms.PSet(
+    pluginName = cms.string('vbfDEta35Cut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTauTagJetDEta35Cumulative'),
+    src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTauTagJetDEta35Individual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgVBFEventMass350 = cms.PSet(
+    pluginName = cms.string('vbfMass350Cut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTauTagJetMass350Cumulative'),
+    src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTauTagJetMass350Individual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgVBF3rdTagJetVeto = cms.PSet(
+    pluginName = cms.string('vbf3rdTagJetVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTau3rdJetVetoCumulative'),
+    src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoElecTau3rdJetVetoIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+
 ahToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
 	  cfgTrigger,
+      cfgPrimaryEventVertexQuality,
+      cfgPrimaryEventVertexPosition,
       cfgElectronIdCut,
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,
@@ -98,18 +134,18 @@ ahToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgTauLeadTrkPtCut,
       cfgTauIsoCut,
       cfgTauElectronVeto,
-      cfgTauEcalCrackVeto,
       cfgTauMuonVeto,
       cfgDiTauCandidateForAHtoElecTauAntiOverlapVeto,
       cfgDiTauCandidateForAHtoElecTauMt1METcut,
       cfgDiTauCandidateForAHtoElecTauPzetaDiffCut,
-      cfgPrimaryEventVertexForElecTau,
-      cfgPrimaryEventVertexQualityForElecTau,
-      cfgPrimaryEventVertexPositionForElecTau,
 	  cfgDiElecPairZeeHypothesisVetoByLooseIsolation,
 	  cfgJetEtCut,
 	  cfgBtagVeto,
 	  cfgBtagCut,
+      cfgVBFEventTag,
+      cfgVBFEventDEta35,
+      cfgVBFEventMass350,
+      cfgVBF3rdTagJetVeto,
       cfgDiTauCandidateForAHtoElecTauZeroChargeCut ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
@@ -133,7 +169,7 @@ isRecAHtoElecTau = cms.EDProducer("BoolEventSelFlagProducer",
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
         cms.InputTag('genPhaseSpaceCut'),
-        cms.InputTag('primaryEventVertexPositionForElecTau'),
+        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('electronTrkIPcut', 'cumulative'),
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoElecTauZeroChargeCut', 'cumulative'),
@@ -146,7 +182,7 @@ isRecAHtoElecTauBtag = cms.EDProducer("BoolEventSelFlagProducer",
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
-        cms.InputTag('primaryEventVertexPositionForElecTau'),
+        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('electronTrkIPcut', 'cumulative'),
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoElecTauZeroChargeCut', 'cumulative'),
@@ -160,7 +196,7 @@ isRecAHtoElecTauBtagVeto = cms.EDProducer("BoolEventSelFlagProducer",
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
-        cms.InputTag('primaryEventVertexPositionForElecTau'),
+        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('electronTrkIPcut', 'cumulative'),
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoElecTauZeroChargeCut', 'cumulative'),
@@ -168,9 +204,41 @@ isRecAHtoElecTauBtagVeto = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('jetBtagVeto', 'cumulative')
     )
 )
+isRecAHtoElecTauVBFtag = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoElecTauVBFtag'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('genPhaseSpaceCut'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('electronTrkIPcut', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'cumulative'),
+        cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolation'),
+        cms.InputTag('vbfMass350Cut', 'cumulative')
+    )
+)
+
+isRecAHtoElecTauZeroJets = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoElecTauZeroJets'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('electronTrkIPcut', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'cumulative'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolation'),
+        cms.InputTag('jetEtCut', 'cumulative'),
+        cms.InputTag('boostedJetVeto', 'cumulative')
+    )
+)
 
 selectAHtoElecTauEvents = cms.Sequence(
-	produceEventSelFlagsAHtoElecTau
+    selectZtoElecTauEvents
+	* produceEventSelFlagsAHtoElecTau
+    * isRecAHtoElecTauVBFtag
+    #* isRecAHtoElecTauZeroJets
 	* isRecAHtoElecTauBtagVeto
 	* isRecAHtoElecTauBtag
 	* isRecAHtoElecTau
