@@ -204,6 +204,19 @@ process_Wenu = cms.PSet(
     )
 )
 
+# Electro-Weak sum (Z+W)
+process_EW = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('EWsum')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/EWsum'),
+        legendEntry = cms.string('EW'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
 # W/Z + c cbar/b bbar
 process_Vqq = cms.PSet(
     config_dqmFileLoader = cms.PSet(
