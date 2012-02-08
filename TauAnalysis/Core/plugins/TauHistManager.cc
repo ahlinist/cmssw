@@ -212,6 +212,8 @@ void TauHistManager::bookHistogramsImp()
     book1D("TauDiscriminatorAgainstElectronsMedium", "Discriminator against Electrons (medium)", 2, -0.5, 1.5);
   hTauDiscriminatorAgainstElectronsTight_ = 
     book1D("TauDiscriminatorAgainstElectronsTight", "Discriminator against Electrons (tight)", 2, -0.5, 1.5);
+  hTauDiscriminatorAgainstElectronsMVA_ = 
+    book1D("TauDiscriminatorAgainstElectronsMVA", "Discriminator against Electrons (MVA)", 2, -0.5, 1.5);
   hTauPFElectronMVA_ = book1D("TauPFElectronMVA", "TauPFElectronMVA", 40, -1.01, +1.01);
   hTauEmFraction_ = book1D("TauEmFraction", "TauEmFraction", 101, -0.01, 2.01);
   hTauHcalTotOverPLead_ = book1D("TauHcalTotOverPLead", "TauHcalTotOverPLead", 101, -0.01, 2.01);
@@ -613,6 +615,8 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 				  discrAvailability_hasBeenChecked, weight);
     fillTauDiscriminatorHistogram(hTauDiscriminatorAgainstElectronsTight_, *patTau, "againstElectronTight",
 				  discrAvailability_hasBeenChecked, weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorAgainstElectronsMVA_, *patTau, "againstElectronMVA",
+				  discrAvailability_hasBeenChecked, weight);
     if ( patTau->leadPFCand().isNonnull() ) {
 	double pfElectronMVA = patTau->leadPFCand()->mva_e_pi();
 	if ( pfElectronMVA > +1.0 ) pfElectronMVA = +1.0;
@@ -800,7 +804,7 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
   hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso(), weight);
 
   //std::cout << " particleIso = " << patTau.particleIso() << std::endl;
-  //std::cout << " chargedHadronIso = " << patTau.chargedHadronIso() << std::endl;
+  //std::cout << " chargedParticleIso = " << patTau.chargedParticleIso() << std::endl;
   //std::cout << " neutralHadronIso = " << patTau.neutralHadronIso() << std::endl;
   //std::cout << " photonIso = " << patTau.photonIso() << std::endl;
 

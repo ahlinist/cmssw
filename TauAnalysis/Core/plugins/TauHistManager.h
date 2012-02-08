@@ -146,6 +146,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorAgainstElectronsLoose_;
   MonitorElement* hTauDiscriminatorAgainstElectronsMedium_;
   MonitorElement* hTauDiscriminatorAgainstElectronsTight_;
+  MonitorElement* hTauDiscriminatorAgainstElectronsMVA_;
   MonitorElement* hTauPFElectronMVA_;
   MonitorElement* hTauEmFraction_;
   MonitorElement* hTauHcalTotOverPLead_;
