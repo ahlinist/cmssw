@@ -28,6 +28,9 @@ def adapt(process):
     process.lowPtTripletStepClusters.oldClusterRemovalInfo = cms.InputTag('loopersMask')
     process.initialStepTrajectoryBuilder.clustersToSkip = cms.InputTag('loopersMask')
 
+    for o in process.outputModules_():
+        om=process.outputModules_()[o]
+        om.outputCommands.append('keep *_loopersMask_*_*')
     return (process)
 
 def looperTracks(process):
@@ -39,6 +42,10 @@ def looperTracks(process):
         adapt(process)
     process.reconstruction_step.replace(process.loopersMask,
                                         process.loopersMask+process.loopersTracks)
+
+    for o in process.outputModules_():
+        om=process.outputModules_()[o]
+        om.outputCommands.append('keep *_loopersMask_*_*')
     return (process)
                                         
     
