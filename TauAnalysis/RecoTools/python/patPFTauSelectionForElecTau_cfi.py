@@ -29,7 +29,10 @@ selectedPatTausForElecTauDecayModeFinding = cms.EDFilter("PATTauSelector",
 )
 
 # require leading track of tau candidate to have Pt > 5. GeV
+# BUT 'leadingTrackPtCut' discriminant is not defined for HPS taus
+# so make the cut manually
 selectedPatTausForElecTauLeadTrkPt = copy.deepcopy(selectedPatTausLeadTrkPt)
+selectedPatTausForElecTauLeadTrkPt.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
 
 # require tau candidate to pass TaNC discriminator
 selectedPatTausForElecTauTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
@@ -49,6 +52,8 @@ selectedPatTausForElecTauCharge = copy.deepcopy(selectedPatTausCharge)
 
 # require tau candidate to pass electron veto
 selectedPatTausForElecTauElectronVeto = copy.deepcopy(selectedPatTausElectronVeto)
+# update cut to MVA algorithm
+selectedPatTausForElecTauElectronVeto.cut = cms.string('againstElectronMVA')
 
 # require tau candidate not to be in ECAL barrel/endcap crack
 selectedPatTausForElecTauEcalCrackVeto = copy.deepcopy(selectedPatTausEcalCrackVeto)

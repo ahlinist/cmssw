@@ -29,7 +29,7 @@ selectedPatElectronsForZeeHypothesesElectronTrack = cms.EDFilter("PATElectronSel
 
 selectedPatElectronsForZeeHypothesesEta = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("selectedPatElectronsForZeeHypothesesElectronTrack"),
-    cut = cms.string('abs(eta) < 2.1'),
+    cut = cms.string('abs(eta) < 2.5'),
     filter = cms.bool(False)
 )
 
