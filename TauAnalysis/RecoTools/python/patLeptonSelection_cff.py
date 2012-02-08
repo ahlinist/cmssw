@@ -72,10 +72,11 @@ selectPatElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.conf
 # select electrons for Z->electron + tau-jet analysis
 #
 
-# VBTF WP80 electron ID for pt > 20; WP70 for pt < 20
-selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))')
+selectedPatElectronsForElecTauPreId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.15 & hcalOverEcal < 0.12 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.009 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.10 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03)')
+selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronIdSelector")
+#selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))')
 selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.444 | abs(superCluster.eta) > 1.566')
-selectedPatElectronsForElecTauEta.cut = cms.string('abs(eta) < 2.5')
+selectedPatElectronsForElecTauEta.cut = cms.string('abs(eta) < 2.1')
 selectedPatElectronsForElecTauPt.cut = cms.string('pt > 20.')
 selectedPatElectronsForElecTauIso.sumPtMax = cms.double(0.1)
 selectedPatElectronsForElecTauIso.sumPtMethod = cms.string("relative")
@@ -86,7 +87,8 @@ selectedPatElectronsForElecTauTrkIP.IpMax = cms.double(0.045)
 selectedPatElectronsForElecTauTrkIP.IpzMax = cms.double(0.2)
 
 patElectronSelConfiguratorForElecTau = objSelConfigurator(
-    [ selectedPatElectronsForElecTauId,
+    [ selectedPatElectronsForElecTauPreId,
+        selectedPatElectronsForElecTauId,
       selectedPatElectronsForElecTauAntiCrackCut,
       selectedPatElectronsForElecTauEta,
       selectedPatElectronsForElecTauPt,
@@ -187,9 +189,9 @@ selectedPatMuonsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatMuonsPt15.cut = cms.string('pt > 15.')
 selectedPatMuonsVbTfId.beamSpotSource = cms.InputTag("offlineBeamSpot")
 selectedPatMuonsVbTfId.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
-selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = cms.double(0.5)
-selectedPatMuonsPFRelIso.chargedHadronIso.dRvetoCone = cms.double(-1.)
-selectedPatMuonsPFRelIso.chargedHadronIso.dRisoCone = cms.double(0.4)
+selectedPatMuonsPFRelIso.chargedParticleIso.ptMin = cms.double(0.5)
+selectedPatMuonsPFRelIso.chargedParticleIso.dRvetoCone = cms.double(-1.)
+selectedPatMuonsPFRelIso.chargedParticleIso.dRisoCone = cms.double(0.4)
 selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = cms.double(1.0)
 selectedPatMuonsPFRelIso.neutralHadronIso.dRvetoCone = cms.double(0.08)
 selectedPatMuonsPFRelIso.neutralHadronIso.dRisoCone = cms.double(0.4)
@@ -282,9 +284,9 @@ selectedPatTausForElecTauAntiOverlapWithElectronsVeto.dRmin = cms.double(0.)
 selectedPatTausForElecTauEta.cut = selectedPatTausEta23.cut
 selectedPatTausForElecTauPt.cut = selectedPatTausPt20.cut
 selectedPatTausForElecTauDecayModeFinding.cut = cms.string('tauID("decayModeFinding") > 0.5')
-selectedPatTausForElecTauLeadTrkPt.cut = cms.string('tauID("decayModeFinding") > 0.5')
+selectedPatTausForElecTauLeadTrkPt.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
 selectedPatTausForElecTauIso.cut = cms.string('tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
-selectedPatTausForElecTauElectronVeto.cut = cms.string('tauID("againstElectronTight") > 0.5')
+selectedPatTausForElecTauElectronVeto.cut = cms.string('tauID("againstElectronMVA") > 0.5')
 selectedPatTausForElecTauEcalCrackVeto.cut =  cms.string('abs(eta) < 10 | abs(eta) > 0') # crack cut is now part of electron discriminant
 selectedPatTausForElecTauMuonVeto.cut = cms.string('tauID("againstMuonLoose") > 0.5')
 

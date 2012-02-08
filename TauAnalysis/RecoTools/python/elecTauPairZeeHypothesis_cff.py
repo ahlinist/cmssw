@@ -59,7 +59,7 @@ elecTauPairVisMassHypothesesLooseElectronIsolation.ZllHypotheses[0].src = cms.In
 produceElecTauPairZeeHypotheses = cms.Sequence(
     elecTauPairZeeHypotheses * selectedElecTauPairZeeHypotheses
    * elecTauPairVisMassHypotheses
-   * elecTauPairZeeHypothesesLooseElectronIsolation * selectedElecTauPairZeeHypothesesLooseElectronIsolation
-   * elecTauPairVisMassHypothesesLooseElectronIsolation
+   #* elecTauPairZeeHypothesesLooseElectronIsolation * selectedElecTauPairZeeHypothesesLooseElectronIsolation
+   #* elecTauPairVisMassHypothesesLooseElectronIsolation
 )
                                                   

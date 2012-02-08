@@ -9,14 +9,17 @@ from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPF
 # to be used specifically for the electron + tau-jet analysis
 #--------------------------------------------------------------------------------
 
-# require electron candidate to pass the tight electron id. criteria
-selectedPatElectronsForElecTauTightId = copy.deepcopy(selectedPatElectronsTightId)
+# require electron candidate to pass pre-selection for ID MVA
+selectedPatElectronsForElecTauPreId = copy.deepcopy(selectedPatElectronsTightId)
 
-# require electron candidate to pass the loose electron id. criteria
-selectedPatElectronsForElecTauLooseId = copy.deepcopy(selectedPatElectronsLooseId)
+# require electron candidate to pass MVA-based ID
+#selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronIdSelector")
 
-# require electron candidate to pass the electron id. criteria 
-selectedPatElectronsForElecTauId = copy.deepcopy(selectedPatElectronsLooseId)
+# tmp for testing
+selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronSelector",
+    cut = cms.string(''),
+    filter = cms.bool(False)
+)
 
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
