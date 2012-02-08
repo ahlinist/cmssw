@@ -99,42 +99,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         if outputFileMap is not None:
             output_file = outputFileMap(channel, sample, jobId)
 
-        #--------------------------------------------------------------------
-        # CV: temporary "hack" for producing (ED)Ntuples/skims for tau id. efficiency measurement
-        jobCustomizations = []
-        jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
-        jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % output_file)
-        jobCustomizations.append("if hasattr(process, 'patTupleOutputModule'):")
-        jobCustomizations.append("    process.patTupleOutputModule.fileName = '%s'" % output_file)
-        jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
-        jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
-        jobCustomizations.append("if hasattr(process, 'saveZtoMuTau_tauIdEffPlots'):")
-        jobCustomizations.append("    process.saveZtoMuTau_tauIdEffPlots.outputFileName = '%s'" % \
-                                 ("plots_ZtoMuTau_tauIdEff_%s_%s.root" % (sample, jobId)))
-        jobCustomizations.append("if hasattr(process, 'out'):")
-        jobCustomizations.append("    process.out.fileName = '%s'" % output_file)
-        jobCustomizations.append("if hasattr(process, 'TFileService'):")
-        jobCustomizations.append("    process.TFileService.fileName = 'plots_HiggsToElecMu_%s_%s.root'" % (sample, jobId))
-        HLTprocessName = 'HLT'
-        if 'hlt' in sample_info.keys():
-            HLTprocessName = sample_info['hlt'].getProcessName()
-        jobCustomizations.append("if hasattr(process, 'hltMu'):")
-        jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
-        jobCustomizations.append("process.patTrigger.processName = cms.string('%s')" % HLTprocessName)
-        jobCustomizations.append("process.patTriggerEvent.processName = cms.string('%s')" % HLTprocessName)
-        jobCustomizations.append("if hasattr(process, 'prePatProductionSequence') and hasattr(process, 'prePatProductionSequenceGen'):")
-        jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
-        if sample_info['type'] == 'Data':
-            jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
-            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'tauGenJets')")
-            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
-            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
-            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
-        jobCustomizations.append("if hasattr(process, 'patTriggerEventSequence') and hasattr(process, 'patTriggerSequence'):")
-        jobCustomizations.append("    process.patDefaultSequence.replace(process.patTriggerEventSequence,")
-        jobCustomizations.append("                                       process.patTriggerSequence + process.patTriggerEventSequence)")
-        #jobCustomizations.append("print process.dumpPython()")
-        #--------------------------------------------------------------------
 
         prepareConfigFile(
           configFile = configFile, jobInfo = jobInfo, newConfigFile = newConfigFile,
@@ -146,7 +110,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
           enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
           processName = processName,
           saveFinalEvents = saveFinalEvents,
-          customizations = jobCustomizations,
           doApplyOptions = doApplyCfgOptions)
 
         output_files = []
@@ -174,6 +137,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'dbs_url' : sample_info['dbs_url'],
             'user_remote_dir' : outputFilePath,
             'output_file' : ", ".join(output_files),
+            'get_edm_output' : sample_info['saveNtuple'],
             # Default MC info
             'split_type' : (sample_info['type'] == 'Data' or sample_info['type'] == 'embeddedData') and 'lumis' or 'events',
             'lumi_mask' : sample_info['lumi_mask'],
