@@ -396,11 +396,11 @@ def applyZrecoilCorrection_runZtoElecTau(process):
                               "produceElecTauPairsAll", 'allElecTauPairs',
                               "ZllRecoilCorrectionElecTauPair",
                               [ "analyzeZtoElecTauSequence" ])
-    _applyZllRecoilCorrection(process,
-                              "produceElecTauPairsAll", 'allElecTauPairsLooseElectronIsolation',
-                              "ZllRecoilCorrectionElecTauPair",
-                              [ "analyzeZtoElecTauSequence_factorizedWithElectronIsolation",
-                                "analyzeZtoElecTauSequence_factorizedWithoutElectronIsolation" ])
+    #_applyZllRecoilCorrection(process,
+    #                          "produceElecTauPairsAll", 'allElecTauPairsLooseElectronIsolation',
+    #                          "ZllRecoilCorrectionElecTauPair",
+    #                          [ "analyzeZtoElecTauSequence_factorizedWithElectronIsolation",
+    #                            "analyzeZtoElecTauSequence_factorizedWithoutElectronIsolation" ])
 
 
     # disable warnings in MET histogram managers
@@ -456,22 +456,18 @@ def applyZrecoilCorrection_runAHtoElecTau(process):
                               "produceElecTauPairsAll", 'allElecTauPairs',
                               "ZllRecoilCorrectionElecTauPair",
                               [ "analyzeAHtoElecTauSequence" ])
-    _applyZllRecoilCorrection(process,
-                              "produceElecTauPairsAll", 'allElecTauPairsLooseElectronIsolation',
-                              "ZllRecoilCorrectionElecTauPair",
-                              [ "analyzeAHtoElecTauSequence_factorizedWithElectronIsolation",
-                                "analyzeAHtoElecTauSequence_factorizedWithoutElectronIsolation" ])
+    #_applyZllRecoilCorrection(process,
+    #                          "produceElecTauPairsAll", 'allElecTauPairsLooseElectronIsolation',
+    #                          "ZllRecoilCorrectionElecTauPair",
+    #                          [ "analyzeAHtoElecTauSequence_factorizedWithElectronIsolation",
+    #                            "analyzeAHtoElecTauSequence_factorizedWithoutElectronIsolation" ])
 
 def _addEventWeightZtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
 
     _addEventWeight(
         process, [
             "analyzeZtoElecTauEventsOS",
-            "analyzeZtoElecTauEventsOS_factorizedWithElectronIsolation",
-            "analyzeZtoElecTauEventsOS_factorizedWithoutElectronIsolation",
-            "analyzeZtoElecTauEventsSS",
-            "analyzeZtoElecTauEventsSS_factorizedWithElectronIsolation",
-            "analyzeZtoElecTauEventsSS_factorizedWithoutElectronIsolation",
+            "analyzeZtoElecTauEventsSS"
         ],
         srcEventWeight, applyAfterFilterName)
 
@@ -547,6 +543,7 @@ def applyRhoNeutralReweighting_runZtoElecTau(process):
         process.produceRecObjects._seq = process.produceRecObjects._seq \
           * process.produceVertexMultiplicityVsRhoPFNeutralReweights
 
+    
     _addEventWeightZtoElecTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
 def applyVertexMultiplicityReweighting_runZtoElecTau_bgEstTemplate(process):
@@ -560,17 +557,11 @@ def _addEventWeighAHtoElecTau(process, srcEventWeight, applyAfterFilterName = "*
     _addEventWeight(
         process, [
             "analyzeAHtoElecTauEventsOS_woBtag",
-            "analyzeAHtoElecTauEventsOS_wBtag",
-            "analyzeAHtoElecTauEventsOS_woBtag_factorizedWithElectronIsolation",
-            "analyzeAHtoElecTauEventsOS_wBtag_factorizedWithElectronIsolation",
-            "analyzeAHtoElecTauEventsOS_woBtag_factorizedWithoutElectronIsolation",
-            "analyzeAHtoElecTauEventsOS_wBtag_factorizedWithoutElectronIsolation",
             "analyzeAHtoElecTauEventsSS_woBtag",
+            "analyzeAHtoElecTauEventsOS_wBtag",
             "analyzeAHtoElecTauEventsSS_wBtag",
-            "analyzeAHtoElecTauEventsSS_woBtag_factorizedWithElectronIsolation",
-            "analyzeAHtoElecTauEventsSS_wBtag_factorizedWithElectronIsolation",
-            "analyzeAHtoElecTauEventsSS_woBtag_factorizedWithoutElectronIsolation",
-            "analyzeAHtoElecTauEventsSS_wBtag_factorizedWithoutElectronIsolation",
+            "analyzeAHtoElecTauEventsOS_VBF",
+            "analyzeAHtoElecTauEventsSS_VBF"
         ],
         srcEventWeight, applyAfterFilterName)
 
