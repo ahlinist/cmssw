@@ -28,3 +28,14 @@ vbfEventProdConfiguratorForAHtoMuTau = objProdConfigurator(
 
 produceVBFEventHypothesesForAHtoMuTau = \
   vbfEventProdConfiguratorForAHtoMuTau.configure(pyNameSpace = locals())
+
+
+allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = allVBFEventHypothesesForAHtoMuTau.clone(
+        srcDiTaus = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative')
+)
+vbfEventProdConfiguratorForAHtoMuTauLooseMuonIsolation = objProdConfigurator(
+    allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation,
+    pyModuleName = __name__
+)
+produceVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = \
+  vbfEventProdConfiguratorForAHtoMuTauLooseMuonIsolation.configure(pyNameSpace = locals())
