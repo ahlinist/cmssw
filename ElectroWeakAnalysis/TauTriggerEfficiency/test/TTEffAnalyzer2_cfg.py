@@ -224,7 +224,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             TrackPt20 = cms.InputTag("hltPFTauTrackPt20Discriminator"),
         ),
         L25Selections = cms.PSet(
-#            VertexSelection = cms.InputTag("pfTauVertexSelector")
+            VertexSelection = cms.InputTag("pfTauVertexSelector")
         ),
         L3IsoQualityCuts                        = process.hltPFTauLooseIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
 
