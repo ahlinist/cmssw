@@ -39,20 +39,23 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
 	)
 )
 
-analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
-  
-    name = cms.string('ahElecTauAnalyzerOS_woBtag'), 
-                            
-    filters = cms.VPSet(
+# import filter definitions
+from TauAnalysis.Configuration.eventSelectionForAHtoElecTau_cfi import *
+filtersForElecTau = cms.VPSet(
         # generator level phase-space selection
         evtSelGenPhaseSpace,
-    
+        evtSelGenAHtoElecTau,
+
         # trigger selection
         evtSelTrigger,
 
-		# data quality (scraping beam veto, etc)
-		evtSelDataQuality,
-        
+        # data quality (scraping beam veto, etc)
+        evtSelDataQuality,
+
+        # primary event vertex selection
+        evtSelPrimaryEventVertexQuality,
+        evtSelPrimaryEventVertexPosition,
+
         # electron candidate selection
         evtSelElectronId,
         evtSelElectronAntiCrack,
@@ -68,34 +71,40 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauPt,
         evtSelTauDecayModeFinding,
         evtSelTauLeadTrkPt,
-		evtSelTauIso,
+        evtSelTauIso,
         evtSelTauElectronVeto,
-        evtSelTauEcalCrackVeto,
         evtSelTauMuonVeto,
-        
-        # di-tau candidate selection
+
+        # SM Higgs di-tau candidate selection
+        evtSelDiTauCandidateForElecTauAntiOverlapVeto,
+        evtSelDiTauCandidateForElecTauMt1MET,
+        evtSelDiTauCandidateForElecTauZeroCharge,
+        evtSelDiTauCandidateForElecTauNonZeroCharge,
+
+        # MSSM Higgs di-tau candidate selection
         evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto,
-        evtSelDiTauCandidateForAHtoElecTauMt1MET,
         evtSelDiTauCandidateForAHtoElecTauPzetaDiff,
         evtSelDiTauCandidateForAHtoElecTauZeroCharge,
         evtSelDiTauCandidateForAHtoElecTauNonZeroCharge,
 
-        # primary event vertex selection
-        evtSelPrimaryEventVertexForElecTau,
-        evtSelPrimaryEventVertexQualityForElecTau,
-        evtSelPrimaryEventVertexPositionForElecTau,
-        
-		# veto events compatible with Z --> e+ e- hypothesis
-		# (based on the precense of an opposite-sign, loosely isolated electron	 
-		evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
-        
-		# jet veto/b-jet candidate selection
-		evtSelJetEtCut,
-		evtSelBtagVeto,
-		evtSelBtagCut
-    ),
-  
-    analyzers = cms.VPSet(
+        # veto events compatible with Z --> e+ e- hypothesis
+        # (based on the precense of an opposite-sign, loosely isolated electron	 
+        evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
+
+        # jet veto/b-jet candidate selection
+        evtSelJetEtCut,
+        evtSelBtagVeto,
+        evtSelBtagCut,
+
+        # VBF selection
+        evtSelVBFtag,
+        evtSelVBFdEta35,
+        evtSelVBFmass350,
+        evtSel3rdTagJetVeto
+)
+
+from TauAnalysis.Configuration.histManagersForZtoElecTau_cfi import *
+elecTauAnalyzers = cms.VPSet(
         genPhaseSpaceEventInfoHistManager,
         eventWeightHistManager,
         electronHistManager,
@@ -103,29 +112,54 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateHistManagerForElecTau,
         diTauCandidateNSVfitHistManagerForElecTau,                                     
         diTauCandidateZeeHypothesisHistManagerForElecTau,
-		diTauLeg1ChargeBinGridHistManager,
-		elecPairHistManagerByLooseIsolation,
+        diTauLeg1ChargeBinGridHistManager,
+        vbfEventHistManagerForElecTau,
+        elecPairHistManagerByLooseIsolation,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
         particleMultiplicityHistManager,
         vertexHistManager,
         triggerHistManagerForElecTau,
-		dataBinner
-    ),
+        dataBinner
+)
+
+# create base analysis sequences
+elecTauAnalysisSequence = cms.VPSet()
+elecTauAnalysisSequence.extend(primaryEventSelectionFilterAnalyzers)
+elecTauAnalysisSequence.extend(vertexSelectionFilterAnalyzers)
+elecTauAnalysisSequence.extend(electronSelectionFilterAnalyzers)
+elecTauAnalysisSequence.extend(tauSelectionFilterAnalyzers)
+elecTauAnalysisSequence.extend(electronIsoFilterAnalyzers)
+elecTauAnalysisSequence.extend(tauIdIsoFilterAnalyzers)
+
+elecTauAnalysisSequence_noPlots = cms.VPSet()
+elecTauAnalysisSequence_noPlots.extend(primaryEventSelectionFilters)
+elecTauAnalysisSequence_noPlots.extend(vertexSelectionFilters)
+elecTauAnalysisSequence_noPlots.extend(electronSelectionFilters)
+elecTauAnalysisSequence_noPlots.extend(tauSelectionFilters)
+elecTauAnalysisSequence_noPlots.extend(electronIsoFilters)
+elecTauAnalysisSequence_noPlots.extend(tauIdIsoFilters)
+
+analyzeAHtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
+  
+    name = cms.string('ahElecTauAnalyzer'), 
+                            
+    filters = filtersForElecTau,
+
+    analyzers = elecTauAnalyzers,
 
     analyzers_systematic = cms.VPSet(
 		sysUncertaintyHistManagerForElecTau,
 		sysUncertaintyBinnerForElecTauEff
 	),                                     
 
-    eventDumps = cms.VPSet(
-        elecTauEventDump_woBtag
-    ),
+    eventDumps = cms.VPSet(),
    
-    analysisSequence = elecTauAnalysisSequenceOS_woBtag,
+    analysisSequence = elecTauAnalysisSequence_noPlots,
 
     estimateSysUncertainties = cms.bool(False), 
+
     systematics = cms.vstring(
         getSysUncertaintyNames(
             [ electronSystematics,
@@ -136,31 +170,54 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         )
     )                                         
 )
-analyzeAHtoElecTauEventsOS_wBtag = analyzeAHtoElecTauEventsOS_woBtag.clone(
 
-    name = cms.string('ahElecTauAnalyzerOS_wBtag'),
-    eventDumps = cms.VPSet(
-        elecTauEventDump_wBtag
-    ),
-    analysisSequence = elecTauAnalysisSequenceOS_wBtag
-)
 
-analyzeAHtoElecTauEventsSS_woBtag = analyzeAHtoElecTauEventsOS_woBtag.clone(
-    name = cms.string('ahElecTauAnalyzerSS_woBtag'),
-    eventDumps = cms.VPSet(
-    ),
-    analysisSequence = elecTauAnalysisSequenceSS_woBtag
+# Analyzers for SM Higgs categories
+analyzeAHtoElecTauEventsOS_VBF = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerOS_VBF'),
+    analysisSequence = elecTauAnalysisSequence
 )
+analyzeAHtoElecTauEventsOS_VBF.analysisSequence.extend(smVBFselectionFilterAnalyzers)
+analyzeAHtoElecTauEventsOS_VBF.analysisSequence.extend(smOppositeSignFilterAnalyzers)
 
-analyzeAHtoElecTauEventsSS_wBtag = analyzeAHtoElecTauEventsOS_wBtag.clone(
-    name = cms.string('ahElecTauAnalyzerSS_wBtag'),
-    eventDumps = cms.VPSet(
-    ),
-    analysisSequence = elecTauAnalysisSequenceSS_wBtag
+analyzeAHtoElecTauEventsSS_VBF = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerSS_VBF')
 )
+analyzeAHtoElecTauEventsSS_VBF.analysisSequence.extend(smVBFselectionFilters)
+analyzeAHtoElecTauEventsSS_VBF.analysisSequence.extend(smSameSignFilterAnalyzers)
+
+
+# Analyzers for MSSM Higgs categories
+analyzeAHtoElecTauEventsOS_wBtag = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerOS_wBtag')
+)
+analyzeAHtoElecTauEventsOS_wBtag.analysisSequence.extend(bTagSelectionFilterAnalyzers)
+analyzeAHtoElecTauEventsOS_wBtag.analysisSequence.extend(mssmOppositeSignFilterAnalyzers)
+
+analyzeAHtoElecTauEventsSS_wBtag = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerSS_wBtag')
+)
+analyzeAHtoElecTauEventsSS_wBtag.analysisSequence.extend(bTagSelectionFilters)
+analyzeAHtoElecTauEventsSS_wBtag.analysisSequence.extend(mssmSameSignFilterAnalyzers)
+
+analyzeAHtoElecTauEventsOS_woBtag = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerOS_woBtag')
+)
+analyzeAHtoElecTauEventsOS_woBtag.analysisSequence.extend(noBtagSelectionFilterAnalyzers)
+analyzeAHtoElecTauEventsOS_woBtag.analysisSequence.extend(mssmOppositeSignFilterAnalyzers)
+
+analyzeAHtoElecTauEventsSS_woBtag = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerSS_woBtag')
+)
+analyzeAHtoElecTauEventsSS_woBtag.analysisSequence.extend(noBtagSelectionFilters)
+analyzeAHtoElecTauEventsSS_woBtag.analysisSequence.extend(mssmSameSignFilterAnalyzers)
 
 analyzeAHtoElecTauSequence = cms.Sequence(
-    analyzeAHtoElecTauEventsOS_woBtag * analyzeAHtoElecTauEventsOS_wBtag
-   * analyzeAHtoElecTauEventsSS_woBtag * analyzeAHtoElecTauEventsSS_wBtag
+    analyzeAHtoElecTauEventsOS_woBtag 
+    + analyzeAHtoElecTauEventsOS_wBtag
+    + analyzeAHtoElecTauEventsSS_woBtag 
+    + analyzeAHtoElecTauEventsSS_wBtag
+    + analyzeAHtoElecTauEventsOS_VBF
+    + analyzeAHtoElecTauEventsSS_VBF
 )
 

@@ -15,7 +15,7 @@ def sample_dqm_name(sample):
     else:
         return sample
 
-dumpAHtoElecTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
+dumpAHtoElecTauOS_woBtag = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
         **dict(
             (sample, cms.string(
@@ -23,7 +23,29 @@ dumpAHtoElecTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
                 % sample_dqm_name(sample))
             ) for sample in samples_to_print)
     ), 
-    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
+    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency")
+    #columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )
 
 
+dumpAHtoElecTauOS_wBtag = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
+    dqmDirectories = cms.PSet(
+        **dict(
+            (sample, cms.string(
+                '/harvested/%s/ahElecTauAnalyzerOS_wBtag/FilterStatistics' 
+                % sample_dqm_name(sample))
+            ) for sample in samples_to_print)
+    ), 
+    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency")
+)
+
+dumpAHtoElecTauOS_VBF = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
+    dqmDirectories = cms.PSet(
+        **dict(
+            (sample, cms.string(
+                '/harvested/%s/ahElecTauAnalyzerOS_VBF/FilterStatistics' 
+                % sample_dqm_name(sample))
+            ) for sample in samples_to_print)
+    ), 
+    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency")
+)

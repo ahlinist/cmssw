@@ -47,8 +47,8 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     ),
 
     legends = cms.PSet(
-        #regular = copy.deepcopy(styles.legend_regular)
-        regular = copy.deepcopy(styles.legend_big)
+        regular = copy.deepcopy(styles.legend_regular)
+        #regular = copy.deepcopy(styles.legend_big)
     ),
 
     labels = cms.PSet(
@@ -447,10 +447,11 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     if dumpDQMStore:
         process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
         makePlotSequence._seq = makePlotSequence._seq * process.dumpDQMStore
-    dqmDumpFilterStatisticsModuleName = "dump%s" % channel
-    if hasattr(process, dqmDumpFilterStatisticsModuleName):
-        dqmDumpFilterStatisticsModule = getattr(process, dqmDumpFilterStatisticsModuleName)
-        makePlotSequence._seq = makePlotSequence._seq * dqmDumpFilterStatisticsModule
+    for entry in ['OS_VBF','OS_woBtag','OS_wBtag']:
+        dqmDumpFilterStatisticsModuleName = "dump%s" % channel+entry
+        if hasattr(process, dqmDumpFilterStatisticsModuleName):
+            dqmDumpFilterStatisticsModule = getattr(process, dqmDumpFilterStatisticsModuleName)
+            makePlotSequence._seq = makePlotSequence._seq * dqmDumpFilterStatisticsModule
     if dqmHistPlotterSequence is not None:
         makePlotSequence._seq = makePlotSequence._seq * dqmHistPlotterSequence
     #makePlotSequence._seq = makePlotSequence._seq * dqmSimpleFileSaverModule
