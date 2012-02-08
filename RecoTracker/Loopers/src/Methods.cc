@@ -379,10 +379,6 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
   edm::ESHandle<TransientTrackingRecHitBuilder> builder;
   iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",builder);
 
-
-  edm::ESHandle<MagneticField> magField;
-  iSetup.get<IdealMagneticFieldRecord>().get(magField);
-
   if (useUnmatched_)
     fastHits.reserve(pixelHits->dataSize()+matchedHits->dataSize()+rphiHits->size()+stereoHits->size());
   else
