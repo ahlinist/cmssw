@@ -19,6 +19,7 @@ pset = $pset
 total_number_of_$split_type = $total_number
 number_of_jobs = $number_of_jobs
 output_file = $output_file
+get_edm_output = $get_edm_output
 $lumi_mask
 $runselection
 
@@ -45,6 +46,7 @@ _CRAB_DEFAULTS = {
     'return_data' : 0,
     'copy_data' : 1,
     'use_server' : 0,
+    'get_edm_output' : 0,
     'scheduler' : 'glite', 
     #------------------------------------
     # for storing output of crab job on castor @ CERN

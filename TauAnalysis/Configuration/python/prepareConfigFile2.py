@@ -191,6 +191,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
 
     jobOptions.append(saveFinalEventsOption)
 
+    # Check if we want to save an ntuple
+    if 'saveNtuple' in sample_info:
+        jobOptions.append(('saveNtuple', sample_info['saveNtuple']))
+
     # Check if we want to manually specify the events to run on.
     if eventList is not None:
         if not os.path.exists(eventList):
