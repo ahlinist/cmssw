@@ -219,6 +219,12 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         L25TauSource                            = cms.InputTag("hltPFTaus"),
         L25MatchingCone                         = cms.double(0.3),
         L25Discriminators = cms.PSet(
+            TrackFinding = cms.InputTag("hltPFTauTrackFindingDiscriminator"),
+            LooseIso = cms.InputTag("hltPFTauLooseIsolationDiscriminator"),
+            TrackPt20 = cms.InputTag("hltPFTauTrackPt20Discriminator"),
+        ),
+        L25Selections = cms.PSet(
+#            VertexSelection = cms.InputTag("pfTauVertexSelector")
         ),
         L3IsoQualityCuts                        = process.hltPFTauLooseIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
 
@@ -226,21 +232,25 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         outputFileName          		= cms.string("tteffAnalysis-hltpftau-hpspftau.root")
 )
 
-# Reference is HPS tau
-process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
-    L25TauSource = "hltPFTausTightIso",
-    L3IsoQualityCuts = process.hltPFTauTightIsoIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
-    outputFileName = "tteffAnalysis-hltpftautight-hpspftau.root",
-)
+#process.TTEffAnalysisHLTPFtauHPS.clone(
+#    L2AssociationCollection = "openhltL2TauGlobalIsolationProducer",
+#    outputFileName = cms.string("tteffAnalysis-hltpftaul2global-hpspftau.root")
+#)
+# process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
+#     L25TauSource = "hltPFTausTightIso",
+#     L3IsoQualityCuts = process.hltPFTauTightIsoIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
+#     outputFileName = "tteffAnalysis-hltpftautight-hpspftau.root",
+# )
 process.TTEffAnalysisHLTPFTauMediumHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
     L25TauSource = "hltPFTausMediumIso",
     L3IsoQualityCuts = process.hltPFTauMediumIsoIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
     outputFileName = "tteffAnalysis-hltpftaumedium-hpspftau.root",
+    L25Discriminators = cms.PSet(
+        MediumIso = cms.InputTag("hltPFTauMediumIsoIsolationDiscriminator"),
+        TrackFinding = cms.InputTag("hltPFTauMediumIsoTrackFindingDiscriminator"),
+        TrackPt20 = cms.InputTag("hltPFTauMediumIsoTrackPt20Discriminator")
+    )
 )
-process.TTEffAnalysisHLTPFTauMediumHPS.L25Discriminators.MediumIso = cms.InputTag("hltPFTauMediumIsoIsolationDiscriminator")
-process.TTEffAnalysisHLTPFTauMediumHPS.L25Discriminators.TrackFinding = cms.InputTag("hltPFTauMediumIsoTrackFindingDiscriminator")
-process.TTEffAnalysisHLTPFTauMediumHPS.L25Discriminators.TrackPt20 = cms.InputTag("hltPFTauMediumIsoTrackPt20Discriminator")
-#process.TTEffAnalysisHLTPFTauTightHPS.L25Discriminators.MediumIso = cms.InputTag("hltPFTauMediumIsoIsolationDiscriminator")
 process.TTEffAnalysisHLTPFTauMediumHPSL2Global = process.TTEffAnalysisHLTPFTauHPS.clone(
     L2AssociationCollection = "openhltL2TauGlobalIsolationProducer",
     outputFileName = "tteffAnalysis-hltpftaumediuml2global-hpspftau.root"
@@ -248,7 +258,7 @@ process.TTEffAnalysisHLTPFTauMediumHPSL2Global = process.TTEffAnalysisHLTPFTauHP
 
 process.runTTEffAna = cms.Path(process.commonSequence)
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
+#process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
 

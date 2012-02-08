@@ -132,6 +132,14 @@ private:
     std::vector<float> values;
   };
 
+  struct OtherTau {
+    OtherTau(const edm::InputTag& s, const std::string& n): src(s), name(n) {}
+    edm::InputTag src;
+    edm::Handle<edm::View<reco::PFTau> > handle;
+    std::string name;
+    std::vector<bool> values;
+  };
+
   // Branches
   uint32_t event_, run_, lumi_;
   float nPU_;
@@ -191,6 +199,7 @@ private:
   std::vector<float> l25TauIsoGammaCandEtMax_;
   std::vector<unsigned> l25TauProng_;
   std::vector<L25Discriminator> l25TauDiscriminators_;
+  std::vector<OtherTau> l25TauSelectedTaus_;
 
   TTree *tree_;
   TFile *file_;
@@ -265,6 +274,12 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   for(size_t i=0; i<l25Names.size(); ++i)
     l25TauDiscriminators_.push_back(L25Discriminator(l25Discs.getParameter<edm::InputTag>(l25Names[i]), l25Names[i]));
 
+  edm::ParameterSet l25Selections = iConfig.getParameter<edm::ParameterSet>("L25Selections");
+  l25Names = l25Selections.getParameterNames();
+  l25TauSelectedTaus_.reserve(l25Names.size());
+  for(size_t i=0; i<l25Names.size(); ++i)
+    l25TauSelectedTaus_.push_back(OtherTau(l25Selections.getParameter<edm::InputTag>(l25Names[i]), l25Names[i]));
+
   // File setup
   file_ = TFile::Open(rootFile_.c_str(), "RECREATE");
   //_TTEffFile = TFile::Open("test.root", "RECREATE");
@@ -337,6 +352,8 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   for(size_t i=0; i<l25TauDiscriminators_.size(); ++i)
     tree_->Branch(("L25Tau_"+l25TauDiscriminators_[i].name).c_str(), &l25TauDiscriminators_[i].values);
 
+  for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i)
+    tree_->Branch(("L25Tau_"+l25TauSelectedTaus_[i].name).c_str(), &l25TauSelectedTaus_[i].values);
 
   h_counters_ = new TH1F("Counters","",counters_.size(),0,counters_.size());
   h_counters_->SetDirectory(file_);
@@ -412,6 +429,8 @@ void TTEffAnalyzer2::reset() {
   l25TauProng_.clear();
   for(size_t i=0; i<l25TauDiscriminators_.size(); ++i)
     l25TauDiscriminators_[i].values.clear();
+  for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i)
+    l25TauSelectedTaus_[i].values.clear();
 }
 
 void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -511,6 +530,9 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   for(size_t i=0; i<l25TauDiscriminators_.size(); ++i) {
     iEvent.getByLabel(l25TauDiscriminators_[i].src, l25TauDiscriminators_[i].handle);
+  }
+  for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i) {
+    iEvent.getByLabel(l25TauSelectedTaus_[i].src, l25TauSelectedTaus_[i].handle);
   }
 
   primaryVertexIsValid_ = hvertices->size() > 0;
@@ -732,6 +754,18 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
         value = (*(l25TauDiscriminators_[i].handle))[ref];
       }
       l25TauDiscriminators_[i].values.push_back(value);
+    }
+    for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i) {
+      bool value = false;
+      if(foundL25) {
+        for(size_t j=0; j<l25TauSelectedTaus_[i].handle->size(); ++j) {
+          if(reco::deltaR(*foundL25, l25TauSelectedTaus_[i].handle->at(j)) < 0.1) {
+            value = true;
+            break;
+          }
+        }
+      }
+      l25TauSelectedTaus_[i].values.push_back(value);
     }
   }
 
