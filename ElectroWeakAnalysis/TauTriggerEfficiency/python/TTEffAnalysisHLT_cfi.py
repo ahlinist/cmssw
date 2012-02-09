@@ -64,20 +64,35 @@ pfTauVertexSelector = cms.EDFilter("PFTauVertexSelector",
     # Tau collection
     tauSrc = cms.InputTag('hltPFTausMediumIso'),
     # Vertex from primary vertex collection
+    useVertex = cms.bool(True),
     vertexSrc = cms.InputTag("hltPixelVertices"),
+    useBeamSpot = cms.bool(False),
+    beamSpotSrc = cms.InputTag("dummy"),
     # use leading track instead of primary vertex collection
     useLeadingTrack = cms.bool(True),
     # Vertex from leading track to be used
-    trackSrc = cms.InputTag("hltIter4Merged"),
+    trackSrc = cms.VInputTag(cms.InputTag("hltIter4Merged")),
     # use leading RecoCandidate instead of primary vertex collection
     useLeadingRecoCandidate = cms.bool(False),
     # Vertex from RecoCandidate(e.g. lepton) track to be used
-    recoCandidateSrc = cms.InputTag("dummy"),
+    recoCandidateSrc = cms.VInputTag(),
+    useTriggerFilterElectrons = cms.bool(False),
+    triggerFilterElectronsSrc = cms.InputTag("dummy"),
+    useTriggerFilterMuons = cms.bool(False),
+    triggerFilterMuonsSrc = cms.InputTag("dummy"),
     # max dZ distance to primary vertex
     dZ = cms.double(0.2),
     # filter events with at least N taus from PV
     filterOnNTaus = cms.uint32(0),
+
 )
-hltPFTauTagInfo.UsePVconstraint = False # no requirement of the leading track to come from PV 
-hltPFTausMediumIso.ChargedHadrCandLeadChargedHadrCand_tksmaxDZ=0.2 # make sure all tracks come from same vertex as the leading track 
-DoHLTTau *= pfTauVertexSelector
+pfTauVertexSelectorMediumIso = pfTauVertexSelector.clone(
+    tauSrc = "hltPFTaus"
+)
+#hltPFTauTagInfo.UsePVconstraint = False # no requirement of the leading track to come from PV 
+#hltPFTausMediumIso.ChargedHadrCandLeadChargedHadrCand_tksmaxDZ=0.2 # make sure all tracks come from same vertex as the leading track
+#hltPFTaus.ChargedHadrCandLeadChargedHadrCand_tksmaxDZ=0.2 # make sure all tracks come from same vertex as the leading track
+DoHLTTau *= (
+    pfTauVertexSelector *
+    pfTauVertexSelectorMediumIso
+)
