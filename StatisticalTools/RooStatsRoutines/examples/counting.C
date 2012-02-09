@@ -117,7 +117,9 @@ void MakeWorkspace( void ){
   sbHypo.SetNuisanceParameters( nuis );
   sbHypo.SetPriorPdf( *pWs->pdf("prior") ); // this is optional
 
-  // fix constants - probably redundant but just in case
+  // fix all other variables in model:
+  // everything except observables, POI, and nuisance parameters
+  // must be constant
   pWs->var("lumi_nom")->setConstant(true);
   pWs->var("efficiency_nom")->setConstant(true);
   pWs->var("nbkg_nom")->setConstant(true);
@@ -143,8 +145,6 @@ void MakeWorkspace( void ){
   delete pProfile;
   delete pNll;
   delete pPoiAndNuisance;
-
-  pWs->var("lumi_nom")->Print();
 
   // import S+B ModelConfig into workspace
   pWs->import( sbHypo );
