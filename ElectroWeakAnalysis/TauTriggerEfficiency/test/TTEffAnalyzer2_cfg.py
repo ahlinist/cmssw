@@ -249,7 +249,10 @@ process.TTEffAnalysisHLTPFTauMediumHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
         MediumIso = cms.InputTag("hltPFTauMediumIsoIsolationDiscriminator"),
         TrackFinding = cms.InputTag("hltPFTauMediumIsoTrackFindingDiscriminator"),
         TrackPt20 = cms.InputTag("hltPFTauMediumIsoTrackPt20Discriminator")
-    )
+    ),
+    L25Selections = cms.PSet(
+        VertexSelection = cms.InputTag("pfTauVertexSelectorMediumIso")
+    ),
 )
 process.TTEffAnalysisHLTPFTauMediumHPSL2Global = process.TTEffAnalysisHLTPFTauHPS.clone(
     L2AssociationCollection = "openhltL2TauGlobalIsolationProducer",
