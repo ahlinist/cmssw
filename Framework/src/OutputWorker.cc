@@ -53,4 +53,8 @@ namespace edm {
   bool OutputWorker::limitReached() const {return module().limitReached();}
 
   void OutputWorker::configure(OutputModuleDescription const& desc) {module().configure(desc);}
+  
+  SelectionsArray const& OutputWorker::keptProducts() const {
+    return module().keptProducts();
+  }
 }
