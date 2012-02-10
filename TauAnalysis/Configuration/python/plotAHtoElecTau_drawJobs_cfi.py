@@ -526,55 +526,69 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
         dqmDirectory_output = cms.string('/harvested/dataQCD'),
         dqmDirectories_input = dqmDirectories_input
     )
-    
-    process.plotahElecTauAnalyzerOS_woBtag_linear.processes.qcdSum = cms.PSet(
-        dqmDirectory = cms.string('/harvested/dataQCD'),
-        type = cms.string('smMC'),
-        legendEntry = cms.string('QCD')
-    )
-    
-    #  create new draw job for each element in plot configuration list
-    for plotCfg in plotConfigs:
-        drawJob = cms.PSet( 
-            drawOptionSet = cms.string('default'),
-            yAxis = cms.string('numEntries_linear'),
-            labels = cms.vstring('mcNormScale'),
-            legend = cms.string('regular'),
-            xAxis = cms.string(plotCfg['xAxis']),
-            stack = cms.vstring('qcdSum',
-                'TTplusJets_madgraph_skim',
-                #'EWsum',
-                'WplusJets_madgraph_skim',
-                'ZeeSum',
-                'ZtautauSum'),
-            title = cms.string(plotCfg['title']),
-            plots = cms.VPSet()
-        )
-        drawJob.plots.append(cms.PSet(
-            dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerSS_woBtag/afterEvtSelDiTauCandidateForAHtoElecTauNonZeroCharge/' + plotCfg['meName']),
-            drawOptionEntry = cms.string('default#.#qcdSum'),
-            process = cms.string('qcdSum')
-        ))
-        for sample in samples['SAMPLES_TO_PLOT']:
-            drawJob.plots.append(cms.PSet(
-                dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerOS_woBtag/afterEvtSelDiTauCandidateForAHtoElecTauZeroCharge/' + plotCfg['meName']),
-                drawOptionEntry = cms.string('default#.#' + sample),
-                process = cms.string(sample)
-            ))
-        for category in ['OS_woBtag_linear']:
-            plotter = getattr(process,"plotahElecTauAnalyzer" + category)
-            setattr(plotter.drawJobs, plotCfg['plotName'], drawJob)
-
-            setattr(plotter.drawOptionSets.default, "qcdSum", cms.PSet(
-                drawOptionLegend = cms.string('f'),
-                fillStyle = cms.int32(1001),
-                fillColor = cms.int32(797),
-                lineColor = cms.int32(797),
-                drawOption = cms.string('hist'),
-                lineWidth = cms.int32(1),
-                lineStyle = cms.int32(1)
-                )
+   
+    # looop over categories
+    for cat in ['woBtag', 'wBtag', 'VBF' ]:
+        for scale in ['_linear', '_log']:
+            plotter = getattr(process, "plotahElecTauAnalyzerOS_" + cat + scale)
+            plotter.processes.qcdSum = cms.PSet(
+                dqmDirectory = cms.string('/harvested/dataQCD'),
+                type = cms.string('smMC'),
+                legendEntry = cms.string('QCD')
             )
+    
+            #  create new draw job for each element in plot configuration list
+            for plotCfg in plotConfigs:
+                drawJob = cms.PSet( 
+                    drawOptionSet = cms.string('default'),
+                    yAxis = cms.string('numEntries' + scale),
+                    labels = cms.vstring('mcNormScale'),
+                    legend = cms.string('regular'),
+                    xAxis = cms.string(plotCfg['xAxis']),
+                    # taken from TauAnalysis/Configuration/python/makePlots2_grid.py
+                    stack = cms.vstring([
+                        sample for sample in samples['SAMPLES_TO_PLOT']
+                        if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
+                            samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
+                    ]),
+                    #stack = cms.vstring('qcdSum',
+                    #    'TTplusJets_madgraph_skim',
+                    #    #'EWsum',
+                    #    'WplusJets_madgraph_skim',
+                    #    'ZeeSum',
+                    #    'ZtautauSum'),
+                    title = cms.string(plotCfg['title']),
+                    plots = cms.VPSet()
+                )
+                drawJob.stack.extend(['qcdSum'])
+
+                tag = 'ForAHtoElecTau'
+                if cat is 'VBF': 
+                    tag = 'ForElecTau'
+                drawJob.plots.append(cms.PSet(
+                    dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerSS_' + cat + '/afterEvtSelDiTauCandidate' + tag  + 'NonZeroCharge/' + plotCfg['meName']),
+                    drawOptionEntry = cms.string('default#.#qcdSum'),
+                    process = cms.string('qcdSum')
+                ))
+                for sample in samples['SAMPLES_TO_PLOT']:
+                    drawJob.plots.append(cms.PSet(
+                        dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerOS_' + cat + '/afterEvtSelDiTauCandidate' + tag + 'ZeroCharge/' + plotCfg['meName']),
+                        drawOptionEntry = cms.string('default#.#' + sample),
+                        process = cms.string(sample)
+                    ))
+                
+                setattr(plotter.drawJobs, plotCfg['plotName'], drawJob)
+
+                setattr(plotter.drawOptionSets.default, "qcdSum", cms.PSet(
+                    drawOptionLegend = cms.string('f'),
+                    fillStyle = cms.int32(1001),
+                    fillColor = cms.int32(797),
+                    lineColor = cms.int32(797),
+                    drawOption = cms.string('hist'),
+                    lineWidth = cms.int32(1),
+                    lineStyle = cms.int32(1)
+                )
+                )
 
     process.saveAHtoElecTau.outputCommands.append('keep harvested/dataQCD/*')
 
