@@ -325,8 +325,10 @@ def _setTriggerBits(process, triggerSelect, **kwargs):
         else:
             raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
     # change trigger paths to print in eventdump(s) and trigger histogram manager
-    for processAttrName in dir(process):
-        processAttr = getattr(process, processAttrName)
+    # (ignore if trigger choice contains an *)
+    if '*' not in triggerSelect:
+        for processAttrName in dir(process):
+            processAttr = getattr(process, processAttrName)
         if isinstance(processAttr, cms.EDAnalyzer):
             if processAttr.type_() == "GenericAnalyzer":
                 if hasattr(processAttr, "analyzers"):
