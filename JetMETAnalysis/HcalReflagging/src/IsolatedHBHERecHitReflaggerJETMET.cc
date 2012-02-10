@@ -16,10 +16,12 @@
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "CondFormats/EcalObjects/interface/EcalChannelStatus.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 #include "CondFormats/HcalObjects/interface/HcalChannelQuality.h"
@@ -30,6 +32,7 @@
 
 #include "RecoMET/METAlgorithms/interface/HcalHPDRBXMap.h"
 
+#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
 
 ////////////////////////////////////////////////////////////
 //
@@ -108,7 +111,11 @@ IsolatedHBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventS
   edm::ESHandle<HcalSeverityLevelComputer> hcalSevLvlComputerHndl;
   evSetup.get<HcalSeverityLevelComputerRcd>().get(hcalSevLvlComputerHndl);
   const HcalSeverityLevelComputer* hcalSevLvlComputer = hcalSevLvlComputerHndl.product();
-  const EcalSeverityLevelAlgo* ecalSevLvlAlgo = new EcalSeverityLevelAlgo();
+
+  edm::ESHandle<EcalSeverityLevelAlgo> sevlv;
+  evSetup.get<EcalSeverityLevelAlgoRcd>().get(sevlv);
+  //const EcalSeverityLevelAlgo* ecalSevLvlAlgo = new EcalSeverityLevelAlgo();
+  const EcalSeverityLevelAlgo* ecalSevLvlAlgo = sevlv.product();
 
   // get the calotower mappings
   edm::ESHandle<CaloTowerConstituentsMap> ctcm;
@@ -359,12 +366,13 @@ bool ObjectValidator::validHit(const EcalRecHit& hit) const
 
   // determine if the hit is good, bad, or recovered
   int severityLevel = 999;
-  if     (id.subdetId() == EcalBarrel && theEBRecHitCollection_!=0) severityLevel = theEcalSevLvlAlgo_->severityLevel(id, *theEBRecHitCollection_, *theEcalChStatus_);
-  else if(id.subdetId() == EcalEndcap && theEERecHitCollection_!=0) severityLevel = theEcalSevLvlAlgo_->severityLevel(id, *theEERecHitCollection_, *theEcalChStatus_);
+
+  if     (id.subdetId() == EcalBarrel && theEBRecHitCollection_!=0) severityLevel = theEcalSevLvlAlgo_->severityLevel(id, *theEBRecHitCollection_);//, *theEcalChStatus_);
+  else if(id.subdetId() == EcalEndcap && theEERecHitCollection_!=0) severityLevel = theEcalSevLvlAlgo_->severityLevel(id, *theEERecHitCollection_);//, *theEcalChStatus_);
   else return false;
   
-  if(severityLevel == EcalSeverityLevelAlgo::kGood) return true;
-  if(severityLevel == EcalSeverityLevelAlgo::kRecovered) return UseEcalRecoveredHits_;
+  if(severityLevel == EcalSeverityLevel::kGood) return true;
+  if(severityLevel == EcalSeverityLevel::kRecovered) return UseEcalRecoveredHits_;
   if(severityLevel > static_cast<int>(EcalAcceptSeverityLevel_)) return false;
   else return true;
 }
