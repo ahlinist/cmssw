@@ -27,6 +27,7 @@ if (isMC):
 else:
     process.GlobalTag.globaltag ='GR10_P_V4::All'
 
+process.GlobalTag.globaltag = "GR_P_V22::All"
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(maxevents)
 )
@@ -39,8 +40,9 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
     # Include your file here
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/132/601/F65A94F7-4141-DF11-9F4E-003048D47A80.root'
+    #'/store/data/Commissioning10/MinimumBias/RAW-RECO/v8/000/132/601/F65A94F7-4141-DF11-9F4E-003048D47A80.root'
     #'file:/home/jtemple/TEST_HCAL_RECO_FILE.root'
+    'file:/data/users/jtemple/HSCP/Test2011RootFiles/Run2011A-HSCPSD-run165472.root'
     )
 
 )
@@ -119,12 +121,13 @@ process.towerMakerWithHO.hfInput = "hfrecoReflagged"
 
 # Path and EndPath definitions
 process.reflagging_step = cms.Path(process.hfrecoReflagged)
+# full rereco case here:
 process.rereco_step = cms.Path(process.caloTowersRec
                                *(process.recoJets*process.recoJetIds+process.recoTrackJets)
                                *process.recoJetAssociations
                                *process.metreco
                                ) # re-reco jets and met
-#process.rereco_step = cms.Path(process.towerMaker*process.ak5CaloJets*process.met) # a simpler use case
+process.rereco_step = cms.Path(process.towerMaker*process.ak5CaloJets*process.met) # a simpler use case
 process.out_step = cms.EndPath(process.output)
 
 # Schedule definition
