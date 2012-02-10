@@ -371,8 +371,8 @@ bool ObjectValidator::validHit(const EcalRecHit& hit) const
   else if(id.subdetId() == EcalEndcap && theEERecHitCollection_!=0) severityLevel = theEcalSevLvlAlgo_->severityLevel(id, *theEERecHitCollection_);//, *theEcalChStatus_);
   else return false;
   
-  if(severityLevel == EcalSeverityLevel::kGood) return true;
-  if(severityLevel == EcalSeverityLevel::kRecovered) return UseEcalRecoveredHits_;
+  if(severityLevel == EcalSeverityLevelAlgo::kGood) return true;
+  if(severityLevel == EcalSeverityLevelAlgo::kRecovered) return UseEcalRecoveredHits_;
   if(severityLevel > static_cast<int>(EcalAcceptSeverityLevel_)) return false;
   else return true;
 }
