@@ -25,9 +25,8 @@ if (isMC):
 
 # DATA
 else:
-    process.GlobalTag.globaltag ='GR10_P_V4::All'
+    process.GlobalTag.globaltag ='GR_P_V22::All'
 
-process.GlobalTag.globaltag = "GR_P_V22::All"
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(maxevents)
 )
