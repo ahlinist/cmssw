@@ -35,8 +35,8 @@ def replaceMETforDiTaus(process,
                            'srcMET', oldMet, newMet)
 
 def replaceMETforTauNu(process,
-                        oldMet = cms.InputTag('patMETs'),
-                        newMet = cms.InputTag('patPFMETs') ):
+                       oldMet = cms.InputTag('patMETs'),
+                       newMet = cms.InputTag('patPFMETs') ):
     massSearchReplaceParam(process.produceTauNuPairs,
                            'srcMET', oldMet, newMet)
 def replaceMETforMet(process,
