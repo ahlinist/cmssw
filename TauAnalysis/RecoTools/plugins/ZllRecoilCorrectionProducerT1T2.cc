@@ -2,6 +2,7 @@
 
 #include "DataFormats/Candidate/interface/Particle.h"
 #include "DataFormats/Common/interface/RefToPtr.h"
+#include "DataFormats/Common/interface/Handle.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
@@ -82,7 +83,7 @@ void ZllRecoilCorrectionProducerT1T2<T1,T2>::produce(edm::Event& evt, const edm:
   // association between diTau candidates and corrected MEt values
   std::auto_ptr<diTauToMEtAssociation> correctedMEtAssociations(new diTauToMEtAssociation(CompositePtrCandidateRefProd(diTauCollection)));
 
-  edm::RefProd<pat::METCollection> correctedMEtRefProd = evt.getRefBeforePut<pat::METCollection>("met");
+  edm::RefProd<pat::METCollection> correctedMEtRefProd = evt.getRefBeforePut<pat::METCollection>(instNameMEtObjects);
 
   reco::Candidate::LorentzVector p4GenBoson;
   bool p4GenBoson_initialized = false;

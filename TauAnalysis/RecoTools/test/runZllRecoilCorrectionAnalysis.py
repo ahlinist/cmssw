@@ -6,9 +6,9 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 
 import os
 
-version = 'v4_9subTotalDataMCtype1PtThresholdEq10'
+version = 'v4_10addResidualJES'
 
-inputFilePath = '/data1/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
+inputFilePath = '/data2/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
 outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 
@@ -224,8 +224,10 @@ metOptions = {
             },
             'smMC' : {
                 'central'    : 'smearedPatJets',
-                'jetEnUp'    : 'shiftedPatJetsEnUp',
-                'jetEnDown'  : 'shiftedPatJetsEnDown',
+                #'jetEnUp'    : 'shiftedPatJetsEnUpForRawMEt',
+                #'jetEnDown'  : 'shiftedPatJetsEnDownForRawMEt',
+                'jetEnUp'    : 'smearedPatJets',
+                'jetEnDown'  : 'smearedPatJets',
                 'jetResUp'   : 'smearedPatJetsResUp',
                 'jetResDown' : 'smearedPatJetsResDown',
                 'unclEnUp'   : 'smearedPatJets',
@@ -254,8 +256,10 @@ metOptions = {
             },
             'smMC' : {
                 'central'    : 'smearedPatJets',
-                'jetEnUp'    : 'shiftedPatJetsEnUp',
-                'jetEnDown'  : 'shiftedPatJetsEnDown',
+                #'jetEnUp'    : 'shiftedPatJetsEnUpForCorrMEt',
+                #'jetEnDown'  : 'shiftedPatJetsEnDownForCorrMEt',
+                'jetEnUp'    : 'smearedPatJets',
+                'jetEnDown'  : 'smearedPatJets',
                 'jetResUp'   : 'smearedPatJetsResUp',
                 'jetResDown' : 'smearedPatJetsResDown',
                 'unclEnUp'   : 'smearedPatJets',
@@ -284,8 +288,10 @@ metOptions = {
     ##        },                
     ##        'smMC' : {
     ##            'central'    : 'smearedPatJets',
-    ##            'jetEnUp'    : 'shiftedPatJetsEnUp',
-    ##            'jetEnDown'  : 'shiftedPatJetsEnDown',
+    ##            #'jetEnUp'    : 'shiftedPatJetsEnUpForCorrMEt',
+    ##            #'jetEnDown'  : 'shiftedPatJetsEnDownForCorrMEt',
+    ##            'jetEnUp'    : 'smearedPatJets',
+    ##            'jetEnDown'  : 'smearedPatJets',
     ##            'jetResUp'   : 'smearedPatJetsResUp',
     ##            'jetResDown' : 'smearedPatJetsResDown',
     ##            'unclEnUp'   : 'smearedPatJets',

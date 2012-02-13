@@ -10,9 +10,9 @@
  * \author Konstantinos A. Petridis, Imperial College;
  *  modified by Christian Veelken
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: PATLeptonIpSelector.h,v 1.6 2011/10/11 17:18:54 jkolb Exp $
+ * $Id: PATLeptonIpSelector.h,v 1.7 2011/10/20 18:15:22 jkolb Exp $
  *
  */
 
@@ -33,6 +33,8 @@ class PATLeptonIpSelector
   
     explicit PATLeptonIpSelector(const edm::ParameterSet&);
     ~PATLeptonIpSelector();
+
+
 
     typename std::vector<const T*>::const_iterator begin() const { return selected_.begin(); }
     typename std::vector<const T*>::const_iterator end() const { return selected_.end(); }
