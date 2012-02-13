@@ -39,6 +39,7 @@ private:
    unsigned int muonHits_; ///< min number of hits
    double muonDxy_; ///< max dxy from beamSpot position
    bool invertVeto_  ;        ///< if lepton veto inverted
+   bool mtwCut_  ;        ///< if cut on transverse W mass if inverted
 
 
    //   edm::InputTag tauTag_;      ///< tag for tau      input collection
