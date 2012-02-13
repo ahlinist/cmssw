@@ -198,7 +198,7 @@ void StateMachine::stateChanged(toolbox::fsm::FiniteStateMachine & fsm)
       LOG4CPLUS_ERROR(logger_,xcept::stdformat_exception_history(e));
     }
   }
-  else if (state=="Halted"||state=="Ready"||state=="Enabled"||state=="Failed"||state=="ShutDown") {
+  else if (state=="Halted" || state=="Ready" || state=="Enabled" || state=="Degraded" ||state=="Failed" || state=="ShutDown") {
     if(doStateNotification_)
       {
 	try {
