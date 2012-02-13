@@ -151,7 +151,7 @@ namespace SVfit_namespace
     return logGaussianNdInvertedCovariance(residual, covInverse, det);
   }
 
-  /// Compute multivariate gaussian likelihood witha pre-computed
+  /// Compute multivariate gaussian likelihood with a pre-computed
   /// inverted covariance matrix and determinant.
   template<typename T1, typename T2>
   double logGaussianNdInvertedCovariance(
