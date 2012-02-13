@@ -43,7 +43,14 @@ VERSION=10
 VERSION=11
 ## Relaxed the max dimuon mass cut to 85 GeV
 
+VERSION=12
+## Relaxed the max dimuon mass cut to 85 GeV
+## First iteration of the full 2011 Dataset using Nov 4 JSON
+## PU reweighting for the full 2011 dataset (A+B)
+
 ##################### DATA #########################
+JSON_FILE=Cert_160404-180252_5Aug-v3_Prompt_Golden.txt
+
 # DATASET=Run2010B-ZMu-Apr21ReReco-v1
 # DATASET=ZMu-May10ReReco-42X-v3
 # DATASET=ZMu-PromptSkim-v4_42X-v5
@@ -53,24 +60,33 @@ VERSION=11
 # DATASET=DoubleMu_Dimuon_AOD_Prompt_v6
 # DATASET=DoubleMu_Run2011A-May10ReReco-v1_glite_Dimuon_RECO-42X-v9
 # DATASET=DoubleMu_Run2011A-PromptReco-v4_glite_Dimuon_RECO-42X-v9
-# TOTAL_SECTIONS=8
-# # for SECTION in 7; do
-# for SECTION in `seq $TOTAL_SECTIONS`; do
-#     COMMAND="nohup cmsRun energyScaleTree_cfg.py \
-#         inputFiles_clear \
-#         inputFiles_load=files_${DATASET}.dat \
-#         jsonFile=Cert_Golden_new.json \
-#         isMC=False \
-#         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/esTree_V${VERSION}_${DATASET} \
-#         totalSections=$TOTAL_SECTIONS \
-#         section=$SECTION \
-#         >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &"
-#     echo $COMMAND
-#     eval $COMMAND
-# done
-#
-#
+
+# DATASET=DoubleMu_Run2011A-05Jul2011ReReco-ECAL-v1_condor_Dimuon_RECO-42X-v9
+# DATASET=DoubleMu_Run2011A-05Aug2011-v1_glite_Dimuon_AOD-42X-v9
+# DATASET=DoubleMu_Run2011A-03Oct2011-v1_condor_Dimuon_AOD-42X-v9
+## This is actually 2011B, although it says 2011A
+DATASET=DoubleMu_Run2011A-PromptReco-v1_condor_Dimuon_AOD-42X-v9
+
+
+
+TOTAL_SECTIONS=8
+# for SECTION in 7; do
+for SECTION in `seq $TOTAL_SECTIONS`; do
+    COMMAND="nohup cmsRun energyScaleTree_cfg.py \
+        inputFiles_clear \
+        inputFiles_load=files_${DATASET}.dat \
+        jsonFile=$JSONE_FILE \
+        isMC=False \
+        maxEvents=-1 \
+        outputFile=/wntmp/veverka/esTree_V${VERSION}_${DATASET} \
+        totalSections=$TOTAL_SECTIONS \
+        section=$SECTION \
+        >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &"
+    echo $COMMAND
+    eval $COMMAND
+done
+
+
 # # ###################### SMALL MC ####################
 # #
 # # for DATASET in WToMuNu_TuneZ2_7TeV-pythia6_Summer11_RECO_42X-v4
@@ -110,27 +126,27 @@ VERSION=11
 
 ############### VERY LARGE MC ##################
 # DATASET=DYToMuMu_M-20-powheg-pythia_Winter10-v2
-DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_S4-v1_condor_Dimuon_AOD-42X-v9
-TOTAL_SECTIONS=40
-# TOTAL_SECTIONS=8
-BATCH=${1:-1}
-JOBS_PER_BATCH=8
-# for SECTION in 1; do
-for SECTION in `seq $((JOBS_PER_BATCH*(BATCH-1)+1)) $((JOBS_PER_BATCH*BATCH))`; do
-    COMMAND="nohup cmsRun energyScaleTree_cfg.py \
-        print \
-        inputFiles_clear \
-        inputFiles_load=files_${DATASET}.dat \
-        isMC=True \
-        maxEvents=-1 \
-        outputFile=/wntmp/veverka/esTree_V${VERSION}_${DATASET} \
-        globalTag=START42_V11::All \
-        totalSections=$TOTAL_SECTIONS \
-        section=$SECTION \
-        >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &"
-    echo $COMMAND
-    eval $COMMAND
-done
+# DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_S4-v1_condor_Dimuon_AOD-42X-v9
+# TOTAL_SECTIONS=40
+# # TOTAL_SECTIONS=8
+# BATCH=${1:-1}
+# JOBS_PER_BATCH=8
+# # for SECTION in 1; do
+# for SECTION in `seq $((JOBS_PER_BATCH*(BATCH-1)+1)) $((JOBS_PER_BATCH*BATCH))`; do
+#     COMMAND="nohup cmsRun energyScaleTree_cfg.py \
+#         print \
+#         inputFiles_clear \
+#         inputFiles_load=files_${DATASET}.dat \
+#         isMC=True \
+#         maxEvents=-1 \
+#         outputFile=/wntmp/veverka/esTree_V${VERSION}_${DATASET} \
+#         globalTag=START42_V11::All \
+#         totalSections=$TOTAL_SECTIONS \
+#         section=$SECTION \
+#         >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &"
+#     echo $COMMAND
+#     eval $COMMAND
+# done
 
 
 
