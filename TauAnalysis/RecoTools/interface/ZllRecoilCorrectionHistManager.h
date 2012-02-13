@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.9 2012/02/02 10:18:27 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.10 2012/02/03 18:02:14 veelken Exp $
  *
  */
 
@@ -42,7 +42,6 @@ class ZllRecoilCorrectionHistManager
   void bookHistograms(TFileDirectory&);
   void fillHistograms(const reco::CompositeCandidate&, const std::vector<pat::Muon>&, 
 		      const std::vector<pat::Jet>&, const pat::MET&, 
-		      const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&, 
 		      const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&, 
 		      const reco::Candidate::LorentzVector&,
 		      int, int, int, const reco::VertexCollection&, double, double);
@@ -169,61 +168,27 @@ class ZllRecoilCorrectionHistManager
 
       histogramMEtVsPhiZ_ = histManager->book2D(
 	dir, TString("metVsPhiZ").Append(label).Data(), "MET vs #phi_{Z}", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramMEtVsPhiZforEtaHadGt0_ = histManager->book2D(
-	dir, TString("metVsPhiZforEtaHadGt0").Append(label).Data(), "MET vs #phi_{Z} (#eta_{had} > 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramMEtVsPhiZforEtaHadLt0_ = histManager->book2D(
-	dir, TString("metVsPhiZforEtaHadLt0").Append(label).Data(), "MET vs #phi_{Z} (#eta_{had} < 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
+	36, -TMath::Pi(), +TMath::Pi(), 150, 0., 150.);
 
       histogramSumPFChargedHadronsVsPhiZ_ = histManager->book2D(
 	dir, TString("sumPFChargedHadronsVsPhiZ").Append(label).Data(), "#Sigma #vec{P}_{T}^{h} vs #phi_{Z}", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramSumPFChargedHadronsVsPhiZforEtaHadGt0_ = histManager->book2D(
-	dir, TString("sumPFChargedHadronsVsPhiZforEtaHadGt0").Append(label).Data(), "#Sigma #vec{P}_{T}^{h} vs #phi_{Z} (#eta_{had} > 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramSumPFChargedHadronsVsPhiZforEtaHadLt0_ = histManager->book2D(
-	dir, TString("sumPFChargedHadronsVsPhiZforEtaHadLt0").Append(label).Data(), "#Sigma #vec{P}_{T}^{h} vs #phi_{Z} (#eta_{had} < 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-
+	36, -TMath::Pi(), +TMath::Pi(), 150, 0., 150.);
       histogramSumPFNeutralHadronsVsPhiZ_ = histManager->book2D(
 	dir, TString("sumPFNeutralHadronsVsPhiZ").Append(label).Data(), "#Sigma #vec{P}_{T}^{h0} vs #phi_{Z}", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramSumPFNeutralHadronsVsPhiZforEtaHadGt0_ = histManager->book2D(
-	dir, TString("sumPFNeutralHadronsVsPhiZforEtaHadGt0").Append(label).Data(), "#Sigma #vec{P}_{T}^{h0} vs #phi_{Z} (#eta_{had} > 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramSumPFNeutralHadronsVsPhiZforEtaHadLt0_ = histManager->book2D(
-	dir, TString("sumPFNeutralHadronsVsPhiZforEtaHadLt0").Append(label).Data(), "#Sigma #vec{P}_{T}^{h0} vs #phi_{Z} (#eta_{had} < 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-
+	36, -TMath::Pi(), +TMath::Pi(), 150, 0., 150.);
       histogramSumPFGammasVsPhiZ_ = histManager->book2D(
 	dir, TString("sumPFGammasVsPhiZ").Append(label).Data(), "#Sigma #vec{P}_{T}^{#gamma} vs #phi_{Z}", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramSumPFGammasVsPhiZforEtaHadGt0_ = histManager->book2D(
-	dir, TString("sumPFGammasVsPhiZforEtaHadGt0").Append(label).Data(), "#Sigma #vec{P}_{T}^{#gamma} vs #phi_{Z} (#eta_{had} > 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
-      histogramSumPFGammasVsPhiZforEtaHadLt0_ = histManager->book2D(
-	dir, TString("sumPFGammasVsPhiZforEtaHadLt0").Append(label).Data(), "#Sigma #vec{P}_{T}^{#gamma} vs #phi_{Z} (#eta_{had} < 0)", 
-	36, -TMath::Pi(), +TMath::Pi(), 60, 0., 60.);
+	36, -TMath::Pi(), +TMath::Pi(), 150, 0., 150.);
     }
     ~histogramsMEtPhiAsymmetryVsQtType() {}
     double qTmin_;
     double qTmax_;
 
     TH2* histogramMEtVsPhiZ_;
-    TH2* histogramMEtVsPhiZforEtaHadGt0_;
-    TH2* histogramMEtVsPhiZforEtaHadLt0_;
 
     TH2* histogramSumPFChargedHadronsVsPhiZ_;
-    TH2* histogramSumPFChargedHadronsVsPhiZforEtaHadGt0_;
-    TH2* histogramSumPFChargedHadronsVsPhiZforEtaHadLt0_;
     TH2* histogramSumPFNeutralHadronsVsPhiZ_;
-    TH2* histogramSumPFNeutralHadronsVsPhiZforEtaHadGt0_;
-    TH2* histogramSumPFNeutralHadronsVsPhiZforEtaHadLt0_;
     TH2* histogramSumPFGammasVsPhiZ_;
-    TH2* histogramSumPFGammasVsPhiZforEtaHadGt0_;
-    TH2* histogramSumPFGammasVsPhiZforEtaHadLt0_;
   };
 
   std::vector<histogramsMEtPhiAsymmetryVsQtType*> histogramsMEtPhiAsymmetryVsQtBinned_;

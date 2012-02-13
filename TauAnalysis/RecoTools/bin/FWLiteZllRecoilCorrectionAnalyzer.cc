@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.11 2012/02/02 10:18:27 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.12 2012/02/03 18:02:14 veelken Exp $
  *
  */
 
@@ -349,42 +349,29 @@ int main(int argc, char* argv[])
   
       const pat::MET& rawMEt = (*met->begin());
 
-      edm::Handle<reco::PFCandidateCollection> pfCandidates;
-      evt.getByLabel(srcPFCandidates, pfCandidates);
+      //edm::Handle<reco::PFCandidateCollection> pfCandidates;
+      //evt.getByLabel(srcPFCandidates, pfCandidates);
       
-      reco::Candidate::LorentzVector p4PFChargedHadronsEtaLt0, p4PFNeutralHadronsEtaLt0, p4PFGammasEtaLt0;
-      reco::Candidate::LorentzVector p4PFChargedHadronsEtaGt0, p4PFNeutralHadronsEtaGt0, p4PFGammasEtaGt0;
-      for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates->begin();
-	    pfCandidate != pfCandidates->end(); ++pfCandidate ) {
-	int pfCandidateType = pfCandidate->particleId();
-	if ( pfCandidate->eta() > 0. ) {
-	  if      ( pfCandidateType == reco::PFCandidate::h     ) p4PFChargedHadronsEtaGt0 += pfCandidate->p4();
-	  else if ( pfCandidateType == reco::PFCandidate::h0    ) p4PFNeutralHadronsEtaGt0 += pfCandidate->p4();
-	  else if ( pfCandidateType == reco::PFCandidate::gamma ) p4PFGammasEtaGt0         += pfCandidate->p4();
-	} else {
-	  if      ( pfCandidateType == reco::PFCandidate::h     ) p4PFChargedHadronsEtaLt0 += pfCandidate->p4();
-	  else if ( pfCandidateType == reco::PFCandidate::h0    ) p4PFNeutralHadronsEtaLt0 += pfCandidate->p4();
-	  else if ( pfCandidateType == reco::PFCandidate::gamma ) p4PFGammasEtaLt0         += pfCandidate->p4();
-	}
-      }
+      reco::Candidate::LorentzVector p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas;
+      //for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates->begin();
+      //      pfCandidate != pfCandidates->end(); ++pfCandidate ) {
+      //  int pfCandidateType = pfCandidate->particleId();
+      //  if      ( pfCandidateType == reco::PFCandidate::h     ) p4PFChargedHadrons += pfCandidate->p4();
+      //  else if ( pfCandidateType == reco::PFCandidate::h0    ) p4PFNeutralHadrons += pfCandidate->p4();
+      //  else if ( pfCandidateType == reco::PFCandidate::gamma ) p4PFGammas         += pfCandidate->p4();
+      //}
       
-      reco::Candidate::LorentzVector p4HadEtaLt0 = p4PFChargedHadronsEtaLt0 + p4PFNeutralHadronsEtaLt0 + p4PFGammasEtaLt0;
-      reco::Candidate::LorentzVector p4HadEtaGt0 = p4PFChargedHadronsEtaGt0 + p4PFNeutralHadronsEtaGt0 + p4PFGammasEtaGt0;
-      reco::Candidate::LorentzVector p4PFChargedHadrons = p4PFChargedHadronsEtaLt0 + p4PFChargedHadronsEtaGt0;
-      reco::Candidate::LorentzVector p4PFNeutralHadrons = p4PFNeutralHadronsEtaLt0 + p4PFNeutralHadronsEtaGt0;
-      reco::Candidate::LorentzVector p4PFGammas = p4PFGammasEtaLt0 + p4PFGammasEtaGt0;
-
       histogramsBeforeGenPUreweight->fillHistograms(
 	*bestZllCandidate, *muons, *jets, rawMEt, 
-	p4HadEtaLt0, p4HadEtaGt0, p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
+	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, 1.0);
       histogramsBeforeAddPUreweight->fillHistograms(
         *bestZllCandidate, *muons, *jets, rawMEt, 
-	p4HadEtaLt0, p4HadEtaGt0, p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
+	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight);
       histogramsBeforeZllRecoilCorr->fillHistograms(
         *bestZllCandidate, *muons, *jets, rawMEt, 
-	p4HadEtaLt0, p4HadEtaGt0, p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
+	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
       //if ( bestZllCandidate->pt() > 150. ) {
@@ -404,7 +391,7 @@ int main(int argc, char* argv[])
       }
       histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
         *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, 
-	p4HadEtaLt0, p4HadEtaGt0, p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
+	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
       pat::MET absCalibMEt(rawMEt);
@@ -421,7 +408,7 @@ int main(int argc, char* argv[])
       }
       histogramsAfterZllRecoilAbsCalib->fillHistograms(
         *bestZllCandidate, *muons, *jets, absCalibMEt, 
-	p4HadEtaLt0, p4HadEtaGt0, p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
+	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
     }
 

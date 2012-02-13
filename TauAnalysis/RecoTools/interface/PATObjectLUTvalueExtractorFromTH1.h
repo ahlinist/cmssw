@@ -10,9 +10,9 @@
  *
  * \authors Christian Veelken
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATObjectLUTvalueExtractorFromTH1.h,v 1.1 2011/10/21 16:24:11 veelken Exp $
+ * $Id: PATObjectLUTvalueExtractorFromTH1.h,v 1.2 2011/11/04 09:39:20 veelken Exp $
  *
  */
 
@@ -30,18 +30,6 @@
 
 #include <vector>
 #include <string>
-
-namespace PATObjectLUTvalueExtractorFromTH1_namespace
-{
-  int getBin(TAxis* axis, double objX)
-  {
-    int bin = axis->FindFixBin(objX);
-    int nBins = axis->GetNbins();
-    if ( bin < 1     ) bin = 1;
-    if ( bin > nBins ) bin = nBins;
-    return bin;
-  }
-}
 
 template<typename T>
 class PATObjectLUTvalueExtractorFromTH1 : public PATObjectLUTvalueExtractorBase<T>
@@ -92,21 +80,21 @@ class PATObjectLUTvalueExtractorFromTH1 : public PATObjectLUTvalueExtractorBase<
     switch ( lut_->GetDimension() ) {
     case 1:
       objX = (*stringFunctionX_)(obj);
-      binX = PATObjectLUTvalueExtractorFromTH1_namespace::getBin(lut_->GetXaxis(), objX);
+      binX = getBin(lut_->GetXaxis(), objX);
       return lut_->GetBinContent(binX);
     case 2:
       objX = (*stringFunctionX_)(obj);
-      binX = PATObjectLUTvalueExtractorFromTH1_namespace::getBin(lut_->GetXaxis(), objX);
+      binX = getBin(lut_->GetXaxis(), objX);
       objY = (*stringFunctionY_)(obj);
-      binY = PATObjectLUTvalueExtractorFromTH1_namespace::getBin(lut_->GetYaxis(), objY);
+      binY = getBin(lut_->GetYaxis(), objY);
       return lut_->GetBinContent(binX, binY);
     case 3:
       objX = (*stringFunctionX_)(obj);
-      binX = PATObjectLUTvalueExtractorFromTH1_namespace::getBin(lut_->GetXaxis(), objX);
+      binX = getBin(lut_->GetXaxis(), objX);
       objY = (*stringFunctionY_)(obj);
-      binY = PATObjectLUTvalueExtractorFromTH1_namespace::getBin(lut_->GetYaxis(), objY);
+      binY = getBin(lut_->GetYaxis(), objY);
       objZ = (*stringFunctionZ_)(obj);
-      binZ = PATObjectLUTvalueExtractorFromTH1_namespace::getBin(lut_->GetZaxis(), objZ);
+      binZ = getBin(lut_->GetZaxis(), objZ);
       return lut_->GetBinContent(binX, binY, binZ);
     } 
 
@@ -115,6 +103,15 @@ class PATObjectLUTvalueExtractorFromTH1 : public PATObjectLUTvalueExtractorBase<
   }
 
  private:
+
+  int getBin(TAxis* axis, double objX) const
+  {
+    int bin = axis->FindFixBin(objX);
+    int nBins = axis->GetNbins();
+    if ( bin < 1     ) bin = 1;
+    if ( bin > nBins ) bin = nBins;
+    return bin;
+  }
 
   TFile* inputFile_;
   TH1* lut_;
