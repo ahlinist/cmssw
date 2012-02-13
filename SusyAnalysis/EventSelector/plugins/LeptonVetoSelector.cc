@@ -12,6 +12,8 @@
 
 #include <DataFormats/PatCandidates/interface/Jet.h>
 
+#include <DataFormats/METReco/interface/PFMET.h>
+
 #include <vector>
 
 //__________________________________________________________________________________________________
@@ -25,7 +27,8 @@ LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
                      pset.getParameter<double> ("maxMuonEta")), muonIso_(pset.getParameter<double> ("muonIsolation")),
             muonIsoPF_(pset.getParameter<double> ("muonIsolationPF")),
             muonHits_(pset.getParameter<unsigned int> ("muonMinHits")), muonDxy_(pset.getParameter<double> (
-                     "maxMuonDxy")), invertVeto_  ( pset.getParameter<bool>        ("invertVeto")        )
+                     "maxMuonDxy")), invertVeto_  ( pset.getParameter<bool>        ("invertVeto")        ), 
+            mtwCut_  ( pset.getParameter<bool>        ("MTWcut")        )
 
 //,
 //  tauTag_    ( pset.getParameter<edm::InputTag>("tau")       ),
@@ -50,6 +53,8 @@ LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
      defineVariable("Electron1DR");
      defineVariable("Muon1DR");
      defineVariable("MuonMTW");
+     defineVariable("MuonMTWfromMET");
+
    }
 
 }
@@ -91,6 +96,8 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   double ElectronDR [3] = {-10.,-10.,-10.};
   double MuonDR [3] = {-10.,-10.,-10.};
   double MTW=0;
+  double MTWfromMET=0;
+
 
 
   math::PtEtaPhiMLorentzVector mhtvec(0.0, 0.0, 0.0, 0.0);
@@ -101,6 +108,17 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 	     << "patJetsAK5PF"<<std::endl;
   }
   else (event.getByLabel("patJetsAK5PF",jets) );
+
+
+  edm::Handle <edm::View<reco::PFMET> >mets;
+  if ( !event.getByLabel("pfMet",mets) ) {
+    std::cout<<"Could not extract MET with input tag "
+             << "pfMet"<<std::endl;
+  }
+  else (event.getByLabel("pfMet",mets) );
+
+
+
 
 
   for (edm::View<pat::Jet>::const_iterator jet= jets->begin(); jet!=jets->end(); ++jet){
@@ -289,6 +307,13 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
       MuonDR[nMuons] = minDR;
       double DPMuMHT = reco::deltaPhi(im->phi(), mhtvec.phi());
       MTW = sqrt(2 * im->pt() * mhtvec.pt() * (1 - cos(DPMuMHT )) );
+
+
+      double DPMuMHTPF = reco::deltaPhi(im->phi(), mets->begin()->phi());
+      MTWfromMET = sqrt(2 * im->pt() * mets->begin()->pt() * (1 - cos(DPMuMHTPF )) );
+
+      if(mtwCut_ && invertVeto_ && MTWfromMET > 100) return false;
+
     }
 
     LogDebug("LeptonVetoSelector") << "Isolated muon found";
@@ -307,6 +332,8 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     setVariable("Muon1DR", MuonDR[0]);
     setVariable("Electron1DR", ElectronDR[0]);
     setVariable("MuonMTW", MTW);
+    setVariable("MuonMTWfromMET", MTWfromMET);
+
   }
   
 
