@@ -172,6 +172,20 @@ namespace dqmevf
 
     void stopSlavesAndAcknowledge();
     void makeStaticInfo();
+
+    bool isEnabled() {
+      if (fsm_.stateName()->toString()=="Enabled" || fsm_.stateName()->toString()=="Degraded") return true;
+      else return false;
+    }
+    bool isEnabledFully() {
+      if (fsm_.stateName()->toString()=="Enabled") return true;
+      else return false;
+    }
+    bool isDegraded() {
+      if (fsm_.stateName()->toString()=="Degraded") return true;
+      else return false;
+    }
+
     //
     // Class members
     //
@@ -280,6 +294,9 @@ namespace dqmevf
     bool                             debug_;
 
     Web *                            webHelper_;
+
+    int                              degradedCounter_;
+    int                              startedCounter_;
 
    //objects used to hold simple info retrieved from child process
    struct masterStatT {

@@ -106,6 +106,8 @@ Processor::Processor(xdaq::ApplicationStub *s)
   , isStopping_(false)
   , inForcedKillMask_(0)
   , debug_(false)
+  , degradedCounter_(0)
+  , startedCounter_(0)
 {
   using namespace utils;
  
@@ -356,6 +358,9 @@ void Processor::spawnChild(unsigned int i) {
   wCfg_.sub=&subs_[i];
   wCfg_.slot = i;
 
+  //init python
+  initEDMConfiguration();
+
   fwepWrapper_.init(wCfg_);
   fsm_.disableRcmsStateNotification();
 
@@ -368,7 +373,9 @@ void Processor::spawnChild(unsigned int i) {
       fsm_.fireFailed("error",this);
       exit(EXIT_FAILURE);
     }
-    else fsm_.fireEvent("EnableDone",this);
+    else {
+      fsm_.fireEvent("EnableDone",this);
+    }
   }
   catch (xcept::Exception &e)
   {
@@ -501,17 +508,17 @@ bool Processor::enabling(toolbox::task::WorkLoop* wl)
   LOG4CPLUS_INFO(getApplicationLogger(), "Starting with Run Number "<< runNumber_.value_);
   cout << "Starting with Run Number " << runNumber_.value_ << endl;
 
-
+  startedCounter_=0;
   //update configuration if FM did not invoke it
 
-  bool ret = initEDMConfiguration();
+  /*bool ret = initEDMConfiguration();
   if (!ret) {
     //back to halted state if configuration problem
     localLog("-I- Start aborted: Configuration error. "+configString_.value_);
     LOG4CPLUS_ERROR(getApplicationLogger(), "Start aborted. Configuration error.");
     fsm_.fireEvent("EnableAbort",this);
     return false;
-  }
+  }*/
   pthread_mutex_lock(&start_lock_);
   pthread_mutex_lock(&start_lock2_);
 
@@ -893,7 +900,7 @@ void Processor::microState(xgi::Input *in,xgi::Output *out)
 	    *out << "<td><button type=\"button\" onclick=\"callManual(0)\">Configure</button></td>\n";
       if (fsm_.stateName()->toString()=="Ready")
 	    *out << "<td><button type=\"button\" onclick=\"callManual(1)\">Enable</button></td>\n";
-      if (fsm_.stateName()->toString()=="Enabled")
+      if (isEnabled())
 	    *out << "<td><button type=\"button\" onclick=\"callManual(2)\">Halt</button></td>\n";
     }
 
@@ -938,7 +945,7 @@ void Processor::microState(xgi::Input *in,xgi::Output *out)
 	    }
 	    *out << "<td>" << subs_[i].params().ls <<"</td>";
 
-            if (fsm_.stateName()->toString()=="Enabled") {
+            if (isEnabled()) {
 	      if (!(inForcedKillMask_&(1<<i)))
 	        *out << "<td><button id=\"ResetButton" << subs_[i].pid() << "\" type=\"button\" onclick=\"callReset("
                      << subs_[i].pid() << ")\">Reset</button></td>";
@@ -964,7 +971,7 @@ void Processor::microState(xgi::Input *in,xgi::Output *out)
 	    *out <<"<td >" << subs_[i].reasonForFailed();
 	    if(subs_[i].alive()<=0 && subs_[i].alive()!=-1000) 
 	    {
-	      if(autoRestartSlaves_ && fsm_.stateName()->toString()=="Enabled") *out << " R:" << subs_[i].countdown() << " s";
+	      if(autoRestartSlaves_ && isEnabled()) *out << " R:" << subs_[i].countdown() << " s";
 	      else *out << " ";
 	    }
 	    *out << "</td>";
@@ -978,7 +985,7 @@ void Processor::microState(xgi::Input *in,xgi::Output *out)
 	    else *out << " (" << "-" <<"%)</td>\n" ;
 
 	    *out << "<td>" << subs_[i].params().ls  << "</td>";
-	    if (fsm_.stateName()->toString()=="Enabled") {
+	    if (isEnabled()) {
 
 	      if (!(inForcedKillMask_&(1<<i)))
 	        *out << "<td><button id=\"ResetButton" << subs_[i].pid() << "\" type=\"button\" onclick=\"callReset("
@@ -1204,7 +1211,7 @@ void Processor::initiateReset(xgi::Input  *in, xgi::Output *out) {
   if (killpid<=0) return;
   pthread_mutex_lock(&start_lock_);
 
-  if (fsm_.stateName()->toString()=="Enabled") {
+  if (isEnabled()) {
     localLog("-I- Manual Reset initiated");
     for (unsigned int i=0;i<subs_.size();i++) {
       if (inForcedKillMask_&(1<<i)) continue;
@@ -1268,7 +1275,7 @@ bool Processor::summarize(toolbox::task::WorkLoop* wl)
   if (lockret!=0) return true;
 
   //shutdown if end of run
-  if(fsm_.stateName()->toString()!="Enabled" || !wlSummarizeActive_){
+  if(isEnabled() || !wlSummarizeActive_){
     wlSummarizeActive_ = false;
     pthread_mutex_unlock(&summary_queue_lock_);
     return false;
@@ -1422,7 +1429,10 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
     return true;
   }
   
-  bool running = fsm_.stateName()->toString()=="Enabled";
+  bool running = isEnabled();
+
+  //update degraded mode status
+  if (isDegraded() && degradedCounter_<=0) fsm_.fireEvent("EnableDone",this);
 
   //monitor detached process
   if (!isStopping_)
@@ -1517,7 +1527,7 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
 	pthread_mutex_unlock(&start_lock2_);
 	return true;
       }
-      if (!isStopping_ && fsm_.stateName()->toString()=="Enabled")
+      if (!isStopping_ && isEnabled())
 	for(unsigned int i = 0; i < subs_.size(); i++)
 	{
 	  bool fkill = ((1<<i)&inForcedKillMask_)!=0;
@@ -1536,7 +1546,7 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
 		if (!fkill) masterStat_.storeToPrev();
 		try {
 		  reconfigureEP();
-		  initEDMConfiguration();
+		  //initEDMConfiguration();
 		} catch (...) {}
 		if (!configurationInitialized_) {
 		  localLog( "-E- Reset failed: configuration error ");
@@ -1554,6 +1564,10 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
 		  }
 		  else //still in master
 		  {
+		    //go to degraded mode if restarted mid-run (even if manually)
+                    degradedCounter_=120;
+		    if (startedCounter_>240 && isEnabledFully()) fsm_.fireEvent("Degrade",this);
+
 		    wlSummarizeActive_=oldSummarize;
 		    std::ostringstream ost1;
 		    ost1 << "-I- New Process " << ret << " forked for slot " << i;
@@ -1661,6 +1675,8 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
   //end
   pthread_mutex_unlock(&start_lock2_);
   ::sleep(superSleepSec_.value_);
+  if (degradedCounter_>0) degradedCounter_--;
+  startedCounter_++;
   return true;
 }
 

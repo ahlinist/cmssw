@@ -121,6 +121,7 @@ namespace dqmevf
       fsm_.addState('R', "Ready"      , this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('e', "enabling"   , this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('E', "Enabled"    , this,&dqmevf::StateMachine::stateChanged);
+      fsm_.addState('X', "Degraded"    , this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('s', "shuttingDown",this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('S', "ShutDown",    this,&dqmevf::StateMachine::stateChanged);
       
@@ -128,7 +129,10 @@ namespace dqmevf
       fsm_.addStateTransition('c','R',"ConfigureDone");
       fsm_.addStateTransition('R','e',"Enable");
       fsm_.addStateTransition('e','E',"EnableDone");
+      fsm_.addStateTransition('X','E',"EnableDone");
+      fsm_.addStateTransition('E','X',"Degrade");
       fsm_.addStateTransition('E','h',"Halt");
+      fsm_.addStateTransition('X','h',"Halt");
       fsm_.addStateTransition('R','h',"Halt");
       fsm_.addStateTransition('h','H',"HaltDone");
       fsm_.addStateTransition('e','H',"EnableAbort");
@@ -137,6 +141,7 @@ namespace dqmevf
       fsm_.addStateTransition('R','s',"Shutdown");
       fsm_.addStateTransition('c','s',"Shutdown");
       fsm_.addStateTransition('E','s',"Shutdown");
+      fsm_.addStateTransition('X','s',"Shutdown");
       fsm_.addStateTransition('e','s',"Shutdown");
       fsm_.addStateTransition('H','s',"Shutdown");
       fsm_.addStateTransition('h','s',"Shutdown");
@@ -148,6 +153,7 @@ namespace dqmevf
       fsm_.addStateTransition('h','F',"Fail",this,&dqmevf::StateMachine::failed);
       
       fsm_.addStateTransition('E','F',"Fail",this,&dqmevf::StateMachine::failed);
+      fsm_.addStateTransition('X','F',"Fail",this,&dqmevf::StateMachine::failed);
 
       fsm_.setFailedStateTransitionAction(this,&dqmevf::StateMachine::failed);
       fsm_.setFailedStateTransitionChanged(this,&dqmevf::StateMachine::stateChanged);
