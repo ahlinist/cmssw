@@ -19,7 +19,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-#include "FWCore/ParameterSet/interface/FileInPath.h"
 
 #include "FWCore/Utilities/interface/Exception.h"
 
@@ -33,10 +32,6 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
-
-#include "TMVA/Factory.h"
-#include "TMVA/Reader.h"
-#include "TMVA/Tools.h"
 
 #include <TMatrixD.h>
 
