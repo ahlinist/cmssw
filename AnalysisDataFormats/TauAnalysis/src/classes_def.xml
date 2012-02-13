@@ -35,6 +35,11 @@
   <class name="edm::Ptr<reco::Track>"/>
   <class name="edm::Ptr<reco::GsfTrack>"/>
 
+  <!-- create disctionaries for MET covariance matrix 
+       computed by (PF)MET significance algorithm -->
+  <class name="PFMEtSignCovMatrix"/>
+  <class name="edm::Wrapper<PFMEtSignCovMatrix>"/>
+
   <!-- create dictionaries for NSVfit solution data-formats -->
   <class name="NSVfitEventHypothesisBase"/>
   <class name="NSVfitEventHypothesis"/>

@@ -16,6 +16,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToDaughtersHypothesisBaseT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
 
@@ -88,6 +90,11 @@ namespace {
     /// as these dictionaries are not yet created in DataFormats/TrackReco/src/classes.h (DataFormats/GsfTrackReco/src/classes.h)
     edm::Ptr<reco::Track> dummyTrackPtr;
     edm::Ptr<reco::GsfTrack> dummyGsfTrackPtr;
+
+    /// create disctionaries for MET covariance matrix 
+    /// computed by (PF)MET significance algorithm
+    PFMEtSignCovMatrix dummyPFMEtSignCovMatrix;
+    edm::Wrapper<PFMEtSignCovMatrix> dummyPFMEtSignCovMatrixWrapper;
 
     /// create dictionaries for NSVfit solution data-formats
     NSVfitEventHypothesisBase dummyNSVfitEventHypothesisBase;
