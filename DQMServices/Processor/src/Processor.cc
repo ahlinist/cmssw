@@ -102,6 +102,7 @@ Processor::Processor(xdaq::ApplicationStub *s)
   , hasScalersService_(true)
 
   , configurationInitialized_(false)
+  , configurationInit_(false)
   , isStopping_(false)
   , inForcedKillMask_(0)
   , debug_(false)
@@ -388,7 +389,9 @@ void Processor::actionPerformed(xdata::Event& e)
   if (e.type()=="ItemRetrieveEvent") {
     std::string item = dynamic_cast<xdata::ItemRetrieveEvent&>(e).itemName();
     if (item == "parameterSetCopy") {
-      initEDMConfiguration();
+      //skip first attempt at this (new xdaq doing causing it at init?)
+      if (!configurationInit_) configurationInit_=true;
+      else initEDMConfiguration();
     }
   }
 }

@@ -274,6 +274,7 @@ namespace dqmevf
 
     //flags 
     bool                             configurationInitialized_ ;
+    bool                             configurationInit_ ;
     bool                             isStopping_;
     unsigned int                     inForcedKillMask_;
     bool                             debug_;
