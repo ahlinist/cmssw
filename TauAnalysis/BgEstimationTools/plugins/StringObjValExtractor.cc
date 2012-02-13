@@ -40,8 +40,8 @@ double StringObjValExtractor<T>::operator()(const edm::Event& evt) const
   }
 }
 
-#include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -50,6 +50,7 @@ double StringObjValExtractor<T>::operator()(const edm::Event& evt) const
 #include "DataFormats/PatCandidates/interface/MET.h"
 
 typedef StringObjValExtractor<reco::Candidate> CandidateValExtractor;
+typedef StringObjValExtractor<reco::CompositeCandidate> CompositeCandidateValExtractor;
 
 typedef StringObjValExtractor<pat::Electron> PATElectronValExtractor;
 typedef StringObjValExtractor<pat::Muon> PATMuonValExtractor;
@@ -88,6 +89,7 @@ typedef StringObjValExtractor<MEtTopology> MEtTopologyValExtractor;
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, CandidateValExtractor,            "CandidateValExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, CompositeCandidateValExtractor,   "CompositeCandidateValExtractor");
 
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATElectronValExtractor,          "PATElectronValExtractor");
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATMuonValExtractor,              "PATMuonValExtractor");
