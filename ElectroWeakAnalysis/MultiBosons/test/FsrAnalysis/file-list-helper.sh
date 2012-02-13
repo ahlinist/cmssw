@@ -9,10 +9,15 @@
 
 ## Customization: Modify the values of PRIMARY_DATASET and SOURCE_LIST.
 
-PRIMARY_DATASET=DoubleMu
-SOURCE_LIST=new_dirs.txt
+#PRIMARY_DATASET=DoubleMu
+#SOURCE_LIST=$(cat new_dirs_2.txt)
 
-for PROCESSED_DATASET in $(cat $SOURCE_LIST); do
+PRIMARY_DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia
+SOURCE_LIST='Summer11-PU_S4_START42_V11-v1_glite_Dimuon_RECO-42X-v9
+             Summer11-PU_S4_START42_V11-v1_glidein_Dimuon_RECO-42X-v9'
+
+
+for PROCESSED_DATASET in $SOURCE_LIST; do
     echo "listFiles.py $TIER2/$PRIMARY_DATASET/$PROCESSED_DATASET <<END"
     echo "files_${PRIMARY_DATASET}_${PROCESSED_DATASET}.dat"
     echo "END"
