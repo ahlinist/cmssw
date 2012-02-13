@@ -38,38 +38,45 @@ std::vector<double> StringObjVectorValExtractor<T>::operator()(const edm::Event&
   return vec;
 }
 
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
+
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
-typedef StringObjVectorValExtractor<reco::Candidate> CandidateVectorValExtractor;
-typedef StringObjVectorValExtractor<pat::Electron>   PATElectronVectorValExtractor;
-typedef StringObjVectorValExtractor<pat::Muon>       PATMuonVectorValExtractor;
-typedef StringObjVectorValExtractor<pat::Tau>        PATTauVectorValExtractor;
-typedef StringObjVectorValExtractor<pat::Jet>        PATJetVectorValExtractor;
-typedef StringObjVectorValExtractor<pat::MET>        PATMetVectorValExtractor;
+typedef StringObjVectorValExtractor<reco::Candidate>          CandidateVectorValExtractor;
+typedef StringObjVectorValExtractor<reco::CompositeCandidate> CompositeCandidateVectorValExtractor;
+
+typedef StringObjVectorValExtractor<pat::Electron>            PATElectronVectorValExtractor;
+typedef StringObjVectorValExtractor<pat::Muon>                PATMuonVectorValExtractor;
+typedef StringObjVectorValExtractor<pat::Tau>                 PATTauVectorValExtractor;
+typedef StringObjVectorValExtractor<pat::Jet>                 PATJetVectorValExtractor;
+typedef StringObjVectorValExtractor<pat::MET>                 PATMetVectorValExtractor;
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
-typedef StringObjVectorValExtractor<DiCandidatePair> DiCandidatePairVectorValExtractor;
-typedef StringObjVectorValExtractor<PATElecMuPair>   PATElecMuPairVectorValExtractor;
-typedef StringObjVectorValExtractor<PATElecTauPair>  PATElecTauPairVectorValExtractor;
-typedef StringObjVectorValExtractor<PATMuTauPair>    PATMuTauPairVectorValExtractor;
-typedef StringObjVectorValExtractor<PATDiTauPair>    PATDiTauPairVectorValExtractor;
+typedef StringObjVectorValExtractor<DiCandidatePair>          DiCandidatePairVectorValExtractor;
+typedef StringObjVectorValExtractor<PATElecMuPair>            PATElecMuPairVectorValExtractor;
+typedef StringObjVectorValExtractor<PATElecTauPair>           PATElecTauPairVectorValExtractor;
+typedef StringObjVectorValExtractor<PATMuTauPair>             PATMuTauPairVectorValExtractor;
+typedef StringObjVectorValExtractor<PATDiTauPair>             PATDiTauPairVectorValExtractor;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, CandidateVectorValExtractor,       "CandidateVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATElectronVectorValExtractor,     "PATElectronVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATMuonVectorValExtractor,         "PATMuonVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATTauVectorValExtractor,          "PATTauVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATJetVectorValExtractor,          "PATJetVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATMetVectorValExtractor,          "PATMetVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, CandidateVectorValExtractor,          "CandidateVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, CompositeCandidateVectorValExtractor, "CompositeCandidateVectorValExtractor");
 
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, DiCandidatePairVectorValExtractor, "DiCandidatePairVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATElecMuPairVectorValExtractor,   "PATElecMuPairVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATElecTauPairVectorValExtractor,  "PATElecTauPairVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATMuTauPairVectorValExtractor,    "PATMuTauPairVectorValExtractor");
-DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATDiTauPairVectorValExtractor,    "PATDiTauPairVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATElectronVectorValExtractor,        "PATElectronVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATMuonVectorValExtractor,            "PATMuonVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATTauVectorValExtractor,             "PATTauVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATJetVectorValExtractor,             "PATJetVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATMetVectorValExtractor,             "PATMetVectorValExtractor");
+
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, DiCandidatePairVectorValExtractor,    "DiCandidatePairVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATElecMuPairVectorValExtractor,      "PATElecMuPairVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATElecTauPairVectorValExtractor,     "PATElecTauPairVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATMuTauPairVectorValExtractor,       "PATMuTauPairVectorValExtractor");
+DEFINE_EDM_PLUGIN(ObjValVectorExtractorPluginFactory, PATDiTauPairVectorValExtractor,       "PATDiTauPairVectorValExtractor");
