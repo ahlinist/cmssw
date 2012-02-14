@@ -645,7 +645,7 @@ void Processor::stopSlavesAndAcknowledge()
 	    LOG4CPLUS_ERROR(getApplicationLogger(),"Child process died before replying");
 	  }
 	}
-	catch(dqmevf::Exception &e){//maybe never used
+	catch(dqmevf::Exception &e){
 	  pthread_mutex_unlock(&sup_queue_lock_);
 	  if (subs_[i].alive()<=0) {
 	    nBad++;
@@ -1451,12 +1451,13 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
     }
     int sl;
     pid_t killedOrNot = waitpid(myProc.first,&sl,WNOHANG);
-    if(killedOrNot==myProc.first || myProc.second<=-3) {//give 2 sec more time to get proper status
+    if(killedOrNot==-1 || killedOrNot==myProc.first || myProc.second<=-3) {
       ostringstream lost;
       if (killedOrNot>0) {
         if (WIFEXITED(sl)) lost << "-I- detached process "<< myProc.first <<" finished";
         else lost << "-I- detached process "<< myProc.first <<" dead";
       }
+      else if (killedOrNot==-1) lost << "-I- detached process "<< myProc.first << " was terminated previously";
       else lost << "-I- detached process "<< myProc.first <<": unknown post-mortem status";
       localLog(lost.str());
       detached_.erase(detached_.begin()+i);
