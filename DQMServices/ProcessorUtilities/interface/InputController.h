@@ -24,22 +24,24 @@ namespace dqmevf
     bool hasTimedOut;
     bool enableLocking;
     bool dropOldLS;
-	bool isDQM;
+    bool isDQM;
+    unsigned int *runStopFlag;
 
     evfSourceVars() {
       evtLumi=0;
       lumi=0;
       lastLumi=0;
-	  processedEvents=0;
+      processedEvents=0;
       droppedEvents=0;
-	  processedDQMEvents=0;
+      processedDQMEvents=0;
       droppedDQMEvents=0;
       nbSubProcesses=1;
       trappingCounter=1;//will be decreased on init
       hasTimedOut=false;
       enableLocking=true;
       dropOldLS=true;
-	  isDQM=false;
+      isDQM=false;
+      runStopFlag=0;
     }
   };
 
