@@ -1567,7 +1567,7 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
 		  {
 		    //go to degraded mode if restarted mid-run (even if manually)
                     degradedCounter_=120;
-		    if (startedCounter_>240 && isEnabledFully()) fsm_.fireEvent("Degrade",this);
+		    //if (startedCounter_>240 && isEnabledFully()) fsm_.fireEvent("Degrade",this);
 
 		    wlSummarizeActive_=oldSummarize;
 		    std::ostringstream ost1;
