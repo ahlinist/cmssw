@@ -99,7 +99,7 @@ namespace dqmevf{
     bool inInconsistentState() const {return reported_inconsistent_;}
     void setReasonForFailed(std::string r){reasonForFailed_ = r;}
     void setReportedInconsistent(){reported_inconsistent_ = true;}
-    unsigned int &countdown(){return restart_countdown_;}
+    int &countdown(){return restart_countdown_;}
     static const unsigned int monitor_queue_offset_ = 200;
 
   private:
@@ -113,7 +113,7 @@ namespace dqmevf{
     SlaveQueue*                    sqm_;  // every subprocess will create its instance at fork 
     std::string reasonForFailed_;
     struct prg prg_;
-    unsigned int restart_countdown_;
+    int restart_countdown_;
 
     int save_nbp_;
     int save_nba_;
