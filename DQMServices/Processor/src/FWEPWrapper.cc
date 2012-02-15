@@ -90,7 +90,6 @@ namespace dqmevf{
    }
    else maxWaitTime.tv_sec=0;
 
-
     //init locking objects
     int retval;
     retval = pthread_mutex_init(&readout_lock_,0);
@@ -137,11 +136,11 @@ namespace dqmevf{
         pf->makePresence("MessageServicePresence").release();
       }
       else {
-        std::cout << "SLAVE: Unable to create message service presence \n";
+        std::cout << "SLAVE: Unable to create message service presence "<<endl;
       }
     } 
     catch(...) {
-      std::cout <<"SLAVE: Unknown Exception (Message Presence)";
+      std::cout <<"SLAVE: Unknown Exception (Message Presence)"<<endl;
     }
     
     //service preparation
@@ -178,16 +177,16 @@ namespace dqmevf{
       serviceToken_ = edm::ServiceRegistry::createSet(*pServiceSets);
     }
     catch(cms::Exception &e) {
-      std::cout << "SLAVE: " << e.explainSelf() << std::endl;
+      cout << "SLAVE: " << e.explainSelf() << endl;
       LOG4CPLUS_ERROR(log_,e.explainSelf());
       exit(EXIT_SUCCESS);
     }    
     catch(std::exception &e) {
-      std::cout << "SLAVE: " << e.what() << std::endl;
+      cout << "SLAVE: " << e.what() << endl;
       LOG4CPLUS_ERROR(log_,e.what());
     }
     catch(...) {
-      std::cout << "SLAVE: Unknown Exception" << std::endl;
+      cout << "SLAVE: Unknown Exception" << endl;
       LOG4CPLUS_ERROR(log_,"Unknown Exception");
     }
 
@@ -209,12 +208,12 @@ namespace dqmevf{
 	  serviceToken_, edm::serviceregistry::kTokenOverrides);
     }
     catch (cms::Exception e) {
-      std::cout << "SLAVE: Exception creating edm:EventProcessor: \n";
+      cout << "SLAVE: Exception creating edm:EventProcessor: "<<endl;
       std::cout << "       " << e.explainSelf() << std::endl;
       exit(EXIT_FAILURE);
       //report failed, or shutdown..
     }
-    catch (...) {std::cout << "SLAVE: Unknown Exception\n";}
+    catch (...) {cout << "SLAVE: Unknown Exception"<<endl;}
 
     pthread_mutex_lock(&readout_lock_); 
     epCreated_=true;
@@ -281,9 +280,9 @@ namespace dqmevf{
       inputControllerReg_->publish(&evfSourceVars_);
       pthread_mutex_lock(&ep_guard_lock_);
       startScalersWorkLoop();
-      std::cout << "SLAVE: waiting to init scalers workloop...";
+      cout << "SLAVE: waiting to init scalers workloop..."<<endl;
       pthread_cond_wait(&cond_, &ep_guard_lock_);
-      std::cout << "SLAVE: done\n";
+      cout << "SLAVE: done"<<endl;
     }  
 
     pthread_mutex_lock(&readout_lock_); 
@@ -315,13 +314,13 @@ namespace dqmevf{
     trh_.formatReportTable(tr);
 
     if (evtProcessor_->getState() == edm::event_processor::sError) {
-      cout << "SLAVE: FWK EP in Error state after construction and initial setup. Exiting";
+      cout << "SLAVE: FWK EP in Error state after construction and initial setup. Exiting"<<endl;
       exit(EXIT_FAILURE);
     }
     epInitialized_ = true;
     pthread_mutex_unlock(&readout_lock_);
     LOG4CPLUS_INFO(log_," edm::EventProcessor configuration finished.");
-    cout << "SLAVE: initialized EP\n";
+    cout << "SLAVE: initialized EP"<<endl;
     return;
   }
 
@@ -330,7 +329,7 @@ namespace dqmevf{
   edm::EventProcessor::StatusCode FWEPWrapper::stop()
   {
     //if not initialized, end with success
-    std::cout << "SLAVE: stopping\n";
+    cout << "SLAVE: stopping"<<endl;
     stopCalled_=true;
     if (!epInitialized_) return edm::EventProcessor::epOther;
 
@@ -345,7 +344,7 @@ namespace dqmevf{
 	if (cfg_.detachTimeout>0) cfg_.timeoutOnStop=cfg_.detachTimeout;
 	*evfSourceVars_.runStopFlag=1;
 	rc = evtProcessor_->stopAsync(cfg_.timeoutOnStop);
-	cout << "SLAVE: stopAsync called\n";
+	cout << "SLAVE: stopAsync called"<<endl;
       }
       unsigned int stepMsec=100000;//0.1s
       unsigned int remainingMsec=cfg_.timeoutOnStop*1000000+stepMsec;//1000000!!!
@@ -426,7 +425,7 @@ namespace dqmevf{
     if (timedOut) {
         //try again next time
     	inputControllerReg_->untrapSource("HTTPInputSource");
-	std::cout << "SLAVE: INPUT SOURCE LOCK TIMED OUT!\n";
+	cout << "SLAVE: INPUT SOURCE LOCK TIMED OUT!"<<endl;
 	return true;
     }
     
@@ -476,7 +475,7 @@ bool FWEPWrapper::enableSlave()
 {
   try {    
     evtProcessor_->beginJob();
-    cout << "SLAVE: beginJob finished..";
+    cout << "SLAVE: beginJob finished.."<<endl;
     attachDqmToShm();//todo:detach on error
     int sc = 0;
     evtProcessor_->clearCounters();
@@ -484,7 +483,7 @@ bool FWEPWrapper::enableSlave()
     cout << "SLAVE: declared run number "<< cfg_.runNumber << endl;
     ::sleep(1);
     evtProcessor_->runAsync();
-    cout << "SLAVE: runAsync executed\n";
+    cout << "SLAVE: runAsync executed"<<endl;
     sc = evtProcessor_->statusAsync();
     
     if(sc != 0) {
@@ -523,10 +522,10 @@ bool FWEPWrapper::enableSlaveAndWait() {
 
   //todo:start workloops before (so that master knows about failures)?
   while(retval && evtProcessor_->getState()!= edm::event_processor::sRunning){
-    cout << "SLAVE: waiting for edm::EventProcessor to start before enabling workloops";
+    cout << "SLAVE: waiting for edm::EventProcessor to start before enabling workloops"<<endl;
 
     if (evtProcessor_->getState()== edm::event_processor::sError) {
-      cout << "SLAVE: failure to startup FWK EventProcessor";
+      cout << "SLAVE: failure to startup FWK EventProcessor"<<endl;
       exit(EXIT_FAILURE);
     }
 
@@ -771,7 +770,7 @@ bool FWEPWrapper::stopListener(toolbox::task::WorkLoop *)
 	  std::stringstream ssout;
 
 	  if (rc==edm::EventProcessor::epSuccess) {
-	    ssout << "SLAVE: EventProcessor exit successful" << std::endl;
+	    ssout << "SLAVE: EventProcessor exit successful";
 	    cout << "SLAVE: EventProcessor exit successful" << std::endl;
 
 	    errorLog_ = ssout.str();
@@ -885,7 +884,7 @@ bool FWEPWrapper::monitorReceiverAux(toolbox::task::WorkLoop *)
 	  if (evtProcessor_->getState() == edm::event_processor::sError) 
 	  {
 	    pthread_mutex_lock(&stop_lock_);
-	    cout << "SLAVE: Processor found in error state - will exit...\n";
+	    cout << "SLAVE: Processor found in error state - will exit..."<<endl;
 	    sleep(1);
 	    exit(EXIT_FAILURE);
 	    /* no need to unlock mutex after exit :-)*/
@@ -910,11 +909,11 @@ bool FWEPWrapper::monitorReceiverAux(toolbox::task::WorkLoop *)
 	pthread_cond_signal(&cond_stop_);
 	break;
       default:
-	std::cout << "SLAVE: UNHANDLED MSG IN AUX LOOP "<<ret<<"\n";
+	cout << "SLAVE: UNHANDLED MSG IN AUX LOOP "<<ret<<endl;
     }
   }
   catch(dqmevf::Exception &e){
-	  std::cout << "SLAVE: exception caught in recevingMAux: " << e.what() << std::endl;
+	  std::cout << "SLAVE: exception caught in recevingMAux: " << e.what() << endl;
 	  sleep(1);
 	  pthread_mutex_unlock(&readout_lock_);
   }
@@ -1050,7 +1049,7 @@ bool FWEPWrapper::monitorReceiver(toolbox::task::WorkLoop *)
       }
   }
   catch(dqmevf::Exception &e){
-    std::cout << "SLAVE: exception caught in recevingM: " << e.what() << std::endl;
+    cout << "SLAVE: exception caught in recevingM: " << e.what() << endl;
     if (stopCalled_ && cfg_.detachTimeout>0) return false;
     sleep(1);
   }
@@ -1100,7 +1099,7 @@ bool FWEPWrapper::scalers(toolbox::task::WorkLoop* wl)
     }
   else
     {
-      std::cout << getpid()<< "SLAVE:  Error: scalers called on edm::EventProcessor uninitialized " << std::endl;
+      cout << getpid()<< "SLAVE:  Error: scalers called on edm::EventProcessor uninitialized " << endl;
       pthread_mutex_lock(&ep_guard_lock_);
       pthread_cond_signal(&cond_);
       pthread_mutex_unlock(&ep_guard_lock_);
@@ -1113,7 +1112,7 @@ bool FWEPWrapper::scalers(toolbox::task::WorkLoop* wl)
     ret = cfg_.sub->postSlaveSup(trh_.getPackedTriggerReport());
   //pthread_mutex_unlock(&readout_lock_);
   if(ret!=0) 
-	  std::cout << "SLAVE: scalers workloop, error posting to sqs_ " << errno << std::endl;
+    cout << "SLAVE: scalers workloop, error posting to sqs_ " << errno << endl;
 
   usleep(100000);//spin protection (sleep 0.1s)
   return true;

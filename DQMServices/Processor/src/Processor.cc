@@ -101,7 +101,7 @@ Processor::Processor(xdaq::ApplicationStub *s)
 
   , hasScalersService_(true)
 
-  , configurationInitialized_(false)
+  //, configurationInitialized_(false)
   , configurationInit_(false)
   , isStopping_(false)
   , inForcedKillMask_(0)
@@ -179,7 +179,7 @@ Processor::Processor(xdaq::ApplicationStub *s)
 
   //ispace->fireItemAvailable("logLevel",           &logLevel_			  );
 
-  configurationInitialized_ = false;
+  //configurationInitialized_ = false;
   getApplicationInfoSpace()->addItemRetrieveListener ("parameterSetCopy", this);
 
   // findRcmsStateListener
@@ -276,7 +276,7 @@ bool Processor::testEDMConfiguration() {
 
 bool Processor::initEDMConfiguration() {
 
-  if (configurationInitialized_) return true;
+  //if (configurationInitialized_) return true;
   pthread_mutex_lock(&cfg_refresh_lock_);
 
   //wipe out previous configuration
@@ -286,21 +286,6 @@ bool Processor::initEDMConfiguration() {
   configStringCopy_=std::string();
 
   try {
-    /*
-    PyLineSimpleModifier * modRef = 0;
-    if (runTypeAuto_.value_) {//change run key at script load time
-      LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_KEY="<<runKey_.value_);
-      LOG4CPLUS_INFO(getApplicationLogger(), "Using RUN_TYPE="<<runType_.value_);
-      //cout << "RUN_TYPE="<<runType_.value_ << endl;
-
-      //using run type (modify to use run key var instead)
-      if (runType_.value_!="") {
-        PyLineSimpleModifier modifier("runtype",runType_.value_);
-        modRef = &modifier;
-      }
-    }
-    */
-    //ParameterSetRetriever pr(configString_,modRef);
     ParameterSetRetriever pr(configString_,0);
 
     friendlyPythonCfg_ = pr.getAsString();
@@ -320,13 +305,13 @@ bool Processor::initEDMConfiguration() {
 
     wCfg_.pdesc = ppdesc.processDesc();
     configStringCopy_ = wCfg_.pdesc->dump();
-    configurationInitialized_=true;
-
+    //configurationInitialized_=true;
   }
   catch (...) 
   {
-    LOG4CPLUS_INFO(getApplicationLogger(),"exception in psetRetriever - file missing or syntax error?\n");
-    configurationInitialized_=false;
+    //LOG4CPLUS_INFO(getApplicationLogger(),"exception in psetRetriever - file missing or syntax error?\n");
+    cout << "exception in psetRetriever - file missing or syntax error?"<<endl;
+    //configurationInitialized_=false;
     pthread_mutex_unlock(&cfg_refresh_lock_);
     return false;
   }
@@ -359,7 +344,13 @@ void Processor::spawnChild(unsigned int i) {
   wCfg_.slot = i;
 
   //init python
-  initEDMConfiguration();
+  bool ret = initEDMConfiguration();
+  if (!ret) {
+    //terminate child process if configuration was not successful
+    cout << "SLAVE: Start aborted: Configuration error. "+configString_.value_ << endl;
+    exit(EXIT_FAILURE);
+    return;
+  }
 
   fwepWrapper_.init(wCfg_);
   fsm_.disableRcmsStateNotification();
@@ -406,7 +397,7 @@ void Processor::actionPerformed(xdata::Event& e)
 //______________________________________________________________________________
 void Processor::reconfigureEP() {
   //reset cfg in case DQM FM already retrieved configuration at FM configure for it's own setup
-  configurationInitialized_=false;
+  //configurationInitialized_=false;
 
   //(re)init semaphore
   try {
@@ -543,8 +534,8 @@ bool Processor::enabling(toolbox::task::WorkLoop* wl)
     pthread_mutex_lock(&start_lock_);
     pthread_mutex_lock(&start_lock2_);
     subs_[i]=SubProcess(i+msgQueueOffset_.value_*1000,retval); //create sub structure
-    pthread_mutex_unlock(&start_lock2_);
     pthread_mutex_unlock(&start_lock_);
+    pthread_mutex_unlock(&start_lock2_);
     
     retval = subs_[i].forkNew();
     if(retval==0)
@@ -687,7 +678,7 @@ void Processor::stopSlavesAndAcknowledge()
   //disconnect from the queue
   //(handled by supervisor thread as well)
   for (unsigned int i=0;i<subs_.size();i++) subs_[i].disconnect();
-  configurationInitialized_=false;
+  //configurationInitialized_=false;
 
   pthread_mutex_lock(&stop_lock_);
   isStopping_=false;
@@ -1547,12 +1538,12 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
 		if (!fkill) masterStat_.storeToPrev();
 		try {
 		  reconfigureEP();
-		  //initEDMConfiguration();
 		} catch (...) {}
-		if (!configurationInitialized_) {
+		/*if (!configurationInitialized_) {
 		  localLog( "-E- Reset failed: configuration error ");
-		}
-		else { //create nw child process
+                  subs_[i].countdown()=slaveRestartDelaySecs_.value_;
+		}*/
+		{ //create new child process
 		  pid_t retval = -1;
 		  subs_[i]=SubProcess(i+msgQueueOffset_.value_*1000,retval); //create sub structure
 		  bool oldSummarize = wlSummarizeActive_;//store for master process
@@ -1567,7 +1558,8 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
 		  {
 		    //go to degraded mode if restarted mid-run (even if manually)
                     degradedCounter_=120;
-		    //if (startedCounter_>240 && isEnabledFully()) fsm_.fireEvent("Degrade",this);
+		    if (startedCounter_>240 && isEnabledFully()) fsm_.fireEvent("Degrade",this);
+                    cout << "tried degrading " << startedCounter_ << " " << isEnabledFully() << endl;
 
 		    wlSummarizeActive_=oldSummarize;
 		    std::ostringstream ost1;
@@ -1725,7 +1717,6 @@ void Processor::updater(xgi::Input *in,xgi::Output *out)
     for(unsigned int i = 0; i<logRingIndex_; i++)
       *out << logRing_[i] << std::endl;
   cDiv(out);
-  
 }
 
 //______________________________________________________________________________

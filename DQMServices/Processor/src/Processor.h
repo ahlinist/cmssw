@@ -287,7 +287,7 @@ namespace dqmevf
     xdata::Vector<xdata::Integer>    spmStates_;
 
     //flags 
-    bool                             configurationInitialized_ ;
+    //bool                             configurationInitialized_ ;
     bool                             configurationInit_ ;
     bool                             isStopping_;
     unsigned int                     inForcedKillMask_;

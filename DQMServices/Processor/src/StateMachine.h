@@ -121,7 +121,7 @@ namespace dqmevf
       fsm_.addState('R', "Ready"      , this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('e', "enabling"   , this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('E', "Enabled"    , this,&dqmevf::StateMachine::stateChanged);
-      fsm_.addState('X', "Degraded"    , this,&dqmevf::StateMachine::stateChanged);
+      fsm_.addState('X', "Degraded"    ,this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('s', "shuttingDown",this,&dqmevf::StateMachine::stateChanged);
       fsm_.addState('S', "ShutDown",    this,&dqmevf::StateMachine::stateChanged);
       
