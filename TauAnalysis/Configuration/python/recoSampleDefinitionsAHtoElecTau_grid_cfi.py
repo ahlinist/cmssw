@@ -56,15 +56,20 @@ SAMPLES_TO_PLOT = [
     'WplusJets_madgraph_skim',
     'ZeeSum',
     #'EWsum',
-    'ZtautauSum',
+    'ZtautauEmbeddedSum',
     'data'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 
 SAMPLES_TO_PLOT.append('A120Sum')
+SAMPLES_TO_PLOT.append('h120Sum')
 
-#SAMPLES_TO_PRINT.append('A90Sum')
+# add Ztautau sample to SAMPLES_TO_PRINT 
+# so that we have access to those filter statistics
+# for embedded sample normalization
+SAMPLES_TO_PRINT.append('Ztautau_powheg_skim')
+
 #SAMPLES_TO_PRINT.append('A100Sum')
 SAMPLES_TO_PRINT.append('A120Sum')
 #SAMPLES_TO_PRINT.append('A130Sum')
@@ -74,13 +79,23 @@ SAMPLES_TO_PRINT.append('A120Sum')
 #SAMPLES_TO_PRINT.append('A200Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
-#SAMPLES_TO_PRINT.append('A300Sum')
-#SAMPLES_TO_PRINT.append('smBgSum')
+
+#SAMPLES_TO_PRINT.append('h95Sum')
+#SAMPLES_TO_PRINT.append('h100Sum')
+#SAMPLES_TO_PRINT.append('h105Sum')
+#SAMPLES_TO_PRINT.append('h110Sum')
+#SAMPLES_TO_PRINT.append('h115Sum')
+SAMPLES_TO_PRINT.append('h120Sum')
+#SAMPLES_TO_PRINT.append('h125Sum')
+#SAMPLES_TO_PRINT.append('h130Sum')
+#SAMPLES_TO_PRINT.append('h135Sum')
+#SAMPLES_TO_PRINT.append('h140Sum')
+#SAMPLES_TO_PRINT.append('h145Sum')
 
 SAMPLE_DEFAULTS = ZtoElecTau.SAMPLE_DEFAULTS
 
 #--------------------------------------------------------------------------------
-# NOTE: cross-sections and branching ratios for Higgs production and decay
+# NOTE: cross-sections and branching ratios for MSSM Higgs production and decay
 #       are obtained with FeynHiggs (version 2.7.4) for "maximal mixing scenario" (cf. CMS AN-09-143),
 #       using the following configuration parameters settings:
 #
@@ -98,6 +113,9 @@ SAMPLE_DEFAULTS = ZtoElecTau.SAMPLE_DEFAULTS
 #         Arg(M_3) 0
 #         prodSqrts 7
 #
+# cross-sections and branching ratios for SM Higgs production and decay
+#  are taken from the Handbook of LHC Higgs Cross Section Observables (arXiv:1101.0593v3)
+#
 #--------------------------------------------------------------------------------
 
 # Conversions to pico barns
@@ -111,10 +129,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199984,
         'number_of_jobs' : 20,
         'skim_eff' : 23903./199984,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 29480.*_femtobarns*0.084,
         'legendEntry' : 'h(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -124,11 +139,8 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 195888,
         'number_of_jobs' : 20,
-        'skim_eff' : 30859./195888,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'skim_eff' : 1./195888,
+        'x_sec' : 1598.*_femtobarns*0.084,
         'legendEntry' : 'VBF h(95) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -139,10 +151,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 197290,
         'number_of_jobs' : 20,
         'skim_eff' : 24786./197290,
-        'x_sec' : (
-             1.*_femtobarns*1. 
-           + 1.*_femtobarns*1. 
-        ),
+        'x_sec' : 26480.*_femtobarns*0.084,
         'legendEntry' : 'h(95) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -181,10 +190,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199166,
         'number_of_jobs' : 20,
         'skim_eff' : 32067./199166,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1530.*_femtobarns*0.0836,
         'legendEntry' : 'VBF h(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -195,10 +201,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199985,
         'number_of_jobs' : 20,
         'skim_eff' : 26192./199985,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 23970.*_femtobarns*0.0836,
         'legendEntry' : 'h(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -209,10 +212,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199784,
         'number_of_jobs' : 20,
         'skim_eff' : 32911./199784,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1445.*_femtobarns*0.0825,
         'legendEntry' : 'VBF h(105) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -223,10 +223,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199982,
         'number_of_jobs' : 20,
         'skim_eff' : 27422./199982,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 21740.*_femtobarns*0.0825,
         'legendEntry' : 'h(105) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -237,10 +234,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 198435,
         'number_of_jobs' : 20,
         'skim_eff' : 33919./198435,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1
-        ),
+        'x_sec' : 1385.*_femtobarns*0.0803,
         'legendEntry' : 'VBF h(110) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -251,10 +245,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199988,
         'number_of_jobs' : 20,
         'skim_eff' : 28962./199988,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 19810.*_femtobarns*0.0803,
         'legendEntry' : 'h(110) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -265,10 +256,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 198051,
         'number_of_jobs' : 20,
         'skim_eff' : 34795./198051,
-        'x_sec' : (
-             1.*_femtobarns*1. 
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1312.*_femtobarns*0.0765,
         'legendEntry' : 'VBF h(115) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -279,10 +267,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 196002,
         'number_of_jobs' : 20,
         'skim_eff' : 29310./196002,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 18120.*_femtobarns*0.0765,
         'legendEntry' : 'h(115) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -325,10 +310,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 198632,
         'number_of_jobs' : 20,
         'skim_eff' : 36014./198632,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1257.*_femtobarns*0.0711,
         'legendEntry' : 'VBF h(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -339,10 +321,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199981,
         'number_of_jobs' : 20,
         'skim_eff' : 31054./199981,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 16630.*_femtobarns*0.0711,
         'legendEntry' : 'h(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -353,10 +332,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 198612,
         'number_of_jobs' : 20,
         'skim_eff' : 36194./198612,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1193.*_femtobarns*0.0637,
         'legendEntry' : 'VBF h(125) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -367,10 +343,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199986,
         'number_of_jobs' : 20,
         'skim_eff' : 31691./199986,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 15310.*_femtobarns*0.0637,
         'legendEntry' : 'h(125) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -411,10 +384,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 197236,
         'number_of_jobs' : 20,
         'skim_eff' : 36899./197236,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1144.*_femtobarns*0.0549,
         'legendEntry' : 'VBF h(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -425,10 +395,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199985,
         'number_of_jobs' : 20,
         'skim_eff' :32604./199985,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 14130.*_femtobarns*0.0549,
         'legendEntry' : 'h(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -439,10 +406,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 198682,
         'number_of_jobs' : 20,
         'skim_eff' : 38360./198682,
-        'x_sec' : (
-             1.*_femtobarns*1. 
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1087.*_femtobarns*0.0452,
         'legendEntry' : 'VBF h(135) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -453,10 +417,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 198571,
         'number_of_jobs' : 20,
         'skim_eff' : 33486./198571,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 13080.*_femtobarns*0.0452,
         'legendEntry' : 'h(135) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -497,10 +458,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 193846,
         'number_of_jobs' : 20,
         'skim_eff' : 37513./193846,
-        'x_sec' : (
-             1.*_femtobarns*1. 
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 1042.*_femtobarns*0.0354,
         'legendEntry' : 'VBF h(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -511,10 +469,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 191549,
         'number_of_jobs' : 20,
         'skim_eff' : 33374./191549,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 12140.*_femtobarns*0.0354,
         'legendEntry' : 'h(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -525,10 +480,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 197095,
         'number_of_jobs' : 20,
         'skim_eff' : 38958./197095,
-        'x_sec' : (
-             1.*_femtobarns*1. 
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 992.*_femtobarns*0.0262,
         'legendEntry' : 'VBF h(145) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -539,10 +491,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'events_processed' : 199981,
         'number_of_jobs' : 20,
         'skim_eff' : 35335./199981,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
+        'x_sec' : 11290.*_femtobarns*0.0262,
         'legendEntry' : 'h(145) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -931,6 +880,72 @@ RECO_SAMPLES.update(AHtoElecTauSpecific_RECO_SAMPLES)
 
 MERGE_SAMPLES = copy.deepcopy(ZtoElecTau.MERGE_SAMPLES)
 AHtoElecTauSpecific_MERGE_SAMPLES = {
+    'h95Sum' : {
+        'samples' : [ 'h95_skim', 'VBFh95_skim' ],
+        'legendEntry' : 'h(95) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h95_skim']['drawOption'],
+    },
+    'h100Sum' : {
+        'samples' : [ 'h100_skim', 'VBFh100_skim' ],
+        'legendEntry' : 'h(100) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h100_skim']['drawOption'],
+    },
+    'h105Sum' : {
+        'samples' : [ 'h105_skim', 'VBFh105_skim' ],
+        'legendEntry' : 'h(105) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h105_skim']['drawOption'],
+    },
+    'h110Sum' : {
+        'samples' : [ 'h110_skim', 'VBFh110_skim' ],
+        'legendEntry' : 'h(110) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h110_skim']['drawOption'],
+    },
+    'h115Sum' : {
+        'samples' : [ 'h115_skim', 'VBFh115_skim' ],
+        'legendEntry' : 'h(115) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h115_skim']['drawOption'],
+    },
+    'h120Sum' : {
+        'samples' : [ 'h120_skim', 'VBFh120_skim' ],
+        'legendEntry' : 'h(120) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h120_skim']['drawOption'],
+    },
+    'h125Sum' : {
+        'samples' : [ 'h125_skim', 'VBFh125_skim' ],
+        'legendEntry' : 'h(125) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h125_skim']['drawOption'],
+    },
+    'h130Sum' : {
+        'samples' : [ 'h130_skim', 'VBFh130_skim' ],
+        'legendEntry' : 'h(130) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h130_skim']['drawOption'],
+    },
+    'h135Sum' : {
+        'samples' : [ 'h135_skim', 'VBFh135_skim' ],
+        'legendEntry' : 'h(135) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h135_skim']['drawOption'],
+    },
+    'h140Sum' : {
+        'samples' : [ 'h140_skim', 'VBFh140_skim' ],
+        'legendEntry' : 'h(140) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h140_skim']['drawOption'],
+    },
+    'h145Sum' : {
+        'samples' : [ 'h145_skim', 'VBFh145_skim' ],
+        'legendEntry' : 'h(145) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['h145_skim']['drawOption'],
+    },
     'A100Sum' : {
         'samples' : [ 'A100_skim', 'bbA100_skim' ],
         'legendEntry' : 'A(100) #rightarrow #tau^{+} #tau^{-}',
