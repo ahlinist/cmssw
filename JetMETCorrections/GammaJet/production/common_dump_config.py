@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.6 2011/11/02 11:50:37 meridian Exp $
+# $Id: common_dump_config.py,v 1.7 2011/11/20 21:45:20 meridian Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -31,7 +31,7 @@ process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
-    'file:/cmsrm/pc24_2/meridian/data/GluGluToHToGG_M-115_7TeV-powheg-pythia6_AODSIM.root'
+    'file:events_GluGluToHToZZTo2L2Q_M-550_7TeV-powheg-pythia6_Summer11_PROVA.root'
 )
 
 )
@@ -87,14 +87,26 @@ process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
 process.ak5PFJets.doAreaFastjet = True
 #process.ak7PFJets.doAreaFastjet = True
 
+process.load("JetMETCorrections.GammaJet.NoPileUp_cff")
+
 process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
 process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
 process.metMuonJESCorAK5.corrector = "ak5CaloL2L3"
 process.metMuonJESCorAK5.inputUncorMetLabel = "corMetGlobalMuons"
 #process.metMuonJESCorAK5.hasMuonsCorr = True
 #process.metMuonJESCorAK5.useTypeII = True
- 
-process.metCorSequence = cms.Sequence(process.metMuonJESCorAK5)
+#process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff") 
+
+#* process.producePFMETCorrections)
+from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
+process.metJESCorPFAK5 = metJESCorAK5PFJet.clone()
+process.metJESCorPFAK5.inputUncorJetsLabel = "pfJets"
+process.metJESCorPFAK5.metType = "PFMET"
+process.metJESCorPFAK5.inputUncorMetLabel = "pfMet"
+process.metJESCorPFAK5.useTypeII = False
+process.metJESCorPFAK5.jetPTthreshold = cms.double(10.0)
+process.metJESCorPFAK5.corrector = cms.string('ak5PFL1FastL2L3')
+process.metCorSequence = cms.Sequence(process.metMuonJESCorAK5  * process.metJESCorPFAK5 )
 
 # configure B-tagging to be run on ak5PFJets
 process.myBtag = cms.Sequence(process.ak5JetTracksAssociatorAtVertex*process.btagging)
@@ -102,11 +114,11 @@ process.ak5JetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
 process.softMuonTagInfos.jets =  cms.InputTag("ak5PFJets")
 process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
 
-from HiggsAnalysis.HiggsToGammaGamma.PhotonFixParams4_2_cfi import *
+#from HiggsAnalysis.HiggsToGammaGamma.PhotonFixParams4_2_cfi import *
 ## dumper module
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
-    PFParameters = PhotonFixParameters,
+#    PFParameters = PhotonFixParameters,
     outFileName = cms.untracked.string("output.root"),                                    
     dumpBeamHaloInformations = cms.untracked.bool(True),
     dumpAKT5Jets=cms.untracked.bool(True),
@@ -132,6 +144,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3'),
     JetCorrectionService_jptak7 = cms.string('ak7JPTL1L2L3'),
     JetCorrectionService_pfakt5 = cms.string('ak5PFL1FastL2L3'),
+    JetCorrectionService_pfakt5_nopu = cms.string('ak5PFL1FastL2L3NoPU'),
     JetCorrectionService_pfakt7 = cms.string('ak7PFL1FastL2L3'),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
@@ -141,6 +154,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetspfkt4 = cms.untracked.InputTag("kt4PFJets"),
     jetspfkt6 = cms.untracked.InputTag("kt6PFJets"),
     jetspfakt5 = cms.untracked.InputTag("ak5PFJets"),
+    jetspfakt5_nopu = cms.untracked.InputTag("ak5PFJetsNoPU"),
     jetspfakt7 = cms.untracked.InputTag("ak7PFJets"),
     hbhits = cms.untracked.InputTag("hbhereco"),
     jetsgenkt4 = cms.untracked.InputTag("kt4GenJets"),
@@ -148,7 +162,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsgenakt5 = cms.untracked.InputTag("ak5GenJets"),
     jetsgenakt7 = cms.untracked.InputTag("ak7GenJets"),
     TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
-    vertices = cms.untracked.InputTag("offlinePrimaryVertices"),
+    vertices = cms.untracked.InputTag("offlinePrimaryVerticesWithBS"),
                                     
                                     
     genjetptthr = cms.double(5.),
@@ -184,6 +198,24 @@ process.kt6CaloJetsForIso.Rho_EtaMax = cms.double(2.5)
 from RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi import *
 import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi
 
+
+# associated met producers (G. Cerminara P. Silva)
+from CommonTools.ClusteredPFMetProducer.ClusteredPFMetProducer_cfi import ClusteredPFMetProducer
+process.ClusteredPFMetProducerStd = ClusteredPFMetProducer.clone()
+
+# cleaned MET (M. Marionneau)
+process.load("CommonTools.ParticleFlow.PF2PAT_cff")
+process.load("MMarionneau.CleanMETProducer.cleanMETProducer_cfi")
+process.ak5PFJetsL1FastL2L3   = cms.EDProducer('PFJetCorrectionProducer',
+                                               src         = cms.InputTag('pfJets'),
+                                               correctors  = cms.vstring('ak5PFL1FastL2L3')
+                                               )
+process.cleanMETProducer.pfMETInput = cms.InputTag("metJESCorPFAK5")
+process.cleanMETProducer.pfJETInput = cms.InputTag("ak5PFJetsL1FastL2L3")
+process.cleanMETProducer.vertexInput = cms.InputTag("offlinePrimaryVerticesWithBS")
+process.cleanMETProducer.vtxUserDef = cms.untracked.bool(False)
+
+
 if (is41X):
     print "ADDING DA VERTICES NOT DEFAULT IN 41X RELEASE"
     process.offlinePrimaryVerticesDA = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi.offlinePrimaryVerticesDA.clone()
@@ -197,9 +229,10 @@ process.highPurityTracks = cms.EDFilter("TrackSelector",
     cut = cms.string('quality("highPurity")')
 )
 
-process.analysisSequence = cms.Sequence( process.monster )
+#process.analysisSequence = cms.Sequence( process.monster )
+process.analysisSequence = cms.Sequence(  )
 if (is41X):
     process.analysisSequence *= process.offlinePrimaryVerticesDA
     process.myanalysis.vertices = cms.untracked.InputTag("offlinePrimaryVerticesDA")
     
-process.analysisSequence *=  (process.highPurityTracks * process.kt6PFJets * process.ak5PFJets *process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.metCorSequence * process.myanalysis)
+process.analysisSequence *=  (process.highPurityTracks * process.kt6PFJets * process.ak5PFJets *process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.PF2PAT * process.ak5PFJetsL1FastL2L3 * process.metCorSequence * process.ClusteredPFMetProducerStd  * process.cleanMETProducer *  process.producePFNoPileUp * process.myanalysis)
