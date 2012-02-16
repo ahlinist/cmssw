@@ -53,7 +53,8 @@ goodMuons = cms.EDFilter("PATMuonSelector",
 # Cuts for muon leg with isolation cut applied
 goodIsoMuons = cms.EDFilter("PATMuonPFIsolationSelector",
     src = cms.InputTag("goodMuons"),
-    pfCandidateSource = cms.InputTag('pfNoPileUp'),
+    pfCandidateSource = cms.InputTag('particleFlow'),
+    pfNoPileUpCandidateSource = cms.InputTag('pfNoPileUp'),
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(0.5),
         dRvetoCone = cms.double(-1.),
