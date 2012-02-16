@@ -29,6 +29,8 @@
 #include "TFile.h"
 #include "TTree.h"
 
+#include "TMVA/Reader.h"
+
 #include <map>
 #include <set>
 class SimTrack;
@@ -116,6 +118,7 @@ TH2D* h2_n_vs_eta;
       edm::InputTag JetPFsrcite_;
       edm::InputTag JetPFsrckt4_;
       edm::InputTag JetPFsrcakt5_;
+      edm::InputTag JetPFNoPUsrcakt5_;
       edm::InputTag JetPFsrcakt7_;
       edm::InputTag JetPFsrcsis5_;
       edm::InputTag JetPFsrckt6_;
@@ -137,6 +140,7 @@ TH2D* h2_n_vs_eta;
       string JetCorrector_akt7_; 
       string JetCorrector_jptak5_; 
       string JetCorrector_pfakt5_; 
+      string JetCorrector_pfakt5_nopu_; 
       string JetCorrector_pfakt7_; 
       double genjetptthr_;
       double calojetptthr_;
@@ -181,6 +185,8 @@ TH2D* h2_n_vs_eta;
       Int_t indexPreselPhot1[20];
       Int_t indexPreselPhot2[20];
       Int_t vrankPhotonPairs[20];
+      Float_t vevtMvaPhotonPairs[20];
+      Float_t vevtProbPhotonPairs[20];
       Float_t vptbalPhotonPairs[20];
       Float_t vptasymPhotonPairs[20];
 
@@ -307,6 +313,46 @@ TH2D* h2_n_vs_eta;
       Int_t pid_mishitsElePhot[40]; 
       Float_t pid_ptElePhot[40]; 
 
+
+      
+      Int_t nEle;
+      float electron_pt[200];
+      float electron_px[200];
+      float electron_py[200];
+      float electron_pz[200];
+      float electron_vx[200];
+      float electron_vy[200];
+      float electron_vz[200];
+      float electron_energy[200];
+      float electron_charge[200];
+      float electron_eta[200];
+      float electron_phi[200];
+      Int_t electron_misHits[200]; 
+      Int_t electron_seedType[200]; 
+      float electron_trkIso[200];
+      float electron_ecalIso[200];
+      float electron_hcalIso[200];
+      float electron_trkIso03[200];
+      float electron_ecalIso03[200];
+      float electron_hcalIso03[200];
+      float electron_HoE[200];
+      float electron_pFlowMVA[200];
+      float electron_fBrem[200];
+      float electron_dist[200];
+      float electron_dcot[200];
+      float electron_EoP[200];
+      float electron_r9[200];
+      Int_t electron_nSubClusters[200];
+      float electron_OneOverEMinusOneOverP[200];
+      float electron_SigmaIetaIeta[200];
+      float electron_SigmaIphiIphi[200];
+      float electron_dEtaIn[200];
+      float electron_dPhiIn[200];
+      float electron_sc_energy[200];
+      float electron_sc_eta[200];
+      float electron_sc_phi[200];
+      
+
       Int_t nJet_akt5;
       Float_t ptJet_akt5[100];
       Float_t ptCorrJet_akt5[100];
@@ -353,6 +399,12 @@ TH2D* h2_n_vs_eta;
       Float_t phiJet_kt6[100];
       Float_t emfJet_kt6[100];
 
+      Float_t   rho;
+      Float_t   rhoCalo;
+      Float_t   rhoAllJets;
+      Float_t   rhoAllJets_nopu;
+      Float_t   rho_nopu;
+
       Int_t nJet_pfkt4;
       Float_t ptJet_pfkt4[100];
       Float_t eJet_pfkt4[100];
@@ -367,7 +419,8 @@ TH2D* h2_n_vs_eta;
       Float_t phiJet_pfakt5[100];
       Float_t ptDJet_pfakt5[100];
       Float_t rmsCandJet_pfakt5[100];
-
+      Float_t beta_pfakt5[100][100];
+      Float_t betaStar_pfakt5[100][100];
       Float_t combinedSecondaryVertexBJetTags_pfakt5[100], 
               combinedSecondaryVertexMVABJetTags_pfakt5[100],
               jetBProbabilityBJetTags_pfakt5[100],
@@ -383,8 +436,6 @@ TH2D* h2_n_vs_eta;
               trackCountingHighPurBJetTags_pfakt5[100],
               trackCountingHighEffBJetTags_pfakt5[100];
 
-      Float_t   rho;
-      Float_t   rhoCalo;
 
 
 
@@ -404,6 +455,54 @@ TH2D* h2_n_vs_eta;
       Float_t eNeutralHadrons_pfakt5[100];
       Float_t eHFHadrons_pfakt5[100];
       Float_t eHFEM_pfakt5[100];
+
+
+
+
+      Int_t nJet_pfakt5_nopu;
+      Float_t ptJet_pfakt5_nopu[100];
+      Float_t ptCorrJet_pfakt5_nopu[100];
+      Float_t eJet_pfakt5_nopu[100];
+      Float_t etaJet_pfakt5_nopu[100];
+      Float_t phiJet_pfakt5_nopu[100];
+      Float_t ptDJet_pfakt5_nopu[100];
+      Float_t rmsCandJet_pfakt5_nopu[100];
+      Float_t beta_pfakt5_nopu[100][100];
+      Float_t betaStar_pfakt5_nopu[100][100];
+      Float_t combinedSecondaryVertexBJetTags_pfakt5_nopu[100], 
+              combinedSecondaryVertexMVABJetTags_pfakt5_nopu[100],
+              jetBProbabilityBJetTags_pfakt5_nopu[100],
+              jetProbabilityBJetTags_pfakt5_nopu[100],
+              simpleSecondaryVertexHighEffBJetTags_pfakt5_nopu[100],
+              simpleSecondaryVertexHighPurBJetTags_pfakt5_nopu[100],
+              softMuonBJetTags_pfakt5_nopu[100],
+              softMuonByIP3dBJetTags_pfakt5_nopu[100],
+              softMuonByPtBJetTags_pfakt5_nopu[100],
+              softElectronBJetTags_pfakt5_nopu[100],
+              softElectronByIP3dBJetTags_pfakt5_nopu[100],
+              softElectronByPtBJetTags_pfakt5_nopu[100],
+              trackCountingHighPurBJetTags_pfakt5_nopu[100],
+              trackCountingHighEffBJetTags_pfakt5_nopu[100];
+
+
+
+
+      // Extra variables for PFlow studies
+      Int_t nChargedHadrons_pfakt5_nopu[100];
+      Int_t nPhotons_pfakt5_nopu[100];
+      Int_t nElectrons_pfakt5_nopu[100];
+      Int_t nMuons_pfakt5_nopu[100];
+      Int_t nNeutralHadrons_pfakt5_nopu[100];
+      Int_t nHFHadrons_pfakt5_nopu[100];
+      Int_t nHFEM_pfakt5_nopu[100];
+
+      Float_t eChargedHadrons_pfakt5_nopu[100];
+      Float_t ePhotons_pfakt5_nopu[100];
+      Float_t eElectrons_pfakt5_nopu[100];
+      Float_t eMuons_pfakt5_nopu[100];
+      Float_t eNeutralHadrons_pfakt5_nopu[100];
+      Float_t eHFHadrons_pfakt5_nopu[100];
+      Float_t eHFEM_pfakt5_nopu[100];
 
       Int_t nJet_pfakt7;
       Float_t ptJet_pfakt7[100];
@@ -498,10 +597,56 @@ TH2D* h2_n_vs_eta;
       Float_t phitcMet;
       Float_t signiftcMet;
 
+      Float_t sglobalPfMet;
+      Float_t eglobalPfMet;
+      Float_t phiglobalPfMet;
+      Float_t signifglobalPfMet;
+
+      Float_t scentralPfMet;
+      Float_t ecentralPfMet;
+      Float_t phicentralPfMet;
+      Float_t signifcentralPfMet;
+
+      Float_t eassocPfMet[100];
+      Float_t phiassocPfMet[100];
+      Float_t signifassocPfMet[100];
+
+      Float_t eassocOtherVtxPfMet[100];
+      Float_t phiassocOtherVtxPfMet[100];
+      Float_t signifassocOtherVtxPfMet[100];
+
+      Float_t etrkPfMet[100];
+      Float_t phitrkPfMet[100];
+      Float_t signiftrkPfMet[100];
+
+      Float_t ecleanPfMet[100];
+      Float_t phicleanPfMet[100];
+      Float_t signifcleanPfMet[100];
+
+      Float_t ecleanedSaclayPfMet[100];
+      Float_t phicleanedSaclayPfMet[100];
+      Float_t signifcleanedSaclayPfMet[100];
+
+      Float_t eminTypeICleanSaclayPfMet[100];
+      Float_t phiminTypeICleanSaclayPfMet[100];
+      Float_t signifminTypeICleanSaclayPfMet[100];
+
+      Float_t globalPfSums[12];
+
       Float_t spfMet;
       Float_t epfMet;
       Float_t phipfMet;
       Float_t signifpfMet;
+
+      Float_t spfMet_nopu;
+      Float_t epfMet_nopu;
+      Float_t phipfMet_nopu;
+      Float_t signifpfMet_nopu;
+
+      Float_t spfMetType1;
+      Float_t epfMetType1;
+      Float_t phipfMetType1;
+      Float_t signifpfMetType1;
 
       Float_t sMetGen;
       Float_t eMetGen;
@@ -517,12 +662,14 @@ TH2D* h2_n_vs_eta;
       Int_t    hltCount;
 
       bool dumpAKT5Jets_;
+      bool dumpAKT5NoPUJets_;
       bool dumpAKT7Jets_;
 
       bool dumpJPTAKT5Jets_;
       bool dumpJPTAKT7Jets_;
 
       bool dumpPFAKT5Jets_;
+      bool dumpPFAKT5NoPUJets_;
       bool dumpPFAKT7Jets_;
 
       bool dumpKT4Jets_;
@@ -575,7 +722,15 @@ TH2D* h2_n_vs_eta;
       float muon_InnerPoint_x[200];
       float muon_InnerPoint_y[200];
       float muon_InnerPoint_z[200];
-
+      float muon_trackIso[200];
+      float muon_ecalIso[200];
+      float muon_hcalIso[200];
+      float muon_relIso[200];
+      int   muon_normChi2[200];
+      int   muon_validHits[200];
+      int   muon_tkHits[200];
+      int   muon_pixHits[200];
+      int  muon_numberOfMatches[200];
       
       //cosmicmuon variables
       Int_t nCosmicMuons;
@@ -614,10 +769,17 @@ TH2D* h2_n_vs_eta;
       HggVertexAnalyzer* vtxAna;
       HggVertexFromConversions* vtxAnaFromConv;
       VertexAlgoParameters vtxPar;
-      std::vector<std::string> rankVariables;
+
 
       std::string outFileName;
       std::string regressionWeights;
       EGEnergyCorrector* ecorr_;
+
+      std::vector<std::string> rankVariables;
+      std::vector<std::string> tmvaPerVtxVariables_;
+      TMVA::Reader *tmvaPerVtxReader_;
+      TMVA::Reader *tmvaPerEvtReader_;
+      std::string tmvaPerVtxMethod;
+      std::string tmvaPerEvtMethod;
 };
 
