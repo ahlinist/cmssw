@@ -143,7 +143,7 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
   std::string drawOption = ( isFirstHistogram ) ? histogram.second : std::string(histogram.second).append("same");
 
   // EK suppress axis
-  drawOption = std::string("A").append(drawOption);
+  //drawOption = std::string("A").append(drawOption);
 
 //--- if stacked histogram is drawn as shaded pattern on transparent background
 //    add a white histogram underneath, in order to "clear" drawing area
@@ -1085,7 +1085,7 @@ void DQMHistPlotter::endJob()
   for ( std::vector<cfgEntryDrawJob>::const_iterator drawJob = drawJobs_.begin();
        drawJob != drawJobs_.end(); ++drawJob ) {
     const std::string& drawJobName = drawJob->name_;
-    std::cout << "--> processing drawJob " << drawJobName << "..." << std::endl;
+    //std::cout << "--> processing drawJob " << drawJobName << "..." << std::endl;
 
 //--- prepare internally used histogram data-structures
     TH1* stackedHistogram_sum = NULL;
