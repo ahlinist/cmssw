@@ -92,12 +92,11 @@ tausBgEstZtautauEnrichedIso = copy.deepcopy(selectedPatTausForElecTauIso)
 # require tau candidate to pass electron veto
 tausBgEstZtautauEnrichedElectronVeto = copy.deepcopy(selectedPatTausForElecTauElectronVeto)
 
-# require tau candidate not to be in ECAL barrel/endcap crack
-tausBgEstZtautauEnrichedEcalCrackVeto = copy.deepcopy(selectedPatTausForElecTauEcalCrackVeto)
-
 # require tau candidate to pass muon veto
 tausBgEstZtautauEnrichedMuonVeto = copy.deepcopy(selectedPatTausForElecTauMuonVeto)
 
+## tausBgEstZtautauEnrichedMuonVeto.cut = cms.string('tauID("againstMuonTight") > -1000')
+## tausBgEstZtautauEnrichedElectronVeto.cut = cms.string('tauID("againstElectronLoose") > -1000')
 
 
 tauSelConfiguratorBgEstZtautauEnriched = objSelConfigurator(
@@ -107,7 +106,6 @@ tauSelConfiguratorBgEstZtautauEnriched = objSelConfigurator(
       tausBgEstZtautauEnrichedLeadTrkPt,
       tausBgEstZtautauEnrichedIso,
       tausBgEstZtautauEnrichedElectronVeto,
-      tausBgEstZtautauEnrichedEcalCrackVeto,
       tausBgEstZtautauEnrichedMuonVeto ],
     src = "cleanPatTaus",
     pyModuleName = __name__,
@@ -137,7 +135,11 @@ from TauAnalysis.CandidateTools.elecTauPairSelection_cfi import *
 
 elecTauPairsBgEstZtautauEnrichedAntiOverlapVeto = copy.deepcopy(selectedElecTauPairsAntiOverlapVeto)
 elecTauPairsBgEstZtautauEnrichedAntiOverlapVeto.cut = cms.string("dR12 > 0.5")
+
+### !!!!! turned off
 elecTauPairsBgEstZtautauEnrichedMt1MET = copy.deepcopy(selectedElecTauPairsMt1MET)
+elecTauPairsBgEstZtautauEnrichedMt1MET.cut = cms.string('mt1MET > -1000.')
+
 elecTauPairsBgEstZtautauEnrichedPzetaDiff = copy.deepcopy(selectedElecTauPairsPzetaDiff)
 elecTauPairsBgEstZtautauEnrichedZeroCharge = copy.deepcopy(selectedElecTauPairsZeroCharge)
 
@@ -206,15 +208,24 @@ produceElecTauPairZeeHypothesesBgEstZtautauEnriched = cms.Sequence(
 
 from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import *
 
+## eta < 4.5
 jetsBgEstZtautauEnrichedEta = copy.deepcopy(selectedPatJetsForAHtoElecTauEta)
+## Et > 20 GeV
 jetsBgEstZtautauEnrichedEt = copy.deepcopy(selectedPatJetsForAHtoElecTauEt)
+## Delta R > 0.5
 jetsBgEstZtautauEnrichedAntiOverlapWithLeptonsVeto = copy.deepcopy(selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto)
 jetsBgEstZtautauEnrichedAntiOverlapWithLeptonsVeto.srcNotToBeFiltered = cms.VInputTag(
         "electronsBgEstZtautauEnrichedTrkIPcumulative",
-        "tausBgEstZtautauEnrichedMuonVetoCumulative"),
+        "tausBgEstZtautauEnrichedMuonVetoCumulative")
 
+#####
+
+## Et > 30 GeV
 jetsBgEstZtautauEnrichedJetTag = copy.deepcopy(selectedPatJetsForAHtoElecTauJetTag)
+
+## bDiscriminator("trackCountingHighEffBJetTags") > 3.3
 jetsBgEstZtautauEnrichedJetBtag = copy.deepcopy(selectedPatJetsForAHtoElecTauBtag)
+
 
 patJetSelConfiguratorBgEstZtautauEnrichedBtag = objSelConfigurator(
     [ jetsBgEstZtautauEnrichedEta,
@@ -322,11 +333,6 @@ cfgTauElectronVetoBgEstZtautauEnriched.pluginName = cms.string('tauElectronVetoB
 cfgTauElectronVetoBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedElectronVetoCumulative')
 cfgTauElectronVetoBgEstZtautauEnriched.src_individual = cms.InputTag('tausBgEstZtautauEnrichedElectronVetoIndividual')
 
-cfgTauEcalCrackVetoBgEstZtautauEnriched = copy.deepcopy(cfgTauEcalCrackVeto)
-cfgTauEcalCrackVetoBgEstZtautauEnriched.pluginName = cms.string('tauEcalCrackVetoBgEstZtautauEnriched')
-cfgTauEcalCrackVetoBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedEcalCrackVetoCumulative')
-cfgTauEcalCrackVetoBgEstZtautauEnriched.src_individual = cms.InputTag('tausBgEstZtautauEnrichedEcalCrackVetoIndividual')
-
 cfgTauMuonVetoBgEstZtautauEnriched = copy.deepcopy(cfgTauMuonVeto)
 cfgTauMuonVetoBgEstZtautauEnriched.pluginName = cms.string('tauMuonVetoBgEstZtautauEnriched')
 cfgTauMuonVetoBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedMuonVetoCumulative')
@@ -408,7 +414,6 @@ evtSelConfiguratorBgEstZtautauEnriched = eventSelFlagProdConfigurator(
       cfgTauLeadTrkPtCutBgEstZtautauEnriched,
       cfgTauIsoCutBgEstZtautauEnriched,
       cfgTauElectronVetoBgEstZtautauEnriched,
-      cfgTauEcalCrackVetoBgEstZtautauEnriched,
       cfgTauMuonVetoBgEstZtautauEnriched,
       cfgDiTauCandidateAntiOverlapVetoBgEstZtautauEnriched,
       cfgDiTauCandidateForElecTauMt1METCutBgEstZtautauEnriched,
@@ -461,6 +466,12 @@ from TauAnalysis.Core.vertexHistManager_cfi import *
 vertexHistManagerForElecTauBgEstZtautauEnriched = copy.deepcopy(vertexHistManager)
 vertexHistManagerForElecTauBgEstZtautauEnriched.pluginName = cms.string('vertexHistManagerForElecTauBgEstZtautauEnriched')
 vertexHistManagerForElecTauBgEstZtautauEnriched.vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSumForElecTau')
+
+from TauAnalysis.Core.jetHistManager_cfi import *
+jetHistManagerForElecTauBgEstZtautauEnriched = copy.deepcopy(jetHistManager)
+jetHistManagerForElecTauBgEstZtautauEnriched.pluginName = cms.string('jetHistManagerForElecTauBgEstZtautauEnriched')
+jetHistManagerForElecTauBgEstZtautauEnriched.jetSource = cms.InputTag('patJets')
+ 
 
 analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
 
@@ -542,11 +553,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('tauElectronVetoBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauElectronVetoBgEstZtautauEnriched','cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauEcalCrackVetoBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalCrackVetoBgEstZtautauEnriched','cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstZtautauEnriched'),
@@ -737,10 +743,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             replace = cms.vstring('tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = tausBgEstZtautauEnrichedElectronVetoCumulative')
         ),   
         
-        cms.PSet(
-            filter = cms.string('tauEcalCrackVetoBgEstZtautauEnriched'),
-            title = cms.string('Tau ECAL crack-Veto'),
-        ),
         cms.PSet(
             filter = cms.string('tauMuonVetoBgEstZtautauEnriched'),
             title = cms.string('Tau mu-Veto'),
@@ -903,11 +905,6 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('tauElectronVetoBgEstZtautauEnriched','cumulative')
         ),
         cms.PSet(
-            pluginName = cms.string('tauEcalCrackVetoBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalCrackVetoBgEstZtautauEnriched','cumulative')
-        ),
-        cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauMuonVetoBgEstZtautauEnriched','cumulative')
@@ -959,7 +956,8 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
          electronHistManagerForElecTauBgEstZtautauEnriched,
          tauHistManagerForElecTauBgEstZtautauEnriched,
          diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched,
-         vertexHistManagerForElecTauBgEstZtautauEnriched
+         vertexHistManagerForElecTauBgEstZtautauEnriched,
+         jetHistManagerForElecTauBgEstZtautauEnriched         
     ),
 
     #eventDumps = cms.VPSet(elecTauEventDump),
@@ -981,11 +979,14 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
+                                    'jetHistManagerForElecTauBgEstZtautauEnriched'                                    
                                     ),
             replace = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched.electronSource = cleanPatElectrons',
-                                  'tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = cleanPatTaus'
+                                  'tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = cleanPatTaus',
+                                  'jetHistManagerForElecTauBgEstZtautauEnriched.jetSource = patJets'
                                   )
-        ),    
+        ),
+        
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
             title = cms.string('Trigger'),
@@ -1105,10 +1106,6 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
         ),   
         
         cms.PSet(
-            filter = cms.string('tauEcalCrackVetoBgEstZtautauEnriched'),
-            title = cms.string('Tau ECAL crack-Veto'),
-        ),
-        cms.PSet(
             filter = cms.string('tauMuonVetoBgEstZtautauEnriched'),
             title = cms.string('Tau mu-Veto'),
         ),
@@ -1160,7 +1157,8 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched',
-                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
+                                    'vertexHistManagerForElecTauBgEstZtautauEnriched',
+                                    'jetHistManagerForElecTauBgEstZtautauEnriched'                                    
                                     ),
         ),
         cms.PSet(
@@ -1172,8 +1170,10 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched',
-                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
+                                    'vertexHistManagerForElecTauBgEstZtautauEnriched',
+                                    'jetHistManagerForElecTauBgEstZtautauEnriched'                                    
                                     ),
+            replace = cms.vstring('jetHistManagerForElecTauBgEstZtautauEnriched.jetSource = jetsBgEstZtautauEnrichedJetTagCumulative')
         ),            
         cms.PSet(
             filter = cms.string('jetBtagBgEstZtautauEnriched'),
@@ -1184,8 +1184,11 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched',
-                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
+                                    'vertexHistManagerForElecTauBgEstZtautauEnriched',
+                                    'jetHistManagerForElecTauBgEstZtautauEnriched'                                    
                                     ),
+            replace = cms.vstring('jetHistManagerForElecTauBgEstZtautauEnriched.jetSource = jetsBgEstZtautauEnrichedJetBtagCumulative')
+            
             
         ),   
         cms.PSet(
@@ -1199,6 +1202,7 @@ analyzeEventsBgEstZtautauEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
                                     'diTauCandidateHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched',
                                     'vertexHistManagerForElecTauBgEstZtautauEnriched',
+                                    'jetHistManagerForElecTauBgEstZtautauEnriched'                                    
                                     ),
         ),
     )
@@ -1288,11 +1292,6 @@ analyzeEventsBgEstZtautauEnrichedBtagVeto = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('tauElectronVetoBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauElectronVetoBgEstZtautauEnriched','cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauEcalCrackVetoBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalCrackVetoBgEstZtautauEnriched','cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstZtautauEnriched'),
@@ -1492,10 +1491,6 @@ analyzeEventsBgEstZtautauEnrichedBtagVeto = cms.EDAnalyzer("GenericAnalyzer",
         ),   
         
         cms.PSet(
-            filter = cms.string('tauEcalCrackVetoBgEstZtautauEnriched'),
-            title = cms.string('Tau ECAL crack-Veto'),
-        ),
-        cms.PSet(
             filter = cms.string('tauMuonVetoBgEstZtautauEnriched'),
             title = cms.string('Tau mu-Veto'),
         ),
@@ -1608,7 +1603,7 @@ bgEstZtautauEnrichedAnalysisSequence = cms.Sequence(
     + produceElecTauPairZeeHypothesesBgEstZtautauEnriched
     + selectPatJetsBgEstZtautauEnriched
     + selectEventsBgEstZtautauEnriched
-    + analyzeEventsBgEstZtautauEnriched
+    #+ analyzeEventsBgEstZtautauEnriched
     + analyzeEventsBgEstZtautauEnrichedBtag
     + analyzeEventsBgEstZtautauEnrichedBtagVeto   
     
