@@ -38,17 +38,28 @@ pfJets = cms.PSet(
 tauAnalysisEventContent.outputCommands.extend(pfJets.outputCommands)
 
 #--------------------------------------------------------------------------------
+# keep special track collections from the Z->tautau embedded data samples
+#--------------------------------------------------------------------------------
+embeddedTracks = cms.PSet(
+    outputCommands = cms.untracked.vstring(
+        'keep *_tmfTracks_*_*'
+    )
+)
+tauAnalysisEventContent.outputCommands.extend(embeddedTracks.outputCommands)
+
+#--------------------------------------------------------------------------------
 # keep TrackExtra objects for computation of electron anti-photon conversion vetos
 #--------------------------------------------------------------------------------
 
-trackExtras = cms.PSet(
-    outputCommands = cms.untracked.vstring(
-        'keep recoTrackExtras_generalTracks_*_*',
-        'keep recoTrackExtras_electronGsfTracks_*_*',
-        'keep recoGsfTrackExtras_electronGsfTracks_*_*',
-		'keep *_ckfInOutTracksFromConversions_*_*',
-		'keep *_ckfOutInTracksFromConversions_*_*'
-    )
-)
-tauAnalysisEventContent.outputCommands.extend(trackExtras.outputCommands)
+#trackExtras = cms.PSet(
+#    outputCommands = cms.untracked.vstring(
+#        'keep recoTrackExtras_generalTracks_*_*',
+#        'keep recoTrackExtras_electronGsfTracks_*_*',
+#        'keep recoGsfTrackExtras_electronGsfTracks_*_*',
+#		'keep *_ckfInOutTracksFromConversions_*_*',
+#		'keep *_ckfOutInTracksFromConversions_*_*'
+#    )
+#)
+#tauAnalysisEventContent.outputCommands.extend(trackExtras.outputCommands)
+
 
