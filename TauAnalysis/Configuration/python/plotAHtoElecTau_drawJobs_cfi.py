@@ -497,46 +497,112 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
                 'xAxis' : job.xAxis,
                 'title' : job.title} )
 
-    dqmDirectories_input = cms.vstring()
+    dqmDirectoriesForData_input = cms.vstring()
 
+    # find background samples to be modified 
+    #  -- if sample is to be scaled, set correct output directory
     for sampleName in samples['FLATTENED_SAMPLES_TO_PLOT']:
         # get data input samples 
-        if 'data' in sampleName:
-            sampleNameFull = sampleName + '_dataForQCD'
-            setattr(process.loadAHtoElecTauSamples,sampleNameFull,cms.PSet() )
-            sampleSet = getattr(process.loadAHtoElecTauSamples,sampleNameFull)
-            sampleSet.inputFileNames = cms.vstring("harvested_%s_%s_%s.root" % (channel, sampleName, jobId))
-            sampleSet.dqmDirectory_store = cms.string('/harvested/' + sampleNameFull)
-            sampleSet.scaleFactor = cms.double(bgYieldCorrections['qcdSum'])
+        #if 'data' in sampleName:
+        #    sampleNameFull = sampleName + '_dataForQCD'
+        #    setattr(process.loadAHtoElecTauSamples,sampleNameFull,cms.PSet() )
+        #    sampleSet = getattr(process.loadAHtoElecTauSamples,sampleNameFull)
+        #    sampleSet.inputFileNames = cms.vstring("harvested_%s_%s_%s.root" % (channel, sampleName, jobId))
+        #    #sampleSet.dqmDirectory_store = cms.string('/harvested/' + sampleNameFull)
+        #    sampleSet.dqmDirectory_store = cms.string('/unScaled/' + sampleNameFull)
+        #    #sampleSet.scaleFactor = cms.double(bgYieldCorrections['qcdSum'])
+        #
+        #    dqmDirectoriesForData_input.append('/unScaled/' + sampleNameFull)
+        # modify DQM directory for other background samples to be scaled
+        for cat in ['woBtag', 'wBtag', 'VBF' ]:
+            for bgSampleName in bgYieldCorrections[cat].keys():
+                if sampleName is bgSampleName:
+                    sampleSet = getattr(process.loadAHtoElecTauSamples,sampleName)
+                    setattr(sampleSet,"dqmDirectory_store",cms.string('/unScaled/' + sampleName))
+                #setattr(sampleSet,"scaleFactor",cms.double(1.0))
+                #if sampleSet.autoscale is not None:
+                #    sampleSet.autoscale = cms.bool(False)
+                    #sampleSet.scaleFactor = sampleSet.xSection.value() * sampleSet.targetIntLumi.value() / sampleSet.totalExpectedEventsBeforeSkim.value()
+                #print 'Luminosity normalization of %s is %f' % (sampleName, sampleSet.scaleFactor.value())
+                #setattr(sampleSet, "scaleFactor", cms.double(bgYieldCorrections[bgSampleName]*sampleSet.scaleFactor.value()) )
+                #print ' --> scaling by factor of %f' % bgYieldCorrections[bgSampleName]
+   
+    #process.mergeSamplesAHtoElecTau.merge_qcdSum = cms.PSet(
+    #    dqmDirectory_output = cms.string('/unScaled/dataQCD'),
+    #    dqmDirectories_input = dqmDirectoriesForData_input
+    #)
+   
+    # find background samples to be scaled in list of samples to be plotted
+    process.scaleBackgroundsAHtoElecTau = cms.Sequence()
+    for sampleName in samples['SAMPLES_TO_PLOT'] + ['qcdSum']:
+        for cat in ['woBtag', 'wBtag', 'VBF' ]:
+            for bgSampleName in bgYieldCorrections[cat].keys():
+                if sampleName is bgSampleName:
+                    # update output directory in case background sample is to be merged
+                    if hasattr(process.mergeSamplesAHtoElecTau, 'merge_' + sampleName):
+                        merger = getattr(process.mergeSamplesAHtoElecTau, 'merge_' + sampleName)
+                        setattr(merger,'dqmDirectory_output','/unScaled/' + sampleName)
+                    # now build DQMHistScaler modules
+                    baseDirInput = '/unScaled/'
+                    sampleNameInput = bgSampleName
+                    # take special care if background is QCD...to be taken from data
+                    if bgSampleName is 'qcdSum':
+                        baseDirInput = '/harvested/'
+                        sampleNameInput = 'data'
+                    # create scaling module for OS analyzer
+                    scalerOS = 'scale' + sampleName + 'OS_' + cat
+                    setattr(process, scalerOS, cms.EDAnalyzer("DQMHistScaler"))
+                    setattr(getattr(process,scalerOS), "scaleFactor", cms.double(bgYieldCorrections[cat][bgSampleName]))
+                    analyzerNameOS = 'ahElecTauAnalyzerOS_' + cat
+                    setattr(getattr(process,scalerOS), "dqmDirectory_input", cms.string(baseDirInput + sampleNameInput + '/' + analyzerNameOS))
+                    setattr(getattr(process,scalerOS), "dqmDirectory_output", cms.string('/harvested/' + bgSampleName + '/' + analyzerNameOS))
+                    print 'Scaling plots in ' + baseDirInput + sampleNameInput + '/' + analyzerNameOS + ' by factor %f' % bgYieldCorrections[cat][bgSampleName]
+                    print ' and placing results in /harvested/' + bgSampleName + '/' + analyzerNameOS
+                    process.scaleBackgroundsAHtoElecTau += getattr(process,scalerOS)
+                    # copy SS analyzer with no scaling
+                    scalerSS = 'scale' + sampleName + 'SS_' + cat
+                    setattr(process, scalerSS, cms.EDAnalyzer("DQMHistScaler"))
+                    setattr(getattr(process,scalerSS), "scaleFactor", cms.double(1.))
+                    analyzerNameSS = 'ahElecTauAnalyzerSS_' + cat
+                    setattr(getattr(process,scalerSS), "dqmDirectory_input", cms.string(baseDirInput + sampleNameInput + '/' + analyzerNameSS))
+                    setattr(getattr(process,scalerSS), "dqmDirectory_output", cms.string('/harvested/' + bgSampleName + '/' + analyzerNameSS))
+                    process.scaleBackgroundsAHtoElecTau += getattr(process,scalerSS)
 
-            dqmDirectories_input.append('/harvested/' + sampleNameFull)
-        # modify scale factors for other background samples
-        for bgSampleName in bgYieldCorrections.keys():
-            if sampleName is bgSampleName:
-                sampleSet = getattr(process.loadAHtoElecTauSamples,sampleName)
-                setattr(sampleSet,"scaleFactor",cms.double(1.0))
-                if sampleSet.autoscale is not None:
-                    sampleSet.autoscale = cms.bool(False)
-                    sampleSet.scaleFactor = sampleSet.xSection.value() * sampleSet.targetIntLumi.value() / sampleSet.totalExpectedEventsBeforeSkim.value()
-                print 'Luminosity normalization of %s is %f' % (sampleName, sampleSet.scaleFactor.value())
-                setattr(sampleSet, "scaleFactor", cms.double(bgYieldCorrections[bgSampleName]*sampleSet.scaleFactor.value()) )
-                print ' --> scaling by factor of %f' % bgYieldCorrections[bgSampleName]
-   
-    process.mergeSamplesAHtoElecTau.merge_qcdSum = cms.PSet(
-        dqmDirectory_output = cms.string('/harvested/dataQCD'),
-        dqmDirectories_input = dqmDirectories_input
-    )
-   
-    # looop over categories
+    process.loadAHtoElecTau.replace(process.mergeSamplesAHtoElecTau, process.mergeSamplesAHtoElecTau + process.scaleBackgroundsAHtoElecTau)
+
+    # scale embedded samples properly
+    if 'ZtautauEmbeddedSum' in samples['SAMPLES_TO_PLOT']:
+        process.mergeSamplesAHtoElecTau.merge_ZtautauEmbeddedSum.dqmDirectory_output = cms.string('/unScaled/ZtautauEmbeddedSum')
+        process.scaleZtautauEmbeddedSum = cms.EDAnalyzer("DQMHistScaler")
+        process.scaleZtautauEmbeddedSum.scaleFactor = cms.double(14602.2/124754.0)
+        process.scaleZtautauEmbeddedSum.dqmDirectory_input = cms.string('/unScaled/ZtautauEmbeddedSum')
+        process.scaleZtautauEmbeddedSum.dqmDirectory_output = cms.string('/harvested/ZtautauEmbeddedSum')
+        process.scaleBackgroundsAHtoElecTau += process.scaleZtautauEmbeddedSum
+
+    # loop over all DQMHistPlotter modules and:
+    #  - add QCD samples to processes list
+    #  - plot QCD with SS data
     for cat in ['woBtag', 'wBtag', 'VBF' ]:
         for scale in ['_linear', '_log']:
             plotter = getattr(process, "plotahElecTauAnalyzerOS_" + cat + scale)
+            # add QCD to processes list
             plotter.processes.qcdSum = cms.PSet(
-                dqmDirectory = cms.string('/harvested/dataQCD'),
+                dqmDirectory = cms.string('/harvested/qcdSum'),
                 type = cms.string('smMC'),
                 legendEntry = cms.string('QCD')
             )
-    
+            # define category-dependant variables
+            tag = 'ForAHtoElecTau'
+            samplesForPlotter = samples['SAMPLES_TO_PLOT_MSSM']
+            if cat is 'VBF':
+                samplesForPlotter = samples['SAMPLES_TO_PLOT_SM']
+                tag = 'ForElecTau'
+            stack = cms.vstring([
+                sample for sample in samplesForPlotter
+                if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
+                    samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
+            ])
+            stack.extend(['qcdSum'])
             #  create new draw job for each element in plot configuration list
             for plotCfg in plotConfigs:
                 drawJob = cms.PSet( 
@@ -545,12 +611,7 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
                     labels = cms.vstring('mcNormScale'),
                     legend = cms.string('regular'),
                     xAxis = cms.string(plotCfg['xAxis']),
-                    # taken from TauAnalysis/Configuration/python/makePlots2_grid.py
-                    stack = cms.vstring([
-                        sample for sample in samples['SAMPLES_TO_PLOT']
-                        if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
-                            samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
-                    ]),
+                    stack = stack,
                     #stack = cms.vstring('qcdSum',
                     #    'TTplusJets_madgraph_skim',
                     #    #'EWsum',
@@ -560,17 +621,13 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
                     title = cms.string(plotCfg['title']),
                     plots = cms.VPSet()
                 )
-                drawJob.stack.extend(['qcdSum'])
 
-                tag = 'ForAHtoElecTau'
-                if cat is 'VBF': 
-                    tag = 'ForElecTau'
                 drawJob.plots.append(cms.PSet(
                     dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerSS_' + cat + '/afterEvtSelDiTauCandidate' + tag  + 'NonZeroCharge/' + plotCfg['meName']),
                     drawOptionEntry = cms.string('default#.#qcdSum'),
                     process = cms.string('qcdSum')
                 ))
-                for sample in samples['SAMPLES_TO_PLOT']:
+                for sample in samplesForPlotter:
                     drawJob.plots.append(cms.PSet(
                         dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerOS_' + cat + '/afterEvtSelDiTauCandidate' + tag + 'ZeroCharge/' + plotCfg['meName']),
                         drawOptionEntry = cms.string('default#.#' + sample),
@@ -590,6 +647,8 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
                 )
                 )
 
-    process.saveAHtoElecTau.outputCommands.append('keep harvested/dataQCD/*')
+    process.saveAHtoElecTau.outputCommands.append('keep harvested/qcdSum/*')
+    process.saveAHtoElecTau.outputCommands.append('keep unScaled/*')
+    process.saveAHtoElecTau.outputCommands.append('keep harvested/Ztautau_powheg_skim/*')
 
 
