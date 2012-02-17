@@ -82,9 +82,6 @@ tausBgEstWplusJetsEnrichedIso.cut = cms.string('tauID("byVLooseCombinedIsolation
 # require tau candidate to pass electron veto
 tausBgEstWplusJetsEnrichedElectronVeto = copy.deepcopy(tausBgEstZtautauEnrichedElectronVeto)
 
-# require tau candidate not to be in ECAL barrel/endcap crack
-tausBgEstWplusJetsEnrichedEcalCrackVeto = copy.deepcopy(tausBgEstZtautauEnrichedEcalCrackVeto)
-
 # require tau candidate to pass muon veto
 tausBgEstWplusJetsEnrichedMuonVeto = copy.deepcopy(tausBgEstZtautauEnrichedMuonVeto)
 
@@ -97,7 +94,6 @@ tauSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
       tausBgEstWplusJetsEnrichedLeadTrkPt,
       tausBgEstWplusJetsEnrichedIso,
       tausBgEstWplusJetsEnrichedElectronVeto,
-      tausBgEstWplusJetsEnrichedEcalCrackVeto,
       tausBgEstWplusJetsEnrichedMuonVeto ],
     src = "cleanPatTaus",
     pyModuleName = __name__,
@@ -265,10 +261,6 @@ cfgTauElectronVetoBgEstWplusJetsEnriched = copy.deepcopy(cfgTauElectronVetoBgEst
 cfgTauElectronVetoBgEstWplusJetsEnriched.pluginName = cms.string('tauElectronVetoBgEstWplusJetsEnriched')
 cfgTauElectronVetoBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedElectronVetoCumulative')
 
-cfgTauEcalCrackVetoBgEstWplusJetsEnriched = copy.deepcopy(cfgTauEcalCrackVetoBgEstZtautauEnriched)
-cfgTauEcalCrackVetoBgEstWplusJetsEnriched.pluginName = cms.string('tauEcalCrackVetoBgEstWplusJetsEnriched')
-cfgTauEcalCrackVetoBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedEcalCrackVetoCumulative')
-
 cfgTauMuonVetoBgEstWplusJetsEnriched = copy.deepcopy(cfgTauMuonVetoBgEstZtautauEnriched)
 cfgTauMuonVetoBgEstWplusJetsEnriched.pluginName = cms.string('tauMuonVetoBgEstWplusJetsEnriched')
 cfgTauMuonVetoBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedMuonVetoCumulative')
@@ -333,7 +325,6 @@ evtSelConfiguratorBgEstWplusJetsEnriched = eventSelFlagProdConfigurator(
       cfgTauLeadTrkPtCutBgEstWplusJetsEnriched,
       cfgTauIsoCutBgEstWplusJetsEnriched,
       cfgTauElectronVetoBgEstWplusJetsEnriched,
-      cfgTauEcalCrackVetoBgEstWplusJetsEnriched,
       cfgTauMuonVetoBgEstWplusJetsEnriched,
       cfgDiTauCandidateAntiOverlapVetoBgEstWplusJetsEnriched,
       cfgDiTauCandidateForElecTauMt1METCutBgEstWplusJetsEnriched,
@@ -463,11 +454,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauElectronVetoBgEstWplusJetsEnriched','cumulative')
         ),  
-        cms.PSet(
-            pluginName = cms.string('tauEcalCrackVetoBgEstWplusJetsEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalCrackVetoBgEstWplusJetsEnriched','cumulative')
-        ),
         cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstWplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -652,10 +638,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             replace = cms.vstring('tauHistManagerForElecTauBgEstWplusJetsEnriched.tauSource = tausBgEstWplusJetsEnrichedElectronVetoCumulative')
         ),          
         cms.PSet(
-            filter = cms.string('tauEcalCrackVetoBgEstWplusJetsEnriched'),
-            title = cms.string('Tau ECAL crack-Veto'),
-        ),
-        cms.PSet(
             filter = cms.string('tauMuonVetoBgEstWplusJetsEnriched'),
             title = cms.string('Tau mu-Veto'),
         ),
@@ -819,11 +801,6 @@ analyzeEventsBgEstWplusJetsEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauElectronVetoBgEstWplusJetsEnriched','cumulative')
         ),  
-        cms.PSet(
-            pluginName = cms.string('tauEcalCrackVetoBgEstWplusJetsEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalCrackVetoBgEstWplusJetsEnriched','cumulative')
-        ),
         cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstWplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -1017,10 +994,6 @@ analyzeEventsBgEstWplusJetsEnrichedBtag = cms.EDAnalyzer("GenericAnalyzer",
                                     ),
             replace = cms.vstring('tauHistManagerForElecTauBgEstWplusJetsEnriched.tauSource = tausBgEstWplusJetsEnrichedElectronVetoCumulative')
         ),          
-        cms.PSet(
-            filter = cms.string('tauEcalCrackVetoBgEstWplusJetsEnriched'),
-            title = cms.string('Tau ECAL crack-Veto'),
-        ),
         cms.PSet(
             filter = cms.string('tauMuonVetoBgEstWplusJetsEnriched'),
             title = cms.string('Tau mu-Veto'),
@@ -1219,11 +1192,6 @@ analyzeEventsBgEstWplusJetsEnrichedBtagVeto = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('tauElectronVetoBgEstWplusJetsEnriched','cumulative')
         ),  
         cms.PSet(
-            pluginName = cms.string('tauEcalCrackVetoBgEstWplusJetsEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalCrackVetoBgEstWplusJetsEnriched','cumulative')
-        ),
-        cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstWplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauMuonVetoBgEstWplusJetsEnriched','cumulative')
@@ -1417,10 +1385,6 @@ analyzeEventsBgEstWplusJetsEnrichedBtagVeto = cms.EDAnalyzer("GenericAnalyzer",
             replace = cms.vstring('tauHistManagerForElecTauBgEstWplusJetsEnriched.tauSource = tausBgEstWplusJetsEnrichedElectronVetoCumulative')
         ),          
         cms.PSet(
-            filter = cms.string('tauEcalCrackVetoBgEstWplusJetsEnriched'),
-            title = cms.string('Tau ECAL crack-Veto'),
-        ),
-        cms.PSet(
             filter = cms.string('tauMuonVetoBgEstWplusJetsEnriched'),
             title = cms.string('Tau mu-Veto'),
         ),
@@ -1533,7 +1497,7 @@ bgEstWplusJetsEnrichedAnalysisSequence = cms.Sequence(
     + produceElecTauPairZeeHypothesesBgEstWplusJetsEnriched
     + selectPatJetsBgEstWplusJetsEnriched
     + selectEventsBgEstWplusJetsEnriched
-    + analyzeEventsBgEstWplusJetsEnriched
+    #+ analyzeEventsBgEstWplusJetsEnriched
     + analyzeEventsBgEstWplusJetsEnrichedBtag
     + analyzeEventsBgEstWplusJetsEnrichedBtagVeto
 )
