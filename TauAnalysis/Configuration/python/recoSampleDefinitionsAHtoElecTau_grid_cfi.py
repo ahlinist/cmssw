@@ -56,7 +56,8 @@ SAMPLES_TO_PLOT = [
     'WplusJets_madgraph_skim',
     'ZeeSum',
     #'EWsum',
-    'ZtautauEmbeddedSum',
+    'ZtautauSum',
+    #'ZtautauEmbeddedSum',
     'data'
 ]
 
@@ -69,6 +70,7 @@ SAMPLES_TO_PLOT.append('h120Sum')
 # so that we have access to those filter statistics
 # for embedded sample normalization
 SAMPLES_TO_PRINT.append('Ztautau_powheg_skim')
+SAMPLES_TO_PRINT.append('ZtautauEmbeddedSum')
 
 #SAMPLES_TO_PRINT.append('A100Sum')
 SAMPLES_TO_PRINT.append('A120Sum')
@@ -286,7 +288,6 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyVertexMultiplicityReweighting' : False,  ## for acceptance challenge
         'noRunLumiEventSave' : False
     },
     'bbA120_skim' : {
@@ -1100,9 +1101,20 @@ for sample in RECO_SAMPLES.keys():
     ALL_SAMPLES.update(MERGE_SAMPLES)
     ALL_SAMPLES.update(RECO_SAMPLES)
 
+SAMPLES_TO_PLOT_SM = []
+for sample in SAMPLES_TO_PLOT:
+    if not (sample.startswith('A') and 'Sum' in sample):
+        SAMPLES_TO_PLOT_SM.append(sample)
+
+SAMPLES_TO_PLOT_MSSM = []
+for sample in SAMPLES_TO_PLOT:
+    if not (sample.startswith('h') and 'Sum' in sample):
+        SAMPLES_TO_PLOT_MSSM.append(sample)
 
 recoSampleDefinitionsAHtoElecTau = {
     'SAMPLES_TO_ANALYZE' : SAMPLES_TO_ANALYZE,
+    'SAMPLES_TO_PLOT_MSSM' : SAMPLES_TO_PLOT_MSSM,
+    'SAMPLES_TO_PLOT_SM' : SAMPLES_TO_PLOT_SM,
     'SAMPLES_TO_PLOT' : SAMPLES_TO_PLOT,
     'SAMPLES_TO_PRINT' : SAMPLES_TO_PRINT,
     'SAMPLE_DEFAULTS' : SAMPLE_DEFAULTS,
