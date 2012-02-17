@@ -6,7 +6,7 @@ import FWCore.ParameterSet.Config as cms
 
 tausTrkIsoLooseIsolationForBgEst = cms.EDFilter("PATTauSelector",
     src = cms.InputTag('selectedPatTausLeadTrkPtCumulative'),                                        
-    cut = cms.string('tauID("trackIsolation") > 0.5 | chargedHadronIso < 8.'),
+    cut = cms.string('tauID("trackIsolation") > 0.5 | chargedParticleIso < 8.'),
     filter = cms.bool(False)
 )
 
