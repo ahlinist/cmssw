@@ -13,7 +13,7 @@ process.MessageLogger.suppressWarning = cms.untracked.vstring(
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('GR_R_42_V13::All')
+process.GlobalTag.globaltag = cms.string('GR_R_42_V14::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -46,23 +46,13 @@ process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
     cut = cms.string("abs(eta) < 2.5 & pt > 12. & ((abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.8 & hcalOverEcal < 0.15 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.01 & abs(deltaPhiSuperClusterTrackAtVtx) <0.7 & hcalOverEcal < 0.07 & sigmaIetaIeta < 0.03))"),
     filter = cms.bool(True)
 )
-
-process.selectedTaNCtaus = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag('hpsTancTaus'),
-    discriminators = cms.VPSet(
-        cms.PSet(
-            discriminator = cms.InputTag("hpsTancTausDiscriminationByTancVLoose"),
-            selectionCut = cms.double(0.5)
-        )
-    ),
-    filter = cms.bool(True)
-)
-
+#
+#  select HPS taus passing very loose isolation discriminant
 process.selectedHPStaus = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag('hpsTancTaus'),
+    src = cms.InputTag('hpsPFTauProducer'),
     discriminators = cms.VPSet(
         cms.PSet(
-            discriminator = cms.InputTag("hpsTancTausDiscriminationByVLooseIsolation"),
+            discriminator = cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation"),
             selectionCut = cms.double(0.5)
         )
     ),
@@ -76,21 +66,6 @@ process.selectedHPStaus = cms.EDFilter("PFTauSelector",
 # particle as the electron (note that almost all electrons get selected as tau-jets !!)
 #--------------------------------------------------------------------------------
 
-process.elecTaNCtauPairs = cms.EDProducer("DiCandidatePairProducer",
-    useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedTaNCtaus'),
-    srcLeg2 = cms.InputTag('selectedElectrons'),
-    dRmin12 = cms.double(0.3),
-    srcMET = cms.InputTag(''),
-    recoMode = cms.string(""),
-    verbosity = cms.untracked.int32(0)                                       
-)
-
-process.selectedElecTaNCtauPairs = cms.EDFilter("DiCandidatePairSelector",
-    src = cms.InputTag('elecTaNCtauPairs'),
-    cut = cms.string("dR12 > 0."),
-    filter = cms.bool(True)                                     
-)
 
 process.elecHPStauPairs = cms.EDProducer("DiCandidatePairProducer",
     useLeadingTausOnly = cms.bool(False),
@@ -104,20 +79,13 @@ process.elecHPStauPairs = cms.EDProducer("DiCandidatePairProducer",
 
 process.selectedElecHPStauPairs = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('elecHPStauPairs'),
-    cut = cms.string("dR12 > 0."),
+    cut = cms.string("dR12 > 0.3"),
     filter = cms.bool(True)                                     
 )
 
 #--------------------------------------------------------------------------------
 # keep event in case it passed either the electron + TaNC tau or electron + hpsTau selection
 #--------------------------------------------------------------------------------
-
-process.elecTaNCtauSkimPath = cms.Path(
-    process.PFTau
-   * (process.selectedTaNCtaus + process.selectedElectrons)
-   * process.elecTaNCtauPairs
-   * process.selectedElecTaNCtauPairs
-)
 
 process.elecHPStauSkimPath = cms.Path(
     process.PFTau
@@ -128,7 +96,7 @@ process.elecHPStauSkimPath = cms.Path(
 
 elecTauEventSelection = cms.untracked.PSet(
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('elecTaNCtauSkimPath', 'elecHPStauSkimPath')
+        SelectEvents = cms.vstring('elecHPStauSkimPath')
     )
 )
 
