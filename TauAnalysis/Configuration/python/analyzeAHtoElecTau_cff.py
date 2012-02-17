@@ -192,25 +192,25 @@ analyzeAHtoElecTauEventsOS_wBtag = analyzeAHtoElecTauEvents.clone(
     name = cms.string('ahElecTauAnalyzerOS_wBtag')
 )
 analyzeAHtoElecTauEventsOS_wBtag.analysisSequence.extend(bTagSelectionFilterAnalyzers)
-analyzeAHtoElecTauEventsOS_wBtag.analysisSequence.extend(mssmOppositeSignFilterAnalyzers)
+analyzeAHtoElecTauEventsOS_wBtag.analysisSequence.extend(mssmOppositeSignFilterAnalyzers_wBtag)
 
 analyzeAHtoElecTauEventsSS_wBtag = analyzeAHtoElecTauEvents.clone(
     name = cms.string('ahElecTauAnalyzerSS_wBtag')
 )
 analyzeAHtoElecTauEventsSS_wBtag.analysisSequence.extend(bTagSelectionFilters)
-analyzeAHtoElecTauEventsSS_wBtag.analysisSequence.extend(mssmSameSignFilterAnalyzers)
+analyzeAHtoElecTauEventsSS_wBtag.analysisSequence.extend(mssmSameSignFilterAnalyzers_wBtag)
 
 analyzeAHtoElecTauEventsOS_woBtag = analyzeAHtoElecTauEvents.clone(
     name = cms.string('ahElecTauAnalyzerOS_woBtag')
 )
 analyzeAHtoElecTauEventsOS_woBtag.analysisSequence.extend(noBtagSelectionFilterAnalyzers)
-analyzeAHtoElecTauEventsOS_woBtag.analysisSequence.extend(mssmOppositeSignFilterAnalyzers)
+analyzeAHtoElecTauEventsOS_woBtag.analysisSequence.extend(mssmOppositeSignFilterAnalyzers_woBtag)
 
 analyzeAHtoElecTauEventsSS_woBtag = analyzeAHtoElecTauEvents.clone(
     name = cms.string('ahElecTauAnalyzerSS_woBtag')
 )
 analyzeAHtoElecTauEventsSS_woBtag.analysisSequence.extend(noBtagSelectionFilters)
-analyzeAHtoElecTauEventsSS_woBtag.analysisSequence.extend(mssmSameSignFilterAnalyzers)
+analyzeAHtoElecTauEventsSS_woBtag.analysisSequence.extend(mssmSameSignFilterAnalyzers_woBtag)
 
 analyzeAHtoElecTauSequence = cms.Sequence(
     analyzeAHtoElecTauEventsOS_woBtag 

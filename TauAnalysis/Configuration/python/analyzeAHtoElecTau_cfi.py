@@ -17,7 +17,7 @@ firstAnalyzers = cms.PSet(
 )
 #
 genAHtoElecTauCutFilter = cms.PSet(
-    filter = cms.string('genAHtoElecTauCut'),
+    filter = cms.string('evtSelGenAHtoElecTau'),
     title = cms.string('gen. A/H -> e + tau'),
     saveRunLumiSectionEventNumbers = cms.vstring('')
 )
@@ -333,11 +333,11 @@ mssmDiTauAnalyzerAfterAntiOverlap = cms.PSet(
                           'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauAntiOverlapVetoCumulative')
 )
 smDiTauAntiOverlapFilter = cms.PSet(
-    filter = cms.string('evtSelDiTauCandidateForElecTauAntiOverlapVeto'),
+    filter = cms.string('evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto'),
     title = cms.string('dR(Electron-Tau) > 0.3'),
     saveRunLumiSectionEventNumbers = cms.vstring('')
 )
-smDiTauAnalyzerAnalyzerAfterAntiOverlap = cms.PSet(
+smDiTauAnalyzerAfterAntiOverlap = cms.PSet(
     analyzers = cms.vstring(
         'electronHistManager',
         'tauHistManager',
@@ -375,7 +375,7 @@ mssmDiTauAnalyzerAfterWcut = cms.PSet(
                           'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
                           'elecPairHistManagerByLooseIsolation.diTauCandidateSource = allDiElecPairZeeHypothesesByLooseIsolation')
 )
-smDiTauAnalyzerAnalyzerAfterWcut = cms.PSet(
+smDiTauAnalyzerAfterWcut = cms.PSet(
     analyzers = cms.vstring(
         'electronHistManager',
         'tauHistManager',
@@ -626,9 +626,9 @@ smVBFfinalAnalyzer = cms.PSet(
 
 smVBFselectionFilterAnalyzers = cms.VPSet(
     smDiTauAntiOverlapFilter,
-    smDiTauAnalyzerAnalyzerAfterAntiOverlap,
+    smDiTauAnalyzerAfterAntiOverlap,
     mtElecMetFilter,
-    smDiTauAnalyzerAnalyzerAfterWcut,
+    smDiTauAnalyzerAfterWcut,
     zeeVetoFilter,
     smVBFjetEtAnalyzer,
     smVBFjetEtFilter,
@@ -664,11 +664,11 @@ smOppositeSignAnalyzer = cms.PSet(
         'genPhaseSpaceEventInfoHistManager',
         'electronHistManager',
         'tauHistManager',
-		#'jetHistManager',
+        'jetHistManager',
         'vertexHistManager',
+        'vbfEventHistManagerForElecTau',
         'diTauCandidateHistManagerForElecTau',
         'diTauCandidateNSVfitHistManagerForElecTau',
-        'caloMEtHistManager',
         'pfMEtHistManager',
         'particleMultiplicityHistManager',
         'triggerHistManagerForElecTau',
@@ -679,8 +679,9 @@ smOppositeSignAnalyzer = cms.PSet(
 	replace = cms.vstring(
 		'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 		'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
-        #'jetHistManager.jetSource = ',
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauJetTagCumulative',
         'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSum',
+        'vbfEventHistManagerForElecTau.vbfEventSource = selectedVBFEventHypothesesForAHtoElecTau3rdJetVetoCumulative',
         'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative',
 		'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative'
 	)
@@ -692,9 +693,12 @@ smSameSignFilter = cms.PSet(
 )
 smSameSignAnalyzer = cms.PSet(
     analyzers = cms.vstring(
+        'genPhaseSpaceEventInfoHistManager',
         'electronHistManager',
         'tauHistManager',
+        'jetHistManager',
         'vertexHistManager',
+        'vbfEventHistManagerForElecTau',
         'pfMEtHistManager',
         'diTauCandidateHistManagerForElecTau',
         'diTauCandidateNSVfitHistManagerForElecTau'
@@ -702,7 +706,9 @@ smSameSignAnalyzer = cms.PSet(
 	replace = cms.vstring(
 		'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 		'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauJetTagCumulative',
         'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSum',
+        'vbfEventHistManagerForElecTau.vbfEventSource = selectedVBFEventHypothesesForAHtoElecTau3rdJetVetoCumulative',
         'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsNonZeroChargeCumulative',
 		'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsNonZeroChargeCumulative'
 	)
@@ -713,16 +719,15 @@ mssmOppositeSignFilter = cms.PSet(
     title = cms.string('Charge(Electron+Tau) = 0'),
     saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
 )
-mssmOppositeSignAnalyzer = cms.PSet(
+mssmOppositeSignAnalyzer_wBtag = cms.PSet(
     analyzers = cms.vstring(
         'genPhaseSpaceEventInfoHistManager',
         'electronHistManager',
         'tauHistManager',
-        #'jetHistManager',
+        'jetHistManager',
         'vertexHistManager',
         'diTauCandidateHistManagerForElecTau',
         'diTauCandidateNSVfitHistManagerForElecTau',
-        'caloMEtHistManager',
         'pfMEtHistManager',
         'particleMultiplicityHistManager',
         'triggerHistManagerForElecTau',
@@ -733,7 +738,32 @@ mssmOppositeSignAnalyzer = cms.PSet(
 	replace = cms.vstring(
 		'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 		'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
-        #'jetHistManager.jetSource = ',
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauBtagCumulative',
+        'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSum',
+        'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative',
+		'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative'
+	)
+)
+mssmOppositeSignAnalyzer_woBtag = cms.PSet(
+    analyzers = cms.vstring(
+        'genPhaseSpaceEventInfoHistManager',
+        'electronHistManager',
+        'tauHistManager',
+        'jetHistManager',
+        'vertexHistManager',
+        'diTauCandidateHistManagerForElecTau',
+        'diTauCandidateNSVfitHistManagerForElecTau',
+        'pfMEtHistManager',
+        'particleMultiplicityHistManager',
+        'triggerHistManagerForElecTau',
+		'sysUncertaintyHistManagerForElecTau',
+		'dataBinner',
+		'sysUncertaintyBinnerForElecTauEff'
+    ),
+	replace = cms.vstring(
+		'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+		'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauJetTagCumulative',
         'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSum',
         'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative',
 		'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative'
@@ -744,8 +774,9 @@ mssmSameSignFilter = cms.PSet(
     title = cms.string('Charge(Muon+Tau) != 0'),
     saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
 )
-mssmSameSignAnalyzer = cms.PSet(
+mssmSameSignAnalyzer_woBtag = cms.PSet(
     analyzers = cms.vstring(
+        'genPhaseSpaceEventInfoHistManager',
         'electronHistManager',
         'tauHistManager',
         'vertexHistManager',
@@ -756,6 +787,26 @@ mssmSameSignAnalyzer = cms.PSet(
 	replace = cms.vstring(
 		'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 		'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauJetTagCumulative',
+        'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSum',
+        'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
+		'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative'
+	)
+)
+mssmSameSignAnalyzer_wBtag = cms.PSet(
+    analyzers = cms.vstring(
+        'genPhaseSpaceEventInfoHistManager',
+        'electronHistManager',
+        'tauHistManager',
+        'vertexHistManager',
+        'pfMEtHistManager',
+        'diTauCandidateHistManagerForElecTau',
+        'diTauCandidateNSVfitHistManagerForElecTau'
+    ),
+	replace = cms.vstring(
+		'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+		'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauBtagCumulative',
         'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSum',
         'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
 		'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative'
@@ -764,9 +815,11 @@ mssmSameSignAnalyzer = cms.PSet(
 
 
 smOppositeSignFilterAnalyzers = cms.VPSet(smOppositeSignFilter,smOppositeSignAnalyzer)
-mssmOppositeSignFilterAnalyzers = cms.VPSet(mssmOppositeSignFilter,mssmOppositeSignAnalyzer)
-mssmSameSignFilterAnalyzers = cms.VPSet(mssmSameSignFilter,mssmSameSignAnalyzer)
 smSameSignFilterAnalyzers = cms.VPSet(smSameSignFilter,smSameSignAnalyzer)
+mssmOppositeSignFilterAnalyzers_woBtag = cms.VPSet(mssmOppositeSignFilter,mssmOppositeSignAnalyzer_woBtag)
+mssmOppositeSignFilterAnalyzers_wBtag = cms.VPSet(mssmOppositeSignFilter,mssmOppositeSignAnalyzer_wBtag)
+mssmSameSignFilterAnalyzers_woBtag = cms.VPSet(mssmSameSignFilter,mssmSameSignAnalyzer_woBtag)
+mssmSameSignFilterAnalyzers_wBtag = cms.VPSet(mssmSameSignFilter,mssmSameSignAnalyzer_wBtag)
 
 
 
