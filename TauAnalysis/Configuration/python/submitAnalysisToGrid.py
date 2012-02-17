@@ -130,6 +130,10 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         if outputFilePath.startswith('/castor/cern.ch'):
             outputFilePath = outputFilePath.replace('/castor/cern.ch','')
 
+        saveNtuple = 0
+        if sample_info['saveNtuple'] is True:
+            saveNtuple = 1
+
         # Build crab options
         crabOptions = {
             'number_of_jobs' : _number_of_jobs(sample_info),
@@ -137,7 +141,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'dbs_url' : sample_info['dbs_url'],
             'user_remote_dir' : outputFilePath,
             'output_file' : ", ".join(output_files),
-            'get_edm_output' : sample_info['saveNtuple'],
+            'get_edm_output' : saveNtuple,
             # Default MC info
             'split_type' : (sample_info['type'] == 'Data' or sample_info['type'] == 'embeddedData') and 'lumis' or 'events',
             'lumi_mask' : sample_info['lumi_mask'],
