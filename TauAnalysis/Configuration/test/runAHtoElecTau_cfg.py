@@ -22,7 +22,7 @@ process.MessageLogger.suppressWarning = cms.untracked.vstring(
 )
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
-process.load('Configuration/StandardSequences/Reconstruction_cff')
+#process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START42_V11::All')
 
@@ -74,7 +74,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/store/user/jkolb/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/skimElecTau_423_v1/2453a4eaae124a4a3fe9f365dc31e11f/elecTauSkim_1_2_zBP.root'
+        'file:/store/user/jkolb/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/skimElecTau_428_Fall11_v1/6aa5d932edddb97c8f87b85a020d9993/elecTauSkim_1_1_yQv.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -110,19 +110,26 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), 
-		doBTagging = True, outputModule = "")
-#process.patJetCorrections.remove(process.patJetCorrFactors)
-#process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
-#process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
-#process.producePatTupleAHtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
-#process.producePatTupleAHtoElecTauSpecific.remove(process.patPFtype1METs)
+switchJetCollection(process,
+        jetCollection = cms.InputTag("ak5PFJets"),
+        #jetCorrLabel = ('AK5PF', ['L1FastJet', 'L2Relative', 'L3Absolute']),
+        doBTagging = True,
+        outputModule = "")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
-from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+from PhysicsTools.PatAlgos.tools.trigTools import switchOnTriggerMatching, switchOnTrigger
+
+# make trigger-matched collections of electrons and taus
+#from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import cleanElectronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoT
+#process.cleanElectronTriggerMatchHLTElectronPlusTau = cleanElectronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoT.clone()
+#process.cleanElectronTriggerMatchHLTElectronPlusTau.matchedCuts = cms.string( 'path( "HLT_Ele*_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_*IsoPFTau20_v*" )' )
+# do matching
+#switchOnTriggerMatching(process, triggerMatchers = [ 'cleanElectronTriggerMatchHLTElectronPlusTau' ], hltProcess = HLTprocessName, outputModule = '')
+
 switchOnTrigger(process, hltProcess = HLTprocessName, outputModule = '')
+
 #process.patTrigger.addL1Algos = cms.bool(True)
 from TauAnalysis.Configuration.cfgOptionMethods import _setTriggerProcess
 _setTriggerProcess(process, cms.InputTag("TriggerResults", "", HLTprocessName))
@@ -144,19 +151,17 @@ metTools.replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('pat
 #--------------------------------------------------------------------------------
 #  do not produce momentum-corrected muons
 from TauAnalysis.RecoTools.patLeptonSelection_cff import patMuonSelConfigurator
-setattr(patMuonSelConfigurator, "src", "patMuons" )
+setattr(patMuonSelConfigurator, "src", "cleanPatMuons" )
 process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 #  make cut changes
 from TauAnalysis.Configuration.tools.changeCut import changeCut
+# update all tau discriminant to HPS types
 changeCut(process,"selectedPatTausLeadTrk",'tauID("decayModeFinding")')
-changeCut(process,"selectedPatTausLeadTrkPt",'leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
+changeCut(process,"selectedPatTausLeadTrkPt",'tauID("decayModeFinding")')
 changeCut(process,"selectedPatTausTaNCdiscr",'tauID("byLooseCombinedIsolationDeltaBetaCorr")')
-
-# turn off di-electron veto
-#process.cfgDiElecPairZeeHypothesisVetoByLooseIsolation.maxNumber = cms.uint32(5)
 
 #--------------------------------------------------------------------------------
 
@@ -266,15 +271,10 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# sequence to produce full PAT
 #
-process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoElecTauSpecific + process.producePatTupleAHtoElecTauSpecific)
+process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
 #
-# define "hook" for enabling/disabling production of PAT-tuple event content,
-# depending on whether RECO/AOD or PAT-tuples are used as input for analysis
-#
-#__#patTupleProduction#
-if not hasattr(process, "isBatchMode"):
-    process.p.replace(process.producePatTupleAHtoElecTauSpecific, process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
