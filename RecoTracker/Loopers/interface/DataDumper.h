@@ -39,7 +39,7 @@ public:
   void orderInZ();
   int unique();
   uint countUsable();
-  uint count(){   return elements_.size();  }
+  uint count() const {   return elements_.size();  }
   void increment( fastRecHit * e, 
 		  bool upLeg,
 		  const float & annularCut
@@ -55,7 +55,7 @@ public:
   }
   bool equilibrate(uint eachSide);
   void truncateForZ(float & maxZ);
-  bool isHelix();
+  bool isHelix() const { return isHelix_;}
   std::string printElements(uint itab=0);
   std::string print(uint itab=0);
 

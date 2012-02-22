@@ -424,7 +424,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
     collector.collect(fastHits[iH]);
   }
 
-  LogDebug("LooperMethod")<<"aggregation ended"<<std::endl;
+  LogDebug("Collect")<<"aggregation ended"<<collector.image("endOfcollect");
 
 
   //make the peaks
