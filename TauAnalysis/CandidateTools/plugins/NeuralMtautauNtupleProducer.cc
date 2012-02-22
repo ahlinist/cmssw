@@ -55,9 +55,13 @@ void NeuralMtautauNtupleProducer::beginJob()
   ntuple_ = fs->make<TTree>("neuralMtautauNtuple", "neuralMtautauNtuple");
 
 //--- add branches storing quantities for neural-net training
-  addBranch_PxPyPz("recLeg1");
+  addBranch_EnPxPyPz("recLeg1");
 
-  addBranch_PxPyPz("recLeg2");
+  addBranch_EnPxPyPz("recLeg2");
+
+  addBranch("recDPhi12");
+  addBranch("recDTheta12");
+  addBranch("recDAlpha12");
 
   addBranch_PxPy("recMEt");
   addBranch_Cov("recMEt");
@@ -168,10 +172,27 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
     std::cout << "logGaussianNd (frame 2) = " << logGaussianNd(recMEtVecInZetaFrame, pfMEtSignCovMatrixInZetaFrame) << std::endl;
   }
 
-  setValue_PxPyPz("recLeg1", recLeg1P4, zetaPhi);
+  setValue_EnPxPyPz("recLeg1", recLeg1P4, zetaPhi);
   
-  setValue_PxPyPz("recLeg2", recLeg2P4, zetaPhi);
+  setValue_EnPxPyPz("recLeg2", recLeg2P4, zetaPhi);
   
+  double recDPhi12       = TMath::ACos(TMath::Cos(recLeg1P4.phi() - recLeg2P4.phi()));
+  setValue("recDPhi12", recDPhi12);
+  double recDTheta12     = TMath::Abs(recLeg1P4.theta() - recLeg2P4.theta());
+  setValue("recDTheta12", recDTheta12);
+  double recLeg1cosPhi   = TMath::Cos(recLeg1P4.phi());
+  double recLeg1sinPhi   = TMath::Sin(recLeg1P4.phi());
+  double recLeg1cosTheta = TMath::Cos(recLeg1P4.theta());
+  double recLeg1sinTheta = TMath::Sin(recLeg1P4.theta());
+  double recLeg2cosPhi   = TMath::Cos(recLeg2P4.phi());
+  double recLeg2sinPhi   = TMath::Sin(recLeg2P4.phi());
+  double recLeg2cosTheta = TMath::Cos(recLeg2P4.theta());
+  double recLeg2sinTheta = TMath::Sin(recLeg2P4.theta());
+  double dotProduct12    = (recLeg1cosPhi*recLeg2cosPhi + recLeg1sinPhi*recLeg2sinPhi)*recLeg1sinTheta*recLeg2sinTheta 
+                          + recLeg1cosTheta*recLeg2cosTheta;
+  double recDAlpha12     = TMath::ACos(dotProduct12);
+  setValue("recDAlpha12", recDAlpha12);
+
   setValue_PxPy("recMEt", recMEtP4, zetaPhi);
   setValue_Cov("recMEt", *pfMEtSignCovMatrix, zetaPhi);
   
@@ -231,11 +252,13 @@ void NeuralMtautauNtupleProducer::setValue(const std::string& name, double value
 //-------------------------------------------------------------------------------
 //
 
-void NeuralMtautauNtupleProducer::addBranch_PxPyPz(const std::string& name) 
+void NeuralMtautauNtupleProducer::addBranch_EnPxPyPz(const std::string& name) 
 {
+  addBranch(std::string(name).append("En"));
   addBranch(std::string(name).append("Px"));
   addBranch(std::string(name).append("Py"));
   addBranch(std::string(name).append("Pz"));
+  addBranch(std::string(name).append("M"));
 }
 
 void NeuralMtautauNtupleProducer::addBranch_PxPy(const std::string& name) 
@@ -258,12 +281,14 @@ void NeuralMtautauNtupleProducer::addBranch_Cov(const std::string& name)
 //-------------------------------------------------------------------------------
 //
 
-void NeuralMtautauNtupleProducer::setValue_PxPyPz(const std::string& name, const reco::Candidate::LorentzVector& p4, double zetaPhi)
+void NeuralMtautauNtupleProducer::setValue_EnPxPyPz(const std::string& name, const reco::Candidate::LorentzVector& p4, double zetaPhi)
 {
   reco::Candidate::LorentzVector p4inZetaFrame = compP4inZetaFrame(p4, zetaPhi);
+  setValue(std::string(name).append("En"), p4inZetaFrame.E());
   setValue(std::string(name).append("Px"), p4inZetaFrame.px());
   setValue(std::string(name).append("Py"), p4inZetaFrame.py());
-  setValue(std::string(name).append("Pz"), p4.pz());
+  setValue(std::string(name).append("Pz"), p4inZetaFrame.pz());
+  setValue(std::string(name).append("M"), p4inZetaFrame.M());
 }
 
 void NeuralMtautauNtupleProducer::setValue_PxPy(const std::string& name, const reco::Candidate::LorentzVector& p4, double zetaPhi)
