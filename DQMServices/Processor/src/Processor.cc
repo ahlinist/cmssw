@@ -388,8 +388,8 @@ void Processor::actionPerformed(xdata::Event& e)
     std::string item = dynamic_cast<xdata::ItemRetrieveEvent&>(e).itemName();
     if (item == "parameterSetCopy") {
       //skip first attempt at this (new xdaq doing causing it at init?)
-      if (!configurationInit_) configurationInit_=true;
-      else initEDMConfiguration();
+//      if (!configurationInit_) configurationInit_=true;
+//      else initEDMConfiguration();
     }
   }
 }
