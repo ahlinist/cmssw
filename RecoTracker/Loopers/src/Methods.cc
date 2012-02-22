@@ -12,17 +12,13 @@
 #include "SimG4Core/Physics/interface/ProcessTypeEnumerator.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "TAxis.h"
 #include "TMath.h"
-#include "TH2F.h"
-#include "TGraph.h"
 
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/JetReco/interface/Jet.h"
@@ -45,6 +41,8 @@
 #include "RecoTracker/TkTrackingRegions/interface/GlobalTrackingRegion.h"
 #include "RecoTracker/TkSeedingLayers/interface/SeedingHitSet.h"
 #include <iostream>
+#include "RecoTracker/Loopers/interface/DataDumper.h"
+
 
 void LooperClusterRemoverMethod::FractionOfTruth::run(edm::Event& iEvent, const edm::EventSetup& iSetup,
 						      LooperClusterRemover::products &prod_)
@@ -339,8 +337,6 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
   edm::LogError("ReadFileIn")<<text.str();
 }
 
-
-#include "DataDumper.h"
 
 
 void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm::EventSetup& iSetup,
