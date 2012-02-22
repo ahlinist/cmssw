@@ -18,13 +18,19 @@ double compZetaPhi(const reco::Candidate::LorentzVector& leg1P4, const reco::Can
 
 reco::Candidate::LorentzVector compP4inZetaFrame(const reco::Candidate::LorentzVector& p4, double zetaPhi)
 {
+  //std::cout << "<compP4inZetaFrame>:" << std::endl;
+  //std::cout << " zetaPhi = " << zetaPhi << std::endl;
   double cosZetaPhi = TMath::Cos(zetaPhi);
   double sinZetaPhi = TMath::Sin(zetaPhi);
   double px = p4.px();
   double py = p4.py();
   double pxInZetaFrame =  cosZetaPhi*px + sinZetaPhi*py;
   double pyInZetaFrame = -sinZetaPhi*px + cosZetaPhi*py;
-  reco::Candidate::LorentzVector p4inZetaFrame(pxInZetaFrame, pyInZetaFrame, p4.pt(), p4.E());
+  reco::Candidate::LorentzVector p4inZetaFrame(pxInZetaFrame, pyInZetaFrame, p4.pz(), p4.E());
+  //std::cout << "p4: E = " << p4.E() << ", Pt = " << p4.pt() << "," 
+  //	      << " eta = " << p4.eta() << ", phi = " << p4.phi() << ", M = " << p4.M() << std::endl;
+  //std::cout << "p4inZetaFrame: E = " << p4inZetaFrame.E() << ", Pt = " << p4inZetaFrame.pt() << "," 
+  //	      << " eta = " << p4inZetaFrame.eta() << ", phi = " << p4inZetaFrame.phi() << ", M = " << p4inZetaFrame.M() << std::endl;
   return p4inZetaFrame;
 }
 

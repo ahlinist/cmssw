@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NeuralMtautauNtupleProducer.h,v 1.5 2011/03/03 13:00:23 veelken Exp $
+ * $Id: NeuralMtautauNtupleProducer.h,v 1.1 2012/02/13 14:00:16 veelken Exp $
  *
  */
 
@@ -48,14 +48,14 @@ class NeuralMtautauNtupleProducer : public edm::EDProducer
  private:
 
   void addBranch(const std::string&);
-  void addBranch_PxPyPz(const std::string&);
+  void addBranch_EnPxPyPz(const std::string&);
   void addBranch_PxPy(const std::string&);
   void addBranch_Cov(const std::string&); 
 
   void printBranches(std::ostream&);
 
   void setValue(const std::string&, double);
-  void setValue_PxPyPz(const std::string&, const reco::Candidate::LorentzVector&, double);
+  void setValue_EnPxPyPz(const std::string&, const reco::Candidate::LorentzVector&, double);
   void setValue_PxPy(const std::string&, const reco::Candidate::LorentzVector&, double);
   void setValue_Cov(const std::string&, const TMatrixD&, double);
 
