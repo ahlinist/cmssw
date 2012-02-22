@@ -1,11 +1,11 @@
 #include "RecoTracker/Loopers/interface/LooperClusterRemover.h"
 
 #include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h"
-#include <fstream>
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h"
 #include "RecoTracker/TkSeedGenerator/interface/SeedCreator.h"
 #include "RecoTracker/TkSeedGenerator/interface/SeedCreatorFactory.h"
+#include <fstream>
 
 
 namespace LooperClusterRemoverMethod {
