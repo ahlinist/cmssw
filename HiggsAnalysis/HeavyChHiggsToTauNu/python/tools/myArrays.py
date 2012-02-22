@@ -1,5 +1,4 @@
-#!/usr/bin/env bin
-# had to change because of CVS complaining about this: #!/usr/bin env python
+#!/usr/bin/env python
 from array import array
 
 def defineArray(type,size):
