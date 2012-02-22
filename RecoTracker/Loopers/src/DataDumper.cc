@@ -7,6 +7,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <fstream>
+#include <set>
 
 bool sameDetId(fastRecHit * h1, fastRecHit * h2){ return (h1->id_ == h2->id_); }
 bool sortByDetId( fastRecHit * h1, fastRecHit * h2){return (h1->id_ > h2->id_);}
@@ -43,8 +44,8 @@ int aCell::unique(){
     std::vector< fastRecHit *>::iterator  newEnd;
     uint s=count();
     if (s==0) return -1;
-    LogDebug("DataDumper")<<"uniquing a cell";
-    LogTrace("DataDumper")<<printElements();
+    LogDebug("Collect")<<"uniquing a cell";
+    LogTrace("Collect")<<printElements();
     newEnd=std::unique(elements_.begin(),elements_.end());
     if (newEnd!=elements_.end())edm::LogError("DataDumper")<<"unique() is necessary !!!";
     elements_.resize(newEnd-elements_.begin());
@@ -69,7 +70,7 @@ void aCell::increment( fastRecHit * e,
     
     //to put in parameter
     if (dR > annularCut ) {
-      LogDebug("DataDumper")<<" does not pass the annular cut.\n"<<e->print();
+      LogDebug("Collect")<<" does not pass the annular cut.\n"<<e->print();
       return;
     }
 
@@ -142,12 +143,14 @@ bool aCell::equilibrate(uint eachSide){
       if (upLeg_[iC]) ++nUp;
       else ++nDo;
     }
-    if ( (nPos>=eachSide && nNeg>=eachSide) || (nUp>=eachSide && nDo>=eachSide)){
-      LogDebug("DataDumper")<<"with n+:"<<nPos<<" n-:"<<nNeg<<" n^:" <<nUp<<"nv:"<<nDo<<" a set of fast hit are helix like for me:\n"<<printElements();
+    
+    LogDebug("PeakFinder|Equilibrate")<<"Get n+: "<<nPos<<" n-: "<<nNeg<<" n^: " <<nUp<<"nv: "<<nDo<<" with set of fast hit :\n"<<printElements();
+    
+    if ( (nPos>=eachSide && nNeg>=eachSide) || (nUp>=eachSide && nDo>=eachSide))
       return true;
-    }
-    return false;
-  }
+    else
+      return false;
+}
 
 void aCell::truncateForZ(float & maxZ){
     center();
@@ -194,11 +197,7 @@ void aCell::truncateForZ(float & maxZ){
     //reorder from outward to center
     if (zUp_) reverse();
 
-  }
-
-bool aCell::isHelix(){
-    if (!helixCache_) assert(0==1);
-    else return isHelix_;
+    LogDebug("PeakFinder|Truncate")<<"after truncation\n"<<printElements();
   }
 
 std::string aCell::printElements(uint itab){
@@ -221,7 +220,7 @@ std::string aCell::print(uint itab){
     std::string tab="";
     for (uint iC=0;iC!=itab;++iC)      tab+="\t";
     std::stringstream ss;
-    ss<<tab<<count()<<" elements at: "<<i_<<":"<<j_<<"\n"
+    ss<<tab<<count()<<" elements at: "<<i_<<":"<<j_<<" "//<<"\n"
       <<" centered @ "<<overR_<<" ~ "<<1./overR_ <<" : "<<phi_<<"\n";
     return ss.str();
   }
@@ -289,10 +288,10 @@ int DataDumper::binY(float &y){
 void DataDumper::collect( fastRecHit & hit){
     aCell * seed = cell(hit.v0(),hit.v1());
     if (seed->i_<=ioverRBound_){
-      LogDebug("DataDumper")<<"the seed is below boundary";
+      LogDebug("Collect")<<"the seed is below boundary";
       return;
     }
-    LogDebug("DataDumper")<<"starting from hit: "<<hit.print()<<" make the seed: "<<print(seed);
+    LogDebug("Collect")<<"starting from hit: "<<hit.print()<<" make the seed: "<<print(seed);
 
     //do not mark the seed as good, it's the grazing circle, and not worth adding
     if (edgeOff_)    seed->increment(&hit,true,annularCut_);
@@ -306,11 +305,11 @@ void DataDumper::collect( fastRecHit & hit){
     //go in both directions
     unsigned int iCount=0;
     while (iCount++<container_.size()){
-      LogTrace("DataDumper")<<"\tprevious cell up : "<<print(previousCellUp);
+      LogTrace("Collect")<<"\tprevious cell up : "<<print(previousCellUp);
       float phiC = Y_.GetBinCenter(previousCellUp->j_+1);
       float overR = cos(phi0-phiC)*overRh;
       aCell * nextCell = cell(overR,phiC);
-      LogTrace("DataDumper")<<"\tnext cell up is "<<print(nextCell);
+      LogTrace("Collect")<<"\tnext cell up is "<<print(nextCell);
 
 
       if ((seed->i_-nextCell->i_) > edgeOff_){ 
@@ -319,9 +318,9 @@ void DataDumper::collect( fastRecHit & hit){
 	float phiLowEdge = Y_.GetBinLowEdge(nextCell->j_);
 	float overLowEdge = cos(phi0-phiLowEdge)*overRh;
 	int ioverRcross=X_.FindBin(overLowEdge);
-	LogTrace("DataDumper")<<"\t\tfilling intervals: "<<nextCell->i_<<"->"<<ioverRcross <<" @ "<<nextCell->j_<<"\n";
+	LogTrace("Collect")<<"\t\t\tfilling intervals: "<<nextCell->i_<<"->"<<ioverRcross <<" @ "<<nextCell->j_<<"\n";
 	for (int iLink=nextCell->i_; iLink<=ioverRcross;++iLink) cellI(iLink,nextCell->j_)->increment(&hit,true,annularCut_);
-	LogTrace("DataDumper")<<"\t\tfilling intervals: "<<ioverRcross<<"->"<<previousCellUp->i_ <<"-- @ "<<previousCellUp->j_<<"\n";
+	LogTrace("Collect")<<"\t\t\tfilling intervals: "<<ioverRcross<<"->"<<previousCellUp->i_ <<"-- @ "<<previousCellUp->j_<<"\n";
 	for (int iLink=ioverRcross; iLink<previousCellUp->i_;++iLink) cellI(iLink,previousCellUp->j_)->increment(&hit,true,annularCut_);
       }
       else
@@ -330,20 +329,20 @@ void DataDumper::collect( fastRecHit & hit){
       
       previousCellUp=nextCell;
 
-      LogTrace("DataDumper")<<"\tprevious cell down : "<<print(previousCellDo);
+      LogTrace("Collect")<<"\tprevious cell down : "<<print(previousCellDo);
       phiC = Y_.GetBinCenter(previousCellDo->j_-1);
       overR = cos(phi0-phiC)*overRh;
       nextCell = cell(overR,phiC);
-      LogTrace("DataDumper")<<"\tnext cell down is "<<print(nextCell);
+      LogTrace("Collect")<<"\t\tnext cell down is "<<print(nextCell);
 
       if ((seed->i_-nextCell->i_) > edgeOff_){ //arbitrary
       if (nextCell->i_!=previousCellDo->i_ && linkPoints_){
 	float phiUpEdge = Y_.GetBinUpEdge(nextCell->j_);
 	float overUpEdge = cos(phi0-phiUpEdge)*overRh;
 	int ioverRcross=X_.FindBin(overUpEdge);
-	LogTrace("DataDumper")<<"\t\tfilling intervals: "<<nextCell->i_<<"->"<<ioverRcross <<" @ "<<nextCell->j_<<"\n";
+	LogTrace("Collect")<<"\t\t\tfilling intervals: "<<nextCell->i_<<"->"<<ioverRcross <<" @ "<<nextCell->j_<<"\n";
 	for (int iLink=nextCell->i_; iLink<=ioverRcross;++iLink) cellI(iLink,nextCell->j_)->increment(&hit,false,annularCut_);
-	LogTrace("DataDumper")<<"\t\tfilling intervals: "<<ioverRcross<<"->"<<previousCellDo->i_ <<"-- @ "<<previousCellDo->j_<<"\n";
+	LogTrace("Collect")<<"\t\t\tfilling intervals: "<<ioverRcross<<"->"<<previousCellDo->i_ <<"-- @ "<<previousCellDo->j_<<"\n";
 	for (int iLink=ioverRcross; iLink<previousCellDo->i_;++iLink) cellI(iLink,previousCellDo->j_)->increment(&hit,false,annularCut_);
       }
       else
@@ -354,16 +353,16 @@ void DataDumper::collect( fastRecHit & hit){
 
       //don't scan too much down in 1/R.
       if (nextCell->i_<= ioverRBound_){
-	LogTrace("DataDumper")<<" reaching maximum radius ";
+	LogTrace("Collect")<<" reaching maximum radius ";
 	break;
       }
       //boundary stopping condition here
       if (nextCell->i_==0 || nextCell->i_==(X_.GetNbins()+1) || nextCell->j_==0 || nextCell->j_==(Y_.GetNbins()+1)){
-	LogTrace("DataDumper")<<" reaching a boarder"<<std::endl;
+	LogTrace("Collect")<<" reaching a boarder"<<std::endl;
 	break;}
     }
     if (iCount>=container_.size())
-      edm::LogError("Methods")<<"went over board in collecting :"<<hit.print();
+      edm::LogError("Collect")<<"went over board in collecting :"<<hit.print();
   }
 
 void DataDumper::makePeaks(){
@@ -382,37 +381,41 @@ void DataDumper::makePeaks(){
       }
     }
 
-    LogDebug("PeakFinder")<<"pushing the peaks";
+    LogDebug("PeakFinder|CollectPeak")<<"pushing the peaks";
 
     peaks_.reserve(above);
     for(std::vector<aCell>::iterator iCell=container_.begin();
 	iCell!=container_.end();++iCell){
       if (iCell->count() >= minHitPerPeak_ && iCell->isHelix()){
-	LogDebug("PeakFinder")<<"As a peak cell: "<< iCell->printElements();
+	LogDebug("PeakFinder|CollectPeak")<<"As a peak cell: "<< iCell->printElements();
 	peaks_.push_back(&*iCell);
       }
     }
     //it's a non order list of peaks
     //make plots for debugging
-    LogDebug("DataDumper")<<image();
+    LogDebug("PeakFinder|CollectPeak")<<image("endOfmakePeaks");
   }
 
 
 bool DataDumper::setHelix(aCell * c,bool v){
     c->helixCache_=true;
     c->isHelix_=v;
-    if (!c->isHelix_) LogDebug("DataDumper")<<"set is not helix-like";
+    if (!c->isHelix_) LogDebug("PeakFinder|CollectPeak")<<"set is not helix-like";
     return v;
   }
+
 bool DataDumper::isHelix(aCell * c){
     if (c->helixCache_) return c->isHelix_;
 
-    LogDebug("PeakFinder")<<"check on helix hypothesis for a cell";
+    LogDebug("PeakFinder|CollectPeak")<<"check on helix hypothesis for a cell at"<<c->print();
 
     c->orderInZ();
     c->suite();
 
-    if ( symetryTopologySelection_!=0 && !c->equilibrate(symetryTopologySelection_)) return setHelix(c,false);
+    if ( symetryTopologySelection_!=0 && !c->equilibrate(symetryTopologySelection_)){
+      LogDebug("PeakFinder|CollectPeak")<<" not equilibrated set of hits";
+      return setHelix(c,false);
+    }
       
     //mask part of the set according to max |z| : resize the set
     c->truncateForZ(maxZForTruncation_);
@@ -420,7 +423,7 @@ bool DataDumper::isHelix(aCell * c){
     //check on the number of hits left
     if (c->count() < minHitPerPeak_ || c->count() < 2)
       {
-	LogDebug("PeakFinder")<<" not enough hits left after truncation for Z\n"<<c->printElements();
+	LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after truncation for Z";
 	return setHelix(c,false);
       }
     
@@ -430,8 +433,7 @@ bool DataDumper::isHelix(aCell * c){
     else
       c->phiUp_=false;
 
-    LogDebug("PeakFinder")<<"truncated\n"<<c->printElements();
-    LogTrace("PeakFinder")<<" this is :"<<(c->phiUp_? "phi up":"phi down");
+    LogDebug("PeakFinder|CollectPeak")<<" this is :"<<(c->phiUp_? "phi up":"phi down");
 	
      // --- search for valid segment
      //reset the phi in turn
@@ -455,12 +457,12 @@ bool DataDumper::isHelix(aCell * c){
       phiPreviousPoint=phiThisPoint;
     }
     
-    LogDebug("PeakFinder")<<" done for phi turn initialisation\n"<<c->printElements();
-    LogTrace("PeakFinder")<<cellImage(c);
+    LogDebug("PeakFinder|PhiInHelix")<<" done for phi turn initialisation\n"<<c->printElements();
+    //    LogTrace("PeakFinder")<<cellImage(c);
     
     int firstPointRemoved=0;
+    //    int cannotRemoveMoreThan=c->count()-minHitPerPeak_;
     int cannotRemoveMoreThan=c->count()-minHitPerPeak_;
-    cannotRemoveMoreThan-=3;
     int point0=0;
     int point1=0;
     uint point2=0;
@@ -468,34 +470,34 @@ bool DataDumper::isHelix(aCell * c){
     //compute the slope between two points once only, and not in a while loop
     std::vector<double> slopes;
     slopes.resize(c->count()-1);
+    LogDebug("PeakFinder|SlopeCheck")<<"Calculating slopes two by two:";
     for (uint iC=0;iC<slopes.size();++iC){
       slopes[iC]=atan2(c->elements_[iC+1]->position_.z() - c->elements_[iC]->position_.z(),
 		       c->inCercle_[iC+1].phiTurn - c->inCercle_[iC].phiTurn);
+      LogTrace("PeakFinder|SlopeCheck")<<"Between: "<<iC<<" and "<<iC+1<<" the slope is: "<<slopes[iC];
     }
+    
+    if (!(firstPointRemoved <= cannotRemoveMoreThan ))
+      LogDebug("PeakFinder|SlopeCheck")<<"Slopes are not tested";
 
-    while (firstPointRemoved < cannotRemoveMoreThan ){
-      LogDebug("PeakFinder")<<"test starting from :"<<point0;
+    while (firstPointRemoved <= cannotRemoveMoreThan ){
+      LogDebug("PeakFinder|SlopeCheck")<<"Test slopes starting from :"<<point0;
       point1=point0+1;
-      //      slope0to1=atan2(c->elements_[point1]->position_.z() - c->elements_[point0]->position_.z(),
-      //			    c->inCercle_[point1].phiTurn - c->inCercle_[point0].phiTurn);
       slope0to1=slopes[point0];
 
       //check slopes, two by two
       for (point2=point1+1;point2<c->count();++point2,++point1){
-	//0,1,2
-	//	slope1to2=atan2(c->elements_[point2]->position_.z() - c->elements_[point1]->position_.z(),
-	//			c->inCercle_[point2].phiTurn - c->inCercle_[point1].phiTurn);
 	slope1to2=slopes[point1];
 	
 	dSlope=fabs(slope1to2 - slope0to1);
 	if (dSlope > deltaSlopeCut_ ){
 	  //skip the first point and start back
 	  c->inCercle_[point0].use=false;
-	  LogTrace("PeakFinder")<<"slope not compatible "<<slope1to2<<" and "<<slope0to1;
+	  LogTrace("PeakFinder|SlopeCheck")<<"slope not compatible "<<slope1to2<<" and "<<slope0to1;
 	  break; //from the for loop
 	}
 	else {
-	  LogTrace("PeakFinder")<<"slope compatible :"<<slope1to2<<" and "<<slope0to1;
+	  LogTrace("PeakFinder|SlopeCheck")<<"slope compatible :"<<slope1to2<<" and "<<slope0to1;
 	  slope0to1=slope1to2;
 	}
       }//loop on next points
@@ -505,7 +507,7 @@ bool DataDumper::isHelix(aCell * c){
 	++firstPointRemoved;
 	++point0;
       }else{
-	LogTrace("PeakFinder")<<"segment search ends "<<point0<<" "<<point1<<" "<<point2;
+	LogTrace("PeakFinder|SlopeCheck")<<"segment search ends "<<point0<<" "<<point1<<" "<<point2;
 	//mask all remaining inside hits
 	for (uint iC=point2;iC<c->count();++iC)  c->inCercle_[iC].use=false;
 	break;
@@ -515,31 +517,39 @@ bool DataDumper::isHelix(aCell * c){
 
     //remove anything not used
     c->resize();
+    LogTrace("PeakFinder|SlopeCheck")<<"removed hits with incompatible slopes\n"<<c->printElements();
 
-    LogDebug("PeakFinder")<<" done for segment search";
-      
     //are there enough hits left in the set
     if ( c->count() < minHitPerPeak_ ){
-      LogDebug("PeakFinder")<<" not enough hits left.";
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left.";
       return setHelix(c,false);
     }
  
-    LogDebug("PeakFinder")<<" this is an helix."<<c->printElements();
-    LogTrace("PeakFinder")<<cellImage(c,"peak_");   
+    LogDebug("PeakFinder|CollectPeak")<<" this is an helix."<<c->printElements();
+    LogTrace("PeakFinder|CollectPeak")<<cellImage(c,"peak_");   
     return setHelix(c,true);      
   }
 
 uint DataDumper::cellImage(aCell * cell,std::string mark){
+  static std::set<std::string> used;
+  if (used.find(mark)!=used.end())
+    edm::LogError("DataDumperCellImage")<<"duplicating image "<<mark;
+  used.insert(mark);
+
     edm::Service<TFileService> fs;
     
     TGraph * gr = fs->make<TGraph>(cell->count());
     TGraph * grC = fs->make<TGraph>(cell->count());
     TGraph * grCt = fs->make<TGraph>(cell->count());
     TGraph * grG = fs->make<TGraph>(cell->count());
-    gr->SetName(Form("aCell_zphiC_%s%d_%d",mark.c_str(),cell->i_,cell->j_));
-    grCt->SetName(Form("aCell_zphiCt_%s%d_%d",mark.c_str(),cell->i_,cell->j_));
-    grC->SetName(Form("aCell_xyC_%s%d_%d",mark.c_str(),cell->i_,cell->j_));
-    grG->SetName(Form("aCell_xyG_%s%d_%d",mark.c_str(),cell->i_,cell->j_));
+    gr->SetName(Form("aCell_zphiC_%s%d_%d",
+		     mark.c_str(),cell->i_,cell->j_));
+    grCt->SetName(Form("aCell_zphiCt_%s%d_%d",
+		       mark.c_str(),cell->i_,cell->j_));
+    grC->SetName(Form("aCell_xyC_%s%d_%d",
+		      mark.c_str(),cell->i_,cell->j_));
+    grG->SetName(Form("aCell_xyG_%s%d_%d",
+		      mark.c_str(),cell->i_,cell->j_));
     gr->SetMarkerStyle(7);
     grCt->SetMarkerStyle(7);
     grC->SetMarkerStyle(7);
@@ -564,42 +574,45 @@ uint DataDumper::cellImage(aCell * cell,std::string mark){
     return cell->count();
   }
 std::string DataDumper::image(std::string stage){
+  static std::set<std::string> used;
+  if (used.find(stage)!=used.end())
+    edm::LogError("DataDumperImage")<<"duplicating image "<<stage;
+  used.insert(stage);
+    
     edm::Service<TFileService> fs;
-    TH2F * image=fs->make<TH2F>(Form("image_%s",stage.c_str()),"image",
+    TH2F * image=fs->make<TH2F>(Form("HS_%s",stage.c_str()),"image",
 				X_.GetNbins()+2,-0.5,X_.GetNbins()+1.5,
 				Y_.GetNbins()+2,-0.5,Y_.GetNbins()+1.5);
-    //    TH2F * imageD=fs->make<TH2F>("imageD","imageD",
-    //				 X_.GetNbins()+2,X_.GetXmin(),X_.GetXmax(),
-    //				 Y_.GetNbins()+2,Y_.GetXmin(),Y_.GetXmax());
-    TH2F * imageD=fs->make<TH2F>(Form("imageD_%s",stage.c_str()),"imageD",
+    TH2F * imageD=fs->make<TH2F>(Form("HS_rphi_%s",stage.c_str()),"imageD",
 				 X_.GetNbins(),X_.GetXbins()->GetArray(),
 				 Y_.GetNbins(),Y_.GetXmin(),Y_.GetXmax());
-    //    TH2F * imageH=fs->make<TH2F>("imageH","imageH",
-    //				 X_.GetNbins()+2,X_.GetXmin(),X_.GetXmax(),
-    //				 Y_.GetNbins()+2,Y_.GetXmin(),Y_.GetXmax());
-    TH2F * imageH=fs->make<TH2F>(Form("imageH_%s",stage.c_str()),"imageH",
+    TH2F * imageH=fs->make<TH2F>(Form("HS_H_rphi_%s",stage.c_str()),"imageH",
 				 X_.GetNbins(),X_.GetXbins()->GetArray(),
 				 Y_.GetNbins(),Y_.GetXmin(),Y_.GetXmax());
   
 
 
     //make a picture of the container
-    fstream ss("image.txt",fstream::out);
+    //    fstream ss("image.txt",fstream::out);
     //    std::stringstream ss;
     for (int j=0;j<=Y_.GetNbins()+1;++j){
       for (int i=0;i<=X_.GetNbins()+1;++i){
-	ss.width(3);
-	ss<<container_[i+offset_*j].count();
-	image->SetBinContent(i,j,container_[i+offset_*j].count());
+	const aCell * cell = cellI(i,j);
+
+	//	ss.width(3);
+	//	ss<<container_[i+offset_*j].count();
+	image->SetBinContent(i,j,cell->count());
 
 	if (i==0 || j==0 || i==X_.GetNbins()+1 || j==Y_.GetNbins()+1) continue;
 
-	imageD->SetBinContent(i,j,container_[i+offset_*j].count());
-	if (container_[i+offset_*j].count() >= minHitPerPeak_ && container_[i+offset_*j].isHelix())
-	  imageH->SetBinContent(i,j,container_[i+offset_*j].count());
+	imageD->SetBinContent(i,j,cell->count());
+	if (cell->count() >= minHitPerPeak_ && 
+	    cell->isHelix())
+	  imageH->SetBinContent(i,j,cell->count());
       }
-      ss<<"\n";
+      //      ss<<"\n";
     }
     //    return ss.str();
-    return "look at image.txt for text details";
+    //    return "look at image.txt for text details";
+    return "store in TFile";
   }
