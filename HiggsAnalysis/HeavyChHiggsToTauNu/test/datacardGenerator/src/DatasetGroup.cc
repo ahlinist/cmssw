@@ -116,6 +116,8 @@ bool DatasetGroup::addDatasets (std::string path, std::vector< std::string > fil
     std::cout << "  File " << *it << " norm. factor=" << info->getNormalisationFactor(myDataset->getFile());
     if (TMath::Abs(fAdditionaNormalisationFactor - 1.0) > 0.00001)
       std::cout << " additional norm. factor=" << fAdditionaNormalisationFactor;
+    if (TMath::Abs(info->getLuminosityScaling() - 1.0) > 0.00001)
+      std::cout << " scaling of luminosity for forecast=" << info->getLuminosityScaling();
     std::cout << std::endl;
     vDatasets.push_back(myDataset);
   }
@@ -201,12 +203,27 @@ TH1F* DatasetGroup::getTransverseMassPlot(NormalisationInfo* info, std::string n
       std::cout << "\033[0;41m\033[1;37mError:\033[0;0m Could not open histogram " << sTransverseMassPlotNameWithPath << " in file " << vDatasets[i]->getFilename() << "!" << std::endl;
       return myPlot;
     }
-    if (!bIsData)
-      myHisto->Scale(info->getNormalisationFactor(vDatasets[i]->getFile()));
+    double myNormFactor = 1.0;
+    if (bIsData) {
+      myNormFactor = info->getLuminosityScaling();
+    } else {
+      myNormFactor = info->getNormalisationFactor(vDatasets[i]->getFile());
+    }
     if (myHisto->GetNbinsX() > myPlot->GetNbinsX())
       myHisto->Rebin(myHisto->GetNbinsX() / myPlot->GetNbinsX());
-    myPlot->Add(myHisto);
+    myPlot->Add(myHisto, myNormFactor);
   }
+  // Set negative bins to zero prior to normalisation (occurs in EWK residual channels)
+  for (int i = 0; i < myPlot->GetNbinsX()+1; ++i) {
+    if (myPlot->GetBinContent(i) < 0) {
+      std::cout << "\033[0;43m\033[1;37mWarning:\033[0;0m mT plot negative value (" << myPlot->GetBinContent(i) << "+-" << myPlot->GetBinError(i)
+                << ") in bin " << myPlot->GetXaxis()->GetBinLowEdge(i) << "-" << myPlot->GetXaxis()->GetBinUpEdge(i)
+                << " set to 0+-0 prior to normalisation in column " << sLabel << std::endl;
+      myPlot->SetBinContent(i, 0);
+      myPlot->SetBinError(i, 0);
+    }
+  }
+  // Normalise
   myPlot->Scale(fAdditionaNormalisationFactor);
   return myPlot; // empty histogram, if no datasets
 }
@@ -262,7 +279,13 @@ TH1F* DatasetGroup::getTransverseMassPlot(std::string counterHisto, std::string 
         std::string myBinLabel = myCounterHisto->GetXaxis()->GetBinLabel(k);
         if (myBinLabel == counterName) {
           myFoundStatus = true;
-          myCount = myCounterHisto->GetBinContent(k) * info->getNormalisationFactor(vDatasets[i]->getFile());
+          double myNormFactor = 1.0;
+          if (bIsData) {
+            myNormFactor = info->getLuminosityScaling();
+          } else {
+            myNormFactor = info->getNormalisationFactor(vDatasets[i]->getFile());
+          }
+          myCount = myCounterHisto->GetBinContent(k) * myNormFactor;
         }
       }
       if (!myFoundStatus) {

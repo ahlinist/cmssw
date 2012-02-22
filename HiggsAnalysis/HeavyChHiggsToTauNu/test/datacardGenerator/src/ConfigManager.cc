@@ -6,18 +6,20 @@
 #include "ExtractableScaleFactor.h"
 #include "ExtractableShape.h"
 #include "QCDMeasurementCalculator.h"
+#include "QCDInverted.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <ctime>
 
-ConfigManager::ConfigManager(bool verbose)
+ConfigManager::ConfigManager(bool verbose, bool optionQCDVerbose)
 : fNormalisationInfo(0),
   fNormalisationInfoQCD(0),
   sDescription(""),
   fLuminosity(-1.0),
-  bVerbose(verbose) {
+  bVerbose(verbose),
+  bOptionQCDVerbose(optionQCDVerbose) {
   
 }
 
@@ -44,6 +46,7 @@ bool ConfigManager::initialize(std::string configFile) {
   std::string myLine;
   std::string myConfigInfoHisto;
   std::string myCounterHisto;
+  double myLuminosityScaling = 1;
   myLine.reserve(2048);
   std::string myCommand;
   myCommand.reserve(100);
@@ -78,6 +81,9 @@ bool ConfigManager::initialize(std::string configFile) {
     } else if (myCommand == "luminosity") {
       fLuminosity = parseNumber(myLine, myDummyPos);
       if ( bVerbose) std::cout << "Luminosity set to " << fLuminosity << std::endl;
+    } else if (myCommand == "luminosityScaling") {
+      myLuminosityScaling = parseNumber(myLine, myDummyPos);
+      if ( bVerbose) std::cout << "Luminosity scaling set to " << myLuminosityScaling << std::endl;
     } else if (myCommand == "observation") {
       if (!fNormalisationInfo) {
         std::cout << "\033[0;41m\033[1;37mError:\033[0;0m provide configInfoHisto, counterHisto, and luminosity before observation!" << std::endl;
@@ -112,7 +118,10 @@ bool ConfigManager::initialize(std::string configFile) {
     if (!fNormalisationInfo) {
       if (myConfigInfoHisto.size()>0 && myCounterHisto.size()>0 && fLuminosity > 0) {
         // Create normalisation info object
-        fNormalisationInfo = new NormalisationInfo(myConfigInfoHisto, myCounterHisto, fLuminosity);
+        fNormalisationInfo = new NormalisationInfo(myConfigInfoHisto, myCounterHisto, fLuminosity, myLuminosityScaling);
+        std::cout << "Luminosity set to \033[1;37m" << fLuminosity << " 1/fb\033[0;0m" << std::endl;
+        if (myLuminosityScaling > 1)
+          std::cout << "Warning: Luminosity is artificially scaled to \033[1;37m" << fLuminosity*myLuminosityScaling << " 1/fb\033[0;0m" << std::endl;
       }
     }
   }
@@ -379,6 +388,8 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
   std::string myMTPlot;
   std::vector< std::string > myQCDDataSource;
   std::vector< std::string > myQCDEWKSource;
+  std::vector< std::string > myScaleFactorHistoSource;
+  std::vector< std::string > myScaleFactorNormSource; 
   std::string myQCDHistoPrefix;
   std::string myQCDBasicSelectionsHisto;
   std::string myQCDMETLegHisto;
@@ -408,10 +419,14 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
         myFunction = parseString(str, myPos);
       } else if (myLabel == "counterHisto") {
         myCounterHisto = parseString(str, myPos);
-      } else if (myLabel == "histogram" || myLabel == "nominatorCounter" || myLabel == "counter") {
+      } else if (myLabel == "nominatorCounter" || myLabel == "counter") {
         myInput1 = parseString(str, myPos);
-      } else if (myLabel == "denominatorCounter" || myLabel == "normHisto") {
+      } else if (myLabel == "histograms") {
+        parseVectorString(str, myPos, myScaleFactorHistoSource);
+      } else if (myLabel == "denominatorCounter") {
         myInput2 = parseString(str, myPos);
+      } else if (myLabel == "normHistos") {
+        parseVectorString(str, myPos, myScaleFactorNormSource);
       } else if (myLabel == "lowerValue" || myLabel == "value" || myLabel == "scale") {
         myValue = parseNumber(str, myPos);
       } else if (myLabel == "upperValue") {
@@ -555,14 +570,14 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
         myFunctionStatus = false;
       }
     } else if (myFunction == "ScaleFactor") {
-      if (!myCounterHisto.size()) {
-        std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'counterHisto' for function 'ScaleFactor'!" << std::endl;
+      if (!myScaleFactorHistoSource.size()) {
+        std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'histograms' for function 'ScaleFactor'!" << std::endl;
         myFunctionStatus = false;
-      } else if (!myInput1.size()) {
-        std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'histogram' for function 'ScaleFactor'!" << std::endl;
+      } else if (!myScaleFactorNormSource.size()) {
+        std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'normHistos' for function 'ScaleFactor'!" << std::endl;
         myFunctionStatus = false;
-      } else if (!myInput2.size()) {
-        std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'normHisto' for function 'ScaleFactor'!" << std::endl;
+      } else if (myScaleFactorHistoSource.size() != myScaleFactorNormSource.size()) {
+        std::cout << "\033[0;41m\033[1;37mError:\033[0;0m Need to provide equal amount of arguments for 'histograms' and 'normHistos' for function 'ScaleFactor'!" << std::endl;
         myFunctionStatus = false;
       }
     } else if (myFunction == "Shape") {
@@ -602,6 +617,14 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
         std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'QCDMode' for function 'QCDMeasurement'!" << std::endl;
         myFunctionStatus = false;
       }
+    } else if (myFunction == "QCDInverted") {
+      if (!myCounterHisto.size()) {
+	std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'counterHisto' for function 'Counter'!" << std::endl;
+        myFunctionStatus = false;
+      } else if (!myInput1.size()) {
+	std::cout << "\033[0;41m\033[1;37mError:\033[0;0m missing or empty field 'counter' for function 'Counter'!" << std::endl;
+        myFunctionStatus = false;
+      }
     } else {
       std::cout << "\033[0;41m\033[1;37mError:\033[0;0m specified function is unknown! (valid functions are 'Constant', 'Counter', 'Ratio', 'ScaleFactor', you tried '" << myFunction << "')" << std::endl;
       myFunctionStatus = false;
@@ -625,9 +648,8 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
                 << ", nominatorCounter=" << '"' << "counterName" << '"'
                 << ", denominatorCounter=" << '"' << "counterName" << '"' << std::endl;
       std::cout << "  function=" << '"' << "ScaleFactor" << '"' 
-                << ", counterHisto=" << '"' << "counterHisto" << '"'
-                << ", histogram=" << '"' << "scaleFactorAbsUncertaintyHistogramNameWithPath" << '"'
-                << ", histogram=" << '"' << "scaleFactorAbsUncertaintyCountsHistogramNameWithPath" << '"' << std::endl;
+                << ", histograms={" << '"' << "scaleFactorAbsUncertaintyHistogramNameWithPath" << '"' << "[, ...]}, "
+                << ", normHistos={" << '"' << "scaleFactorAbsUncertaintyCountsHistogramNameWithPath" << '"' << "[, ...]} " <<  std::endl;
       std::cout << "  function=" << '"' << "Shape" << '"' 
                 << ", histoName=" << '"' << "histoName" << '"'
                 << ", upPrefix=" << '"' << "pathToUpHisto" << '"'
@@ -647,7 +669,7 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
   }
   if (!myFunctionStatus)
     return false;
-  
+
   // All available parameters have been defined; now create the objects
   // Create extractable
   Extractable* myExtractable = 0;
@@ -686,7 +708,7 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
     }
   } else if (myFunction == "ScaleFactor") {
     if (type == Extractable::kExtractableNuisance)
-      myExtractable = new ExtractableScaleFactor(myId, myDistribution, myDescription, myCounterHisto, myInput1, myInput2);
+      myExtractable = new ExtractableScaleFactor(myId, myDistribution, myDescription, myScaleFactorHistoSource, myScaleFactorNormSource);
     else {
       std::cout << "\033[0;41m\033[1;37mError:\033[0;0m function 'ScaleFactor' is only available for nuisance!" << std::endl;
       return false;
@@ -700,7 +722,7 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
     }
   } else if (myFunction == "QCDMeasurement") {
     if (type == Extractable::kExtractableRate) {
-      myExtractable = new QCDMeasurementCalculator(myId);
+      myExtractable = new QCDMeasurementCalculator(myId, bOptionQCDVerbose);
     } else if (type == Extractable::kExtractableNuisance) {
       myExtractable = new QCDMeasurementCalculator(myQCDMode, myId, myDistribution, myDescription);
     } else {
@@ -712,7 +734,19 @@ bool ConfigManager::addExtractable ( std::string str, Extractable::ExtractableTy
     dynamic_cast<QCDMeasurementCalculator*>(myExtractable)->setMeasurementInfo(myQCDHistoPrefix, myQCDBasicSelectionsHisto, myQCDTauLegHisto, myQCDMETLegHisto);
     dynamic_cast<QCDMeasurementCalculator*>(myExtractable)->setNormalisationInfo(fNormalisationInfo, myCounterHisto);
     dynamic_cast<QCDMeasurementCalculator*>(myExtractable)->setTransverseMassInfo(myQCDHistoPrefix, myQCDBasicMtHisto);
+  } else if (myFunction == "QCDInverted") {
+    if (type == Extractable::kExtractableObservation){
+      myExtractable = new QCDInverted(myChannel, myCounterHisto, myInput1, myFilePath);
+    }else if (type == Extractable::kExtractableRate){
+      myExtractable = new QCDInverted(myId, myCounterHisto, myInput1, myFilePath);
+    }else if (type == Extractable::kExtractableNuisance){
+      myExtractable = new QCDInverted(myId, myDistribution, myDescription, myCounterHisto, myInput1, myFilePath);
+    }else {
+      std::cout << "\033[0;41m\033[1;37mError:\033[0;0m function 'QCDInverted' is only available for rate and nuisance!" << std::endl;
+      return false;
+    }
   }
+
   if (myExtractable)
     vExtractables.push_back(myExtractable);
   // Create dataset group for observation (for rate and nuisance they are created via addDataGroup)
@@ -908,21 +942,12 @@ bool ConfigManager::doExtract() {
   return true;
 }
 
-void ConfigManager::generateCards() {
+void ConfigManager::generateCards(bool useShapes) {
   // Loop over mass points
-  /*for (size_t i = 0; i < vDatacardGenerators.size(); ++i) {
-    vDatacardGenerators[i]->generateDataCard(sDescription, fLuminosity, 
-                                             sShapeSource, false,
+  for (size_t i = 0; i < vDatacardGenerators.size(); ++i) {
+    vDatacardGenerators[i]->generateDataCard(sDescription, fLuminosity,
+                                             sShapeSource, useShapes,
                                              vExtractables, vDatasetGroups,
                                              fNormalisationInfo);
-  }*/
-  //  Generate datacards with shapes
-  if (sShapeSource.size()) {
-    for (size_t i = 0; i < vDatacardGenerators.size(); ++i) {
-      vDatacardGenerators[i]->generateDataCard(sDescription, fLuminosity,
-                                              sShapeSource, true,
-                                              vExtractables, vDatasetGroups,
-                                               fNormalisationInfo);
-    }
   }
 }
