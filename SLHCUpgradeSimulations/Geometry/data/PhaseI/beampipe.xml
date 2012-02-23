@@ -194,7 +194,6 @@
   <ZSection z="[BeampipeZ2]"    rMin="[cms:Rmin]"      rMax="[BeampipeRout2]"/>
   <ZSection z="[BeampipeZ2]"    rMin="[cms:Rmin]"      rMax="[BeampipeRout3]"/>
   <ZSection z="[BeampipeZ3]"    rMin="[cms:Rmin]"      rMax="[BeampipeRout4]"/>
-  <ZSection z="[BeampipeZ3]"    rMin="[cms:Rmin]"      rMax="[BeampipeRout5]"/>
  </Polycone> 
  <Cone name="BeamVacuum2"       dz="([BeampipeZ3]-[BeampipeZ1])/2" 
        rMin1="[cms:Rmin]"       rMax1="[BeampipeRin1]" rMin2="[cms:Rmin]"
