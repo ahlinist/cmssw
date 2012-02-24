@@ -15,7 +15,8 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
+  fpJSON = new JSON("../../Bs2MuMu/macros2/cuts/Cert_160404-180252_7TeV_PromptReco_May10ReReco_Collisions11_JSON_MuonPhys.txt"); // Run2011
+  //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
   //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
   //fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
 
