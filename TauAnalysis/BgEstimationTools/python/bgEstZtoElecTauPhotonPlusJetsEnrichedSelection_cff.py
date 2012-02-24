@@ -27,14 +27,11 @@ electronsBgEstPhotonPlusJetsEnrichedEta = copy.deepcopy(electronsBgEstZtautauEnr
 # require electron candidate to have transverse momentum above threshold
 electronsBgEstPhotonPlusJetsEnrichedPt = copy.deepcopy(electronsBgEstZtautauEnrichedPt)
 
-
 electronsBgEstPhotonPlusJetsEnrichedIso = copy.deepcopy(electronsBgEstZtautauEnrichedIso)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMinEB = cms.double(-1)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMaxEB = cms.double(0.02)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMinEE = cms.double(-1)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMaxEE = cms.double(0.02)
-
-
 
 # require electron to not be from a photon conversion
 electronsBgEstPhotonPlusJetsEnrichedConversionVeto = copy.deepcopy(electronsBgEstZtautauEnrichedConversionVeto)
@@ -47,15 +44,13 @@ electronsBgEstPhotonPlusJetsEnrichedConversionVeto.doMissingHitsCut = cms.bool(T
 electronsBgEstPhotonPlusJetsEnrichedConversionVeto.nConvPairMax = cms.double(10)
 #electronsBgEstPhotonPlusJetsEnrichedConversionVeto.useConversionColl = cms.bool(False)
 
-
-
 produceNonConversionElectronsBgEstPhotonPlusJetsEnriched =  cms.Sequence(electronsBgEstPhotonPlusJetsEnrichedConversionVeto)
 
 electronsBgEstPhotonPlusJetsEnrichedTrkIP = copy.deepcopy(electronsBgEstZtautauEnrichedTrkIP)
 
 electronSelConfiguratorBgEstPhotonPlusJetsEnriched = objSelConfigurator(
     [ electronsBgEstPhotonPlusJetsEnrichedId,
-      electronsBgEstPhotonPlusJetsEnrichedAntiCrackCut,
+##      electronsBgEstPhotonPlusJetsEnrichedAntiCrackCut,
       electronsBgEstPhotonPlusJetsEnrichedEta,
       electronsBgEstPhotonPlusJetsEnrichedPt,
       electronsBgEstPhotonPlusJetsEnrichedIso,
@@ -93,17 +88,14 @@ tausBgEstPhotonPlusJetsEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnriche
 tausBgEstPhotonPlusJetsEnrichedIso = copy.deepcopy(tausBgEstZtautauEnrichedIso)
 tausBgEstPhotonPlusJetsEnrichedIso.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("byHPSmedium") < 0.5')
 
-
 # require tau candidate to pass electron veto
 tausBgEstPhotonPlusJetsEnrichedElectronVeto = copy.deepcopy(tausBgEstZtautauEnrichedElectronVeto)
 
 # require tau candidate not to be in ECAL barrel/endcap crack
-tausBgEstPhotonPlusJetsEnrichedEcalCrackVeto = copy.deepcopy(tausBgEstZtautauEnrichedEcalCrackVeto)
+##tausBgEstPhotonPlusJetsEnrichedEcalCrackVeto = copy.deepcopy(tausBgEstZtautauEnrichedEcalCrackVeto)
 
 # require tau candidate to pass muon veto
 tausBgEstPhotonPlusJetsEnrichedMuonVeto = copy.deepcopy(tausBgEstZtautauEnrichedMuonVeto)
-
-
 
 tauSelConfiguratorBgEstPhotonPlusJetsEnriched = objSelConfigurator(
     [ tausBgEstPhotonPlusJetsEnrichedAntiOverlapWithElectronsVeto,
@@ -112,7 +104,7 @@ tauSelConfiguratorBgEstPhotonPlusJetsEnriched = objSelConfigurator(
       tausBgEstPhotonPlusJetsEnrichedLeadTrkPt,
       tausBgEstPhotonPlusJetsEnrichedIso,
       tausBgEstPhotonPlusJetsEnrichedElectronVeto,
-      tausBgEstPhotonPlusJetsEnrichedEcalCrackVeto,
+##      tausBgEstPhotonPlusJetsEnrichedEcalCrackVeto,
       tausBgEstPhotonPlusJetsEnrichedMuonVeto ],
     src = "cleanPatTaus",
     pyModuleName = __name__,
@@ -156,7 +148,6 @@ elecTauPairsBgEstPhotonPlusJetsEnrichedDPhi = cms.EDFilter("PATElecTauPairSelect
     filter = cms.bool(False)
 )
 
-
 elecTauPairSelConfiguratorBgEstPhotonPlusJetsEnriched = objSelConfigurator(
     [ elecTauPairsBgEstPhotonPlusJetsEnrichedAntiOverlapVeto,
       elecTauPairsBgEstPhotonPlusJetsEnrichedMt1MET,
@@ -170,10 +161,6 @@ elecTauPairSelConfiguratorBgEstPhotonPlusJetsEnriched = objSelConfigurator(
 )
 
 selectElecTauPairsBgEstPhotonPlusJetsEnriched = elecTauPairSelConfiguratorBgEstPhotonPlusJetsEnriched.configure(pyNameSpace = locals())
-
-
-
-
 
 ####### anti Zee Cut #######
 
@@ -193,11 +180,9 @@ produceElecTauPairZeeHypothesesBgEstPhotonPlusJetsEnriched = cms.Sequence(
 	selectedDiElecPairBgEstPhotonPlusJetsEnrichedZeeHypothesesByLooseIsolation
 )
 
-
 #--------------------------------------------------------------------------------  
 # produce boolean event selection flags
 #--------------------------------------------------------------------------------
-
 
 # electron cuts
 
@@ -259,9 +244,9 @@ cfgTauElectronVetoBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauElectronVeto
 cfgTauElectronVetoBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauElectronVetoBgEstPhotonPlusJetsEnriched')
 cfgTauElectronVetoBgEstPhotonPlusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstPhotonPlusJetsEnrichedElectronVetoCumulative')
 
-cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauEcalCrackVetoBgEstZtautauEnriched)
-cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauEcalCrackVetoBgEstPhotonPlusJetsEnriched')
-cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstPhotonPlusJetsEnrichedEcalCrackVetoCumulative')
+##cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauEcalCrackVetoBgEstZtautauEnriched)
+##cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauEcalCrackVetoBgEstPhotonPlusJetsEnriched')
+##cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstPhotonPlusJetsEnrichedEcalCrackVetoCumulative')
 
 cfgTauMuonVetoBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauMuonVetoBgEstZtautauEnriched)
 cfgTauMuonVetoBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauMuonVetoBgEstPhotonPlusJetsEnriched')
@@ -313,7 +298,7 @@ evtSelConfiguratorBgEstPhotonPlusJetsEnriched = eventSelFlagProdConfigurator(
       cfgTauLeadTrkPtCutBgEstPhotonPlusJetsEnriched,
       cfgTauIsoCutBgEstPhotonPlusJetsEnriched,
       cfgTauElectronVetoBgEstPhotonPlusJetsEnriched,
-      cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched,
+##    cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched,
       cfgTauMuonVetoBgEstPhotonPlusJetsEnriched,
       cfgDiTauCandidateAntiOverlapVetoBgEstPhotonPlusJetsEnriched,
       cfgDiTauCandidateForElecTauMt1METCutBgEstPhotonPlusJetsEnriched,

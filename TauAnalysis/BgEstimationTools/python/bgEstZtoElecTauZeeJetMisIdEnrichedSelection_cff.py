@@ -84,7 +84,7 @@ tausBgEstZeeJetMisIdEnrichedElectronVeto = copy.deepcopy(tausBgEstZtautauEnriche
 
 
 # require tau candidate not to be in ECAL barrel/endcap crack
-tausBgEstZeeJetMisIdEnrichedEcalCrackVeto = copy.deepcopy(tausBgEstZtautauEnrichedEcalCrackVeto)
+##tausBgEstZeeJetMisIdEnrichedEcalCrackVeto = copy.deepcopy(tausBgEstZtautauEnrichedEcalCrackVeto)
 
 
 # require tau candidate to pass muon veto
@@ -99,7 +99,7 @@ tauSelConfiguratorBgEstZeeJetMisIdEnriched = objSelConfigurator(
       tausBgEstZeeJetMisIdEnrichedLeadTrkPt,
       tausBgEstZeeJetMisIdEnrichedIso,
       tausBgEstZeeJetMisIdEnrichedElectronVeto,
-      tausBgEstZeeJetMisIdEnrichedEcalCrackVeto,
+##    tausBgEstZeeJetMisIdEnrichedEcalCrackVeto,
       tausBgEstZeeJetMisIdEnrichedMuonVeto ],
     src = "cleanPatTaus",
     pyModuleName = __name__,
@@ -235,9 +235,9 @@ cfgTauElectronVetoBgEstZeeJetMisIdEnriched = copy.deepcopy(cfgTauElectronVetoBgE
 cfgTauElectronVetoBgEstZeeJetMisIdEnriched.pluginName = cms.string('tauElectronVetoBgEstZeeJetMisIdEnriched')
 cfgTauElectronVetoBgEstZeeJetMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZeeJetMisIdEnrichedElectronVetoCumulative')
 
-cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched = copy.deepcopy(cfgTauEcalCrackVetoBgEstZtautauEnriched)
-cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched.pluginName = cms.string('tauEcalCrackVetoBgEstZeeJetMisIdEnriched')
-cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZeeJetMisIdEnrichedEcalCrackVetoCumulative')
+##cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched = copy.deepcopy(cfgTauEcalCrackVetoBgEstZtautauEnriched)
+##cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched.pluginName = cms.string('tauEcalCrackVetoBgEstZeeJetMisIdEnriched')
+##cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZeeJetMisIdEnrichedEcalCrackVetoCumulative')
 
 cfgTauMuonVetoBgEstZeeJetMisIdEnriched = copy.deepcopy(cfgTauMuonVetoBgEstZtautauEnriched)
 cfgTauMuonVetoBgEstZeeJetMisIdEnriched.pluginName = cms.string('tauMuonVetoBgEstZeeJetMisIdEnriched')
@@ -280,7 +280,7 @@ evtSelConfiguratorBgEstZeeJetMisIdEnriched = eventSelFlagProdConfigurator(
       cfgTauLeadTrkPtCutBgEstZeeJetMisIdEnriched,
       cfgTauIsoCutBgEstZeeJetMisIdEnriched,
       cfgTauElectronVetoBgEstZeeJetMisIdEnriched,
-      cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched,
+##    cfgTauEcalCrackVetoBgEstZeeJetMisIdEnriched,
       cfgTauMuonVetoBgEstZeeJetMisIdEnriched,
       cfgDiTauCandidateAntiOverlapVetoBgEstZeeJetMisIdEnriched,
       cfgDiTauCandidateForElecTauMt1METCutBgEstZeeJetMisIdEnriched,
