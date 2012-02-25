@@ -57,7 +57,7 @@ for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEA
     PACKAGE=$(echo $CMSSWDATA | sed -e's#.*/data-\(\w\+\)-\(\w\+\)/.*#\1/\2#')
     # make sure the parent directory for the links exists
     mkdir -p $TARGET/$PACKAGE
-    cp -r -s $CMSSWDATA/$PACKAGE/* $TARGET/$PACKAGE
+    ln -s $CMSSWDATA/$PACKAGE/* $TARGET/$PACKAGE
 done
 
 echo "Generating and populating summary directories"
