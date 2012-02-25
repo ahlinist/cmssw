@@ -37,11 +37,11 @@ mkdir  patch-cmssw-tmp
 cd     patch-cmssw-tmp
 TOPDIR=$PWD
 
-# create a local CMSSW area, import patches from the specidfied directory, and build them (except for the "test" directories)
+# create a local CMSSW area, import patches from the specified directory, and build them (except for the "test" directories)
 scram project CMSSW $CMSSW_VERSION
 sed -e's#<classpath path=".*+test"/>##' -i $CMSSW_VERSION/config/BuildFile.xml
 cd $CMSSW_VERSION/src
-cp -r $LOCAL_CODE_PATCHES_TOP/* .
+[ "$(ls $LOCAL_CODE_PATCHES_TOP/)" ] && cp -r $LOCAL_CODE_PATCHES_TOP/* .
 scram b USER_CXXFLAGS="-g" -j 8
 cd $TOPDIR
 
@@ -65,6 +65,7 @@ for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEA
 done
 
 echo "Generating and populating summary directories"
+# this should be equivalent to $CMSSW_RELEASE_BASE
 CMSSW_ROOT_DIRECTORY=`grep RELEASETOP $CMSSW_VERSION/.SCRAM/$SCRAM_ARCH/Environment | cut -d= -f2`
 cd $CMSSW_ROOT_DIRECTORY/src
 install_env.pl $TOPDIR/opt/cmssw/$AREA/lib $TOPDIR/opt/cmssw/$AREA/module $TOPDIR/opt/cmssw/$AREA/env.txt $TOPDIR/opt/cmssw/$AREA/python
