@@ -11,7 +11,7 @@ $pid = $$;
 $envfile = "/tmp/cmsswenv$pid.tmp";
 print "creating emvironment file $envfile\n";
 system `scram runtime -sh > $envfile`;
-system `echo export PYTHONHOME="\$(scram tool tag python PYTHON_BASE)" >> $envfile`;
+system `echo export PYTHONHOME=\"\$(scram tool tag python PYTHON_BASE)\" >> $envfile`;
 system `cp $envfile /tmp/fwyzard/env`;
 print "creating library clones at $libdir\n";
 `copyFUlibs.pl $envfile $libdir`;
