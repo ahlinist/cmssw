@@ -12,9 +12,13 @@ grep -q "PYTHONPATH=" $ENVFILE || {
     exit 1
 }
 
-mkdir -p $TARGET
+mkdir -p $TARGET/base $TARGET/path
 
+# traverse the PYTHONBASE defined in $ENVFILE in reverse order
+for DIR in $( unset PYTHONBASE; source $ENVFILE; echo $PYTHONBASE | tr : \\n | tac ); do
+    cp -r -s -f $DIR/* $TARGET/base/
+done
 # traverse the PYTHONPATH defined in $ENVFILE in reverse order
 for DIR in $( unset PYTHONPATH; source $ENVFILE; echo $PYTHONPATH | tr : \\n | tac ); do
-    cp -r -s -f $DIR/* $TARGET/
+    cp -r -s -f $DIR/* $TARGET/path/
 done
