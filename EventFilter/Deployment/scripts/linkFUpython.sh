@@ -15,7 +15,7 @@ grep -q "PYTHONPATH=" $ENVFILE || {
 mkdir -p $TARGET/home $TARGET/path
 
 # traverse the PYTHONHOME defined in $ENVFILE in reverse order
-for DIR in $( unset PYTHONHOME; source $ENVFILE; echo $PYTHONBASE | tr : \\n | tac ); do
+for DIR in $( unset PYTHONHOME; source $ENVFILE; echo $PYTHONHOME | tr : \\n | tac ); do
     cp -r -s -f $DIR/* $TARGET/home/
 done
 # traverse the PYTHONPATH defined in $ENVFILE in reverse order
