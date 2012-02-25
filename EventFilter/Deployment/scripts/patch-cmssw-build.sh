@@ -59,6 +59,15 @@ for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEA
     # remove the target data directory, if present
     rm -rf $TARGET
     # make sure the parent directory for the link exists
+    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    echo
+    echo "about to mkdir -p $(dirname $TARGET)"
+    echo
+    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
     mkdir -p $(dirname $TARGET)
     ln -s $DATA $TARGET
   done
