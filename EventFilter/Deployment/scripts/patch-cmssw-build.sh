@@ -22,7 +22,7 @@ export PATH=$PATH:$PWD/EventFilter/Deployment/scripts
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
 
 # define SCRAM_ARCH if unset
-[ -n "$SCRAM_ARCH" ] || SCRAM_ARCH=slc5onl_ia32_gcc434
+[ -n "$SCRAM_ARCH" ] || SCRAM_ARCH=slc5onl_amd64_gcc462
 export SCRAM_ARCH
 
 # check for an online release vs. an online patch release
