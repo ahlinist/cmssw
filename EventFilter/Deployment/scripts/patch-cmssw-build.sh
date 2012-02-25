@@ -53,21 +53,22 @@ cp -r $TOPDIR/$CMSSW_VERSION/lib $TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms
 # add links to the external data directories
 echo "Linking extrnal data to their destination"
 for CMSSWDATA in $(cd $CMSSW_VERSION; scram tool info cmsswdata | grep CMSSW_SEARCH_PATH | cut -d= -f2 | tr ':' ' '); do
+  echo
+  echo "    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  echo "    CMSSWDATA=$CMSSWDATA"
+  echo "    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   for DATA in $CMSSWDATA/*/*/data; do
+    echo
+    echo "    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    echo "    DATA=$DATA"
     RELATIVE=$(echo "$DATA" | sed -e"s#$CMSSWDATA/##")
     TARGET=$TOPDIR/opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/src/$RELATIVE
+    echo "    RELATIVE=$RELATIVE"
+    echo "    TARGET=$TARGET"
+    echo "    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
     # remove the target data directory, if present
     rm -rf $TARGET
     # make sure the parent directory for the link exists
-    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    echo
-    echo "about to mkdir -p $(dirname $TARGET)"
-    echo
-    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
     mkdir -p $(dirname $TARGET)
     ln -s $DATA $TARGET
   done
