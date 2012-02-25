@@ -10,7 +10,8 @@ $python = @ARGV[3];
 $pid = $$;
 $envfile = "/tmp/cmsswenv$pid.tmp";
 print "creating emvironment file $envfile\n";
-system `scramv1 runtime -sh > $envfile`;
+system `scram runtime -sh > $envfile`;
+system `echo PYTHONHOME=\$(scram tool tag python PYTHON_BASE) >> $envfile`
 print "creating library clones at $libdir\n";
 `copyFUlibs.pl $envfile $libdir`;
 print "creating module clones at $moddir\n";
