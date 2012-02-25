@@ -7,14 +7,14 @@ open( INFILE, "$oldfile") || die "ERROR::could not open input file $oldfile";
 print "$INFILE\n";
 while( $record = <INFILE> )
 {
-    if($record =~ /PYTHONBASE=/){
-	print "found PYTHONBASE = $record\n";
+    if($record =~ /PYTHONHOME=/){
+	print "found PYTHONHOME = $record\n";
 	@tok1 = split(/=\"/, $record);
 	print "this is tok1\n";
 	print "@tok1[1]\n";
 	mkdir ($destination);
-	mkdir ("$destination\/base");
-	opendir(LIBS,"$destination\/base");
+	mkdir ("$destination\/home");
+	opendir(LIBS,"$destination\/home");
 	@tokens = split(/\:/,@tok1[1]);
 	while($#tokens != -1)
 	{
@@ -30,18 +30,18 @@ while( $record = <INFILE> )
 		    my $ffname = @tokens[$#tokens].'/'.$fname;
 		    if(grep {(/\.py/ || /\.pyc/)} $fname)
 		    {
-			$foundlink = readlink "$destination\/base\/$fname";
+			$foundlink = readlink "$destination\/home\/$fname";
 			print "replacing previous link $foundlink\n" if ($foundlink);
-			system `rm $destination\/base\/$fname` if $foundlink;
+			system `rm $destination\/home\/$fname` if $foundlink;
 			print " linking $ffname\n";
-			symlink("$ffname","$destination\/base\/$fname");
+			symlink("$ffname","$destination\/home\/$fname");
 		    }
 		    if(($fname ne '.') and ($fname ne "..") and -d $ffname)
 		    {
 			print "verifying directory $ffname\n";
                         # make the dir if it does not exist
-			print $destination."/base/".$fname."\n";
-			$ddest = $destination."/base/".$fname;
+			print $destination."/home/".$fname."\n";
+			$ddest = $destination."/home/".$fname;
 			print "check existence of $ddest\n";
 			mkdir ($ddest) unless -e $ddest;
 			print "checking subdirs of $fname\n";
@@ -55,9 +55,9 @@ while( $record = <INFILE> )
 			    print "replacing previous link $foundlink\n" if ($foundlink);
 			    system `rm -r $ddest\/$dname` if $foundlink;
 			
-			    symlink("$ddname","$destination\/base\/$fname\/$dname") if -d $ddname;
+			    symlink("$ddname","$destination\/home\/$fname\/$dname") if -d $ddname;
 			    print " linking directory $ddname\n" if -d $ddname; 
-			    symlink("$ddname","$destination\/base\/$fname\/$dname") if (grep {(/\.py/ || /\.pyc/)} $dname);
+			    symlink("$ddname","$destination\/home\/$fname\/$dname") if (grep {(/\.py/ || /\.pyc/)} $dname);
 			    print " linking file $dname\n" if (grep {(/\.py/ || /\.pyc/)} $dname);
 			}
 		    }
