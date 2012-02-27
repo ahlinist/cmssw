@@ -62,7 +62,7 @@ void vpp_generated_2012_01_31::wrap
 	//	static ULLONG mb1bPhir, mb1bQr;
 
 	// put delayed inputs into the core inputs (internal variables of vpp_generated)
-	/*	me1ar = me1arr;
+	me1ar = me1arr;
 	me1br = me1brr;
 	me1cr = me1crr;
 	me1dr = me1drr;
@@ -79,7 +79,7 @@ void vpp_generated_2012_01_31::wrap
 				 		    
 	me4ar = me4arr;
 	me4br = me4brr;
-	me4cr = me4crr;*/
+	me4cr = me4crr;
 
 	// pack CSC inputs into delayed inputs. This delay is necessary to compensate for deserialization of DT inputs in the core
 	me1arr = ((me1aValidp&1)<<27) | ((me1aCSCidp&0xf)<<23) | ((me1aQp&0xf)<<19) | ((me1aEtap&0x7f)<<12) |  (me1aPhip&0xfff) | ((me1aCLCTp&0xf)<<28);
@@ -101,25 +101,6 @@ void vpp_generated_2012_01_31::wrap
 	me4brr = ((me4bValidp&1)<<23) |                          ((me4bQp&0xf)<<19) | ((me4bEtap&0x7f)<<12) |  (me4bPhip&0xfff);
 	me4crr = ((me4cValidp&1)<<23) |                          ((me4cQp&0xf)<<19) | ((me4cEtap&0x7f)<<12) |  (me4cPhip&0xfff);
 
-	// remove CSC delay
-	me1ar = me1arr;
-	me1br = me1brr;
-	me1cr = me1crr;
-	me1dr = me1drr;
-	me1er = me1err;
-	me1fr = me1frr;
-				 		    
-	me2ar = me2arr;
-	me2br = me2brr;
-	me2cr = me2crr;
-				 		    
-	me3ar = me3arr;
-	me3br = me3brr;
-	me3cr = me3crr;
-				 		    
-	me4ar = me4arr;
-	me4br = me4brr;
-	me4cr = me4crr;
 			  			
 	// serialize 4 DT inputs into 2 inputs for the core
 	// if      (mb1aQp != 0) {mb1ap =             ((mb1aQp&0x7)<<12) | (mb1aPhip&0xfff); }
