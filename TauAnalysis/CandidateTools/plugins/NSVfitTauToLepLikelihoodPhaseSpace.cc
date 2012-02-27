@@ -71,6 +71,8 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
                *TMath::Sqrt((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)))/(2*tauLeptonMass)
                *sinDecayAngle;
 
+  if ( applyVisPtCutCorrection_ ) prob *= evaluateVisPtCutCorrection(hypothesis);
+
   double nll = 0.;
   if ( prob > 0. ) {
     nll = -TMath::Log(prob);

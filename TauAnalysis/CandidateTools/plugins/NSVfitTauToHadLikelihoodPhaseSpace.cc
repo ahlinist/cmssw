@@ -47,6 +47,8 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
 
   double prob = TMath::Sin(decayAngle);
   
+  if ( applyVisPtCutCorrection_ ) prob *= evaluateVisPtCutCorrection(hypothesis);
+
   double nll = 0.;
   if ( prob > 0. ) {
     nll = -TMath::Log(prob);
