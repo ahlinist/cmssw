@@ -50,6 +50,17 @@ namespace dqmevf{
 	//	delete ptr;
 	return rc;
       }
+    int postNonBlocking(MsgBuf &ptr)
+      {
+        int rc;                  /* error code returned by system calls. */
+        rc = msgsnd(queue_id_, ptr.ptr_, ptr.msize()+1,IPC_NOWAIT);
+        //if(rc==-1)
+          //std::cout << "snd::Master failed to post message - error:"
+          //        << strerror(errno) << std::endl;
+        //      delete ptr;
+        return rc;
+      }
+
     unsigned long rcv(MsgBuf &ptr)
       {
 	unsigned long msg_type = ptr->mtype;
@@ -155,6 +166,17 @@ namespace dqmevf{
 		    << strerror(errno) << std::endl;
 	return rc;
       }
+    int postNonBlocking(MsgBuf &ptr)
+      {
+        int rc;                  /* error code retuend by system calls. */
+        rc = msgsnd(queue_id_,ptr.ptr_, ptr.msize()+1,IPC_NOWAIT);
+        //      delete ptr;
+        if(rc==-1)
+          std::cout << "snd::Slave failed to post message - error:"
+                    << strerror(errno) << std::endl;
+        return rc;
+      }
+
     unsigned long rcv(MsgBuf &ptr)
       {
 	unsigned long msg_type = MSQS_MESSAGE_TYPE_SLA;

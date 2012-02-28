@@ -85,6 +85,7 @@ namespace dqmevf{
 
     //slave post and receive on various queues
     int postSlaveSup(MsgBuf &ptr) {return sqS_->post(ptr);}
+    int postSlaveSupNonBlocking(MsgBuf &ptr) {return sqS_->postNonBlocking(ptr);}
     int postSlaveMon(MsgBuf &ptr) {return sqm_->post(ptr);}
 
     unsigned long rcvSlaveSup(MsgBuf &ptr) {return sqS_->rcv(ptr);}
