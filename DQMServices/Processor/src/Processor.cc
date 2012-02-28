@@ -274,6 +274,17 @@ bool Processor::testEDMConfiguration() {
   return true;
 }
 
+//read cfg for display in master GUI
+bool Processor::readEDMConfiguration() {
+  try {
+    friendlyPythonCfg_ = std::string();
+    ParameterSetRetriever pr(configString_,0);
+    friendlyPythonCfg_ = pr.getAsString();
+  }
+  catch (...) {return false;}
+  return true;
+}
+
 bool Processor::initEDMConfiguration() {
 
   //if (configurationInitialized_) return true;
@@ -544,6 +555,9 @@ bool Processor::enabling(toolbox::task::WorkLoop* wl)
       spawnChild(i);
       return false;
       //end child process stuff
+    }
+    else {
+      readEDMConfiguration();
     }
   }
   //start threads for child process IPC (will start much before EP in child)
@@ -1556,6 +1570,7 @@ bool Processor::supervisor(toolbox::task::WorkLoop *)
 		  }
 		  else //still in master
 		  {
+		    readEDMConfiguration();
 		    //go to degraded mode if restarted mid-run (even if manually)
                     degradedCounter_=120;
 		    if (startedCounter_>240 && isEnabledFully()) fsm_.fireEvent("Degrade",this);

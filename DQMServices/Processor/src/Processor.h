@@ -157,6 +157,7 @@ namespace dqmevf
     void subWebRetriever(xgi::Output*, std::string, pid_t, int par1, std::ostringstream * cgiPassThrough);
 
     bool testEDMConfiguration();
+    bool readEDMConfiguration();
     bool initEDMConfiguration();
     void reconfigureEP();
     void spawnChild(unsigned int);
