@@ -1266,7 +1266,7 @@ bool Processor::summarize(toolbox::task::WorkLoop* wl)
   if (lockret!=0) return true;
 
   //shutdown if end of run
-  if(isEnabled() || !wlSummarizeActive_){
+  if(!isEnabled() || !wlSummarizeActive_){
     wlSummarizeActive_ = false;
     pthread_mutex_unlock(&summary_queue_lock_);
     return false;
