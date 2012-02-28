@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.5 2012/02/27 17:01:03 veelken Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.6 2012/02/28 09:44:08 veelken Exp $
  *
  */
 
@@ -51,20 +51,6 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
 	edm::ParameterSet cfgPar = cfgVisPtCutCorrection.getParameter<edm::ParameterSet>(parName);
 	std::string name = Form("%s_visPtCutCorrFunction_par%i", pluginName_.data(), iParameter);
 	visPtCutCorrParameters_.push_back(new massDepParameterType(iParameter, name, cfgPar));
-      }
-      
-      double masses[3] = { 90., 120., 130. };
-      for ( int iMass = 0; iMass < 3; ++iMass ) {
-	double mass = masses[iMass];
-	std::cout << "likelihood = " << visPtCutCorrFunction_->GetName() << ", mass = " << mass << ":" << std::endl;
-	for ( double x = 0.05; x < 1.0; x+= 0.10 ) {
-	  for ( std::vector<massDepParameterType*>::const_iterator visPtCutCorrParameter = visPtCutCorrParameters_.begin();
-		visPtCutCorrParameter != visPtCutCorrParameters_.end(); ++visPtCutCorrParameter ) {
-	    visPtCutCorrFunction_->SetParameter((*visPtCutCorrParameter)->idx_, (*visPtCutCorrParameter)->evaluate(mass));
-	  }
-	  double corr = visPtCutCorrFunction_->Eval(x);
-	  std::cout << " x = " << x << ": corr = " << corr << std::endl;
-	}
       }
     }
   }
