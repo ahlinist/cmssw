@@ -104,15 +104,15 @@ EcalXMLDelaysPlotter::beginJob( ) {
   //Now for the 3D timing plots.
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
   double ttPhiBins[73];
-  double timingBins[126];
-  double timingtBins[501];
-  double ttEtaEEBins[21];
+  //double timingBins[126];
+  // double timingtBins[501];
+  // double ttEtaEEBins[21];
   for (int i = 0; i < 501; ++i)
     {
-      timingtBins[i]=2.5+double(i)*5./500.;
+      // timingtBins[i]=2.5+double(i)*5./500.;
 	  
-      if ( i < 126) {timingBins[i]=2.5+double(i)*5./125.;}
-      if ( i < 21) {ttEtaEEBins[i]=0.0+double(i)*100./20.;}
+      // if ( i < 126) {timingBins[i]=2.5+double(i)*5./125.;}
+      // if ( i < 21) {ttEtaEEBins[i]=0.0+double(i)*100./20.;}
       if (i<73) 
 	   {
           ttPhiBins[i]=1+5*i;
@@ -192,10 +192,10 @@ EcalXMLDelaysPlotter::analyze(  edm::Event const& iEvent,  edm::EventSetup const
      }
    }
 
-   int iz = -1;
+   // int iz = -1;
    for (int idcc = 1; idcc < 55; ++idcc)
    {
-     if ( idcc == 10 ) {idcc = 46; iz=1;} //Just because I only care about EE
+     if ( idcc == 10 ) {idcc = 46; /*iz=1;*/} //Just because I only care about EE
      for (int iTT = 1; iTT < 44; ++iTT)
      {
     // EEDetId detId = EEDetId(ix,iy,iz,EEDetId::XYMODE); //This gets the detId
