@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.15 2011/08/18 16:03:20 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.16 2011/11/24 14:37:35 franzoni Exp $
 //
 //
 
@@ -810,21 +810,21 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
   // double modEtaBins[10]={-85, -65, -45, -25, 0, 1, 26, 46, 66, 86};
   double ttPhiBins[73];
-  double modPhiBins[19];
-  double timingBins[79];
-  double highEBins[11];
+  // double modPhiBins[19];
+  // double timingBins[79];
+  // double highEBins[11];
   for (int i = 0; i < 79; ++i)
   {
-    timingBins[i]=-7.+double(i)*14./78.;
+    // timingBins[i]=-7.+double(i)*14./78.;
     if (i<73)
     {
       ttPhiBins[i]=1+5*i;
       if ( i < 19) 
       {
-        modPhiBins[i]=1+20*i;
+        // modPhiBins[i]=1+20*i;
         if (i < 11)
         {
-          highEBins[i]=10.+double(i)*20.;
+          // highEBins[i]=10.+double(i)*20.;
         }
       }
     }
