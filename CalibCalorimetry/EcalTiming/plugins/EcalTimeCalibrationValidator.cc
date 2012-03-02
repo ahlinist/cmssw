@@ -6,18 +6,35 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+//#include "CondFormats/DataRecord/interface/EcalTimeCalibConstantsRcd.h"
+//#include "CondTools/Ecal/interface/EcalTimeCalibConstantsXMLTranslator.h"
+//#include "CondTools/Ecal/interface/EcalCondHeader.h"
+
 #include "CondFormats/DataRecord/interface/EcalTimeCalibConstantsRcd.h"
+#include "CondFormats/DataRecord/interface/EcalTimeOffsetConstantRcd.h"
 #include "CondTools/Ecal/interface/EcalTimeCalibConstantsXMLTranslator.h"
+#include "CondTools/Ecal/interface/EcalTimeOffsetXMLTranslator.h"
 #include "CondTools/Ecal/interface/EcalCondHeader.h"
 
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 
+#include "CalibCalorimetry/EcalTiming/interface/EcalCrystalTimingCalibration.h"
+
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DQM/EcalCommon/interface/Numbers.h"
+
+#include <fstream>
+
 EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterSet& ps) :
   inputFiles_ (ps.getParameter<std::vector<std::string> >("InputFileNames")),
   outputTreeFileName_ (ps.getParameter<std::string>("OutputFileName")),
   calibConstantFileName_ (ps.getParameter<std::string>("CalibConstantXMLFileName")),
+  calibOffsetFileName_ (ps.getParameter<std::string>("CalibOffsetXMLFileName")),
+  disableGlobalShift_ (ps.getParameter<bool>("ZeroGlobalOffset")),
   maxEntries_ (ps.getUntrackedParameter<int>("MaxTreeEntriesToProcess",-1)),
   startingEntry_ (ps.getUntrackedParameter<int>("StartingTreeEntry",0)),
   inRuns_ (ps.getParameter<std::string>("RunIncludeExclude"))
@@ -82,6 +99,23 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
   }
   const EcalTimeCalibConstantMap itimeMap = calibConstants;
 
+  EcalCondHeader offsetFileHeader;
+  EcalTimeOffsetConstant offsetConstant;
+  int retOffset = EcalTimeOffsetXMLTranslator::readXML(calibOffsetFileName_,offsetFileHeader,offsetConstant);
+  if(retOffset)
+  {
+    edm::LogError("EcalTimeCalibrationValidator") << "Problem reading offset  XML file.  Quitting.";
+    return;
+  }
+  if(disableGlobalShift_) {
+    recalibratedOffsetEB = 0;
+    recalibratedOffsetEE = 0;
+  } 
+  else {
+    recalibratedOffsetEB = offsetConstant.getEBValue();
+    recalibratedOffsetEE = offsetConstant.getEEValue();
+  }
+  
   // Loop over the TTree
   int nEntries = myInputTree_->GetEntries();
   edm::LogInfo("EcalTimeCalibrationValidator") << "Begin loop over TTree";
@@ -140,7 +174,6 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
             det = detid;
           }
         }
-
         float origTime = ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC];
         // get orig time calibration coefficient
         const EcalTimeCalibConstantMap & origTimeMap = origTimeCalibConstHandle->getMap();
@@ -153,7 +186,23 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
           //  << rawId
           //  << "in database! something wrong with EcalTimeCalibConstants in the database?";
         }
-        origTime-=itimeconstOrig;
+        // get orig time offset
+        
+        if(disableGlobalShift_) {
+          originalOffsetEB = 0;
+          originalOffsetEE = 0;
+        } 
+        else {
+          originalOffsetEB = origTimeOffsetConstHandle->getEBValue();
+          originalOffsetEE = origTimeOffsetConstHandle->getEEValue();
+        }
+        // get the raw time
+        if (isEB) {
+          origTime-=(itimeconstOrig + originalOffsetEB);
+        }
+        else {
+          origTime-=(itimeconstOrig + originalOffsetEE);
+        }
 
         // get new time calibration coefficient
         EcalTimeCalibConstantMap::const_iterator itimeItr = itimeMap.find(rawId);
@@ -165,7 +214,12 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
             << rawId
             << "! something wrong with EcalTimeCalibConstants in the XML file?";
         }
-        ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC]= origTime+itimeconst;
+        if (isEB) {
+          ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC]= origTime + itimeconst + recalibratedOffsetEB;
+        }
+        else {
+          ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC]= origTime + itimeconst + recalibratedOffsetEE;
+        }
       }
     }
     myOutputTree_->Fill();
@@ -174,7 +228,11 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
       myOutputTree_->FlushBaskets();
     }
   }
-  
+  edm::LogInfo("EcalTimeCalibrationValidator") << "Original Offset EB: "
+    << originalOffsetEB << " Orig Offset EE: " 
+    << originalOffsetEE << " Recal. Offset EB: " 
+    << recalibratedOffsetEB << " Recal. Offset EE: " 
+    << recalibratedOffsetEE;
   outputTreeFile_->cd();
   myOutputTree_->Write();
   outputTreeFile_->Close();
@@ -183,6 +241,7 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
 void EcalTimeCalibrationValidator::set(edm::EventSetup const& eventSetup)
 {
   eventSetup.get<EcalTimeCalibConstantsRcd>().get(origTimeCalibConstHandle);
+  eventSetup.get<EcalTimeOffsetConstantRcd>().get(origTimeOffsetConstHandle);
 }
 
 void EcalTimeCalibrationValidator::beginRun(edm::EventSetup const& eventSetup)

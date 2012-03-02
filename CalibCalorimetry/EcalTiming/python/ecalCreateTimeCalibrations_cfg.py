@@ -23,6 +23,7 @@ process.TFileService = cms.Service("TFileService",
 process.createTimeCalibs = cms.EDAnalyzer("EcalCreateTimeCalibrations",
   OutputFileName = cms.string("file:converted1.root"),##Not Used
   OutputTimeCalibFileName = cms.string("EcalTimeCalibConstants.xml"),##Name of output xml file with new constants
+  OutputTimeOffsetFileName = cms.string("EcalTimeOffset.xml"),##Name of output xml file with new constants
   FileNameStart = cms.string("ecalCreateTimeCalibs"),
   ZeroGlobalOffset = cms.bool(True),
   SubtractDBcalibs = cms.bool(True),

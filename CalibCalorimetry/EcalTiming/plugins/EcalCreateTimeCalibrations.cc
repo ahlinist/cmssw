@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.16 2011/11/24 14:37:35 franzoni Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.15 2011/08/18 16:03:20 scooper Exp $
 //
 //
 
@@ -46,7 +46,10 @@ EcalCreateTimeCalibrations::EcalCreateTimeCalibrations(const edm::ParameterSet& 
   inputFiles_ (ps.getParameter<std::vector<std::string> >("InputFileNames")),
   fileName_ (ps.getParameter<std::string>("FileNameStart")),
   timeCalibFileName_ (ps.getParameter<std::string>("OutputTimeCalibFileName")),  
+  timeOffsetFileName_ (ps.getParameter<std::string>("OutputTimeOffsetFileName")),  
   numTotalCrys_ (EBDetId::kSizeForDenseIndexing+EEDetId::kSizeForDenseIndexing),
+  numTotalCrysEB_ (EBDetId::kSizeForDenseIndexing),
+  numTotalCrysEE_ (EEDetId::kSizeForDenseIndexing),
   disableGlobalShift_ (ps.getParameter<bool>("ZeroGlobalOffset")),
   subtractDBcalibs_ (ps.getParameter<bool>("SubtractDBcalibs")),
   inBxs_ (ps.getParameter<std::string>("BxIncludeExclude")),
@@ -129,7 +132,15 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   for(int i=0; i < EEDetId::kSizeForDenseIndexing; ++i)
     eeCryCalibs[i] = new EcalCrystalTimingCalibration(); //use weighted mean!
     //eeCryCalibs[i] = new EcalCrystalTimingCalibration(false); //don't use weighted mean!
+  int hitCounterEB[EBDetId::kSizeForDenseIndexing];
+//  int hitCounterFailedCutsEB[EBDetId::kSizeForDenseIndexing];
+  for(int i=0; i < EBDetId::kSizeForDenseIndexing; ++i)
+    hitCounterEB[i] = 0; 
+  int hitCounterEE[EEDetId::kSizeForDenseIndexing];
+  for(int i=0; i < EEDetId::kSizeForDenseIndexing; ++i)
+    hitCounterEE[i] = 0;
 
+  
   // Loop over the TTree
   int numEventsUsed = 0;
   int nEntries = myInputTree_->GetEntries();
@@ -178,18 +189,19 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       
     numEventsUsed++;
     //if more than 2.5 million events are used (about 500 hits per EB crystal) end the for loop to prevent code from taking too long due to memory issues 
-    if(numEventsUsed >= 2500000)
-    {
+//    if(numEventsUsed >= 2500000)
+/*     if(numEventsUsed >= 50000)
+     {
       std::cout << "Using only first 2.5 million events" << std::endl;
       break;
-    }
+     }*/
     // Loop over the clusters in the event
     for(int bCluster=0; bCluster < treeVars_.nClusters; bCluster++)
     {
       for(int cryInBC=0; cryInBC < treeVars_.nXtalsInCluster[bCluster]; cryInBC++)
       {
         int hashedIndex = treeVars_.xtalInBCHashedIndex[bCluster][cryInBC];
-        float cryTime = treeVars_.xtalInBCTime[bCluster][cryInBC];
+	float cryTime = treeVars_.xtalInBCTime[bCluster][cryInBC];
         float cryTimeError = treeVars_.xtalInBCTimeErr[bCluster][cryInBC];
         float cryAmp = treeVars_.xtalInBCAmplitudeADC[bCluster][cryInBC];
         //SIC FEB 14,16 2011 - removed E/E9 cut
@@ -201,7 +213,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
           EBDetId det = EBDetId::unhashIndex(hashedIndex);
           if(det==EBDetId()) // make sure DetId is valid
             continue;
-
+	  if(hitCounterEB[hashedIndex] >= 400)
+            continue;
           int ieta = det.ieta();
           int iphi = det.iphi();
           // RecHit cuts
@@ -211,7 +224,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
             && cryTime < maxHitTimeEB_;
             if(!keepHit)
               continue;
-
+	  hitCounterEB[hashedIndex] = hitCounterEB[hashedIndex] + 1;
           //cout << "DEBUG: " << hashedIndex << " cryTime: " << cryTime << " cryTimeError: " << cryTimeError << " cryAmp: " << cryAmp << endl;
           //FIXME
           cryTimeError = 1;
@@ -236,16 +249,17 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
           EEDetId det = EEDetId::unhashIndex(hashedIndex);
           if(det==EEDetId()) // make sure DetId is valid
             continue;
-
-          int ix = det.ix();
+	  if(hitCounterEE[hashedIndex] >= 400)
+            continue;
+	  int ix = det.ix();
           int iy = det.iy();
-          //XXX: RecHit cuts
+	  //XXX: RecHit cuts
           bool keepHit = cryAmp >= minHitAmpEE_
             && cryTime > minHitTimeEE_
             && cryTime < maxHitTimeEE_;
           if(!keepHit)
             continue;
-
+	  hitCounterEE[hashedIndex] = hitCounterEE[hashedIndex] + 1;
           //std::cout << "STUPID DEBUG: EE CRY " << hashedIndex << " cryTime: " << cryTime << " cryTimeError: " << cryTimeError << " cryAmp: " << cryAmp << std::endl;
           //FIXME
           cryTimeError = 1;
@@ -304,7 +318,12 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   edm::LogInfo("EcalCreateTimeCalibrations") << "Using " << numEventsUsed << " out of " << nEntries << " in the tree.";
   edm::LogInfo("EcalCreateTimeCalibrations") << "Creating calibs...";
   float cryCalibAvg = 0;
+  float cryCalibAvgEB = 0;
+  float cryCalibAvgEE = 0;
   int numCrysCalibrated = 0;
+  int numCrysCalibratedEB = 0;
+  int numCrysCalibratedEE = 0;
+
   std::vector<int> hashesToCalibrateToZeroEB;
   std::vector<int> hashesToCalibrateToZeroEE;
   std::vector<int> hashesToCalibrateNormallyEB;
@@ -422,6 +441,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       cryCalibAvg+=p1;
       if(isEB)
       {
+        cryCalibAvgEB+=p1;
         hashesToCalibrateNormallyEB.push_back(hashedIndex);
         calibHistEB_->Fill(p1);
         //calibMapEEMFlip_->Fill(y-85,x+1,p1);
@@ -432,6 +452,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       }
       else
       {
+        cryCalibAvgEE+=p1;
         hashesToCalibrateNormallyEE.push_back(hashedIndex-EBDetId::kSizeForDenseIndexing);
         if(zside < 0)
         {
@@ -506,9 +527,14 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
 
   // Calc average
   numCrysCalibrated = hashesToCalibrateNormallyEB.size()+hashesToCalibrateNormallyEE.size();
+  numCrysCalibratedEB = hashesToCalibrateNormallyEB.size();
+  numCrysCalibratedEE = hashesToCalibrateNormallyEE.size();
   if(numCrysCalibrated > 0)
     cryCalibAvg/=numCrysCalibrated;
-
+  if(numCrysCalibratedEB > 0)
+    cryCalibAvgEB/=numCrysCalibratedEB;
+  if(numCrysCalibratedEE > 0)
+    cryCalibAvgEE/=numCrysCalibratedEE;
   float originalCryCalibsEB[EBDetId::kSizeForDenseIndexing];
   float originalCryCalibsEE[EEDetId::kSizeForDenseIndexing];
   for(int i=0; i < EBDetId::kSizeForDenseIndexing ; ++i)
@@ -518,6 +544,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   float originalOffsetEB = 0;
   float originalOffsetEE = 0;
   float originalCalibAvg = 0;
+  float originalCalibAvgEB = 0;
+  float originalCalibAvgEE = 0;
   // avg original calibs
   if(subtractDBcalibs_)
     set(es);
@@ -554,9 +582,15 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       // if no time constant in DB, use zero
       originalCalibAvg+=itimeconstOrig;
       if(isEB)
+      {
+        originalCalibAvgEB+=itimeconstOrig;
         originalCryCalibsEB[hashedIndex]=itimeconstOrig;
+      }
       else
+      {
+        originalCalibAvgEE+=itimeconstOrig;
         originalCryCalibsEE[hashedIndex-EBDetId::kSizeForDenseIndexing]=itimeconstOrig;
+      }
     }
     else if(isEB)
       originalCryCalibsEB[hashedIndex]=0;
@@ -567,6 +601,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   if(subtractDBcalibs_)
   {
     originalCalibAvg/=numTotalCrys_;
+    originalCalibAvgEB/=numTotalCrysEB_;
+    originalCalibAvgEE/=numTotalCrysEE_;
     // get orig time offsets
     originalOffsetEB = origTimeOffsetConstHandle->getEBValue();
     originalOffsetEE = origTimeOffsetConstHandle->getEEValue();
@@ -587,13 +623,12 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     //               -p1                                    cryCalibAvg
     double recoAvg = cryCalib.mean;
     double p1err = cryCalib.meanE;
-    double p1 = 0;
+    double p1;
     // Make it so we can add calib to reco time
     if(disableGlobalShift_)
       p1 = -1*recoAvg+originalCryCalibsEB[*hashItr]+originalOffsetEB;
     else
-      p1 = -1*recoAvg+originalCryCalibsEB[*hashItr]-originalCalibAvg+cryCalibAvg;
-
+      p1 = -1*recoAvg+originalCryCalibsEB[*hashItr]-originalCalibAvgEB+cryCalibAvgEB;
     fileStream << "EB\t" << *hashItr << "\t" << p1 << "\t\t" << p1err << std::endl;
     //Store in timeCalibration container
     EcalTimeCalibConstant tcConstant = p1;
@@ -616,13 +651,12 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     // Make timing calibs
     double recoAvg = cryCalib.mean;
     double p1err = cryCalib.meanE;
-    double p1 = 0;
+    double p1;
     // Make it so we can add calib to reco time
     if(disableGlobalShift_)
       p1 = -1*recoAvg+originalCryCalibsEE[*hashItr]+originalOffsetEE;
     else
-      p1 = -1*recoAvg+originalCryCalibsEE[*hashItr]-originalCalibAvg+cryCalibAvg;
-
+      p1 = -1*recoAvg+originalCryCalibsEE[*hashItr]-originalCalibAvgEE+cryCalibAvgEE;
     fileStream << "EE\t" << *hashItr << "\t" << p1 << "\t\t" << p1err << std::endl;
     //Store in timeCalibration container
     EcalTimeCalibConstant tcConstant = p1;
@@ -653,9 +687,11 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     if(det==EBDetId())
       continue;
     //Store in timeCalibration container
-    double p1 = 0;
+    double p1;
     if(disableGlobalShift_)
-      p1 = originalCryCalibsEB[*hashItr]+originalOffsetEB-cryCalibAvg;
+      p1 = originalCryCalibsEB[*hashItr]+originalOffsetEB-cryCalibAvgEB;
+    else
+      p1 = originalCryCalibsEB[*hashItr]-originalCalibAvgEB;
     double p1err = 999;
     EcalTimeCalibConstant tcConstant = p1;
     EcalTimeCalibError tcError = p1err;
@@ -674,9 +710,11 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     if(det==EEDetId())
       continue;
     //Store in timeCalibration container
-    double p1 = 0;
+    double p1;
     if(disableGlobalShift_)
-      p1 = originalCryCalibsEE[*hashItr]+originalOffsetEE-cryCalibAvg;
+      p1 = originalCryCalibsEE[*hashItr]+originalOffsetEE-cryCalibAvgEE;
+    else
+      p1 = originalCryCalibsEE[*hashItr]-originalCalibAvgEE;
     double p1err = 999;
     EcalTimeCalibConstant tcConstant = p1;
     EcalTimeCalibError tcError = p1err;
@@ -705,8 +743,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   }
   else
   {
-    timeOffsetConstant.setEBValue(originalOffsetEB+originalCalibAvg-cryCalibAvg);
-    timeOffsetConstant.setEEValue(originalOffsetEE+originalCalibAvg-cryCalibAvg);
+    timeOffsetConstant.setEBValue(originalOffsetEB+originalCalibAvgEB-cryCalibAvgEB);
+    timeOffsetConstant.setEEValue(originalOffsetEE+originalCalibAvgEE-cryCalibAvgEE);
   }
 
 
@@ -720,7 +758,6 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   header.tag_="testtag";
   header.date_="Mar 24 1973";
   std::string timeCalibErrFile = "EcalTimeCalibErrors.xml";
-  std::string timeOffsetFile = "EcalTimeOffset.xml";
   //NOTE: Hack should now be unnecessary...
   // Hack to prevent seg fault
   //EcalTimeCalibConstant tcConstant = 0;
@@ -731,7 +768,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   // End hack
   EcalTimeCalibConstantsXMLTranslator::writeXML(timeCalibFileName_,header,timeCalibConstants);
   EcalTimeCalibErrorsXMLTranslator::writeXML(timeCalibErrFile,header,timeCalibErrors);
-  EcalTimeOffsetXMLTranslator::writeXML(timeOffsetFile,header,timeOffsetConstant);
+  EcalTimeOffsetXMLTranslator::writeXML(timeOffsetFileName_,header,timeOffsetConstant);
 
   //Move empty bins out of the way -- EB
   int nxbins = calibMapEB_->GetNbinsX();
@@ -810,21 +847,21 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
   // double modEtaBins[10]={-85, -65, -45, -25, 0, 1, 26, 46, 66, 86};
   double ttPhiBins[73];
-  // double modPhiBins[19];
-  // double timingBins[79];
-  // double highEBins[11];
+  double modPhiBins[19];
+  double timingBins[79];
+  double highEBins[11];
   for (int i = 0; i < 79; ++i)
   {
-    // timingBins[i]=-7.+double(i)*14./78.;
+    timingBins[i]=-7.+double(i)*14./78.;
     if (i<73)
     {
       ttPhiBins[i]=1+5*i;
       if ( i < 19) 
       {
-        // modPhiBins[i]=1+20*i;
+        modPhiBins[i]=1+20*i;
         if (i < 11)
         {
-          // highEBins[i]=10.+double(i)*20.;
+          highEBins[i]=10.+double(i)*20.;
         }
       }
     }

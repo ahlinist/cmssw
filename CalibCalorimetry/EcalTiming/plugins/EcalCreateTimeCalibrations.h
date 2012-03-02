@@ -87,10 +87,13 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 std::vector<std::string> inputFiles_;
                 std::string fileName_; // beginning of file name of txt output, etc.
 		std::string timeCalibFileName_; 
+		std::string timeOffsetFileName_; 
                 TChain* myInputTree_;
                 bool produce_;
                 EcalTimeTreeContent treeVars_;
                 int numTotalCrys_;
+                int numTotalCrysEB_;
+                int numTotalCrysEE_;
                 // For selection cuts
                 bool disableGlobalShift_;
                 bool subtractDBcalibs_;
