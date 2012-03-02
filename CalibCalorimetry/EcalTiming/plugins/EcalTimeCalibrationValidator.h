@@ -10,6 +10,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 
 #include "CondFormats/EcalObjects/interface/EcalTimeCalibConstants.h"
+#include "CondFormats/EcalObjects/interface/EcalTimeOffsetConstant.h"
 
 #include "CalibCalorimetry/EcalTiming/interface/EcalTimeTreeContent.h"
 
@@ -43,15 +44,22 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
                 std::vector<std::string> split(std::string msg, std::string separator);
 
                 edm::ESHandle<EcalTimeCalibConstants> origTimeCalibConstHandle;
+                edm::ESHandle<EcalTimeOffsetConstant> origTimeOffsetConstHandle;
                 std::vector<std::string> inputFiles_;
                 std::string outputTreeFileName_; // file name of output ttree
                 std::string calibConstantFileName_; // file name of XML calib constants
+                std::string calibOffsetFileName_; // file name of XML calib Offset
                 TFile* outputTreeFile_;
                 TChain* myInputTree_;
                 TTree* myOutputTree_;
+                bool disableGlobalShift_;
                 bool produce_;
                 int maxEntries_;
                 int startingEntry_;
+                float originalOffsetEB;
+                float originalOffsetEE;
+                float recalibratedOffsetEB;
+                float recalibratedOffsetEE;
                 EcalTimeTreeContent ttreeMembersInput_;
                 std::string inRuns_;
 
@@ -60,5 +68,3 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
 
 };
 #endif
-
-
