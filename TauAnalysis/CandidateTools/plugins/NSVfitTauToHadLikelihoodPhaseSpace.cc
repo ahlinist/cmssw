@@ -43,11 +43,7 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
 
   double decayAngle = hypothesis_T->decay_angle_rf();
-  if ( this->verbosity_ ) {
-    std::cout << " decayAngle = " << decayAngle << std::endl;
-    double decayAngle_debug = SVfit_namespace::decayAngleFromLabMomenta(hypothesis_T->p4_fitted(), hypothesis_T->p4());
-    std::cout << " decayAngle_debug = " << decayAngle_debug << std::endl;
-  }
+  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
 
   double prob = TMath::Sin(decayAngle);
   
