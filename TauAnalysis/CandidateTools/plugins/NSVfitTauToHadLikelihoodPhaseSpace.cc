@@ -1,6 +1,7 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitTauToHadLikelihoodPhaseSpace.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
+#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 
@@ -42,12 +43,19 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
 
   double decayAngle = hypothesis_T->decay_angle_rf();
-
-  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
+  if ( this->verbosity_ ) {
+    std::cout << " decayAngle = " << decayAngle << std::endl;
+    double decayAngle_debug = SVfit_namespace::decayAngleFromLabMomenta(hypothesis_T->p4_fitted(), hypothesis_T->p4());
+    std::cout << " decayAngle_debug = " << decayAngle_debug << std::endl;
+  }
 
   double prob = TMath::Sin(decayAngle);
   
-  if ( applyVisPtCutCorrection_ ) prob *= evaluateVisPtCutCorrection(hypothesis);
+  if ( applyVisPtCutCorrection_ ) {
+    double probCorr = evaluateVisPtCutCorrection(hypothesis);
+    if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
+    prob *= probCorr;
+  }
 
   double nll = 0.;
   if ( prob > 0. ) {
