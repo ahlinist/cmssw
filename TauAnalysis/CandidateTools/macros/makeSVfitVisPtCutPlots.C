@@ -30,7 +30,7 @@ TH1* getHistogram(TFile* inputFile, const TString& directory, const TString& his
 
   if ( histogram && !histogram->GetSumw2N() ) histogram->Sumw2();
   else if ( !histogram) 
-    std::cerr << "Failed to load histogram = " << histogramName << " from file = " << inputFile->GetName() << " !!" << std::endl;
+    std::cerr << "Failed to load histogram = " << histogramName_full << " from file = " << inputFile->GetName() << " !!" << std::endl;
 
   return histogram;
 }
@@ -39,7 +39,7 @@ TH1* getHistogram(TFile* inputFile, const TString& directory, double massPoint, 
 {
   TString directory_full = TString(directory);
   if ( !directory_full.EndsWith("/") ) directory_full.Append("/");
-  directory_full.Append(Form("massEq%3.0fGeV", massPoint));
+  directory_full.Append(Form("massEq%1.0fGeV", massPoint));
   return getHistogram(inputFile, directory_full, histogramName);
 }
 
@@ -730,15 +730,15 @@ void showGraphMass(const std::string& type,
 
 void makeSVfitVisPtCutPlots()
 {
-  TString inputFileName = "../test/studySVfitVisPtCuts_2012Feb26.root";
+  TString inputFileName = "../test/studySVfitVisPtCuts_2012Mar04.root";
   TFile* inputFile = new TFile(inputFileName.Data());
 
   gROOT->SetBatch(true);
 
-  TString directory_beforeVisPtCuts        = "plotsBeforeVisPtCuts";
-  TString directory_afterVisPtCutsLeg1     = "plotsAfterVisPtCutsLeg1";
-  TString directory_afterVisPtCutsLeg2     = "plotsAfterVisPtCutsLeg2";
-  TString directory_afterVisPtCutsLeg1and2 = "plotsAfterVisPtCutsLeg1and2";
+  TString directory_beforeVisPtCuts        = "plotsBeforeVisEtaAndPtCuts";
+  TString directory_afterVisPtCutsLeg1     = "plotsAfterVisEtaAndPtCutsLeg1";
+  TString directory_afterVisPtCutsLeg2     = "plotsAfterVisEtaAndPtCutsLeg2";
+  TString directory_afterVisPtCutsLeg1and2 = "plotsAfterVisEtaAndPtCutsLeg1and2";
   
   TString histogramName_EventCounter = "histogramEventCounter";
   TString histogramName_X1           = "histogramLeg1X";
@@ -747,6 +747,46 @@ void makeSVfitVisPtCutPlots()
   TString histogramName_X2           = "histogramLeg2X";
   TString histogramName_NuMass2      = "histogramLeg2NuMass";
   TString histogramName_NuMass2vsX2  = "histogramLeg2NuMassVsX";
+
+  std::vector<std::string> histogramNames_X_dPhi;
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhiLt30"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhi30to60"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhi60to90"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhi90to120"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhi120to140"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhi140to160"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhi160to170"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhi170to175"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg1XdPhiGt175"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhiLt30"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhi30to60"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhi60to90"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhi90to120"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhi120to140"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhi140to160"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhi160to170"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhi170to175"));
+  histogramNames_X_dPhi.push_back(std::string("histogramLeg2XdPhiGt175"));
+
+  std::map<std::string, std::string> plotLabels_X_dPhi;
+  plotLabels_X_dPhi["histogramLeg1XdPhiLt30"]     = "X1_dPhiLt30";
+  plotLabels_X_dPhi["histogramLeg1XdPhi30to60"]   = "X1_dPhi30to60";
+  plotLabels_X_dPhi["histogramLeg1XdPhi60to90"]   = "X1_dPhi60to90";
+  plotLabels_X_dPhi["histogramLeg1XdPhi90to120"]  = "X1_dPhi90to120";
+  plotLabels_X_dPhi["histogramLeg1XdPhi120to140"] = "X1_dPhi120to140";
+  plotLabels_X_dPhi["histogramLeg1XdPhi140to160"] = "X1_dPhi140to160";
+  plotLabels_X_dPhi["histogramLeg1XdPhi160to170"] = "X1_dPhi160to170";
+  plotLabels_X_dPhi["histogramLeg1XdPhi170to175"] = "X1_dPhi170to175";
+  plotLabels_X_dPhi["histogramLeg1XdPhiGt175"]    = "X1_dPhiGt175";
+  plotLabels_X_dPhi["histogramLeg2XdPhiLt30"]     = "X2_dPhiLt30";
+  plotLabels_X_dPhi["histogramLeg2XdPhi30to60"]   = "X2_dPhi30to60";
+  plotLabels_X_dPhi["histogramLeg2XdPhi60to90"]   = "X2_dPhi60to90";
+  plotLabels_X_dPhi["histogramLeg2XdPhi90to120"]  = "X2_dPhi90to120";
+  plotLabels_X_dPhi["histogramLeg2XdPhi120to140"] = "X2_dPhi120to140";
+  plotLabels_X_dPhi["histogramLeg2XdPhi140to160"] = "X2_dPhi140to160";
+  plotLabels_X_dPhi["histogramLeg2XdPhi160to170"] = "X2_dPhi160to170";
+  plotLabels_X_dPhi["histogramLeg2XdPhi170to175"] = "X2_dPhi170to175";
+  plotLabels_X_dPhi["histogramLeg2XdPhiGt175"]    = "X2_dPhiGt175";
 
   std::vector<double> massPoints;
   massPoints.push_back(90.);
@@ -765,13 +805,16 @@ void makeSVfitVisPtCutPlots()
   massPoints.push_back(500.);
   massPoints.push_back(700.);
   massPoints.push_back(1000.);
- 
+
   std::vector<double> massPointErrsUp;
   std::vector<double> massPointErrsDown;
   
   typedef std::pair<double, double> fitParameterType; // first entry = value, second entry = estimated uncertainty
   std::map<double, std::vector<fitParameterType> > fitParameterX1; // key = mass-point
   std::map<double, std::vector<fitParameterType> > fitParameterX2; // key = mass-point
+
+  std::map<std::string, std::map<double, std::vector<fitParameterType> > > fitParameterX1_dPhi; // keys = plotLabel, mass-point
+  std::map<std::string, std::map<double, std::vector<fitParameterType> > > fitParameterX2_dPhi; // keys = plotLabel, mass-point
 
   int numMassPoints = massPoints.size();
   for ( int iMassPoint = 0; iMassPoint < numMassPoints; ++iMassPoint ) {
@@ -835,6 +878,36 @@ void makeSVfitVisPtCutPlots()
 	      histogram_X2_afterVisPtCutsLeg1and2,
 	      Form("plots/plotSVfitVisPtCut_X2_m%1.0f.eps", massPoint),
 	      fitParameterX2[massPoint]);
+
+    for ( std::vector<std::string>::const_iterator histogramName_X_dPhi = histogramNames_X_dPhi.begin();
+	  histogramName_X_dPhi != histogramNames_X_dPhi.end(); ++histogramName_X_dPhi ) {
+      int legIdx = -1;
+      std::string directory_afterVisPtCutsLeg1or2;
+      std::map<std::string, std::map<double, std::vector<fitParameterType> > >* fitParameterX_dPhi = NULL;
+      if ( histogramName_X_dPhi->find("Leg1X") != std::string::npos ) {
+	legIdx = 1;
+	directory_afterVisPtCutsLeg1or2 = directory_afterVisPtCutsLeg1and2;
+	fitParameterX_dPhi = &fitParameterX1_dPhi;
+      } else if ( histogramName_X_dPhi->find("Leg2X") != std::string::npos ) {
+	legIdx = 2;
+	directory_afterVisPtCutsLeg1or2 = directory_afterVisPtCutsLeg1and2;
+	fitParameterX_dPhi = &fitParameterX2_dPhi;
+      } else assert(0);
+      std::cout << (*histogramName_X_dPhi) << ": legIdx = " << legIdx << std::endl;
+      TH1* histogram_X_dPhi_beforeVisPtCuts = 
+	getHistogram(inputFile, directory_beforeVisPtCuts, massPoint, *histogramName_X_dPhi);      
+      TH1* histogram_X_dPhi_afterVisPtCutsLeg1or2 = 
+	getHistogram(inputFile, directory_afterVisPtCutsLeg1or2, massPoint, *histogramName_X_dPhi);
+      TH1* histogram_X_dPhi_afterVisPtCutsLeg1and2 = 
+	getHistogram(inputFile, directory_afterVisPtCutsLeg1and2, massPoint, *histogramName_X_dPhi);   
+      const std::string& plotLabel = plotLabels_X_dPhi[*histogramName_X_dPhi];
+      makePlotX(legIdx, 
+		histogram_X_dPhi_beforeVisPtCuts, 
+		histogram_X_dPhi_afterVisPtCutsLeg1or2, 
+		histogram_X_dPhi_afterVisPtCutsLeg1and2,
+		Form("plots/plotSVfitVisPtCut_%s_m%1.0f.eps", plotLabel.data(), massPoint),
+		(*fitParameterX_dPhi)[plotLabel][massPoint]);
+    }
 
     TH1* histogram_NuMass1_beforeVisPtCuts = 
       getHistogram(inputFile, directory_beforeVisPtCuts, massPoint, histogramName_NuMass1);
@@ -900,6 +973,26 @@ void makeSVfitVisPtCutPlots()
 		  massPoints, massPointErrsUp, massPointErrsDown, fitParameterX2,
 		  "plots/paramSVfitVisPtCut_fit1dX2vsMass.txt",
 		  "plots/plotSVfitVisPtCut_p%ifit1dX2vsMass.eps");
+
+    for ( std::vector<std::string>::const_iterator histogramName_X_dPhi = histogramNames_X_dPhi.begin();
+	  histogramName_X_dPhi != histogramNames_X_dPhi.end(); ++histogramName_X_dPhi ) {
+      std::string type;
+      std::map<std::string, std::map<double, std::vector<fitParameterType> > >* fitParameterX_dPhi = NULL;
+      if ( histogramName_X_dPhi->find("Leg1X") != std::string::npos ) {
+	type = "X1";
+	fitParameterX_dPhi = &fitParameterX1_dPhi;
+      } else if ( histogramName_X_dPhi->find("Leg2X") != std::string::npos ) {
+	type = "X2";
+	fitParameterX_dPhi = &fitParameterX2_dPhi;
+      } else assert(0);
+      const std::string& plotLabel = plotLabels_X_dPhi[*histogramName_X_dPhi];
+      std::string outputFileName_txt = Form("plots/paramSVfitVisPtCut_fit1d%svsMass.txt", plotLabel.data());
+      std::string outputFileName = Form("plots/plotSVfitVisPtCut_p%sfit1d%svsMass.eps", "%i", plotLabel.data());
+      showGraphMass(type,
+		    massPoints, massPointErrsUp, massPointErrsDown, (*fitParameterX_dPhi)[plotLabel],
+		    outputFileName_txt,
+		    outputFileName);
+    }
   }
 
   delete inputFile;
