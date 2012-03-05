@@ -6,16 +6,13 @@
 ## Filenames are stored with full path and prepended with `file:'.
 
 ## Usage: `. file-list-helper.sh | sh'
-
 ## Customization: Modify the values of PRIMARY_DATASET and SOURCE_LIST.
-
-#PRIMARY_DATASET=DoubleMu
+PRIMARY_DATASET='WJetsToLNu_TuneZ2_7TeV-madgraph-tauola'
+## ZGToEEG_TuneZ2_7TeV-madgraph/Fall11-PU_S6_START42_V14B-v1_glite_Diphoton_AOD-42X-v10
 #SOURCE_LIST=$(cat new_dirs_2.txt)
-
-PRIMARY_DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia
-SOURCE_LIST='Summer11-PU_S4_START42_V11-v1_glite_Dimuon_RECO-42X-v9
-             Summer11-PU_S4_START42_V11-v1_glidein_Dimuon_RECO-42X-v9'
-
+SOURCE_LIST='
+    Fall11-PU_S6_START42_V14B-v1_condor_Dimuon_AOD-42X-v10
+    '
 
 for PROCESSED_DATASET in $SOURCE_LIST; do
     echo "listFiles.py $TIER2/$PRIMARY_DATASET/$PROCESSED_DATASET <<END"

@@ -9,14 +9,14 @@
 
 ## Customization: Modify the values of PRIMARY_DATASET and SOURCE_LIST.
 
-#PRIMARY_DATASET=DoubleMu
+PRIMARY_DATASET=DoubleMu
 #SOURCE_LIST=$(cat new_dirs_2.txt)
-
-PRIMARY_DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia
-SOURCE_LIST='Summer11-PU_S4_START42_V11-v1_glite_Dimuon_RECO-42X-v9
-             Summer11-PU_S4_START42_V11-v1_glidein_Dimuon_RECO-42X-v9'
-
-
+SOURCE_LIST='
+    Run2011A-30Nov2011-v1_condor_Dimuon_AOD-42X-v10
+    Run2011B-30Nov2011-v1_condor_Dimuon_AOD-42X-v10
+    Run2011A-30Nov2011-v1_condor_Dimuon_AOD-42X-v10_DBS
+    Run2011B-30Nov2011-v1_condor_Dimuon_AOD-42X-v10_DBS
+    '
 
 for PROCESSED_DATASET in $SOURCE_LIST; do
     INPUT=files_${PRIMARY_DATASET}_${PROCESSED_DATASET}.dat
