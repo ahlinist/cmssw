@@ -36,9 +36,23 @@
 # VERSION=16
 ## PU weights for 2011A only
 
-VERSION=17
+## VERSION=17
 ## PU weights for 2011B only
 
+## VERSION=18
+## Fall 2011 MC + 16Jan 2011A + 2011B rereco
+
+# VERSION=19
+## Fall 2011 MC + 30Jan 2011A + 2011B rereco, AN-12-048 JSON and
+## analysis PU distribution from data
+
+# VERSION=20
+## Fall 2011 MC, AN-12-048 JSON and
+## analysis PU distribution from data for 2011A only
+
+VERSION=21
+## Fall 2011 MC, AN-12-048 JSON and
+## analysis PU distribution from data for 2011B only
 
 
 ##################### DATA #########################
@@ -62,12 +76,17 @@ VERSION=17
 # DATASET=DoubleMu_Run2011A-03Oct2011-v1_condor_Dimuon_RECO-42X-v9
 # DATASET=DoubleMu_Run2011A-PromptReco-v6_glite_Dimuon_RECO-42X-v9
 # DATASET=DoubleMu_Run2011B-PromptReco-v1_condor_Dimuon_RECO-42X-v9
+# DATASET=DoubleMu_Run2011A-16Jan2012-v1_condor_Dimuon_AOD-42X-v10
+# DATASET=DoubleMu_Run2011B-16Jan2012-v1_condor_Dimuon_AOD-42X-v10
+# DATASET=DoubleMu_Run2011A-30Nov2011-v1_condor_Dimuon_AOD-42X-v10_DBS
+# DATASET=DoubleMu_Run2011B-30Nov2011-v1_condor_Dimuon_AOD-42X-v10_DBS
 
 # JSON_FILE=Cert_136033-166861_Apr21_May10_Prompt-v4_Golden.json
 # JSON_FILE=Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON.txt
 # JSON_FILE=Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON.txt
 # JSON_FILE=Cert_Golden_new.json
 # JSON_FILE=Cert_160404-180252_5Aug-v3_Prompt_Golden.txt
+# JSON_FILE=Cert_160404-180252_AN-12-048_HggMVA.json
 # TOTAL_SECTIONS=8
 # for SECTION in `seq $TOTAL_SECTIONS`; do
 #     nohup cmsRun PmvTreeMaker_cfg.py \
@@ -93,6 +112,13 @@ VERSION=17
 # TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v2_condor_Dimuon_RECO-42X-v9
 # QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1_condor_Dimuon_RECO-42X-v9
 # '
+
+# DATASETS='
+#     QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_Fall11-PU_S6_START42_V14B-v1_condor_Dimuon_AOD-42X-v10_10Feb
+#     TT_TuneZ2_7TeV-powheg-tauola_Fall11-PU_S6_START42_V14B-v1_condor_Dimuon_AOD-42X-v10_10Feb
+#     WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v1_condor_Dimuon_AOD-42X-v10_10Feb
+#     '
+#
 # for DATASET in $DATASETS
 # do
 #     nohup cmsRun PmvTreeMaker_cfg.py \
@@ -101,7 +127,7 @@ VERSION=17
 #         isMC=True \
 #         maxEvents=-1 \
 #         outputFile=/wntmp/veverka/pmvTree_V${VERSION}_${DATASET} \
-#         >& /wntmp/veverka/pmv_${DATASET}.out &
+#         >& /wntmp/veverka/pmvTree_V${VERSION}_${DATASET}.log &
 # done
 #
 #G_Pt-15to3000_TuneZ2_Flat_7TeV_pythia6_Summer11_AOD_42X-v4
@@ -128,16 +154,17 @@ VERSION=17
 #     eval $COMMAND
 # done
 
-# ################ VERY LARGE MC ##################
+################ VERY LARGE MC ##################
 # DATASET=DYToMuMu_M-20-powheg-pythia_Winter10-v2
 # DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_S4-v1_condor_Dimuon_AOD-42X-v9
-DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1_glidein_Dimuon_RECO-42X-v9
+# DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1_glidein_Dimuon_RECO-42X-v9
 # DATASET=DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1_condor_Dimuon_AOD-42X-v9
+# DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall11-PU_S6_START42_V14B-v1_glite_Dimuon_AOD-42X-v10_10Feb
+DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall11-PU_S6_START42_V14B-v1_condor_Dimuon_AOD-42X-v10_10Feb
 
-#TOTAL_BATCHES=8
-TOTAL_BATCHES=2
+TOTAL_BATCHES=5
 JOBS_PER_BATCH=8
-((TOTAL_SECTIONS=JOBS_PER_BATCH*TOTAL_BATCHES))
+(( TOTAL_SECTIONS = JOBS_PER_BATCH * TOTAL_BATCHES ))
 BATCH=${1:-1}
 
 FIRST_SECTION=$((JOBS_PER_BATCH*(BATCH-1)+1))
@@ -152,7 +179,7 @@ for SECTION in $(seq $FIRST_SECTION $LAST_SECTION); do
         outputFile=/wntmp/veverka/pmvTree_V${VERSION}_${DATASET} \
         totalSections=$TOTAL_SECTIONS \
         section=$SECTION \
-        >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
+        >& /wntmp/veverka/pmvTree_V${VERSION}_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.log &
 done
 
 
@@ -163,9 +190,11 @@ done
 # DATASET=RelValSingleGammaPt35_RECO-42X-v4
 # DATASET=VBF_HToGG_M-120_7TeV-powheg-pythia6_Summer11_42X-v4
 # DATASET=G_Pt-15to3000_TuneZ2_Flat_7TeV_pythia6_S4-v1_condor_Inclusive_AOD-42X-v9
+# DATASET=WGToENuG_TuneZ2_7TeV-madgraph_Fall11-PU_S6_START42_V14B-v1_glite_Diphoton_AOD-42X-v10
+# DATASET=WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v1_glite_Diphoton_AOD-42X-v10
 # TOTAL_SECTIONS=8
-# SECTION=3
-#     python -i HigagaPmvTreeMaker_cfg.py \
+# # SECTION=3
+# #     python -i HigagaPmvTreeMaker_cfg.py \
 # for SECTION in `seq $TOTAL_SECTIONS`; do
 #     nohup cmsRun HigagaPmvTreeMaker_cfg.py \
 #         print \
