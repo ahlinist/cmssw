@@ -14,7 +14,7 @@ const char * hname = "pudist";*/
 
 // const char * fname = "pudist_G_Pt-15to3000_TuneZ2_Flat_7TeV_pythia6"
 //                        "_S4-v1_condor_Inclusive_AOD-42X-v9.root";
- 
+
 // Runs 2011A and 2011B combined
 // const char * fname = "Cert_160404-180252_7TeV_May10Re-v3_Prompt_Aug5Re-v2_Prompt.pileup_v2.root";
 
@@ -22,7 +22,7 @@ const char * hname = "pudist";*/
 // const char * fname = "Cert_160404-173692_7TeV_May10Re-v3_Prompt_Aug5Re-v2.pileup_v2.root";
 
 // Run 2011B
-const char * fname = "Cert_175832-180252_7TeV_Prompt.pileup_v2.root";
+const char * fname = "DataPileupHistogram_analysis_AN-12-048_HggMVA_2011B.root";
 const char * hname = "pileup";
 TFile file(fname);
 TH1F * hist =  (TH1F*) file.Get(hname) ;
