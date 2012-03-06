@@ -1,8 +1,39 @@
-<use name="TauAnalysis/CandidateTools"/>
-<use name="FWCore/PythonParameterSet"/>
-<use name="FWCore/ParameterSet"/>
-<use name="rootcintex"/>
-<use name="root"/>
-<environment>
-  <bin file="nsvfitStandalone.cc"> </bin>
-</environment>
+<bin   file="trainNeuralMtautau.cc" name="trainNeuralMtautau">
+  <use   name="DataFormats/Common"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+</bin>
+<bin   file="testNeuralMtautau.cc" name="testNeuralMtautau">
+  <use   name="DataFormats/Common"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+</bin>
+<bin   file="studySVfitVisPtCuts.cc" name="studySVfitVisPtCuts">
+  <use   name="DataFormats/Candidate"/>
+  <use   name="DataFormats/Common"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="root"/>
+</bin>
+<bin   file="nsvfitStandalone.cc" name="nsvfitStandalone">
+  <use name="FWCore/PythonParameterSet"/>
+  <use name="FWCore/ParameterSet"/>
+  <use name="TauAnalysis/CandidateTools"/>
+  <use name="rootcintex"/>
+  <use name="root"/>
+</bin>
