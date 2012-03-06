@@ -56,10 +56,94 @@ TH1* compRatioHistogram(const TString& ratioHistogramName, const TH1* numerator,
   return histogramRatio;
 }
 
+struct fitParameterTypeBase
+{
+  fitParameterTypeBase(const fitParameterTypeBase& bluePrint)
+  {
+    formula_ = bluePrint.formula_;
+    xMin_ = bluePrint.xMin_;
+    xMax_ = bluePrint.xMax_;
+    numFitParameter_ = bluePrint.numFitParameter_;
+    fitStatus_ = bluePrint.fitStatus_;
+  }
+  fitParameterTypeBase(const std::string& variable, const TF1* fitFunction, double xMin, double xMax, int fitStatus)
+  {
+    set(variable, fitFunction, xMin, xMax, fitStatus);
+  }
+  void set(const std::string& variable, const TF1* fitFunction, double xMin, double xMax, int fitStatus)
+  {
+    variable_ = variable;
+    formula_ = fitFunction->GetTitle();
+    xMin_ = xMin;
+    xMax_ = xMax;
+    numFitParameter_ = fitFunction->GetNpar();
+    fitStatus_ = fitStatus;
+  }
+  virtual fitParameterTypeBase* clone() = 0;
+  std::string variable_;
+  std::string formula_;
+  double xMin_;
+  double xMax_;
+  int numFitParameter_;
+  int fitStatus_;
+};
+
+struct fitParameterType_const : public fitParameterTypeBase
+{
+  fitParameterType_const(const fitParameterType_const& bluePrint)
+    : fitParameterTypeBase(bluePrint)
+  {
+    fitParameterValues_.resize(bluePrint.numFitParameter_);
+    fitParameterErrors_.resize(bluePrint.numFitParameter_);
+    for ( int iFitParameter = 0; iFitParameter < numFitParameter_; ++iFitParameter ) {
+      fitParameterValues_[iFitParameter] = bluePrint.fitParameterValues_[iFitParameter];
+      fitParameterErrors_[iFitParameter] = bluePrint.fitParameterErrors_[iFitParameter];
+    }
+  }
+  fitParameterType_const(const fitParameterTypeBase& bluePrint)
+    : fitParameterTypeBase(bluePrint)
+  {}
+  fitParameterType_const(const std::string& variable, const TF1* fitFunction, double xMin, double xMax, int fitStatus)
+    : fitParameterTypeBase(variable, fitFunction, xMin, xMax, fitStatus)
+  {
+    set(variable, fitFunction, xMin, xMax, fitStatus);
+  }
+  void set(const std::string& variable, const TF1* fitFunction, double xMin, double xMax, int fitStatus)
+  {
+    fitParameterTypeBase::set(variable, fitFunction, xMin, xMax, fitStatus);
+    fitParameterValues_.resize(numFitParameter_);
+    fitParameterErrors_.resize(numFitParameter_);
+    for ( int iFitParameter = 0; iFitParameter < numFitParameter_; ++iFitParameter ) {
+      fitParameterValues_[iFitParameter] = fitFunction->GetParameter(iFitParameter);
+      fitParameterErrors_[iFitParameter] = fitFunction->GetParError(iFitParameter);
+    }
+  }
+  fitParameterTypeBase* clone() { return new fitParameterType_formula(*this); }
+  std::vector<double> fitParameterValues_;
+  std::vector<double> fitParameterErrors_;
+};
+
+struct fitParameterType_formula : public fitParameterTypeBase
+{
+  fitParameterType_formula(const fitParameterType_formula& bluePrint)
+    : fitParameterTypeBase(bluePrint)
+  {    
+    fitParameters_.resize(bluePrint.numFitParameter_);
+    for ( int iFitParameter = 0; iFitParameter < numFitParameter_; ++iFitParameter ) {
+      fitParameters_[iFitParameter] = bluePrint.fitParameters_[iFitParameter]->clone();
+    }
+  }
+  fitParameterType_(const fitParameterTypeBase& bluePrint)
+    : fitParameterTypeBase(bluePrint)
+  {}
+  fitParameterTypeBase* clone() { return new fitParameterType_formula(*this); }
+  std::vector<fitParameterTypeBase*> fitParameters_;
+};
+
 TF1* fitX1d(TH1* histogram_afterVisPtCuts_div_beforeVisPtCuts, 
 	    TH1* histogram_beforeVisPtCuts, 
 	    double visPtCut, double mass,
-	    int* fitStatus, std::vector<std::pair<double, double> >* fitParameter)
+	    fitParameterType_const* fitParameter)
 {
   std::cout << "<fitX1d>:" << std::endl;
   std::cout << " visPtCut = " << visPtCut << std::endl;
@@ -108,17 +192,10 @@ TF1* fitX1d(TH1* histogram_afterVisPtCuts_div_beforeVisPtCuts,
   fitFunction->SetParameter(3, p3_initial);
   fitFunction->SetParameter(4, p4_initial);
   TFitResultPtr fitResult = histogram_afterVisPtCuts_div_beforeVisPtCuts->Fit(fitFunction, "0");
-  if ( fitStatus ) {
-    (*fitStatus) = (int)fitResult;
-    std::cout << "fitStatus = " << (*fitStatus) << std::endl;
-  }
+  std::cout << "fitStatus = " << (int)fitResult << std::endl;
+
   if ( fitParameter ) {
-    int numFitParameter = fitFunction->GetNpar();
-    for ( int iFitParameter = 0; iFitParameter < numFitParameter; ++iFitParameter ) {
-      double fitParameterValue = fitFunction->GetParameter(iFitParameter);
-      double fitParameterError = fitFunction->GetParError(iFitParameter);
-      fitParameter->push_back(std::pair<double, double>(fitParameterValue, fitParameterError));
-    }
+    fitParameter->set("X", fitFunction, xMin, xMax, (int)fitResult);
   }
 
   return fitFunction;
@@ -129,7 +206,7 @@ void showPlot(TH1* histogramRef, const std::string& legendEntryRef,
 	      TH1* histogram2, const std::string& legendEntry2,
 	      TF1* (*fitFunction)(TH1*, TH1*, double, double, int*, std::vector<std::pair<double, double> >*), 
 	      double visPtCut, double mass,
-	      int* fitStatus, std::vector<std::pair<double, double> >* fitParameter,
+	      fitParameterType_const* fitParameter,
 	      const std::string& xAxisTitle, 
 	      const std::string& outputFileName)
 {
@@ -241,7 +318,7 @@ void showPlot(TH1* histogramRef, const std::string& legendEntryRef,
   TString histogram2divRefName = TString(histogram2->GetName()).Append("_div_").Append(histogramRef->GetName());
   TH1* histogram2divRef = compRatioHistogram(histogram2divRefName, histogram2, histogramRef);
 
-  TF1* fitFunction2 = (*fitFunction)(histogram2divRef, histogramRef, visPtCut, mass, fitStatus, fitParameter);
+  TF1* fitFunction2 = (*fitFunction)(histogram2divRef, histogramRef, visPtCut, mass, fitParameter);
   fitFunction2->SetLineColor(histogram2divRef->GetLineColor());
   fitFunction2->SetLineWidth(1);
   fitFunction2->Draw("same");
@@ -293,7 +370,7 @@ void makePlotX(int legIdx,
   showPlot(histogram_beforeVisPtCuts_normalized, legendEntry_beforeVisPtCuts,
 	   histogram_afterVisPtCutsSingleLeg_normalized, legendEntry_afterVisPtCutsSingleLeg,
 	   histogram_afterVisPtCutsBothLegs_normalized, legendEntry_afterVisPtCutsBothLegs,
-	   fitFunction, visPtCut, mass, fitStatus, fitParameter, xAxisTitle, outputFileName);
+	   fitFunction, visPtCut, mass, fitParameter, xAxisTitle, outputFileName);
 }
 
 void showHistogram2d(TH2* histogram, 
@@ -386,13 +463,22 @@ void makePlotNuMassVsX(int legIdx,
 void showGraphDPhi(const std::string& type,
 		   const std::vector<double>& dPhiValues,
 		   const std::vector<double>& dPhiErrsUp, const std::vector<double>& dPhiErrsDown, 
-		   std::map<double, int>& fitStatus_in, std::map<double, std::vector<std::pair<double, double> > >& fitParameter_in,
-		   int* fitStatus_out, std::vector<std::pair<double, double> >* fitParameter_out,
+		   std::map<double, fitParameterType_const>& fitParameter_in,
+		   fitParameterType_formula* fitParameter_out,
 		   const std::string& outputFileName)
 {
-  int numFitParameter_in = fitParameter_in.begin()->second.size();
+  const fitParameterType_const& fitParameter_in_ref = fitParameter_in.begin()->second;
+  int numFitParameter_in = fitParameter_in_ref.numFitParameter_;
+  if ( fitParameter_out ) {
+    fitParameter_out
+    fitParameter_out->variable_ = fitParameter_in_ref.variable_;
+    fitParameter_out->formula_ = fitParameter_in_ref.variable_;
+    fitParameter_out->variable_ = fitParameter_in_ref.variable_;
+    fitParameter_out->variable_ = fitParameter_in_ref.variable_;
+    fitParameter_out->fitParameters_.resize(numFitParameter_in);
+  }
   for ( int iFitParameter_in = 0; iFitParameter_in < numFitParameter_in; ++iFitParameter_in ) {
-        
+
     std::vector<double> graph_xs;
     std::vector<double> graph_xErrsUp;
     std::vector<double> graph_xErrsDown;
@@ -403,17 +489,19 @@ void showGraphDPhi(const std::string& type,
     int numDPhiValues = dPhiValues.size();
     for ( int iDPhiValue = 0; iDPhiValue < numDPhiValues; ++iDPhiValue ) {
       double dPhiValue = dPhiValues[iDPhiValue];
+
+      const fitParameterType_const& fitParameter_in_dPhi = fitParameter_in[dPhiValue];
       
       double x         = dPhiValue;
       double xErrUp    = dPhiErrsUp[iDPhiValue];
       double xErrDown  = dPhiErrsDown[iDPhiValue];
       
-      if ( !((int)fitParameter_in[dPhiValue].size() == numFitParameter_in) ) continue;
+      assert(fitParameter_in_dPhi.numFitParameter_ == numFitParameter_in);
 
-      double y         = fitParameter_in[dPhiValue][iFitParameter_in].first;
-      double yErr      = fitParameter_in[dPhiValue][iFitParameter_in].second;
+      double y         = fitParameter_in_dPhi.fitParameterValues_[iFitParameter_in];
+      double yErr      = fitParameter_in_dPhi.fitParameterErrors_[iFitParameter_in];
 
-      if ( fitStatus_in[dPhiValue] == 0 ) {
+      if ( fitParameter_in_dPhi.fitStatus_ == 0 ) {
 	graph_xs.push_back(x);
         graph_xErrsUp.push_back(xErrUp);
         graph_xErrsDown.push_back(xErrDown);
@@ -455,24 +543,15 @@ void showGraphDPhi(const std::string& type,
       fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
       fitOptions = "W";
     } else if ( iFitParameter_in == 3 ) {
-      fitFunction = new TF1("fitFunction", "[0] + [1]*x + [2]*0.5*(3.*x*x - 1.)", xMin, xMax);
+      fitFunction = new TF1("fitFunction", "[0] + [1]*x", xMin, xMax);
     } else if ( iFitParameter_in == 4 ) {
       fitFunction = new TF1("fitFunction", "[0] + [1]*x", xMin, xMax);
       fitOptions = "W";
     } else assert(0);
     fitOptions.append("0");
     TFitResultPtr fitResult = graph->Fit(fitFunction, fitOptions.data());   
-    if ( fitStatus_out ) {
-      (*fitStatus_out) = (int)fitResult;
-      std::cout << "fitStatus = " << (*fitStatus_out) << std::endl;
-    }
     if ( fitParameter_out ) {
-      int numFitParameter_out = fitFunction->GetNpar();
-      for ( int iFitParameter_out = 0; iFitParameter_out < numFitParameter_out; ++iFitParameter_out ) {
-	double fitParameterValue = fitFunction->GetParameter(iFitParameter_out);
-	double fitParameterError = fitFunction->GetParError(iFitParameter_out);
-	fitParameter_out->push_back(std::pair<double, double>(fitParameterValue, fitParameterError));
-      }
+      fitParameter_out->fitParameters_[iFitParameter_in] = new fitParameterType_const("dPhi", fitFunction, xMin, xMax, (int)fitResult);
     }
 
     double yMin = +1.e+6;
@@ -537,161 +616,213 @@ void showGraphDPhi(const std::string& type,
   }
 }
 
-struct fitFunctionParameters
-{
-  int numFitParameter_;
-  std::vector<double> fitParameterValues_;
-  std::vector<double> fitParameterErrors_;
-  int fitStatus_;
-};
-
 void showGraphMass(const std::string& type,
 		   const std::vector<double>& massPoints,
 		   const std::vector<double>& massPointErrsUp, const std::vector<double>& massPointErrsDown, 
-		   std::map<double, int>& fitStatus, std::map<double, std::vector<std::pair<double, double> > >& fitParameter,
+		   std::map<double, fitParameterType_formula>& fitParameter_in,
+		   fitParameterType_formula* fitParameter_out,
 		   const std::string& outputFileName)
 {
-  int numFitParameter = fitParameter.begin()->second.size();
-  for ( int iFitParameter = 0; iFitParameter < numFitParameter; ++iFitParameter ) {
-        
-    std::vector<double> graph_xs;
-    std::vector<double> graph_xErrsUp;
-    std::vector<double> graph_xErrsDown;
-    std::vector<double> graph_ys;
-    std::vector<double> graph_yErrsUp;
-    std::vector<double> graph_yErrsDown;
-
-    int numMassPoints = massPoints.size();
-    for ( int iMassPoint = 0; iMassPoint < numMassPoints; ++iMassPoint ) {
-      double massPoint = massPoints[iMassPoint];
-
-      double x         = massPoint;
-      double xErrUp    = massPointErrsUp[iMassPoint];
-      double xErrDown  = massPointErrsDown[iMassPoint];
+  int numFitParameter_in_formula = fitParameter_in.begin()->second.numFitParameter_;
+  if ( fitParameter_out ) {
+    fitParameter_out->fitParameters_.resize(numFitParameter_in_formula);
+  }
+  for ( int iFitParameter_in_formula = 0; iFitParameter_in_formula < numFitParameter_in_formula; ++iFitParameter_in_formula ) {
+    assert((int)fitParameter_in[iFitParameter_in_formula].numFitParameter_ == numFitParameter_in_formula);
+    std::vector<fitParameterType_const> fitParameter_out_const;
+    int numFitParameter_in_const = fitParameter_in.begin()->second.fitParameterValues_.begin().numFitParameter_;
+    for ( int iFitParameter_in_const = 0; iFitParameter_in_const < numFitParameter_in_const; ++iFitParameter_in_const ) {
       
-      if ( !((int)fitParameter[massPoint].size() == numFitParameter) ) continue;
+      std::vector<double> graph_xs;
+      std::vector<double> graph_xErrsUp;
+      std::vector<double> graph_xErrsDown;
+      std::vector<double> graph_ys;
+      std::vector<double> graph_yErrsUp;
+      std::vector<double> graph_yErrsDown;
+      
+      int numMassPoints = massPoints.size();
+      for ( int iMassPoint = 0; iMassPoint < numMassPoints; ++iMassPoint ) {
+	double massPoint = massPoints[iMassPoint];
 
-      double y         = fitParameter[massPoint][iFitParameter].first;
-      double yErr      = fitParameter[massPoint][iFitParameter].second;
+	const fitParameterType_formula& fitParameter_in_formula = fitParameter_in[iMassPoint];
+	const fitParameterType_const* fitParameter_in_const = dynamic_cast<const fitParameterType_const*>(
+          fitParameter_in_formula.fitParameterValues_[iFitParameter_in_formula]);
+	assert(fitParameter_in_const);
 
-      if ( fitStatus[massPoint] == 0 ) {
-	graph_xs.push_back(x);
-        graph_xErrsUp.push_back(xErrUp);
-        graph_xErrsDown.push_back(xErrDown);
-        graph_ys.push_back(y);
-        graph_yErrsUp.push_back(yErr);
-	graph_yErrsDown.push_back(yErr);
+	double x         = massPoint;
+	double xErrUp    = massPointErrsUp[iMassPoint];
+	double xErrDown  = massPointErrsDown[iMassPoint];
+      
+	assert(fitParameter_in_const.numFitParameter_ == numFitParameter_in_const);
+
+	double y         = fitParameter_in_const->fitParameterValues_[iFitParameter_in_const];
+	double yErr      = fitParameter_in_const->fitParameterErrors_[iFitParameter_in_const];
+
+	if ( fitParameter_in_formula.fitStatus_ == 0 &&
+	     fitParameter_in_const->fitStatus_  == 0 ) {
+	  graph_xs.push_back(x);
+	  graph_xErrsUp.push_back(xErrUp);
+	  graph_xErrsDown.push_back(xErrDown);
+	  graph_ys.push_back(y);
+	  graph_yErrsUp.push_back(yErr);
+	  graph_yErrsDown.push_back(yErr);
+	}
       }
+
+      size_t numPoints = graph_xs.size();
+      assert(graph_xErrsUp.size()   == numPoints);
+      assert(graph_xErrsDown.size() == numPoints);
+      assert(graph_ys.size()        == numPoints);
+      assert(graph_yErrsUp.size()   == numPoints);
+      assert(graph_yErrsDown.size() == numPoints);
+      TGraphAsymmErrors* graph = new TGraphAsymmErrors(numPoints);
+      for ( size_t iPoint = 0; iPoint < numPoints; ++iPoint ) {
+        graph->SetPoint(
+          iPoint, 
+          graph_xs[iPoint], 
+          graph_ys[iPoint]);
+        graph->SetPointError(
+          iPoint, 
+          graph_xErrsDown[iPoint], graph_xErrsUp[iPoint], 
+          graph_yErrsDown[iPoint], graph_yErrsUp[iPoint]);
+      }
+
+      double xMin = massPoints[0];
+      double xMax = massPoints[numMassPoints - 1];
+    
+      TF1* fitFunction = 0;
+      std::string fitOptions;
+      if ( iFitParameter_in == 0 ) {
+        fitFunction = new TF1("fitFunction", "[0]/TMath::Power(TMath::Max(5., x - [1]), [2])", xMin, xMax);
+      } else if ( iFitParameter_in == 1 ) {
+	fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
+      } else if ( iFitParameter_in == 2 ) {
+	fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
+      } else if ( iFitParameter_in == 3 ) {
+	fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
+      } else if ( iFitParameter_in == 4 ) {
+	fitFunction = new TF1("fitFunction", "[0]/([1] + x)", xMin, xMax);
+      } else if ( iFitParameter_in == 5 ) {
+	fitFunction = new TF1("fitFunction", "[0]*0.5*(1.0 - TMath::Erf(-[1]*(x - [2])*TMath::Power(TMath::Abs(x - [2]), [3])))", xMin, xMax);
+      } else if ( iFitParameter_in == 6 ) {
+	fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
+      } else if ( iFitParameter_in == 7 ) {
+	fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
+      } else if ( iFitParameter_in == 8 ) {
+	fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
+      } else if ( iFitParameter_in == 9 ) {
+	fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
+      } else assert(0);
+      fitOptions.append("0");
+      TFitResultPtr fitResult = graph->Fit(fitFunction, fitOptions.data());
+      fitParameter_out_const.push_back(fitParameterType_const(fitFunction, xMin, xMax, (int)fitResult));
+
+      double yMin = +1.e+6;
+      double yMax = -1.e+6;
+      for ( size_t iPoint = 0; iPoint < numPoints; ++iPoint ) {
+	double x, y;
+	graph->GetPoint(iPoint, x, y);
+	if ( x > xMin && x < xMax ) {
+	  if ( y < yMin ) yMin = y;
+	  if ( y > yMax ) yMax = y;
+	}
+      }    
+      yMin -= 0.06*(yMax - yMin);
+      yMax += 0.06*(yMax - yMin);
+      
+      TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
+      canvas->SetFillColor(10);
+      canvas->SetBorderSize(2);
+      
+      canvas->SetLeftMargin(0.12);
+      canvas->SetBottomMargin(0.12);
+      
+      TH1* dummyHistogram = new TH1F("dummyHistogram", "dummyHistogram", 10, xMin, xMax);
+      dummyHistogram->SetStats(false);
+      dummyHistogram->SetTitle("");
+      dummyHistogram->SetMinimum(yMin);
+      dummyHistogram->SetMaximum(yMax);
+      
+      std::string xAxisTitle = "M_{#tau#tau} / GeV";
+      std::string yAxisTitle = Form("p_{%i}", iFitParameter);
+      
+      TAxis* xAxis = dummyHistogram->GetXaxis();
+      xAxis->SetTitle(xAxisTitle.data());
+      xAxis->SetTitleOffset(1.15);
+      
+      TAxis* yAxis = dummyHistogram->GetYaxis();
+      yAxis->SetTitle(yAxisTitle.data());
+      yAxis->SetTitleOffset(1.30);
+      
+      dummyHistogram->Draw("axis");
+      
+      fitFunction->SetLineColor(2);
+      fitFunction->SetLineWidth(2);
+      fitFunction->Draw("same");
+      
+      graph->SetMarkerStyle(20);
+      graph->SetMarkerColor(1);
+      graph->Draw("P");
+      
+      canvas->Update();
+      size_t idx = outputFileName.find_last_of('.');
+      std::string outputFileName_param = std::string(outputFileName, 0, idx);
+      outputFileName_param = Form(outputFileName_param.data(), iFitParameter);
+      if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_param).append(std::string(outputFileName, idx)).data());
+      canvas->Print(std::string(outputFileName_param).append(".png").data());
+      canvas->Print(std::string(outputFileName_param).append(".pdf").data());
+      canvas->Print(std::string(outputFileName_param).append(".root").data());
+      
+      delete fitFunction;
+      delete dummyHistogram;
+      delete canvas;
     }
 
-    size_t numPoints = graph_xs.size();
-    assert(graph_xErrsUp.size()   == numPoints);
-    assert(graph_xErrsDown.size() == numPoints);
-    assert(graph_ys.size()        == numPoints);
-    assert(graph_yErrsUp.size()   == numPoints);
-    assert(graph_yErrsDown.size() == numPoints);
-    TGraphAsymmErrors* graph = new TGraphAsymmErrors(numPoints);
-    for ( size_t iPoint = 0; iPoint < numPoints; ++iPoint ) {
-      graph->SetPoint(
-        iPoint, 
-        graph_xs[iPoint], 
-        graph_ys[iPoint]);
-      graph->SetPointError(
-        iPoint, 
-        graph_xErrsDown[iPoint], graph_xErrsUp[iPoint], 
-        graph_yErrsDown[iPoint], graph_yErrsUp[iPoint]);
+    if ( fitParameter_out ) {
+      const fitParameterType_formula& fitParameter_ref_formula = fitParameter_in.begin()->second;
+       int numFitParameter_in_const = fitParameter_in.begin()->second.fitParameterValues_.begin().numFitParameter_;
+    for ( int iFitParameter_in_const = 0; iFitParameter_in_const < numFitParameter_in_const; ++iFitParameter_in_const ) {
+
+      const fitParameterType_const* fitParameter_ref_const = dynamic_cast<const fitParameterType_const*>(
+        fitParameter_ref_formula.fitParameterValues_[iFitParameter_in_formula]);
+      
+
+
+	 if ( iFitParameter_in_const == 0 ) {
+	   fitParameter_out->fitParameters_[iFitParameter_in_formula] = new fitParameterType_formula(fitParameter_ref_formula);
+	   fitParameter_out->fitParameters_[iFitParameter_in_formula].fitParameters_.resize(numFitParameter_in_const);
+	 }
+	 fitParameterType_const* fitParameter_out_const = new fitParameterType_formula("mass", fitFunction, xMin, xMax, (int)fitResult);
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula].fitParameters_[iFitParameter_in_const] = fitParameter_out_const
+
+fitParameter_ref_const);
+	 fitParameter_out_const.fitParameters_.resize(fitParameter_ref_const.numFitParameter_);
+	 
+
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula].fitParameters_[iFitParameter_in_const] = fitParameter_out_const;
+	 
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula].fitParameters_[iFitParameter_in_const] = 
+	   new fitParameterType_formula(fitParameter_ref_const);
+	 
+
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula]
+
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula] = new fitParameterType_formula(fitParameter_ref_formula);
+
+	 const fitParameterType_const& fitParameter_ref_const = fitParameter_ref_formula.fitParameterValues_[iFitParameter_in_formula];
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula] = new fitParameterType_formula();
+
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula] = new fitParameterType_formula();
+
+	 if ( iFitParameter_in_formula == 0 ) 
+	 iFitParameter_in_formula iFitParameter_in_formula = 0
+
+	 fitParameterType_formula* fitParameter_out_formula = new fitParameterType_formula()
+
+	 fitParameter_out->fitParameters_[iFitParameter_in_formula] = new fitParameterType_const(fitFunction, xMin, xMax, (int)fitResult);
     }
 
-    double xMin = massPoints[0];
-    double xMax = massPoints[numMassPoints - 1];
     
-    TF1* fitFunction = 0;
-    std::string fitOptions;
-    if ( iFitParameter == 0 ) {
-      fitFunction = new TF1("fitFunction", "[0]/TMath::Power(TMath::Max(5., x - [1]), [2])", xMin, xMax);
-    } else if ( iFitParameter == 1 ) {
-      fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
-    } else if ( iFitParameter == 2 ) {
-      fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
-    } else if ( iFitParameter == 3 ) {
-      fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
-    } else if ( iFitParameter == 4 ) {
-      fitFunction = new TF1("fitFunction", "[0]/([1] + x)", xMin, xMax);
-    } else if ( iFitParameter == 5 ) {
-      fitFunction = new TF1("fitFunction", "[0]*0.5*(1.0 - TMath::Erf(-[1]*(x - [2])*TMath::Power(TMath::Abs(x - [2]), [3])))", xMin, xMax);
-    } else if ( iFitParameter == 6 ) {
-      fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
-    } else if ( iFitParameter == 7 ) {
-      fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
-    } else if ( iFitParameter == 8 ) {
-      fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
-    } else if ( iFitParameter == 9 ) {
-      fitFunction = new TF1("fitFunction", "[0]", xMin, xMax);
-    } else assert(0);
-    fitOptions.append("0");
-    graph->Fit(fitFunction, fitOptions.data());
-    
-    double yMin = +1.e+6;
-    double yMax = -1.e+6;
-    for ( size_t iPoint = 0; iPoint < numPoints; ++iPoint ) {
-      double x, y;
-      graph->GetPoint(iPoint, x, y);
-      if ( x > xMin && x < xMax ) {
-	if ( y < yMin ) yMin = y;
-	if ( y > yMax ) yMax = y;
-      }
-    }    
-    yMin -= 0.06*(yMax - yMin);
-    yMax += 0.06*(yMax - yMin);
-
-    TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
-    canvas->SetFillColor(10);
-    canvas->SetBorderSize(2);
-  
-    canvas->SetLeftMargin(0.12);
-    canvas->SetBottomMargin(0.12);
-   
-    TH1* dummyHistogram = new TH1F("dummyHistogram", "dummyHistogram", 10, xMin, xMax);
-    dummyHistogram->SetStats(false);
-    dummyHistogram->SetTitle("");
-    dummyHistogram->SetMinimum(yMin);
-    dummyHistogram->SetMaximum(yMax);
-    
-    std::string xAxisTitle = "M_{#tau#tau} / GeV";
-    std::string yAxisTitle = Form("p_{%i}", iFitParameter);
-
-    TAxis* xAxis = dummyHistogram->GetXaxis();
-    xAxis->SetTitle(xAxisTitle.data());
-    xAxis->SetTitleOffset(1.15);
-    
-    TAxis* yAxis = dummyHistogram->GetYaxis();
-    yAxis->SetTitle(yAxisTitle.data());
-    yAxis->SetTitleOffset(1.30);
-    
-    dummyHistogram->Draw("axis");
-
-    
-
-    fitFunction->SetLineColor(2);
-    fitFunction->SetLineWidth(2);
-    fitFunction->Draw("same");
-
-    graph->SetMarkerStyle(20);
-    graph->SetMarkerColor(1);
-    graph->Draw("P");
-
-    canvas->Update();
-    size_t idx = outputFileName.find_last_of('.');
-    std::string outputFileName_param = std::string(outputFileName, 0, idx);
-    outputFileName_param = Form(outputFileName_param.data(), iFitParameter);
-    if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_param).append(std::string(outputFileName, idx)).data());
-    canvas->Print(std::string(outputFileName_param).append(".png").data());
-    canvas->Print(std::string(outputFileName_param).append(".pdf").data());
-    canvas->Print(std::string(outputFileName_param).append(".root").data());
-  
-    delete fitFunction;
-    delete dummyHistogram;
-    delete canvas;
   }
 }
 
@@ -752,17 +883,12 @@ void makeSVfitVisPtCutPlots()
   std::vector<double> massPointErrsUp;
   std::vector<double> massPointErrsDown;
   
-  typedef std::pair<double, double> fitParameterType; // first entry = value, second entry = estimated uncertainty
-
-  std::map<std::string, std::map<double, int> >                            fitStatus_X1_dPhi;    // keys = dPhiLabel, mass-point
-  std::map<std::string, std::map<double, std::vector<fitParameterType> > > fitParameter_X1_dPhi; // keys = dPhiLabel, mass-point
-  std::map<std::string, std::map<double, int> >                            fitStatus_X2_dPhi;    // keys = dPhiLabel, mass-point
-  std::map<std::string, std::map<double, std::vector<fitParameterType> > > fitParameter_X2_dPhi; // keys = dPhiLabel, mass-point
-
-  std::map<double, int>                            fitStatus_X1;    // key = mass-point
-  std::map<double, std::vector<fitParameterType> > fitParameter_X1; // key = mass-point
-  std::map<double, int>                            fitStatus_X2;    // key = mass-point
-  std::map<double, std::vector<fitParameterType> > fitParameter_X2; // key = mass-point
+  std::map<std::string, std::map<double, fitParameterType_const> fitParameterX1_dPhi_mass; // keys = dPhiLabel, mass-point
+  std::map<double, fitParameterType_formula> fitParameterX1_mass;                          // key = mass-point
+  fitParameterType_formula fitParameterX1;
+  std::map<std::string, std::map<double, fitParameterType_const> fitParameterX2_dPhi_mass; // keys = dPhiLabel, mass-point
+  std::map<double, fitParameterType_formula> fitParameterX2_mass;                          // key = mass-point
+  fitParameterType_formula fitParameterX2;
 
   int numMassPoints = massPoints.size();
   for ( int iMassPoint = 0; iMassPoint < numMassPoints; ++iMassPoint ) {
@@ -832,30 +958,23 @@ void makeSVfitVisPtCutPlots()
     for ( int legIdx = 1; legIdx <= 2; ++legIdx ) {
       std::string directory_afterVisPtCutsLeg1or2;
       double visPtCut = 0.;
-      std::map<std::string, std::map<double, int> >* fitStatus_X_dPhi = NULL;
-      std::map<std::string, std::map<double, std::vector<fitParameterType> > >* fitParameter_X_dPhi = NULL;
-      std::map<double, int>* fitStatus_X = NULL;
-      std::map<double, std::vector<fitParameterType> >* fitParameter_X = NULL;
+      std::map<std::string, std::map<double, fitParameterType_const> >* fitParameterX_dPhi_mass = NULL;
+      std::map<double, fitParameterType_formula>* fitParameterX_mass = NULL;
       if ( legIdx == 1 ) {
-	directory_afterVisPtCutsLeg1or2 = directory_afterVisPtCutsLeg1and2;
+	directory_afterVisPtCutsLeg1or2 = directory_afterVisPtCutsLeg1;
 	visPtCut = visPtCut1;
-	fitStatus_X_dPhi = &fitStatus_X1_dPhi;
-	fitParameter_X_dPhi = &fitParameter_X1_dPhi;
-	fitStatus_X = &fitStatus_X1;
-	fitParameter_X = &fitParameter_X1;
+	fitParameterX_dPhi_mass = &fitParameterX1_dPhi_mass;
+	fitParameterX_mass = &fitParameterX1_mass;
       } else if ( legIdx == 2 ) {
-	directory_afterVisPtCutsLeg1or2 = directory_afterVisPtCutsLeg1and2;
+	directory_afterVisPtCutsLeg1or2 = directory_afterVisPtCutsLeg2;
 	visPtCut = visPtCut2;
-	fitStatus_X_dPhi = &fitStatus_X2_dPhi;
-	fitParameter_X_dPhi = &fitParameter_X2_dPhi;
-	fitStatus_X = &fitStatus_X2;
-	fitParameter_X = &fitParameter_X2;
+	fitParameterX_dPhi_mass = &fitParameterX2_dPhi_mass;
+	fitParameterX_mass = &fitParameterX2_mass;
       } else assert(0);
       std::vector<double> dPhiValues;
       std::vector<double> dPhiErrsUp;
       std::vector<double> dPhiErrsDown;
-      std::map<double, int>                            fitStatus_dPhi;    // key = dPhi 
-      std::map<double, std::vector<fitParameterType> > fitParameter_dPhi; // key = dPhi 
+      std::map<double, fitParameterType_const> tmpFitParameterX_dPhi; // key = dPhi 
       for ( std::vector<pdouble>::const_iterator xRange_dPhi = xRanges_dPhi.begin();
 	    xRange_dPhi != xRanges_dPhi.end(); ++xRange_dPhi ) {
 	double dPhiMin_deg = xRange_dPhi->first;
@@ -881,7 +1000,7 @@ void makeSVfitVisPtCutPlots()
 		  histogram_X_dPhi_afterVisPtCutsLeg1and2,
 		  visPtCut, massPoint,
 		  Form("plots/plotSVfitVisPtCut_%s_m%1.0f.eps", plotLabel_X_dPhi.data(), massPoint),
-		  &(*fitStatus_X_dPhi)[plotLabel_X_dPhi][massPoint], &(*fitParameter_X_dPhi)[plotLabel_X_dPhi][massPoint]);
+		  &(*fitParameterX_dPhi_mass)[plotLabel_X_dPhi][massPoint]);
 	TH1* histogram_dPhi =
 	  getHistogram(inputFile, directory_beforeVisPtCuts, massPoint, histogramName_dPhi12.Data());
 	int bin0 = histogram_dPhi->FindBin(dPhiMin_rad);
@@ -891,12 +1010,12 @@ void makeSVfitVisPtCutPlots()
 	dPhiValues.push_back(dPhiMean_rad);
 	dPhiErrsUp.push_back(dPhiMean_rad - dPhiMin_rad);
 	dPhiErrsDown.push_back(dPhiMax_rad - dPhiMean_rad);
-	fitStatus_dPhi[dPhiMean_rad] = (*fitStatus_X_dPhi)[plotLabel_X_dPhi][massPoint];
-	fitParameter_dPhi[dPhiMean_rad] = (*fitParameter_X_dPhi)[plotLabel_X_dPhi][massPoint];
+	tmpFitParameterX_dPhi[dPhiMean_rad] = (*fitParameterX_dPhi_mass)[plotLabel_X_dPhi][massPoint];
       }
       showGraphDPhi(Form("X%i", legIdx),
-		    dPhiValues, dPhiErrsUp, dPhiErrsDown, fitStatus_dPhi, fitParameter_dPhi, 
-		    &(*fitStatus_X)[massPoint], &(*fitParameter_X)[massPoint],
+		    dPhiValues, dPhiErrsUp, dPhiErrsDown, 
+		    tmpFitParameterX_dPhi,
+		    &(*fitParameterX_mass)[massPoint],
 		    Form("plots/plotSVfitVisPtCut_p%sfit1dX%ivsDPhi_m%1.0f.eps", "%i", legIdx, massPoint));
     }
 
@@ -927,11 +1046,15 @@ void makeSVfitVisPtCutPlots()
  
   if ( massPoints.size() >= 10 ) {
     showGraphMass("X1",
-		  massPoints, massPointErrsUp, massPointErrsDown, fitStatus_X1, fitParameter_X1, 
+		  massPoints, massPointErrsUp, massPointErrsDown, 
+		  fitParameterX1_mass,  
+		  &fitParameterX1,
 		  "plots/paramSVfitVisPtCut_fit1dX1vsMass.txt",
 		  "plots/plotSVfitVisPtCut_p%ifit1dX1vsMass.eps");
     showGraphMass("X2",
-		  massPoints, massPointErrsUp, massPointErrsDown, fitStatus_X2, fitParameter_X2,
+		  massPoints, massPointErrsUp, massPointErrsDown, 
+		  fitParameterX2_mass,
+		  &fitParameterX2,
 		  "plots/paramSVfitVisPtCut_fit1dX2vsMass.txt",
 		  "plots/plotSVfitVisPtCut_p%ifit1dX2vsMass.eps");
   }
