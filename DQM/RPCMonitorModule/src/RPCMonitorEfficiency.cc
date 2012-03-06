@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.58 2011/06/09 16:23:16 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.59 2011/06/22 14:24:07 carrillo Exp $
 //
 //
 
@@ -754,6 +754,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   TCanvas * Ca0;
   TCanvas * Ca1;
+  TCanvas * Ca11;
   TCanvas * Ca2;
   TCanvas * Ca3;
   TCanvas * Ca4;
@@ -766,6 +767,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   Ca0 = new TCanvas("Ca0","Profile",400,300);
   Ca1 = new TCanvas("Ca1","Efficiency",800,600);
+  Ca11 = new TCanvas("Ca11","Efficiency",800,600);
   Ca2 = new TCanvas("Ca2","Global Efficiency",CanvaSizeX,CanvaSizeY);
   Ca3 = new TCanvas("Ca3","Profile",1200,600);
   Ca4 = new TCanvas("Ca4","Residuals",800,600);
@@ -6790,8 +6792,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    EffEndCap_black->SetFillColor(4); EffEndCap->GetXaxis()->SetTitle("%"); EffEndCap->Draw(); EffEndCap_black->Draw("same"); Ca1->SaveAs("Distro/EffDistroEndCap.png");EffEndCap->Write();EffEndCap_black->Write();
    Ca1->Clear();
    DoubleGapEndCap_black->SetFillColor(4); DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); DoubleGapEndCap_black->Draw("same"); Ca1->SaveAs("Distro/DoubleGapEndCap.png");DoubleGapEndCap->Write();DoubleGapEndCap_black->Write();
+   
    Ca1->Clear();
-   CentralEffEndCap_black->SetFillColor(4); CentralEffEndCap->GetXaxis()->SetTitle("%"); CentralEffEndCap->Draw(); CentralEffEndCap_black->Draw("same"); Ca1->SaveAs("Distro/CentralEffEndCap.png");CentralEffEndCap->Write();CentralEffEndCap_black->Write();
+   CentralEffEndCap_black->SetFillColor(4); CentralEffEndCap->GetXaxis()->SetTitle("%"); CentralEffEndCap->Draw(); CentralEffEndCap_black->Draw("same"); Ca1->SaveAs("Distro/CentralEffEndCap.png");
+   
+
    Ca1->Clear();
    BXEffEndCap->GetXaxis()->SetTitle("%"); BXEffEndCap->Draw(); Ca1->SaveAs("Distro/BXEffDistroEndCap.png");BXEffEndCap->Write();
    badBXEffEndCap->GetXaxis()->SetTitle("%"); badBXEffEndCap->Draw(); Ca1->SaveAs("Distro/badBXEffDistroEndCap.png");badBXEffEndCap->Write();
@@ -6833,6 +6838,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  Ca1->Close();
 
+
+ if(barrel){
+   Ca11->Clear();
+   CentralEffBarrel_black->SetFillColor(4); CentralEffBarrel->GetXaxis()->SetTitle("%"); CentralEffBarrel->Draw(); CentralEffBarrel_black->Draw("same"); Ca11->SetLogy(); Ca11->SaveAs("Distro/CentralEffBarrelLog.png");
+ }
+ if(endcap){
+   Ca11->Clear();
+   CentralEffEndCap_black->SetFillColor(4); CentralEffEndCap->GetXaxis()->SetTitle("%"); CentralEffEndCap->Draw(); CentralEffEndCap_black->Draw("same");  Ca11->SetLogy();Ca11->SaveAs("Distro/CentralEffEndCapLog.png");
+ }
+
+ Ca11->Close();
+ 
  //Cesare
  EffBarrelRoll->Write();
  HitDen->Write();
@@ -6907,6 +6924,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  EffDistroW1far->Write();
  EffDistroW2far->Write();
 
+ CentralEffEndCap->Write();
+ CentralEffEndCap_black->Write();
+ 
  EffEndCap->Write();
  CentralEffEndCap->Write();
  DoubleGapEndCap->Write();
@@ -7160,6 +7180,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  delete Ca0;
  delete Ca1;
+ delete Ca11;
  delete Ca2;
  delete Ca3;
  delete Ca4;
