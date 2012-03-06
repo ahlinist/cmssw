@@ -75,9 +75,13 @@ process.museg = cms.EDAnalyzer("MuonSegmentEff",
 	
     rangestrips = cms.untracked.double(4.),
 
-    cscSegments = cms.untracked.InputTag('hltCscSegments'),
-    dt4DSegments = cms.untracked.InputTag('hltDt4DSegments'),
+    dt4DSegments = cms.untracked.InputTag('dTandCSCSegmentsinTracks','SelectedDtSegments'),
+    cscSegments = cms.untracked.InputTag('dTandCSCSegmentsinTracks','SelectedCscSegments'),
     rpcRecHits = cms.InputTag("hltRpcRecHits"),
+
+##  cscSegments = cms.untracked.InputTag('hltCscSegments'),
+##  dt4DSegments = cms.untracked.InputTag('hltDt4DSegments'),
+##  rpcRecHits = cms.InputTag("hltRpcRecHits"),
 
 ##  cscSegments = cms.untracked.InputTag('cscSegments'),
 ##  dt4DSegments = cms.untracked.InputTag('dt4DSegments'),
