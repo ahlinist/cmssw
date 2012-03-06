@@ -39,7 +39,13 @@ from PhysicsTools.PatAlgos.selectionLayer1.jetCountFilter_cfi import *
 # Global Tag
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff")
+
+# tag below tested in CMSSW_4_3_0_pre3
 process.GlobalTag.globaltag = 'GR_R_42_V14::All'
+
+# this is for jan16 reprocessing - tested in CMSSW_4_3_0_pre3
+#process.GlobalTag.globaltag = 'FT_R_42_V24::All'
+
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 
 
@@ -110,7 +116,7 @@ process.ecalTimeEleTree.runNum = 999999
 
 process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 process.p = cms.Path(
     process.patMyDefaultSequence *
