@@ -33,9 +33,15 @@ selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAn
     filter = cms.bool(False)                                           
 )
 
-# select jets with Et > 30 GeV
+# select jets with Et > 30 GeV 
 selectedPatJetsForAHtoElecTauJetTag = cms.EDFilter("PATJetSelector",
     cut = cms.string('et > 30.'), 
+    filter = cms.bool(False)
+)
+
+# select jets with Et > 150 GeV (for SM boosted category)
+selectedPatJetsForAHtoElecTauBoostedJetTag = cms.EDFilter("PATJetSelector",
+    cut = cms.string('et > 150.'), 
     filter = cms.bool(False)
 )
 
@@ -51,7 +57,7 @@ patJetSelConfiguratorForAHtoElecTauBtag = objSelConfigurator(
       selectedPatJetsForAHtoElecTauEt,
       selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto,
       selectedPatJetsForAHtoElecTauBtag ],
-    src = "cleanPatJets",
+    src = "patJets",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -59,7 +65,8 @@ patJetSelConfiguratorForAHtoElecTauBtag = objSelConfigurator(
 selectPatJetsForAHtoElecTauBtag = patJetSelConfiguratorForAHtoElecTauBtag.configure(pyNameSpace = locals())
 
 patJetSelConfiguratorForAHtoElecTauJetTag = objSelConfigurator(
-    [ selectedPatJetsForAHtoElecTauJetTag ],
+    [ selectedPatJetsForAHtoElecTauJetTag,
+      selectedPatJetsForAHtoElecTauBoostedJetTag],
     src = 'selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
     pyModuleName = __name__,
     doSelIndividual = True
@@ -90,7 +97,7 @@ patJetSelConfiguratorForAHtoElecTauBtagLooseElectronIsolation = objSelConfigurat
       selectedPatJetsForAHtoElecTauEt,
       selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoLooseElectronIsolation,
       selectedPatJetsForAHtoElecTauBtagLooseElectronIsolation ],
-    src = "cleanPatJets",
+    src = "patJets",
     pyModuleName = __name__,
     doSelIndividual = True
 )

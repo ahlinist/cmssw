@@ -166,6 +166,15 @@ evtSelDiElecPairZeeHypothesisVetoByLooseIsolation = cms.PSet(
     src = cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolation')
 )
 
+# jet Et cut (shared by SM/MSSM categories)
+evtSelJetEtCut = cms.PSet(
+    pluginName = cms.string('evtSelJetEtCut'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('jetEtCut', 'cumulative'),
+    src_individual = cms.InputTag('jetEtCut', 'individual'),
+    systematics = cms.vstring(jetSystematics.keys())
+)
+
 #------------------------------------------------------------
 # di-tau candidate selection for SM Higgs
 #------------------------------------------------------------
@@ -200,6 +209,25 @@ evtSelDiTauCandidateForElecTauNonZeroCharge = cms.PSet(
 	systematics = cms.vstring(elecTauPairSystematics.keys())
 )
 
+# 0/1 jet selection
+evtSelBoostedJetVeto = cms.PSet(
+    pluginName = cms.string('evtSelBoostedJetVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('boostedJetVeto', 'cumulative'),
+    src_individual = cms.InputTag('boostedJetVeto', 'individual'),
+    systematics = cms.vstring(jetSystematics.keys())
+)
+
+# boosted jet selection
+evtSelBoostedJetTag = cms.PSet(
+    pluginName = cms.string('evtSelBoostedJetTag'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('boostedJetTag', 'cumulative'),
+    src_individual = cms.InputTag('boostedJetTag', 'individual'),
+    systematics = cms.vstring(jetSystematics.keys())
+)
+
+# VBF jet selection
 evtSelVBFtag = cms.PSet(
     pluginName = cms.string('evtSelVBFtag'),
     pluginType = cms.string('BoolEventSelector'),
@@ -259,13 +287,6 @@ evtSelBtagVeto = cms.PSet(
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('jetBtagVeto', 'cumulative'),
     src_individual = cms.InputTag('jetBtagVeto', 'individual'),
-    systematics = cms.vstring(jetSystematics.keys())
-)
-evtSelJetEtCut = cms.PSet(
-    pluginName = cms.string('evtSelJetEtCut'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('jetEtCut', 'cumulative'),
-    src_individual = cms.InputTag('jetEtCut', 'individual'),
     systematics = cms.vstring(jetSystematics.keys())
 )
 evtSelBtagCut = cms.PSet(

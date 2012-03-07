@@ -490,6 +490,89 @@ noBtagSelectionFilters = cms.VPSet(
 )
 
 # SM jet selection
+smNumJetAnalyzer = cms.PSet( 
+    analyzers = cms.vstring( 
+        'electronHistManager', 
+        'tauHistManager', 
+        'diTauCandidateHistManagerForElecTau', 
+        'diTauCandidateNSVfitHistManagerForElecTau', 
+        'jetHistManager' 
+    ), 
+    replace = cms.vstring( 
+        'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+        'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative'
+    ) 
+)
+smNumJetFilter = cms.PSet(
+	filter = cms.string('evtSelJetEtCut'),
+	title = cms.string('N(jets with E_{T} > 30) < 2'),
+	saveRunLumiSectionEventNumbers = cms.vstring('')
+)
+
+smJetEtAnalyzer = cms.PSet( 
+    analyzers = cms.vstring( 
+        'electronHistManager', 
+        'tauHistManager', 
+        'diTauCandidateHistManagerForElecTau', 
+        'diTauCandidateNSVfitHistManagerForElecTau', 
+        'jetHistManager' 
+    ), 
+    replace = cms.vstring( 
+        'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+        'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauJetTagCumulative'
+    ) 
+)
+smBoostedJetVetoFilter = cms.PSet(
+	filter = cms.string('evtSelBoostedJetVeto'),
+	title = cms.string('no jets with E_{T} > 150'),
+	saveRunLumiSectionEventNumbers = cms.vstring('')
+)
+smBoostedJetTagFilter = cms.PSet(
+	filter = cms.string('evtSelBoostedJetTag'),
+	title = cms.string('N(jets with E_{T} > 150) > 0'),
+	saveRunLumiSectionEventNumbers = cms.vstring('')
+)
+
+smZeroOneJetFinalJetAnalyzer = cms.PSet( 
+    analyzers = cms.vstring( 
+        'electronHistManager', 
+        'tauHistManager', 
+        'diTauCandidateHistManagerForElecTau', 
+        'diTauCandidateNSVfitHistManagerForElecTau', 
+        'jetHistManager' 
+    ), 
+    replace = cms.vstring( 
+        'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+        'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauJetTagCumulative'
+    ) 
+)
+smBoostedFinalJetAnalyzer = cms.PSet( 
+    analyzers = cms.vstring( 
+        'electronHistManager', 
+        'tauHistManager', 
+        'diTauCandidateHistManagerForElecTau', 
+        'diTauCandidateNSVfitHistManagerForElecTau', 
+        'jetHistManager' 
+    ), 
+    replace = cms.vstring( 
+        'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+        'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
+        'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative', 
+        'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauBoostedJetTagCumulative'
+    ) 
+)
+
+# VBF-specific modules
 smVBFjetEtAnalyzer = cms.PSet( 
     analyzers = cms.vstring( 
         'electronHistManager', 
@@ -622,6 +705,45 @@ smVBFfinalAnalyzer = cms.PSet(
         'vbfEventHistManagerForElecTau.vbfEventSource = selectedVBFEventHypothesesForAHtoElecTau3rdJetVetoCumulative',
         'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauJetTagCumulative'
     ) 
+)
+
+smZeroOneJetsSelectionFilterAnalyzers = cms.VPSet(
+    smDiTauAntiOverlapFilter,
+    smDiTauAnalyzerAfterAntiOverlap,
+    mtElecMetFilter,
+    smDiTauAnalyzerAfterWcut,
+    zeeVetoFilter,
+    smNumJetAnalyzer,
+    smNumJetFilter,
+    smJetEtAnalyzer,
+    smBoostedJetVetoFilter,
+    smZeroOneJetFinalJetAnalyzer
+)
+smZeroOneJetsSelectionFilters = cms.VPSet(
+    smDiTauAntiOverlapFilter,
+    mtElecMetFilter,
+    zeeVetoFilter,
+    smNumJetFilter,
+    smBoostedJetVetoFilter
+)
+smBoostedSelectionFilterAnalyzers = cms.VPSet(
+    smDiTauAntiOverlapFilter,
+    smDiTauAnalyzerAfterAntiOverlap,
+    mtElecMetFilter,
+    smDiTauAnalyzerAfterWcut,
+    zeeVetoFilter,
+    smNumJetAnalyzer,
+    smNumJetFilter,
+    smJetEtAnalyzer,
+    smBoostedJetTagFilter,
+    smBoostedFinalJetAnalyzer
+)
+smBoostedSelectionFilters = cms.VPSet(
+    smDiTauAntiOverlapFilter,
+    mtElecMetFilter,
+    zeeVetoFilter,
+    smNumJetFilter,
+    smBoostedJetTagFilter
 )
 
 smVBFselectionFilterAnalyzers = cms.VPSet(

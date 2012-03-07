@@ -96,6 +96,10 @@ filtersForElecTau = cms.VPSet(
         evtSelBtagVeto,
         evtSelBtagCut,
 
+        # SM jet selection
+        evtSelBoostedJetTag,
+        evtSelBoostedJetVeto,
+        
         # VBF selection
         evtSelVBFtag,
         evtSelVBFdEta35,
@@ -173,6 +177,7 @@ analyzeAHtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
 
 
 # Analyzers for SM Higgs categories
+# -- VBF
 analyzeAHtoElecTauEventsOS_VBF = analyzeAHtoElecTauEvents.clone(
     name = cms.string('ahElecTauAnalyzerOS_VBF'),
     analysisSequence = elecTauAnalysisSequence
@@ -186,8 +191,34 @@ analyzeAHtoElecTauEventsSS_VBF = analyzeAHtoElecTauEvents.clone(
 analyzeAHtoElecTauEventsSS_VBF.analysisSequence.extend(smVBFselectionFilters)
 analyzeAHtoElecTauEventsSS_VBF.analysisSequence.extend(smSameSignFilterAnalyzers)
 
+# -- 0/1 jets
+analyzeAHtoElecTauEventsOS_ZeroOneJets = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerOS_ZeroOneJets')
+)
+analyzeAHtoElecTauEventsOS_ZeroOneJets.analysisSequence.extend(smZeroOneJetsSelectionFilterAnalyzers)
+analyzeAHtoElecTauEventsOS_ZeroOneJets.analysisSequence.extend(smOppositeSignFilterAnalyzers)
+
+analyzeAHtoElecTauEventsSS_ZeroOneJets = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerSS_ZeroOneJets')
+)
+analyzeAHtoElecTauEventsSS_ZeroOneJets.analysisSequence.extend(smZeroOneJetsSelectionFilters)
+analyzeAHtoElecTauEventsSS_ZeroOneJets.analysisSequence.extend(smSameSignFilterAnalyzers)
+
+# -- boosted Higgs
+analyzeAHtoElecTauEventsOS_Boosted = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerOS_Boosted')
+)
+analyzeAHtoElecTauEventsOS_Boosted.analysisSequence.extend(smBoostedSelectionFilterAnalyzers)
+analyzeAHtoElecTauEventsOS_Boosted.analysisSequence.extend(smOppositeSignFilterAnalyzers)
+
+analyzeAHtoElecTauEventsSS_Boosted = analyzeAHtoElecTauEvents.clone(
+    name = cms.string('ahElecTauAnalyzerSS_Boosted')
+)
+analyzeAHtoElecTauEventsSS_Boosted.analysisSequence.extend(smBoostedSelectionFilters)
+analyzeAHtoElecTauEventsSS_Boosted.analysisSequence.extend(smSameSignFilterAnalyzers)
 
 # Analyzers for MSSM Higgs categories
+# -- b-tagged
 analyzeAHtoElecTauEventsOS_wBtag = analyzeAHtoElecTauEvents.clone(
     name = cms.string('ahElecTauAnalyzerOS_wBtag')
 )
@@ -200,6 +231,7 @@ analyzeAHtoElecTauEventsSS_wBtag = analyzeAHtoElecTauEvents.clone(
 analyzeAHtoElecTauEventsSS_wBtag.analysisSequence.extend(bTagSelectionFilters)
 analyzeAHtoElecTauEventsSS_wBtag.analysisSequence.extend(mssmSameSignFilterAnalyzers_wBtag)
 
+# -- no b-tag
 analyzeAHtoElecTauEventsOS_woBtag = analyzeAHtoElecTauEvents.clone(
     name = cms.string('ahElecTauAnalyzerOS_woBtag')
 )
@@ -219,5 +251,9 @@ analyzeAHtoElecTauSequence = cms.Sequence(
     + analyzeAHtoElecTauEventsSS_wBtag
     + analyzeAHtoElecTauEventsOS_VBF
     + analyzeAHtoElecTauEventsSS_VBF
+    + analyzeAHtoElecTauEventsOS_ZeroOneJets
+    + analyzeAHtoElecTauEventsSS_ZeroOneJets
+    + analyzeAHtoElecTauEventsSS_Boosted
+    + analyzeAHtoElecTauEventsOS_Boosted
 )
 

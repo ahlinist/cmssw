@@ -55,7 +55,7 @@ cfgDiTauCandidateForAHtoElecTauNonZeroChargeCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-# jet veto/b-jet candidate selection
+# jet Et selection
 cfgJetEtCut = cms.PSet(
     pluginName = cms.string('jetEtCut'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
@@ -64,6 +64,7 @@ cfgJetEtCut = cms.PSet(
     systematics = cms.vstring(jetSystematics.keys()),
     maxNumber = cms.uint32(1)
 )
+# MSSM b-tag jet selection
 cfgBtagVeto = cms.PSet(
     pluginName = cms.string('jetBtagVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
@@ -80,6 +81,26 @@ cfgBtagCut = cms.PSet(
     systematics = cms.vstring(jetSystematics.keys()),
     minNumber = cms.uint32(1)
 )
+
+# SM 0/1 jet selection
+cfgBoostedJetVeto = cms.PSet(
+    pluginName = cms.string('boostedJetVeto'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoElecTauBoostedJetTagCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoElecTauBoostedJetTagIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    maxNumber = cms.uint32(0)
+)
+# SM boosted selection
+cfgBoostedJetTag = cms.PSet(
+    pluginName = cms.string('boostedJetTag'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatJetsForAHtoElecTauBoostedJetTagCumulative'),
+    src_individual = cms.InputTag('selectedPatJetsForAHtoElecTauBoostedJetTagIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+
 
 # VBF event selection
 cfgVBFEventTag = cms.PSet(
@@ -142,6 +163,8 @@ ahToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
 	  cfgJetEtCut,
 	  cfgBtagVeto,
 	  cfgBtagCut,
+      cfgBoostedJetVeto,
+      cfgBoostedJetTag,
       cfgVBFEventTag,
       cfgVBFEventDEta35,
       cfgVBFEventMass350,
@@ -219,8 +242,8 @@ isRecAHtoElecTauVBFtag = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
-isRecAHtoElecTauZeroJets = cms.EDProducer("BoolEventSelFlagProducer",
-    pluginName = cms.string('isRecAHtoElecTauZeroJets'),
+isRecAHtoElecTauZeroOneJets = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoElecTauZeroOneJets'),
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
@@ -234,11 +257,27 @@ isRecAHtoElecTauZeroJets = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
+isRecAHtoElecTauBoosted = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoElecTauBoosted'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('electronTrkIPcut', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'cumulative'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolation'),
+        cms.InputTag('jetEtCut', 'cumulative'),
+        cms.InputTag('boostedJetTag', 'cumulative')
+    )
+)
+
 selectAHtoElecTauEvents = cms.Sequence(
     selectZtoElecTauEvents
 	* produceEventSelFlagsAHtoElecTau
     * isRecAHtoElecTauVBFtag
-    #* isRecAHtoElecTauZeroJets
+    * isRecAHtoElecTauZeroOneJets
+    * isRecAHtoElecTauBoosted
 	* isRecAHtoElecTauBtagVeto
 	* isRecAHtoElecTauBtag
 	* isRecAHtoElecTau
