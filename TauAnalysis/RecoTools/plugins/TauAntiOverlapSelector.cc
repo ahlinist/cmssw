@@ -1,12 +1,12 @@
-#include "TauAnalysis/RecoTools/interface/PATObjectAntiOverlapSelector.h"
+#include "TauAnalysis/CandidateTools/interface/ParticleAntiOverlapSelector.h"
 
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 
-typedef ObjectSelector<PATObjectAntiOverlapSelector<reco::CaloTau> > CaloTauAntiOverlapSelector;
-typedef ObjectSelector<PATObjectAntiOverlapSelector<reco::PFTau> > PFTauAntiOverlapSelector;
+typedef ObjectSelector<ParticleAntiOverlapSelector<reco::CaloTau> > CaloTauAntiOverlapSelector;
+typedef ObjectSelector<ParticleAntiOverlapSelector<reco::PFTau> > PFTauAntiOverlapSelector;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 

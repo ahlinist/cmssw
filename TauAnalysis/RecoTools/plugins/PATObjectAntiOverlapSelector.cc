@@ -1,4 +1,4 @@
-#include "TauAnalysis/RecoTools/interface/PATObjectAntiOverlapSelector.h"
+#include "TauAnalysis/CandidateTools/interface/ParticleAntiOverlapSelector.h"
 
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
@@ -7,10 +7,10 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
-typedef ObjectSelector<PATObjectAntiOverlapSelector<pat::Electron> > PATElectronAntiOverlapSelector;
-typedef ObjectSelector<PATObjectAntiOverlapSelector<pat::Muon> > PATMuonAntiOverlapSelector;
-typedef ObjectSelector<PATObjectAntiOverlapSelector<pat::Tau> > PATTauAntiOverlapSelector;
-typedef ObjectSelector<PATObjectAntiOverlapSelector<pat::Jet> > PATJetAntiOverlapSelector;
+typedef ObjectSelector<ParticleAntiOverlapSelector<pat::Electron> > PATElectronAntiOverlapSelector;
+typedef ObjectSelector<ParticleAntiOverlapSelector<pat::Muon> > PATMuonAntiOverlapSelector;
+typedef ObjectSelector<ParticleAntiOverlapSelector<pat::Tau> > PATTauAntiOverlapSelector;
+typedef ObjectSelector<ParticleAntiOverlapSelector<pat::Jet> > PATJetAntiOverlapSelector;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
