@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import TransientTrackBuilderESProducer
 import RecoMET.METProducers.METSigParams_cfi as met_config
 import TauAnalysis.CandidateTools.nSVfitAlgorithmTauDecayKineMC_cfi as kineMC_config
+import TauAnalysis.CandidateTools.nSVfitAlgorithmVisPtCutCorrections_cfi as visPtCutCorrections
 
 nSVfitTrackService = cms.Service("NSVfitTrackService")
 
@@ -36,6 +37,12 @@ nSVfitMuonLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihood
     verbosity = cms.int32(0)
 )
 
+nSVfitMuonLikelihoodMatrixElement = cms.PSet(
+    pluginName = cms.string("nSVfitTauToMuLikelihoodMatrixElement"),
+    pluginType = cms.string("NSVfitTauToMuLikelihoodMatrixElement"),
+    verbosity = cms.int32(0)
+)
+
 nSVfitTauToMuBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuBuilder"),
     pluginType = cms.string("NSVfitTauToMuBuilder"),
@@ -57,6 +64,27 @@ nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
     pluginType = cms.string("NSVfitTauToHadBuilder"),
+    verbosity = cms.int32(0)
+)
+
+nSVfitResonanceLikelihoodVisPtCutCorrMuTau = cms.PSet(
+    pluginName = cms.string("nSVfitResonanceLikelihoodVisPtCutCorrMuTau"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodSculpting2"),
+    inputFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/nSVfitSculpting2.root"),
+    histogramNameX1 = cms.string("histogramTauToLepX"),
+    histogramNameX2 = cms.string("histogramTauToHadX"),
+    minVisPt1 = cms.double(15.0),
+    minVisPt2 = cms.double(20.0),
+    minVisPt1alt = cms.double(-1.),
+    minVisPt2alt = cms.double(-1.),
+    power = cms.double(1.0),
+    verbosity = cms.int32(0)
+)
+
+nSVfitResonanceLikelihoodPhaseSpace = cms.PSet(
+    pluginName = cms.string("nSVfitResonanceLikelihoodPhaseSpace"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodPhaseSpace"),
+    power = cms.double(1.0),
     verbosity = cms.int32(0)
 )
 
