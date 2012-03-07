@@ -15,7 +15,8 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
  public:
 
   NSVfitResonanceHypothesis()
-    : eventHyp_(NULL)
+    : eventHyp_(NULL),
+      prod_angle_rf_(0.)
   {}
   NSVfitResonanceHypothesis(const NSVfitResonanceHypothesis&);
   virtual ~NSVfitResonanceHypothesis() {}
@@ -42,11 +43,9 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   reco::Candidate::LorentzVector p4_fitted() const { return (p4_ + dp4_); }
   reco::Candidate::LorentzVector dp4_fitted() const { return dp4_; }
 
-  /// mean and median reconstructed mass
-  double mass_mean() const { return massMean_; }
-  double mass_median() const { return massMedian_; }
-  double mass_maximum() const { return massMaximum_; }
-  double mass_maxInterpol() const { return massMaxInterpol_; }
+  double dPhiVis() const { return dPhiVis_; }
+
+  double prod_angle_rf() const { return prod_angle_rf_; }
 
   virtual void print(std::ostream& stream) const
   {
@@ -56,8 +55,9 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
     stream << " p4: Pt = " << p4_.pt() << ","
 	   << " eta = " << p4_.eta() << ", phi = " << p4_.phi() << std::endl;
     stream << " p4_fitted: Pt = " << p4_fitted().pt() << ","
-	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() << std::endl;
+	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() << std::endl;    
     stream << "--> mass = " << mass_ << " + " << massErrUp_ << " - " << massErrDown_ << std::endl;
+    stream << "(prod. angle = " << prod_angle_rf_ << ")" << std::endl;
     stream << " isValidSolution = " << isValidSolution_ << std::endl;
     for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters_.begin();
           daughter != daughters_.end(); ++daughter ) {
@@ -80,11 +80,11 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   /// difference in momentum (after - before) fit
   reco::Candidate::LorentzVector dp4_;
 
-  /// mean and median reconstructed mass
-  double massMean_;
-  double massMedian_;
-  double massMaximum_;
-  double massMaxInterpol_;
+  /// azimuthal angle between visible tau decay products
+  double dPhiVis_;
+  
+  /// production angle of tau lepton in rest-frame of tau+ tau- pair
+  double prod_angle_rf_;
 };
 
 #endif
