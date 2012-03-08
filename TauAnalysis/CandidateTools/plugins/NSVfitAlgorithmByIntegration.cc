@@ -404,6 +404,7 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     
     //std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
     //std::cout << "--> mass = " << resonance->mass_ << std::endl;
+    //resonance_->print(std::cout);
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";

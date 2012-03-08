@@ -10,6 +10,7 @@
 <use   name="DataFormats/Math"/>
 <use   name="DataFormats/METReco"/>
 <use   name="DataFormats/ParticleFlowCandidate"/>
+<use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/TrackReco"/>
 <use   name="DataFormats/VertexReco"/>
 <use   name="AnalysisDataFormats/TauAnalysis"/>

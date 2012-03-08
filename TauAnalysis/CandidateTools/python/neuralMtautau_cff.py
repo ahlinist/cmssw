@@ -9,9 +9,9 @@ selectedPatJetsNotOverlappingWithLeptons = cms.EDFilter("PATJetAntiOverlapSelect
     src = cms.InputTag('patJets'),
     # CV: set 'srcNotToBeFiltered' to collections of electrons, muons and taus passing analysis specific selection criteria
     srcNotToBeFiltered = cms.VInputTag(
-        'patElectrons',
-        'patMuons',
-        'patTaus',
+        'genMatchedElectrons',
+        'genMatchedMuons',
+        'genMatchedTaus'
     ),
     dRmin = cms.double(0.5),
     filter = cms.bool(False)      
@@ -81,7 +81,9 @@ from RecoMET.METProducers.METSigParams_cfi import *
 neuralMtautauNtupleProducer = cms.EDProducer("NeuralMtautauNtupleProducer",
     srcGenTauPair = cms.InputTag(''),
     srcGenMEt = cms.InputTag('genMetFromGenParticles'), 
-
+    srcGenTaus = cms.InputTag(''),                                         
+    srcGenParticles = cms.InputTag('genParticles'),
+                                             
     srcRecPFJets = cms.InputTag('ak5PFJetsNotOverlappingWithLeptonsCorrPtGt20'),
     srcRecPFCandidatesNotWithinJets = cms.InputTag('pfCandsNotInSelectedJets'),
     srcRecLeg1 = cms.InputTag('genMatchedMuons'), # collection of reconstructed tau decay products (1st leg)

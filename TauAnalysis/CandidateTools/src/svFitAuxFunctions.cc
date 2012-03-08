@@ -52,6 +52,13 @@ namespace SVfit_namespace {
     return ROOT::Math::VectorUtil::boost(p4ToBoost, boost);
   }
 
+  reco::Candidate::LorentzVector boostToLab(
+      const reco::Candidate::LorentzVector& rfSystem,
+      const reco::Candidate::LorentzVector& p4ToBoost) {
+    reco::Candidate::Vector boost = rfSystem.BoostToCM();
+    return ROOT::Math::VectorUtil::boost(p4ToBoost, -boost);
+  }
+
   double gjAngleFromX(double x, double visMass, double pVis_rf, double enVis_lab) {
     double enVis_rf = energyFromMomentum(pVis_rf, visMass);
     double beta = TMath::Sqrt(1. - square(tauLeptonMass*x/enVis_lab));
@@ -150,6 +157,17 @@ namespace SVfit_namespace {
     //          << " mass = " << tauP4LabFrame.mass() << std::endl;
 
     return tauP4LabFrame;
+  }
+
+  double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector& tauP4, const reco::Candidate::LorentzVector& visP4)
+  {
+    double decayAngle_rf = 0.;
+    reco::Candidate::LorentzVector visP4_rf = boostToCOM(tauP4, visP4);
+    if ( (tauP4.pt()*visP4_rf.pt()) > 0. ) {
+      double scalarProduct = (tauP4.px()*visP4_rf.px() + tauP4.py()*visP4_rf.py() + tauP4.pz()*visP4_rf.pz())/(tauP4.P()*visP4_rf.P());
+      decayAngle_rf = TMath::ACos(scalarProduct);
+    }
+    return decayAngle_rf;
   }
 
 //

@@ -19,6 +19,11 @@ namespace SVfit_namespace
   //        K. Nakamura et al. (Particle Data Group),
   //        J. Phys. G 37, 075021 (2010)
   //
+  const double electronMass = 0.51100e-3; // GeV
+  const double electronMass2 = electronMass*electronMass;
+  const double muonMass = 0.10566; // GeV
+  const double muonMass2 = muonMass*muonMass; 
+  
   const double chargedPionMass = 0.13957; // GeV
   const double chargedPionMass2 = chargedPionMass*chargedPionMass;
   const double neutralPionMass = 0.13498; // GeV
@@ -70,8 +75,14 @@ namespace SVfit_namespace
     return x*x*x*x;
   }
 
-  /// Boost a lorentz vector into the COM system of another lorentz vector.
+  /// Boost a lorentz vector given in the laboratory frame into the rest frame of another lorentz vector.
   reco::Candidate::LorentzVector boostToCOM(
+      const reco::Candidate::LorentzVector &comSystem,
+      const reco::Candidate::LorentzVector &p4ToBoost
+  );
+
+  /// Boost a lorentz vector given in the rest frame of another lorentz vector to the laboratory frame.
+  reco::Candidate::LorentzVector boostToLab(
       const reco::Candidate::LorentzVector &comSystem,
       const reco::Candidate::LorentzVector &p4ToBoost
   );
@@ -80,13 +91,13 @@ namespace SVfit_namespace
     return TMath::Sqrt(square(mass)+square(momentum));
   }
 
-  /// Determine
+  /// Determine Gottfried-Jackson angle from visible energy fraction X
   double gjAngleFromX(double, double, double, double);
 
   /// Determine visible tau rest frame energy given visible mass and neutrino mass
   double pVisRestFrame(double, double);
 
-  /// Convert the Gottfried-Jackson angle into a LAB frame opening angle
+  /// Convert the Gottfried-Jackson angle into a lab frame opening angle
   double gjAngleToLabFrame(double, double, double);
 
   /// Determine the tau momentum in the lab frame given the rest frame assumptions
@@ -97,6 +108,9 @@ namespace SVfit_namespace
 
   /// Compute the tau four vector given the tau direction and momentum
   reco::Candidate::LorentzVector tauP4(const reco::Candidate::Vector&, double);
+
+  /// Compute decay angle in rest frame given momentum of tau lepton and visible decay product in lab frame
+  double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
 
   /// Compute logarithm of Gaussion probability density function
   /// in one/N dimensions

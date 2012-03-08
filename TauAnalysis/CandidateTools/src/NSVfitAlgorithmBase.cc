@@ -101,7 +101,9 @@ NSVfitEventHypothesisBase* NSVfitAlgorithmBase::fit(const inputParticleMap& inpu
   assert(currentEventSetup_);
 
   // Setup the track service
-  trackService_->setup(*currentEventSetup_, eventVertex->position());
+  reco::Candidate::Point eventVertexPosition(0,0,0);
+  if ( eventVertex ) eventVertexPosition = eventVertex->position();
+  trackService_->setup(*currentEventSetup_, eventVertexPosition);
 
   currentEventHypothesis_ = eventModel_->builder_->build(inputParticles, eventVertex);
   currentEventHypothesis_->name_ = pluginName_;

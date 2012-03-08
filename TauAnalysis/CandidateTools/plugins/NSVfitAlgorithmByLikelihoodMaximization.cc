@@ -136,11 +136,6 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 
 void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypothesis& resonance) const
 {
-  resonance.massMean_        = 0.;
-  resonance.massMedian_      = 0.;
-  resonance.massMaximum_     = 0.;
-  resonance.massMaxInterpol_ = 0.;
-  
   resonance.mass_ = resonance.p4_fitted().mass();
   
   double massRelErrUp2   = 0.;
@@ -165,9 +160,10 @@ void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypo
   resonance.massErrUp_   = resonance.mass_*TMath::Sqrt(massRelErrUp2);
   resonance.massErrDown_ = resonance.mass_*TMath::Sqrt(massRelErrDown2);
 
-  //std::cout << "--> mass (plugin version)    = " << resonance.mass_ 
-  //	      << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ 
-  //	      << std::endl;
+  //std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::setMassResults>:" << std::endl;
+  //std::cout << "--> mass = " << resonance.mass_ 
+  //	      << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ << std::endl;
+  //resonance.print(std::cout);
 }
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const
@@ -200,7 +196,7 @@ double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const doubl
 
   if ( verbosity_ ) {
     std::cout << " penalty term = " << penalty << std::endl;
-    std::cout << " combied nll  = " << penalty + eventModel_->nll(currentEventHypothesis_) << std::endl;
+    std::cout << " combined nll  = " << penalty + eventModel_->nll(currentEventHypothesis_) << std::endl;
   }
 
 //--- compute likelihood

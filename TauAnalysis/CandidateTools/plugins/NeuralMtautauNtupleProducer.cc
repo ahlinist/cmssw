@@ -8,12 +8,16 @@
 
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneLikelihood.h"
 #include "TauAnalysis/CandidateTools/interface/neuralMtautauAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
 
 #include <TMath.h>
@@ -33,7 +37,9 @@ NeuralMtautauNtupleProducer::NeuralMtautauNtupleProducer(const edm::ParameterSet
 {
   srcGenTauPair_ = cfg.getParameter<edm::InputTag>("srcGenTauPair");
   srcGenMEt_ = cfg.getParameter<edm::InputTag>("srcGenMEt");
-  
+  srcGenTaus_ = cfg.getParameter<edm::InputTag>("srcGenTaus");
+  srcGenParticles_ = cfg.getParameter<edm::InputTag>("srcGenParticles");
+
   srcRecPFJets_ = cfg.getParameter<edm::InputTag>("srcRecPFJets");
   srcRecPFCandidatesNotWithinJets_ = cfg.getParameter<edm::InputTag>("srcRecPFCandidatesNotWithinJets");
   srcRecLeg1_ = cfg.getParameter<edm::InputTag>("srcRecLeg1");
@@ -55,9 +61,17 @@ void NeuralMtautauNtupleProducer::beginJob()
   ntuple_ = fs->make<TTree>("neuralMtautauNtuple", "neuralMtautauNtuple");
 
 //--- add branches storing quantities for neural-net training
-  addBranch_EnPxPyPz("recLeg1");
+  addBranch_EnPxPyPz("genTau1");
+  addBranch_EnPxPyPz("genVis1");
+  addBranch_EnPxPyPz("genNu1");
 
-  addBranch_EnPxPyPz("recLeg2");
+  addBranch_EnPxPyPz("genTau2");
+  addBranch_EnPxPyPz("genVis2");
+  addBranch_EnPxPyPz("genNu2");
+  
+  addBranch_EnPxPyPz("recVis1");
+
+  addBranch_EnPxPyPz("recVis2");
 
   addBranch("recDPhi12");
   addBranch("recDTheta12");
@@ -67,6 +81,9 @@ void NeuralMtautauNtupleProducer::beginJob()
   addBranch_Cov("recMEt");
 
   addBranch("recSVfitMtautau");
+  addBranch("recSigmaSVfit");
+
+  addBranch("recVisMass");
 
   addBranch_PxPy("genMEt");
   addBranch("genMtautau");
@@ -89,6 +106,11 @@ namespace
       return 0.;
     }
   }
+
+  double square(double x)
+  {
+    return x*x;
+  }
 }
 
 void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup& es) 
@@ -106,16 +128,16 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
     throw cms::Exception("InvalidData") 
       << "Failed to find unique gen. MET object !!\n";
   const reco::Candidate::LorentzVector& genMEtP4 = genMEt->front().p4();
+  
+  edm::Handle<CandidateView> recVis1;
+  evt.getByLabel(srcRecLeg1_, recVis1);
+  if ( !recVis1->size() >= 1 ) return;
+  const reco::Candidate::LorentzVector& recVis1P4 = recVis1->front().p4();
 
-  edm::Handle<CandidateView> recLeg1;
-  evt.getByLabel(srcRecLeg1_, recLeg1);
-  if ( !recLeg1->size() >= 1 ) return;
-  const reco::Candidate::LorentzVector& recLeg1P4 = recLeg1->front().p4();
-
-  edm::Handle<CandidateView> recLeg2;
-  evt.getByLabel(srcRecLeg2_, recLeg2);
-  if ( !recLeg2->size() >= 1 ) return;
-  const reco::Candidate::LorentzVector& recLeg2P4 = recLeg2->front().p4();
+  edm::Handle<CandidateView> recVis2;
+  evt.getByLabel(srcRecLeg2_, recVis2);
+  if ( !recVis2->size() >= 1 ) return;
+  const reco::Candidate::LorentzVector& recVis2P4 = recVis2->front().p4();
 
   edm::Handle<MEtView> recMEt;
   evt.getByLabel(srcRecMEt_, recMEt);
@@ -128,13 +150,13 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
   evt.getByLabel(srcPFMEtCovMatrix_, pfMEtSignCovMatrix);
 
 //--- compute axis 'zeta' bisecting angle between visible decay products of the two tau leptons
-  double zetaPhi = compZetaPhi(recLeg1P4, recLeg2P4);
+  double zetaPhi = compZetaPhi(recVis1P4, recVis2P4);
 
   if ( verbosity_ ) {
-    std::cout << "recLeg1: px = " << recLeg1P4.px() << ", py = " << recLeg1P4.py() << "," 
-	      << " phi = " << recLeg1P4.phi() << std::endl;
-    std::cout << "recLeg2: px = " << recLeg2P4.px() << ", py = " << recLeg2P4.py() << "," 
-	      << " phi = " << recLeg2P4.phi() << std::endl;      
+    std::cout << "recVis1: px = " << recVis1P4.px() << ", py = " << recVis1P4.py() << "," 
+	      << " phi = " << recVis1P4.phi() << std::endl;
+    std::cout << "recVis2: px = " << recVis2P4.px() << ", py = " << recVis2P4.py() << "," 
+	      << " phi = " << recVis2P4.phi() << std::endl;      
     std::cout << "--> zetaPhi = " << zetaPhi << std::endl;
 
     TVectorD recMEtVec(2);
@@ -172,24 +194,24 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
     std::cout << "logGaussianNd (frame 2) = " << logGaussianNd(recMEtVecInZetaFrame, pfMEtSignCovMatrixInZetaFrame) << std::endl;
   }
 
-  setValue_EnPxPyPz("recLeg1", recLeg1P4, zetaPhi);
+  setValue_EnPxPyPz("recVis1", recVis1P4, zetaPhi);
   
-  setValue_EnPxPyPz("recLeg2", recLeg2P4, zetaPhi);
+  setValue_EnPxPyPz("recVis2", recVis2P4, zetaPhi);
   
-  double recDPhi12       = TMath::ACos(TMath::Cos(recLeg1P4.phi() - recLeg2P4.phi()));
+  double recDPhi12       = TMath::ACos(TMath::Cos(recVis1P4.phi() - recVis2P4.phi()));
   setValue("recDPhi12", recDPhi12);
-  double recDTheta12     = TMath::Abs(recLeg1P4.theta() - recLeg2P4.theta());
+  double recDTheta12     = TMath::Abs(recVis1P4.theta() - recVis2P4.theta());
   setValue("recDTheta12", recDTheta12);
-  double recLeg1cosPhi   = TMath::Cos(recLeg1P4.phi());
-  double recLeg1sinPhi   = TMath::Sin(recLeg1P4.phi());
-  double recLeg1cosTheta = TMath::Cos(recLeg1P4.theta());
-  double recLeg1sinTheta = TMath::Sin(recLeg1P4.theta());
-  double recLeg2cosPhi   = TMath::Cos(recLeg2P4.phi());
-  double recLeg2sinPhi   = TMath::Sin(recLeg2P4.phi());
-  double recLeg2cosTheta = TMath::Cos(recLeg2P4.theta());
-  double recLeg2sinTheta = TMath::Sin(recLeg2P4.theta());
-  double dotProduct12    = (recLeg1cosPhi*recLeg2cosPhi + recLeg1sinPhi*recLeg2sinPhi)*recLeg1sinTheta*recLeg2sinTheta 
-                          + recLeg1cosTheta*recLeg2cosTheta;
+  double recVis1cosPhi   = TMath::Cos(recVis1P4.phi());
+  double recVis1sinPhi   = TMath::Sin(recVis1P4.phi());
+  double recVis1cosTheta = TMath::Cos(recVis1P4.theta());
+  double recVis1sinTheta = TMath::Sin(recVis1P4.theta());
+  double recVis2cosPhi   = TMath::Cos(recVis2P4.phi());
+  double recVis2sinPhi   = TMath::Sin(recVis2P4.phi());
+  double recVis2cosTheta = TMath::Cos(recVis2P4.theta());
+  double recVis2sinTheta = TMath::Sin(recVis2P4.theta());
+  double dotProduct12    = (recVis1cosPhi*recVis2cosPhi + recVis1sinPhi*recVis2sinPhi)*recVis1sinTheta*recVis2sinTheta 
+                          + recVis1cosTheta*recVis2cosTheta;
   double recDAlpha12     = TMath::ACos(dotProduct12);
   setValue("recDAlpha12", recDAlpha12);
 
@@ -199,19 +221,89 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
   setValue_PxPy("genMEt", genMEtP4, zetaPhi);
   setValue("genMtautau", genMtautau);
 
+  // determine generator level momenta of tau leptons, visible decay products and neutrinos produced in tau decays
+  // (not needed for actual neuralMtautau training, but useful for mass-reconstruction studies...)
+  edm::Handle<reco::GenParticleCollection> genTaus;
+  evt.getByLabel(srcGenTaus_, genTaus);
+
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  evt.getByLabel(srcGenParticles_, genParticles);
+
+  const reco::GenParticle* genTauPlus  = 0;
+  const reco::GenParticle* genTauMinus = 0;
+  for ( reco::GenParticleCollection::const_iterator genTau = genTaus->begin();
+	genTau != genTaus->end(); ++genTau ) {
+    // CV: find genParticle corresponding to genTau;
+    //     this is neccessary in order to get the mother and daughter references correct
+    //    (the genTaus do not have valid daughter references for some reason...)
+    for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin();
+	  genParticle != genParticles->end(); ++genParticle ) {
+      if ( genParticle->pdgId() == genTau->pdgId() ) {
+	double dR = deltaR(genParticle->p4(), genTau->p4());
+	if ( dR < 1.e-2 ) {
+	  if      ( genParticle->charge() == +1 ) genTauPlus  = &(*genParticle);
+	  else if ( genParticle->charge() == -1 ) genTauMinus = &(*genParticle);
+	}
+      }
+    }
+  }
+  if ( !(genTauPlus && genTauMinus) )
+    throw cms::Exception("InvalidData") 
+      << "Failed to find gen. Tau lepton pair !!\n";
+
+  reco::Candidate::LorentzVector genVisPlusP4  = getVisMomentum(genTauPlus);
+  reco::Candidate::LorentzVector genVisMinusP4 = getVisMomentum(genTauMinus);
+  double dRplusMapsTo1MinusMapsTo2 = square(deltaR(genVisPlusP4, recVis1P4)) + square(deltaR(genVisMinusP4, recVis2P4));
+  double dRplusMapsTo2MinusMapsTo1 = square(deltaR(genVisPlusP4, recVis2P4)) + square(deltaR(genVisMinusP4, recVis1P4));
+  reco::Candidate::LorentzVector genTau1P4, genVis1P4, genNu1P4, genTau2P4, genVis2P4, genNu2P4;
+  if ( dRplusMapsTo1MinusMapsTo2 < dRplusMapsTo2MinusMapsTo1 ) {
+    genTau1P4 = genTauPlus->p4();
+    genVis1P4 = genVisPlusP4;
+    genNu1P4  = getInvisMomentum(genTauPlus);
+    genTau2P4 = genTauMinus->p4();
+    genVis2P4 = genVisMinusP4;
+    genNu2P4  = getInvisMomentum(genTauMinus);
+  } else {
+    genTau1P4 = genTauMinus->p4();
+    genVis1P4 = genVisMinusP4;
+    genNu1P4  = getInvisMomentum(genTauMinus);
+    genTau2P4 = genTauPlus->p4();
+    genVis2P4 = genVisPlusP4;
+    genNu2P4  = getInvisMomentum(genTauPlus);
+  }
+  //assert(TMath::Abs((genTau1P4 + genTau2P4).mass() - genMtautau) < 1.e-1);
+  //assert(TMath::Abs((genVis1P4 + genNu1P4).mass() - genTau1P4.mass()) < 1.e-2);
+  //assert(TMath::Abs((genVis2P4 + genNu2P4).mass() - genTau2P4.mass()) < 1.e-2);
+
+  setValue_EnPxPyPz("genTau1", genTau1P4, zetaPhi);
+  setValue_EnPxPyPz("genVis1", genVis1P4, zetaPhi);
+  setValue_EnPxPyPz("genNu1",  genNu1P4,  zetaPhi);
+
+  setValue_EnPxPyPz("genTau2", genTau2P4, zetaPhi);
+  setValue_EnPxPyPz("genVis2", genVis2P4, zetaPhi);
+  setValue_EnPxPyPz("genNu2",  genNu2P4,  zetaPhi);
+
   // reconstruct mTauTau using SVfit for comparisson
   //
   // WARNING: assumes that srcLeg1 (srcLeg2) refers to leptonic (hadronic) tau decays
   //
   std::vector<MeasuredTauLepton> tauDecayProduts;
-  tauDecayProduts.push_back(MeasuredTauLepton(kLepDecay, recLeg1P4));
-  tauDecayProduts.push_back(MeasuredTauLepton(kHadDecay, recLeg2P4));
+  tauDecayProduts.push_back(MeasuredTauLepton(kLepDecay, recVis1P4));
+  tauDecayProduts.push_back(MeasuredTauLepton(kHadDecay, recVis2P4));
   Vector recMEtP3(recMEtP4.px(), recMEtP4.py(), recMEtP4.pz());
   NSVfitStandaloneAlgorithm svFit(tauDecayProduts, recMEtP3, *pfMEtSignCovMatrix);
   svFit.fit();
-  double svFitMtautau = ( svFit.isValidSolution() ) ?
-    svFit.mass() : -1.;
+  double svFitMtautau = -1.;
+  double sigmaSVfit = 1.e+3;
+  if ( svFit.isValidSolution() ) {
+    svFitMtautau = svFit.mass();
+    sigmaSVfit = svFit.massUncert();
+  }
   setValue("recSVfitMtautau", svFitMtautau);
+  setValue("recSigmaSVfit", sigmaSVfit);
+
+  double visMass = (recVis1P4 + recVis2P4).mass();
+  setValue("recVisMass", visMass);
 
 //--- finally, fill all computed quantities into TTree
   assert(ntuple_);
