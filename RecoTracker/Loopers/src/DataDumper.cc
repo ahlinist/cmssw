@@ -8,11 +8,13 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <fstream>
 #include <set>
+#include "TStopwatch.h"
 
 bool sameDetId(fastRecHit * h1, fastRecHit * h2){ return (h1->id_ == h2->id_); }
 bool sortByDetId( fastRecHit * h1, fastRecHit * h2){return (h1->id_ > h2->id_);}
 bool sortByZ( fastRecHit * h1, fastRecHit * h2){return (h1->position_.z() < h2->position_.z());}
 
+bool sortByNumber (aCell* cell1, aCell* cell2){ return cell1->count() > cell2->count(); }
 
 fastRecHit::fastRecHit(TransientTrackingRecHit::RecHitPointer h,
 		       GlobalPoint & origin,
@@ -255,6 +257,7 @@ DataDumper::DataDumper(edm::ParameterSet & pset){
     deltaSlopeCut_ = pset.getParameter<double>("deltaSlopeCut");
     phiSlopeEpsilon_ = pset.getParameter<double>("phiSlopeEpsilon");
     phiSpreadCut_ = pset.getParameter<double>("phiSpread");
+    maximumTime_ = pset.getParameter<double>("maximumTime");
   }
 
 void DataDumper::resize(){
@@ -377,13 +380,38 @@ void DataDumper::makePeaks(){
   uint averageOccupancy_ = totalBins/nTotalBins;
   LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy_<<". It's used as a baseline cut";
 
-  uint above=0;
-  std::map<uint,uint> counts;
+  //create an image of the container, to not sort in place. although we could in principle, since the container is not accessed anymore afterwards as is.
+  std::vector<aCell*> sortedImage;
+  sortedImage.reserve(container_.size());
+
   for(std::vector<aCell>::iterator iCell=container_.begin();
       iCell!=container_.end();++iCell){
+    sortedImage.push_back( & *iCell);
+  }
+  
+  // let's order it to start with the highest cell
+  std::sort(sortedImage.begin(),sortedImage.end(),sortByNumber);
+  
+  uint above=0;
+  std::map<uint,uint> counts;
+  double timeSpent=0;
+  double maximumTime=-1;
+  TStopwatch myWatch;
+  bool abort=false;
+  for(std::vector<aCell*>::iterator iiCell=sortedImage.begin();
+      iiCell!=sortedImage.end();++iiCell){
+    if (maximumTime>0 && !abort && timeSpent>maximumTime_){
+      edm::LogError("AbortedLooperReco")<<"it is taking too much time to compute. Let's stop";
+      abort=true;
+    }
+
     //first remove possible duplicates
     //this is a test, which should be removed later
     //      iCell->unique();
+    aCell * iCell=*iiCell;
+    if (abort){
+      setHelix(&*iCell,false);
+      continue;}
     if (iCell->count() < averageOccupancy_) {
       setHelix(&*iCell,false);
       continue;}
@@ -391,24 +419,33 @@ void DataDumper::makePeaks(){
       setHelix(&*iCell,false);
       continue;}
     //triggers the computation
+    myWatch.Start();
     if (!isHelix(&*iCell)) continue;
     if (iCell->count() >= minHitPerPeak_){
       above++;
       counts[iCell->count()]++;
+      myWatch.Stop();
+      timeSpent+=myWatch.CpuTime();
     }
   }
+  myWatch.Stop();
   
-  LogDebug("PeakFinder|CollectPeak")<<"pushing the peaks";
+  LogDebug("PeakFinder|CollectPeak")<<"pushing the peaks. computed in: "<<timeSpent;
   
   peaks_.reserve(above);
-  for(std::vector<aCell>::iterator iCell=container_.begin();
-      iCell!=container_.end();++iCell){
+  for(std::vector<aCell*>::iterator iiCell=sortedImage.begin();
+      iiCell!=sortedImage.end();++iiCell){
+
+    aCell * iCell=*iiCell;
+
     if (iCell->count() >= minHitPerPeak_ && iCell->isHelix()){
       LogDebug("PeakFinder|CollectPeak")<<"As a peak cell: "<< iCell->printElements();
       peaks_.push_back(&*iCell);
     }
   }
   //it's a non order list of peaks
+
+
   //make plots for debugging
   LogDebug("PeakFinder|CollectPeak")<<image("endOfmakePeaks");
 }
