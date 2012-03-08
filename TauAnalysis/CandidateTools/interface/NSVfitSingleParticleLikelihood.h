@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.8 2012/03/07 15:45:01 veelken Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.9 2012/03/08 10:31:48 veelken Exp $
  *
  */
 
@@ -39,10 +39,7 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
     : NSVfitLikelihoodBase(cfg),
       prodParticleLabel_(cfg.getParameter<std::string>("prodParticleLabel")),
       visPtCutCorrFunction_(0),
-      visPtCutCorrFunctionOLD_(0)
   {
-    //-----------------------------------------------------------------------------
-    // CV: NEW method for visible Pt cut correction
     applyVisPtCutCorrection_ = ( cfg.exists("applyVisPtCutCorrection") ) ?
       cfg.getParameter<bool>("applyVisPtCutCorrection") : false;
     if ( applyVisPtCutCorrection_ ) {
@@ -50,45 +47,11 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
       std::string visPtCutCorrFunctionName = Form("%s_visPtCutCorrFunction", pluginName_.data());
       visPtCutCorrFunction_ = new visPtCutCorrType_formula(visPtCutCorrFunctionName.data(), cfgVisPtCutCorrection);
     }
-    //-----------------------------------------------------------------------------
-    
-    //-----------------------------------------------------------------------------
-    // CV: OLD method for visible Pt cut correction
-    applyVisPtCutCorrectionOLD_ = ( cfg.exists("applyVisPtCutCorrectionOLD") ) ?
-      cfg.getParameter<bool>("applyVisPtCutCorrectionOLD") : false;
-    if ( applyVisPtCutCorrectionOLD_ ) {
-      applyVisPtCutCorrection_ = true; // CV: temporary hack (for "old" visPtCut correction to be called from derrived classes)
-      edm::ParameterSet cfgVisPtCutCorrection = cfg.getParameter<edm::ParameterSet>("visPtCutCorrectionOLD");
-      std::string formula = cfgVisPtCutCorrection.getParameter<std::string>("formula");
-      visPtCutCorrOLD_xMin_ = cfgVisPtCutCorrection.getParameter<double>("xMin");
-      visPtCutCorrOLD_xMax_ = cfgVisPtCutCorrection.getParameter<double>("xMax");
-      std::string name = Form("%s_visPtCutCorrFunctionOLD", pluginName_.data());
-      visPtCutCorrFunctionOLD_ = new TF1(name.data(), formula.data(), visPtCutCorrOLD_xMin_, visPtCutCorrOLD_xMax_);
-      int numParameter = visPtCutCorrFunctionOLD_->GetNpar();
-      for ( int iParameter = 0; iParameter < numParameter; ++iParameter ) {
-	std::string parName = Form("par%i", iParameter);
-	edm::ParameterSet cfgPar = cfgVisPtCutCorrection.getParameter<edm::ParameterSet>(parName);
-	std::string name = Form("%s_visPtCutCorrFunctionOLD_par%i", pluginName_.data(), iParameter);
-	visPtCutCorrOLD_parameters_.push_back(new massDepParameterType(iParameter, name, cfgPar));
-      }
-    }
   }
 
   virtual ~NSVfitSingleParticleLikelihood() 
   {
-    //-----------------------------------------------------------------------------
-    // CV: NEW method for visible Pt cut correction
     delete visPtCutCorrFunction_;
-    //-----------------------------------------------------------------------------
-    
-    //-----------------------------------------------------------------------------
-    // CV: OLD method for visible Pt cut correction
-    delete visPtCutCorrFunctionOLD_;
-    for ( std::vector<massDepParameterType*>::iterator it = visPtCutCorrOLD_parameters_.begin();
-	  it != visPtCutCorrOLD_parameters_.end(); ++it ) {
-      delete (*it);
-    }
-    //-----------------------------------------------------------------------------
   }
 
   virtual void beginCandidate(const NSVfitSingleParticleHypothesis*) {}
@@ -98,8 +61,6 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
  protected:
   std::string prodParticleLabel_;
 
-  //-----------------------------------------------------------------------------
-  // CV: NEW method for visible Pt cut correction
   double evaluateVisPtCutCorrection(const NSVfitSingleParticleHypothesis* hypothesis) const
   {
 //--- compute multiplicative correction to tau decay likelihood
@@ -220,68 +181,6 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
 
   mutable visPtCutCorrType_formula* visPtCutCorrFunction_;
   bool applyVisPtCutCorrection_;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
-  // CV: OLD method for visible Pt cut correction
-  double evaluateVisPtCutCorrectionOLD(const NSVfitSingleParticleHypothesis* hypothesis) const
-  {
-//--- compute multiplicative correction to tau decay likelihood
-//    in order to account for effect of visible Pt cuts on x (= visible/tau lepton enery) distribution
-    double x = hypothesis->p4().energy()/hypothesis->p4_fitted().energy();
-    if ( x < 0. ) x = 0.;
-    if ( x > 1. ) x = 1.;
-    //double mass = hypothesis->p4_fitted().mass(); // original (buggy) version
-    double mass = hypothesis->mother()->p4_fitted().mass(); // corrected (bug-fixed) version
-    if ( mass < visPtCutCorrOLD_xMin_ ) mass = visPtCutCorrOLD_xMin_;
-    if ( mass > visPtCutCorrOLD_xMax_ ) mass = visPtCutCorrOLD_xMax_;
-    for ( std::vector<massDepParameterType*>::const_iterator visPtCutCorrParameter = visPtCutCorrOLD_parameters_.begin();
-	  visPtCutCorrParameter != visPtCutCorrOLD_parameters_.end(); ++visPtCutCorrParameter ) {
-      visPtCutCorrFunctionOLD_->SetParameter((*visPtCutCorrParameter)->idx_, (*visPtCutCorrParameter)->evaluate(mass));
-    }
-    return visPtCutCorrFunctionOLD_->Eval(x);
-  }
-
-  struct massDepParameterType
-  {
-    massDepParameterType(int idx, const std::string& name, const edm::ParameterSet& cfg)
-      : idx_(idx),
-	function_(0)
-    {
-      std::string formula = cfg.getParameter<std::string>("formula");
-      xMin_ = cfg.getParameter<double>("xMin");
-      xMax_ = cfg.getParameter<double>("xMax");
-      function_ = new TF1(name.data(), formula.data(), xMin_, xMax_);
-      int numParameter = function_->GetNpar();
-      for ( int iParameter = 0; iParameter < numParameter; ++iParameter ) {
-	std::string parName = Form("par%i", iParameter);
-	double parValue = cfg.getParameter<double>(parName);
-	function_->SetParameter(iParameter, parValue);
-      }
-    }
-    ~massDepParameterType() 
-    { 
-      delete function_; 
-    }
-    double evaluate(double mass) const
-    {
-      double x = mass;
-      if ( x < xMin_ ) x = xMin_;
-      if ( x > xMax_ ) x = xMax_;
-      return function_->Eval(x);
-    }
-    int idx_;
-    TF1* function_;
-    double xMin_;
-    double xMax_;
-  };
-
-  mutable TF1* visPtCutCorrFunctionOLD_;
-  std::vector<massDepParameterType*> visPtCutCorrOLD_parameters_;
-  double visPtCutCorrOLD_xMin_;
-  double visPtCutCorrOLD_xMax_;
-  bool applyVisPtCutCorrectionOLD_;
-  //-----------------------------------------------------------------------------
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"
