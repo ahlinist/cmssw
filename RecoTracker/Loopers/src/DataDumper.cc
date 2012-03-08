@@ -254,7 +254,7 @@ DataDumper::DataDumper(edm::ParameterSet & pset){
     maxZForTruncation_=pset.getParameter<double>("maxZForTruncation");
     deltaSlopeCut_ = pset.getParameter<double>("deltaSlopeCut");
     phiSlopeEpsilon_ = pset.getParameter<double>("phiSlopeEpsilon");
-
+    phiSpreadCut_ = pset.getParameter<double>("phiSpread");
   }
 
 void DataDumper::resize(){
@@ -366,35 +366,52 @@ void DataDumper::collect( fastRecHit & hit){
   }
 
 void DataDumper::makePeaks(){
-    uint above=0;
-    std::map<uint,uint> counts;
-    for(std::vector<aCell>::iterator iCell=container_.begin();
-	iCell!=container_.end();++iCell){
-      //first remove possible duplicates
-      //this is a test, which should be removed later
-      //      iCell->unique();
-      if (iCell->count() < minHitPerPeak_) continue;
-      if (!isHelix(&*iCell)) continue;
-      if (iCell->count() >= minHitPerPeak_){
-	above++;
-	counts[iCell->count()]++;
-      }
-    }
-
-    LogDebug("PeakFinder|CollectPeak")<<"pushing the peaks";
-
-    peaks_.reserve(above);
-    for(std::vector<aCell>::iterator iCell=container_.begin();
-	iCell!=container_.end();++iCell){
-      if (iCell->count() >= minHitPerPeak_ && iCell->isHelix()){
-	LogDebug("PeakFinder|CollectPeak")<<"As a peak cell: "<< iCell->printElements();
-	peaks_.push_back(&*iCell);
-      }
-    }
-    //it's a non order list of peaks
-    //make plots for debugging
-    LogDebug("PeakFinder|CollectPeak")<<image("endOfmakePeaks");
+  uint totalBins=0;
+  float nTotalBins=0;
+  for(std::vector<aCell>::iterator iCell=container_.begin();
+      iCell!=container_.end();++iCell){
+    if (iCell->count()==0) continue;
+    totalBins+=iCell->count();
+    nTotalBins++;
   }
+  uint averageOccupancy_ = totalBins/nTotalBins;
+  LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy_<<". It's used as a baseline cut";
+
+  uint above=0;
+  std::map<uint,uint> counts;
+  for(std::vector<aCell>::iterator iCell=container_.begin();
+      iCell!=container_.end();++iCell){
+    //first remove possible duplicates
+    //this is a test, which should be removed later
+    //      iCell->unique();
+    if (iCell->count() < averageOccupancy_) {
+      setHelix(&*iCell,false);
+      continue;}
+    if (iCell->count() < minHitPerPeak_) {
+      setHelix(&*iCell,false);
+      continue;}
+    //triggers the computation
+    if (!isHelix(&*iCell)) continue;
+    if (iCell->count() >= minHitPerPeak_){
+      above++;
+      counts[iCell->count()]++;
+    }
+  }
+  
+  LogDebug("PeakFinder|CollectPeak")<<"pushing the peaks";
+  
+  peaks_.reserve(above);
+  for(std::vector<aCell>::iterator iCell=container_.begin();
+      iCell!=container_.end();++iCell){
+    if (iCell->count() >= minHitPerPeak_ && iCell->isHelix()){
+      LogDebug("PeakFinder|CollectPeak")<<"As a peak cell: "<< iCell->printElements();
+      peaks_.push_back(&*iCell);
+    }
+  }
+  //it's a non order list of peaks
+  //make plots for debugging
+  LogDebug("PeakFinder|CollectPeak")<<image("endOfmakePeaks");
+}
 
 
 bool DataDumper::setHelix(aCell * c,bool v){
@@ -440,6 +457,7 @@ bool DataDumper::isHelix(aCell * c){
     c->resuite();
 
     // change phiTurn under phiUp hypothesis
+    uint phiSpread=0;
     float phiThisPoint=0,phiPreviousPoint=c->inCercle_[0].phi;
     float signMe=(c->phiUp_ ? 1 : -1 );
     //if phiUp, we need to remove 2Pi at each round while the next phi is bigger than the previous phi
@@ -454,7 +472,14 @@ bool DataDumper::isHelix(aCell * c){
 	*/
       }
       c->inCercle_[iC].phiTurn = phiThisPoint;
+      if (reco::deltaPhi(phiThisPoint,phiPreviousPoint) > phiSpreadCut_)
+	phiSpread++;
       phiPreviousPoint=phiThisPoint;
+    }
+
+    if (phiSpread < 2.){
+      LogDebug("PeakFinder|PhiInHelix")<<" There is not enough spread in phi in this looper\n"<<c->printElements();
+      return setHelix(c,false);
     }
     
     LogDebug("PeakFinder|PhiInHelix")<<" done for phi turn initialisation\n"<<c->printElements();
