@@ -115,9 +115,11 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
   } else {
     // Otherwise just take the position of the PV from the event.
     // Leave the errors @ 0.
-    event->eventVertexPosition_(0) = eventVertex->position().x();
-    event->eventVertexPosition_(1) = eventVertex->position().y();
-    event->eventVertexPosition_(2) = eventVertex->position().z();
+    reco::Candidate::Point eventVertexPosition(0,0,0);
+    if ( eventVertex ) eventVertexPosition = eventVertex->position();
+    event->eventVertexPosition_(0) = eventVertexPosition.x();
+    event->eventVertexPosition_(1) = eventVertexPosition.y();
+    event->eventVertexPosition_(2) = eventVertexPosition.z();
     // CV: need to add protection against case that primary event vertex is not valid <-- FIXME ?
     event->eventVertexIsValid_ = true;
   }

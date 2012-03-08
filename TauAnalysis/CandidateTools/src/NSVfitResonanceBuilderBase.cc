@@ -3,6 +3,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
 
+#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
+
 NSVfitResonanceBuilderBase::NSVfitResonanceBuilderBase(const edm::ParameterSet& cfg)
   : NSVfitBuilderBase(cfg),
     prodResonanceLabel_(cfg.getParameter<std::string>("prodResonanceLabel")),
@@ -67,6 +69,12 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticle
 
   resonance->p4_ = p4;
 
+  if ( resonance->numDaughters() == 2 ) {
+    const NSVfitSingleParticleHypothesis* daughter1 = resonance->daughter(0);
+    const NSVfitSingleParticleHypothesis* daughter2 = resonance->daughter(1);
+    resonance->dPhiVis_ = TMath::ACos(TMath::Cos(daughter1->p4().phi() - daughter2->p4().phi()));
+  }
+
   resonance->name_ = prodResonanceLabel_;
 
   resonance->barcode_ = barcodeCounter_;
@@ -90,6 +98,11 @@ void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* re
   }
   
   resonance->dp4_ = dp4;
+
+  if ( numDaughters == 2 ) {
+    const NSVfitSingleParticleHypothesis* daughter1 = resonance->daughter(0);
+    resonance->prod_angle_rf_ = SVfit_namespace::decayAngleFromLabMomenta(resonance->p4_fitted(), daughter1->p4_fitted());
+  }
 }
 
 void NSVfitResonanceBuilderBase::print(std::ostream& stream) const

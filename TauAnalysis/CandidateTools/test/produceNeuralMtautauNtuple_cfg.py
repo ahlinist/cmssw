@@ -56,6 +56,7 @@ genElectronsFromTauDecays = None
 genMuonsFromTauDecays = None
 genTauJetsFromTauDecays = None
 genTauPairs = None
+genTaus = None
 if sample_type == 'Z':
     process.load("TauAnalysis/GenSimTools/gen_decaysFromZs_cfi")
     process.neuralMtautauNtupleProductionSequence += process.produceGenDecayProductsFromZs
@@ -63,6 +64,7 @@ if sample_type == 'Z':
     genMuonsFromTauDecays = 'genMuonsFromZtautauDecays'
     genTauJetsFromTauDecays = 'genHadronsFromZtautauDecays'
     genTauPairs = 'genZdecayToTaus'
+    genTaus = 'genTausFromZs'
 elif sample_type == 'Higgs':
     process.load("TauAnalysis/GenSimTools/gen_decaysFromAHs_cfi")
     process.neuralMtautauNtupleProductionSequence += process.produceGenDecayProductsFromAHs
@@ -70,6 +72,7 @@ elif sample_type == 'Higgs':
     genMuonsFromTauDecays = 'genMuonsFromAHtautauDecays'
     genTauJetsFromTauDecays = 'genHadronsFromAHtautauDecays'
     genTauPairs = 'genAHdecayToTaus'
+    genTaus = 'genTausFromAHs'
 else:
     raise ValueError("Invalid sample type = %s !!" % sample_type)
 
@@ -201,6 +204,7 @@ for objSelAttrName in dir(process.patTaus):
 # produce NeuralMtautau Ntuple
 process.load("TauAnalysis/CandidateTools/neuralMtautau_cff")
 process.neuralMtautauNtupleProducer.srcGenTauPair = cms.InputTag(genTauPairs)
+process.neuralMtautauNtupleProducer.srcGenTaus = cms.InputTag(genTaus)
 process.neuralMtautauNtupleProductionSequence += process.neuralMtautauSequence
 
 process.TFileService = cms.Service("TFileService",

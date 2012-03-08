@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NeuralMtautauNtupleProducer.h,v 1.1 2012/02/13 14:00:16 veelken Exp $
+ * $Id: NeuralMtautauNtupleProducer.h,v 1.2 2012/02/22 09:46:03 veelken Exp $
  *
  */
 
@@ -63,7 +63,9 @@ class NeuralMtautauNtupleProducer : public edm::EDProducer
 
   edm::InputTag srcGenTauPair_;
   edm::InputTag srcGenMEt_;
-  
+  edm::InputTag srcGenTaus_;
+  edm::InputTag srcGenParticles_;
+
   edm::InputTag srcRecPFJets_;
   edm::InputTag srcRecPFCandidatesNotWithinJets_;
   edm::InputTag srcRecLeg1_;

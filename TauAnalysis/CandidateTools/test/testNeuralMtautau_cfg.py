@@ -16,7 +16,7 @@ process.fwliteInput = cms.PSet(
 )
 
 #--------------------------------------------------------------------------------
-inputFilePath = '/data1/veelken/CMSSW_4_2_x/Ntuples/user/v/veelken/CMSSW_4_2_x/Ntuples/neuralMtautauTraining/v1_4'
+inputFilePath = '/data1/veelken/CMSSW_4_2_x/Ntuples/user/v/veelken/CMSSW_4_2_x/Ntuples/neuralMtautauTraining/v1_5'
 inputFileNames = []
 if inputFilePath.find('/castor/') != -1:
     inputFileNames = [ 'rfio:%s' % file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
@@ -61,11 +61,14 @@ process.testNeuralMtautau = cms.PSet(
         "recLeg2M",
         "recMEtPx",
         "recMEtPy",
-        "TMath::Min(recMEtSigmaX, 1.e+2)",
-        "TMath::Min(recMEtSigmaY, 1.e+2)",
+        "TMath::Min(recMEtSigmaX,    1.e+2)",
+        "TMath::Min(recMEtSigmaY,    1.e+2)",
         "recMEtCorrXY",
         "recDPhi12",
         "recDAlpha12",
+        "TMath::Min(recSVfitMtautau, 1.e+3)",
+        "TMath::Min(recSigmaSVfit,   1.e+2)",
+        "TMath::Min(recVisMass,      1.e+3)",
         ##"recPx1",
         ##"recPy1",
         ##"recPx2",
