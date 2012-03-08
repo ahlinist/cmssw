@@ -26,6 +26,7 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                                propagator = cms.string('PropagatorWithMaterialWithLoops')
                                ),
                              collector = cms.PSet(
+                                maximumTime = cms.double(-1), #time out value
                                 xAxis = cms.vdouble(200, 1/65., 1/1.5), #34
                                 invertX = cms.bool(True), 
                                 nPhi = cms.uint32(200), #60

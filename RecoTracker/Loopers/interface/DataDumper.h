@@ -142,11 +142,15 @@ public:
   float deltaSlopeCut_;
   float phiSlopeEpsilon_;
   float phiSpreadCut_;
+  
+  double maximumTime_;
 
   TAxis X_,Y_;
   uint offset_;
 
   uint tfileDir;
 };
+
+bool sortByNumber( aCell* cell1, aCell* cell2);
 
 #endif
