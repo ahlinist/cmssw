@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.9 2012/03/08 10:31:48 veelken Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.10 2012/03/08 10:35:44 veelken Exp $
  *
  */
 
@@ -38,7 +38,7 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
   NSVfitSingleParticleLikelihood(const edm::ParameterSet& cfg)
     : NSVfitLikelihoodBase(cfg),
       prodParticleLabel_(cfg.getParameter<std::string>("prodParticleLabel")),
-      visPtCutCorrFunction_(0),
+      visPtCutCorrFunction_(0)
   {
     applyVisPtCutCorrection_ = ( cfg.exists("applyVisPtCutCorrection") ) ?
       cfg.getParameter<bool>("applyVisPtCutCorrection") : false;
@@ -65,8 +65,7 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
   {
 //--- compute multiplicative correction to tau decay likelihood
 //    in order to account for effect of visible Pt cuts on x (= visible/tau lepton enery) distribution
-    if ( applyVisPtCutCorrectionOLD_ ) return evaluateVisPtCutCorrectionOLD(hypothesis);
-    else return visPtCutCorrFunction_->eval(hypothesis);
+    return visPtCutCorrFunction_->eval(hypothesis);
   }
 
   struct visPtCutCorrTypeBase
