@@ -141,6 +141,7 @@ public:
   float maxZForTruncation_;
   float deltaSlopeCut_;
   float phiSlopeEpsilon_;
+  float phiSpreadCut_;
 
   TAxis X_,Y_;
   uint offset_;
