@@ -776,21 +776,16 @@ bool CosmicSplittingResolutionFilter::filter(edm::Event& event, const edm::Event
   // there!
   if (!no_refits) {
     for (int i = 0; i < n_tracks; ++i) {
-      std::map<unsigned, unsigned short> hits_seen;
+      nt->shared_hits[i] = 0;
+      std::vector<unsigned> hits_seen;
       for (int j = 0; j < 2; ++j) {
 	for (int k = 0; k < int(tracks[i][j]->recHitsSize()); ++k) {
 	  unsigned id = tracks[i][j]->recHit(k)->geographicalId().rawId();
-	  if (hits_seen.find(id) == hits_seen.end())
-	    hits_seen[id] = 1;
-	  else
-	    hits_seen[id]++;
+	  if (j == 0)
+	    hits_seen.push_back(id);
+	  else if (std::find(hits_seen.begin(), hits_seen.end(), id) != hits_seen.end())
+	    nt->shared_hits[i] += 1;
 	}
-      }
-    
-      nt->shared_hits[i] = 0;
-      for (std::map<unsigned, unsigned short>::const_iterator it = hits_seen.begin(), ite = hits_seen.end(); it != ite; ++it) {
-	if (it->second > 1)
-	  nt->shared_hits[i] += 1;
       }
     }
   }
