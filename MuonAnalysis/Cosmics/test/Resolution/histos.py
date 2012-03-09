@@ -44,6 +44,8 @@ parser.add_argument('+min-strip-layers', type=int, default=8,
                     help='Require MIN_STRIP_LAYERS strip layers on every track (except standalone). Default is %(default)s.')
 parser.add_argument('+min-muon-hits', type=int, default=0,
                     help='Require MIN_MUON_HITS muon hits on every track (except tracker-only). Default is %(default)s.')
+parser.add_argument('+check-shared-hits', action='store_true',
+                    help='Check that there are no shared hits between upper, lower tracks.')
 parser.add_argument('+muon-subdet', default='dtonly', choices='dtonly either'.split(),
                     help='Which muon subdetectors to allow (and require DQM flags good for). Choices are %(choices)s; default is "%(default)s".')
 parser.add_argument('+require-tt25', action='store_true',
@@ -96,6 +98,7 @@ cfg = cms.PSet(
     no_dt_allowed           = cms.bool(options.muon_subdet == 'csconly'),
     no_csc_allowed          = cms.bool(options.muon_subdet == 'dtonly'),
     check_tksta_dphi        = cms.bool(False),
+    check_shared_hits       = cms.bool(options.check_shared_hits),
     use_unpropagated_values = cms.bool(True),
     pp_reco_mode            = cms.bool(False),
     force_run_list          = cms.vuint32(run_list),
