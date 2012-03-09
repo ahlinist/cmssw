@@ -197,6 +197,10 @@ using namespace std;
 
 class LimitResult;
 
+
+// -----> User interface
+
+
 Double_t
 roostats_cl95( Double_t ilum, Double_t slum,
 	       Double_t eff, Double_t seff,
