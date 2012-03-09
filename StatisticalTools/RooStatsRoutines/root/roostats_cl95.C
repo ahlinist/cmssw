@@ -110,6 +110,7 @@ static const char* desc =
 
 
 #include <algorithm>
+#include <limits>
 
 #include "TCanvas.h"
 #include "TMath.h"
@@ -232,6 +233,16 @@ roostats_limit(Double_t ilum, Double_t slum,
 	       std::string plotFileName,
 	       UInt_t seed);
 
+double
+roostats_zscore( Double_t ilum, Double_t slum,
+		 Double_t eff, Double_t seff,
+		 Double_t bck, Double_t sbck,
+		 Int_t n,
+		 Bool_t gauss,
+		 Int_t nuisanceModel,
+		 std::string method,
+		 std::string plotFileName,
+		 UInt_t seed );
 
 
 // below are experimental and legacy interfaces
@@ -298,6 +309,18 @@ public:
   Double_t GetTwoSigmaHighRange(){return _high95;};
   Double_t GetTwoSigmaCoverage(){return _cover95;};
 
+  void Clear( void ){
+    _observed_limit = 0;
+    _observed_limit_error = 0;
+    _expected_limit = 0;
+    _low68 = 0;
+    _high68 = 0;
+    _low95 = 0;
+    _high95 = 0;
+    _cover68 = 0;
+    _cover95 = 0;
+  }
+
 private:
   Double_t _observed_limit;
   Double_t _observed_limit_error;
@@ -308,15 +331,32 @@ private:
   Double_t _high95;
   Double_t _cover68;
   Double_t _cover95;
+
+  void SetObservedLimit(Double_t limit){_observed_limit = limit;};
+  void SetObservedLimitError(Double_t error){_observed_limit_error = error;};
+  void SetExpectedLimit(Double_t limit){_expected_limit = limit;};
+  void SetOneSigmaLowRange(Double_t band){_low68 = band;};
+  void SetOneSigmaHighRange(Double_t band){_high68 = band;};
+  void SetTwoSigmaLowRange(Double_t band){_low95 = band;};
+  void SetTwoSigmaHighRange(Double_t band){_high95 = band;};
+
 };
 
 
 class CL95Calc{
 
 public:
-  CL95Calc();
-  CL95Calc( UInt_t seed );
+
+  // no public constructors - this is a singleton class
+  // use static method CL95Calc::GetInstance() to get the instance
+  //CL95Calc();
+  //CL95Calc( UInt_t seed );
   ~CL95Calc();
+
+  static CL95Calc * GetInstance(void){
+    if (!mspInstance) mspInstance = new CL95Calc();
+    return mspInstance;
+  }
 
   RooWorkspace * MakeWorkspace(Double_t ilum, Double_t slum,
 			       Double_t eff, Double_t seff,
@@ -420,6 +460,8 @@ private:
   Double_t _low95;
   Double_t _high95;
   
+  // pointer to class instance
+  static CL95Calc * mspInstance;
 };
 
 
@@ -1895,6 +1937,29 @@ LimitResult roostats_clm(Double_t ilum, Double_t slum,
 
   return limit;
 }
+
+
+
+double
+roostats_zscore( Double_t ilum, Double_t slum,
+		 Double_t eff, Double_t seff,
+		 Double_t bck, Double_t sbck,
+		 Int_t n,
+		 Bool_t gauss,
+		 Int_t nuisanceModel,
+		 std::string method,
+		 std::string plotFileName,
+		 UInt_t seed ){
+  //
+  // Estimate z-score (a measure of signiicance)
+  //
+
+  double zscore = std::numeric_limits<double>::min();
+
+  return zscore;
+}
+
+
 
 
 /////////////////////////////////////////////////////////////////////////
