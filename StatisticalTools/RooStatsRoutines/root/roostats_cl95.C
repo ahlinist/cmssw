@@ -208,7 +208,7 @@ roostats_cl95( Double_t ilum, Double_t slum,
 	       Double_t bck, Double_t sbck,
 	       Int_t n,
 	       Bool_t gauss = kFALSE,
-	       Int_t nuisanceModel = 0,
+	       Int_t nuisanceModel = 1,
 	       std::string method = "bayesian",
 	       std::string plotFileName = "plot_cl95.pdf",
 	       UInt_t seed = 12345,
@@ -218,7 +218,7 @@ LimitResult
 roostats_clm(  Double_t ilum, Double_t slum,
 	       Double_t eff, Double_t seff,
 	       Double_t bck, Double_t sbck,
-	       Int_t nit = 200, Int_t nuisanceModel = 0,
+	       Int_t nit = 200, Int_t nuisanceModel = 1,
 	       std::string method = "bayesian",
 	       UInt_t seed = 12345);
 
@@ -238,11 +238,11 @@ roostats_zscore( Double_t ilum, Double_t slum,
 		 Double_t eff, Double_t seff,
 		 Double_t bck, Double_t sbck,
 		 Int_t n,
-		 Bool_t gauss,
-		 Int_t nuisanceModel,
-		 std::string method,
-		 std::string plotFileName,
-		 UInt_t seed );
+		 Bool_t gauss = false,
+		 Int_t nuisanceModel = 1,
+		 std::string method = "bayesian",
+		 std::string plotFileName = "plot_zscore.pdf",
+		 UInt_t seed = 12345 );
 
 
 // below are experimental and legacy interfaces
@@ -349,8 +349,6 @@ public:
 
   // no public constructors - this is a singleton class
   // use static method CL95Calc::GetInstance() to get the instance
-  //CL95Calc();
-  //CL95Calc( UInt_t seed );
   ~CL95Calc();
 
   static CL95Calc * GetInstance(void){
@@ -390,7 +388,14 @@ public:
 
   Double_t FC_calc(int Nbins, float conf_int, float ULprecision, bool UseAdaptiveSampling = true, bool CreateConfidenceBelt = true);
 
+  void SetSeed(UInt_t seed);
+
+
 private:
+
+  CL95Calc();
+  CL95Calc(const CL95Calc &); // stop default
+  //CL95Calc( UInt_t seed );
 
   // methods
   void Init( UInt_t seed ); //  to be called by constructor
@@ -399,8 +404,9 @@ private:
 		  Double_t eff, Double_t seff,
 		  Double_t bck, Double_t sbck,
 		  Int_t n,
-		  Bool_t gauss,
 		  Int_t nuisanceModel);
+
+  void PrintMethodInfo( std::string method );
 
   int CreateSystTerm( std::string varName,
 		      double value,
@@ -440,6 +446,7 @@ private:
   bool mbHaveLumiErr;
   bool mbHaveEffErr;
   bool mbHaveBkgErr;
+  bool mbGaussianStatistics;
 
   // for Bayesian MCMC calculation
   MCMCInterval * mcInt;
@@ -451,7 +458,8 @@ private:
   LikelihoodInterval * pPlrInt;
 
   // random numbers
-  TRandom3 r;
+  //TRandom3 r;
+  TRandom3 mRandom;
 
   // expected limits
   Double_t _expected_limit;
@@ -463,6 +471,10 @@ private:
   // pointer to class instance
   static CL95Calc * mspInstance;
 };
+
+
+// static pointer to the instance
+CL95Calc * CL95Calc::mspInstance = 0;
 
 
 
@@ -503,9 +515,9 @@ CL95Calc::CL95Calc(){
 }
 
 
-CL95Calc::CL95Calc(UInt_t seed){
-  Init(seed);
-}
+//CL95Calc::CL95Calc(UInt_t seed){
+//  Init(seed);
+//}
 
 
 void CL95Calc::Init(UInt_t seed){
@@ -524,26 +536,7 @@ void CL95Calc::Init(UInt_t seed){
   nbkg_rel_err = -1.0; // default non-initialized value
 
   // set random seed
-  if (seed == 0){
-    r.SetSeed();
-    UInt_t _seed = r.GetSeed();
-    UInt_t _pid = gSystem->GetPid();
-    std::cout << "[CL95Calc]: random seed: " << _seed << std::endl;
-    std::cout << "[CL95Calc]: process ID: " << _pid << std::endl;
-    _seed = 31*_seed+_pid;
-    std::cout << "[CL95Calc]: new random seed (31*seed+pid): " << _seed << std::endl;
-    r.SetSeed(_seed);
-    
-    // set RooFit random seed (it has a private copy)
-    RooRandom::randomGenerator()->SetSeed(_seed);
-  }
-  else{
-    std::cout << "[CL95Calc]: random seed: " << seed << std::endl;
-    r.SetSeed(seed);
-    
-    // set RooFit random seed (it has a private copy)
-    RooRandom::randomGenerator()->SetSeed(seed);
-  }
+  SetSeed(seed);
 
   // default Gaussian nuisance model
   _nuisance_model = 0;
@@ -553,6 +546,7 @@ void CL95Calc::Init(UInt_t seed){
   mbHaveLumiErr = false;
   mbHaveEffErr = false;
   mbHaveBkgErr = false;
+  mbGaussianStatistics = false;
 }
 
 
@@ -568,11 +562,44 @@ CL95Calc::~CL95Calc(){
 
 
 
+void CL95Calc::SetSeed( UInt_t seed ){
+  //
+  // Set random seed. If 0, set unique random.
+  //
+  std::string _legend = "[CL95Calc::SetSeed]: ";
+
+  if (seed == 0){
+    mRandom.SetSeed();
+    UInt_t _seed = mRandom.GetSeed();
+    UInt_t _pid = gSystem->GetPid();
+    std::cout << _legend << "random seed: " << _seed << std::endl;
+    std::cout << _legend << "process ID: " << _pid << std::endl;
+    _seed = 31*_seed+_pid;
+    std::cout << _legend << "new random seed (31*seed+pid): " << _seed << std::endl;
+    mRandom.SetSeed(_seed);
+    
+    // set RooFit random seed (it has a private copy)
+    RooRandom::randomGenerator()->SetSeed(_seed);
+  }
+  else{
+    std::cout << _legend 
+	      << "random seed: " << seed 
+	      << std::endl;
+    mRandom.SetSeed(seed);
+    
+    // set RooFit random seed (it has a private copy)
+    RooRandom::randomGenerator()->SetSeed(seed);
+  }
+
+  return;
+}
+
+
+
 int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
 			  Double_t eff, Double_t seff,
 			  Double_t bck, Double_t sbck,
 			  Int_t n,
-			  Bool_t gauss,
 			  Int_t nuisanceModel){
   //
   // Check inputs, return ok(0), warning(1) or error(-1)
@@ -582,8 +609,7 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
 
   // silence unused var warnings
   (void)bck;
-  (void)n;
-  (void)gauss;
+  //(void)n;
   (void)nuisanceModel;
 
   int _status = 0;
@@ -633,6 +659,21 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
     }
   }
   
+  if (n < 0){
+    std::cout << "Negative observed number of events specified, exiting" << std::endl;
+    return -1.0;
+  }
+
+  if (n == 0) mbGaussianStatistics = kFALSE;
+
+  if (mbGaussianStatistics){
+    nuisanceModel = 0;
+    std::cout << _legend << "Gaussian statistics used" << endl;
+  }
+  else{
+    std::cout << _legend << "Poisson statistics used" << endl;
+  }
+
   return _status;
 }
 
@@ -730,11 +771,12 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
   
   std::string _legend = "[CL95Calc::MakeWorkspace]: ";
 
+  mbGaussianStatistics = gauss;
+
   int _input_status = CheckInputs( ilum, slum,
 				   eff, seff,
 				   bck, sbck,
 				   n,
-				   gauss,
 				   nuisanceModel );
 
   if ( _input_status < 0 ){
@@ -771,7 +813,7 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
 
   // core model:
   pWs->factory("sum::yield(nsig,nbkg)");
-  if (gauss){
+  if (mbGaussianStatistics){
     // Poisson probability with mean signal+bkg
     std::cout << "[CL95Calc]: creating Gaussian probability as core model..." << std::endl;
     pWs->factory( "Gaussian::model_core(n,yield,expr('sqrt(yield)',yield))" );
@@ -1488,7 +1530,7 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
       
 
       std::cout << "[roostats_clm]: generatin pseudo-data with bmean = " << bmean << std::endl;
-      Int_t n = r.Poisson(bmean);
+      Int_t n = mRandom.Poisson(bmean);
 
       // check if the limit for this n is already cached
       Double_t _pe = -1.0;
@@ -1672,6 +1714,43 @@ Double_t CL95Calc::RoundUpperBound(Double_t bound){
 
 
 
+void CL95Calc::PrintMethodInfo( std::string method ){
+  //
+  // Printout some info
+  // 
+
+  std::string legend = "[CL95Calc::ValidateInput]: ";
+
+  std::cout << legend << "estimating 95% C.L. upper limit" << endl;
+  if (method.find("bayesian") != std::string::npos){
+    std::cout << legend << "using Bayesian calculation via numeric integration" << endl;
+  }
+  else if (method.find("plr") != std::string::npos){
+    std::cout << legend << "using profile likelihood ratio calculation with Wilk's theorem" << endl;
+  }
+  else if (method.find("mcmc") != std::string::npos){
+    std::cout << legend << "using Bayesian calculation via numeric integration" << endl;
+  }
+  else if (method.find("cls") != std::string::npos){
+    std::cout << legend << "using CLs calculation" << endl;
+  }
+  else if (method.find("fc") != std::string::npos){
+    std::cout << legend << "using Feldman-Cousins approach" << endl;
+  }
+  else if (method.find("workspace") != std::string::npos){
+    std::cout << legend << "no interval calculation, only create and save workspace" << endl;
+  }
+  else{
+    std::cout << legend << "method " << method 
+	      << " is not implemented, exiting" <<std::endl;
+    return;
+  }
+
+  return;
+}
+
+
+
 Int_t banner(){
   //#define __ROOFIT_NOBANNER // banner temporary off
 #ifndef __EXOST_NOBANNER
@@ -1680,6 +1759,9 @@ Int_t banner(){
   return 0 ;
 }
 static Int_t dummy_ = banner() ;
+
+
+
 
 
 
@@ -1702,61 +1784,27 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
   // users are not expected to use that (but they can of course)
   //
 
-  std::cout << "[roostats_cl95]: estimating 95% C.L. upper limit" << endl;
-  if (method.find("bayesian") != std::string::npos){
-    std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
-  }
-  else if (method.find("plr") != std::string::npos){
-    std::cout << "[roostats_cl95]: using profile likelihood ratio calculation with Wilk's theorem" << endl;
-  }
-  else if (method.find("mcmc") != std::string::npos){
-    std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
-  }
-  else if (method.find("cls") != std::string::npos){
-    std::cout << "[roostats_cl95]: using CLs calculation" << endl;
-  }
-  else if (method.find("fc") != std::string::npos){
-    std::cout << "[roostats_cl95]: using Feldman-Cousins approach" << endl;
-  }
-  else if (method.find("workspace") != std::string::npos){
-    std::cout << "[roostats_cl95]: no interval calculation, only create and save workspace" << endl;
-  }
-  else{
-    std::cout << "[roostats_cl95]: method " << method 
-	      << " is not implemented, exiting" <<std::endl;
-    return -1.0;
-  }
-
-  // some input validation
-  if (n < 0){
-    std::cout << "Negative observed number of events specified, exiting" << std::endl;
-    return -1.0;
-  }
-
-  if (n == 0) gauss = kFALSE;
-
-  if (gauss){
-    nuisanceModel = 0;
-    std::cout << "[roostats_cl95]: Gaussian statistics used" << endl;
-  }
-  else{
-    std::cout << "[roostats_cl95]: Poisson statistics used" << endl;
-  }
-    
   // limit calculation
-  CL95Calc theCalc(seed);
+  //CL95Calc theCalc(seed);
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  theCalc->SetSeed(seed);
+
+  //mbGaussianStatistics = gauss;
+  //if (n == 0) gauss = kFALSE;
+
+  theCalc->PrintMethodInfo( method );
 
   // container for computed limits
   LimitResult limitResult;
 
-  RooWorkspace * pWs = theCalc.MakeWorkspace( ilum, slum,
-					     eff, seff,
-					     bck, sbck,
-					     n,
-					     gauss,
-					     nuisanceModel );
-
-  //RooDataSet * data = (RooDataSet *)( theCalc.makeData( n )->Clone() );
+  RooWorkspace * pWs = theCalc->MakeWorkspace( ilum, slum,
+					       eff, seff,
+					       bck, sbck,
+					       n,
+					       gauss,
+					       nuisanceModel );
+  
+  //RooDataSet * data = (RooDataSet *)( theCalc->makeData( n )->Clone() );
   //data->SetName("observed_data");
   //pWs->import(*data);
 
@@ -1767,12 +1815,12 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
   // if only workspace requested, exit here
   if ( method.find("workspace") != std::string::npos ) return 0.0;
 
-  Double_t limit = theCalc.cl95( method, &limitResult );
+  Double_t limit = theCalc->cl95( method, &limitResult );
   std::cout << "[roostats_cl95]: 95% C.L. upper limit: " << limit << std::endl;
 
   // check if the plot is requested
   if (plotFileName.size() != 0){
-    theCalc.makePlot(method, plotFileName);
+    theCalc->makePlot(method, plotFileName);
   }
 
   if (result) *result = limitResult;
@@ -1881,8 +1929,10 @@ Double_t roostats_cla(Double_t ilum, Double_t slum,
 
   std::cout << "[roostats_cla]: Poisson statistics used" << endl;
     
-  CL95Calc theCalc(seed);
-  limit = theCalc.cla( ilum, slum,
+  //CL95Calc theCalc(seed);
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  theCalc->SetSeed(seed);
+  limit = theCalc->cla( ilum, slum,
 		       eff, seff,
 		       bck, sbck,
 		       nuisanceModel,
@@ -1928,8 +1978,10 @@ LimitResult roostats_clm(Double_t ilum, Double_t slum,
 
   std::cout << "[roostats_clm]: Poisson statistics used" << endl;
     
-  CL95Calc theCalc(seed);
-  limit = theCalc.clm( ilum, slum,
+  //CL95Calc theCalc(seed);
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  theCalc->SetSeed(seed);
+  limit = theCalc->clm( ilum, slum,
 		       eff, seff,
 		       bck, sbck,
 		       nit, nuisanceModel,
@@ -1955,6 +2007,50 @@ roostats_zscore( Double_t ilum, Double_t slum,
   //
 
   double zscore = std::numeric_limits<double>::min();
+
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  theCalc->SetSeed(seed);
+
+  theCalc->PrintMethodInfo( method );
+
+  RooWorkspace * pWs = theCalc->MakeWorkspace( ilum, slum,
+					       eff, seff,
+					       bck, sbck,
+					       n,
+					       gauss,
+					       nuisanceModel );
+
+  pWs->Print();
+
+  /*
+  // use ProfileLikelihood
+  ProfileLikelihoodCalculator plc(*data, mc);
+  plc.SetConfidenceLevel(0.68);
+
+  std::string null_parameters_snapshot_name = "BModel_poiAndNuisance_snapshot";
+  ws->loadSnapshot( null_parameters_snapshot_name.c_str() );
+
+  const RooArgSet * pNullParameters = ws->set(null_parameters_snapshot_name.c_str());
+  plc.SetNullParameters(*pNullParameters);
+
+  // suppress RooFit verbosity
+  RooFit::MsgLevel msglevel = RooMsgService::instance().globalKillBelow();
+  RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
+
+  RooStats::HypoTestResult * htr = plc.GetHypoTest();
+  Double_t significance = htr->Significance();
+
+  std::cout << _legend << "null p-value = " << htr->NullPValue() << std::endl;
+  std::cout << _legend << "significance = " << significance << std::endl;
+  logfile << _legend << "significance = " << significance << std::endl;
+  delete htr;
+
+  // return RooFit verbosity to previous level
+  RooMsgService::instance().setGlobalKillBelow(msglevel);
+  */
+  
+  (void)pWs;
+  (void)plotFileName;
 
   return zscore;
 }
