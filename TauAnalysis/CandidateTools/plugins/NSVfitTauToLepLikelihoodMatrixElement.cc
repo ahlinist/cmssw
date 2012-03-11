@@ -51,25 +51,41 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   assert(hypothesis_T != 0);
 
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodMatrixElement::operator()>:" << std::endl;
-  
-  double chargedLepMass2 = square(hypothesis_T->p4().mass());         // electron/muon mass
-  double Emax = (tauLeptonMass2 + chargedLepMass2)/(2*tauLeptonMass); // formula (2.6)
-  double E = hypothesis_T->p4vis_rf().energy();                       // electron/muon energy (in tau lepton rest-frame)
-  double p = hypothesis_T->p4vis_rf().P();                            // electron/muon momentum (in tau lepton rest-frame)
-  double theta = hypothesis_T->decay_angle_rf();
-  double sinTheta = TMath::Sin(theta);
+    
+  double visMass = hypothesis_T->p4().mass();                  // electron/muon mass 
+  double visMass2 = square(visMass);
+  double Emax = (tauLeptonMass2 + visMass2)/(2*tauLeptonMass); // formula (2.6)
+  double E = hypothesis_T->p4vis_rf().energy();                // electron/muon energy (in tau lepton rest-frame)
+  double p = hypothesis_T->p4vis_rf().P();                     // electron/muon momentum (in tau lepton rest-frame)
+  double decayAngle = hypothesis_T->decay_angle_rf();
+  double sinDecayAngle = TMath::Sin(decayAngle);
   double nuMass = hypothesis_T->p4invis_rf().mass();
+  if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
+  double nuMass2 = square(nuMass);
   
   if ( this->verbosity_ ) {
-    std::cout << " chargedLepMass2 = " << chargedLepMass2 << std::endl;
+    std::cout << " visMass2 = " << visMass2 << std::endl;
     std::cout << " Emax = " << Emax << std::endl;
     std::cout << " E = " << E << std::endl;
     std::cout << " p = " << p << std::endl;
-    std::cout << " theta = " << theta << std::endl;
+    std::cout << " theta = " << decayAngle << std::endl;
     std::cout << " nuMass = " << nuMass << std::endl;
   }
-
-  double prob = p*E*(3.*Emax - 2.*E - (chargedLepMass2/E))*sinTheta*(nuMass/tauLeptonMass); // formula (2.5)
+  
+  // CV: normalize likelihood function such that 
+  //               1
+  //       integral  prob dMnunu dX = 1.
+  //               0
+  //
+  double term1 = tauLeptonMass2 - visMass2;
+  double term2 = tauLeptonMass2 + visMass2;
+  double term3 = tauLeptonMass*visMass;
+  double term4 = square(term3);
+  double norm_factor = 1./(0.75*square(visMass2)*TMath::Log(-2.*term3) + (1./square(tauLeptonMass2))
+                      *(0.5*cube(term1)*term2 - 0.25*term1*(cube(tauLeptonMass2) + 5.*term2*term4 + cube(visMass2)) 
+		       - 6.*square(term4)*TMath::Log(term1 - term2)));
+  double prob = norm_factor*p*E*(3.*Emax - 2.*E - (visMass2/E))*(nuMass/tauLeptonMass); // formula (2.5)
+  //prob *= (0.5*sinDecayAngle);
 
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = evaluateVisPtCutCorrection(hypothesis);
