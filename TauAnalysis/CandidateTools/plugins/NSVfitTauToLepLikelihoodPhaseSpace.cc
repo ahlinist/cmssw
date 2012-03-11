@@ -53,6 +53,7 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
   double decayAngle = hypothesis_T->decay_angle_rf();
   double sinDecayAngle = TMath::Sin(decayAngle);
   double nuMass = hypothesis_T->p4invis_rf().mass();
+  if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
   double visMass = hypothesis_T->p4vis_rf().mass();
 
   if ( this->verbosity_ ) {
@@ -66,10 +67,10 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     std::cout << " invisible rest frame p4: " << hypothesis_T->p4invis_rf() << std::endl;
   }
 
-  if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
-  double prob = 0.5*nuMass
-               *TMath::Sqrt((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)))/(2*tauLeptonMass)
-               *sinDecayAngle;
+  const double const_factor = (1./fifth(2.*TMath::Pi()))*(1./(64.*tauLeptonMass2));
+  double prob = const_factor*nuMass
+               *TMath::Sqrt((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)))
+            /* *sinDecayAngle */;
 
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = evaluateVisPtCutCorrection(hypothesis);

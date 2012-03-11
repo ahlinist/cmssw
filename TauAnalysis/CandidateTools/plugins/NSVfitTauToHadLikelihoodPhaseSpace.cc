@@ -7,6 +7,8 @@
 
 #include <TMath.h>
 
+using namespace SVfit_namespace;
+
 NSVfitTauToHadLikelihoodPhaseSpace::NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet& cfg)
   : NSVfitSingleParticleLikelihood(cfg)
 {
@@ -44,8 +46,12 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
 
   double decayAngle = hypothesis_T->decay_angle_rf();
   if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
+  double visMass = hypothesis_T->p4vis_rf().mass();
+  const double epsilon = 0.1; // CV: add protection against mismeasurent of mass of visible tau decay products
+  if ( visMass > (tauLeptonMass - epsilon) ) visMass = tauLeptonMass - epsilon;
 
-  double prob = TMath::Sin(decayAngle);
+  const double const_factor = (1./(32.*square(TMath::Pi())))*(1./(2.*cube(tauLeptonMass)));
+  double prob = const_factor*(tauLeptonMass2 - square(visMass)) /* *TMath::Sin(decayAngle)*/;
   
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = evaluateVisPtCutCorrection(hypothesis);
