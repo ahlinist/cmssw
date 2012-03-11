@@ -50,8 +50,12 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   const double epsilon = 0.1; // CV: add protection against mismeasurent of mass of visible tau decay products
   if ( visMass > (tauLeptonMass - epsilon) ) visMass = tauLeptonMass - epsilon;
 
-  const double const_factor = (1./(32.*square(TMath::Pi())))*(1./(2.*cube(tauLeptonMass)));
-  double prob = const_factor*(tauLeptonMass2 - square(visMass)) /* *TMath::Sin(decayAngle)*/;
+  // CV: normalize likelihood function such that 
+  //               1
+  //       integral  prob dX = 1.
+  //               0
+  double prob = 1.;
+  //prob *= (0.5*TMath::Sin(decayAngle));
   
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = evaluateVisPtCutCorrection(hypothesis);
