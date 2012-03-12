@@ -245,6 +245,15 @@ roostats_zscore( Double_t ilum, Double_t slum,
 		 UInt_t seed = 12345 );
 
 
+
+void SetParameter(const char * name, const char * value);
+void SetParameter(const char * name, bool value);
+void SetParameter(const char * name, int value);
+void SetParameter(const char * name, double value);
+
+
+
+
 // below are experimental and legacy interfaces
 
 // legacy support: use roostats_clm() instead
@@ -343,6 +352,7 @@ private:
 };
 
 
+
 class CL95Calc{
 
 public:
@@ -365,6 +375,11 @@ public:
 
   RooWorkspace *          getWorkspace(){ return pWs;}
   RooStats::ModelConfig * GetModelConfig( std::string mcName = "SbModel" );
+  RooAbsData *            GetData( void ){ return data; }
+
+  RooStats::HypoTestResult * 
+  GetHypoTest( std::string hypoName, std::string plotName );
+
   LikelihoodInterval *    GetPlrInterval( double conf_level );
 
   RooAbsData * makeData(Int_t n);
@@ -389,6 +404,10 @@ public:
   Double_t FC_calc(int Nbins, float conf_int, float ULprecision, bool UseAdaptiveSampling = true, bool CreateConfidenceBelt = true);
 
   void SetSeed(UInt_t seed);
+  void SetParameter(const char * name, const char * value);
+  void SetParameter(const char * name, bool value);
+  void SetParameter(const char * name, int value);
+  void SetParameter(const char * name, double value);
 
 
 private:
@@ -447,6 +466,13 @@ private:
   bool mbHaveEffErr;
   bool mbHaveBkgErr;
   bool mbGaussianStatistics;
+
+  // settable parameters
+  bool mbOptimize;
+  int mNToys;
+  int mCalculatorType;
+  int mTestStatType;
+  double mNToysRatio;
 
   // for Bayesian MCMC calculation
   MCMCInterval * mcInt;
@@ -521,7 +547,7 @@ CL95Calc::CL95Calc(){
 
 
 void CL95Calc::Init(UInt_t seed){
-  pWs = new RooWorkspace("ws");
+  pWs = 0;
   data = 0;
 
   sInt = 0;
@@ -547,6 +573,13 @@ void CL95Calc::Init(UInt_t seed){
   mbHaveEffErr = false;
   mbHaveBkgErr = false;
   mbGaussianStatistics = false;
+  mbOptimize = true;
+  mNToys = 1000;
+  mNToysRatio = 2.0;
+  mCalculatorType = 0;
+  mTestStatType = 3;
+
+  return;
 }
 
 
@@ -592,6 +625,83 @@ void CL95Calc::SetSeed( UInt_t seed ){
   }
 
   return;
+}
+
+
+
+void
+CL95Calc::SetParameter(const char * name, bool value){
+   //
+   // set boolean parameters
+   //
+
+   std::string s_name(name);
+
+   if (s_name.find("Optimize") != std::string::npos) mbOptimize = value;
+   else{
+     Info("SetParameter","Unknown parameter %s, ignored", name);
+   }
+   return;
+}
+
+
+
+void
+CL95Calc::SetParameter(const char * name, int value){
+   //
+   // set integer parameters
+   //
+
+   std::string s_name(name);
+
+   if (s_name.find("NToys") != std::string::npos) mNToys = value;
+   else if (s_name.find("CalculatorType") != std::string::npos) mCalculatorType = value;
+   else if (s_name.find("TestStatType") != std::string::npos) mTestStatType = value;
+   else if (s_name.find("RandomSeed") != std::string::npos) SetSeed(value);
+   else{
+     Info("SetParameter","Unknown parameter %s, ignored", name);
+   }
+
+   return;
+}
+
+
+
+void
+CL95Calc::SetParameter(const char * name, double value){
+   //
+   // set double precision parameters
+   //
+
+   std::string s_name(name);
+
+   if (s_name.find("NToysRatio") != std::string::npos) mNToysRatio = value;
+   else{
+     Info("SetParameter","Unknown parameter %s, ignored", name);
+   }
+
+   return;
+}
+
+
+
+void
+CL95Calc::SetParameter(const char * name, const char * value){
+   //
+   // set string parameters
+   //
+
+   std::string s_name(name);
+
+   // silence warning
+   (void)value;
+
+   if (0) {}
+   else{
+     Info("SetParameter","Unknown parameter %s, ignored", name);
+   }
+
+   return;
 }
 
 
@@ -770,6 +880,9 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
 			Int_t nuisanceModel){
   
   std::string _legend = "[CL95Calc::MakeWorkspace]: ";
+
+  delete pWs;
+  pWs = new RooWorkspace("ws");
 
   mbGaussianStatistics = gauss;
 
@@ -1751,6 +1864,189 @@ void CL95Calc::PrintMethodInfo( std::string method ){
 
 
 
+RooStats::HypoTestResult *
+CL95Calc::GetHypoTest( std::string hypoName, std::string plotName ){
+  //
+  // Evaluate and return HypoTestResult for a hypothesis
+  // defined as a model config object in the workspace
+  // 
+  // If non-empty plotName is specified, create a plot
+  // of the sampling distribution
+  //
+  // User takes ownership of returned object
+  //
+
+  std::string legend = "[CL95Calc::GetHypoTest]: ";
+
+  RooStats::HypoTestResult * pHtr = 0;
+
+  // not used yet
+  // name of prior PDF for hybrid calculator
+  const char * nuisPriorName = 0;
+
+  // silence warning
+  (void)plotName;
+
+  if (!pWs){
+    std::cout << legend
+	      << "workspace is not created, cannot do hypothesis test"
+	      << std::endl;
+  }
+
+  // get data
+  RooAbsData * pData = pWs->data("observed_data");
+
+  // get s+b model config
+  RooStats::ModelConfig * pSbModel = (RooStats::ModelConfig *)pWs->obj("SbModel");
+
+  // get b-only model config
+  RooStats::ModelConfig * pBModel = (RooStats::ModelConfig *)pWs->obj(hypoName.c_str());
+
+  // parameter of interest
+  const RooArgSet * pPoiSet = pSbModel->GetParametersOfInterest();
+  RooRealVar *pPoi = (RooRealVar*)pPoiSet->first();
+
+  // load parameter snapshot
+  if ( !pBModel->GetSnapshot() ){
+    Error(legend.c_str(),"B-only hypothesis has no snapshot saved, exiting" );
+    std::exit(-1);
+  }
+
+  // test statistic
+  SimpleLikelihoodRatioTestStat slrts(*pSbModel->GetPdf(),*pBModel->GetPdf());
+  if (pSbModel->GetSnapshot()) slrts.SetNullParameters(*pSbModel->GetSnapshot());
+  if (pBModel->GetSnapshot()) slrts.SetAltParameters(*pBModel->GetSnapshot());
+  slrts.SetReuseNLL(mbOptimize);
+  
+  // ratio of profile likelihood - need to pass snapshot for the alt
+  RatioOfProfiledLikelihoodsTestStat 
+    ropl(*pSbModel->GetPdf(), *pBModel->GetPdf(), pBModel->GetSnapshot());
+  ropl.SetSubtractMLE(false);
+  //ropl.SetPrintLevel(mPrintLevel);
+  //ropl.SetMinimizer(minimizerType.c_str());
+  ropl.SetReuseNLL(mbOptimize);
+  if (mbOptimize) ropl.SetStrategy(0);
+  
+  ProfileLikelihoodTestStat profll(*pSbModel->GetPdf());
+  if (mTestStatType == 3) profll.SetOneSided(1);
+  //profll.SetMinimizer(minimizerType.c_str());
+  //profll.SetPrintLevel(mPrintLevel);
+  profll.SetReuseNLL(mbOptimize);
+  if (mbOptimize) profll.SetStrategy(0);
+
+  MaxLikelihoodEstimateTestStat maxll(*pSbModel->GetPdf(),*pPoi); 
+
+  /*
+  ProfileLikelihoodTestStat profll(*pSbModel->GetPdf());
+  profll.SetOneSided(0);
+  profll.SetReuseNLL(1);
+  profll.SetStrategy(0);
+  //if (testStatType == 3) profll.SetOneSided(1);
+  //profll.SetMinimizer(minimizerType.c_str());
+  //profll.SetPrintLevel(mPrintLevel);
+  */
+  
+  // create the HypoTest calculator object
+  HypoTestCalculatorGeneric *  hc = 0;
+  if (mCalculatorType == 0){
+    hc = new FrequentistCalculator(*pData, *pSbModel, *pBModel);
+    ((FrequentistCalculator*) hc)->SetToys(mNToys,0); 
+  }
+  else if (mCalculatorType == 1){
+    hc = new HybridCalculator(*pData, *pSbModel, *pBModel);
+    HybridCalculator *hhc = dynamic_cast<HybridCalculator*> (hc);
+    assert(hhc);
+    
+    hhc->SetToys(mNToys,0); // can use less ntoys for b hypothesis 
+    
+    // remove global observables from ModelConfig (this is probably not needed anymore in 5.32)
+    pBModel->SetGlobalObservables(RooArgSet() );
+    pSbModel->SetGlobalObservables(RooArgSet() );
+    
+    // check for nuisance prior pdf in case of nuisance parameters 
+    if (pBModel->GetNuisanceParameters() || pSbModel->GetNuisanceParameters() ) {
+      RooAbsPdf * nuisPdf = 0; 
+      if (nuisPriorName) nuisPdf = pWs->pdf(nuisPriorName);
+      // use prior defined first in pBModel (then in SbModel)
+      if (!nuisPdf)  { 
+	Info("StandardHypoTestInvDemo","No nuisance pdf given for the HybridCalculator - try to deduce  pdf from the model");
+	if (pBModel->GetPdf() && pBModel->GetObservables() ) 
+	  nuisPdf = RooStats::MakeNuisancePdf(*pBModel,"nuisancePdf_bmodel");
+	else 
+	  nuisPdf = RooStats::MakeNuisancePdf(*pSbModel,"nuisancePdf_sbmodel");
+      }   
+      if (!nuisPdf ) {
+	if (pBModel->GetPriorPdf())  { 
+	  nuisPdf = pBModel->GetPriorPdf();
+	  Info("StandardHypoTestInvDemo","No nuisance pdf given - try to use %s that is defined as a prior pdf in the B model",nuisPdf->GetName());            
+	}
+	else { 
+	  Error("StandardHypoTestInvDemo","Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified or can be derived");
+	  return 0;
+	}
+      }
+      assert(nuisPdf);
+      Info("StandardHypoTestInvDemo","Using as nuisance Pdf ... " );
+      nuisPdf->Print();
+      
+      const RooArgSet * nuisParams = (pBModel->GetNuisanceParameters() ) ? pBModel->GetNuisanceParameters() : pSbModel->GetNuisanceParameters();
+      RooArgSet * np = nuisPdf->getObservables(*nuisParams);
+      if (np->getSize() == 0) { 
+	Warning("StandardHypoTestInvDemo","Prior nuisance does not depend on nuisance parameters. They will be smeared in their full range");
+      }
+      delete np;
+      
+      hhc->ForcePriorNuisanceAlt(*nuisPdf);
+      hhc->ForcePriorNuisanceNull(*nuisPdf);
+      
+      
+    }
+  }
+  else if (mCalculatorType == 2){
+    hc = new AsymptoticCalculator(*pData, *pSbModel, *pBModel);
+    ((AsymptoticCalculator*) hc)->SetOneSided(true); 
+    // ((AsymptoticCalculator*) hc)->SetQTilde(true); // not needed should be done automatically now
+    //((AsymptoticCalculator*) hc)->SetPrintLevel(mPrintLevel+1); 
+  }
+  else {
+    Error("StandardHypoTestInvDemo","Invalid - calculator type = %d supported values are only :\n\t\t\t 0 (Frequentist) , 1 (Hybrid) , 2 (Asymptotic) ",mCalculatorType);
+    return 0;
+  }
+   /*
+   hc = new FrequentistCalculator(*pData, *pSbModel, *pBModel);
+   */
+
+  // set the test statistic 
+  TestStatistic * testStat = 0;
+  if (mTestStatType == 0) testStat = &slrts;
+  if (mTestStatType == 1) testStat = &ropl;
+  if (mTestStatType == 2 || mTestStatType == 3) testStat = &profll;
+  if (mTestStatType == 4) testStat = &maxll;
+  if (testStat == 0) { 
+    Error("StandardHypoTestInvDemo","Invalid - test statistic type = %d supported values are only :\n\t\t\t 0 (SLR) , 1 (Tevatron) , 2 (PLR), 3 (PLR1), 4(MLE)",mTestStatType);
+    return 0;
+  }
+  /*
+  testStat = &profll;
+   */
+
+  // toy MC sampler
+  ToyMCSampler *toymcs = (ToyMCSampler*)hc->GetTestStatSampler();
+  toymcs->SetNEventsPerToy(1);
+  toymcs->SetTestStatistic(testStat);
+  toymcs->SetUseMultiGen(1);
+
+  // get hypo test
+  pHtr = hc->GetHypoTest();
+  
+  // clean up
+  delete hc;
+
+  return pHtr;
+}
+
+
+
 Int_t banner(){
   //#define __ROOFIT_NOBANNER // banner temporary off
 #ifndef __EXOST_NOBANNER
@@ -2006,6 +2302,8 @@ roostats_zscore( Double_t ilum, Double_t slum,
   // Estimate z-score (a measure of signiicance)
   //
 
+  std::string legend = "[roostats_zscore]: ";
+
   double zscore = std::numeric_limits<double>::min();
 
   CL95Calc * theCalc = CL95Calc::GetInstance();
@@ -2013,48 +2311,71 @@ roostats_zscore( Double_t ilum, Double_t slum,
 
   theCalc->PrintMethodInfo( method );
 
-  RooWorkspace * pWs = theCalc->MakeWorkspace( ilum, slum,
-					       eff, seff,
-					       bck, sbck,
-					       n,
-					       gauss,
-					       nuisanceModel );
+  theCalc->MakeWorkspace( ilum, slum,
+			  eff, seff,
+			  bck, sbck,
+			  n,
+			  gauss,
+			  nuisanceModel );
 
-  pWs->Print();
+  RooStats::HypoTestResult * pHtr = theCalc->GetHypoTest("BModel", "");
 
-  /*
-  // use ProfileLikelihood
-  ProfileLikelihoodCalculator plc(*data, mc);
-  plc.SetConfidenceLevel(0.68);
+  double nullPValue = pHtr->NullPValue();
+  zscore = pHtr->Significance();
 
-  std::string null_parameters_snapshot_name = "BModel_poiAndNuisance_snapshot";
-  ws->loadSnapshot( null_parameters_snapshot_name.c_str() );
+  std::cout << legend
+	    << "Null p-value = " << nullPValue << std::endl;
 
-  const RooArgSet * pNullParameters = ws->set(null_parameters_snapshot_name.c_str());
-  plc.SetNullParameters(*pNullParameters);
+  std::cout << legend
+	    << "Z-score = " << zscore << std::endl;
 
-  // suppress RooFit verbosity
-  RooFit::MsgLevel msglevel = RooMsgService::instance().globalKillBelow();
-  RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
-
-  RooStats::HypoTestResult * htr = plc.GetHypoTest();
-  Double_t significance = htr->Significance();
-
-  std::cout << _legend << "null p-value = " << htr->NullPValue() << std::endl;
-  std::cout << _legend << "significance = " << significance << std::endl;
-  logfile << _legend << "significance = " << significance << std::endl;
-  delete htr;
-
-  // return RooFit verbosity to previous level
-  RooMsgService::instance().setGlobalKillBelow(msglevel);
-  */
-  
-  (void)pWs;
   (void)plotFileName;
+
+  // clean up
+  delete pHtr;
 
   return zscore;
 }
 
+
+
+void SetParameter(const char * name, const char * value){
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  
+  theCalc->SetParameter(name, value);
+  
+  return;
+}
+
+
+
+void SetParameter(const char * name, bool value){
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  
+  theCalc->SetParameter(name, value);
+  
+  return;
+}
+
+
+
+void SetParameter(const char * name, int value){
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  
+  theCalc->SetParameter(name, value);
+  
+  return;
+}
+
+
+
+void SetParameter(const char * name, double value){
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  
+  theCalc->SetParameter(name, value);
+  
+  return;
+}
 
 
 
