@@ -396,12 +396,6 @@ def applyZrecoilCorrection_runZtoElecTau(process):
                               "produceElecTauPairsAll", 'allElecTauPairs',
                               "ZllRecoilCorrectionElecTauPair",
                               [ "analyzeZtoElecTauSequence" ])
-    #_applyZllRecoilCorrection(process,
-    #                          "produceElecTauPairsAll", 'allElecTauPairsLooseElectronIsolation',
-    #                          "ZllRecoilCorrectionElecTauPair",
-    #                          [ "analyzeZtoElecTauSequence_factorizedWithElectronIsolation",
-    #                            "analyzeZtoElecTauSequence_factorizedWithoutElectronIsolation" ])
-
 
     # disable warnings in MET histogram managers
     # that num. MET objects != 1
@@ -456,11 +450,6 @@ def applyZrecoilCorrection_runAHtoElecTau(process):
                               "produceElecTauPairsAll", 'allElecTauPairs',
                               "ZllRecoilCorrectionElecTauPair",
                               [ "analyzeAHtoElecTauSequence" ])
-    #_applyZllRecoilCorrection(process,
-    #                          "produceElecTauPairsAll", 'allElecTauPairsLooseElectronIsolation',
-    #                          "ZllRecoilCorrectionElecTauPair",
-    #                          [ "analyzeAHtoElecTauSequence_factorizedWithElectronIsolation",
-    #                            "analyzeAHtoElecTauSequence_factorizedWithoutElectronIsolation" ])
 
 def _addEventWeightZtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
 
@@ -468,6 +457,23 @@ def _addEventWeightZtoElecTau(process, srcEventWeight, applyAfterFilterName = "*
         process, [
             "analyzeZtoElecTauEventsOS",
             "analyzeZtoElecTauEventsSS"
+        ],
+        srcEventWeight, applyAfterFilterName)
+
+def _addEventWeighAHtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
+
+    _addEventWeight(
+        process, [
+            "analyzeAHtoElecTauEventsOS_woBtag",
+            "analyzeAHtoElecTauEventsSS_woBtag",
+            "analyzeAHtoElecTauEventsOS_wBtag",
+            "analyzeAHtoElecTauEventsSS_wBtag",
+            "analyzeAHtoElecTauEventsOS_VBF",
+            "analyzeAHtoElecTauEventsSS_VBF",
+            "analyzeAHtoElecTauEventsOS_ZeroOneJets",
+            "analyzeAHtoElecTauEventsSS_ZeroOneJets",
+            "analyzeAHtoElecTauEventsOS_Boosted",
+            "analyzeAHtoElecTauEventsSS_Boosted"
         ],
         srcEventWeight, applyAfterFilterName)
 
@@ -496,6 +502,38 @@ def applyElectronTriggerEfficiencyCorrection_runZtoElecTau_bgEstTemplate(process
     applyElectronTriggerEfficiencyCorrection_runZtoElecTau(process)
 
     _addEventWeightZtoElecTau_bgEstTemplate(process, "electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+
+def applyElectronTriggerEfficiencyCorrection_runAHtoElecTau(process):
+
+    process.load("TauAnalysis.RecoTools.electronTriggerEfficiencyCorrection_cfi")
+    if hasattr(process, "producePatTupleAHtoElecTauSpecific"):
+        process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
+          * process.electronTriggerEfficiencyCorrection
+
+    _addEventWeighAHtoElecTau(process, "electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+
+def applyTauMetTriggerEfficiencyCorrection_runZtoElecTau(process):
+    process.load("TauAnalysis.RecoTools.tauTriggerEfficiencyCorrectionForElecTau_cfi")
+    if hasattr(process, "producePatTupleZtoElecTauSpecific"):
+        process.producePatTupleZtoElecTauSpecific._seq = process.producePatTupleZtoElecTauSpecific._seq \
+          * process.tauTriggerEfficiencyCorrectionForElecTau
+
+    _addEventWeightZtoElecTau(process, "tauTriggerEfficiencyCorrectionForElecTau", applyAfterFilterName = "evtSelTrigger")
+
+def applyTauMetTriggerEfficiencyCorrection_runZtoElecTau_bgEstTemplate(process):
+
+    applyTauMETTriggerEfficiencyCorrection_runZtoElecTau(process)
+
+    _addEventWeightZtoElecTau_bgEstTemplate(process, "tauTriggerEfficiencyCorrectionForElecTau", applyAfterFilterName = "evtSelTrigger")
+
+def applyTauMetTriggerEfficiencyCorrection_runAHtoElecTau(process):
+
+    process.load("TauAnalysis.RecoTools.tauTriggerEfficiencyCorrectionForElecTau_cfi")
+    if hasattr(process, "producePatTupleAHtoElecTauSpecific"):
+        process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
+          * process.tauTriggerEfficiencyCorrectionForElecTau
+
+    _addEventWeighAHtoElecTau(process, "tauTriggerEfficiencyCorrectionForElecTau", applyAfterFilterName = "evtSelTrigger")
 
 def applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process):
 
@@ -529,6 +567,15 @@ def applyElectronIsolationEfficiencyCorrection_runZtoElecTau_bgEstTemplate(proce
 	            [ "analyzeEventsBgEstZeeElectronMisIdEnriched" ],
 	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstZeeElectronMisIdEnriched")
 
+def applyElectronIsolationEfficiencyCorrection_runAHtoElecTau(process):
+
+    process.load("TauAnalysis.RecoTools.electronIsolationEfficiencyCorrection_cfi")
+    if hasattr(process, "producePatTupleAHtoElecTauSpecific"):
+        process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
+          * process.electronIsolationEfficiencyCorrection
+
+    _addEventWeighAHtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronIso")
+
 def applyVertexMultiplicityReweighting_runZtoElecTau(process):
     process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
     if hasattr(process, "producePatTupleZtoElecTauSpecific"): 
@@ -536,6 +583,12 @@ def applyVertexMultiplicityReweighting_runZtoElecTau(process):
           * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight
                 
     _addEventWeightZtoElecTau(process, "vertexMultiplicityReweight")
+
+def applyVertexMultiplicityReweighting_runZtoElecTau_bgEstTemplate(process):
+
+    applyVertexMultiplicityReweighting_runZtoElecTau(process)
+
+    _addEventWeightZtoElecTau_bgEstTemplate(process, "vertexMultiplicityReweight")
 
 def applyRhoNeutralReweighting_runZtoElecTau(process):
     process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
@@ -545,43 +598,6 @@ def applyRhoNeutralReweighting_runZtoElecTau(process):
 
     
     _addEventWeightZtoElecTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
-
-def applyVertexMultiplicityReweighting_runZtoElecTau_bgEstTemplate(process):
-
-    applyVertexMultiplicityReweighting_runZtoElecTau(process)
-
-    _addEventWeightZtoElecTau_bgEstTemplate(process, "vertexMultiplicityReweight")
-
-def _addEventWeighAHtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
-
-    _addEventWeight(
-        process, [
-            "analyzeAHtoElecTauEventsOS_woBtag",
-            "analyzeAHtoElecTauEventsSS_woBtag",
-            "analyzeAHtoElecTauEventsOS_wBtag",
-            "analyzeAHtoElecTauEventsSS_wBtag",
-            "analyzeAHtoElecTauEventsOS_VBF",
-            "analyzeAHtoElecTauEventsSS_VBF"
-        ],
-        srcEventWeight, applyAfterFilterName)
-
-def applyElectronTriggerEfficiencyCorrection_runAHtoElecTau(process):
-
-    process.load("TauAnalysis.RecoTools.electronTriggerEfficiencyCorrection_cfi")
-    if hasattr(process, "producePatTupleAHtoElecTauSpecific"):
-        process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
-          * process.electronTriggerEfficiencyCorrection
-
-    _addEventWeighAHtoElecTau(process, "electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
-
-def applyElectronIsolationEfficiencyCorrection_runAHtoElecTau(process):
-
-    process.load("TauAnalysis.RecoTools.electronIsolationEfficiencyCorrection_cfi")
-    if hasattr(process, "producePatTupleAHtoElecTauSpecific"):
-        process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
-          * process.electronIsolationEfficiencyCorrection
-
-    _addEventWeighAHtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronIso")
 
 def applyVertexMultiplicityReweighting_runAHtoElecTau(process):
     process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
