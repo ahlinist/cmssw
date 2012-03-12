@@ -1,100 +1,82 @@
 <?xml version="1.0"?>
-<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">     
-
-<Algorithm name="ecal:DDEcalEndcapAlgo">
-     <rParent name="eregalgo:EREG"/>
-
-    <String  name="EEMat"      value="materials:Air"/>
-
-    <Numeric name="EEzOff"     value="[eecon:EEzOff]"/>
-
-    <String   name="EECutBoxName" value="EECutBox"/>
-
-    <String   name="EEEnvName" value="EESCEnv"/>
-    <String   name="EEAlvName" value="EESCAlv"/>
-    <String   name="EEIntName" value="EESCInt"/>
-    <String   name="EECryName" value="EFRY"/>
-
-<!-- Added by BWK -->
-
-<!-- More endcap materials -->
-    <String  name="EECrysMat" value="materials:E_PbWO4"     />
-    <String  name="EEBPMat"   value="materials:E_Aluminium" />
-    <String  name="EEWallMat" value="materials:EE_Aveolar"     />
-
-<!--  Endcap Quadrant -->
-    <String   name="EEQuaName" value="eehier:EEFrontQuad"/>
-    <String   name="EEQuaMat"  value="materials:Air"/>
-
-<!-- Endcap crystal: nominal size -->
-   <Numeric name="EECrysLength" value="220.00*mm"/>
-   <Numeric name="EECrysRear"   value="30.000*mm - 0.05*mm"/>
-   <Numeric name="EECrysFront"  value="28.618*mm - 0.05*mm"/>  <!-- Taper = 0.36deg -->
-
-<!-- Endcap supercrystal: size of tapered envelope -->
-   <Numeric name="EESCELength" value="[eecon:SCEnvLength]"/>
-   <Numeric name="EESCERear"   value="156.87*mm"/>
-   <Numeric name="EESCEFront"  value="145.98*mm"/>  <!-- Taper = 1.80deg -->
-
-<!-- Endcap supercrystal: size of C-fibre alveolar -->
-   <Numeric name="EESCALength" value="276.20*mm"/>
-   <Numeric name="EESCARear"   value="154.66*mm - 0.01*mm"/>
-   <Numeric name="EESCAFront"  value="145.98*mm - 0.01*mm"/>  <!-- Taper = 1.80deg -->
-   <Numeric name="EESCAWall"   value="0.200*mm"/> <!-- SC wall thickness -->
-
-   <Numeric name="EEiLength" value="2*mm"/>
-   <Numeric name="EEiXYOff"  value="-2.2*mm"/>
-
-<!-- Endcap supercrystal: size of rear housing -->
-   <Numeric name="EESCHLength" value="60.20*mm"/>
-   <Numeric name="EESCHSide"   value="154.20*mm"/>
-
-<!-- Supercrystal profiles: number of crystals in each column -->
-<!--                        (-ve => counting from the top)    -->
-   <Numeric name="EEnSCTypes" value="6"/> <!-- Number of SC types -->
-
-   <Vector name="EESCProf" type="numeric" nEntries="30">
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
+  <Algorithm name="ecal:DDEcalEndcapAlgo">
+    <rParent name="eregalgo:EREG"/>
+    <String name="EEMat" value="materials:Air"/>
+    <Numeric name="EEzOff" value="[eecon:EEzOff]"/>
+    <String name="EECutBoxName" value="EECutBox"/>
+    <String name="EEEnvName" value="EESCEnv"/>
+    <String name="EEAlvName" value="EESCAlv"/>
+    <String name="EEIntName" value="EESCInt"/>
+    <String name="EECryName" value="EFRY"/>
+    <!-- Added by BWK -->
+    <!-- More endcap materials -->
+    <String name="EECrysMat" value="materials:E_PbWO4"/>
+    <String name="EEBPMat" value="materials:E_Aluminium"/>
+    <String name="EEWallMat" value="materials:EE_Aveolar"/>
+    <!--  Endcap Quadrant -->
+    <String name="EEQuaName" value="eehier:EEFrontQuad"/>
+    <String name="EEQuaMat" value="materials:Air"/>
+    <!-- Endcap crystal: nominal size -->
+    <Numeric name="EECrysLength" value="220.00*mm"/>
+    <Numeric name="EECrysRear" value="30.000*mm - 0.05*mm"/>
+    <Numeric name="EECrysFront" value="28.618*mm - 0.05*mm"/>
+    <!-- Taper = 0.36deg -->
+    <!-- Endcap supercrystal: size of tapered envelope -->
+    <Numeric name="EESCELength" value="[eecon:SCEnvLength]"/>
+    <Numeric name="EESCERear" value="156.87*mm"/>
+    <Numeric name="EESCEFront" value="145.98*mm"/>
+    <!-- Taper = 1.80deg -->
+    <!-- Endcap supercrystal: size of C-fibre alveolar -->
+    <Numeric name="EESCALength" value="276.20*mm"/>
+    <Numeric name="EESCARear" value="154.66*mm - 0.01*mm"/>
+    <Numeric name="EESCAFront" value="145.98*mm - 0.01*mm"/>
+    <!-- Taper = 1.80deg -->
+    <Numeric name="EESCAWall" value="0.200*mm"/>
+    <!-- SC wall thickness -->
+    <Numeric name="EEiLength" value="2*mm"/>
+    <Numeric name="EEiXYOff" value="-2.2*mm"/>
+    <!-- Endcap supercrystal: size of rear housing -->
+    <Numeric name="EESCHLength" value="60.20*mm"/>
+    <Numeric name="EESCHSide" value="154.20*mm"/>
+    <!-- Supercrystal profiles: number of crystals in each column -->
+    <!--                        (-ve => counting from the top)    -->
+    <Numeric name="EEnSCTypes" value="6"/>
+    <!-- Number of SC types -->
+    <Vector name="EESCProf" type="numeric" nEntries="30">
       5,5,5,5,5, 2,2,2,2,2, 5,5,0,0,0,
       -4,-4,-4,-4,-4, 0,0,-1,-2,-3, 0,5,5,5,5
-   </Vector>
-
-<!-- Endcap quadrant profile: lowest and highest SC in each column -->
-   <Numeric name="EEnColumns" value="10"/> <!-- Number of endcap columns -->
-   <Vector name="EEShape" type="numeric" nEntries="20">
+    </Vector>
+    <!-- Endcap quadrant profile: lowest and highest SC in each column -->
+    <Numeric name="EEnColumns" value="10"/>
+    <!-- Number of endcap columns -->
+    <Vector name="EEShape" type="numeric" nEntries="20">
       3,10,  2,10, 1,10, 1,9, 1,9, 1,9, 1,8, 1,7, 1,6, 1,3
-   </Vector>
-   <Numeric name="EEnSCCutaway"  value="9"/> <!-- Number of cutaway SCs -->
-   <Vector name="EESCCutaway" type="numeric" nEntries="27"> <!-- Map of cutaway SCs -->
+    </Vector>
+    <Numeric name="EEnSCCutaway" value="9"/>
+    <!-- Number of cutaway SCs -->
+    <Vector name="EESCCutaway" type="numeric" nEntries="27"><!-- Map of cutaway SCs -->
       1,3,4, 2,2,5, 3,1,6, 3,10,2, 6,9,2, 7,8,2, 8,7,3, 9,6,3, 10,3,3
-   </Vector>
-
-<!-- Endcap supercrystal: size of interface plate -->
-   <Numeric name="EESCILength" value="10.20*mm"/>
-
-<!-- Factors used in shaving the SCs for partials -->
-   <Numeric name="EEPFHalf"  value="0.3"/>
-   <Numeric name="EEPFFifth" value="1.55"/>
-   <Numeric name="EEPF45"    value="0.65"/>
-
-<!-- Which SCs are in place? -->
-
-   <Vector name="EESCLims" type="numeric" nEntries="4">
-     [eehier:EESCLimsXlo],  [eehier:EESCLimsXhi],  [eehier:EESCLimsYlo],  [eehier:EESCLimsYhi] 
-   </Vector>
-
-
-<!-- Endcap supercrystal corner positions -->
-
-   <Numeric name="EEnSCquad" value="78"/>
-
-   <Numeric name="EEzFront" value="[eecon:EEzFront]"/>
-
-<!-- EESCCtrs gives positions of centres of front and rear SC faces in CMS coordinates -->
-<!-- Column headings for EESCCtrs vector                                       
-     Z positions are assuming front of EE env screen (EEzFront) is at 3172mm from IP-->
-<!-- This correction to 3172 is made in the C++ code
- -->
-<!-- IX  IY   Xfront         Xrear        Yfront       Yrear        Zfront       Zrear -->
+    </Vector>
+    <!-- Endcap supercrystal: size of interface plate -->
+    <Numeric name="EESCILength" value="10.20*mm"/>
+    <!-- Factors used in shaving the SCs for partials -->
+    <Numeric name="EEPFHalf" value="0.3"/>
+    <Numeric name="EEPFFifth" value="1.55"/>
+    <Numeric name="EEPF45" value="0.65"/>
+    <!-- Which SCs are in place? -->
+    <Vector name="EESCLims" type="numeric" nEntries="4">
+      [eehier:EESCLimsXlo],  [eehier:EESCLimsXhi],  [eehier:EESCLimsYlo],  [eehier:EESCLimsYhi] 
+    </Vector>
+    <!-- Endcap supercrystal corner positions -->
+    <Numeric name="EEnSCquad" value="78"/>
+    <Numeric name="EEzFront" value="[eecon:EEzFront]"/>
+    <!-- EESCCtrs gives positions of centres of front and rear SC faces in CMS coordinates -->
+    <!-- Column headings for EESCCtrs vector                                       
+         Z positions are assuming front of EE env screen (EEzFront) is at 3172mm from IP-->
+    <!-- This correction to 3172 is made in the C++ code
+         -->
+    <!-- IX  IY   Xfront         Xrear        Yfront       Yrear        Zfront       Zrear -->
     <Vector name="EESCCtrs" type="numeric" nEntries="624">
       1,  3,  73.99*mm,     79.436*mm,  367.857*mm,  395.056*mm, 3183.583*mm, 3529.157*mm,
       1,  4,  73.99*mm,     79.436*mm,  515.672*mm,  553.7125*mm,3185.869*mm, 3530.4185*mm,
@@ -175,19 +157,14 @@
       10, 2,1423.6395*mm, 1529.093*mm,  220.479*mm,  236.8095*mm,3202.325*mm, 3532.179*mm,
       10, 3,1424.3025*mm, 1529.558*mm,  367.857*mm,  395.056*mm, 3204.51725*mm, 3533.717*mm
     </Vector>
-
-<!-- Crystal positions inside endcap supercrystal -->
-
-     <Numeric name="EEnCRSC" value="25"/>
-
-
-<!-- EECRCtrs gives positions of centres of front and rear CR faces in SC coordinates  -->
-<!-- Note: for historical reasons, "front" and "rear" in this table are reversed with  -->
-<!--       respect to the EESCStrs definition - the CRs are rotated correctly in the   -->
-<!--       C++ code which creates the endcap geometry.                                 -->
-
-<!-- Column headings for EECRCtrs vector                                                          -->
-<!-- IX  IY   Xfront           Xrear            Yfront        Yrear          Zfront         Zrear -->
+    <!-- Crystal positions inside endcap supercrystal -->
+    <Numeric name="EEnCRSC" value="25"/>
+    <!-- EECRCtrs gives positions of centres of front and rear CR faces in SC coordinates  -->
+    <!-- Note: for historical reasons, "front" and "rear" in this table are reversed with  -->
+    <!--       respect to the EESCStrs definition - the CRs are rotated correctly in the   -->
+    <!--       C++ code which creates the endcap geometry.                                 -->
+    <!-- Column headings for EECRCtrs vector                                                          -->
+    <!-- IX  IY   Xfront           Xrear            Yfront        Yrear          Zfront         Zrear -->
     <Vector name="EECRCtrs" type="numeric" nEntries="200">
       1, 1, -59.27878125*mm, -59.96993625*mm, -59.96718*mm, -59.276025*mm, 110.333615*mm,-109.666385*mm,
       1, 2, -59.27878125*mm, -59.96993625*mm, -30.84865*mm, -28.77521*mm,  110.24371*mm,-109.74761*mm,
@@ -214,13 +191,8 @@
       5, 3,  62.74861875*mm,  56.52709125*mm,  -1.727815*mm,  1.727815*mm, 109.7941125*mm,-110.0929225*mm,
       5, 4,  62.75022625*mm,  56.52935125*mm,  27.39645*mm,  32.234145*mm, 109.7042475*mm,-110.1567525*mm,
       5, 5,  62.75161125*mm,  56.53161125*mm,  56.525305*mm, 62.744865*mm, 109.6143925*mm,-110.2118725*mm
-   </Vector>
-
-
-<!-- Z offset for crystals inside alveolus -->
-   <Numeric name="EECryZOff" value="21.0*mm"/>
-
-
+    </Vector>
+    <!-- Z offset for crystals inside alveolus -->
+    <Numeric name="EECryZOff" value="21.0*mm"/>
   </Algorithm>
-
 </DDDefinition>
