@@ -51,53 +51,55 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   assert(hypothesis_T != 0);
 
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodMatrixElement::operator()>:" << std::endl;
-    
-  double visMass = hypothesis_T->p4().mass();                  // electron/muon mass 
-  double visMass2 = square(visMass);
-  double Emax = (tauLeptonMass2 + visMass2)/(2*tauLeptonMass); // formula (2.6)
-  double E = hypothesis_T->p4vis_rf().energy();                // electron/muon energy (in tau lepton rest-frame)
-  double p = hypothesis_T->p4vis_rf().P();                     // electron/muon momentum (in tau lepton rest-frame)
-  double decayAngle = hypothesis_T->decay_angle_rf();
-  double sinDecayAngle = TMath::Sin(decayAngle);
-  double nuMass = hypothesis_T->p4invis_rf().mass();
-  if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
-  double nuMass2 = square(nuMass);
   
+  double chargedLepMass2 = square(hypothesis_T->p4().mass());         // electron/muon mass
+  double Emax = (tauLeptonMass2 + chargedLepMass2)/(2*tauLeptonMass); // formula (2.6)
+  double E = hypothesis_T->p4vis_rf().energy();                       // electron/muon energy (in tau lepton rest-frame)
+  double p = hypothesis_T->p4vis_rf().P();                            // electron/muon momentum (in tau lepton rest-frame)
+  double theta = hypothesis_T->decay_angle_rf();
+  double sinTheta = TMath::Sin(theta);
+  double nuMass = hypothesis_T->p4invis_rf().mass();
+  double visEnFracX = hypothesis_T->visEnFracX();
+
   if ( this->verbosity_ ) {
-    std::cout << " visMass2 = " << visMass2 << std::endl;
+    std::cout << " chargedLepMass2 = " << chargedLepMass2 << std::endl;
     std::cout << " Emax = " << Emax << std::endl;
     std::cout << " E = " << E << std::endl;
     std::cout << " p = " << p << std::endl;
-    std::cout << " theta = " << decayAngle << std::endl;
+    std::cout << " theta = " << theta << std::endl;
     std::cout << " nuMass = " << nuMass << std::endl;
   }
-  
-  // CV: normalize likelihood function such that 
-  //               1
-  //       integral  prob dMnunu dX = 1.
-  //               0
-  //
-  double term1 = tauLeptonMass2 - visMass2;
-  double term2 = tauLeptonMass2 + visMass2;
-  double term3 = tauLeptonMass*visMass;
-  double term4 = square(term3);
-  double norm_factor = 1./(0.75*square(visMass2)*TMath::Log(-2.*term3) + (1./square(tauLeptonMass2))
-                      *(0.5*cube(term1)*term2 - 0.25*term1*(cube(tauLeptonMass2) + 5.*term2*term4 + cube(visMass2)) 
-		       - 6.*square(term4)*TMath::Log(term1 - term2)));
-  double prob = norm_factor*p*E*(3.*Emax - 2.*E - (visMass2/E))*(nuMass/tauLeptonMass); // formula (2.5)
-  //prob *= (0.5*sinDecayAngle);
+
+  /*
+  double prob = p*E*(3.*Emax - 2.*E - (chargedLepMass2/E))*sinTheta*(nuMass/tauLeptonMass); // formula (2.5)
 
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = evaluateVisPtCutCorrection(hypothesis);
     if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
     prob *= probCorr;
   }
+  */
+
+  //hardcoded for the moment
+  double xcut       = 15./(hypothesis_T->p4_fitted()).Pt();
+  double ptCutsNorm = 3 - 5*xcut + 3*xcut*xcut*xcut - xcut*xcut*xcut*xcut;
+  double prob       = 52./4./tauLeptonMass2*tauLeptonMass2*(tauLeptonMass2-nuMass*nuMass)*(tauLeptonMass2-nuMass*nuMass)*(tauLeptonMass2-nuMass*nuMass)*(tauLeptonMass2+2*nuMass*nuMass)*nuMass;
+  
+  if(applyVisPtCutCorrection_){
+    prob /= ptCutsNorm;
+    if(visEnFracX<xcut || xcut>1) prob=1e-06;
+  }
+  
+  if( nuMass>TMath::Sqrt((1-visEnFracX)*tauLeptonMass2) || nuMass<0 ) prob = 1e-06;
+
 
   double nll = 0.;
   if ( prob > 0. ) {
     nll = -TMath::Log(prob);
   } else {
     if ( prob < 0. ) 
+
+      std::cout << "xcut= " << xcut << ", " << "visEnFracX= " << visEnFracX << ", nuMass=" << nuMass << std::endl; 
       edm::LogWarning ("NSVfitTauToLepLikelihoodMatrixElement::operator()")
 	<< " Unphysical solution: prob = " << prob << " --> returning very large negative number !!";
     nll = std::numeric_limits<float>::max();
