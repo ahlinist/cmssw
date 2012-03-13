@@ -7,8 +7,6 @@
 
 #include <TMath.h>
 
-using namespace SVfit_namespace;
-
 NSVfitTauToHadLikelihoodPhaseSpace::NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet& cfg)
   : NSVfitSingleParticleLikelihood(cfg)
 {
@@ -45,23 +43,29 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
 
   double decayAngle = hypothesis_T->decay_angle_rf();
-  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
-  double visMass = hypothesis_T->p4vis_rf().mass();
-  const double epsilon = 0.1; // CV: add protection against mismeasurent of mass of visible tau decay products
-  if ( visMass > (tauLeptonMass - epsilon) ) visMass = tauLeptonMass - epsilon;
+  double visEnFracX = hypothesis_T->visEnFracX();
 
-  // CV: normalize likelihood function such that 
-  //               1
-  //       integral  prob dX = 1.
-  //               0
-  double prob = 1.;
-  //prob *= (0.5*TMath::Sin(decayAngle));
+  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
+
+  double xcut = 20./(hypothesis_T->p4_fitted()).Pt();
+  double ptCutsNorm = (1-xcut);
+ 
+  double prob = 1;
+
+  if(applyVisPtCutCorrection_){
+    prob /= ptCutsNorm;
+    if(visEnFracX<xcut) prob=1e-06;
+  }
+
+  /*
+  double prob = TMath::Sin(decayAngle);
   
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = evaluateVisPtCutCorrection(hypothesis);
     if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
     prob *= probCorr;
   }
+  */
 
   double nll = 0.;
   if ( prob > 0. ) {
