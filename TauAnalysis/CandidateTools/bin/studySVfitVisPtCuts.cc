@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.1 $
  *
- * $Id: studySVfitVisPtCuts.cc,v 1.6 2011/09/30 12:26:40 veelken Exp $
+ * $Id: studySVfitVisPtCuts.cc,v 1.1 2012/03/06 17:34:42 veelken Exp $
  *
  */
 
@@ -450,66 +450,66 @@ struct plotEntryType
   TH1* histogramEventCounter_;
 };
 
-void genTauToLepDecay_ps(inputVariableSet& inputVariables, reco::Candidate::LorentzVector& nuP4Leg1, TRandom& rnd)
+void genTauToLepDecay_ps(inputVariableSet& inputVariables, reco::Candidate::LorentzVector& nuP4, TRandom& rnd)
 {
 //--- generate "random" leptonic tau decay 
 //    using simple "Phase-Space" model implemented in SVfit
 //   (assuming tau decay matrix element to be constant)
 
-  double visMass1 = muonMass;
-  double theta1_rf = 0.;
-  double nuMass1 = 0.;
-  bool keep1 = false;
-  while ( !keep1 ) {
-    theta1_rf = rnd.Uniform(0., TMath::Pi());
-    nuMass1 = rnd.Uniform(0., tauLeptonMass);
-    double term1a = tauLeptonMass2 - square(nuMass1 + visMass1);
-    double term1b = tauLeptonMass2 - square(nuMass1 - visMass1);
-    double prob1 = 0.5*nuMass1*(TMath::Sqrt(TMath::Max(0., term1a*term1b))/(2.*tauLeptonMass))*TMath::Sin(theta1_rf);
-    //std::cout << "prob1 = " << prob1 << std::endl;
-    keep1 = (prob1 > rnd.Rndm());
+  double visMass = muonMass;
+  double theta_rf = 0.;
+  double nuMass = 0.;
+  bool keep = false;
+  while ( !keep ) {
+    theta_rf = rnd.Uniform(0., TMath::Pi());
+    nuMass = rnd.Uniform(0., tauLeptonMass);
+    double term1 = tauLeptonMass2 - square(nuMass + visMass);
+    double term2 = tauLeptonMass2 - square(nuMass - visMass);
+    double prob = 0.5*nuMass*(TMath::Sqrt(TMath::Max(0., term1*term2))/(2.*tauLeptonMass))*TMath::Sin(theta_rf);
+    //std::cout << "prob = " << prob << std::endl;
+    keep = (prob > rnd.Rndm());
   }
-  double phi1_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
-  //std::cout << "visMass1 (PS) = " << visMass1 << std::endl;
-  //std::cout << "nuMass1 (PS) = " << nuMass1 << std::endl;
-  double term1a = tauLeptonMass2 - square(nuMass1 + visMass1);
-  double term1b = tauLeptonMass2 - square(nuMass1 - visMass1);
-  double p1_rf = TMath::Sqrt(TMath::Max(0., term1a*term1b))/(2.*tauLeptonMass);
-  //std::cout << "P1 (rf,PS) = " << p1_rf << std::endl;
-  double visPx1_rf = p1_rf*TMath::Cos(phi1_rf)*TMath::Sin(theta1_rf);
-  double visPy1_rf = p1_rf*TMath::Sin(phi1_rf)*TMath::Sin(theta1_rf);
-  double visPz1_rf = p1_rf*TMath::Cos(theta1_rf);
-  double visEn1_rf = TMath::Sqrt(square(p1_rf) + square(visMass1));
-  reco::Candidate::LorentzVector visP4Leg1_rf(visPx1_rf, visPy1_rf, visPz1_rf, visEn1_rf);      
-  reco::Candidate::LorentzVector visP4Leg1 = boostToLab(inputVariables.genTau1P4_, visP4Leg1_rf);      
+  double phi_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
+  //std::cout << "visMass1 (PS) = " << visMass << std::endl;
+  //std::cout << "nuMass1 (PS) = " << nuMass << std::endl;
+  double terma = tauLeptonMass2 - square(nuMass + visMass);
+  double termb = tauLeptonMass2 - square(nuMass - visMass);
+  double p_rf = TMath::Sqrt(TMath::Max(0., terma*termb))/(2.*tauLeptonMass);
+  //std::cout << "P1 (rf,PS) = " << p_rf << std::endl;
+  double visPx_rf = p_rf*TMath::Cos(phi_rf)*TMath::Sin(theta_rf);
+  double visPy_rf = p_rf*TMath::Sin(phi_rf)*TMath::Sin(theta_rf);
+  double visPz_rf = p_rf*TMath::Cos(theta_rf);
+  double visEn_rf = TMath::Sqrt(square(p_rf) + square(visMass));
+  reco::Candidate::LorentzVector visP4_rf(visPx_rf, visPy_rf, visPz_rf, visEn_rf);      
+  reco::Candidate::LorentzVector visP4 = boostToLab(inputVariables.genTau1P4_, visP4_rf);      
   //std::cout << "genTau1 (lab): E = " << inputVariables.genTau1P4_.E() << "," 
   //	  << " Px = " << inputVariables.genTau1P4_.Px() << "," 
   //	  << " Py = " << inputVariables.genTau1P4_.Py() << "," 
   //	  << " Pz = " << inputVariables.genTau1P4_.Pz() << std::endl;
-  //std::cout << "genVis1 (rf,PS): E = " << visP4Leg1_rf.E() << "," 
-  //	  << " Px = " << visP4Leg1_rf.Px() << "," 
-  //	  << " Py = " << visP4Leg1_rf.Py() << "," 
-  //	  << " Pz = " << visP4Leg1_rf.Pz() << std::endl;
-  //std::cout << "genVis1 (lab,PS): E = " << visP4Leg1.E() << "," 
-  //	  << " Px = " << visP4Leg1.Px() << "," 
-  //	  << " Py = " << visP4Leg1.Py() << "," 
-  //	  << " Pz = " << visP4Leg1.Pz() << std::endl;
-  //std::cout << "X1 = " << (visP4Leg1.E()/inputVariables.genTau1P4_.E()) << std::endl;
-  double nuEn1_rf = TMath::Sqrt(square(p1_rf) + square(nuMass1));
-  reco::Candidate::LorentzVector nuP4Leg1_rf(-visPx1_rf, -visPy1_rf, -visPz1_rf, nuEn1_rf);
-  nuP4Leg1 = boostToLab(inputVariables.genTau1P4_, nuP4Leg1_rf);
-  inputVariables.genVis1En_  = visP4Leg1.energy();
-  inputVariables.genVis1Px_  = visP4Leg1.px();
-  inputVariables.genVis1Py_  = visP4Leg1.py();
-  inputVariables.genVis1Pz_  = visP4Leg1.pz();
-  inputVariables.genNu1En_   = nuP4Leg1.energy();
-  inputVariables.genNu1Px_   = nuP4Leg1.px();
-  inputVariables.genNu1Py_   = nuP4Leg1.py();
-  inputVariables.genNu1Pz_   = nuP4Leg1.pz();
-  inputVariables.genNu1Mass_ = nuMass1;
+  //std::cout << "genVis1 (rf,PS): E = " << visP4_rf.E() << "," 
+  //	  << " Px = " << visP4_rf.Px() << "," 
+  //	  << " Py = " << visP4_rf.Py() << "," 
+  //	  << " Pz = " << visP4_rf.Pz() << std::endl;
+  //std::cout << "genVis1 (lab,PS): E = " << visP4.E() << "," 
+  //	  << " Px = " << visP4.Px() << "," 
+  //	  << " Py = " << visP4.Py() << "," 
+  //	  << " Pz = " << visP4.Pz() << std::endl;
+  //std::cout << "X1 = " << (visP4.E()/inputVariables.genTau1P4_.E()) << std::endl;
+  double nuEn_rf = TMath::Sqrt(square(p_rf) + square(nuMass));
+  reco::Candidate::LorentzVector nuP4_rf(-visPx_rf, -visPy_rf, -visPz_rf, nuEn_rf);
+  nuP4 = boostToLab(inputVariables.genTau1P4_, nuP4_rf);
+  inputVariables.genVis1En_  = visP4.energy();
+  inputVariables.genVis1Px_  = visP4.px();
+  inputVariables.genVis1Py_  = visP4.py();
+  inputVariables.genVis1Pz_  = visP4.pz();
+  inputVariables.genNu1En_   = nuP4.energy();
+  inputVariables.genNu1Px_   = nuP4.px();
+  inputVariables.genNu1Py_   = nuP4.py();
+  inputVariables.genNu1Pz_   = nuP4.pz();
+  inputVariables.genNu1Mass_ = nuMass;
 }
 
-void genTauToLepDecay_me(inputVariableSet& inputVariables, reco::Candidate::LorentzVector& nuP4Leg1, TRandom& rnd)
+void genTauToLepDecay_me(inputVariableSet& inputVariables, reco::Candidate::LorentzVector& nuP4, TRandom& rnd)
 {
 //--- generate "random" leptonic tau decay 
 //    using "real" tau decay matrix element
@@ -521,109 +521,120 @@ void genTauToLepDecay_me(inputVariableSet& inputVariables, reco::Candidate::Lore
 //           Nucl. Phys. B395 (1993) 499.
 //
   
-  double visMass1 = muonMass;
-  double theta1_rf = 0.;
-  double nuMass1 = 0.;
-  double p1_rf = 0.;
-  bool keep1 = false;
-  while ( !keep1 ) {
-    theta1_rf = rnd.Uniform(0., TMath::Pi());
-    nuMass1 = rnd.Uniform(0., tauLeptonMass);
-    double term1a = tauLeptonMass2 - square(nuMass1 + visMass1);
-    double term1b = tauLeptonMass2 - square(nuMass1 - visMass1);
-    p1_rf = TMath::Sqrt(TMath::Max(0., term1a*term1b))/(2.*tauLeptonMass);
-    double E1_rf = TMath::Sqrt(square(p1_rf) + square(visMass1));
-    double Emax = (tauLeptonMass2 + square(visMass1))/(2.*tauLeptonMass); // formula (2.6)
-    double prob1 = p1_rf*E1_rf*(3.*Emax - 2.*E1_rf - (square(visMass1)/E1_rf))*TMath::Sin(theta1_rf)*(nuMass1/tauLeptonMass);
-    //std::cout << "prob1 = " << prob1 << std::endl;
-    keep1 = (prob1 > rnd.Rndm());
+  double visMass = muonMass;
+  double visMass2 = square(visMass);
+  double theta_rf = 0.;
+  double nuMass = 0.;
+  double p_rf = 0.;
+  bool keep = false;
+  while ( !keep ) {
+    //theta_rf = rnd.Uniform(0., TMath::Pi());
+    double cosTheta_rf = rnd.Uniform(-1., +1);
+    theta_rf = TMath::ACos(cosTheta_rf);
+    nuMass = rnd.Uniform(0., tauLeptonMass);
+    double term1 = tauLeptonMass2 - square(nuMass + visMass);
+    double term2 = tauLeptonMass2 - square(nuMass - visMass);
+    p_rf = TMath::Sqrt(TMath::Max(0., term1*term2))/(2.*tauLeptonMass);
+    double E_rf = TMath::Sqrt(square(p_rf) + square(visMass));
+    double Emax = (tauLeptonMass2 + square(visMass))/(2.*tauLeptonMass); // formula (2.6)
+    double term3 = tauLeptonMass2 - visMass2;
+    double term4 = tauLeptonMass2 + visMass2;
+    double term5 = tauLeptonMass*visMass;
+    double term6 = square(term5);
+    double norm_factor = 1./(0.75*square(visMass2)*(TMath::Log(term5) - TMath::Log(visMass2))
+			   + (1./(8.*square(tauLeptonMass2)))*(0.5*cube(term3)*term4
+                                                             - 0.25*term3*(cube(tauLeptonMass2) + 5.*term4*term6 + cube(visMass2))));
+    //std::cout << "norm_factor = " << norm_factor << std::endl;
+    double prob = norm_factor*p_rf*E_rf*(3.*Emax - 2.*E_rf - (square(visMass)/E_rf))/* *TMath::Sin(theta_rf)*/ *(nuMass/tauLeptonMass);
+    //std::cout << "prob = " << prob << std::endl;
+    keep = (prob > rnd.Rndm());
   }
-  double phi1_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
-  //std::cout << "visMass1 (ME) = " << visMass1 << std::endl;
-  //std::cout << "nuMass1 (ME) = " << nuMass1 << std::endl;
-  //std::cout << "P1 (rf,ME) = " << p1_rf << std::endl;
-  double visPx1_rf = p1_rf*TMath::Cos(phi1_rf)*TMath::Sin(theta1_rf);
-  double visPy1_rf = p1_rf*TMath::Sin(phi1_rf)*TMath::Sin(theta1_rf);
-  double visPz1_rf = p1_rf*TMath::Cos(theta1_rf);
-  double visEn1_rf = TMath::Sqrt(square(p1_rf) + square(visMass1));
-  reco::Candidate::LorentzVector visP4Leg1_rf(visPx1_rf, visPy1_rf, visPz1_rf, visEn1_rf);      
-  reco::Candidate::LorentzVector visP4Leg1 = boostToLab(inputVariables.genTau1P4_, visP4Leg1_rf);      
+  double phi_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
+  //std::cout << "visMass1 (ME) = " << visMass << std::endl;
+  //std::cout << "nuMass1 (ME) = " << nuMass << std::endl;
+  //std::cout << "P1 (rf,ME) = " << p_rf << std::endl;
+  double visPx_rf = p_rf*TMath::Cos(phi_rf)*TMath::Sin(theta_rf);
+  double visPy_rf = p_rf*TMath::Sin(phi_rf)*TMath::Sin(theta_rf);
+  double visPz_rf = p_rf*TMath::Cos(theta_rf);
+  double visEn_rf = TMath::Sqrt(square(p_rf) + square(visMass));
+  reco::Candidate::LorentzVector visP4_rf(visPx_rf, visPy_rf, visPz_rf, visEn_rf);      
+  reco::Candidate::LorentzVector visP4 = boostToLab(inputVariables.genTau1P4_, visP4_rf);      
   //std::cout << "genTau1 (lab): E = " << inputVariables.genTau1P4_.E() << "," 
   //	  << " Px = " << inputVariables.genTau1P4_.Px() << "," 
   //	  << " Py = " << inputVariables.genTau1P4_.Py() << "," 
   //	  << " Pz = " << inputVariables.genTau1P4_.Pz() << std::endl;
-  //std::cout << "genVis1 (rf,ME): E = " << visP4Leg1_rf.E() << "," 
-  //	  << " Px = " << visP4Leg1_rf.Px() << "," 
-  //	  << " Py = " << visP4Leg1_rf.Py() << "," 
-  //	  << " Pz = " << visP4Leg1_rf.Pz() << std::endl;
-  //std::cout << "genVis1 (lab,ME): E = " << visP4Leg1.E() << "," 
-  //	  << " Px = " << visP4Leg1.Px() << "," 
-  //	  << " Py = " << visP4Leg1.Py() << "," 
-  //	  << " Pz = " << visP4Leg1.Pz() << std::endl;
-  //std::cout << "X1 = " << (visP4Leg1.E()/inputVariables.genTau1P4_.E()) << std::endl;
-  double nuEn1_rf = TMath::Sqrt(square(p1_rf) + square(nuMass1));
-  reco::Candidate::LorentzVector nuP4Leg1_rf(-visPx1_rf, -visPy1_rf, -visPz1_rf, nuEn1_rf);
-  nuP4Leg1 = boostToLab(inputVariables.genTau1P4_, nuP4Leg1_rf);
-  inputVariables.genVis1En_  = visP4Leg1.energy();
-  inputVariables.genVis1Px_  = visP4Leg1.px();
-  inputVariables.genVis1Py_  = visP4Leg1.py();
-  inputVariables.genVis1Pz_  = visP4Leg1.pz();
-  inputVariables.genNu1En_   = nuP4Leg1.energy();
-  inputVariables.genNu1Px_   = nuP4Leg1.px();
-  inputVariables.genNu1Py_   = nuP4Leg1.py();
-  inputVariables.genNu1Pz_   = nuP4Leg1.pz();
-  inputVariables.genNu1Mass_ = nuMass1;
+  //std::cout << "genVis1 (rf,ME): E = " << visP4_rf.E() << "," 
+  //	  << " Px = " << visP4_rf.Px() << "," 
+  //	  << " Py = " << visP4_rf.Py() << "," 
+  //	  << " Pz = " << visP4_rf.Pz() << std::endl;
+  //std::cout << "genVis1 (lab,ME): E = " << visP4.E() << "," 
+  //	  << " Px = " << visP4.Px() << "," 
+  //	  << " Py = " << visP4.Py() << "," 
+  //	  << " Pz = " << visP4.Pz() << std::endl;
+  //std::cout << "X1 = " << (visP4.E()/inputVariables.genTau1P4_.E()) << std::endl;
+  double nuEn_rf = TMath::Sqrt(square(p_rf) + square(nuMass));
+  reco::Candidate::LorentzVector nuP4_rf(-visP4_rf.px(), -visP4_rf.py(), -visP4_rf.pz(), nuEn_rf);
+  nuP4 = boostToLab(inputVariables.genTau1P4_, nuP4_rf);
+  inputVariables.genVis1En_  = visP4.energy();
+  inputVariables.genVis1Px_  = visP4.px();
+  inputVariables.genVis1Py_  = visP4.py();
+  inputVariables.genVis1Pz_  = visP4.pz();
+  inputVariables.genNu1En_   = nuP4.energy();
+  inputVariables.genNu1Px_   = nuP4.px();
+  inputVariables.genNu1Py_   = nuP4.py();
+  inputVariables.genNu1Pz_   = nuP4.pz();
+  inputVariables.genNu1Mass_ = nuMass;
 }
 
-void genTauToHadDecay(inputVariableSet& inputVariables, reco::Candidate::LorentzVector& nuP4Leg2, TRandom& rnd)
+void genTauToHadDecay(inputVariableSet& inputVariables, reco::Candidate::LorentzVector& nuP4, TRandom& rnd)
 {
 //--- generate "random" hadronic tau decay 
 //    using simple "Phase-Space" model implemented in SVfit
 //   (assuming tau decay matrix element to be constant)
 
-  double visMass2 = inputVariables.genVis2Mass_;
-  double theta2_rf = 0.;
-  bool keep2 = false;
-  while ( !keep2 ) {
-    theta2_rf = rnd.Uniform(0., TMath::Pi());
-    double prob2 = TMath::Sin(theta2_rf);
-    //std::cout << "prob2 = " << prob2 << std::endl;
-    keep2 = (prob2 > rnd.Rndm());
+  double visMass = inputVariables.genVis2Mass_;
+  double theta_rf = 0.;
+  bool keep = false;
+  while ( !keep ) {
+    theta_rf = rnd.Uniform(0., TMath::Pi());
+    double prob = TMath::Sin(theta_rf);
+    //std::cout << "prob = " << prob << std::endl;
+    keep = (prob > rnd.Rndm());
   }
-  double phi2_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
-  double term2 = tauLeptonMass2 - square(visMass2);
-  double p2_rf = term2/(2.*tauLeptonMass);
-  //std::cout << "P2 (rf) = " << p2_rf << std::endl;
-  double visPx2_rf = p2_rf*TMath::Cos(phi2_rf)*TMath::Sin(theta2_rf);
-  double visPy2_rf = p2_rf*TMath::Sin(phi2_rf)*TMath::Sin(theta2_rf);
-  double visPz2_rf = p2_rf*TMath::Cos(theta2_rf);
-  double visEn2_rf = TMath::Sqrt(square(p2_rf) + square(visMass2));
-  reco::Candidate::LorentzVector visP4Leg2_rf(visPx2_rf, visPy2_rf, visPz2_rf, visEn2_rf);
-  reco::Candidate::LorentzVector visP4Leg2 = boostToLab(inputVariables.genTau2P4_, visP4Leg2_rf);
+  double phi_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
+  double term = tauLeptonMass2 - square(visMass);
+  double p_rf = term/(2.*tauLeptonMass);
+  //std::cout << "P2 (rf) = " << p_rf << std::endl;
+  double visPx_rf = p_rf*TMath::Cos(phi_rf)*TMath::Sin(theta_rf);
+  double visPy_rf = p_rf*TMath::Sin(phi_rf)*TMath::Sin(theta_rf);
+  double visPz_rf = p_rf*TMath::Cos(theta_rf);
+  double visEn_rf = TMath::Sqrt(square(p_rf) + square(visMass));
+  reco::Candidate::LorentzVector visP4_rf(visPx_rf, visPy_rf, visPz_rf, visEn_rf);
+  reco::Candidate::LorentzVector visP4 = boostToLab(inputVariables.genTau2P4_, visP4_rf);
   //std::cout << "genTau2 (lab): E = " << inputVariables.genTau2P4_.E() << "," 
   //	  << " Px = " << inputVariables.genTau2P4_.Px() << "," 
   //	  << " Py = " << inputVariables.genTau2P4_.Py() << "," 
   //	  << " Pz = " << inputVariables.genTau2P4_.Pz() << std::endl;
-  //std::cout << "genVis2 (rf): E = " << visP4Leg2_rf.E() << "," 
-  //	  << " Px = " << visP4Leg2_rf.Px() << "," 
-  //	  << " Py = " << visP4Leg2_rf.Py() << "," 
-  //	  << " Pz = " << visP4Leg2_rf.Pz() << std::endl;
-  //std::cout << "genVis2 (lab): E = " << visP4Leg2.E() << "," 
-  //	  << " Px = " << visP4Leg2.Px() << "," 
-  //	  << " Py = " << visP4Leg2.Py() << "," 
-  //	  << " Pz = " << visP4Leg2.Pz() << std::endl;
-  //std::cout << "X2 = " << (visP4Leg2.E()/inputVariables.genTau2P4_.E()) << std::endl;
-  double nuEn2_rf = p2_rf;
-  reco::Candidate::LorentzVector nuP4Leg2_rf(-visPx2_rf, -visPy2_rf, -visPz2_rf, nuEn2_rf);
-  nuP4Leg2 = boostToLab(inputVariables.genTau2P4_, nuP4Leg2_rf);
-  inputVariables.genVis2En_  = visP4Leg2.energy();
-  inputVariables.genVis2Px_  = visP4Leg2.px();
-  inputVariables.genVis2Py_  = visP4Leg2.py();
-  inputVariables.genVis2Pz_  = visP4Leg2.pz();
-  inputVariables.genNu2En_   = nuP4Leg2.energy();
-  inputVariables.genNu2Px_   = nuP4Leg2.px();
-  inputVariables.genNu2Py_   = nuP4Leg2.py();
-  inputVariables.genNu2Pz_   = nuP4Leg2.pz();
+  //std::cout << "genVis2 (rf): E = " << visP4_rf.E() << "," 
+  //	  << " Px = " << visP4_rf.Px() << "," 
+  //	  << " Py = " << visP4_rf.Py() << "," 
+  //	  << " Pz = " << visP4_rf.Pz() << std::endl;
+  //std::cout << "genVis2 (lab): E = " << visP4.E() << "," 
+  //	  << " Px = " << visP4.Px() << "," 
+  //	  << " Py = " << visP4.Py() << "," 
+  //	  << " Pz = " << visP4.Pz() << std::endl;
+  //std::cout << "X2 = " << (visP4.E()/inputVariables.genTau2P4_.E()) << std::endl;
+  double nuEn_rf = p_rf;
+  reco::Candidate::LorentzVector nuP4_rf(-visPx_rf, -visPy_rf, -visPz_rf, nuEn_rf);
+  nuP4 = boostToLab(inputVariables.genTau1P4_, nuP4_rf);
+  inputVariables.genVis2En_  = visP4.energy();
+  inputVariables.genVis2Px_  = visP4.px();
+  inputVariables.genVis2Py_  = visP4.py();
+  inputVariables.genVis2Pz_  = visP4.pz();
+  inputVariables.genNu2En_   = nuP4.energy();
+  inputVariables.genNu2Px_   = nuP4.px();
+  inputVariables.genNu2Py_   = nuP4.py();
+  inputVariables.genNu2Pz_   = nuP4.pz();
   inputVariables.genNu2Mass_ = 0.; 
 }
 
