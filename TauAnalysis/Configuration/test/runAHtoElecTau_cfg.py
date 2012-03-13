@@ -112,7 +112,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 # uncomment to replace caloJets by pfJets
 switchJetCollection(process,
         jetCollection = cms.InputTag("ak5PFJets"),
-        #jetCorrLabel = ('AK5PF', ['L1FastJet', 'L2Relative', 'L3Absolute']),
+        jetCorrLabel = ('AK5PF', ['L1FastJet', 'L2Relative', 'L3Absolute']),
         doBTagging = True,
         outputModule = "")
 #--------------------------------------------------------------------------------
