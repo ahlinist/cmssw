@@ -10,7 +10,8 @@
 NSVfitTauToHadLikelihoodPhaseSpace::NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet& cfg)
   : NSVfitSingleParticleLikelihood(cfg)
 {
-// nothing to be done yet...
+  applySinThetaFactor_ = cfg.exists("applySinThetaFactor") ?
+    cfg.getParameter<bool>("applySinThetaFactor") : false;
 }
 
 NSVfitTauToHadLikelihoodPhaseSpace::~NSVfitTauToHadLikelihoodPhaseSpace()
@@ -41,31 +42,29 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   assert(hypothesis_T != 0);
 
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
-
-  double decayAngle = hypothesis_T->decay_angle_rf();
-  double visEnFracX = hypothesis_T->visEnFracX();
-
+  
+  double decayAngle = hypothesis_T->decay_angle_rf();  
   if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
+  
 
-  double xcut = 20./(hypothesis_T->p4_fitted()).Pt();
-  double ptCutsNorm = (1-xcut);
- 
-  double prob = 1;
-
-  if(applyVisPtCutCorrection_){
-    prob /= ptCutsNorm;
-    if(visEnFracX<xcut) prob=1e-06;
-  }
-
-  /*
-  double prob = TMath::Sin(decayAngle);
+  // CV: normalize likelihood function such that 
+  //               1
+  //       integral  prob dX = 1.
+  //               0
+  double prob = 1.;
+  if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
   
   if ( applyVisPtCutCorrection_ ) {
-    double probCorr = evaluateVisPtCutCorrection(hypothesis);
+    double probCorr = 1.;
+    if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
+      double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
+      probCorr = 1./(1. - xCut);
+    } else {
+      probCorr = 1e-6;
+    }
     if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
     prob *= probCorr;
   }
-  */
 
   double nll = 0.;
   if ( prob > 0. ) {
