@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: studySVfitVisPtCuts.cc,v 1.1 2012/03/06 17:34:42 veelken Exp $
+ * $Id: studySVfitVisPtCuts.cc,v 1.2 2012/03/13 11:17:12 veelken Exp $
  *
  */
 
@@ -524,41 +524,44 @@ void genTauToLepDecay_me(inputVariableSet& inputVariables, reco::Candidate::Lore
   double visMass = muonMass;
   double visMass2 = square(visMass);
   double theta_rf = 0.;
+  reco::Candidate::LorentzVector visP4_rf;
+  reco::Candidate::LorentzVector visP4;
   double nuMass = 0.;
   double p_rf = 0.;
   bool keep = false;
   while ( !keep ) {
-    //theta_rf = rnd.Uniform(0., TMath::Pi());
     double cosTheta_rf = rnd.Uniform(-1., +1);
     theta_rf = TMath::ACos(cosTheta_rf);
+    double phi_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
     nuMass = rnd.Uniform(0., tauLeptonMass);
     double term1 = tauLeptonMass2 - square(nuMass + visMass);
     double term2 = tauLeptonMass2 - square(nuMass - visMass);
     p_rf = TMath::Sqrt(TMath::Max(0., term1*term2))/(2.*tauLeptonMass);
     double E_rf = TMath::Sqrt(square(p_rf) + square(visMass));
     double Emax = (tauLeptonMass2 + square(visMass))/(2.*tauLeptonMass); // formula (2.6)
+    double visPx_rf = p_rf*TMath::Cos(phi_rf)*TMath::Sin(theta_rf);
+    double visPy_rf = p_rf*TMath::Sin(phi_rf)*TMath::Sin(theta_rf);
+    double visPz_rf = p_rf*TMath::Cos(theta_rf);
+    double visEn_rf = TMath::Sqrt(square(p_rf) + square(visMass));
+    visP4_rf.SetXYZT(visPx_rf, visPy_rf, visPz_rf, visEn_rf);      
+    visP4 = boostToLab(inputVariables.genTau1P4_, visP4_rf);      
     double term3 = tauLeptonMass2 - visMass2;
     double term4 = tauLeptonMass2 + visMass2;
     double term5 = tauLeptonMass*visMass;
     double term6 = square(term5);
     double norm_factor = 1./(0.75*square(visMass2)*(TMath::Log(term5) - TMath::Log(visMass2))
-			   + (1./(8.*square(tauLeptonMass2)))*(0.5*cube(term3)*term4
+                           + (1./(8.*square(tauLeptonMass2)))*(0.5*cube(term3)*term4
                                                              - 0.25*term3*(cube(tauLeptonMass2) + 5.*term4*term6 + cube(visMass2))));
     //std::cout << "norm_factor = " << norm_factor << std::endl;
-    double prob = norm_factor*p_rf*E_rf*(3.*Emax - 2.*E_rf - (square(visMass)/E_rf))/* *TMath::Sin(theta_rf)*/ *(nuMass/tauLeptonMass);
+    double prob = norm_factor*p_rf*E_rf*(3.*Emax - 2.*E_rf - (square(visMass)/E_rf))*(nuMass/tauLeptonMass);
+    double visEnFracX = visP4.E()/inputVariables.genTau1P4_.E();
+    if ( nuMass > TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) prob = 0.;
     //std::cout << "prob = " << prob << std::endl;
     keep = (prob > rnd.Rndm());
   }
-  double phi_rf = rnd.Uniform(-TMath::Pi(), +TMath::Pi());
   //std::cout << "visMass1 (ME) = " << visMass << std::endl;
   //std::cout << "nuMass1 (ME) = " << nuMass << std::endl;
-  //std::cout << "P1 (rf,ME) = " << p_rf << std::endl;
-  double visPx_rf = p_rf*TMath::Cos(phi_rf)*TMath::Sin(theta_rf);
-  double visPy_rf = p_rf*TMath::Sin(phi_rf)*TMath::Sin(theta_rf);
-  double visPz_rf = p_rf*TMath::Cos(theta_rf);
-  double visEn_rf = TMath::Sqrt(square(p_rf) + square(visMass));
-  reco::Candidate::LorentzVector visP4_rf(visPx_rf, visPy_rf, visPz_rf, visEn_rf);      
-  reco::Candidate::LorentzVector visP4 = boostToLab(inputVariables.genTau1P4_, visP4_rf);      
+  //std::cout << "P1 (rf,ME) = " << p_rf << std::endl; 
   //std::cout << "genTau1 (lab): E = " << inputVariables.genTau1P4_.E() << "," 
   //	  << " Px = " << inputVariables.genTau1P4_.Px() << "," 
   //	  << " Py = " << inputVariables.genTau1P4_.Py() << "," 
@@ -596,8 +599,9 @@ void genTauToHadDecay(inputVariableSet& inputVariables, reco::Candidate::Lorentz
   double theta_rf = 0.;
   bool keep = false;
   while ( !keep ) {
-    theta_rf = rnd.Uniform(0., TMath::Pi());
-    double prob = TMath::Sin(theta_rf);
+    double cosTheta_rf = rnd.Uniform(-1., +1);
+    theta_rf = TMath::ACos(cosTheta_rf);
+    double prob = 1.;
     //std::cout << "prob = " << prob << std::endl;
     keep = (prob > rnd.Rndm());
   }
