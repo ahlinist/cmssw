@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitResonanceLikelihood.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
+ * $Id: NSVfitResonanceLikelihood.h,v 1.3 2011/03/06 11:31:11 veelken Exp $
  *
  */
 
@@ -35,7 +35,7 @@ class NSVfitResonanceLikelihood : public NSVfitLikelihoodBase
 
   virtual void beginCandidate(const NSVfitResonanceHypothesis*) const {}
 
-  virtual double operator()(const NSVfitResonanceHypothesis*) const = 0;
+  virtual double operator()(const NSVfitResonanceHypothesis*, int) const = 0;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

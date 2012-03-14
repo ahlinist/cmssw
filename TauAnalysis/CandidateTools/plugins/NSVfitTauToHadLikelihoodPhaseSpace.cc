@@ -27,7 +27,7 @@ void NSVfitTauToHadLikelihoodPhaseSpace::beginJob(NSVfitAlgorithmBase* algorithm
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,    pluginName_);
 }
 
-double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
+double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticleHypothesis* hypothesis, int polSign) const
 {
 //--- compute negative log-likelihood for tau lepton decay "leg"
 //    to be compatible with three-body decay,
@@ -58,23 +58,23 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   //               1
   //       integral  prob dX = 1.
   //               0
-  double prob = 1.;
-  if ( visEnFracX >= TMath::Max(0., (Evis_rf - Pvis_rf)/tauLeptonMass) &&
-       visEnFracX <= TMath::Min(1., (Evis_rf + Pvis_rf)/tauLeptonMass) ) {
-    prob = tauLeptonMass/(2.*Pvis_rf);
-  } else {
-    prob = 1e-6;
+  double prob = tauLeptonMass/(2.*Pvis_rf);
+  if ( visEnFracX < TMath::Min(0., (Evis_rf - Pvis_rf)/tauLeptonMass) ) {
+    prob *= 1.e-3/(((Evis_rf - Pvis_rf) - visEnFracX) + 1.e-3);
+  } else if ( visEnFracX > TMath::Max(1., (Evis_rf + Pvis_rf)/tauLeptonMass) ) {
+    prob *= 1.e-3/((visEnFracX - (Evis_rf + Pvis_rf)) + 1.e-3);
   }
   if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
   
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = 1.;
-    if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
-     
+    const double epsilon_regularization = 1.e-1;
+    if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {     
       double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();      
-      probCorr = 1./((Evis_rf + Pvis_rf)/tauLeptonMass - xCut);
+      probCorr = 1./((((Evis_rf + Pvis_rf)/tauLeptonMass) - xCut) + epsilon_regularization);
     } else {
-      probCorr = 1e-6;
+      const double penalty_factor = 1.e-3;
+      probCorr = penalty_factor/((visPtCutThreshold_ - hypothesis_T->p4_fitted().pt()) + penalty_factor*epsilon_regularization);
     }
     if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
     prob *= probCorr;

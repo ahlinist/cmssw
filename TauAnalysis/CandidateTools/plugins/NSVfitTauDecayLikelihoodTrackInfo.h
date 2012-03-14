@@ -8,9 +8,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.1 2011/03/23 17:46:39 veelken Exp $
+ * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.2 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
@@ -37,7 +37,7 @@ class NSVfitTauDecayLikelihoodTrackInfo : public NSVfitSingleParticleLikelihood
   void beginEvent(const edm::Event&, const edm::EventSetup&);
   void beginCandidate(const NSVfitSingleParticleHypothesis*);
 
-  double operator()(const NSVfitSingleParticleHypothesis*) const;
+  double operator()(const NSVfitSingleParticleHypothesis*, int) const;
 
  private:
   const TransientTrackBuilder* trackBuilder_;

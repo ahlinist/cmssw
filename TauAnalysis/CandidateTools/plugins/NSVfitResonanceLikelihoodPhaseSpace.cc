@@ -13,7 +13,7 @@ NSVfitResonanceLikelihoodPhaseSpace::~NSVfitResonanceLikelihoodPhaseSpace()
 // nothing to be done yet...
 }
 
-double NSVfitResonanceLikelihoodPhaseSpace::operator()(const NSVfitResonanceHypothesis* resonance) const 
+double NSVfitResonanceLikelihoodPhaseSpace::operator()(const NSVfitResonanceHypothesis* resonance, int polHandedness) const 
 {
   if ( this->verbosity_ ) std::cout << "<NSVfitResonanceLikelihoodPhaseSpace::operator()>:" << std::endl;
 

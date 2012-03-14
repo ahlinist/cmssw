@@ -92,6 +92,56 @@ nSVfitResonanceLikelihoodLogEff = cms.PSet(
     power = cms.double(1.0)
 )
 
+nSVfitResonanceLikelihoodPolarization = cms.PSet(
+    pluginName = cms.string("nSVfitResonanceLikelihoodPolarization"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodPolarization"),
+    LR = cms.PSet(
+        formula = cms.string("[0]*([1] + [2] - x)/[2]"), # CV: linearly decrease weight of Z specific polarization
+                                                         #     between mZ and mZ + 20 GeV
+        xMin = cms.double(91.188),
+        xMax = cms.double(111.188),
+        parameter = cms.PSet(
+            par0 = cms.double(0.576),
+            par1 = cms.double(91.188), # mZ / GeV
+            par2 = cms.double(20.)     # width of transition region between Z and Higgs specific polarization
+        )
+    ),
+    RL = cms.PSet(
+        formula = cms.string("[0]*([1] + [2] - x)/[2]"), # CV: linearly decrease weight of Z specific polarization
+                                                         #     between mZ and mZ + 20 GeV
+        xMin = cms.double(91.188),
+        xMax = cms.double(111.188),
+        parameter = cms.PSet(
+            par0 = cms.double(0.424),
+            par1 = cms.double(91.188), # mZ / GeV
+            par2 = cms.double(20.)     # width of transition region between Z and Higgs specific polarization
+        )
+    ),
+    LL = cms.PSet(
+        formula = cms.string("[0]*(x - [1])/[2]"), # CV: linearly increase weight of Higgs specific polarization
+                                                   #     between mZ and mZ + 20 GeV
+        xMin = cms.double(91.188), 
+        xMax = cms.double(111.188),
+        parameter = cms.PSet(
+            par0 = cms.double(0.50),
+            par1 = cms.double(91.188), # mZ / GeV
+            par2 = cms.double(20.),    # width of transition region between Z and Higgs specific polarization
+        )
+    ),
+    RR = cms.PSet(
+        formula = cms.string("[0]*(x - [1])/[2]"), # CV: linearly increase weight of Higgs specific polarization
+                                                   #     between mZ and mZ + 20 GeV
+        xMin = cms.double(91.188), 
+        xMax = cms.double(111.188),
+        parameter = cms.PSet(
+            par0 = cms.double(0.50),
+            par1 = cms.double(91.188), # mZ / GeV
+            par2 = cms.double(20.),    # width of transition region between Z and Higgs specific polarization
+        )
+    ),
+    power = cms.double(1.0)
+)
+
 nSVfitResonanceLikelihoodPrior = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodPrior"),
     pluginType = cms.string("NSVfitResonanceLikelihoodPrior"),
@@ -108,7 +158,11 @@ nSVfitResonanceLikelihoodPrior = cms.PSet(
 
 nSVfitResonanceBuilder = cms.PSet(
     pluginName = cms.string("nSVfitResonanceBuilder"),
-    pluginType = cms.string("NSVfitResonanceBuilder")
+    pluginType = cms.string("NSVfitResonanceBuilder"),
+    polStates = cms.vstring( # polarization states to be considered when evaluating likelihoods
+        "LR", "RL", # Z case
+        "LL", "RR"  # Higgs case
+    )
 )
 
 nSVfitEventLikelihoodMEt2 = cms.PSet(

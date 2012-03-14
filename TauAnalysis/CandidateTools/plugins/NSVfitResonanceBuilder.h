@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitResonanceBuilder.h,v 1.11 2011/01/18 16:41:35 friis Exp $
+ * $Id: NSVfitResonanceBuilder.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -23,10 +23,15 @@
 class NSVfitResonanceBuilder : public NSVfitResonanceBuilderBase
 {
  public:
-  NSVfitResonanceBuilder(const edm::ParameterSet& cfg) 
-    : NSVfitResonanceBuilderBase(cfg)
-  {}
+  NSVfitResonanceBuilder(const edm::ParameterSet&); 
   ~NSVfitResonanceBuilder() {}
+
+  virtual NSVfitResonanceHypothesis* build(const inputParticleMap&) const;
+
+ private:
+  /// different possible polarization states of each tau lepton pair 
+  std::vector<int> polHandedness_;
+  unsigned numPolStates_;
 };
 
 #endif
