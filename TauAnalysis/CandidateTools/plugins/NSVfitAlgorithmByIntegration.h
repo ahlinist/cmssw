@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.6 2011/06/11 17:08:51 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.7 2011/06/13 17:57:28 veelken Exp $
  *
  */
 
@@ -25,6 +25,7 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/IndepCombinatoricsGeneratorT.h"
+#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisByIntegration.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisByIntegration.h"
@@ -37,6 +38,7 @@
 #include <TMath.h>
 
 #include <vector>
+#include <algorithm>
 #include <string>
 
 class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
@@ -139,6 +141,9 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
 	double stepSize = TMath::Max((iterStepSizeFactor_ - 1.)*gridPoint, iterMinStepSize_);
 	gridPoint += stepSize;	
       }
+      // CV: always probe Z mass
+      gridPoints_vector.push_back(SVfit_namespace::mZ);
+      std::sort(gridPoints_vector.begin(), gridPoints_vector.end());
       
       numGridPoints_ = gridPoints_vector.size();
       gridPoints_ = new TArrayF(numGridPoints_);
