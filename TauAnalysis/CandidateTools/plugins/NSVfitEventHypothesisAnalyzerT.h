@@ -37,7 +37,13 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 
   std::string moduleLabel_;
 
-  edm::InputTag src_;
+  edm::InputTag srcEventHypotheses_;
+
+  edm::InputTag srcGenLeg1_;
+  edm::InputTag srcGenLeg2_;
+  edm::InputTag srcGenMEt_;
+
+  edm::InputTag srcPFMEtCovMatrix_;
   
   typedef std::vector<edm::InputTag> vInputTag;
   vInputTag srcWeights_;
@@ -48,9 +54,24 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
   
   struct plotEntryType
   {
-    plotEntryType(const std::string& dqmDirectory)
-      : dqmDirectory_(dqmDirectory)
-    {}
+    plotEntryType(const std::string& dqmDirectory, double minSVfitSigma, double maxSVfitSigma, int isValidSolution)
+      : minSVfitSigma_(minSVfitSigma),
+	maxSVfitSigma_(maxSVfitSigma),
+	isValidSolution_(isValidSolution)
+    {
+      TString dqmDirectory_full = dqmDirectory.data();
+      if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
+      if      ( minSVfitSigma_ <= 0. && 
+		maxSVfitSigma_ <= 0. ) dqmDirectory_full.Append("");
+      else if ( minSVfitSigma_ <= 0. ) dqmDirectory_full.Append(Form("sigmaSVfitLt%1.0f", maxSVfitSigma_));
+      else if ( maxSVfitSigma_ <= 0. ) dqmDirectory_full.Append(Form("sigmaSVfitGt%1.0f", minSVfitSigma_));
+      else                             dqmDirectory_full.Append(Form("sigmaSVfit%1.0fto%1.0f", minSVfitSigma_, maxSVfitSigma_));
+      dqmDirectory_full.ReplaceAll(".", "_");
+      if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
+      if ( isValidSolution_ > 0 ) dqmDirectory_full.Append("validSVfitSolution");
+      if ( isValidSolution_ < 0 ) dqmDirectory_full.Append("invalidSVfitSolution");
+      dqmDirectory_ = dqmDirectory_full.Data();
+    }
     ~plotEntryType() {}
     void bookHistograms(DQMStore& dqmStore)
     {
@@ -62,7 +83,7 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       dPhi12_     = dqmStore.book1D("dPhi12",     "dPhi12",     180, 0., TMath::Pi());
       diTauPt_    = dqmStore.book1D("diTauPt",    "diTauPt",    250, 0., 250.);
       svFitMass_  = dqmStore.book1D("svFitMass",  "svFitMass",  250, 0., 250.);
-      svFitSigma_ = dqmStore.book1D("svFitSigma", "svFitSigma", 250, 0., 250.);
+      svFitSigma_ = dqmStore.book1D("svFitSigma", "svFitSigma", 250, 0., 250.);     
 
       svFitMass_mean_        = dqmStore.book1D("svFitMass_mean",        "svFitMass_mean",        250, 0., 250.);
       svFitMass_median_      = dqmStore.book1D("svFitMass_median",      "svFitMass_median",      250, 0., 250.);
@@ -74,6 +95,11 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       svFitMassVsVisMass_ = dqmStore.book2D("svFitMassVsVisMass", "svFitMassVsVisMass",  50, 0., 250., 50, 0., 250.);
       svFitMassVsDPhi12_  = dqmStore.book2D("svFitMassVsDPhi12",  "svFitMassVsDPhi12",   36, 0., TMath::Pi(), 50, 0., 250.);
       svFitMassVsDiTauPt_ = dqmStore.book2D("svFitMassVsDiTauPt", "svFitMassVsDiTauPt", 150, 0., 150., 50, 0., 250.);
+
+      svFitMassVsLeg1PtErr_  = dqmStore.book2D("svFitMassVsLeg1PtErr",  "svFitMassVsLeg1PtErr",  100, -25., +25., 50, 0., 250.);
+      svFitSigmaVsLeg1PtErr_ = dqmStore.book2D("svFitSigmaVsLeg1PtErr", "svFitSigmaVsLeg1PtErr", 100, -25., +25., 50, 0.,  50.);
+      svFitMassVsLeg2PtErr_  = dqmStore.book2D("svFitMassVsLeg2PtErr",  "svFitMassVsLeg2PtErr",  100, -25., +25., 50, 0., 250.);
+      svFitSigmaVsLeg2PtErr_ = dqmStore.book2D("svFitSigmaVsLeg2PtErr", "svFitSigmaVsLeg2PtErr", 100, -25., +25., 50, 0.,  50.);
 
       svFitMassVsProdAngle_rf_ = 
 	dqmStore.book2D("svFitMassVsProdAngle_rf",  
@@ -98,77 +124,145 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       svFitMassVsSigma_maxInterpol_ = 
 	dqmStore.book2D("svFitMassVsSigma_maxInterpol", 
 			"svFitMassVsSigma_maxInterpol", 50, 0.,  50., 50, 0., 250.);
+      
+      metErrPx_ = dqmStore.book1D("metErrPx", "metErrPx", 200, -100., +100.);
+      metErrPy_ = dqmStore.book1D("metErrPy", "metErrPy", 200, -100., +100.);
+      metErrPt_ = dqmStore.book1D("metErrPt", "metErrPt", 250,    0.,  250.);
+      metCov_   = dqmStore.book1D("metCov",   "metCov",   250,    0.,  250.);
+      metPull_  = dqmStore.book1D("metPull",  "metPull",  250,    0.,   25.);
 
-      avSVfitMassVsLeg1And2Pt_  = dqmStore.book2D("avSVfitMassVsLeg1And2Pt",  "avSVfitMassVsLeg1And2Pt",  40, 0., 100., 40, 0., 100.);
-      avSVfitSigmaVsLeg1And2Pt_ = dqmStore.book2D("avSVfitSigmaVsLeg1And2Pt", "avSVfitSigmaVsLeg1And2Pt", 40, 0., 100., 40, 0., 100.);
-      normLeg1And2Pt_           = dqmStore.book2D("normLeg1And2Pt",           "normLeg1And2Pt",           40, 0., 100., 40, 0., 100.);
+      svFitMassVsMEtCov_ = 
+	dqmStore.book2D("svFitMassVsMEtCov", 
+			"svFitMassVsMEtCov", 50, 0., 50., 50, 0., 250.);
+      svFitSigmaVsMEtCov_ = 
+	dqmStore.book2D("svFitSigmaVsMEtCov", 
+			"svFitSigmaVsMEtCov", 50, 0., 50., 50, 0., 50.);      
+      svFitMassVsMEtErr_ = 
+	dqmStore.book2D("svFitMassVsMEtErr", 
+			"svFitMassVsMEtErr", 40, 0., 100., 50, 0., 250.);
+      svFitSigmaVsMEtErr_ = 
+	dqmStore.book2D("svFitSigmaVsMEtErr", 
+			"svFitSigmaVsMEtErr", 40, 0., 100., 50, 0., 50.);
+      svFitMassVsMEtPull_ = 
+	dqmStore.book2D("svFitMassVsMEtPull", 
+			"svFitMassVsMEtPull", 100, 0., +10., 50, 0., 250.);
+      svFitSigmaVsMEtPull_ = 
+	dqmStore.book2D("svFitSigmaVsMEtPull", 
+			"svFitSigmaVsMEtPull", 100, 0., +10., 50, 0., 50.);
+      svFitMassVsMEtErrProjLeg1_ = 
+	dqmStore.book2D("svFitMassVsMEtErrProjLeg1", 
+			"svFitMassVsMEtErrProjLeg1", 100, -50., 50., 50, 0., 250.);
+      svFitSigmaVsMEtErrProjLeg1_ = 
+	dqmStore.book2D("svFitSigmaVsMEtErrProjLeg1", 
+			"svFitSigmaVsMEtErrProjLeg1", 100, -50., 50., 50, 0., 50.);
+      svFitMassVsMEtPullProjLeg1_ = 
+	dqmStore.book2D("svFitMassVsMEtPullProjLeg1", 
+			"svFitMassVsMEtPullProjLeg1", 100, 0., 10., 50, 0., 250.);
+      svFitSigmaVsMEtPullProjLeg1_ = 
+	dqmStore.book2D("svFitSigmaVsMEtPullProjLeg1", 
+			"svFitSigmaVsMEtPullProjLeg1", 100, 0., 10., 50, 0., 50.);
+      svFitMassVsMEtErrProjLeg2_ = 
+	dqmStore.book2D("svFitMassVsMEtErrProjLeg2", 
+			"svFitMassVsMEtErrProjLeg2", 100, -50., 50., 50, 0., 250.);
+      svFitSigmaVsMEtErrProjLeg2_ = 
+	dqmStore.book2D("svFitSigmaVsMEtErrProjLeg2", 
+			"svFitSigmaVsMEtErrProjLeg2", 100, -50., 50., 50, 0., 50.);
+      svFitMassVsMEtPullProjLeg2_ = 
+	dqmStore.book2D("svFitMassVsMEtPullProjLeg2", 
+			"svFitMassVsMEtPullProjLeg2", 100, 0., 10., 50, 0., 250.);
+      svFitSigmaVsMEtPullProjLeg2_ = 
+	dqmStore.book2D("svFitSigmaVsMEtPullProjLeg2", 
+			"svFitSigmaVsMEtPullProjLeg2", 100, 0., 10., 50, 0., 50.);
     }
-    void fillHistograms(const reco::Candidate::LorentzVector& leg1P4, 
-			const reco::Candidate::LorentzVector& leg2P4,
+    void fillHistograms(bool isValidSolution,
+			const reco::Candidate::LorentzVector& genLeg1P4, const reco::Candidate::LorentzVector& recLeg1P4, 
+			const reco::Candidate::LorentzVector& genLeg2P4, const reco::Candidate::LorentzVector& recLeg2P4, 
 			double svFitMass, double svFitSigma, double diTauPt, double prodAngle_rf,
 			double svFitMass_mean, double svFitMass_median, double svFitMass_maximum, double svFitMass_maxInterpol,
+			double metCov, const reco::Candidate::LorentzVector& rec_minus_genMEtP4, double metPull, 
+			double metErrProjLeg1, double metPullProjLeg1, double metErrProjLeg2, double metPullProjLeg2, 
 			double evtWeight)
     {
-      double leg1Pt = leg1P4.pt();
-      double leg2Pt = leg2P4.pt();
+      if ( isValidSolution_ < 0 &&  isValidSolution ) return;
+      if ( isValidSolution_ > 0 && !isValidSolution ) return;
 
-      double visMass = (leg1P4 + leg2P4).mass();
+      if ( (svFitSigma > minSVfitSigma_ || minSVfitSigma_ <= 0.) &&
+	   (svFitSigma < maxSVfitSigma_ || maxSVfitSigma_ <= 0.) ) {
+	double genLeg1Pt = genLeg1P4.pt();
+	double recLeg1Pt = recLeg1P4.pt();
+	double genLeg2Pt = genLeg2P4.pt();
+	double recLeg2Pt = recLeg2P4.pt();
 
-      double dPhi12 = TMath::ACos(TMath::Cos(leg1P4.phi() - leg2P4.phi()));
+	double visMass = (recLeg1P4 + recLeg2P4).mass();
+	
+	double dPhi12 = TMath::ACos(TMath::Cos(recLeg1P4.phi() - recLeg2P4.phi()));
+	
+	double metErr = rec_minus_genMEtP4.pt();
 
-      leg1Pt_->Fill(leg1Pt, evtWeight);
-      leg2Pt_->Fill(leg2Pt, evtWeight);
-      visMass_->Fill(visMass, evtWeight);
-      dPhi12_->Fill(dPhi12, evtWeight);
-      diTauPt_->Fill(diTauPt, evtWeight);
-      svFitMass_->Fill(svFitMass, evtWeight);
-      svFitSigma_->Fill(svFitSigma, evtWeight);
-      
-      svFitMass_mean_ ->Fill(svFitMass_mean, evtWeight);
-      svFitMass_median_->Fill(svFitMass_median, evtWeight);
-      svFitMass_maximum_->Fill(svFitMass_maximum, evtWeight);
-      svFitMass_maxInterpol_->Fill(svFitMass_maxInterpol, evtWeight);
+	leg1Pt_->Fill(recLeg1Pt, evtWeight);
+	leg2Pt_->Fill(recLeg2Pt, evtWeight);
+	visMass_->Fill(visMass, evtWeight);
+	dPhi12_->Fill(dPhi12, evtWeight);
+	diTauPt_->Fill(diTauPt, evtWeight);
+	svFitMass_->Fill(svFitMass, evtWeight);
+	svFitSigma_->Fill(svFitSigma, evtWeight);
+	
+	svFitMassVsLeg1PtErr_->Fill(recLeg1Pt - genLeg1Pt, svFitMass, evtWeight);
+	svFitSigmaVsLeg1PtErr_->Fill(recLeg1Pt - genLeg1Pt, svFitSigma, evtWeight);
+	svFitMassVsLeg2PtErr_->Fill(recLeg2Pt - genLeg2Pt, svFitMass, evtWeight);
+	svFitSigmaVsLeg2PtErr_->Fill(recLeg2Pt - genLeg2Pt, svFitSigma, evtWeight);
 
-      svFitMassVsLeg1Pt_->Fill(leg1Pt, svFitMass, evtWeight);
-      svFitMassVsLeg2Pt_->Fill(leg2Pt, svFitMass, evtWeight);
-      svFitMassVsVisMass_->Fill(visMass, svFitMass, evtWeight);
-      svFitMassVsDPhi12_->Fill(dPhi12, svFitMass, evtWeight);      
-      svFitMassVsDiTauPt_->Fill(diTauPt, svFitMass, evtWeight);
+	svFitMass_mean_ ->Fill(svFitMass_mean, evtWeight);
+	svFitMass_median_->Fill(svFitMass_median, evtWeight);
+	svFitMass_maximum_->Fill(svFitMass_maximum, evtWeight);
+	svFitMass_maxInterpol_->Fill(svFitMass_maxInterpol, evtWeight);
+	
+	svFitMassVsLeg1Pt_->Fill(recLeg1Pt, svFitMass, evtWeight);
+	svFitMassVsLeg2Pt_->Fill(recLeg2Pt, svFitMass, evtWeight);
+	svFitMassVsVisMass_->Fill(visMass, svFitMass, evtWeight);
+	svFitMassVsDPhi12_->Fill(dPhi12, svFitMass, evtWeight);      
+	svFitMassVsDiTauPt_->Fill(diTauPt, svFitMass, evtWeight);
 
-      svFitMassVsProdAngle_rf_->Fill(prodAngle_rf, svFitMass, evtWeight);
-      svFitSigmaVsProdAngle_rf_->Fill(prodAngle_rf, svFitSigma, evtWeight);
-
-      svFitMassVsSigma_->Fill(svFitSigma, svFitMass, evtWeight);   
-      svFitMassVsSigma_mean_->Fill(svFitSigma, svFitMass_mean, evtWeight);
-      svFitMassVsSigma_median_->Fill(svFitSigma, svFitMass_median, evtWeight);
-      svFitMassVsSigma_maximum_->Fill(svFitSigma, svFitMass_maximum, evtWeight);
-      svFitMassVsSigma_maxInterpol_->Fill(svFitSigma, svFitMass_maxInterpol, evtWeight);
-
-      avSVfitMassVsLeg1And2Pt_->Fill(leg1Pt, leg2Pt, svFitMass*evtWeight);
-      avSVfitSigmaVsLeg1And2Pt_->Fill(leg1Pt, leg2Pt, svFitSigma*evtWeight);
-      normLeg1And2Pt_->Fill(leg1Pt, leg2Pt, evtWeight);
-    }
-
-    void finalizeHistograms()
-    {
-      int numBinsX = normLeg1And2Pt_->getTH1()->GetNbinsX();
-      for ( int iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
-	int numBinsY = normLeg1And2Pt_->getTH1()->GetNbinsY();
-	for ( int iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
-	  double norm = normLeg1And2Pt_->getTH1()->GetBinContent(iBinX, iBinY);
-	  if ( norm > 0. ) {
-	    double avSVfitMass = avSVfitMassVsLeg1And2Pt_->getTH1()->GetBinContent(iBinX, iBinY);
-	    avSVfitMass /= norm;
-	    avSVfitMassVsLeg1And2Pt_->getTH1()->SetBinContent(iBinX, iBinY, avSVfitMass);
-	    double avSVfitSigma = avSVfitSigmaVsLeg1And2Pt_->getTH1()->GetBinContent(iBinX, iBinY);
-	    avSVfitSigma /= norm;
-	    avSVfitSigmaVsLeg1And2Pt_->getTH1()->SetBinContent(iBinX, iBinY, avSVfitSigma);
-	  }
-	}
+	svFitMassVsProdAngle_rf_->Fill(prodAngle_rf, svFitMass, evtWeight);
+	svFitSigmaVsProdAngle_rf_->Fill(prodAngle_rf, svFitSigma, evtWeight);
+	
+	svFitMassVsSigma_->Fill(svFitSigma, svFitMass, evtWeight);   
+	svFitMassVsSigma_mean_->Fill(svFitSigma, svFitMass_mean, evtWeight);
+	svFitMassVsSigma_median_->Fill(svFitSigma, svFitMass_median, evtWeight);
+	svFitMassVsSigma_maximum_->Fill(svFitSigma, svFitMass_maximum, evtWeight);
+	svFitMassVsSigma_maxInterpol_->Fill(svFitSigma, svFitMass_maxInterpol, evtWeight);
+	
+	metErrPx_->Fill(rec_minus_genMEtP4.px(), evtWeight);
+	metErrPy_->Fill(rec_minus_genMEtP4.py(), evtWeight);
+	metErrPt_->Fill(metErr, evtWeight);
+	metCov_->Fill(metCov, evtWeight);
+	metPull_->Fill(metPull, evtWeight);
+	
+	svFitMassVsMEtCov_->Fill(metCov, svFitMass, evtWeight);
+	svFitSigmaVsMEtCov_->Fill(metCov, svFitSigma, evtWeight);
+	svFitMassVsMEtErr_->Fill(metErr, svFitMass, evtWeight);
+	svFitSigmaVsMEtErr_->Fill(metErr, svFitSigma, evtWeight);
+	svFitMassVsMEtPull_->Fill(metPull, svFitMass, evtWeight);
+	svFitSigmaVsMEtPull_->Fill(metPull, svFitSigma, evtWeight);
+	svFitMassVsMEtErrProjLeg1_->Fill(metErrProjLeg1, svFitMass, evtWeight);
+	svFitSigmaVsMEtErrProjLeg1_->Fill(metErrProjLeg1, svFitSigma, evtWeight);
+	svFitMassVsMEtPullProjLeg1_->Fill(metPullProjLeg1, svFitMass, evtWeight);
+	svFitSigmaVsMEtPullProjLeg1_->Fill(metPullProjLeg1, svFitSigma, evtWeight);
+	svFitMassVsMEtErrProjLeg2_->Fill(metErrProjLeg2, svFitMass, evtWeight);
+	svFitSigmaVsMEtErrProjLeg2_->Fill(metErrProjLeg2, svFitSigma, evtWeight);
+	svFitMassVsMEtPullProjLeg2_->Fill(metPullProjLeg2, svFitMass, evtWeight);
+	svFitSigmaVsMEtPullProjLeg2_->Fill(metPullProjLeg2, svFitSigma, evtWeight);
       }
     }
 
+    void finalizeHistograms()
+    {}
+
     std::string dqmDirectory_;
+
+    double minSVfitSigma_;
+    double maxSVfitSigma_;
+    int isValidSolution_;
 
     MonitorElement* leg1Pt_;
     MonitorElement* leg2Pt_;
@@ -189,6 +283,11 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* svFitMassVsDPhi12_;
     MonitorElement* svFitMassVsDiTauPt_;
 
+    MonitorElement* svFitMassVsLeg1PtErr_;
+    MonitorElement* svFitSigmaVsLeg1PtErr_;
+    MonitorElement* svFitMassVsLeg2PtErr_;
+    MonitorElement* svFitSigmaVsLeg2PtErr_;
+    
     MonitorElement* svFitMassVsProdAngle_rf_;
     MonitorElement* svFitSigmaVsProdAngle_rf_;
 
@@ -198,13 +297,29 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* svFitMassVsSigma_maximum_;
     MonitorElement* svFitMassVsSigma_maxInterpol_;
 
-    MonitorElement* avSVfitMassVsLeg1And2Pt_;
-    MonitorElement* avSVfitSigmaVsLeg1And2Pt_;
-    MonitorElement* normLeg1And2Pt_;
+    MonitorElement* metErrPx_;
+    MonitorElement* metErrPy_;
+    MonitorElement* metErrPt_;
+    MonitorElement* metCov_;
+    MonitorElement* metPull_;
+
+    MonitorElement* svFitMassVsMEtCov_;
+    MonitorElement* svFitSigmaVsMEtCov_;
+    MonitorElement* svFitMassVsMEtErr_;
+    MonitorElement* svFitSigmaVsMEtErr_;
+    MonitorElement* svFitMassVsMEtPull_;
+    MonitorElement* svFitSigmaVsMEtPull_;
+    MonitorElement* svFitMassVsMEtErrProjLeg1_;
+    MonitorElement* svFitSigmaVsMEtErrProjLeg1_;
+    MonitorElement* svFitMassVsMEtPullProjLeg1_;
+    MonitorElement* svFitSigmaVsMEtPullProjLeg1_;
+    MonitorElement* svFitMassVsMEtErrProjLeg2_;
+    MonitorElement* svFitSigmaVsMEtErrProjLeg2_;
+    MonitorElement* svFitMassVsMEtPullProjLeg2_;
+    MonitorElement* svFitSigmaVsMEtPullProjLeg2_;
   };
 
-  plotEntryType* plotsSVfitSolutionValid_;
-  plotEntryType* plotsSVfitSolutionInvalid_;
+  std::vector<plotEntryType*> plotEntries_;
 
   long numEvents_processed_;
   double numEventsWeighted_processed_;
