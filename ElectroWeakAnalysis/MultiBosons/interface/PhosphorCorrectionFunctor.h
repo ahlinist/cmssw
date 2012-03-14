@@ -7,7 +7,7 @@
  * @brief       Corrects photon energy using PHOSPHOR fit results.
  * 
  * @details     Provides the @c operator(...) that takes some basic 
- *              photon quantities and returns the corrected photon  
+ *              photon quantities and returns the corrected photon transverse 
  *              energy. It uses the results of the PHOton energy Scale
  *              and PHOton energy Resolution in-situ measurement using
  *              radiative Z -> mu mu gamma decays (PHOSPHOR fit), 
@@ -18,9 +18,9 @@
  *              of the SMP MultiBosons Vgamma group using 2011 data. 
  *              However, other analyses using soft-to-intermediate photons 
  *              of typical transverse momenta in the range of 10-50 GeV
- *              may benefit from it.
+ *              may benefit from it too.
  *              
- *              It has two modes of operation depending on the nature 
+ *              It has multiple modes of operation depending on the nature 
  *              of the photons, one for the photons in simulation and 
  *              one for real data. The mode is specified in the 
  *              constructor by the embeded enum type
@@ -34,13 +34,13 @@
  * 
  *              The photon properties provided as input depend on the mode.
  *              For the real data, they are:
- *                  @li @c energy - reconstructed energy
+ *                  @li @c pt - reconstructed transverse energy
  *                  @li @c eta - pseudorapidity
  *                  @li @c runNumber - the run number 
  *              For the simulation, instead of the run number a different
  *              parameter is required for the correlated resolution smearing,
  *              generator-level energy:
- *                  @li @c energy - reconstructed energy
+ *                  @li @c pt - reconstructed transverse energy
  *                  @li @c eta - pseudorapidity
  *                  @li @c genEnergy - the generator-level energy 
  *              The gen-level energy is the energy of a 
@@ -75,16 +75,16 @@ namespace vgamma {
   public:
     /// Two modes of operation
     enum Mode {kMonteCarlo=0, kRealData, kNumModes};
-    enum Category {kMonteCarloBarrelEt12to15=0,
-                   kMonteCarloBarrelEt15to20,
-                   kMonteCarloEndcapsEt12to15,
-                   kMonteCarloEndcapsEt15to25,
-                   kRealData2011ABarrelEt12to15,
-                   kRealData2011ABarrelEt15to20,
+    enum Category {kMonteCarloBarrelEt12to15=0  ,
+                   kMonteCarloBarrelEt15to20    ,
+                   kMonteCarloEndcapsEt12to15   ,
+                   kMonteCarloEndcapsEt15to25   ,
+                   kRealData2011ABarrelEt12to15 ,
+                   kRealData2011ABarrelEt15to20 ,
                    kRealData2011AEndcapsEt12to15,
                    kRealData2011AEndcapsEt15to20,
-                   kRealData2011BBarrelEt12to15,
-                   kRealData2011BBarrelEt15to20,
+                   kRealData2011BBarrelEt12to15 ,
+                   kRealData2011BBarrelEt15to20 ,
                    kRealData2011BEndcapsEt12to15,
                    kRealData2011BEndcapsEt15to20,
                    kNumCategories};
@@ -92,11 +92,11 @@ namespace vgamma {
     PhosphorCorrectionFunctor(Mode mode, const char * configuration);
     
     /// Scale correction for photons in real data
-    double operator()(double energy, double eta, int runNumber);
+    double operator()(double pt, double eta, int runNumber);
 
     /// Scale correction and correlated resolution smearing 
     /// for photons in simulation
-    double operator()(double energy, double eta, double genEnergy);
+    double operator()(double pt, double eta, double genEnergy);
 
     /// Data accessors
     const char * configuration() const {return configuration_.c_str();}
