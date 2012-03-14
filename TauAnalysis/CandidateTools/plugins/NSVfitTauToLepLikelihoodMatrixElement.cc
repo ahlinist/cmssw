@@ -70,7 +70,8 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   //       integral  prob dX dMnunu = 1.
   //               0
   double prob = 1.;
-  if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
+  if ( visEnFracX >= 0. && visEnFracX <= 1 &&
+       nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
     prob = (13./square(tauLeptonMass2))*cube(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
   } else {                                                        // LB: unphysical solution
     prob = 1e-6;

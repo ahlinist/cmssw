@@ -78,7 +78,7 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
   pfMEtCovInverse10_ = pfMEtCovInverse_(1, 0);
   pfMEtCovInverse11_ = pfMEtCovInverse_(1, 1);
   
-  nllConstTerm_ = TMath::Log(2*TMath::Pi()) + 0.5*TMath::Log(TMath::Abs(pfMEtCovDet_));
+  nllConstTerm_ = TMath::Log(2.*TMath::Pi()) + 0.5*TMath::Log(TMath::Abs(pfMEtCovDet_));
 }
 
 double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypothesis) const
