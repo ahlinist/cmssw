@@ -26,6 +26,10 @@ SAMPLES_TO_ANALYZE.extend([
     'A400_skim', 'bbA400_skim',
     'A450_skim', 'bbA450_skim',
     'A500_skim', 'bbA500_skim',
+    'A600_skim', 'bbA600_skim',
+    'A700_skim', 'bbA700_skim',
+    'A800_skim', 'bbA800_skim',
+    'A900_skim', 'bbA900_skim',
     'h95_skim', 'VBFh95_skim',
     'h100_skim', 'VBFh100_skim',
     'h105_skim', 'VBFh105_skim',
@@ -51,7 +55,7 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    #'VVsum',
+    'VVsum',
     'TTplusJets_madgraph_skim',
     'WplusJets_madgraph_skim',
     'ZeeSum',
@@ -61,38 +65,53 @@ SAMPLES_TO_PLOT = [
     'data'
 ]
 
+SAMPLES_TO_PLOT.append('h125Sum')
+SAMPLES_TO_PLOT.append('A140Sum')
+
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 
-SAMPLES_TO_PLOT.append('A120Sum')
-SAMPLES_TO_PLOT.append('h120Sum')
+# needed for plotting in high-statistics categories
+SAMPLES_TO_PRINT.append('ZtautauEmbeddedSum')
 
 # add Ztautau sample to SAMPLES_TO_PRINT 
 # so that we have access to those filter statistics
 # for embedded sample normalization
 SAMPLES_TO_PRINT.append('Ztautau_powheg_skim')
-SAMPLES_TO_PRINT.append('ZtautauEmbeddedSum')
 
-#SAMPLES_TO_PRINT.append('A100Sum')
+# add alternate VV sample
+SAMPLES_TO_PRINT.append('VVtoLLsum')
+
+SAMPLES_TO_PRINT.append('A100Sum')
 SAMPLES_TO_PRINT.append('A120Sum')
-#SAMPLES_TO_PRINT.append('A130Sum')
-#SAMPLES_TO_PRINT.append('A140Sum')
-#SAMPLES_TO_PRINT.append('A160Sum')
-#SAMPLES_TO_PRINT.append('A180Sum')
-#SAMPLES_TO_PRINT.append('A200Sum')
-#SAMPLES_TO_PRINT.append('A250Sum')
-#SAMPLES_TO_PRINT.append('A250Sum')
+SAMPLES_TO_PRINT.append('A130Sum')
+SAMPLES_TO_PRINT.append('A140Sum')
+SAMPLES_TO_PRINT.append('A160Sum')
+SAMPLES_TO_PRINT.append('A180Sum')
+SAMPLES_TO_PRINT.append('A200Sum')
+SAMPLES_TO_PRINT.append('A250Sum')
+SAMPLES_TO_PRINT.append('A300Sum')
+SAMPLES_TO_PRINT.append('A350Sum')
+SAMPLES_TO_PRINT.append('A400Sum')
+SAMPLES_TO_PRINT.append('A450Sum')
+SAMPLES_TO_PRINT.append('A500Sum')
+SAMPLES_TO_PRINT.append('A600Sum')
+SAMPLES_TO_PRINT.append('A700Sum')
+SAMPLES_TO_PRINT.append('A800Sum')
+SAMPLES_TO_PRINT.append('A900Sum')
 
-#SAMPLES_TO_PRINT.append('h95Sum')
-#SAMPLES_TO_PRINT.append('h100Sum')
-#SAMPLES_TO_PRINT.append('h105Sum')
-#SAMPLES_TO_PRINT.append('h110Sum')
-#SAMPLES_TO_PRINT.append('h115Sum')
+SAMPLES_TO_PRINT.append('h95Sum')
+SAMPLES_TO_PRINT.append('h100Sum')
+SAMPLES_TO_PRINT.append('h105Sum')
+SAMPLES_TO_PRINT.append('h110Sum')
+SAMPLES_TO_PRINT.append('h115Sum')
 SAMPLES_TO_PRINT.append('h120Sum')
-#SAMPLES_TO_PRINT.append('h125Sum')
-#SAMPLES_TO_PRINT.append('h130Sum')
-#SAMPLES_TO_PRINT.append('h135Sum')
-#SAMPLES_TO_PRINT.append('h140Sum')
-#SAMPLES_TO_PRINT.append('h145Sum')
+SAMPLES_TO_PRINT.append('h125Sum')
+SAMPLES_TO_PRINT.append('h130Sum')
+SAMPLES_TO_PRINT.append('h135Sum')
+SAMPLES_TO_PRINT.append('h140Sum')
+SAMPLES_TO_PRINT.append('h145Sum')
+
+SAMPLES_TO_PRINT.append('QCDsum_MC')
 
 SAMPLE_DEFAULTS = ZtoElecTau.SAMPLE_DEFAULTS
 
@@ -525,20 +544,6 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h160_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(160) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A180_skim' : {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -564,20 +569,6 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
            +  32063.*_femtobarns*0.133826 # (bb -> H0)*(H0->tautau)
         ),
         'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
-    'h180_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
@@ -609,20 +600,6 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h200_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(200) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A250_skim' : {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -651,27 +628,12 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h250_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(250) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A300_skim' : {
-        'saveNtuple' : True,
-        'datasetpath' : "/GluGluToHToTauTau_M-300_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 196122,
-        'number_of_jobs' : 10,
-        'skim_eff' : 50724./196122,
+        'events_processed' : 220000,
+        'number_of_jobs' : 50,
+        'skim_eff' : 55749./220000,
         'x_sec' : (
                 286.*_femtobarns*0.131076 # (gg -> A0)*(A0->tautau)
            +    387.*_femtobarns*0.139620 # (gg -> H0)*(H0->tautau)
@@ -694,26 +656,12 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h300_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(300) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A350_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-350_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199504,
-        'number_of_jobs' : 10,
-        'skim_eff' : 54926./199504,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 57171./220000,
         'x_sec' : (
                  84.*_femtobarns*0.117009 # (gg -> A0)*(A0->tautau)
            +    121.*_femtobarns*0.133089 # (gg -> H0)*(H0->tautau)
@@ -736,26 +684,12 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h350_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(350) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A400_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-400_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-400_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199984,
-        'number_of_jobs' : 10,
-        'skim_eff' : 57056./199984,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 59148./220000,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
            +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
@@ -778,26 +712,12 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h400_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(400) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A450_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-450_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-450_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 199510,
-        'number_of_jobs' : 10,
-        'skim_eff' : 59076./199510,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 59297./220000,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
            +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
@@ -820,26 +740,12 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h450_skim' : {
-        'datasetpath' : "",
-        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
-        'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
-        ),
-        'legendEntry' : 'h(450) #rightarrow #tau^{+} #tau^{-}',
-        'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
-    },
     'A500_skim' : {
-        'datasetpath' : "/GluGluToHToTauTau_M-500_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-500_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 198082,
-        'number_of_jobs' : 10,
-        'skim_eff' : 60004./198082,
+        'events_processed' : 220000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 56865./220000,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
            +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
@@ -862,17 +768,115 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
-    'h500_skim' : {
-        'datasetpath' : "",
+    'A600_skim' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-600_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'events_processed' : 1,
+        'events_processed' : 216625,
         'number_of_jobs' : 20,
-        'skim_eff' : 1./1,
-        'x_sec' : (
-             1.*_femtobarns*1.
-           + 1.*_femtobarns*1.
+        'skim_eff' : 29452./216625,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
         ),
-        'legendEntry' : 'h(500) #rightarrow #tau^{+} #tau^{-}',
+        'legendEntry' : 'ggA(600) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
+    'bbA600_skim' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-600_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 217345,
+        'number_of_jobs' : 20,
+        'skim_eff' : 68834./217345,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(600) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
+    'A700_skim' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-700_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 218678,
+        'number_of_jobs' : 20,
+        'skim_eff' : 24524./218678,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(700) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
+    'bbA700_skim' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-700_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 212314,
+        'number_of_jobs' : 20,
+        'skim_eff' : 69451./212314,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(700) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
+    'A800_skim' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-800_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 219229,
+        'number_of_jobs' : 20,
+        'skim_eff' : 20699./219229,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(800) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
+    'bbA800_skim' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-800_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 213214,
+        'number_of_jobs' : 20,
+        'skim_eff' : 70621./213214,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(800) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
+    'A900_skim' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-900_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 215275,
+        'number_of_jobs' : 20,
+        'skim_eff' : 17547./215275,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(900) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
+    'bbA900_skim' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-900_7TeV-pythia6-tauola/jkolb-skimElecTau_428_su11-7425ae7dad1d99a5db224df3689e983a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 213214,
+        'number_of_jobs' : 20,
+        'skim_eff' : 70739./213214,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(900) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
     }
@@ -1024,6 +1028,30 @@ AHtoElecTauSpecific_MERGE_SAMPLES = {
         'legendEntry' : 'A(500) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A500_skim']['drawOption'],
+    },
+    'A600Sum' : {
+        'samples' : [ 'A600_skim', 'bbA600_skim' ],
+        'legendEntry' : 'A(600) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A600_skim']['drawOption'],
+    },
+    'A700Sum' : {
+        'samples' : [ 'A700_skim', 'bbA700_skim' ],
+        'legendEntry' : 'A(700) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A700_skim']['drawOption'],
+    },
+    'A800Sum' : {
+        'samples' : [ 'A800_skim', 'bbA800_skim' ],
+        'legendEntry' : 'A(800) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A800_skim']['drawOption'],
+    },
+    'A900Sum' : {
+        'samples' : [ 'A900_skim', 'bbA900_skim' ],
+        'legendEntry' : 'A(900) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A900_skim']['drawOption'],
     }
 }
 MERGE_SAMPLES.update(AHtoElecTauSpecific_MERGE_SAMPLES)
