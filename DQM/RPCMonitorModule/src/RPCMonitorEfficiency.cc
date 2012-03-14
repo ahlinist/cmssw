@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.59 2011/06/22 14:24:07 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.60 2012/03/06 15:49:21 carrillo Exp $
 //
 //
 
@@ -764,7 +764,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   TCanvas * Ca7;
   TCanvas * Ca8;
   TCanvas * Ca9;
-  
+  TCanvas * Ca10;  
+  TCanvas * Ca101;  
+
   Ca0 = new TCanvas("Ca0","Profile",400,300);
   Ca1 = new TCanvas("Ca1","Efficiency",800,600);
   Ca11 = new TCanvas("Ca11","Efficiency",800,600);
@@ -777,7 +779,25 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca7 = new TCanvas("Ca7","ResidualsEndCap",800,600);
   Ca8 = new TCanvas("Ca8","DistBorders",800,600);
   Ca9 = new TCanvas("Ca9","MeanResiduals",400,300);
+  Ca10 = new TCanvas("Ca10","EfficiencyPerLayer",800,600);
+  Ca101 = new TCanvas("Ca101","EfficiencyPerDisk",800,600);
 
+  
+  Ca0->SetFillColor(0); 
+  Ca1->SetFillColor(0); 
+  Ca11->SetFillColor(0);
+  Ca2->SetFillColor(0); 
+  Ca3->SetFillColor(0); 
+  Ca4->SetFillColor(0); 
+  Ca5->SetFillColor(0); 
+  Ca5a->SetFillColor(0);
+  Ca6->SetFillColor(0); 
+  Ca7->SetFillColor(0); 
+  Ca8->SetFillColor(0); 
+  Ca9->SetFillColor(0); 
+  Ca10->SetFillColor(0);
+  Ca101->SetFillColor(0);
+    
   //Cesare
   EffBarrelRoll = new TH1F ("EffBarrelRoll","Efficiency Roll by Roll For All The Barrel",54,-7,101);
   EndcapEffTot = new TH1F ("EndcapEffTot","Efficiency chamber by chamber",54,-7,101);
@@ -4130,6 +4150,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
     EfficiencyPerDisk->Write();
 
+    Ca101->cd();
+    EfficiencyPerDisk->Draw();
+    Ca101->SaveAs("EfficiencyPerDisk.png");
+    Ca101->Close();
+
 
     TH1F * EfficiencyPerStation = new TH1F("EfficiencyPerStation","Efficiency per Station",4,0.5,4.5);
 
@@ -4157,7 +4182,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     EfficiencyPerStation->GetXaxis()->SetBinLabel(4,"S4");
 
     EfficiencyPerStation->Write();
-
 
     TH1F * EfficiencyPerStationRing = new TH1F("EfficiencyPerStationRing","Efficiency per Station",8,0.5,8.5);
 
@@ -4224,7 +4248,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	std::cout<<ExpLayerWm2->GetBinContent(k)<<" "<<ExpLayerWm1->GetBinContent(k)<<" "<<ExpLayerW0->GetBinContent(k)<<" "<<ExpLayerW1->GetBinContent(k)<<" "<<ExpLayerW2->GetBinContent(k)<<std::endl;
 	std::cout<<Exp[k]<<" "<<Obs[k]<<" "<<Eff[k]<<std::endl;
     }
-     
+    
     EfficiencyPerLayer->GetXaxis()->SetBinLabel(1,"Layer 1");
     EfficiencyPerLayer->SetBinContent(1,100*Eff[1]);
     EfficiencyPerLayer->SetBinError(1,100*Err[1]);
@@ -4251,6 +4275,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
     EfficiencyPerLayer->SetMinimum(90);
     EfficiencyPerLayer->Write();
+
+    Ca10->cd();
+    EfficiencyPerLayer->Draw();
+    Ca10->SaveAs("EfficiencyPerLayer.png");
+    Ca10->Close();
 
     StatisticsPerLayer->GetXaxis()->SetBinLabel(1,"Layer 1");
     StatisticsPerLayer->SetBinContent(1,Exp[1]);
@@ -7188,7 +7217,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  delete Ca6;
  delete Ca7;
  delete Ca8;
- delete Ca9;
+ delete Ca9; 
+ delete Ca10;
+ delete Ca101;
 
  delete GregD1R2_black; 
  delete GregD1R3_black;
