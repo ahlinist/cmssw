@@ -68,7 +68,7 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    'conditions' : 'START42_V13::All',
+    'conditions' : 'START42_V17::All',
     'genPhaseSpaceCut' : '',
     'genFinalStateFilter': False,
     'factorize' : False,
@@ -117,7 +117,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_423_May10ReReco_v3-2da1106465614f2b4aae43c293e2ca66/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3.txt',
-        'conditions' : 'GR_R_42_V14::All',
+        'conditions' : 'GR_R_42_V25::All',
         'runselection' : '163262-163869',
         'number_of_jobs' : 150,
         'type' : 'Data',
@@ -141,7 +141,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt',
         'skim_eff' : 1407306./12485249.,
-        'conditions' : 'GR_R_42_V14::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 100,
         'type' : 'Data',
         'legendEntry' : 'DATA',        
@@ -165,7 +165,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-05Aug2011-v1_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v3.txt',
-        'conditions' : 'GR_R_42_V20::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 300,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
@@ -190,7 +190,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v3-da7956cf664e460ea98716c7f3391601/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'skim_eff' : 728380./3727491,
-        'conditions' : 'GR_R_42_V20::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 300,
         'type' : 'Data',
         'inputFileType' : 'PATTuple',
@@ -216,7 +216,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_03OctReReco_skim' : { # 705/pb 172620-173692, 1217831 events
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-03OctReReco_skimElecTau_v1-6aa5d932edddb97c8f87b85a020d9993/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V22::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 500,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
@@ -237,7 +237,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_03OctReReco_pat' : { # 705/pb 172620-173692, 1217831 events  #done
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v3-b13ce57e4a1e9e520b27a0250d4dfe14/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V22::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 500,
         'runselection' : '172620-173692',        
         'type' : 'Data',
@@ -262,7 +262,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_424_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V22::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 300,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
@@ -284,7 +284,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v3-b13ce57e4a1e9e520b27a0250d4dfe14/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-172802_7TeV_PromptReco_Collisions11_JSON_v4.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V22::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 200,
         'runselection' : '165071-167913',           
         'type' : 'Data',
@@ -308,7 +308,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011B_PR_v1_skim' : {  # 2570/pb, runs 175860-180252, 4148117 events 
         'datasetpath' : '/TauPlusX/jkolb-Run2011B-PromptReco-v1_skimElecTau_v4-982c87f3521a6471fb16318d08f703d0/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V22::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 500,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
@@ -331,7 +331,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011B_PR_v1_pat' : {#done
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v3-b13ce57e4a1e9e520b27a0250d4dfe14/USER', 
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V22::All',
+        'conditions' : 'GR_R_42_V25::All',
         'number_of_jobs' : 300,
         'runselection' : '175860-179411',           
         'type' : 'Data',
@@ -797,9 +797,16 @@ MERGE_SAMPLES = {
     'VVsum' : {
         'samples' : [
             'WW_skim',
-            #'WWtoLL_skim',
             'WZ_skim'
-            #'WZto3LNu_skim'
+        ],
+        'legendEntry' : 'WW/WZ/ZZ',
+        'type' : 'smMC',
+        'drawOption' : styles.drawOption_VV
+    },
+    'VVtoLLsum' : {
+        'samples' : [
+            'WWtoLL_skim',
+            'WZto3LNu_skim'
         ],
         'legendEntry' : 'WW/WZ/ZZ',
         'type' : 'smMC',
