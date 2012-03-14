@@ -75,20 +75,7 @@ namespace vgamma {
   public:
     /// Two modes of operation
     enum Mode {kMonteCarlo=0, kRealData, kNumModes};
-    enum Category {kMonteCarloBarrelEt12to15=0  ,
-                   kMonteCarloBarrelEt15to20    ,
-                   kMonteCarloEndcapsEt12to15   ,
-                   kMonteCarloEndcapsEt15to25   ,
-                   kRealData2011ABarrelEt12to15 ,
-                   kRealData2011ABarrelEt15to20 ,
-                   kRealData2011AEndcapsEt12to15,
-                   kRealData2011AEndcapsEt15to20,
-                   kRealData2011BBarrelEt12to15 ,
-                   kRealData2011BBarrelEt15to20 ,
-                   kRealData2011BEndcapsEt12to15,
-                   kRealData2011BEndcapsEt15to20,
-                   kNumCategories};
-    /// ctor
+   /// ctor
     PhosphorCorrectionFunctor(Mode mode, const char * configuration);
     
     /// Scale correction for photons in real data
@@ -106,6 +93,20 @@ namespace vgamma {
     void init();
     
     /// Data members
+    enum Category {kMonteCarloBarrelEt12to15=0  ,
+                   kMonteCarloBarrelEt15to20    ,
+                   kMonteCarloEndcapsEt12to15   ,
+                   kMonteCarloEndcapsEt15to25   ,
+                   kRealData2011ABarrelEt12to15 ,
+                   kRealData2011ABarrelEt15to20 ,
+                   kRealData2011AEndcapsEt12to15,
+                   kRealData2011AEndcapsEt15to20,
+                   kRealData2011BBarrelEt12to15 ,
+                   kRealData2011BBarrelEt15to20 ,
+                   kRealData2011BEndcapsEt12to15,
+                   kRealData2011BEndcapsEt15to20,
+                   kNumCategories};
+ 
     Mode mode_;
     std::string configuration_;
     std::vector<double> correctionFactors_;

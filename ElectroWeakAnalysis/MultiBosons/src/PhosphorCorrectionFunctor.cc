@@ -57,16 +57,16 @@ PhosphorCorrectionFunctor::init()
   scales[kRealData2011AEndcapsEt15to20] = -2.55;
   scales[kRealData2011BEndcapsEt15to20] =  0.05;
 
+  /// Calculate correctin factors.
   correctionFactors_.reserve(scales.size());
   correctionFactors_.clear();
   for (std::vector<double>::const_iterator it = scales.begin();
        it != scales.end(); ++it) {
     double scale(*it);
+    /// 0.01 accounts for the %
     correctionFactors_.push_back(1. / (1. + 0.01 * scale));
   }
 
-  /// Fill the scale correction factors with the meaured scale values in %.
-  // correctionFactors_[kMonteCarlo][kCategory1] = 
 }
 
 
