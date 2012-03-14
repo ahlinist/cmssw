@@ -54,6 +54,12 @@ drawJobConfigurator_AHtoElecTau_woBtag.add(
             name = "cutFlowControlPlots_visibleMass_afterPzetaDiff"
         ),
         drawJobConfigEntry(
+            meName = 'DiTauCandidateNSVfitQuantities/psKine_MEt_logM_fit/Mass',
+            title = "M(Electron + Tau), SVfit method, fit. (after P_{#zeta} Cut)",
+            xAxis = 'Mass',
+            name = "cutFlowControlPlots_visibleMass_afterPzetaDiff"
+        ),
+        drawJobConfigEntry(
             meName = 'DiElecZeeHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
             title = "Charge(iso. Elec. + iso. Elec.) (after P_{#zeta} Cut)",
             xAxis = 'unlabeled',
@@ -140,6 +146,12 @@ drawJobConfigurator_AHtoElecTau_wBtag.add(
             name = "cutFlowControlPlots_visibleMass_afterPzetaDiff"
         ),
         drawJobConfigEntry(
+            meName = 'DiTauCandidateNSVfitQuantities/psKine_MEt_logM_fit/Mass',
+            title = "M(Electron + Tau), SVfit method, fit. (after P_{#zeta} Cut)",
+            xAxis = 'Mass',
+            name = "cutFlowControlPlots_visibleMass_afterPzetaDiff"
+        ),
+        drawJobConfigEntry(
             meName = 'DiElecZeeHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
             title = "Charge(iso. Elec. + iso. Elec.) (after P_{#zeta} Cut)",
             xAxis = 'unlabeled',
@@ -191,6 +203,58 @@ drawJobConfigurator_AHtoElecTau_wBtag.add(
 #)
 
 #--------------------------------------------------------------------------------
+# define cut-flow control plots specific to "0/1 jets" analysis path
+#--------------------------------------------------------------------------------
+
+drawJobConfigurator_AHtoElecTau_ZeroOneJets = drawJobConfigurator(
+    template = plots_AHtoElecTau,
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzerOS_ZeroOneJets/'
+) 
+
+drawJobConfigurator_AHtoElecTau_ZeroOneJets.add(
+    afterCut = evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto,
+    beforeCut = evtSelDiTauCandidateForElecTauMt1MET,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/Mt1MET',
+            title = "M_{T}(Electron + MET) (after di-tau #DeltaR Cut)",
+            xAxis = 'Mt',
+            name = "cutFlowControlPlots_mtElectronMET_afterDiTauDeltaR"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMass',
+            title = "M_{vis}(Electron + Tau) (after di-tau #DeltaR Cut)",
+            xAxis = 'Mass',
+            name = "cutFlowControlPlots_visibleMass_afterDiTauDeltaR"
+        )
+    ]
+)
+
+drawJobConfigurator_AHtoElecTau_ZeroOneJets.add(
+    afterCut = evtSelDiTauCandidateForElecTauMt1MET,
+    beforeCut = evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMass',
+            title = "M_{vis}(Electron + Tau) (after transverse mass Cut)",
+            xAxis = 'Mass',
+            name = "cutFlowControlPlots_visibleMass_afterMt1MET"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateNSVfitQuantities/psKine_MEt_logM_fit/Mass',
+            title = "M(Electron + Tau), SVfit method, fit. (after transverse mass Cut)",
+            xAxis = 'Mass',
+            name = "cutFlowControlPlots_visibleMass_afterMt1MET"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiElecZeeHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
+            title = "Charge(iso. Elec. + iso. Elec.) (after transverse Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_diElectronCharge_afterMt1MET"
+        )
+    ]
+)
+#--------------------------------------------------------------------------------
 # define cut-flow control plots specific to "VBF" analysis path
 #--------------------------------------------------------------------------------
 
@@ -227,6 +291,12 @@ drawJobConfigurator_AHtoElecTau_VBF.add(
             name = "cutFlowControlPlots_visibleMass_afterMt1MET"
         ),
         drawJobConfigEntry(
+            meName = 'DiTauCandidateNSVfitQuantities/psKine_MEt_logM_fit/Mass',
+            title = "M(Electron + Tau), SVfit method, fit. (after transverse mass Cut)",
+            xAxis = 'Mass',
+            name = "cutFlowControlPlots_visibleMass_afterMt1MET"
+        ),
+        drawJobConfigEntry(
             meName = 'DiElecZeeHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
             title = "Charge(iso. Elec. + iso. Elec.) (after transverse Cut)",
             xAxis = 'unlabeled',
@@ -244,6 +314,15 @@ drawJobConfigurator_AHtoElecTau_VBF.add(
 #        name = "cutFlowControlPlots_diTauCharge_afterVBF"
 #    )
 #)
+
+#--------------------------------------------------------------------------------
+# define cut-flow control plots specific to "Boosted" analysis path
+#--------------------------------------------------------------------------------
+
+drawJobConfigurator_AHtoElecTau_Boosted = drawJobConfigurator(
+    template = plots_AHtoElecTau,
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzerOS_Boosted/'
+) 
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
@@ -350,12 +429,12 @@ finalSamplePlotsBase = [
                 xAxis = 'dPhi',
                 name = "finalSamplePlots_dPhiElectronTau"
                 ),
-        #drawJobConfigEntry(
-        #        meName = 'DiTauCandidateQuantities/PzetaDiff',
-        #        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
-        #        xAxis = 'GeV',
-        #        name = "finalSamplePlots_PzetaDiff"
-        #        ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/PzetaDiff',
+                title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
+                xAxis = 'GeV',
+                name = "finalSamplePlots_PzetaDiff"
+                ),
         drawJobConfigEntry(
                 meName = 'DiTauCandidateQuantities/Mt1MET',
                 title = "M_{T}(Electron + MET) (final Event sample)",
@@ -447,24 +526,37 @@ drawJobConfigurator_AHtoElecTau_VBF.add(
     afterCut = evtSelDiTauCandidateForElecTauZeroCharge,
     plots = finalSamplePlotsBase
 )
+drawJobConfigurator_AHtoElecTau_ZeroOneJets.add(
+    afterCut = evtSelDiTauCandidateForElecTauZeroCharge,
+    plots = finalSamplePlotsBase
+)
+drawJobConfigurator_AHtoElecTau_Boosted.add(
+    afterCut = evtSelDiTauCandidateForElecTauZeroCharge,
+    plots = finalSamplePlotsBase
+)
 
 
 # Build draw job configurations for the same sign final event plots
 drawJobConfigurator_AHtoElecTau_woBtagSS = drawJobConfigurator(
     template = plots_AHtoElecTau,
-    dqmDirectory = ''
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzerSS_woBtag/'
 )
 drawJobConfigurator_AHtoElecTau_wBtagSS = drawJobConfigurator(
     template = plots_AHtoElecTau,
-    dqmDirectory = ''
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzerSS_wBtag/'
 )
 drawJobConfigurator_AHtoElecTau_VBF_SS = drawJobConfigurator(
     template = plots_AHtoElecTau,
-    dqmDirectory = ''
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzerSS_VBF/'
 )
-drawJobConfigurator_AHtoElecTau_woBtagSS.setDQMdirectory('#PROCESSDIR#/ahElecTauAnalyzerSS_woBtag/')
-drawJobConfigurator_AHtoElecTau_wBtagSS.setDQMdirectory('#PROCESSDIR#/ahElecTauAnalyzerSS_wBtag/')
-drawJobConfigurator_AHtoElecTau_VBF_SS.setDQMdirectory('#PROCESSDIR#/ahElecTauAnalyzerSS_VBF/')
+drawJobConfigurator_AHtoElecTau_ZeroOneJets_SS = drawJobConfigurator(
+    template = plots_AHtoElecTau,
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzerSS_ZeroOneJets/'
+)
+drawJobConfigurator_AHtoElecTau_Boosted_SS = drawJobConfigurator(
+    template = plots_AHtoElecTau,
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzerSS_Boosted/'
+)
 
 drawJobConfigurator_AHtoElecTau_woBtagSS.add(
     afterCut = evtSelDiTauCandidateForAHtoElecTauNonZeroCharge,
@@ -478,8 +570,29 @@ drawJobConfigurator_AHtoElecTau_VBF_SS.add(
     afterCut = evtSelDiTauCandidateForElecTauNonZeroCharge,
     plots = finalSamplePlotsBase
 )
+drawJobConfigurator_AHtoElecTau_ZeroOneJets_SS.add(
+    afterCut = evtSelDiTauCandidateForElecTauNonZeroCharge,
+    plots = finalSamplePlotsBase
+)
+drawJobConfigurator_AHtoElecTau_Boosted_SS.add(
+    afterCut = evtSelDiTauCandidateForElecTauNonZeroCharge,
+    plots = finalSamplePlotsBase
+)
 
-def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
+drawJobConfiguratorDict = {
+    'OS_woBtag' : drawJobConfigurator_AHtoElecTau_woBtag,
+    'OS_wBtag'  : drawJobConfigurator_AHtoElecTau_wBtag,
+    'OS_ZeroOneJets' : drawJobConfigurator_AHtoElecTau_ZeroOneJets,
+    'OS_VBF' : drawJobConfigurator_AHtoElecTau_VBF,
+    'OS_Boosted' : drawJobConfigurator_AHtoElecTau_Boosted,
+    'SS_woBtag' : drawJobConfigurator_AHtoElecTau_woBtagSS,
+    'SS_wBtag'  : drawJobConfigurator_AHtoElecTau_wBtagSS,
+    'SS_ZeroOneJets' : drawJobConfigurator_AHtoElecTau_ZeroOneJets_SS,
+    'SS_VBF' : drawJobConfigurator_AHtoElecTau_VBF_SS,
+    'SS_Boosted' : drawJobConfigurator_AHtoElecTau_Boosted_SS,
+}
+
+def useSSdataForQCD(process, samples, channel, categories, jobId, bgYieldCorrections):
     
 
     # import plot configurations
@@ -487,7 +600,7 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
     for job in finalSamplePlotsBase:
         if getattr(job,"PAR",None) is not None:
             for var in job.PAR:
-                plotConfigs.append( { 'plotName' : job.name + var ,
+                plotConfigs.append( { 'plotName' : job.name + '_' + var ,
                     'meName' : job.meName[:len(job.meName)-5] + var,
                     'xAxis' : var,
                     'title' : job.title} )
@@ -497,113 +610,134 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
                 'xAxis' : job.xAxis,
                 'title' : job.title} )
 
-    dqmDirectoriesForData_input = cms.vstring()
-
-    # find background samples to be modified 
+    # find background samples to be scaled in list of samples to be loaded
     #  -- if sample is to be scaled, set correct output directory
     for sampleName in samples['FLATTENED_SAMPLES_TO_PLOT']:
-        # get data input samples 
-        #if 'data' in sampleName:
-        #    sampleNameFull = sampleName + '_dataForQCD'
-        #    setattr(process.loadAHtoElecTauSamples,sampleNameFull,cms.PSet() )
-        #    sampleSet = getattr(process.loadAHtoElecTauSamples,sampleNameFull)
-        #    sampleSet.inputFileNames = cms.vstring("harvested_%s_%s_%s.root" % (channel, sampleName, jobId))
-        #    #sampleSet.dqmDirectory_store = cms.string('/harvested/' + sampleNameFull)
-        #    sampleSet.dqmDirectory_store = cms.string('/unScaled/' + sampleNameFull)
-        #    #sampleSet.scaleFactor = cms.double(bgYieldCorrections['qcdSum'])
-        #
-        #    dqmDirectoriesForData_input.append('/unScaled/' + sampleNameFull)
-        # modify DQM directory for other background samples to be scaled
-        for cat in ['woBtag', 'wBtag', 'VBF' ]:
+        # modify target DQM directory for background samples to be scaled
+        for cat in categories:
             for bgSampleName in bgYieldCorrections[cat].keys():
                 if sampleName is bgSampleName:
                     sampleSet = getattr(process.loadAHtoElecTauSamples,sampleName)
                     setattr(sampleSet,"dqmDirectory_store",cms.string('/unScaled/' + sampleName))
-                #setattr(sampleSet,"scaleFactor",cms.double(1.0))
-                #if sampleSet.autoscale is not None:
-                #    sampleSet.autoscale = cms.bool(False)
-                    #sampleSet.scaleFactor = sampleSet.xSection.value() * sampleSet.targetIntLumi.value() / sampleSet.totalExpectedEventsBeforeSkim.value()
-                #print 'Luminosity normalization of %s is %f' % (sampleName, sampleSet.scaleFactor.value())
-                #setattr(sampleSet, "scaleFactor", cms.double(bgYieldCorrections[bgSampleName]*sampleSet.scaleFactor.value()) )
-                #print ' --> scaling by factor of %f' % bgYieldCorrections[bgSampleName]
-   
-    #process.mergeSamplesAHtoElecTau.merge_qcdSum = cms.PSet(
-    #    dqmDirectory_output = cms.string('/unScaled/dataQCD'),
-    #    dqmDirectories_input = dqmDirectoriesForData_input
-    #)
    
     # find background samples to be scaled in list of samples to be plotted
+    #  -- if sample is to be scaled, set up scaling module
     process.scaleBackgroundsAHtoElecTau = cms.Sequence()
-    for sampleName in samples['SAMPLES_TO_PLOT'] + ['qcdSum']:
-        for cat in ['woBtag', 'wBtag', 'VBF' ]:
+    for sampleName in samples['SAMPLES_TO_PLOT'] + ['qcdFromData']:
+        for cat in categories:
             for bgSampleName in bgYieldCorrections[cat].keys():
                 if sampleName is bgSampleName:
-                    # update output directory in case background sample is to be merged
+                    # in case background sample is to be merged, correct merging output directory
                     if hasattr(process.mergeSamplesAHtoElecTau, 'merge_' + sampleName):
                         merger = getattr(process.mergeSamplesAHtoElecTau, 'merge_' + sampleName)
                         setattr(merger,'dqmDirectory_output','/unScaled/' + sampleName)
-                    # now build DQMHistScaler modules
+                    # now build DQMHistScaler module
                     baseDirInput = '/unScaled/'
                     sampleNameInput = bgSampleName
-                    # take special care if background is QCD...to be taken from data
-                    if bgSampleName is 'qcdSum':
+                    analyzerNameInput = 'ahElecTauAnalyzerOS_' + cat
+                    analyzerNameOutput = analyzerNameInput
+                    # take special care if sample is QCD...to be taken from SS data
+                    if bgSampleName is 'qcdFromData':
                         baseDirInput = '/harvested/'
                         sampleNameInput = 'data'
+                        analyzerNameInput = 'ahElecTauAnalyzerSS_' + cat
                     # create scaling module for OS analyzer
                     scalerOS = 'scale' + sampleName + 'OS_' + cat
                     setattr(process, scalerOS, cms.EDAnalyzer("DQMHistScaler"))
                     setattr(getattr(process,scalerOS), "scaleFactor", cms.double(bgYieldCorrections[cat][bgSampleName]))
-                    analyzerNameOS = 'ahElecTauAnalyzerOS_' + cat
-                    setattr(getattr(process,scalerOS), "dqmDirectory_input", cms.string(baseDirInput + sampleNameInput + '/' + analyzerNameOS))
-                    setattr(getattr(process,scalerOS), "dqmDirectory_output", cms.string('/harvested/' + bgSampleName + '/' + analyzerNameOS))
-                    print 'Scaling plots in ' + baseDirInput + sampleNameInput + '/' + analyzerNameOS + ' by factor %f' % bgYieldCorrections[cat][bgSampleName]
-                    print ' and placing results in /harvested/' + bgSampleName + '/' + analyzerNameOS
+                    setattr(getattr(process,scalerOS), "dqmDirectory_input", cms.string(baseDirInput + sampleNameInput + '/' + analyzerNameInput))
+                    setattr(getattr(process,scalerOS), "dqmDirectory_output", cms.string('/harvested/' + bgSampleName + '/' + analyzerNameOutput))
                     process.scaleBackgroundsAHtoElecTau += getattr(process,scalerOS)
-                    # copy SS analyzer with no scaling
-                    scalerSS = 'scale' + sampleName + 'SS_' + cat
-                    setattr(process, scalerSS, cms.EDAnalyzer("DQMHistScaler"))
-                    setattr(getattr(process,scalerSS), "scaleFactor", cms.double(1.))
-                    analyzerNameSS = 'ahElecTauAnalyzerSS_' + cat
-                    setattr(getattr(process,scalerSS), "dqmDirectory_input", cms.string(baseDirInput + sampleNameInput + '/' + analyzerNameSS))
-                    setattr(getattr(process,scalerSS), "dqmDirectory_output", cms.string('/harvested/' + bgSampleName + '/' + analyzerNameSS))
-                    process.scaleBackgroundsAHtoElecTau += getattr(process,scalerSS)
+                    print 'Scaling plots in ' + baseDirInput + sampleNameInput + '/' + analyzerNameInput + ' by factor %f' % bgYieldCorrections[cat][bgSampleName]
+                    print ' and placing results in /harvested/' + bgSampleName + '/' + analyzerNameOutput
+                    # create scaling module for SS analyzer
+                    if bgSampleName is not 'qcdFromData':
+                        scalerSS = 'scale' + sampleName + 'SS_' + cat
+                        setattr(process, scalerSS, cms.EDAnalyzer("DQMHistScaler"))
+                        setattr(getattr(process,scalerSS), "scaleFactor", cms.double(bgYieldCorrections[cat][bgSampleName]))
+                        analyzerNameSS = 'ahElecTauAnalyzerSS_' + cat
+                        setattr(getattr(process,scalerSS), "dqmDirectory_input", cms.string(baseDirInput + sampleNameInput + '/' + analyzerNameSS))
+                        setattr(getattr(process,scalerSS), "dqmDirectory_output", cms.string('/harvested/' + bgSampleName + '/' + analyzerNameSS))
+                        process.scaleBackgroundsAHtoElecTau += getattr(process,scalerSS)
+                        print 'Scaling plots in ' + baseDirInput + sampleNameInput + '/' + analyzerNameSS + ' by factor %f' % bgYieldCorrections[cat][bgSampleName]
+                        print ' and placing results in /harvested/' + bgSampleName + '/' + analyzerNameSS
 
+    # add scaling sequence after merging sequence 
     process.loadAHtoElecTau.replace(process.mergeSamplesAHtoElecTau, process.mergeSamplesAHtoElecTau + process.scaleBackgroundsAHtoElecTau)
 
-    # scale embedded samples properly
-    if 'ZtautauEmbeddedSum' in samples['SAMPLES_TO_PLOT']:
-        process.mergeSamplesAHtoElecTau.merge_ZtautauEmbeddedSum.dqmDirectory_output = cms.string('/unScaled/ZtautauEmbeddedSum')
+    # scale and add embedded samples
+    if 'ZtautauEmbeddedSum' in samples['SAMPLES_TO_PRINT']:
+        # build new, independent merging module
+        process.mergeZtautauEmbeddedSamples = cms.EDAnalyzer("DQMHistAdder")
+        process.mergeZtautauEmbeddedSamples.merge_ZtautauEmbeddedSum = copy.deepcopy( process.mergeSamplesAHtoElecTau.merge_ZtautauEmbeddedSum )
+        process.mergeZtautauEmbeddedSamples.merge_ZtautauEmbeddedSum.dqmDirectory_output = cms.string('/unScaled/ZtautauEmbeddedSum')
+        # remove embedded samples from normal merger module
+        delattr(process.mergeSamplesAHtoElecTau,'merge_ZtautauEmbeddedSum')
+        # build scaler module
         process.scaleZtautauEmbeddedSum = cms.EDAnalyzer("DQMHistScaler")
-        process.scaleZtautauEmbeddedSum.scaleFactor = cms.double(14602.2/124754.0)
+        process.scaleZtautauEmbeddedSum.scaleFactor = cms.double(14259./124713.)
         process.scaleZtautauEmbeddedSum.dqmDirectory_input = cms.string('/unScaled/ZtautauEmbeddedSum')
         process.scaleZtautauEmbeddedSum.dqmDirectory_output = cms.string('/harvested/ZtautauEmbeddedSum')
         process.scaleBackgroundsAHtoElecTau += process.scaleZtautauEmbeddedSum
+        # create sequence for embedded sample merging and scaling
+        process.mergeAndScaleZtautauEmbeddedSamples = cms.Sequence(process.mergeZtautauEmbeddedSamples + process.scaleZtautauEmbeddedSum)
+        # run embedded merging and scaling before other mergers
+        process.loadAHtoElecTau.replace(process.mergeSamplesAHtoElecTau, process.mergeAndScaleZtautauEmbeddedSamples + process.mergeSamplesAHtoElecTau )
 
     # loop over all DQMHistPlotter modules and:
-    #  - add QCD samples to processes list
+    #  - add QCD and embedded Ztautau samples to processes list
+    #  - replace Ztautau MC with embedded sample for high statistics categories
     #  - plot QCD with SS data
-    for cat in ['woBtag', 'wBtag', 'VBF' ]:
+    for cat in categories:
         for scale in ['_linear', '_log']:
             plotter = getattr(process, "plotahElecTauAnalyzerOS_" + cat + scale)
             # add QCD to processes list
-            plotter.processes.qcdSum = cms.PSet(
-                dqmDirectory = cms.string('/harvested/qcdSum'),
+            plotter.processes.qcdFromData = cms.PSet(
+                dqmDirectory = cms.string('/harvested/qcdFromData'),
                 type = cms.string('smMC'),
                 legendEntry = cms.string('QCD')
             )
+            # added embedded sample to processes list
+            plotter.processes.ZtautauEmbeddedSum = cms.PSet(
+                dqmDirectory = cms.string('/harvested/ZtautauEmbeddedSum'),
+                type = cms.string('smMC'),
+                legendEntry = cms.string('Z #rightarrow #tau^{+} #tau^{-}')
+            )
+            # set up plotting options
+            setattr(plotter.drawOptionSets.default, "qcdFromData", cms.PSet(
+                drawOptionLegend = cms.string('f'),
+                fillStyle = cms.int32(1001),
+                fillColor = cms.int32(797),
+                lineColor = cms.int32(797),
+                drawOption = cms.string('hist'),
+                lineWidth = cms.int32(1),
+                lineStyle = cms.int32(1)
+                )
+            )
+            plotter.drawOptionSets.default.ZtautauEmbeddedSum = copy.deepcopy(plotter.drawOptionSets.default.ZtautauSum)
             # define category-dependant variables
-            tag = 'ForAHtoElecTau'
-            samplesForPlotter = samples['SAMPLES_TO_PLOT_MSSM']
-            if cat is 'VBF':
-                samplesForPlotter = samples['SAMPLES_TO_PLOT_SM']
+            tag = ''
+            samplesForPlotter = []
+            if cat is 'woBtag':
+                tag = 'ForAHtoElecTau'
+                samplesForPlotter = [sample if sample is not 'ZtautauSum' else 'ZtautauEmbeddedSum' for sample in samples['SAMPLES_TO_PLOT_MSSM']]
+            if cat is 'ZeroOneJets':
                 tag = 'ForElecTau'
+                samplesForPlotter = [sample if sample is not 'ZtautauSum' else 'ZtautauEmbeddedSum' for sample in samples['SAMPLES_TO_PLOT_SM']]
+            if cat in ['VBF','Boosted']:
+                tag = 'ForElecTau'
+                samplesForPlotter = copy.deepcopy(samples['SAMPLES_TO_PLOT_SM'])
+            if cat is 'wBtag':
+                tag = 'ForAHtoElecTau'
+                samplesForPlotter = copy.deepcopy(samples['SAMPLES_TO_PLOT_MSSM'])
             stack = cms.vstring([
                 sample for sample in samplesForPlotter
                 if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
                     samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
             ])
-            stack.extend(['qcdSum'])
-            #  create new draw job for each element in plot configuration list
+            samplesForPlotter.insert(0,'qcdFromData')
+            stack.append('qcdFromData')
+            # create new draw job for each element in plot configuration list
             for plotCfg in plotConfigs:
                 drawJob = cms.PSet( 
                     drawOptionSet = cms.string('default'),
@@ -612,43 +746,22 @@ def useSSdataForQCD(process, samples, channel, jobId, bgYieldCorrections):
                     legend = cms.string('regular'),
                     xAxis = cms.string(plotCfg['xAxis']),
                     stack = stack,
-                    #stack = cms.vstring('qcdSum',
-                    #    'TTplusJets_madgraph_skim',
-                    #    #'EWsum',
-                    #    'WplusJets_madgraph_skim',
-                    #    'ZeeSum',
-                    #    'ZtautauSum'),
                     title = cms.string(plotCfg['title']),
                     plots = cms.VPSet()
                 )
-
-                drawJob.plots.append(cms.PSet(
-                    dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerSS_' + cat + '/afterEvtSelDiTauCandidate' + tag  + 'NonZeroCharge/' + plotCfg['meName']),
-                    drawOptionEntry = cms.string('default#.#qcdSum'),
-                    process = cms.string('qcdSum')
-                ))
                 for sample in samplesForPlotter:
+                    non = ''
+                    if sample is 'qcdFromData':
+                        non = 'Non'
                     drawJob.plots.append(cms.PSet(
-                        dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerOS_' + cat + '/afterEvtSelDiTauCandidate' + tag + 'ZeroCharge/' + plotCfg['meName']),
+                        dqmMonitorElements = cms.vstring('#PROCESSDIR#/ahElecTauAnalyzerOS_' + cat + '/afterEvtSelDiTauCandidate' + tag + non + 'ZeroCharge/' + plotCfg['meName']),
                         drawOptionEntry = cms.string('default#.#' + sample),
                         process = cms.string(sample)
                     ))
                 
                 setattr(plotter.drawJobs, plotCfg['plotName'], drawJob)
 
-                setattr(plotter.drawOptionSets.default, "qcdSum", cms.PSet(
-                    drawOptionLegend = cms.string('f'),
-                    fillStyle = cms.int32(1001),
-                    fillColor = cms.int32(797),
-                    lineColor = cms.int32(797),
-                    drawOption = cms.string('hist'),
-                    lineWidth = cms.int32(1),
-                    lineStyle = cms.int32(1)
-                )
-                )
-
-    process.saveAHtoElecTau.outputCommands.append('keep harvested/qcdSum/*')
-    process.saveAHtoElecTau.outputCommands.append('keep unScaled/*')
+    process.saveAHtoElecTau.outputCommands.append('keep harvested/qcdFromData/*')
     process.saveAHtoElecTau.outputCommands.append('keep harvested/Ztautau_powheg_skim/*')
 
 
