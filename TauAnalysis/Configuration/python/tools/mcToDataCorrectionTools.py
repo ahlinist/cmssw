@@ -605,7 +605,7 @@ def applyVertexMultiplicityReweighting_runAHtoElecTau(process):
         process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
           * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight
                 
-    _addEventWeightZtoElecTau(process, "vertexMultiplicityReweight")
+    _addEventWeightAHtoElecTau(process, "vertexMultiplicityReweight", applyAfterFilterName = "evtSelDataQuality")
 
 def applyRhoNeutralReweighting_runAHtoElecTau(process):
     process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
