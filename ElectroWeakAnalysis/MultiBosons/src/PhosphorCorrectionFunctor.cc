@@ -13,6 +13,7 @@
  */
 
 #include <assert.h>
+#include <vector>
 
 #include "ElectroWeakAnalysis/MultiBosons/interface/PhosphorCorrectionFunctor.h"
 
@@ -58,9 +59,10 @@ PhosphorCorrectionFunctor::init()
 
   correctionFactors_.reserve(scales.size());
   correctionFactors_.clear();
-  for (vector<double>::const_iterator s = scales_->begin();
-       s != scales_->end(); ++s) {
-    correctionFactors_.push_back(1. / (1. + 0.01 * s));
+  for (std::vector<double>::const_iterator it = scales.begin();
+       it != scales.end(); ++it) {
+    double scale(*it);
+    correctionFactors_.push_back(1. / (1. + 0.01 * scale));
   }
 
   /// Fill the scale correction factors with the meaured scale values in %.
