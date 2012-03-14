@@ -17,7 +17,10 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   NSVfitResonanceHypothesis()
     : eventHyp_(NULL),
       prod_angle_rf_(0.)
-  {}
+  {
+    polHandedness_.push_back(kPolUndefined);
+    numPolStates_ = polHandedness_.size();
+  }
   NSVfitResonanceHypothesis(const NSVfitResonanceHypothesis&);
   virtual ~NSVfitResonanceHypothesis() {}
 
@@ -65,7 +68,13 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
     }
   }
 
+  unsigned numPolStates() const { return numPolStates_; }
+  int polHandedness(unsigned idx) const { return polHandedness_[idx]; }
+
+  enum { kPolUndefined, kPolLR, kPolRL, kPolLL, kPolRR };
+
   friend class NSVfitResonanceBuilderBase;
+  friend class NSVfitResonanceBuilder;
   friend class NSVfitAlgorithmByLikelihoodMaximization;
   template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
 
@@ -85,6 +94,10 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   
   /// production angle of tau lepton in rest-frame of tau+ tau- pair
   double prod_angle_rf_;
+
+  /// different possible polarization states
+  std::vector<int> polHandedness_;
+  unsigned numPolStates_;
 };
 
 #endif

@@ -67,7 +67,7 @@ class NSVfitResonanceHypothesisBase
   std::string name_;
 
   /// unique identifier to associate hypothesis to likelihood function
-  int barcode_;
+  int barcode_; 
 
   /// fit hypotheses for daughter particles
   edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughters_;
