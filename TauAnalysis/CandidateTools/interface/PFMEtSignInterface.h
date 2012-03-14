@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PFMEtSignInterface.h,v 1.1 2011/04/19 08:16:11 veelken Exp $
+ * $Id: PFMEtSignInterface.h,v 1.2 2012/02/13 14:00:16 veelken Exp $
  *
  */
 
@@ -54,6 +54,8 @@ class PFMEtSignInterface : public PFMEtSignInterfaceBase
 
   double dRoverlapPFJet_;
   double dRoverlapPFCandidate_;
+
+ 
 
   int verbosity_;
 };
