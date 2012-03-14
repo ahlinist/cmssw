@@ -40,8 +40,7 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
       decay_angle_rf_(bluePrint.decay_angle_rf_),
       decayVertexPos_(bluePrint.decayVertexPos_),
       flightPath_(bluePrint.flightPath_),
-      decayDistance_(bluePrint.decayDistance_),
-      polarization_(bluePrint.polarization_)
+      decayDistance_(bluePrint.decayDistance_)
   {}
 
   ~NSVfitTauDecayHypothesis() {}
@@ -59,7 +58,6 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
     decayVertexPos_ = bluePrint.decayVertexPos_;
     flightPath_ = bluePrint.flightPath_;
     decayDistance_ = bluePrint.decayDistance_;
-    polarization_ = bluePrint.polarization_;
     return (*this);
   }
 
@@ -86,9 +84,6 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
   const AlgebraicVector3& decayVertexPos() const { return decayVertexPos_; }
   const reco::Candidate::Vector& flightPath() const { return flightPath_; }
   double decayDistance() const { return decayDistance_; }
-
-  /// tau lepton polarization
-  double polarization() const { return polarization_; }
 
   friend class NSVfitTauDecayBuilder;
   template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
@@ -117,9 +112,6 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
   AlgebraicVector3 decayVertexPos_;
   reco::Candidate::Vector flightPath_;
   double decayDistance_;
-
-  /// tau lepton polarization
-  double polarization_;
 };
 
 #endif /* end of include guard: AnalysisDataFormats_TauAnalysis_NSVfitTauDecayHypothesis_h */

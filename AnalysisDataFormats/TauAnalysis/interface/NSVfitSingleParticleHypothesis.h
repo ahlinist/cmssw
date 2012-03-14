@@ -77,7 +77,15 @@ class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
     stream << "(x = " << (p4_.energy()/p4_fitted().energy()) << ")" << std::endl;
   }
 
-  friend class NSVfitAlgorithmByLikelihoodMaximization;
+  unsigned numPolStates() const { return numPolStates_; }
+  int polHandedness(unsigned idx) const { return polHandedness_[idx]; }
+  int polSign(unsigned idx) const { return polSign_[idx]; }
+
+  enum { kPolUndefined, kPolL, kPolR };
+  enum { kPolPlus = 1, kPolMinus = 2 };
+
+  friend class NSVfitResonanceBuilder;
+  friend class NSVfitAlgorithmByLikelihoodMaximization;  
   template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
 
  protected:
@@ -90,6 +98,11 @@ class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
   reco::Candidate::LorentzVector p4_;
   reco::Candidate::LorentzVector p4_fitted_;
   reco::Candidate::LorentzVector dp4_;  
+
+  /// different possible polarization states
+  std::vector<int> polHandedness_;
+  std::vector<int> polSign_;
+  unsigned numPolStates_;
 };
 
 #endif

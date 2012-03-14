@@ -5,7 +5,9 @@ NSVfitResonanceHypothesis::NSVfitResonanceHypothesis(const NSVfitResonanceHypoth
     eventHyp_(bluePrint.eventHyp_),
     p4_(bluePrint.p4_),
     dp4_(bluePrint.dp4_),
-    prod_angle_rf_(bluePrint.prod_angle_rf_)
+    prod_angle_rf_(bluePrint.prod_angle_rf_),
+    polHandedness_(bluePrint.polHandedness_),
+    numPolStates_(bluePrint.numPolStates_)
 {
   size_t  numDaughters = daughters_.size();
   for ( size_t iDaughter = 0; iDaughter < numDaughters; iDaughter++ ) {
@@ -20,6 +22,8 @@ NSVfitResonanceHypothesis& NSVfitResonanceHypothesis::operator=(const NSVfitReso
   p4_ = bluePrint.p4_;
   dp4_ = bluePrint.dp4_;
   prod_angle_rf_ = bluePrint.prod_angle_rf_;
+  polHandedness_ = bluePrint.polHandedness_;
+  numPolStates_ = bluePrint.numPolStates_;
   size_t  numDaughters = daughters_.size();
   for ( size_t iDaughter = 0; iDaughter < numDaughters; iDaughter++ ) {
     this->daughter(iDaughter)->setMother(this);

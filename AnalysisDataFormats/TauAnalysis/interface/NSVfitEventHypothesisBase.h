@@ -82,6 +82,8 @@ class NSVfitEventHypothesisBase
   /// unique identifier to associate hypothesis to likelihood function
   int barcode_;
 
+  /// -log(prob)
+
   /// pointer to MET object from which this hypothesis was made
   edm::Ptr<reco::Candidate> met_;
 
