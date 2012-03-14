@@ -12,7 +12,8 @@ using namespace SVfit_namespace;
 NSVfitTauToHadLikelihoodPhaseSpace::NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet& cfg)
   : NSVfitSingleParticleLikelihood(cfg)
 {
-// nothing to be done yet...
+  applySinThetaFactor_ = cfg.exists("applySinThetaFactor") ?
+    cfg.getParameter<bool>("applySinThetaFactor") : false;
 }
 
 NSVfitTauToHadLikelihoodPhaseSpace::~NSVfitTauToHadLikelihoodPhaseSpace()
@@ -43,51 +44,41 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   assert(hypothesis_T != 0);
 
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
-
-  double decayAngle = hypothesis_T->decay_angle_rf();
+  
+  double decayAngle = hypothesis_T->decay_angle_rf();  
+  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;  
   double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
+  if ( visMass < chargedPionMass ) visMass = chargedPionMass;
+  if ( visMass > tauLeptonMass   ) visMass = tauLeptonMass;
+  double Evis_rf = hypothesis_T->p4vis_rf().E();
+  double Pvis_rf = hypothesis_T->p4vis_rf().P();
 
-  if( visMass< 0 ) 
-    visMass = 0.13957;
-  if( visMass> TMath::Sqrt(tauLeptonMass2)) 
-    visMass = TMath::Sqrt(tauLeptonMass2);
-
-  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
-
-  double eVisRest = (tauLeptonMass2 + visMass*visMass)/(2*TMath::Sqrt(tauLeptonMass2));
-  double pVisRest = TMath::Sqrt(eVisRest*eVisRest - visMass*visMass);
-
-  double xcut = 20./(hypothesis_T->p4_fitted()).Pt();
-  double ptCutsNorm = (eVisRest+pVisRest)/TMath::Sqrt(tauLeptonMass2) - xcut;
- 
-  //std::cout << visMass << " - " << eVisRest << std::endl;
-
-  double prob = TMath::Sqrt(tauLeptonMass2)/(2*pVisRest);
-
-  if(applyVisPtCutCorrection_){
-    if( ptCutsNorm>0) prob /= ptCutsNorm;
-    if(visEnFracX<xcut) prob=1e-06;
+  // CV: normalize likelihood function such that 
+  //               1
+  //       integral  prob dX = 1.
+  //               0
+  double prob = 1.;
+  if ( visEnFracX >= TMath::Max(0., (Evis_rf - Pvis_rf)/tauLeptonMass) &&
+       visEnFracX <= TMath::Min(1., (Evis_rf + Pvis_rf)/tauLeptonMass) ) {
+    prob = tauLeptonMass/(2.*Pvis_rf);
+  } else {
+    prob = 1e-6;
   }
-
-  if(visEnFracX  >1 || 
-     visEnFracX  < (eVisRest-pVisRest)/TMath::Sqrt(tauLeptonMass2) ||
-      visEnFracX > (eVisRest+pVisRest)/TMath::Sqrt(tauLeptonMass2))
-    prob = 1e-06;
-
+  if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
   
-
-
-  
-  //prob = TMath::Sin(decayAngle);
-  
-  /*
   if ( applyVisPtCutCorrection_ ) {
-    double probCorr = evaluateVisPtCutCorrection(hypothesis);
+    double probCorr = 1.;
+    if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
+     
+      double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();      
+      probCorr = 1./((Evis_rf + Pvis_rf)/tauLeptonMass - xCut);
+    } else {
+      probCorr = 1e-6;
+    }
     if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
     prob *= probCorr;
   }
-  */
 
   double nll = 0.;
   if ( prob > 0. ) {
