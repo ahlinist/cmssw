@@ -10,6 +10,7 @@ nSVfitTrackService = cms.Service("NSVfitTrackService")
 nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodPhaseSpace"),
+    applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
 
@@ -28,6 +29,7 @@ nSVfitTauToElecBuilder = cms.PSet(
 nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
+    applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
 
@@ -40,6 +42,7 @@ nSVfitMuonLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihood
 nSVfitMuonLikelihoodMatrixElement = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodMatrixElement"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodMatrixElement"),
+    applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
 
@@ -52,6 +55,7 @@ nSVfitTauToMuBuilder = cms.PSet(
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
+    applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
 
@@ -64,20 +68,6 @@ nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
     pluginType = cms.string("NSVfitTauToHadBuilder"),
-    verbosity = cms.int32(0)
-)
-
-nSVfitResonanceLikelihoodVisPtCutCorrMuTau = cms.PSet(
-    pluginName = cms.string("nSVfitResonanceLikelihoodVisPtCutCorrMuTau"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodSculpting2"),
-    inputFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/nSVfitSculpting2.root"),
-    histogramNameX1 = cms.string("histogramTauToLepX"),
-    histogramNameX2 = cms.string("histogramTauToHadX"),
-    minVisPt1 = cms.double(15.0),
-    minVisPt2 = cms.double(20.0),
-    minVisPt1alt = cms.double(-1.),
-    minVisPt2alt = cms.double(-1.),
-    power = cms.double(1.0),
     verbosity = cms.int32(0)
 )
 
@@ -99,6 +89,20 @@ nSVfitResonanceLikelihoodLogEff = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodEff_power100"),
     pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
     nll = cms.string("TMath::Log(TMath::Max(5.00e-3, 4.21e-2*(2.52e-2 + TMath::Erf((x - 4.40e+1)*6.90e-3))))"),
+    power = cms.double(1.0)
+)
+
+nSVfitResonanceLikelihoodPrior = cms.PSet(
+    pluginName = cms.string("nSVfitResonanceLikelihoodPrior"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodPrior"),
+    formula = cms.string("1. + [0]*TMath::Gaus(x, [1], [2])"),
+    xMin = cms.double(91.188), # do not apply prior probability correction below mZ
+    xMax = cms.double(1.e+3),
+    parameter = cms.PSet(
+        par0 = cms.double(3.),
+        par1 = cms.double(91.188), # mZ / GeV
+        par2 = cms.double(2.495)   # GammaZ / GeV
+    ),
     power = cms.double(1.0)
 )
 
