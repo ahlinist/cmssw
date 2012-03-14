@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.11 2012/03/08 15:52:13 veelken Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.12 2012/03/13 15:29:10 veelken Exp $
  *
  */
 
@@ -51,7 +51,7 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
 
   virtual void beginCandidate(const NSVfitSingleParticleHypothesis*) {}
 
-  virtual double operator()(const NSVfitSingleParticleHypothesis*) const = 0;
+  virtual double operator()(const NSVfitSingleParticleHypothesis*, int) const = 0;
 
  protected:
   std::string prodParticleLabel_;

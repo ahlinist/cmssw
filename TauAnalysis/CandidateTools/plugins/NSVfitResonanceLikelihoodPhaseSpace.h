@@ -28,7 +28,7 @@ class NSVfitResonanceLikelihoodPhaseSpace : public NSVfitResonanceLikelihood
 
   void beginCandidate(const NSVfitResonanceHypothesis*) const {};
 
-  double operator()(const NSVfitResonanceHypothesis*) const;
+  double operator()(const NSVfitResonanceHypothesis*, int) const;
 
  private:
 

@@ -34,7 +34,7 @@ void NSVfitTauToLepLikelihoodPhaseSpace<T>::beginJob(NSVfitAlgorithmBase* algori
 }
 
 template <typename T>
-double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
+double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis, int polSign) const
 {
 //--- compute negative log-likelihood for tau lepton decay "leg"
 //    to be compatible with three-body decay,
@@ -83,11 +83,13 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
 
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = 1.;
+    const double epsilon_regularization = 1.e-1;
     if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
       double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
-      probCorr = 1./(1. - xCut);
+      probCorr = 1./((1. - xCut) + epsilon_regularization);
     } else {
-      probCorr = 1e-6;
+      const double penalty_factor = 1.e-3;
+      probCorr = penalty_factor/((visPtCutThreshold_ - hypothesis_T->p4_fitted().pt()) + penalty_factor*epsilon_regularization);
     }
     if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
     prob *= probCorr;

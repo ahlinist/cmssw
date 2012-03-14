@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitTauToLepLikelihoodMatrixElement.h,v 1.1 2012/03/08 10:35:45 veelken Exp $
+ * $Id: NSVfitTauToLepLikelihoodMatrixElement.h,v 1.2 2012/03/14 09:46:58 veelken Exp $
  *
  */
 
@@ -31,7 +31,7 @@ class NSVfitTauToLepLikelihoodMatrixElement : public NSVfitSingleParticleLikelih
   
   void beginJob(NSVfitAlgorithmBase*);
   
-  double operator()(const NSVfitSingleParticleHypothesis*) const;
+  double operator()(const NSVfitSingleParticleHypothesis*, int) const;
 
  private:
   bool applySinThetaFactor_;

@@ -931,6 +931,7 @@ void makeSVfitVisPtCutPlots()
   
   std::vector<double> massPoints;
   massPoints.push_back(90.);
+/*
   massPoints.push_back(105.);
   massPoints.push_back(110.);
   massPoints.push_back(115.);
@@ -946,7 +947,7 @@ void makeSVfitVisPtCutPlots()
   massPoints.push_back(500.);
   massPoints.push_back(700.);
   massPoints.push_back(1000.);
- 
+ */
   std::vector<double> massPointErrsUp;
   std::vector<double> massPointErrsDown;
   

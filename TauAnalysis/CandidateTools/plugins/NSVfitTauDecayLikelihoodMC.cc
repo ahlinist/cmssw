@@ -197,7 +197,7 @@ void NSVfitTauDecayLikelihoodMC<T>::beginCandidate(const NSVfitSingleParticleHyp
 }
 
 template <typename T>
-double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
+double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis, int polSign) const
 {
   double prob = 0.;
 

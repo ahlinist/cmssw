@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.17 $
+ * \version $Revision: 1.18 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.17 2011/05/29 17:58:22 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.18 2011/05/30 15:19:41 veelken Exp $
  *
  */
 
@@ -32,7 +32,7 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
 
 #include <vector>
 #include <string>
@@ -107,12 +107,12 @@ class NSVfitAlgorithmBase
 	(*likelihood)->beginCandidate(hypothesis);
       }
     }
-    double nll(const NSVfitSingleParticleHypothesis* hypothesis) const
+    double nll(const NSVfitSingleParticleHypothesis* hypothesis, int idxPolState) const
     {
       double retVal = 0.;
       for ( std::vector<NSVfitSingleParticleLikelihood*>::const_iterator likelihood = likelihoods_.begin();
 	    likelihood != likelihoods_.end(); ++likelihood ) {
-	retVal += (**likelihood)(hypothesis);
+	retVal += (**likelihood)(hypothesis, hypothesis->polSign(idxPolState));
       }
       return retVal;
     }
@@ -171,16 +171,16 @@ class NSVfitAlgorithmBase
 	daughters_[iDaughter]->beginCandidate(hypothesis->daughter(iDaughter));
       }
     }
-    double nll(const NSVfitResonanceHypothesis* hypothesis) const
+    double nll(const NSVfitResonanceHypothesis* hypothesis, int idxPolState) const
     {
       double retVal = 0.;
       for ( std::vector<NSVfitResonanceLikelihood*>::const_iterator likelihood = likelihoods_.begin();
 	    likelihood != likelihoods_.end(); ++likelihood ) {
-	retVal += (**likelihood)(hypothesis);
+	retVal += (**likelihood)(hypothesis, hypothesis->polHandedness(idxPolState));
       }
       assert(hypothesis->numDaughters() == numDaughters_);
       for ( unsigned iDaughter = 0; iDaughter < numDaughters_; ++iDaughter ) {
-	retVal += daughters_[iDaughter]->nll(hypothesis->daughter(iDaughter));
+	retVal += daughters_[iDaughter]->nll(hypothesis->daughter(iDaughter), idxPolState);
       }
       return retVal;
     }
@@ -252,7 +252,17 @@ class NSVfitAlgorithmBase
       }
       assert(hypothesis->numResonances() == numResonances_);
       for ( unsigned iResonance = 0; iResonance < numResonances_; ++iResonance ) {
-	retVal += resonances_[iResonance]->nll(hypothesis->resonance(iResonance));
+        const NSVfitResonanceHypothesis* resonance_hypothesis = hypothesis->resonance(iResonance);
+	unsigned numPolStates = resonance_hypothesis->numPolStates();
+	if ( numPolStates == 1 ) {          
+	  retVal += resonances_[iResonance]->nll(resonance_hypothesis, 0);
+	} else {
+	  double prob = 0.;
+	  for ( unsigned idxPolState = 0; idxPolState < numPolStates; ++idxPolState ) {
+	    prob += TMath::Exp(-resonances_[iResonance]->nll(resonance_hypothesis, idxPolState));
+	  }
+	  retVal += TMath::Log(-prob);
+	}
       }
       return retVal;
     }

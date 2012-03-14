@@ -136,7 +136,7 @@ double backwardsPenaltyTerm(const reco::Candidate::Vector& flight, const reco::C
   return penalty;
 }
 
-double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
+double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleHypothesis* hypothesis, int polHandedness) const
 {
 //--- compute negative log-likelihood for tracks of tau lepton decay "leg"
 //    to be compatible with originating from hypothetic secondary (tau lepton decay) vertex
