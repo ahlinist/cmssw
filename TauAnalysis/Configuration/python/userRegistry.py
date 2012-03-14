@@ -90,9 +90,16 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run39',
+        'current' : 'Run41',
         'jobs' : {
-            'Run40' : { # added: energy smearing in PAT
+            'Run41' : { # added: energy smearing in PAT, tau trigger eff. corrections
+               	'AHtoElecTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_8_patch7/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
+            'Run40' : { # turned off systematics
                	'AHtoElecTau' : {
                     'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_8_patch7/src/TauAnalysis/Configuration/test/",
                     'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
