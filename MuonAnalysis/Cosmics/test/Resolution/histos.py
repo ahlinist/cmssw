@@ -44,8 +44,8 @@ parser.add_argument('+min-strip-layers', type=int, default=8,
                     help='Require MIN_STRIP_LAYERS strip layers on every track (except standalone). Default is %(default)s.')
 parser.add_argument('+min-muon-hits', type=int, default=0,
                     help='Require MIN_MUON_HITS muon hits on every track (except tracker-only). Default is %(default)s.')
-parser.add_argument('+check-shared-hits', action='store_true',
-                    help='Check that there are no shared hits between upper, lower tracks.')
+parser.add_argument('+no-check-shared-hits', action='store_false', dest='check_shared_hits',
+                    help='Do not check whether there are shared hits between upper, lower tracks.')
 parser.add_argument('+muon-subdet', default='dtonly', choices='dtonly either'.split(),
                     help='Which muon subdetectors to allow (and require DQM flags good for). Choices are %(choices)s; default is "%(default)s".')
 parser.add_argument('+require-tt25', action='store_true',
