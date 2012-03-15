@@ -52,7 +52,7 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilder::build(const inputParticleMap&
 	  } else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolLR ) {
 	    if      ( iDaughter == 0 ) daughter_polHandedness = NSVfitSingleParticleHypothesis::kPolL;
 	    else if ( iDaughter == 1 ) daughter_polHandedness = NSVfitSingleParticleHypothesis::kPolR;
-	  } else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolLR ) {
+	  } else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolRL ) {
 	    if      ( iDaughter == 0 ) daughter_polHandedness = NSVfitSingleParticleHypothesis::kPolL;
 	    else if ( iDaughter == 1 ) daughter_polHandedness = NSVfitSingleParticleHypothesis::kPolR;
 	  } else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolLL ) {
