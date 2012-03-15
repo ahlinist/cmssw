@@ -1,6 +1,6 @@
 /*
 Copy the ntuple and apply a preselection, perhaps reproducing the
-default cuts in CosmicSplittingResolutionHistos. To compile+run, do:
+default cuts in CosmicSplittingResolutionHistos, or just filtering out bad runs. To compile+run, do:
 
 g++ -Wall `root-config --cflags --libs --glibs` -I${CMSSW_BASE}/src ../../plugins/CosmicSplittingResolutionNtuple.cc preselect.cc -o exe.preselect && ./exe.preselect filename.root newfilename.root
 */
@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
   sel.min_pixel_layers = 0;
   sel.min_strip_layers = 0;
   sel.no_csc_allowed = false;
+  sel.no_shared_hits = false;
   sel.only_2011 = true;
 
   printf("\nEvent loop:\n");
