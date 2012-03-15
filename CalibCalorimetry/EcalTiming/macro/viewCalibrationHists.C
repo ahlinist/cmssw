@@ -10,23 +10,26 @@ void viewCalibrationHists(char *fileName)
 {
   std::cout << fileName << std::endl;
   TFile *theFile = new TFile(fileName);
-
-  TH1F *timingCalibDiffEB = (TH1F*) theFile->Get("createTimeCalibs/timingCalibDiffEB");
-  TH1F *timingCalibDiffsEEM = (TH1F*) theFile->Get("createTimeCalibs/timingCalibDiffsEEM");
-  TH1F *timingCalibDiffsEEP = (TH1F*) theFile->Get("createTimeCalibs/timingCalibDiffsEEP");
-  TH2F *hitsPerCryMapEB = (TH2F*) theFile->Get("createTimeCalibs/hitsPerCryMapEB");
-  TH2F *hitsPerCryMapEEM = (TH2F*) theFile->Get("createTimeCalibs/hitsPerCryMapEEM");
-  TH2F *hitsPerCryMapEEP = (TH2F*) theFile->Get("createTimeCalibs/hitsPerCryMapEEP");
-  TH2F *calibDiffMapEB   = (TH2F*) theFile->Get("createTimeCalibs/calibDiffMapEB");
-  TH2F *calibDiffMapEEM   = (TH2F*) theFile->Get("createTimeCalibs/calibDiffMapEEM");
-  TH2F *calibDiffMapEEP   = (TH2F*) theFile->Get("createTimeCalibs/calibDiffMapEEP");
   
-  TH1F *sigmaCalibsEB = (TH1F*) theFile->Get("createTimeCalibs/sigmaCalibsEB");
-  TH1F *sigmaCalibsEE = (TH1F*) theFile->Get("createTimeCalibs/sigmaCalibDiffsEE");
+  // std::string folderInFile("createTimeCalibs/");        // >> if you want to see the measured RECO average times
+  std::string folderInFile("recalibratedTimeHists/");   // >> if you want to see the recalibrated average times
 
-  TH2F *sigmaMapEB   = (TH2F*) theFile->Get("createTimeCalibs/sigmaDiffMapEB");
-  TH2F *sigmaMapEEM   = (TH2F*) theFile->Get("createTimeCalibs/sigmaMapEEM");
-  TH2F *sigmaMapEEP   = (TH2F*) theFile->Get("createTimeCalibs/sigmaMapEEP");
+  TH1F *timingCalibDiffEB = (TH1F*) theFile->Get( (  folderInFile + std::string("timingCalibDiffEB") ).c_str() ) ;
+  TH1F *timingCalibDiffsEEM = (TH1F*) theFile->Get( (  folderInFile + std::string("timingCalibDiffsEEM") ).c_str() ) ;
+  TH1F *timingCalibDiffsEEP = (TH1F*) theFile->Get( (  folderInFile + std::string("timingCalibDiffsEEP") ).c_str() ) ;
+  TH2F *hitsPerCryMapEB = (TH2F*) theFile->Get( (  folderInFile + std::string("hitsPerCryMapEB") ).c_str() ) ;
+  TH2F *hitsPerCryMapEEM = (TH2F*) theFile->Get( (  folderInFile + std::string("hitsPerCryMapEEM") ).c_str() ) ;
+  TH2F *hitsPerCryMapEEP = (TH2F*) theFile->Get( (  folderInFile + std::string("hitsPerCryMapEEP") ).c_str() ) ;
+  TH2F *calibDiffMapEB   = (TH2F*) theFile->Get( (  folderInFile + std::string("calibDiffMapEB") ).c_str() ) ;
+  TH2F *calibDiffMapEEM   = (TH2F*) theFile->Get( (  folderInFile + std::string("calibDiffMapEEM") ).c_str() ) ;
+  TH2F *calibDiffMapEEP   = (TH2F*) theFile->Get( (  folderInFile + std::string("calibDiffMapEEP") ).c_str() ) ;
+  
+  TH1F *sigmaCalibsEB = (TH1F*) theFile->Get( (  folderInFile + std::string("sigmaCalibsEB") ).c_str() ) ;
+  TH1F *sigmaCalibsEE = (TH1F*) theFile->Get( (  folderInFile + std::string("sigmaCalibDiffsEE") ).c_str() ) ;
+
+  TH2F *sigmaMapEB   = (TH2F*) theFile->Get( (  folderInFile + std::string("sigmaDiffMapEB") ).c_str() ) ;
+  TH2F *sigmaMapEEM   = (TH2F*) theFile->Get( (  folderInFile + std::string("sigmaMapEEM") ).c_str() ) ;
+  TH2F *sigmaMapEEP   = (TH2F*) theFile->Get( (  folderInFile + std::string("sigmaMapEEP") ).c_str() ) ;
 
   float minTimeAverageDistribution = -1.5;//Min time for x axis on time distribution hists
   float maxTimeAverageDistribution = 1.5;
