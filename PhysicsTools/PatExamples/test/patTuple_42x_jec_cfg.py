@@ -27,19 +27,18 @@ process.pfJetsPFlow.doRhoFastjet = False
 # Compute the mean pt per unit area (rho) from the
 # PFchs inputs
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-process.kt6PFJetsPFlow = kt4PFJets.clone(
+process.kt6PFJets = kt4PFJets.clone(
     rParam = cms.double(0.6),
-    src = cms.InputTag('pfNoElectron'+postfix),
     doAreaFastjet = cms.bool(True),
     doRhoFastjet = cms.bool(True)
     )
-process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJetsPFlow", "rho")
+process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJets", "rho")
 
 
 # Add the PV selector and KT6 producer to the sequence
 getattr(process,"patPF2PATSequence"+postfix).replace(
     getattr(process,"pfNoElectron"+postfix),
-    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJetsPFlow )
+    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
 
 process.patseq = cms.Sequence(    
     process.goodOfflinePrimaryVertices*
@@ -50,7 +49,7 @@ process.patseq = cms.Sequence(
 process.out.outputCommands += [
     'keep *_selectedPat*_*_*',
     'keep *_goodOfflinePrimaryVertices*_*_*',    
-    'keep double_*PFlow*_*_PAT'
+    'keep double_*_*_PAT'
 ]
 
 
