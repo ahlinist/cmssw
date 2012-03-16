@@ -20,6 +20,13 @@ nSVfitElectronLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
     verbosity = cms.int32(0)
 )
 
+nSVfitElectronLikelihoodMatrixElement = cms.PSet(
+    pluginName = cms.string("nSVfitTauToElecLikelihoodMatrixElement"),
+    pluginType = cms.string("NSVfitTauToElecLikelihoodMatrixElement"),
+    applySinThetaFactor = cms.bool(True),
+    verbosity = cms.int32(0)
+)
+
 nSVfitTauToElecBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecBuilder"),
     pluginType = cms.string("NSVfitTauToElecBuilder"),
@@ -30,7 +37,7 @@ nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
     applySinThetaFactor = cms.bool(True),
-    verbosity = cms.int32(0)
+    verbosity = cms.int32(1)
 )
 
 nSVfitMuonLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
@@ -56,7 +63,7 @@ nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
     applySinThetaFactor = cms.bool(True),
-    verbosity = cms.int32(0)
+    verbosity = cms.int32(1)
 )
 
 nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
@@ -64,6 +71,8 @@ nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
     pluginType = cms.string("NSVfitTauToHadLikelihoodMC"),
     verbosity = cms.int32(0)
 )
+
+nSVfitTauLikelihoodMatrixElement = nSVfitTauLikelihoodPhaseSpace # CV: not implemented yet
 
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
@@ -174,7 +183,7 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     dRoverlapPFJet = cms.double(0.3),
     dRoverlapPFCandidate = cms.double(0.1),
     power = cms.double(1.0),
-    verbosity = cms.int32(0)
+    verbosity = cms.int32(1)
 )
 
 nSVfitEventBuilder = cms.PSet(

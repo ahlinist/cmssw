@@ -8,6 +8,8 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+
 #include <TMath.h>
 #include <TVectorD.h>
 
@@ -27,7 +29,11 @@ NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2(const edm::ParameterSet& cf
   power_ = ( cfg.exists("power") ) ?
     cfg.getParameter<double>("power") : 1.0;
 
-  pfMEtSign_ = new PFMEtSignInterface(cfg);
+  if ( cfg.exists("srcMEtCovMatrix") ) {
+    srcMEtCovMatrix_ = cfg.getParameter<edm::InputTag>("srcMEtCovMatrix");
+  } else {
+    pfMEtSign_ = new PFMEtSignInterface(cfg);
+  }
 }
 
 NSVfitEventLikelihoodMEt2::~NSVfitEventLikelihoodMEt2()
@@ -46,7 +52,13 @@ void NSVfitEventLikelihoodMEt2::beginJob(NSVfitAlgorithmBase* algorithm)
 
 void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
-  pfMEtSign_->beginEvent(evt, es);
+  if ( srcMEtCovMatrix_.label() != "" ) {
+    edm::Handle<PFMEtSignCovMatrix> metCovMatrix;
+    evt.getByLabel(srcMEtCovMatrix_, metCovMatrix);
+    pfMEtCov_ = (*metCovMatrix);
+  } else {
+    pfMEtSign_->beginEvent(evt, es);
+  }
 }
 
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
@@ -55,20 +67,28 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
     std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
     std::cout << " hypothesis = " << hypothesis << std::endl;
   }
-
-  std::list<const reco::Candidate*> daughterHypothesesList;
-
-  size_t numResonances = hypothesis->numResonances();
-  for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
-    const NSVfitResonanceHypothesis* resonance = hypothesis->resonance(iResonance);
-    size_t numDaughters = resonance->numDaughters();
-    for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
-      const NSVfitSingleParticleHypothesis* daughter = resonance->daughter(iDaughter);
-      daughterHypothesesList.push_back(daughter->particle().get());
-    }
-  }
   
-  pfMEtCov_ = (*pfMEtSign_)(daughterHypothesesList);
+  if ( srcMEtCovMatrix_.label() == "" ) {
+    std::list<const reco::Candidate*> daughterHypothesesList;
+    
+    size_t numResonances = hypothesis->numResonances();
+    for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
+      const NSVfitResonanceHypothesis* resonance = hypothesis->resonance(iResonance);
+      size_t numDaughters = resonance->numDaughters();
+      for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+	const NSVfitSingleParticleHypothesis* daughter = resonance->daughter(iDaughter);
+	daughterHypothesesList.push_back(daughter->particle().get());
+      }
+    }
+    
+    pfMEtCov_ = (*pfMEtSign_)(daughterHypothesesList);
+  }
+
+  if ( this->verbosity_ ) {
+    std::cout << "pfMEtCov:" << std::endl;
+    pfMEtCov_.Print();
+  }
+
   pfMEtCovDet_ = pfMEtCov_.Determinant();
   pfMEtCovInverse_ = pfMEtCov_;
   if ( pfMEtCovDet_ != 0. ) pfMEtCovInverse_.Invert();

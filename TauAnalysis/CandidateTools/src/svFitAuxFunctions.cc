@@ -14,11 +14,8 @@
 namespace SVfit_namespace {
 
   // Adapted for our vector types from TVector3 class
-  reco::Candidate::Vector rotateUz(const math::RThetaPhiVector& toRotate,
-				   const reco::Candidate::Vector& newUzVector)
+  reco::Candidate::Vector rotateUz(const math::RThetaPhiVector& toRotate, const reco::Candidate::Vector& newUzVector)
   {
-    //std::cout << "<rotateUz>:" << std::endl;
-
     // NB: newUzVector must be a unit vector !
     Double_t u1 = newUzVector.X();
     Double_t u2 = newUzVector.Y();
@@ -40,8 +37,6 @@ namespace SVfit_namespace {
       fZ = -fZ;
     } else {}; // phi = 0, theta = pi
 
-    //std::cout << " fX = " << fX << ", fY = " << fY << ", fZ = " << fZ << std::endl;
-
     return reco::Candidate::Vector(fX, fY, fZ);
   }
 
@@ -59,112 +54,89 @@ namespace SVfit_namespace {
     return ROOT::Math::VectorUtil::boost(p4ToBoost, -boost);
   }
 
-  double gjAngleFromX(double x, double visMass, double pVis_rf, double enVis_lab) {
+  double gjAngleFromX(double x, double visMass, double pVis_rf, double enVis_lab, double motherMass) 
+  {
     double enVis_rf = energyFromMomentum(pVis_rf, visMass);
-    double beta = TMath::Sqrt(1. - square(tauLeptonMass*x/enVis_lab));
-    double cosGjAngle = (tauLeptonMass*x - enVis_rf)/(pVis_rf*beta);
+    double beta = TMath::Sqrt(1. - square(motherMass*x/enVis_lab));
+    double cosGjAngle = (motherMass*x - enVis_rf)/(pVis_rf*beta);
     double gjAngle = TMath::ACos(cosGjAngle);
     return gjAngle;
   }
 
-  double pVisRestFrame(double tauVisMass, double tauNuNuMass)
+  double pVisRestFrame(double visMass, double invisMass, double motherMass)
   {
-    //std::cout << "<pVisRestFrame>:" << std::endl;
-    //std::cout << " tauVisMass = " << tauVisMass << std::endl;
-    //std::cout << " tauNuNuMass = " << tauNuNuMass << std::endl;
-
-    double pVis = TMath::Sqrt((tauLeptonMass2 - square(tauVisMass + tauNuNuMass))
-			      *(tauLeptonMass2 - square(tauVisMass - tauNuNuMass)))/(2*tauLeptonMass);
-    //std::cout << "--> pVis = " << pVis << std::endl;
-
+    double motherMass2 = motherMass*motherMass;
+    double pVis = TMath::Sqrt((motherMass2 - square(visMass + invisMass))
+                             *(motherMass2 - square(visMass - invisMass)))/(2.*motherMass);
     return pVis;
   }
 
   double gjAngleToLabFrame(double pVisRestFrame, double gjAngle, double pVisLabFrame)
   {
-    //std::cout << "<gjAngleToLabFrame>:" << std::endl;
-
     // Get the compenent of the rest frame momentum perpindicular to the tau
     // boost direction. This quantity is Lorentz invariant.
     double pVisRestFramePerp = pVisRestFrame*TMath::Sin(gjAngle);
-    //std::cout << " pVisRestFramePerp = " << pVisRestFramePerp << std::endl;
 
     // Determine the corresponding opening angle in the LAB frame
     double gjAngleLabFrame = TMath::ASin(pVisRestFramePerp/pVisLabFrame);
-    //std::cout << "--> gjAngleLabFrame = " << gjAngleLabFrame << std::endl;
 
     return gjAngleLabFrame;
   }
 
-  double tauMomentumLabFrame(double tauVisMass, double pVisRestFrame, double gjAngle, double pVisLabFrame)
+  double motherMomentumLabFrame(double visMass, double pVisRestFrame, double gjAngle, double pVisLabFrame, double motherMass)
   {
-    //std::cout << "<tauMomentumLabFrame>:" << std::endl;
-
     // Determine the corresponding opening angle in the LAB frame
     double angleVisLabFrame = gjAngleToLabFrame(pVisRestFrame, gjAngle, pVisLabFrame);
-    //std::cout << " angleVisLabFrame = " << angleVisLabFrame << std::endl;
 
     // Get the visible momentum perpindicular/parallel to the tau boost direction in the LAB
-    double pVisLabFramePara = pVisLabFrame*TMath::Cos(angleVisLabFrame);
-    //std::cout << " pVisLabFramePara = " << pVisLabFramePara << std::endl;
+    double pVisLabFrame_parallel = pVisLabFrame*TMath::Cos(angleVisLabFrame);
 
     // Now use the Lorentz equation for pVis along the tau direction to solve for
     // the gamma of the tau boost.
-    double pVisRestFramePara = pVisRestFrame*TMath::Cos(gjAngle);
-    //std::cout << " pVisRestFramePara = " << pVisRestFramePara << std::endl;
-    double eVisRestFrame = TMath::Sqrt(square(tauVisMass) + square(pVisRestFrame));
-    //std::cout << " eVisRestFrame = " << eVisRestFrame << std::endl;
+    double pVisRestFrame_parallel = pVisRestFrame*TMath::Cos(gjAngle);
+    double enVisRestFrame = TMath::Sqrt(square(visMass) + square(pVisRestFrame));
 
-    double gamma = (eVisRestFrame * TMath::Sqrt(square(eVisRestFrame) + square(pVisLabFramePara)
-      - square(pVisRestFramePara)) - pVisRestFramePara*pVisLabFramePara)/(square(eVisRestFrame) - square(pVisRestFramePara));
-    //std::cout << " gamma = " << gamma << std::endl;
+    double gamma = (enVisRestFrame*TMath::Sqrt(square(enVisRestFrame) + square(pVisLabFrame_parallel) - square(pVisRestFrame_parallel)) 
+                  - pVisRestFrame_parallel*pVisLabFrame_parallel)/(square(enVisRestFrame) - square(pVisRestFrame_parallel));
 
-    double pTauLabFrame = TMath::Sqrt(square(gamma) - 1)*tauLeptonMass;
-    //std::cout << "--> pTauLabFrame = " << pTauLabFrame << std::endl;
+    double pMotherLabFrame = TMath::Sqrt(square(gamma) - 1)*motherMass;
 
-    return pTauLabFrame;
+    return pMotherLabFrame;
   }
 
-  reco::Candidate::Vector tauDirection(
-      const reco::Candidate::Vector& pVisLabFrame, double angleVisLabFrame,
-      double phiLab) {
+  reco::Candidate::Vector motherDirection(const reco::Candidate::Vector& pVisLabFrame, double angleVisLabFrame, double phiLab) 
+  {
     // The direction is defined using polar coordinates in a system where the visible energy
     // defines the Z axis.
-    math::RThetaPhiVector tauDirectionVisibleSystem(1.0, angleVisLabFrame, phiLab);
+    math::RThetaPhiVector motherDirectionVisibleSystem(1.0, angleVisLabFrame, phiLab);
 
     // Rotate into the LAB coordinate system
-    return rotateUz(tauDirectionVisibleSystem, pVisLabFrame.Unit());
+    return rotateUz(motherDirectionVisibleSystem, pVisLabFrame.Unit());
   }
 
-  reco::Candidate::LorentzVector tauP4(
-      const reco::Candidate::Vector& tauDirection, double tauMomentumLabFrame) {
-    //std::cout << "<tauP4>:" << std::endl;
-
+  reco::Candidate::LorentzVector motherP4(
+    const reco::Candidate::Vector& motherDirection, double motherMomentumLabFrame, double motherMass) 
+  {
     // NB: tauDirection must be a unit vector !
-    //reco::Candidate::Vector tauMomentum = tauDirection*tauMomentumLabFrame;
-
-    reco::Candidate::LorentzVector tauP4LabFrame =
+    reco::Candidate::LorentzVector motherP4LabFrame =
       reco::Candidate::LorentzVector(
-          tauDirection.x()*tauMomentumLabFrame,
-          tauDirection.y()*tauMomentumLabFrame,
-          tauDirection.z()*tauMomentumLabFrame,
-          TMath::Sqrt(tauMomentumLabFrame*tauMomentumLabFrame
-            + tauLeptonMass*tauLeptonMass));
+          motherDirection.x()*motherMomentumLabFrame,
+          motherDirection.y()*motherMomentumLabFrame,
+          motherDirection.z()*motherMomentumLabFrame,
+          TMath::Sqrt(motherMomentumLabFrame*motherMomentumLabFrame
+            + motherMass*motherMass));
 
-      //math::PtEtaPhiMLorentzVector(tauMomentum.rho(), tauMomentum.eta(), tauMomentum.phi(), tauLeptonMass));
-    //std::cout << "--> tauMomentum: E = " << tauP4LabFrame.energy() << ","
-    //          << " eta = " << tauP4LabFrame.eta() << ", phi = " << tauP4LabFrame.phi()*180./TMath::Pi() << ","
-    //          << " mass = " << tauP4LabFrame.mass() << std::endl;
-
-    return tauP4LabFrame;
+    return motherP4LabFrame;
   }
 
-  double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector& tauP4, const reco::Candidate::LorentzVector& visP4)
+  double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector& motherP4, const reco::Candidate::LorentzVector& visP4)
   {
     double decayAngle_rf = 0.;
-    reco::Candidate::LorentzVector visP4_rf = boostToCOM(tauP4, visP4);
-    if ( (tauP4.pt()*visP4_rf.pt()) > 0. ) {
-      double scalarProduct = (tauP4.px()*visP4_rf.px() + tauP4.py()*visP4_rf.py() + tauP4.pz()*visP4_rf.pz())/(tauP4.P()*visP4_rf.P());
+    reco::Candidate::LorentzVector visP4_rf = boostToCOM(motherP4, visP4);
+    if ( (motherP4.pt()*visP4_rf.pt()) > 0. ) {
+      double scalarProduct = (motherP4.px()*visP4_rf.px() 
+                            + motherP4.py()*visP4_rf.py() 
+                            + motherP4.pz()*visP4_rf.pz())/(motherP4.P()*visP4_rf.P());
       decayAngle_rf = TMath::ACos(scalarProduct);
     }
     return decayAngle_rf;

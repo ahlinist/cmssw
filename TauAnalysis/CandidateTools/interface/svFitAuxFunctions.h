@@ -98,22 +98,22 @@ namespace SVfit_namespace
   }
 
   /// Determine Gottfried-Jackson angle from visible energy fraction X
-  double gjAngleFromX(double, double, double, double);
+  double gjAngleFromX(double, double, double, double, double);
 
   /// Determine visible tau rest frame energy given visible mass and neutrino mass
-  double pVisRestFrame(double, double);
+  double pVisRestFrame(double, double, double);
 
   /// Convert the Gottfried-Jackson angle into a lab frame opening angle
   double gjAngleToLabFrame(double, double, double);
 
   /// Determine the tau momentum in the lab frame given the rest frame assumptions
-  double tauMomentumLabFrame(double, double, double, double);
+  double motherMomentumLabFrame(double, double, double, double, double );
 
   /// Determine the tau direction given our parameterization
-  reco::Candidate::Vector tauDirection(const reco::Candidate::Vector&, double, double);
+  reco::Candidate::Vector motherDirection(const reco::Candidate::Vector&, double, double);
 
   /// Compute the tau four vector given the tau direction and momentum
-  reco::Candidate::LorentzVector tauP4(const reco::Candidate::Vector&, double);
+    reco::Candidate::LorentzVector motherP4(const reco::Candidate::Vector&, double, double);
 
   /// Compute decay angle in rest frame given momentum of tau lepton and visible decay product in lab frame
   double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
