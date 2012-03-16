@@ -86,12 +86,15 @@ def main(options,args):
     atgcModel.SetGlobalObservables(ws.set('glbObs'))
     atgcModel.SetSnapshot(ws.set('POI'))
 
-    limitCalc = RooStats.FeldmanCousins(ws.data('allcountingdata'),
-                                        atgcModel)
+    #limitCalc = RooStats.FeldmanCousins(ws.data('allcountingdata'),
+    #                                    atgcModel)
 
-    hypoTest = limitCalc.GetInterval()
+    limitCalc = RooStats.ProfileLikelihoodCalculator(ws.data('allcountingdata'),
+                                                     atgcModel)
 
-    hypoTest.GetParameters().Print("V")
+    hypoTest = limitCalc.GetHypoTest()
+
+    print hypoTest.CLs()
 
     exit(1)
     
@@ -108,7 +111,8 @@ def main(options,args):
     ws.saveSnapshot('%s_fitresult'%cfg.get('Global','couplingType'),
                     ws.allVars())
 
-        
+    exit(1)
+
     #create profile likelihood       
     level_68 = ROOT.TMath.ChisquareQuantile(.68,2)/2.0 # delta NLL for 68% confidence level for -log(LR)
     level_95 = ROOT.TMath.ChisquareQuantile(.95,2)/2.0 # delta NLL for 95% confidence level for -log(LR)
@@ -591,16 +595,17 @@ def createPdfForChannel(ws,cfg,section):
     
     ws.factory('prod::sigExp_%s(%s_signal_model,%s_err_gs,err_gl)'%(section,section,section))
     ws.factory('prod::bkgExp_%s(%s_background_model,%s_err_gb)'%(section,section,section))
-    ws.factory('Uniform::dummy_%s(n_observed_%s)'%(section,section))
+    ws.factory('Uniform::dummysig_%s(n_observed_%s)'%(section,section))
+    ws.factory('Uniform::dummybkg_%s(n_observed_%s)'%(section,section))
     ws.factory('sum::expected_%s(sigExp_%s,bkgExp_%s)'%(section,section,section)) # for easy plotting 
     #ws.factory('RooPoisson::pois_%s(n_observed_%s,expected_%s)'%(section,
     #                                                             section,
     #                                                             section))    
     #ws.factory('PROD::countingpdf_%s(pois_%s,selectionErr_%s,backgroundErr_%s,lumiErr)'%(section,section,section,section))
     
-    ws.factory('SUM::model_%s(sigExp_%s*dummy_%s,bkgExp_%s*dummy_%s)'%(section,
-                                                                       section,section,
-                                                                       section,section))
+    ws.factory('SUM::model_%s(sigExp_%s*dummysig_%s,bkgExp_%s*dummybkg_%s)'%(section,
+                                                                             section,section,
+                                                                             section,section))
     ws.factory('PROD::countingpdf_%s(model_%s,selectionErr_%s,backgroundErr_%s,lumiErr)'%(section,section,
                                                                                           section,section))
     ws.set('nuis').add(RooArgSet(ws.var('%s_err_gs'%section),
