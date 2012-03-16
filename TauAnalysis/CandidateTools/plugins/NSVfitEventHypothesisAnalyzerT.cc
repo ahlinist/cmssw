@@ -40,8 +40,13 @@ NSVfitEventHypothesisAnalyzerT<T>::NSVfitEventHypothesisAnalyzerT(const edm::Par
 template <typename T>
 NSVfitEventHypothesisAnalyzerT<T>::~NSVfitEventHypothesisAnalyzerT()
 {
-  for ( typename std::vector<plotEntryType*>::iterator it = plotEntries_.begin();
-	it != plotEntries_.end(); ++it ) {
+  for ( typename std::vector<plotEntryType1*>::iterator it = plotEntries1_.begin();
+	it != plotEntries1_.end(); ++it ) {
+    delete (*it);
+  }
+
+  for ( typename std::vector<plotEntryType2*>::iterator it = plotEntries2_.begin();
+	it != plotEntries2_.end(); ++it ) {
     delete (*it);
   }
 }
@@ -60,15 +65,33 @@ void NSVfitEventHypothesisAnalyzerT<T>::beginJob()
 
   svFitIsValidSolution_ = dqmStore.book1D("svFitIsValidSolution", "svFitIsValidSolution",  2, -0.5, 1.5);
 
-  plotEntries_.push_back(new plotEntryType(dqmDirectory_, -1., -1., +1));
-  plotEntries_.push_back(new plotEntryType(dqmDirectory_, -1., -1., -1));
-  plotEntries_.push_back(new plotEntryType(dqmDirectory_,  0., 15.,  0));
-  plotEntries_.push_back(new plotEntryType(dqmDirectory_, 15., 25.,  0));
-  plotEntries_.push_back(new plotEntryType(dqmDirectory_, 25., 35.,  0));
-  plotEntries_.push_back(new plotEntryType(dqmDirectory_, 35., 45.,  0));
-  plotEntries_.push_back(new plotEntryType(dqmDirectory_, 45., -1.,  0));
-  for ( typename std::vector<plotEntryType*>::iterator plotEntry = plotEntries_.begin();
-	plotEntry != plotEntries_.end(); ++plotEntry ) {
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  -1.,  -1.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  -1.,  -1., +1));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  -1.,  -1., -1));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,   0.,  30.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  30.,  60.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  60.,  90.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  90., 120.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 120., 140.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 140., 160.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 160., 170.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 170., 175.,  0));
+  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 175.,  -1.,  0));
+  for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
+	plotEntry != plotEntries1_.end(); ++plotEntry ) {
+    (*plotEntry)->bookHistograms(dqmStore);
+  }
+
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  -1.,  -1.,  0));
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  -1.,  -1., +1));
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  -1.,  -1., -1));
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,   0.,  15.,  0));
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  15.,  25.,  0));
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  25.,  35.,  0));
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  35.,  45.,  0));
+  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  45.,  -1.,  0));
+  for ( typename std::vector<plotEntryType2*>::iterator plotEntry = plotEntries2_.begin();
+	plotEntry != plotEntries2_.end(); ++plotEntry ) {
     (*plotEntry)->bookHistograms(dqmStore);
   }
 }
@@ -186,13 +209,22 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     double metPullProjLeg1 = metErrProjLeg1/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, svFitDaughter1P4);
     double metErrProjLeg2  = compProjVecXY(recMEtP4 - genMEtP4, svFitDaughter2P4);
     double metPullProjLeg2 = metErrProjLeg2/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, svFitDaughter2P4);
+
+    for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
+	  plotEntry != plotEntries1_.end(); ++plotEntry ) {
+      (*plotEntry)->fillHistograms(
+        svFitIsValidSolution,			     
+	svFitDaughter1P4, svFitDaughter2P4, 
+	svFitMass_mean, svFitMass_median, svFitMass_maximum, svFitMass_maxInterpol, 
+	svFitSigma, 
+	evtWeight);
+    }
     
-    for ( typename std::vector<plotEntryType*>::iterator plotEntry = plotEntries_.begin();
-	  plotEntry != plotEntries_.end(); ++plotEntry ) {
+    for ( typename std::vector<plotEntryType2*>::iterator plotEntry = plotEntries2_.begin();
+	  plotEntry != plotEntries2_.end(); ++plotEntry ) {
       (*plotEntry)->fillHistograms(
         svFitIsValidSolution,			     
 	genLeg1P4, svFitDaughter1P4, genLeg2P4, svFitDaughter2P4, svFitMass, svFitSigma, diTauPt, prodAngle_rf,
-	svFitMass_mean, svFitMass_median, svFitMass_maximum, svFitMass_maxInterpol, 
 	metCov, rec_minus_genMEtP4, metPull, metErrProjLeg1, metPullProjLeg1, metErrProjLeg2, metPullProjLeg2, 
 	evtWeight);
     }
@@ -210,8 +242,13 @@ void NSVfitEventHypothesisAnalyzerT<T>::endJob()
   //	      << " num. Events processed = " << numEvents_processed_ << "," 
   //	      << " weighted = " << numEventsWeighted_processed_ << std::endl;
 
-  for ( typename std::vector<plotEntryType*>::iterator plotEntry = plotEntries_.begin();
-	plotEntry != plotEntries_.end(); ++plotEntry ) {
+  for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
+	plotEntry != plotEntries1_.end(); ++plotEntry ) {
+    (*plotEntry)->finalizeHistograms();
+  }
+
+  for ( typename std::vector<plotEntryType2*>::iterator plotEntry = plotEntries2_.begin();
+	plotEntry != plotEntries2_.end(); ++plotEntry ) {
     (*plotEntry)->finalizeHistograms();
   }
 }

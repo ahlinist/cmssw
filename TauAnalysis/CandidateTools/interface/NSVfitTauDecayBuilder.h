@@ -7,19 +7,21 @@
  *
  * \author Evan K. Friis, Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitTauDecayBuilderBase.h,v 1.7 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitTauDecayBuilder.h,v 1.1 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitTrackService.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesis.h"
-#include "DataFormats/TrackReco/interface/Track.h"
 
 class NSVfitSingleParticleHypothesis;
 class NSVfitAlgorithmBase;

@@ -3,6 +3,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneLikelihood.h"
 
 using namespace NSVfitStandalone;
+using namespace SVfit_namespace;
 
 const NSVfitStandaloneLikelihood* NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood = 0;
 
@@ -92,16 +93,16 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
     // to the electron mass
     if(visMass<5.1e-4) { visMass = 5.1e-4; }    
     // momentum of visible decay products in tau lepton restframe
-    double restframeVisMom     = SVfit_namespace::pVisRestFrame(visMass, nunuMass);
+    double restframeVisMom     = pVisRestFrame(visMass, nunuMass, tauLeptonMass);
     // tau lepton decay angle in tau lepton restframe (as function of the energy ratio of visible decay products/tau lepton energy)
-    double restframeDecayAngle = SVfit_namespace::gjAngleFromX(labframeXFrac, visMass, restframeVisMom, labframeVisEn);
+    double restframeDecayAngle = gjAngleFromX(labframeXFrac, visMass, restframeVisMom, labframeVisEn, tauLeptonMass);
     // tau lepton decay angle in labframe
-    double labframeDecayAngle  = SVfit_namespace::gjAngleToLabFrame(restframeVisMom, restframeDecayAngle, labframeVisMom);
+    double labframeDecayAngle  = gjAngleToLabFrame(restframeVisMom, restframeDecayAngle, labframeVisMom);
     // tau lepton momentum in labframe
-    double labframeTauMom      = SVfit_namespace::tauMomentumLabFrame(visMass, restframeVisMom, restframeDecayAngle, labframeVisMom);
-    Vector labframeTauDir      = SVfit_namespace::tauDirection(measuredTauLeptons_[idx].direction(), labframeDecayAngle, labframePhi).unit();
+    double labframeTauMom      = motherMomentumLabFrame(visMass, restframeVisMom, restframeDecayAngle, labframeVisMom, tauLeptonMass);
+    Vector labframeTauDir      = motherDirection(measuredTauLeptons_[idx].direction(), labframeDecayAngle, labframePhi).unit();
     // tau lepton four vector in labframe
-    fittedDiTauSystem += SVfit_namespace::tauP4(labframeTauDir, labframeTauMom);
+    fittedDiTauSystem += motherP4(labframeTauDir, labframeTauMom, tauLeptonMass);
     // fill branch-wise nll parameters
     xPrime[ idx==0 ? kNuNuMass1   : kNuNuMass2   ] = nunuMass;
     xPrime[ idx==0 ? kVisMass1    : kVisMass2    ] = visMass;
@@ -204,16 +205,17 @@ NSVfitStandaloneLikelihood::results(std::vector<LorentzVector>& fittedTauLeptons
     double visMass        = measuredTauLeptons_[ idx ].mass();     // vis mass
   
     // momentum of visible decay products in tau lepton restframe
-    double restframeVisMom     = SVfit_namespace::pVisRestFrame(visMass, nunuMass);
+    double restframeVisMom     = pVisRestFrame(visMass, nunuMass, tauLeptonMass);
     // tau lepton decay angle in tau lepton restframe (as function of the energy ratio of visible decay products/tau lepton energy)
-    double restframeDecayAngle = SVfit_namespace::gjAngleFromX(labframeXFrac, visMass, restframeVisMom, labframeVisEn);
+    double restframeDecayAngle = gjAngleFromX(labframeXFrac, visMass, restframeVisMom, labframeVisEn, 
+tauLeptonMass);
     // tau lepton decay angle in labframe
-    double labframeDecayAngle  = SVfit_namespace::gjAngleToLabFrame(restframeVisMom, restframeDecayAngle, labframeVisMom);
+    double labframeDecayAngle  = gjAngleToLabFrame(restframeVisMom, restframeDecayAngle, labframeVisMom);
     // tau lepton momentum in labframe
-    double labframeTauMom      = SVfit_namespace::tauMomentumLabFrame(visMass, restframeVisMom, restframeDecayAngle, labframeVisMom);
-    Vector labframeTauDir      = SVfit_namespace::tauDirection(measuredTauLeptons_[idx].direction(), labframeDecayAngle, labframePhi).unit();
+    double labframeTauMom      = motherMomentumLabFrame(visMass, restframeVisMom, restframeDecayAngle, labframeVisMom, tauLeptonMass);
+    Vector labframeTauDir      = motherDirection(measuredTauLeptons_[idx].direction(), labframeDecayAngle, labframePhi).unit();
     // tau lepton four vector in labframe
-    fittedTauLeptons.push_back(SVfit_namespace::tauP4(labframeTauDir, labframeTauMom));
+    fittedTauLeptons.push_back(motherP4(labframeTauDir, labframeTauMom, tauLeptonMass));
   }
   return;
 }

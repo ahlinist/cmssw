@@ -92,6 +92,9 @@ std::string get_name_incl_type(const std::string& name, int type)
   else if ( type == nSVfit_namespace::kLep_shiftEn           ) retVal.append("shiftEn");
   else if ( type == nSVfit_namespace::kNu_energy_lab         ) retVal.append("energy_lab");
   else if ( type == nSVfit_namespace::kNu_phi_lab            ) retVal.append("phi_lab");
+  else if ( type == nSVfit_namespace::kW_theta_lab           ) retVal.append("W_theta_lab");
+  else if ( type == nSVfit_namespace::kW_phi_lab             ) retVal.append("W_phi_lab");
+  else if ( type == nSVfit_namespace::kW_mass                ) retVal.append("W_mass");
   else retVal.append("undefined");
   return retVal;
 }
@@ -122,6 +125,9 @@ void NSVfitParameter::initializeDefaultValues()
   defaultInitialValues_[nSVfit_namespace::kLep_shiftEn]           =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_energy_lab]         =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_phi_lab]            =  0.;
+  defaultInitialValues_[nSVfit_namespace::kW_theta_lab]           =  0.50*TMath::Pi();
+  defaultInitialValues_[nSVfit_namespace::kW_phi_lab]             =  0.;
+  defaultInitialValues_[nSVfit_namespace::kW_mass]                = 80.399; // GeV
 
   defaultLimits_.resize(nSVfit_namespace::kNu_phi_lab + 1);
   defaultLimits_[nSVfit_namespace::kPV_shiftX]                    = pdouble(         -0.1,         +0.1); // cm
@@ -141,6 +147,9 @@ void NSVfitParameter::initializeDefaultValues()
   defaultLimits_[nSVfit_namespace::kLep_shiftEn]                  = pdouble(          0.,          10.);  // relative to measured lepton energy
   defaultLimits_[nSVfit_namespace::kNu_energy_lab]                = pdouble(          0.,        1.e+3);  // GeV
   defaultLimits_[nSVfit_namespace::kNu_phi_lab]                   = pdouble(          0.,  TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kW_theta_lab]                  = pdouble(          0.,  TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kW_phi_lab]                    = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kW_mass]                       = pdouble(80.399 - 3.*2.085, 80.399 + 3.*2.085); // GeV
 
   defaultStepSizes_.resize(nSVfit_namespace::kNu_phi_lab + 1);
   defaultStepSizes_[nSVfit_namespace::kPV_shiftX]                 =  0.01;
@@ -160,6 +169,9 @@ void NSVfitParameter::initializeDefaultValues()
   defaultStepSizes_[nSVfit_namespace::kLep_shiftEn]               =  0.01;
   defaultStepSizes_[nSVfit_namespace::kNu_energy_lab]             = 10.;
   defaultStepSizes_[nSVfit_namespace::kNu_phi_lab]                =  0.25;
+  defaultStepSizes_[nSVfit_namespace::kW_theta_lab]               =  0.25;
+  defaultStepSizes_[nSVfit_namespace::kW_phi_lab]                 =  0.25;
+  defaultStepSizes_[nSVfit_namespace::kW_mass]                    =  1.;
  
   defaultValues_initialized_ = true;
 }

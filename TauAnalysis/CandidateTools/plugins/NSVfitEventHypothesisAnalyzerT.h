@@ -52,9 +52,99 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 
   MonitorElement* svFitIsValidSolution_;
   
-  struct plotEntryType
+  struct plotEntryType1
   {
-    plotEntryType(const std::string& dqmDirectory, double minSVfitSigma, double maxSVfitSigma, int isValidSolution)
+    plotEntryType1(const std::string& dqmDirectory, double minDPhi12, double maxDPhi12, int isValidSolution)
+      : minDPhi12_(minDPhi12),
+	maxDPhi12_(maxDPhi12),
+	isValidSolution_(isValidSolution)
+    {
+      TString dqmDirectory_full = dqmDirectory.data();
+      if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
+      if      ( minDPhi12_ <= 0. && 
+		maxDPhi12_ <= 0. ) dqmDirectory_full.Append("");
+      else if ( minDPhi12_ <= 0. ) dqmDirectory_full.Append(Form("dPhiLt%1.0f", maxDPhi12_));
+      else if ( maxDPhi12_ <= 0. ) dqmDirectory_full.Append(Form("dPhiGt%1.0f", minDPhi12_));
+      else                         dqmDirectory_full.Append(Form("dPhi%1.0fto%1.0f", minDPhi12_, maxDPhi12_));
+      dqmDirectory_full.ReplaceAll(".", "_");
+      if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
+      if ( isValidSolution_ > 0 ) dqmDirectory_full.Append("validSVfitSolution");
+      if ( isValidSolution_ < 0 ) dqmDirectory_full.Append("invalidSVfitSolution");
+      dqmDirectory_ = dqmDirectory_full.Data();
+    }
+    ~plotEntryType1() {}
+    void bookHistograms(DQMStore& dqmStore)
+    {
+      dqmStore.setCurrentFolder(dqmDirectory_.data());
+
+      svFitMass_mean_        = dqmStore.book1D("svFitMass_mean",        "svFitMass_mean",        250, 0., 250.);
+      svFitMass_median_      = dqmStore.book1D("svFitMass_median",      "svFitMass_median",      250, 0., 250.);
+      svFitMass_maximum_     = dqmStore.book1D("svFitMass_maximum",     "svFitMass_maximum",     250, 0., 250.);
+      svFitMass_maxInterpol_ = dqmStore.book1D("svFitMass_maxInterpol", "svFitMass_maxInterpol", 250, 0., 250.);
+      
+      svFitMassVsSigma_mean_ = 
+	dqmStore.book2D("svFitMassVsSigma_mean",        
+			"svFitMassVsSigma_mean", 50, 0.,  50., 50, 0., 250.);
+      svFitMassVsSigma_median_ = 
+	dqmStore.book2D("svFitMassVsSigma_median",      
+			"svFitMassVsSigma_median", 50, 0.,  50., 50, 0., 250.);
+      svFitMassVsSigma_maximum_ = 
+	dqmStore.book2D("svFitMassVsSigma_maximum",     
+			"svFitMassVsSigma_maximum", 50, 0.,  50., 50, 0., 250.);
+      svFitMassVsSigma_maxInterpol_ = 
+	dqmStore.book2D("svFitMassVsSigma_maxInterpol", 
+			"svFitMassVsSigma_maxInterpol", 50, 0.,  50., 50, 0., 250.);
+    }      
+    void fillHistograms(bool isValidSolution,
+			const reco::Candidate::LorentzVector& recLeg1P4, const reco::Candidate::LorentzVector& recLeg2P4,  
+			double svFitMass_mean, double svFitMass_median, double svFitMass_maximum, double svFitMass_maxInterpol,
+			double svFitSigma,
+			double evtWeight)
+    {
+      if ( isValidSolution_ < 0 &&  isValidSolution ) return;
+      if ( isValidSolution_ > 0 && !isValidSolution ) return;
+
+      double dPhi12 = TMath::ACos(TMath::Cos(recLeg1P4.phi() - recLeg2P4.phi()));
+      dPhi12 *= TMath::RadToDeg();
+      
+      if ( (dPhi12 > minDPhi12_ || minDPhi12_ <= 0.) &&
+	   (dPhi12 < maxDPhi12_ || maxDPhi12_ <= 0.) ) {
+
+	svFitMass_mean_ ->Fill(svFitMass_mean, evtWeight);
+	svFitMass_median_->Fill(svFitMass_median, evtWeight);
+	svFitMass_maximum_->Fill(svFitMass_maximum, evtWeight);
+	svFitMass_maxInterpol_->Fill(svFitMass_maxInterpol, evtWeight);
+
+	svFitMassVsSigma_mean_->Fill(svFitSigma, svFitMass_mean, evtWeight);
+	svFitMassVsSigma_median_->Fill(svFitSigma, svFitMass_median, evtWeight);
+	svFitMassVsSigma_maximum_->Fill(svFitSigma, svFitMass_maximum, evtWeight);
+	svFitMassVsSigma_maxInterpol_->Fill(svFitSigma, svFitMass_maxInterpol, evtWeight);
+      }
+    }
+
+    void finalizeHistograms()
+    {}
+
+    std::string dqmDirectory_;
+
+    double minDPhi12_;
+    double maxDPhi12_;
+    int isValidSolution_;
+
+    MonitorElement* svFitMass_mean_;
+    MonitorElement* svFitMass_median_;
+    MonitorElement* svFitMass_maximum_;
+    MonitorElement* svFitMass_maxInterpol_;
+
+    MonitorElement* svFitMassVsSigma_mean_;
+    MonitorElement* svFitMassVsSigma_median_;
+    MonitorElement* svFitMassVsSigma_maximum_;
+    MonitorElement* svFitMassVsSigma_maxInterpol_;
+  };
+
+  struct plotEntryType2
+  {
+    plotEntryType2(const std::string& dqmDirectory, double minSVfitSigma, double maxSVfitSigma, int isValidSolution)
       : minSVfitSigma_(minSVfitSigma),
 	maxSVfitSigma_(maxSVfitSigma),
 	isValidSolution_(isValidSolution)
@@ -72,7 +162,7 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       if ( isValidSolution_ < 0 ) dqmDirectory_full.Append("invalidSVfitSolution");
       dqmDirectory_ = dqmDirectory_full.Data();
     }
-    ~plotEntryType() {}
+    ~plotEntryType2() {}
     void bookHistograms(DQMStore& dqmStore)
     {
       dqmStore.setCurrentFolder(dqmDirectory_.data());
@@ -84,11 +174,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       diTauPt_    = dqmStore.book1D("diTauPt",    "diTauPt",    250, 0., 250.);
       svFitMass_  = dqmStore.book1D("svFitMass",  "svFitMass",  250, 0., 250.);
       svFitSigma_ = dqmStore.book1D("svFitSigma", "svFitSigma", 250, 0., 250.);     
-
-      svFitMass_mean_        = dqmStore.book1D("svFitMass_mean",        "svFitMass_mean",        250, 0., 250.);
-      svFitMass_median_      = dqmStore.book1D("svFitMass_median",      "svFitMass_median",      250, 0., 250.);
-      svFitMass_maximum_     = dqmStore.book1D("svFitMass_maximum",     "svFitMass_maximum",     250, 0., 250.);
-      svFitMass_maxInterpol_ = dqmStore.book1D("svFitMass_maxInterpol", "svFitMass_maxInterpol", 250, 0., 250.);
 
       svFitMassVsLeg1Pt_  = dqmStore.book2D("svFitMassVsLeg1Pt",  "svFitMassVsLeg1Pt",  150, 0., 150., 50, 0., 250.);
       svFitMassVsLeg2Pt_  = dqmStore.book2D("svFitMassVsLeg2Pt",  "svFitMassVsLeg2Pt",  150, 0., 150., 50, 0., 250.);
@@ -111,19 +196,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       svFitMassVsSigma_ = 
 	dqmStore.book2D("svFitMassVsSigma",             
 			"svFitMassVsSigma", 50, 0.,  50., 50, 0., 250.);
-
-      svFitMassVsSigma_mean_ = 
-	dqmStore.book2D("svFitMassVsSigma_mean",        
-			"svFitMassVsSigma_mean", 50, 0.,  50., 50, 0., 250.);
-      svFitMassVsSigma_median_ = 
-	dqmStore.book2D("svFitMassVsSigma_median",      
-			"svFitMassVsSigma_median", 50, 0.,  50., 50, 0., 250.);
-      svFitMassVsSigma_maximum_ = 
-	dqmStore.book2D("svFitMassVsSigma_maximum",     
-			"svFitMassVsSigma_maximum", 50, 0.,  50., 50, 0., 250.);
-      svFitMassVsSigma_maxInterpol_ = 
-	dqmStore.book2D("svFitMassVsSigma_maxInterpol", 
-			"svFitMassVsSigma_maxInterpol", 50, 0.,  50., 50, 0., 250.);
       
       metErrPx_ = dqmStore.book1D("metErrPx", "metErrPx", 200, -100., +100.);
       metErrPy_ = dqmStore.book1D("metErrPy", "metErrPy", 200, -100., +100.);
@@ -178,7 +250,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 			const reco::Candidate::LorentzVector& genLeg1P4, const reco::Candidate::LorentzVector& recLeg1P4, 
 			const reco::Candidate::LorentzVector& genLeg2P4, const reco::Candidate::LorentzVector& recLeg2P4, 
 			double svFitMass, double svFitSigma, double diTauPt, double prodAngle_rf,
-			double svFitMass_mean, double svFitMass_median, double svFitMass_maximum, double svFitMass_maxInterpol,
 			double metCov, const reco::Candidate::LorentzVector& rec_minus_genMEtP4, double metPull, 
 			double metErrProjLeg1, double metPullProjLeg1, double metErrProjLeg2, double metPullProjLeg2, 
 			double evtWeight)
@@ -212,11 +283,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	svFitMassVsLeg2PtErr_->Fill(recLeg2Pt - genLeg2Pt, svFitMass, evtWeight);
 	svFitSigmaVsLeg2PtErr_->Fill(recLeg2Pt - genLeg2Pt, svFitSigma, evtWeight);
 
-	svFitMass_mean_ ->Fill(svFitMass_mean, evtWeight);
-	svFitMass_median_->Fill(svFitMass_median, evtWeight);
-	svFitMass_maximum_->Fill(svFitMass_maximum, evtWeight);
-	svFitMass_maxInterpol_->Fill(svFitMass_maxInterpol, evtWeight);
-	
 	svFitMassVsLeg1Pt_->Fill(recLeg1Pt, svFitMass, evtWeight);
 	svFitMassVsLeg2Pt_->Fill(recLeg2Pt, svFitMass, evtWeight);
 	svFitMassVsVisMass_->Fill(visMass, svFitMass, evtWeight);
@@ -227,10 +293,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	svFitSigmaVsProdAngle_rf_->Fill(prodAngle_rf, svFitSigma, evtWeight);
 	
 	svFitMassVsSigma_->Fill(svFitSigma, svFitMass, evtWeight);   
-	svFitMassVsSigma_mean_->Fill(svFitSigma, svFitMass_mean, evtWeight);
-	svFitMassVsSigma_median_->Fill(svFitSigma, svFitMass_median, evtWeight);
-	svFitMassVsSigma_maximum_->Fill(svFitSigma, svFitMass_maximum, evtWeight);
-	svFitMassVsSigma_maxInterpol_->Fill(svFitSigma, svFitMass_maxInterpol, evtWeight);
 	
 	metErrPx_->Fill(rec_minus_genMEtP4.px(), evtWeight);
 	metErrPy_->Fill(rec_minus_genMEtP4.py(), evtWeight);
@@ -272,11 +334,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* svFitMass_;
     MonitorElement* svFitSigma_;
 
-    MonitorElement* svFitMass_mean_;
-    MonitorElement* svFitMass_median_;
-    MonitorElement* svFitMass_maximum_;
-    MonitorElement* svFitMass_maxInterpol_;
-
     MonitorElement* svFitMassVsLeg1Pt_;
     MonitorElement* svFitMassVsLeg2Pt_;
     MonitorElement* svFitMassVsVisMass_;
@@ -292,10 +349,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* svFitSigmaVsProdAngle_rf_;
 
     MonitorElement* svFitMassVsSigma_;
-    MonitorElement* svFitMassVsSigma_mean_;
-    MonitorElement* svFitMassVsSigma_median_;
-    MonitorElement* svFitMassVsSigma_maximum_;
-    MonitorElement* svFitMassVsSigma_maxInterpol_;
 
     MonitorElement* metErrPx_;
     MonitorElement* metErrPy_;
@@ -319,7 +372,8 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* svFitSigmaVsMEtPullProjLeg2_;
   };
 
-  std::vector<plotEntryType*> plotEntries_;
+  std::vector<plotEntryType1*> plotEntries1_;
+  std::vector<plotEntryType2*> plotEntries2_;
 
   long numEvents_processed_;
   double numEventsWeighted_processed_;

@@ -12,15 +12,14 @@ using namespace SVfit::track;
 
 using namespace SVfit_namespace;
 
-// Map the fit parameters to indices.
-void
-NSVfitTauDecayBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
+void NSVfitTauDecayBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   algorithm_ = algorithm;
 
-  idxFitParameter_visEnFracX_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX);
-  idxFitParameter_phi_lab_     = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_phi_lab);
-  idxFitParameter_deltaR_      = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_decayDistance_lab, true);
+  // Map the fit parameters to indices.
+  idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX);
+  idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_phi_lab);
+  idxFitParameter_deltaR_     = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_decayDistance_lab, true);
 }
 
 void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, const reco::Candidate* visCandidate) const
@@ -68,17 +67,17 @@ NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hypothe
   const reco::Candidate::Vector& p3Vis_unit = hypothesis_T->p3Vis_unit();
 
 //--- compute momentum of visible decay products in tau lepton rest frame
-  double pVis_rf = pVisRestFrame(visMass, nuInvMass);
+  double pVis_rf = pVisRestFrame(visMass, nuInvMass, tauLeptonMass);
 
 //--- decay angle in tau lepton rest frame as function of X
 //    (= energy ratio of visible decay products/tau lepton energy)
-  double gjAngle = SVfit_namespace::gjAngleFromX(visEnFracX, visMass, pVis_rf, enVis_lab);
+  double gjAngle = gjAngleFromX(visEnFracX, visMass, pVis_rf, enVis_lab, tauLeptonMass);
 
 //--- compute tau lepton decay angle in laboratory frame
-  double angleVis_lab = SVfit_namespace::gjAngleToLabFrame(pVis_rf, gjAngle, pVis_lab);
+  double angleVis_lab = gjAngleToLabFrame(pVis_rf, gjAngle, pVis_lab);
 
 //--- compute tau lepton momentum in laboratory frame
-  double pTau_lab = SVfit_namespace::tauMomentumLabFrame(visMass, pVis_rf, gjAngle, pVis_lab);
+  double pTau_lab = motherMomentumLabFrame(visMass, pVis_rf, gjAngle, pVis_lab, tauLeptonMass);
 
 //--- compute tau lepton direction in laboratory frame
   reco::Candidate::Vector tauFlight;
@@ -86,7 +85,7 @@ NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hypothe
   //std::stringstream decayVertexLog;
   // If we are not using track likelihoods, the tau direction is just a unit vector.
   if ( idxFitParameter_deltaR_ == -1 || tracks.size() == 0 ) {
-    tauFlight = SVfit_namespace::tauDirection(p3Vis_unit, angleVis_lab, phi_lab);
+    tauFlight = motherDirection(p3Vis_unit, angleVis_lab, phi_lab);
     if ( this->verbosity_ )
       std::cout << " Build non-track based vertex @ " << tauFlight << std::endl;
   } else {
@@ -254,7 +253,7 @@ NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hypothe
   }
 
 //--- compute tau lepton four-vector in laboratory frame
-  reco::Candidate::LorentzVector p4Tau = SVfit_namespace::tauP4(tauFlight.Unit(), pTau_lab);
+  reco::Candidate::LorentzVector p4Tau = motherP4(tauFlight.Unit(), pTau_lab, tauLeptonMass);
 
   hypothesis_T->p4_fitted_      = p4Tau;
   hypothesis_T->dp4_            = (p4Tau - hypothesis_T->p4_);
@@ -267,8 +266,8 @@ NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hypothe
 
   if ( verbosity_ ) {
     std::cout << "<NSVfitTauDecayBuilderBase::applyFitParameter>:" << std::endl;
-    std::cout << " visEnFracX = " << param[idxFitParameter_visEnFracX_] << std::endl;
-    std::cout << " phi_lab = " << param[idxFitParameter_phi_lab_] << std::endl;
+    std::cout << " visEnFracX = " << visEnFracX << std::endl;
+    std::cout << " phi_lab = " << phi_lab << std::endl;
     std::cout << " enVis_lab = " << enVis_lab << std::endl;
     std::cout << " visMass = " << visMass << std::endl;
     std::cout << " nuInvMass = " << hypothesis_T->p4invis_rf_.mass() << std::endl;

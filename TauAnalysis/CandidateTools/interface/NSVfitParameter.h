@@ -19,7 +19,9 @@ namespace nSVfit_namespace
     // fit parameters specific to electrons, muons not originating from tau decays
     kLep_shiftEn,
     // fit parameters specific to neutrinos (not originating from tau decays)
-    kNu_energy_lab, kNu_phi_lab
+    kNu_energy_lab, kNu_phi_lab,
+    // fit parameters specific to W -> e nu and W -> mu nu decays
+    kW_theta_lab, kW_phi_lab, kW_mass
   };
 }
 
