@@ -9,7 +9,9 @@ import ROOT
 from ROOT import RooWorkspace, TFile, TH1, TChain, RooDataHist, \
      RooHistFunc, RooFit, RooSimultaneous, RooDataSet, TH1F, \
      RooRealVar, RooBinning, RooThresholdCategory, RooCategory, \
-     RooArgSet, RooArgList, TH2F, TTree, TF2, RooFormulaVar, TCanvas
+     RooArgSet, RooArgList, TH2F, TTree, TF2, RooFormulaVar, TCanvas, \
+     RooStats
+
 #pretty plots stuff from Irakli
 from beautify import beautify
 from initCMSStyle import initCMSStyle
@@ -35,13 +37,63 @@ def main(options,args):
                                              RooFit.NumCPU(1),
                                              RooFit.ConditionalObservables(ws.set('condObs')),
                                              RooFit.Verbose(True))
-
-    ws.saveSnapshot('standardmodel',ws.allVars())
     
     minuit = ROOT.RooMinuit(theNLL)
     minuit.setPrintLevel(1)
     minuit.setPrintEvalErrors(-1)
     minuit.setErrorLevel(.5)
+
+   
+
+    ws.defineSet('POI',
+                 ROOT.RooArgSet(ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                                                cfg.get('Global','couplingType'))),
+                                ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                                                cfg.get('Global','couplingType')))))
+
+    #set POI to SM and savesnapshot to make NULL model    
+    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                    cfg.get('Global','couplingType'))).setVal(0.0)
+    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                    cfg.get('Global','couplingType'))).setVal(0.0)
+
+    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                    cfg.get('Global','couplingType'))).setConstant(True)
+    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                    cfg.get('Global','couplingType'))).setConstant(True)
+    
+    
+    ws.saveSnapshot('standardmodel',ws.allVars())
+    
+    smModel = RooStats.ModelConfig('smModel',ws)
+    smModel.SetPdf(ws.pdf('TopLevelPdf'))
+    smModel.SetConditionalObservables(ws.set('condObs'))
+    smModel.SetNuisanceParameters(ws.set('nuis'))
+    smModel.SetParametersOfInterest(ws.set('POI'))
+    smModel.SetGlobalObservables(ws.set('glbObs'))
+    smModel.SetSnapshot(ws.set('POI'))
+
+    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                    cfg.get('Global','couplingType'))).setConstant(False)
+    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                    cfg.get('Global','couplingType'))).setConstant(False)
+
+    atgcModel = RooStats.ModelConfig('smModel',ws)
+    atgcModel.SetPdf(ws.pdf('TopLevelPdf'))
+    atgcModel.SetConditionalObservables(ws.set('condObs'))
+    atgcModel.SetNuisanceParameters(ws.set('nuis'))
+    atgcModel.SetParametersOfInterest(ws.set('POI'))
+    atgcModel.SetGlobalObservables(ws.set('glbObs'))
+    atgcModel.SetSnapshot(ws.set('POI'))
+
+    limitCalc = RooStats.FeldmanCousins(ws.data('allcountingdata'),
+                                        atgcModel)
+
+    hypoTest = limitCalc.GetInterval()
+
+    hypoTest.GetParameters().Print("V")
+
+    exit(1)
     
     #find the values of the parameters that minimize the likelihood
     minuit.setStrategy(2)
@@ -53,12 +105,9 @@ def main(options,args):
     #ws.var('err_gs').setConstant(True)
     #ws.var('err_gb').setConstant(True)
 
-    ws.defineSet('POI',
-                 ROOT.RooArgSet(ws.var('%s_%s'%(cfg.get('Global','par1Name'),cfg.get('Global','couplingType'))),
-                                ws.var('%s_%s'%(cfg.get('Global','par2Name'),cfg.get('Global','couplingType')))))
-
     ws.saveSnapshot('%s_fitresult'%cfg.get('Global','couplingType'),
                     ws.allVars())
+
         
     #create profile likelihood       
     level_68 = ROOT.TMath.ChisquareQuantile(.68,2)/2.0 # delta NLL for 68% confidence level for -log(LR)
@@ -230,6 +279,7 @@ def setupWorkspace(ws,options):
 
     #first pass: process the backgrounds, signal and data into
     # simultaneous counting pdfs over the bins
+    ws.defineSet('nuis',RooArgSet(ws.var('err_gl')))    
     for section in fit_sections:
         #create the basic observable, this is used behind the scenes
         #in the background and signal models
@@ -249,7 +299,7 @@ def setupWorkspace(ws,options):
 
         createPdfForChannel(ws,cfg,section)
 
-        ws.data('countingdata_%s'%section).addColumn(channel_cat)
+        ws.data('countingdata_%s'%section).addColumn(channel_cat)    
 
     getattr(ws,'import')(channel_cat)
 
@@ -258,15 +308,18 @@ def setupWorkspace(ws,options):
                           ws.cat('channels'))    
     alldatavars = RooArgSet(ws.cat('channels'))
     conditionals = RooArgSet()
+    glbObs = RooArgSet()
                                  
     #second pass: process counting pdfs into simultaneous pdf over channels
     for section in fit_sections:
         top.addPdf(ws.pdf('countingpdf_%s'%section),section)
         alldatavars.add(ws.var('%s_%s'%(cfg.get(section,'obsVar'),section)))
         conditionals.add(ws.var('%s_%s'%(cfg.get(section,'obsVar'),section)))
-        alldatavars.add(ws.var('n_observed_%s'%section))         
+        alldatavars.add(ws.var('n_observed_%s'%section))
+        glbObs.add(ws.var('n_observed_%s'%section))
     getattr(ws,'import')(top)
 
+    ws.defineSet('glbObs',glbObs)
     ws.defineSet('condObs',conditionals)
 
     allcountingdata = RooDataSet('allcountingdata',
@@ -488,12 +541,12 @@ def processFittingData(ws,cfg,section):
     getattr(ws,'import')(obs)
     n_observed = RooRealVar('n_observed_%s'%section,
                             'n_observed_%s'%section,
-                            1.0,0,10)
-    n_observed.removeMax()
+                            1.0,0,1e6)
+    #n_observed.removeMax()
     countingSet = RooDataSet('countingdata_%s'%section,
                              'countingdata_%s'%section,
                              RooArgSet(obs,n_observed))       
-
+    
     if isinstance(inpObj,ROOT.TH1) and inpObj.GetDimension() == 1:
         print 'Input fitting data for channel: "%s" is a TH1'%section
         cfg.set(section,'obsBins',binEdges(inpObj))        
@@ -535,12 +588,23 @@ def createPdfForChannel(ws,cfg,section):
     #systematic variations
     ws.factory('RooLognormal::selectionErr_%s(%s_err_gs[1,0.001,50],1,selectionError_%s)'%(section,section,section))
     ws.factory('RooLognormal::backgroundErr_%s(%s_err_gb[1,0.001,50],1,backgroundError_%s)'%(section,section,section))
-
+    
     ws.factory('prod::sigExp_%s(%s_signal_model,%s_err_gs,err_gl)'%(section,section,section))
     ws.factory('prod::bkgExp_%s(%s_background_model,%s_err_gb)'%(section,section,section))
-    ws.factory('sum::expected_%s(sigExp_%s,bkgExp_%s)'%(section,section,section))
-    ws.factory('RooPoisson::pois_%s(n_observed_%s,expected_%s)'%(section,section,section))
-    ws.factory('PROD::countingpdf_%s(pois_%s,selectionErr_%s,backgroundErr_%s,lumiErr)'%(section,section,section,section))        
+    ws.factory('Uniform::dummy_%s(n_observed_%s)'%(section,section))
+    ws.factory('sum::expected_%s(sigExp_%s,bkgExp_%s)'%(section,section,section)) # for easy plotting 
+    #ws.factory('RooPoisson::pois_%s(n_observed_%s,expected_%s)'%(section,
+    #                                                             section,
+    #                                                             section))    
+    #ws.factory('PROD::countingpdf_%s(pois_%s,selectionErr_%s,backgroundErr_%s,lumiErr)'%(section,section,section,section))
+    
+    ws.factory('SUM::model_%s(sigExp_%s*dummy_%s,bkgExp_%s*dummy_%s)'%(section,
+                                                                       section,section,
+                                                                       section,section))
+    ws.factory('PROD::countingpdf_%s(model_%s,selectionErr_%s,backgroundErr_%s,lumiErr)'%(section,section,
+                                                                                          section,section))
+    ws.set('nuis').add(RooArgSet(ws.var('%s_err_gs'%section),
+                                 ws.var('%s_err_gb'%section)))
 
 #adds the overflow bin to the last bin of a histogram
 def makeLastBinOverflow(h,nBins):
