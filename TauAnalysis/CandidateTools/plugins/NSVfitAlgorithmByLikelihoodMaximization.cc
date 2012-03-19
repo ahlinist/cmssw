@@ -70,7 +70,8 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     int fitParameterType = fitParameter->Type();
     if ( fitParameterType == nSVfit_namespace::kTau_phi_lab   ||
 	 fitParameterType == nSVfit_namespace::kTauVM_phi_a1r ||
-	 fitParameterType == nSVfit_namespace::kNu_phi_lab    ) {
+	 fitParameterType == nSVfit_namespace::kNu_phi_lab    ||
+	 fitParameterType == nSVfit_namespace::kW_phi_lab     ) {
       double limit_disabled = std::numeric_limits<float>::quiet_NaN(); // CMSSSW_4_2_x version
       //double limit_disabled = TMath::QuietNaN();                     // CMSSSW_4_4_x version
       fitParameter->setLowerLimit(limit_disabled);
@@ -130,8 +131,7 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
   }
 
   fittedEventHypothesis_ = currentEventHypothesis_;
-
-  if ( verbosity_ ) fittedEventHypothesis_->print(std::cout);
+  fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
 }
 
 void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypothesis& resonance) const
