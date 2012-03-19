@@ -15,6 +15,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToDaughtersHypothesisBaseT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitStableSingleParticleHypothesisBaseT.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleNeutrinoHypothesisBaseT.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
 
@@ -110,6 +112,8 @@ namespace {
     NSVfitTauToMuHypothesis dummyNSVfitTauToMuHypothesis;
     NSVfitTauToHadHypothesisBase dummyNSVfitTauToHadHypothesisBase;
     NSVfitTauToHadHypothesis dummyNSVfitTauToHadHypothesis;
+    NSVfitStableSingleParticleHypothesisBase dummyNSVfitStableSingleParticleHypothesisBase;
+    NSVfitSingleNeutrinoHypothesisBase dummyNSVfitSingleNeutrinoHypothesisBase;
     std::vector<NSVfitEventHypothesisBase> dummyNSVfitEventHypothesisBaseCollection;
     std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
     std::vector<NSVfitEventHypothesisByIntegration> dummyNSVfitEventHypothesisByIntegrationCollection;
