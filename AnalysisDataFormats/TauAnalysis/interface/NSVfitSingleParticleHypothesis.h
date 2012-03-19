@@ -37,7 +37,9 @@ class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
       mother_(bluePrint.mother_),
       p4_(bluePrint.p4_),
       p4_fitted_(bluePrint.p4_fitted_),
-      dp4_(bluePrint.dp4_)
+      dp4_(bluePrint.dp4_),
+      polHandedness_(bluePrint.polHandedness_),
+      polSign_(bluePrint.polSign_)
   {}
 
   NSVfitSingleParticleHypothesis& operator=(const NSVfitSingleParticleHypothesis& bluePrint)  
@@ -47,6 +49,8 @@ class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
     p4_ = bluePrint.p4_;
     p4_fitted_ = bluePrint.p4_fitted_;
     dp4_ = bluePrint.dp4_;
+    polHandedness_ = bluePrint.polHandedness_;
+    polSign_ = bluePrint.polSign_;
     return (*this);
   }
 
