@@ -155,7 +155,7 @@ class testSVFit : public CppUnit::TestFixture {
     // to the rest frame energy of the visible stuff.
     void testRestFrameTranslation() {
       BOOST_FOREACH(const TauDecayInfo& taudecay, testTaus_) {
-        double pVis_rf = pVisRestFrame(taudecay.visMass, taudecay.nuInvMass);
+        double pVis_rf = pVisRestFrame(taudecay.visMass, taudecay.nuInvMass, tauLeptonMass);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(pVis_rf ,  taudecay.restFrameVis.P(), 1e-6);
       }
     }
@@ -177,9 +177,9 @@ class testSVFit : public CppUnit::TestFixture {
     // frame.
     void testTauEnergy() {
       BOOST_FOREACH(const TauDecayInfo& taudecay, testTaus_) {
-        double tauP_lf = tauMomentumLabFrame(
+        double tauP_lf = motherMomentumLabFrame(
             taudecay.restFrameVis.M(), taudecay.restFrameVis.P(),
-            taudecay.gjangle, taudecay.labFrameVis.P());
+            taudecay.gjangle, taudecay.labFrameVis.P(), tauLeptonMass);
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(taudecay.print(),
             tauP_lf ,  taudecay.labFrameTotal.P(), 1e-6);
       }
@@ -191,7 +191,8 @@ class testSVFit : public CppUnit::TestFixture {
         double recoGJAngle = gjAngleFromX(trueX,
             taudecay.visMass,
             taudecay.restFrameVis.P(),
-            taudecay.labFrameVis.E());
+            taudecay.labFrameVis.E(),
+	    tauLeptonMass);
         // Don't check the very low end
         if (taudecay.labFrameVis.E() > 5)
           CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
