@@ -285,7 +285,7 @@ void NSVfitAlgorithmByIntegration::fitImp() const
       gsl_monte_vegas_integrate(integrand_, xl_, xu_, numDimensions_, 
 				numCallsGridOpt_/workspace_->iterations, rnd_, workspace_, &p, &pErr);
       workspace_->stage = 1;
-      
+
       // CV: repeat integration in case chi2 of estimated integral/uncertainty values
       //     indicates that result of integration cannot be trusted
       //    (up to maxIntEvalIter times in total)
@@ -336,9 +336,10 @@ void NSVfitAlgorithmByIntegration::fitImp() const
     setMassResults(dynamic_cast<NSVfitResonanceHypothesisByIntegration*>(resonance), histResults, iMassParameter);
   }
 
-  delete currentEventHypothesis_;
- 
   fittedEventHypothesis_ = persistentEventHypothesis;
+  fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
+
+  delete currentEventHypothesis_;
 }
 
 void NSVfitAlgorithmByIntegration::setMassResults(
