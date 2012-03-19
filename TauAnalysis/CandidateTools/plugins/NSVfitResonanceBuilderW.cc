@@ -105,7 +105,7 @@ void NSVfitResonanceBuilderW::applyFitParameter(NSVfitResonanceHypothesis* reson
   reco::Candidate::Vector Wdirection = motherDirection(p3ChargedLepton_unit, angleVis_lab, phi_lab);
   reco::Candidate::LorentzVector p4W_lab = motherP4(Wdirection.Unit(), pW_lab, W_mass);
 
-  const reco::Candidate::LorentzVector& p4Neutrino_lab = p4W_lab - p4ChargedLepton_lab;;
+  reco::Candidate::LorentzVector p4Neutrino_lab = p4W_lab - p4ChargedLepton_lab;
   neutrino->p4_fitted_ = p4Neutrino_lab;
   neutrino->dp4_       = neutrino->p4_fitted_;
 
