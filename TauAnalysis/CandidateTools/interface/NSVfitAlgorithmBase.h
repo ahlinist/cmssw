@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.18 $
+ * \version $Revision: 1.19 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.18 2011/05/30 15:19:41 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.19 2012/03/14 16:34:42 veelken Exp $
  *
  */
 
@@ -281,6 +281,7 @@ class NSVfitAlgorithmBase
   const edm::EventSetup* currentEventSetup_;
   mutable NSVfitEventHypothesis* currentEventHypothesis_;
   mutable NSVfitEventHypothesisBase* fittedEventHypothesis_;
+  mutable double fittedEventHypothesis_nll_;
 
   mutable std::vector<NSVfitParameter> fitParameters_;
   int fitParameterCounter_;
