@@ -410,6 +410,7 @@ def tdr_style(_cache=[]):
     s.SetOptLogy(0)
     s.SetOptLogz(0)
     s.SetPaperSize(20.,20.)
+    s.SetPalette(1)
 
     s.cd()
 
