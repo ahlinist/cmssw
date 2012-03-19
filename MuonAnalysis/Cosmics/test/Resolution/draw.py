@@ -55,7 +55,7 @@ class Drawer:
         'Global': ROOT.kBlue,
         'TkOnly': ROOT.kRed,
         'TPFMS':  ROOT.kGreen+1,
-        'Picky':  ROOT.kViolet-7,
+        'Picky':  ROOT.kOrange+7,
         'TuneP':  ROOT.kBlack,
         'StAlone':ROOT.kMagenta,
         }
