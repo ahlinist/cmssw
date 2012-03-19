@@ -43,7 +43,6 @@ class NSVfitStableSingleParticleHypothesis : public NSVfitStableSingleParticleHy
   }
 
   NSVfitStableSingleParticleHypothesis* clone() const { return new NSVfitStableSingleParticleHypothesis(*this); }
-  NSVfitSingleParticleHypothesisBase* reduceToBase() const { return this->clone(); }
 
   /// unit-vector in lepton flight direction
   const reco::Candidate::Vector& p3_unit() const { return p3_unit_; }

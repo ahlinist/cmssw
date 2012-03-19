@@ -43,7 +43,6 @@ class NSVfitSingleNeutrinoHypothesis : public NSVfitSingleNeutrinoHypothesisBase
   }
 
   NSVfitSingleNeutrinoHypothesis* clone() const { return new NSVfitSingleNeutrinoHypothesis(*this); }
-  NSVfitSingleParticleHypothesisBase* reduceToBase() const { return this->clone(); }
 
   friend class NSVfitResonanceBuilderW;
 };
