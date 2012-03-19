@@ -37,7 +37,7 @@ nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
     applySinThetaFactor = cms.bool(True),
-    verbosity = cms.int32(1)
+    verbosity = cms.int32(0)
 )
 
 nSVfitMuonLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
@@ -63,7 +63,7 @@ nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
     applySinThetaFactor = cms.bool(True),
-    verbosity = cms.int32(1)
+    verbosity = cms.int32(0)
 )
 
 nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
@@ -183,7 +183,7 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     dRoverlapPFJet = cms.double(0.3),
     dRoverlapPFCandidate = cms.double(0.1),
     power = cms.double(1.0),
-    verbosity = cms.int32(1)
+    verbosity = cms.int32(0)
 )
 
 nSVfitEventBuilder = cms.PSet(
