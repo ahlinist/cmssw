@@ -26,7 +26,7 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type,
     stepSize_(stepSize),
     isFixed_(isFixed)
 {
-  if ( !(type >= 0 && type <= nSVfit_namespace::kNu_phi_lab) ) throw cms::Exception("NSVfitParameter")
+  if ( !(type >= 0 && type < nSVfit_namespace::kNumFitParameter) ) throw cms::Exception("NSVfitParameter")
        << "Invalid type = " << type << " !!\n";
 
   reset();
@@ -40,7 +40,7 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type, boo
 {
   if ( !defaultValues_initialized_ ) initializeDefaultValues();
 
-  if ( !(type >= 0 && type <= nSVfit_namespace::kNu_phi_lab) ) throw cms::Exception("NSVfitParameter")
+  if ( !(type >= 0 && type < nSVfit_namespace::kNumFitParameter) ) throw cms::Exception("NSVfitParameter")
     << "Invalid type = " << type << " !!\n";
   
   initialValue_ = defaultInitialValues_[type];
@@ -107,7 +107,7 @@ void NSVfitParameter::initializeDefaultValues()
 {
   using namespace SVfit_namespace;
 
-  defaultInitialValues_.resize(nSVfit_namespace::kNu_phi_lab + 1);
+  defaultInitialValues_.resize(nSVfit_namespace::kNumFitParameter);
   defaultInitialValues_[nSVfit_namespace::kPV_shiftX]             =  0.;
   defaultInitialValues_[nSVfit_namespace::kPV_shiftY]             =  0.;
   defaultInitialValues_[nSVfit_namespace::kPV_shiftZ]             =  0.;
@@ -129,7 +129,7 @@ void NSVfitParameter::initializeDefaultValues()
   defaultInitialValues_[nSVfit_namespace::kW_phi_lab]             =  0.;
   defaultInitialValues_[nSVfit_namespace::kW_mass]                = 80.399; // GeV
 
-  defaultLimits_.resize(nSVfit_namespace::kNu_phi_lab + 1);
+  defaultLimits_.resize(nSVfit_namespace::kNumFitParameter);
   defaultLimits_[nSVfit_namespace::kPV_shiftX]                    = pdouble(         -0.1,         +0.1); // cm
   defaultLimits_[nSVfit_namespace::kPV_shiftY]                    = pdouble(         -0.1,         +0.1); // cm
   defaultLimits_[nSVfit_namespace::kPV_shiftZ]                    = pdouble(         -2.,          +2.);  // cm
@@ -151,7 +151,7 @@ void NSVfitParameter::initializeDefaultValues()
   defaultLimits_[nSVfit_namespace::kW_phi_lab]                    = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
   defaultLimits_[nSVfit_namespace::kW_mass]                       = pdouble(80.399 - 3.*2.085, 80.399 + 3.*2.085); // GeV
 
-  defaultStepSizes_.resize(nSVfit_namespace::kNu_phi_lab + 1);
+  defaultStepSizes_.resize(nSVfit_namespace::kNumFitParameter);
   defaultStepSizes_[nSVfit_namespace::kPV_shiftX]                 =  0.01;
   defaultStepSizes_[nSVfit_namespace::kPV_shiftY]                 =  0.01;
   defaultStepSizes_[nSVfit_namespace::kPV_shiftZ]                 =  0.01;
