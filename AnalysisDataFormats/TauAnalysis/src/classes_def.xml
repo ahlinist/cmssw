@@ -66,6 +66,8 @@
   <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, pat::Electron>"/>
   <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, pat::Muon>"/>
   <class name="NSVfitTauToHadHypothesis"/>
+  <class name="NSVfitStableSingleParticleHypothesisBase"/>
+  <class name="NSVfitSingleNeutrinoHypothesisBase"/>
   <class name="std::vector<NSVfitEventHypothesisBase>"/>
   <class name="std::vector<NSVfitEventHypothesis>"/>
   <class name="std::vector<NSVfitEventHypothesisByIntegration>"/>
