@@ -28,7 +28,7 @@ def make_cut_string(min_pixel_layers=1, min_strip_layers=8, no_csc_allowed=True,
     if no_csc_allowed:
         base_cut.append('!hit_csc')
     if no_shared_hits:
-        base_cut += ['shared_hits[%i] == 0' for i in xrange(n_simple_tracks)]
+        base_cut += ['shared_hits[%i] == 0' % i for i in xrange(n_simple_tracks)]
     if min_pixel_layers > 0:
         base_cut += ['pixel_layers[%i][%i] >= %i' % (i,j, min_pixel_layers) for j in xrange(n_track_pos) for i in xrange(n_simple_tracks) if i != tk_stalone]
     if min_strip_layers > 0:
