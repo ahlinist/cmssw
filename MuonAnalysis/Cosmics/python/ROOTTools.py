@@ -176,6 +176,21 @@ def mkdir(dir, path):
             dir = dir.mkdir(p)
     return dir
 
+def offset_x_tgae(g, f):
+    """Shift all the central points by a relative fraction f
+    (e.g. f=1.05 means shift 50 to 52.5, 200 to 210). Error bar
+    endpoints are kept fixed."""
+    
+    for i in xrange(g.GetN()):
+        x,y = ROOT.Double(), ROOT.Double()
+        g.GetPoint(i,x,y)
+        exh = g.GetErrorXhigh(i)
+        exl = g.GetErrorXlow(i)
+        g.SetPoint(i, ROOT.Double(x*f), y)
+        dx = (f-1)*x
+        g.SetPointEXhigh(i, exh - dx)
+        g.SetPointEXlow (i, exl + dx)
+
 class plot_saver:
     i = 0
     
@@ -431,6 +446,7 @@ __all__ = [
     'fit_gaussian',
     'integral',
     'mkdir',
+    'offset_x_tgae',
     'plot_saver',
     'tdr_style',
     'tfile_iterator',
