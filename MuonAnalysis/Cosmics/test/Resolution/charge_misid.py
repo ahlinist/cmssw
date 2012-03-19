@@ -122,15 +122,23 @@ h_tag_charges_agree.Draw('hist text00')
 h_tag_charges_agree.SetTitle('Tagged events;tag tracker-only p_{T} (GeV);events')
 ps.save('tag_charges_agree')
 
-# If MC, monitor the relative contribution of each sample to each bin,
-# since we aren't using weights for the 3 samples below.
 if options.mc:
+    # If MC, monitor the relative contribution of each sample to each bin,
+    # since we aren't using weights for the 3 samples below.
     h_sample_proportion = ROOT.TH2F("h_sample_proportion", "", len(bins)-1, bins, 3, 1, 4)
     t.Draw('id:' + bin_by + '>>h_sample_proportion', cut(base_cut, good_tag))
     h_sample_proportion.SetTitle(';tag tracker-only p_{T} (GeV);MC dataset id')
     h_sample_proportion.SetStats(0)    
     h_sample_proportion.Draw('colz text')
     ps.save('mc_sample_proportion')
+
+    # Also check that our use of unprop_mc_charge below is OK. Assume
+    # if it's OK for Global that it's OK for all the rest of the
+    # propagations.
+    ps.c.SetLogx(0)
+    t.Draw('unprop_mc_charge != mc_charge[0]', cut(base_cut, good_tag))
+    ps.save('mc_unprop_charge_OK_Global')
+    ps.c.SetLogx()
 
 # Keep the divided histograms for superimposing later.
 h_probe_charge_misid_prob = []
