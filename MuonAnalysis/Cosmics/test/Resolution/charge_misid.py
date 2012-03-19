@@ -64,8 +64,7 @@ tag_track, probe_track = (lower, upper) if options.tag_lower else (upper, lower)
 bin_by = 'unprop_pt[2][%(tag_track)i]' % locals()
 
 # The binning.
-bins = [10, 20, 30, 40, 50, 75, 100, 200, 350, 500, 800, 1200, 2000]
-bins = [10, 20, 30, 40, 50, 75, 100, 200, 350, 2000]
+bins = [10, 20, 30, 50, 100, 300, 2000]
 bins = array('d', bins)
 
 # Tag events if tkonly, global, tpfms charges agree. The %constants
@@ -129,20 +128,32 @@ for i,n in enumerate(track_nicks):
         m.SetTitle('MC-truth charge mis-id for %s;tag tracker-only p_{T} (GeV);true charge mis-id prob.' % n)
         ps.save('probe_charge_misid_mctruth_%s' % n)
 
-# Superimpose all the tracks.
-# JMTBAD legend
+# Superimpose all the tracks, moving the points slightly so they can
+# be seen on the same plot when the values are the same.
 def do(l,ex):
     from draw import Drawer 
     draw_cmd = 'AP'
+    a = 0
+    b = 6 # adjust if the c is None thing gets changed, should be the total number of graphs on the plot (e.g. Global, StAlone, TkOnly, TPFMS, Picky, TuneP => b = 6)
+    z = 0.2
+    for_leg = []
     for i,n,m in l:
         c = Drawer.colors.get(n, None)
         if c is None:
             continue
+        offset_x_tgae(m, 1+a*z/b-z/2)
+        a += 1
+        m.SetLineWidth(2)
         m.SetLineColor(c)
         m.SetMarkerColor(c)
+        m.SetMarkerStyle(Drawer.markers.get(n, 20))
         m.Draw(draw_cmd)
         m.GetYaxis().SetRangeUser(1e-5, 1)
         draw_cmd = 'Psame'
+        for_leg.append(n)
+    leg = Drawer.make_legend((0.200, 0.517, 0.603, 0.641), for_leg)
+    leg.SetNColumns(3)
+    leg.Draw()
     ps.save('probe_charge_misid_prob%s' % ex)
 
 do(h_probe_charge_misid_prob, '')
