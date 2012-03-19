@@ -34,6 +34,8 @@ parser.add_argument('--max-dxy', type=float,
                     help='Require tracks to have impact parameter |dxy| < MAX_DXY.')
 parser.add_argument('--max-dz', type=float,
                     help='Require tracks to have impact parameter |dz| < MAX_DZ.')
+parser.add_argument('--looser-tag', action='store_true',
+                    help='For the tag, only require global and tracker-only to agree (default requires these two plus TPFMS).')
 parser.add_argument('--tag-lower', action='store_true',
                     help='Tag with the lower track rather than the upper.')
 parser.add_argument('--tree-dir', default='',
@@ -52,8 +54,10 @@ from MuonAnalysis.Cosmics.ROOTTools import *
 from MuonAnalysis.Cosmics.ResolutionNtupleHelper import *
 
 tdr_style()
+ROOT.gStyle.SetTitleXOffset(1.0)
+ROOT.gStyle.SetLabelOffset(0)
 ROOT.gStyle.SetOptStat(111111)
-ps = plot_saver(options.plot_dir)
+ps = plot_saver(options.plot_dir, size=(600,600))
 ps.c.SetLogx()
 
 # Get the input ntuple. The tree should already have the good run
@@ -86,6 +90,9 @@ bins = array('d', bins)
 # will get evaluated in cut() below before going to TTree::Draw().
 good_tag = 'unprop_charge[%(tk_tkonly)i][%(tag_track)i] == unprop_charge[%(tk_global)i][%(tag_track)i] && unprop_charge[%(tk_tkonly)i][%(tag_track)i] == unprop_charge[%(tk_tpfms)i][%(tag_track)i]'
 
+if options.looser_tag:
+    good_tag = 'unprop_charge[%(tk_tkonly)i][%(tag_track)i] == unprop_charge[%(tk_global)i][%(tag_track)i]'
+
 def cut(*cuts):
     return ' && '.join(cuts) % globals()
 
@@ -100,13 +107,19 @@ h_tag_charges_agree = ROOT.TH1F("h_tag_charges_agree", "", len(bins)-1, bins);
 # Tagged events in which the probe track's charge disagreed.
 h_tag_charges_agree_but_not_with_probe = [ROOT.TH1F('h_tag_charges_agree_but_not_with_probe_%s' % n, '', len(bins)-1, bins) for n in track_nicks]
 
-# If we're doing MC, also calculate the true charge mis-id.
+# If we're doing MC, calculate the true charge mis-id for the tags,
+# and for all of the probes.
 if options.mc:
+    h_tag_charge_misid_mctruth = ROOT.TH1F('h_tag_charge_misid_mctruth', '', len(bins)-1, bins)
     h_probe_charge_misid_mctruth = [ROOT.TH1F('h_probe_charge_misid_mctruth_%s' % n, '', len(bins)-1, bins) for n in track_nicks]
 
 # Use TTree::Draw to do the loops.
 t.Draw(bin_by + '>>h_bin_by',            cut(base_cut))
 t.Draw(bin_by + '>>h_tag_charges_agree', cut(base_cut, good_tag))
+
+if options.mc:
+    t.Draw(bin_by + '>>h_tag_charge_misid_mctruth', cut(base_cut, good_tag, 'unprop_mc_charge != unprop_charge[%(tk_tkonly)i][%(tag_track)i]'))
+    
 for i,n in enumerate(track_nicks):
     t.Draw(bin_by + '>>h_tag_charges_agree_but_not_with_probe_%s' % n, cut(base_cut, good_tag, 'unprop_charge[%i][%%(probe_track)i] != unprop_charge[%%(tk_tkonly)i][%%(tag_track)i]' % i))
     if options.mc:
@@ -143,6 +156,16 @@ if options.mc:
 # Keep the divided histograms for superimposing later.
 h_probe_charge_misid_prob = []
 h_probe_charge_misid_prob_mctruth = []
+
+if options.mc:
+    h_tag_charge_misid_mctruth.Draw('hist text00')
+    h_tag_charge_misid_mctruth.SetTitle('Tagged events where tag charge != MC truth;tag tracker-only p_{T} (GeV);events')
+    ps.save('tag_charges_agree_but_not_with_mctruth')
+
+    m = binomial_divide(h_tag_charge_misid_mctruth, h_tag_charges_agree)
+    m.Draw('AP')
+    m.SetTitle('MC truth tag charge mis-id;tag tracker-only p_{T} (GeV);true tagp charge mis-id prob.')
+    ps.save('tag_charge_misid_mctruth')
 
 for i,n in enumerate(track_nicks):
     h_tag_charges_agree_but_not_with_probe[i].Draw('hist text00')
@@ -185,8 +208,8 @@ def do(l,ex):
         m.GetYaxis().SetRangeUser(1e-5, 1)
         draw_cmd = 'Psame'
         for_leg.append(n)
-    leg = Drawer.make_legend((0.200, 0.517, 0.603, 0.641), for_leg)
-    leg.SetNColumns(3)
+    leg = Drawer.make_legend((0.200, 0.483, 0.661, 0.657), for_leg)
+    leg.SetNColumns(2)
     leg.Draw()
     ps.save('probe_charge_misid_prob%s' % ex)
 
