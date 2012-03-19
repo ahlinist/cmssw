@@ -37,6 +37,9 @@ class NSVfitStableSingleParticleHypothesisBaseT : public T
     T::operator=(bluePrint);
     return (*this);
   }
+
+  NSVfitStableSingleParticleHypothesisBaseT* clone() const { return new NSVfitStableSingleParticleHypothesisBaseT(*this); }
+  NSVfitSingleParticleHypothesisBase* reduceToBase() const { return this->clone(); }
 };
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
