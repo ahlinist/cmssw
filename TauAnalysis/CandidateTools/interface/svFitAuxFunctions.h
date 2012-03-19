@@ -107,7 +107,7 @@ namespace SVfit_namespace
   double gjAngleToLabFrame(double, double, double);
 
   /// Determine the tau momentum in the lab frame given the rest frame assumptions
-  double motherMomentumLabFrame(double, double, double, double, double );
+  double motherMomentumLabFrame(double, double, double, double, double);
 
   /// Determine the tau direction given our parameterization
   reco::Candidate::Vector motherDirection(const reco::Candidate::Vector&, double, double);
