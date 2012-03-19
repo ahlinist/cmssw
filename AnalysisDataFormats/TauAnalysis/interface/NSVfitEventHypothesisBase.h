@@ -59,6 +59,8 @@ class NSVfitEventHypothesisBase
     return retVal;
   }
 
+  double nll() const { return nll_; }
+
   virtual void print(std::ostream& stream) const 
   {
     stream << "<NSVfitEventHypothesisBase::print>:" << std::endl;
@@ -68,7 +70,8 @@ class NSVfitEventHypothesisBase
     for ( edm::OwnVector<NSVfitResonanceHypothesisBase>::const_iterator resonance = resonances_.begin();
           resonance != resonances_.end(); ++resonance ) {
       resonance->print(stream);
-    }
+    }    
+    stream << " -log(prob) = " << nll_ << std::endl;
   }
 
   friend class NSVfitEventBuilderBase;
@@ -83,6 +86,7 @@ class NSVfitEventHypothesisBase
   int barcode_;
 
   /// -log(prob)
+  double nll_;
 
   /// pointer to MET object from which this hypothesis was made
   edm::Ptr<reco::Candidate> met_;
