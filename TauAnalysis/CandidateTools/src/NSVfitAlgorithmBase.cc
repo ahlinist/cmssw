@@ -63,7 +63,7 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
   NSVfitParameter* fitParameter = getFitParameter(name, type);
 
   if ( !fitParameter ) {
-    assert(type >= 0 && type <= nSVfit_namespace::kNu_phi_lab);
+    assert(type >= 0 && type <= nSVfit_namespace::kW_mass);
     NSVfitParameter newFitParameter(fitParameterCounter_, name, type);
     fitParameters_.push_back(newFitParameter);
     fitParameter = &fitParameters_.back();
@@ -113,6 +113,8 @@ NSVfitEventHypothesisBase* NSVfitAlgorithmBase::fit(const inputParticleMap& inpu
   gNSVfitAlgorithm = this;
 
   fitImp();
+  fittedEventHypothesis_->nll_ = fittedEventHypothesis_nll_;
+  if ( verbosity_ ) fittedEventHypothesis_->print(std::cout);
 
   return fittedEventHypothesis_;
 }
