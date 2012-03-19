@@ -18,6 +18,8 @@ parser.add_argument('filename',
                     help='Input filename for ntuple (already having run selection applied).')
 parser.add_argument('--mc', action='store_true',
                     help='Input file has MC truth information.')
+parser.add_argument('--mc-no-cut-samples', action='store_true',
+                    help='On MC, do not bother to reduce the use of multiple samples in each pT bin.')
 parser.add_argument('--plot-dir', default='plots/cosmic_charge_misid',
                     help='Save plots in PLOT_DIR (default is %(default)s).')
 parser.add_argument('--plot-dir-tag',
@@ -34,10 +36,15 @@ parser.add_argument('--max-dz', type=float,
                     help='Require tracks to have impact parameter |dz| < MAX_DZ.')
 parser.add_argument('--tag-lower', action='store_true',
                     help='Tag with the lower track rather than the upper.')
+parser.add_argument('--tree-dir', default='',
+                    help='Get the TTree from this directory in the file. Default is to look in the root.')
 options = parser.parse_args()
 
 if options.plot_dir_tag:
     options.plot_dir = os.path.join(options.plot_dir, options.plot_dir_tag)
+
+if options.mc and not options.tree_dir:
+    options.tree_dir = 'UTpickedTracks'
 
 ################################################################################
 
@@ -52,10 +59,18 @@ ps.c.SetLogx()
 # Get the input ntuple. The tree should already have the good run
 # list applied.
 f = ROOT.TFile(options.filename)
-t = f.Get('t') 
+t = f.Get(os.path.join(options.tree_dir, 't'))
 
 # Apply a base selection: default is the same as for the resolution study.
 base_cut = make_cut_string(min_pixel_layers=options.min_pixel_layers, min_strip_layers=options.min_strip_layers, max_dxy=options.max_dxy, max_dz=options.max_dz, no_csc_allowed=True, min_muon_hits=options.min_muon_hits)
+
+# Unless told not to, in MC try not to let multiple samples (that
+# should enter with different weights) have entries in each pT
+# bin. (Just so the error bars are more correct when not bothering to
+# weight the MC.) Need to change the pT cut values if the bins are
+# changed below.
+if options.mc and not options.mc_no_cut_samples:
+    base_cut += ' && ((id == 1 && mc_pt[2] < 100) || (id == 2 && mc_pt[2] > 100 && mc_pt[2] < 300) || (id == 3 && mc_pt[2] > 300))'
 
 # Choose which is the tag track and which is the probe track.
 tag_track, probe_track = (lower, upper) if options.tag_lower else (upper, lower)
@@ -70,6 +85,7 @@ bins = array('d', bins)
 # Tag events if tkonly, global, tpfms charges agree. The %constants
 # will get evaluated in cut() below before going to TTree::Draw().
 good_tag = 'unprop_charge[%(tk_tkonly)i][%(tag_track)i] == unprop_charge[%(tk_global)i][%(tag_track)i] && unprop_charge[%(tk_tkonly)i][%(tag_track)i] == unprop_charge[%(tk_tpfms)i][%(tag_track)i]'
+
 def cut(*cuts):
     return ' && '.join(cuts) % globals()
 
@@ -106,6 +122,16 @@ h_tag_charges_agree.Draw('hist text00')
 h_tag_charges_agree.SetTitle('Tagged events;tag tracker-only p_{T} (GeV);events')
 ps.save('tag_charges_agree')
 
+# If MC, monitor the relative contribution of each sample to each bin,
+# since we aren't using weights for the 3 samples below.
+if options.mc:
+    h_sample_proportion = ROOT.TH2F("h_sample_proportion", "", len(bins)-1, bins, 3, 1, 4)
+    t.Draw('id:' + bin_by + '>>h_sample_proportion', cut(base_cut, good_tag))
+    h_sample_proportion.SetTitle(';tag tracker-only p_{T} (GeV);MC dataset id')
+    h_sample_proportion.SetStats(0)    
+    h_sample_proportion.Draw('colz text')
+    ps.save('mc_sample_proportion')
+
 # Keep the divided histograms for superimposing later.
 h_probe_charge_misid_prob = []
 h_probe_charge_misid_prob_mctruth = []
@@ -125,7 +151,7 @@ for i,n in enumerate(track_nicks):
         m = binomial_divide(h_probe_charge_misid_mctruth[i], h_bin_by)
         h_probe_charge_misid_prob_mctruth.append((i,n,m))
         m.Draw('AP')
-        m.SetTitle('MC-truth charge mis-id for %s;tag tracker-only p_{T} (GeV);true charge mis-id prob.' % n)
+        m.SetTitle('MC-truth charge mis-id for %s;tag tracker-only p_{T} (GeV);true probe charge mis-id prob.' % n)
         ps.save('probe_charge_misid_mctruth_%s' % n)
 
 # Superimpose all the tracks, moving the points slightly so they can
