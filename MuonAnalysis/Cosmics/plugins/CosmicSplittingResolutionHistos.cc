@@ -272,6 +272,7 @@ struct Bin {
       h_ref_phi = bindir.make<TH1F>("ref_phi", "", 200/nbins_scale, -3.15, 3.15);
       h_ref_dxy = bindir.make<TH1F>("ref_dxy", "", 200/nbins_scale, -40, 40);
       h_ref_dz  = bindir.make<TH1F>("ref_dz",  "", 200/nbins_scale, -40, 40);
+      h_ref_p  ->Sumw2();
       h_ref_pt ->Sumw2();
       h_ref_eta->Sumw2();
       h_ref_phi->Sumw2();
