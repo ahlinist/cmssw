@@ -17,7 +17,28 @@ def fit_histo(h, hist_name, draw=False):
     opt = 'qrll'
     if not draw:
         opt += '0'
-    return fit_gaussian(h, factor, opt)
+    original_range = None
+    original_prob = None
+    original_mu = None
+    original_sigma = None
+    refit_count = 0
+    while 1:
+        res = fit_gaussian(h, factor, opt)
+        if original_range is None:
+            original_range = res['fcn'].GetXmin(), res['fcn'].GetXmax()
+            original_prob = res['fcn'].GetProb()
+            original_mu = res['mu']
+            original_sigma = res['sigma']
+        if res['fcn'].GetProb() > 0.03:
+            break
+        refit_count += 1
+        factor *= 0.9
+    res['original_range'] = original_range
+    res['original_prob'] = original_prob
+    res['original_mu'] = original_mu
+    res['original_sigma'] = original_sigma
+    res['refit_count'] = refit_count
+    return res
 
 def get_histo_stat(h, hist_name, stat):
     if stat == 'rms':
@@ -173,6 +194,8 @@ if __name__ == '__main__':
                 hist.Draw()
                 if bin.use_by_bin and res['fcn'].GetProb() < 0.03:
                     print 'check fit: prob for %s %s %s is %s' % (hist_name, track, bin.name, res['fcn'].GetProb())
+                elif bin.use_by_bin and res['refit_count'] > 0:
+                    print 'check fit: refit count for %s %s %s is %s;\n   old range: (%10.2g, %10.2g) prob: %10.2g mu: %10.2g sigma: %10.2g\n   new range: (%10.2g, %10.2g) prob: %10.2g mu: %10.2g sigma: %10.2g' % (hist_name, track, bin.name, res['refit_count'], res['original_range'][0], res['original_range'][1], res['original_prob'], res['original_mu'][0], res['original_sigma'][0], res['fcn'].GetXmin(), res['fcn'].GetXmax(), res['fcn'].GetProb(), res['mu'][0], res['sigma'][0])
                 ps.save(bin.name)
 
     ps = plot_saver(plot_path, log=False)
