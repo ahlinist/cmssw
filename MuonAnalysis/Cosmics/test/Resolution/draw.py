@@ -7,14 +7,17 @@ tdr_style()
 ROOT.gStyle.SetOptStat(111111)
 ROOT.gStyle.SetOptFit(1111)
 
-def fit_histo(h, hist_name, draw=False, likelihood=False):
+def fit_histo(h, hist_name, draw=False):
     if 'P' in hist_name: # pull
         factor = 3/(h.GetRMS() if h.GetRMS() > 0 else 1) # fix to mean +/- 3
     elif 'R' in hist_name:
         factor = 1.5 # mean +/- 1.5 * rms
     else:
         raise NotImplementedError('fit_histo with hist_name %s' % hist_name)
-    return fit_gaussian(h, factor, draw, likelihood)
+    opt = 'qrll'
+    if not draw:
+        opt += '0'
+    return fit_gaussian(h, factor, opt)
 
 def get_histo_stat(h, hist_name, stat):
     if stat == 'rms':
