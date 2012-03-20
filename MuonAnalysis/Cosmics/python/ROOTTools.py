@@ -69,26 +69,18 @@ def core_gaussian(hist, factor, i=[0]):
     i[0] += 1
     return f
 
-def fit_gaussian(hist, factor=None, draw=False, likelihood=False, cache=[]):
+def fit_gaussian(hist, factor=None, fit_options='qr', cache=[]):
     """Fit a Gaussian to the histogram, and return a dict with fitted
     parameters and errors. If factor is supplied, fit only to range in
     hist.mean +/- factor * hist.rms.
     """
 
-    if draw:
-        opt = 'qr'
-    else:
-        opt = 'qr0'
-
-    if likelihood:
-        opt += 'l'
-
     if factor is not None:
         fcn = core_gaussian(hist, factor)
         cache.append(fcn)
-        hist.Fit(fcn, opt)
+        hist.Fit(fcn, fit_options)
     else:
-        hist.Fit('gaus', opt)
+        hist.Fit('gaus', fit_options)
         fcn = hist.GetFunction('gaus')
         
     return {
