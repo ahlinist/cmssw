@@ -71,7 +71,7 @@ NSVfitVMlineShape& NSVfitVMlineShape::operator=(const NSVfitVMlineShape& bluePri
 double NSVfitVMlineShape::operator()(double theta, double tauLeptonPol, double z, double vmMass2) const
 {
   if ( vmMass2 > minMass2_ && vmMass2 < (square(z)*tauLeptonMass2) ) {
-    integrand_->SetParameterTheta(theta);
+    integrand_->SetParameterZ(z);
     integrand_->SetParameterTauLeptonPol(tauLeptonPol);
     return (*integrand_)(vmMass2)/norm_;
   } else {

@@ -36,14 +36,15 @@ SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VM
   integrand_->SetVMpol(vmPol);
   integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMnorm);
 
-//--- CV: need to trigger update of ROOT::Math::Integrator by calling integrator->SetFunction
-//        after calling any non-const function of SVfitVMlineShapeIntegrand 
+
+  //--- CV: need to trigger update of ROOT::Math::Integrator by calling integrator->SetFunction
+  //        after calling any non-const function of SVfitVMlineShapeIntegrand 
   integrator_ = new ROOT::Math::Integrator(*integrand_);
   integrator_->SetFunction(*integrand_);
 
-//--- compute vector meson line-shape normalization factor
+  //--- compute vector meson line-shape normalization factor
   norm_ = integrator_->Integral(minMass2_, tauLeptonMass2); 
-  //std::cout << " norm = " << norm_ << std::endl;
+
 
 //--- set integrand to compute vector meson line-shape integrals in the following...  
   integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMlineShape);
@@ -83,15 +84,16 @@ SVfitVMlineShapeIntegral& SVfitVMlineShapeIntegral::operator=(const SVfitVMlineS
   return (*this);
 }
 
-double SVfitVMlineShapeIntegral::operator()(double theta, double tauLeptonPol, double z) const
+double SVfitVMlineShapeIntegral::operator()(double tauLeptonPol, double z) const
 {
   //std::cout << "<SVfitVMlineShapeIntegral::operator()>:" << std::endl;
   //std::cout << " theta = " << theta << std::endl;
   //std::cout << " tauLeptonPol = " << tauLeptonPol << std::endl;
   //std::cout << " z = " << z << std::endl;
 
-  integrand_->SetParameterTheta(theta);
+  integrand_->SetParameterZ(z);
   integrand_->SetParameterTauLeptonPol(tauLeptonPol);
+  integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMlineShape);
 
   integrator_->SetFunction(*integrand_);
 
