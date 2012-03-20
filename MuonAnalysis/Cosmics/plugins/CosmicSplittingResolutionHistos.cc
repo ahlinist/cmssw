@@ -30,10 +30,13 @@ struct Loader {
   // Return a weight for the given dataset id (0 = data, 1-3 = MC with
   // p>10, p>100, and p>500).
   static double get_weight(unsigned id) {
+    if (!use_weights) return 1;
     static const double weights[4] = { 1., 1., 0.1375, 0.007983 };
     assert(id < 4);
     return weights[id];  
   }
+
+  static bool use_weights;
 
   Loader(const CosmicSplittingResolutionNtuple* nt,
 	 int track,                    // Which set of tracks to use, e.g. TPFMS.
@@ -114,6 +117,8 @@ struct Loader {
     }
   }
 };
+
+bool Loader::use_weights = true;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -460,6 +465,10 @@ public:
 private:
   // Whether we're running on MC or data. JMTBAD take from ntuple?
   const bool is_mc;
+  // Only use events from the specified sample id (0 = data, 1-3 = MC
+  // for p > 10, p > 100, p > 500 samples). -1 = default = use
+  // anything.
+  const int only_sample;
   // Whether to check for "wrong" MC sample (i.e. only take 10<p<100 GeV
   // events from id=1, 100<p<500 GeV events from id=2, etc.)
   const bool check_for_wrong_sample;
@@ -557,6 +566,7 @@ private:
 
 CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::ParameterSet& cfg)
   : is_mc(cfg.getParameter<bool>("is_mc")),
+    only_sample(cfg.getParameter<int>("only_sample")),
     check_for_wrong_sample(cfg.getParameter<bool>("check_for_wrong_sample")),
     filename(cfg.getParameter<std::string>("filename")),
     directory(cfg.getParameter<std::string>("directory")),
@@ -577,6 +587,9 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
     min_bfield(cfg.getParameter<double>("min_bfield")),
     copy_selected_events(cfg.getParameter<bool>("copy_selected_events"))
 {
+  if (only_sample >= 0)
+    Loader::use_weights = false;
+
   if (force_event_list.size() % 3 != 0)
     throw cms::Exception("CosmicSplittingResolutionHistos") << "force_event_list size must be a multiple of 3\n";
 
@@ -717,6 +730,9 @@ CosmicSplittingResolutionHistos::error_code CosmicSplittingResolutionHistos::cut
     return error_tt25;
 
   if (is_mc && check_for_wrong_sample) {
+    if (only_sample >= 0 && nt->id != unsigned(only_sample))
+      return error_wrong_sample; // JMTBAD different error code
+
     double unprop_mc_p = nt->unprop_mc_pt/sin(nt->unprop_mc_theta);
     if ((nt->id == mc_10 && unprop_mc_p > 100) || (nt->id == mc_100 && unprop_mc_p > 500))
       return error_wrong_sample;
