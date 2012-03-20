@@ -24,6 +24,8 @@ parser.add_argument('+input-directory', default='UTpickedTracks',
                     help='In the input ROOT file, the directory the ntuple TTree "t" is in. Default is "%(default)s".')
 parser.add_argument('+output-fn',
                     help='Override the output filename. (Default is to write to the current directory a file with basename the same as the input, but ending in .histos.root.)')
+parser.add_argument('+output-fn-tag',
+                    help='A tag for the output filename.')
 parser.add_argument('+run-type', action='append', dest='run_types', choices='cosmics collisions commissioning'.split(),
                     help='For data, include runs of type TYPE. (May be specified more than once; default is %(default)s.)')
 parser.add_argument('+require-rpc-good', action='store_true',
@@ -34,6 +36,8 @@ parser.add_argument('+max-run', type=int, default=999999,
                     help='For data, drop all runs below MIN_RUN.')
 parser.add_argument('+is-mc', action='store_true',
                     help='Specified input file is MC. (Data assumed by default.)')
+parser.add_argument('+only-sample', type=int, default=-1,
+                    help='Only use events from the specified sample id (0 = data, 1-3 = MC for p > 10, p > 100, p > 500 samples). -1 = default = use anything.')
 parser.add_argument('+no-wrong-sample', action='store_false', dest='check_for_wrong_sample',
                     help='Do not check for "wrong" sample, i.e. use all MC events regardless of dataset id.')
 parser.add_argument('+copy-selected-events', action='store_true',
@@ -70,6 +74,9 @@ options.input_fn = options.input_fn[0]
 if not options.output_fn:
     options.output_fn = os.path.basename(options.input_fn).replace('.root', '.histos.root')
 
+if options.output_fn_tag:
+    options.output_fn = options.output_fn.replace('.histos', '_' + options.output_fn_tag + '.histos')
+    
 if not options.run_types:
     options.run_types = ['cosmics']
 
@@ -89,6 +96,7 @@ if not options.is_mc:
 cfg = cms.PSet(
     directory               = cms.string(options.input_directory),
     is_mc                   = cms.bool(options.is_mc),
+    only_sample             = cms.int32(options.only_sample),
     check_for_wrong_sample  = cms.bool(options.check_for_wrong_sample),
     filename                = cms.string(options.input_fn),
     min_muon_hits           = cms.int32(options.min_muon_hits),
