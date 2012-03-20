@@ -32,6 +32,8 @@ def fit_histo(h, hist_name, draw=False):
         if res['fcn'].GetProb() > 0.03:
             break
         refit_count += 1
+        if refit_count >= 5:
+            break
         factor *= 0.9
     res['original_range'] = original_range
     res['original_prob'] = original_prob
