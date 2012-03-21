@@ -196,7 +196,7 @@ if __name__ == '__main__':
                 hist.Draw()
                 if bin.use_by_bin and res['fcn'].GetProb() < 0.03:
                     print 'check fit: prob for %s %s %s is %s' % (hist_name, track, bin.name, res['fcn'].GetProb())
-                elif bin.use_by_bin and res['refit_count'] > 0:
+                if bin.use_by_bin and res['refit_count'] > 0:
                     print 'check fit: refit count for %s %s %s is %s;\n   old range: (%10.2g, %10.2g) prob: %10.2g mu: %10.2g sigma: %10.2g\n   new range: (%10.2g, %10.2g) prob: %10.2g mu: %10.2g sigma: %10.2g' % (hist_name, track, bin.name, res['refit_count'], res['original_range'][0], res['original_range'][1], res['original_prob'], res['original_mu'][0], res['original_sigma'][0], res['fcn'].GetXmin(), res['fcn'].GetXmax(), res['fcn'].GetProb(), res['mu'][0], res['sigma'][0])
                 ps.save(bin.name)
 
