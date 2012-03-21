@@ -69,6 +69,27 @@ def core_gaussian(hist, factor, i=[0]):
     i[0] += 1
     return f
 
+def cumulative_histogram(h, type='ge'):
+    """Construct the cumulative histogram in which the value of each
+    bin is the tail integral of the given histogram.
+    """
+    
+    nb = h.GetNbinsX()
+    hc = ROOT.TH1F(h.GetName() + '_cumulative_' + type, '', nb, h.GetXaxis().GetXmin(), h.GetXaxis().GetXmax())
+    hc.Sumw2()
+    if type == 'ge':
+        first, last, step = nb+1, 0, -1
+    elif type == 'le':
+        first, last, step = 0, nb+1, 1
+    else:
+        raise ValueError('type %s not recognized' % type)
+    for i in xrange(first, last, step):
+        prev = 0 if i == first else hc.GetBinContent(i-step)
+        c = h.GetBinContent(i) + prev
+        hc.SetBinContent(i, c)
+        hc.SetBinError(i, c**0.5)
+    return hc
+
 def fit_gaussian(hist, factor=None, fit_options='qr', cache=[]):
     """Fit a Gaussian to the histogram, and return a dict with fitted
     parameters and errors. If factor is supplied, fit only to range in
@@ -433,6 +454,7 @@ __all__ = [
     'ROOT',
     'binomial_clopper_pearson',
     'binomial_divide',
+    'cumulative_histogram',
     'core_gaussian',
     'detree',
     'differentiate_stat_box',
