@@ -62,6 +62,7 @@ nSVfitTauToMuBuilder = cms.PSet(
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
+    VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/shapes.root")
     applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
@@ -105,7 +106,7 @@ nSVfitResonanceLikelihoodPolarization = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodPolarization"),
     pluginType = cms.string("NSVfitResonanceLikelihoodPolarization"),
     LR = cms.PSet(
-        formula = cms.string("[0]*([1] + [2] - x)/[2]"), # CV: linearly decrease weight of Z specific polarization
+        formula = cms.string("[0]"), # CV: linearly decrease weight of Z specific polarization
                                                          #     between mZ and mZ + 20 GeV
         xMin = cms.double(91.188),
         xMax = cms.double(111.188),
@@ -116,7 +117,7 @@ nSVfitResonanceLikelihoodPolarization = cms.PSet(
         )
     ),
     RL = cms.PSet(
-        formula = cms.string("[0]*([1] + [2] - x)/[2]"), # CV: linearly decrease weight of Z specific polarization
+        formula = cms.string("[0]"), # CV: linearly decrease weight of Z specific polarization
                                                          #     between mZ and mZ + 20 GeV
         xMin = cms.double(91.188),
         xMax = cms.double(111.188),
@@ -127,7 +128,7 @@ nSVfitResonanceLikelihoodPolarization = cms.PSet(
         )
     ),
     LL = cms.PSet(
-        formula = cms.string("[0]*(x - [1])/[2]"), # CV: linearly increase weight of Higgs specific polarization
+        formula = cms.string("[0]"), # CV: linearly increase weight of Higgs specific polarization
                                                    #     between mZ and mZ + 20 GeV
         xMin = cms.double(91.188), 
         xMax = cms.double(111.188),
@@ -138,7 +139,7 @@ nSVfitResonanceLikelihoodPolarization = cms.PSet(
         )
     ),
     RR = cms.PSet(
-        formula = cms.string("[0]*(x - [1])/[2]"), # CV: linearly increase weight of Higgs specific polarization
+        formula = cms.string("[0]"), # CV: linearly increase weight of Higgs specific polarization
                                                    #     between mZ and mZ + 20 GeV
         xMin = cms.double(91.188), 
         xMax = cms.double(111.188),
@@ -169,8 +170,9 @@ nSVfitResonanceBuilder = cms.PSet(
     pluginName = cms.string("nSVfitResonanceBuilder"),
     pluginType = cms.string("NSVfitResonanceBuilder"),
     polStates = cms.vstring( # polarization states to be considered when evaluating likelihoods
-        "LR", "RL", # Z case
-        "LL", "RR"  # Higgs case
+    "undefined"
+    #"LR", "RL", # Z case
+    #"LL", "RR"  # Higgs case
     )
 )
 

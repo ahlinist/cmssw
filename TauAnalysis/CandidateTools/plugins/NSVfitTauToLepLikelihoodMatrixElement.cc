@@ -72,7 +72,7 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   double prob = 1.;
   if ( visEnFracX >= 0. && visEnFracX <= 1 &&
        nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
-    prob = (13./square(tauLeptonMass2))*cube(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
+    prob = (13./square(tauLeptonMass2))*(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
   } else {                                                        // LB: unphysical solution
     prob = 1e-6;
   }
@@ -80,7 +80,7 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   
   if ( applyVisPtCutCorrection_ ) {
     double probCorr = 1.;
-    const double epsilon_regularization = 1.e-1;
+    const double epsilon_regularization = 1.e-3;
     if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
       double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
       probCorr = 1./((3. - 5.*xCut + 3.*cube(xCut) - fourth(xCut)) + epsilon_regularization);
@@ -91,6 +91,22 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
     if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
     prob *= probCorr;
   }
+
+  if(polSign==+1 || polSign==-1){
+    
+    prob = nuMass/(4*square(tauLeptonMass2))*( (tauLeptonMass2 + 2.*nuMass2)*(tauLeptonMass2 - nuMass2) + 
+					       polSign*(tauLeptonMass2*(2*visEnFracX-1)+nuMass2)*(-tauLeptonMass2+2*nuMass2)  );
+    if ( applyVisPtCutCorrection_ ) {
+      double probCorr = 1.;
+      const double epsilon_regularization = 1.e-3;
+      double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
+      probCorr *= 
+	(1./2*(1+polSign)*1./3*(1./2 - xCut + cube(xCut) - 1./2*fourth(xCut))+
+	 1./2*(1-polSign)*1./3*(3./4 - xCut + fourth(xCut)/4.));
+    }
+    
+  }
+
 
   double nll = 0.;
   if ( prob > 0. ) {

@@ -10,9 +10,9 @@
  * 
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: NSVfitTauToHadLikelihoodPhaseSpace.h,v 1.6 2012/03/14 09:46:58 veelken Exp $
+ * $Id: NSVfitTauToHadLikelihoodPhaseSpace.h,v 1.7 2012/03/14 16:34:47 veelken Exp $
  *
  */
 
@@ -21,6 +21,11 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleLikelihood.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
+
+#include "FWCore/ParameterSet/interface/FileInPath.h"
+
+#include <TFile.h>
+#include <TGraph.h>
 
 class NSVfitTauToHadLikelihoodPhaseSpace : public NSVfitSingleParticleLikelihood
 {
@@ -34,6 +39,16 @@ class NSVfitTauToHadLikelihoodPhaseSpace : public NSVfitSingleParticleLikelihood
 
  private:
   bool applySinThetaFactor_; 
+  edm::FileInPath VMshapeFileName_;
+  TFile* VMshapeFile_;
+  TGraph* rhoLPlus_;
+  TGraph* rhoNormLPlus_; 
+  TGraph* rhoLMinus_;
+  TGraph* rhoNormLMinus_; 
+  TGraph* rhoTPlus_;
+  TGraph* rhoNormTPlus_;
+  TGraph* rhoTMinus_;
+  TGraph* rhoNormTMinus_;
 };
 
 #endif
