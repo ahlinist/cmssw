@@ -88,7 +88,7 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
     } else {                                                        // LB: unphysical solution
       double nuMass_limit  = TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2);
       double nuMass2_limit = square(nuMass_limit);
-      prob = (13./square(tauLeptonMass2))*cube(tauLeptonMass2 - nuMass2_limit)*(tauLeptonMass2 + 2.*nuMass2_limit)*nuMass_limit;
+      prob = (13./square(tauLeptonMass2))*(tauLeptonMass2 - nuMass2_limit)*(tauLeptonMass2 + 2.*nuMass2_limit)*nuMass_limit;
       prob /= (1. + 1.e+6*square(nuMass - nuMass_limit));
     }
     if ( applyVisPtCutCorrection_ ) {
