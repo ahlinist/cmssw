@@ -72,7 +72,7 @@ nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
     verbosity = cms.int32(0)
 )
 
-nSVfitTauLikelihoodMatrixElement = = cms.PSet(
+nSVfitTauLikelihoodMatrixElement = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodMatrixElement"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodMatrixElement"),
     VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/shapes.root")
