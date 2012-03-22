@@ -75,7 +75,7 @@ nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
 nSVfitTauLikelihoodMatrixElement = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodMatrixElement"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodMatrixElement"),
-    VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/shapes.root")
+    VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/shapes.root"),
     applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
