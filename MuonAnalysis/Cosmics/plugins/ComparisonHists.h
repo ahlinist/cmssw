@@ -86,7 +86,7 @@ public:
     // below. For those histograms that can end up not being made, we
     // explicitly test for the null pointer in Fill().
     h_0 = h_1 = h_2 = 0;
-    h_0v1 = h_0v2 = h_1v2 = 0;
+    h_0v1 = h_0v2 = h_1v2 = h_0d1v0d2 = h_0d1v1d2 = 0;
     h_diff = h_res0 = h_res1 = h_pull = 0;
     h_diff02 = h_diff12 = h_res02 = h_res12 = h_pull02 = h_pull12 = 0;
 
@@ -105,6 +105,9 @@ public:
       if (make_mctruth) {
 	h_0v2 = fsdir.make<TH2F>(name_0 + "V" + name_2, "", nbins, xmin, xmax, nbins, xmin, xmax);
 	h_1v2 = fsdir.make<TH2F>(name_1 + "V" + name_2, "", nbins, xmin, xmax, nbins, xmin, xmax);
+
+	h_0d1v0d2 = fsdir.make<TH2F>(name_0 + "X" + name_1 + "X" + name_2, "", nbins_diff, xmin_diff, xmax_diff, nbins_diff, xmin_diff, xmax_diff);
+	h_0d1v1d2 = fsdir.make<TH2F>(name_0 + "X" + name_1 + "Y" + name_2, "", nbins_diff, xmin_diff, xmax_diff, nbins_diff, xmin_diff, xmax_diff);
       }
     }
 
@@ -148,6 +151,8 @@ public:
     if (h_0v1) h_0v1->Sumw2();
     if (h_0v2) h_0v2->Sumw2();
     if (h_1v2) h_1v2->Sumw2();
+    if (h_0d1v0d2) h_0d1v0d2->Sumw2();
+    if (h_0d1v1d2) h_0d1v1d2->Sumw2();
     if (h_diff) h_diff->Sumw2();
     if (h_diff02) h_diff02->Sumw2();
     if (h_diff12) h_diff12->Sumw2();
@@ -177,6 +182,9 @@ public:
     double diff   = val[0] - val[1];
     double diff02 = val[0] - val2;
     double diff12 = val[1] - val2;
+
+    if (h_0d1v0d2) h_0d1v0d2->Fill(diff, diff02, weight);
+    if (h_0d1v1d2) h_0d1v1d2->Fill(diff, diff12, weight);
 
     double res0  = diff/val[0];
     double res1  = diff/val[1];
@@ -226,6 +234,8 @@ private:
   TH2F* h_0v1;
   TH2F* h_0v2;
   TH2F* h_1v2;
+  TH2F* h_0d1v0d2;
+  TH2F* h_0d1v1d2;
   TH1F* h_diff;
   TH1F* h_res0;
   TH1F* h_res1;
