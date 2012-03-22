@@ -51,7 +51,7 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   double visMass = hypothesis_T->p4vis_rf().mass();
   if ( visMass < chargedPionMass ) visMass = chargedPionMass;
   if ( visMass > tauLeptonMass   ) visMass = tauLeptonMass;
-  double Evis_rf = hypothesis_T->p4vis_rf().E();
+  double visMass2 = square(visMass);
   double Pvis_rf = hypothesis_T->p4vis_rf().P();
 
   // CV: normalize likelihood function such that 
@@ -59,11 +59,11 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   //       integral  prob dX = 1.
   //               0
   double prob = tauLeptonMass/(2.*Pvis_rf);
-  if ( visEnFracX < ((Evis_rf - Pvis_rf)/tauLeptonMass) ) {
-    double visEnFracX_limit = ((Evis_rf - Pvis_rf)/tauLeptonMass);
+  if ( visEnFracX < (visMass2/tauLeptonMass2) ) {
+    double visEnFracX_limit = visMass2/tauLeptonMass2;
     prob /= (1. + 1.e+6*square(visEnFracX - visEnFracX_limit));
-  } else if ( visEnFracX > ((Evis_rf + Pvis_rf)/tauLeptonMass) ) {
-    double visEnFracX_limit = ((Evis_rf + Pvis_rf)/tauLeptonMass);
+  } else if ( visEnFracX > 1. ) {
+    double visEnFracX_limit = 1.;
     prob /= (1. + 1.e+6*square(visEnFracX - visEnFracX_limit));
   }
   if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
@@ -73,7 +73,7 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
     const double epsilon_regularization = 1.e-1;
     if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {     
       double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();      
-      probCorr = 1./((((Evis_rf + Pvis_rf)/tauLeptonMass) - xCut) + epsilon_regularization);
+      probCorr = 1./((1. - xCut) + epsilon_regularization);
     }
     if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
     prob *= probCorr;

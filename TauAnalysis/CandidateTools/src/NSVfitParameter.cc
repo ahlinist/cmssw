@@ -10,6 +10,8 @@
 #include <iostream>
 #include <iomanip>
 
+using namespace SVfit_namespace;
+
 std::vector<double> NSVfitParameter::defaultInitialValues_;
 std::vector<std::pair<double, double> > NSVfitParameter::defaultLimits_;
 std::vector<double> NSVfitParameter::defaultStepSizes_;
@@ -26,6 +28,9 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type,
     stepSize_(stepSize),
     isFixed_(isFixed)
 {
+  //std::cout << "<NSVfitParameter::NSVfitParameter>:" << std::endl;
+  //std::cout << " constructor(int, std::string, int, double, double, double, double, bool)" << std::endl;
+
   if ( !(type >= 0 && type < nSVfit_namespace::kNumFitParameter) ) throw cms::Exception("NSVfitParameter")
        << "Invalid type = " << type << " !!\n";
 
@@ -38,6 +43,9 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type, boo
     type_(type),
     isFixed_(isFixed)
 {
+  //std::cout << "<NSVfitParameter::NSVfitParameter>:" << std::endl;
+  //std::cout << " constructor(int, std::string, int, bool)" << std::endl;
+
   if ( !defaultValues_initialized_ ) initializeDefaultValues();
 
   if ( !(type >= 0 && type < nSVfit_namespace::kNumFitParameter) ) throw cms::Exception("NSVfitParameter")
@@ -46,9 +54,16 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type, boo
   initialValue_ = defaultInitialValues_[type];
   lowerLimit_ = defaultLimits_[type].first;
   upperLimit_ = defaultLimits_[type].second;
-  stepSize_ = defaultStepSizes_[type]; 
+  stepSize_ = defaultStepSizes_[type];   
 
   reset();
+}
+
+bool isLimitDisabled(double limit)
+{
+  if ( limit == std::numeric_limits<float>::quiet_NaN() ) return true; // CMSSSW_4_2_x version
+  //if ( limit == TMath::QuietNaN()                     ) return true; // CMSSSW_4_4_x version
+  else return false;
 }
 
 void NSVfitParameter::dump(std::ostream& stream) const 
@@ -56,7 +71,13 @@ void NSVfitParameter::dump(std::ostream& stream) const
   stream << "param #" << idx_ << "(name = " << get_name_incl_type(name_, type_) << "):" 
 	 << " value = " << value_ << " + " << errUp_ << " - " << errDown_ << std::endl;
   stream << " initialValue = " << initialValue_ << " +/- " << stepSize_ << ","
-	 << " limits = {" <<  lowerLimit_ << ", " << upperLimit_ << "}";
+	 << " limits = {";
+  if ( isLimitDisabled(lowerLimit_) ) stream << "disabled";
+  else stream << lowerLimit_;
+  stream << ", ";
+  if ( isLimitDisabled(upperLimit_) ) stream << "disabled";
+  else stream << upperLimit_;
+  stream << "}";
   if      ( IsFixed()       ) stream << ", isFixed"; 
   else if ( IsDoubleBound() ) stream << ", isDoubleBound"; 
   else if ( HasLowerLimit() ) stream << ", hasLowerLimit"; 
@@ -82,13 +103,6 @@ std::string get_name_incl_type(const std::string& name, int type)
   else if ( type == nSVfit_namespace::kTau_phi_lab           ) retVal.append("phi_lab");
   else if ( type == nSVfit_namespace::kTau_decayDistance_lab ) retVal.append("decayDistance_lab");
   else if ( type == nSVfit_namespace::kTau_nuInvMass         ) retVal.append("nuInvMass");
-  else if ( type == nSVfit_namespace::kTau_pol               ) retVal.append("pol");
-  else if ( type == nSVfit_namespace::kTauVM_theta_rho       ) retVal.append("theta_rho");
-  else if ( type == nSVfit_namespace::kTauVM_mass2_rho       ) retVal.append("mass2_rho");
-  else if ( type == nSVfit_namespace::kTauVM_theta_a1        ) retVal.append("theta_a1");
-  else if ( type == nSVfit_namespace::kTauVM_theta_a1r       ) retVal.append("theta_a1r");
-  else if ( type == nSVfit_namespace::kTauVM_phi_a1r         ) retVal.append("phi_a1r");
-  else if ( type == nSVfit_namespace::kTauVM_mass2_a1        ) retVal.append("mass2_a1");
   else if ( type == nSVfit_namespace::kLep_shiftEn           ) retVal.append("shiftEn");
   else if ( type == nSVfit_namespace::kNu_energy_lab         ) retVal.append("energy_lab");
   else if ( type == nSVfit_namespace::kNu_phi_lab            ) retVal.append("phi_lab");
@@ -105,7 +119,8 @@ std::string get_name_incl_type(const std::string& name, int type)
 
 void NSVfitParameter::initializeDefaultValues()
 {
-  using namespace SVfit_namespace;
+  //std::cout << "<NSVfitParameter::initializeDefaultValues>:" << std::endl;
+  //std::cout << " numFitParameter = " << nSVfit_namespace::kNumFitParameter << std::endl;
 
   defaultInitialValues_.resize(nSVfit_namespace::kNumFitParameter);
   defaultInitialValues_[nSVfit_namespace::kPV_shiftX]             =  0.;
@@ -115,13 +130,6 @@ void NSVfitParameter::initializeDefaultValues()
   defaultInitialValues_[nSVfit_namespace::kTau_phi_lab]           =  0.;
   defaultInitialValues_[nSVfit_namespace::kTau_decayDistance_lab] =  0.01; // 100 microns
   defaultInitialValues_[nSVfit_namespace::kTau_nuInvMass]         =  0.8;  // GeV
-  defaultInitialValues_[nSVfit_namespace::kTau_pol]               =  0.;
-  defaultInitialValues_[nSVfit_namespace::kTauVM_theta_rho]       =  0.25*TMath::Pi();
-  defaultInitialValues_[nSVfit_namespace::kTauVM_mass2_rho]       =  0.8;
-  defaultInitialValues_[nSVfit_namespace::kTauVM_theta_a1]        =  0.25*TMath::Pi();
-  defaultInitialValues_[nSVfit_namespace::kTauVM_theta_a1r]       =  0.25*TMath::Pi();
-  defaultInitialValues_[nSVfit_namespace::kTauVM_phi_a1r]         =  0.;
-  defaultInitialValues_[nSVfit_namespace::kTauVM_mass2_a1]        =  1.2; // GeV
   defaultInitialValues_[nSVfit_namespace::kLep_shiftEn]           =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_energy_lab]         =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_phi_lab]            =  0.;
@@ -137,17 +145,10 @@ void NSVfitParameter::initializeDefaultValues()
   defaultLimits_[nSVfit_namespace::kTau_phi_lab]                  = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
   defaultLimits_[nSVfit_namespace::kTau_decayDistance_lab]        = pdouble(        -4.,            1.);  // sigmas
   defaultLimits_[nSVfit_namespace::kTau_nuInvMass]                = pdouble(          0.,           0.);  // depends on decay: mTau - mVis
-  defaultLimits_[nSVfit_namespace::kTau_pol]                      = pdouble(         -1.,          +1.);  // -1: left-handed, +1: right-handed
-  defaultLimits_[nSVfit_namespace::kTauVM_theta_rho]              = pdouble(          0.,  TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kTauVM_mass2_rho]              = pdouble(square(chargedPionMass + neutralPionMass), tauLeptonMass2); // GeV^2
-  defaultLimits_[nSVfit_namespace::kTauVM_theta_a1]               = pdouble(          0.,  TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kTauVM_theta_a1r]              = pdouble(          0.,  TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kTauVM_phi_a1r]                = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kTauVM_mass2_a1]               = pdouble(square(chargedPionMass + 2*neutralPionMass), tauLeptonMass2); // GeV^2
   defaultLimits_[nSVfit_namespace::kLep_shiftEn]                  = pdouble(          0.,          10.);  // relative to measured lepton energy
   defaultLimits_[nSVfit_namespace::kNu_energy_lab]                = pdouble(          0.,        1.e+3);  // GeV
   defaultLimits_[nSVfit_namespace::kNu_phi_lab]                   = pdouble(          0.,  TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kW_theta_lab]                  = pdouble(          0.,  TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kW_theta_lab]                  = pdouble(          0., 0.25*TMath::Pi()); // rad
   defaultLimits_[nSVfit_namespace::kW_phi_lab]                    = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
   defaultLimits_[nSVfit_namespace::kW_mass]                       = pdouble(80.399 - 3.*2.085, 80.399 + 3.*2.085); // GeV
 
@@ -159,13 +160,6 @@ void NSVfitParameter::initializeDefaultValues()
   defaultStepSizes_[nSVfit_namespace::kTau_phi_lab]               =  0.25;
   defaultStepSizes_[nSVfit_namespace::kTau_decayDistance_lab]     =  0.25;
   defaultStepSizes_[nSVfit_namespace::kTau_nuInvMass]             =  0.1;
-  defaultStepSizes_[nSVfit_namespace::kTau_pol]                   =  0.25;
-  defaultStepSizes_[nSVfit_namespace::kTauVM_theta_rho]           =  0.25;
-  defaultStepSizes_[nSVfit_namespace::kTauVM_mass2_rho]           =  0.1;
-  defaultStepSizes_[nSVfit_namespace::kTauVM_theta_a1]            =  0.25;
-  defaultStepSizes_[nSVfit_namespace::kTauVM_theta_a1r]           =  0.25;
-  defaultStepSizes_[nSVfit_namespace::kTauVM_phi_a1r]             =  0.25;
-  defaultStepSizes_[nSVfit_namespace::kTauVM_mass2_a1]            =  0.1;
   defaultStepSizes_[nSVfit_namespace::kLep_shiftEn]               =  0.01;
   defaultStepSizes_[nSVfit_namespace::kNu_energy_lab]             = 10.;
   defaultStepSizes_[nSVfit_namespace::kNu_phi_lab]                =  0.25;

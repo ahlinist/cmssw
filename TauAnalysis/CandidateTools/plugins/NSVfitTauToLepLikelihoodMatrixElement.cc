@@ -31,7 +31,6 @@ void NSVfitTauToLepLikelihoodMatrixElement<T>::beginJob(NSVfitAlgorithmBase* alg
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,    pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass,  pluginName_);
-  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_pol,        pluginName_);
 }
 
 template <typename T>
@@ -70,44 +69,41 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   //       integral  prob dX dMnunu = 1.
   //               0
   double prob = 1.;
-  if ( visEnFracX >= 0. && visEnFracX <= 1 &&
-       nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
-    prob = (13./square(tauLeptonMass2))*(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
-  } else {                                                        // LB: unphysical solution
-    prob = 1e-6;
-  }
-  if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
-  
-  if ( applyVisPtCutCorrection_ ) {
-    double probCorr = 1.;
-    const double epsilon_regularization = 1.e-3;
-    if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
-      double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
-      probCorr = 1./((3. - 5.*xCut + 3.*cube(xCut) - fourth(xCut)) + epsilon_regularization);
-    } else {
-      const double penalty_factor = 1.e-3;
-      probCorr = penalty_factor/((visPtCutThreshold_ - hypothesis_T->p4_fitted().pt()) + penalty_factor*epsilon_regularization);
+  if ( polSign == +1 || polSign == -1 ) {
+    prob = (nuMass/(4.*tauLeptonMass4))*((tauLeptonMass2 + 2.*nuMass2)*(tauLeptonMass2 - nuMass2) 
+                                       + polSign*(tauLeptonMass2*(2.*visEnFracX - 1.) + nuMass2)*(-tauLeptonMass2 + 2.*nuMass2));
+    if ( applyVisPtCutCorrection_ ) {
+      double probCorr = 1.;
+      if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
+	double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
+	probCorr = (0.5*(1. + polSign)*(1./3.)*(0.5 - xCut + cube(xCut) - 0.5*fourth(xCut))
+		  + 0.5*(1. - polSign)*(1./3.)*(0.75 - xCut + 0.5*fourth(xCut)));
+      }
+      if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
+      prob *= probCorr;
     }
-    if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
-    prob *= probCorr;
-  }
-
-  if(polSign==+1 || polSign==-1){
-    
-    prob = nuMass/(4*square(tauLeptonMass2))*( (tauLeptonMass2 + 2.*nuMass2)*(tauLeptonMass2 - nuMass2) + 
-					       polSign*(tauLeptonMass2*(2*visEnFracX-1)+nuMass2)*(-tauLeptonMass2+2*nuMass2)  );
+  } else {
+    if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
+      prob = (13./square(tauLeptonMass2))*(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
+    } else {                                                        // LB: unphysical solution
+      double nuMass_limit  = TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2);
+      double nuMass2_limit = square(nuMass_limit);
+      prob = (13./square(tauLeptonMass2))*cube(tauLeptonMass2 - nuMass2_limit)*(tauLeptonMass2 + 2.*nuMass2_limit)*nuMass_limit;
+      prob /= (1. + 1.e+6*square(nuMass - nuMass_limit));
+    }
     if ( applyVisPtCutCorrection_ ) {
       double probCorr = 1.;
       const double epsilon_regularization = 1.e-3;
-      double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
-      probCorr *= 
-	(1./2*(1+polSign)*1./3*(1./2 - xCut + cube(xCut) - 1./2*fourth(xCut))+
-	 1./2*(1-polSign)*1./3*(3./4 - xCut + fourth(xCut)/4.));
+      if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
+	double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
+	probCorr = 1./((3. - 5.*xCut + 3.*cube(xCut) - fourth(xCut)) + epsilon_regularization);
+      } 
+      if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
+      prob *= probCorr;
     }
-    
   }
-
-
+  if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
+  
   double nll = 0.;
   if ( prob > 0. ) {
     nll = -TMath::Log(prob);

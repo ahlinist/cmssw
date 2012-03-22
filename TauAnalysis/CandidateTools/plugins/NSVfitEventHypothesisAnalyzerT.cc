@@ -34,6 +34,9 @@ NSVfitEventHypothesisAnalyzerT<T>::NSVfitEventHypothesisAnalyzerT(const edm::Par
 
   srcWeights_ = cfg.getParameter<vInputTag>("srcWeights");
 
+  idxResonance_ = ( cfg.exists("idxResonance") ) ?
+    cfg.getParameter<int>("idxResonance") : 0;
+
   dqmDirectory_ = cfg.getParameter<std::string>("dqmDirectory");
 }
 
@@ -162,14 +165,18 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 
   for ( typename NSVfitEventHypothesisCollection::const_iterator svFitEventHypothesis = svFitEventHypotheses->begin();
 	svFitEventHypothesis != svFitEventHypotheses->end(); ++svFitEventHypothesis ) {
-    assert(svFitEventHypothesis->numResonances() == 1);
-    const NSVfitResonanceHypothesisBase* svFitResonanceHypothesis = svFitEventHypothesis->resonance(0);
+    if ( !((int)svFitEventHypothesis->numResonances() > idxResonance_) )
+      throw cms::Exception("NSVfitEventHypothesisAnalyzer") 
+	<< " Failed to find resonance #" << idxResonance_ << " in NSVfitEventHypothesis !!\n";
+    const NSVfitResonanceHypothesisBase* svFitResonanceHypothesis = svFitEventHypothesis->resonance(idxResonance_);
 
     bool svFitIsValidSolution = svFitResonanceHypothesis->isValidSolution();
     svFitIsValidSolution_->Fill(svFitIsValidSolution, evtWeight);
 
-    double svFitMass  = svFitResonanceHypothesis->mass();
-    double svFitSigma = TMath::Sqrt(square(svFitResonanceHypothesis->massErrUp()) + svFitResonanceHypothesis->massErrDown());
+    double svFitMass      = svFitResonanceHypothesis->mass();
+    double svFitSigmaUp   = svFitResonanceHypothesis->massErrUp();
+    double svFitSigmaDown = svFitResonanceHypothesis->massErrDown();
+    double svFitSigma     = TMath::Sqrt(square(svFitSigmaUp) + square(svFitSigmaDown));
 
     assert(svFitResonanceHypothesis->numDaughters() == 2);
     const NSVfitSingleParticleHypothesis* svFitDaughter1 = dynamic_cast<const NSVfitSingleParticleHypothesis*>(
@@ -205,10 +212,6 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     double metCov          = TMath::Power(square(covEigenValues(0)) + square(covEigenValues(1)), 0.25);
     reco::Candidate::LorentzVector rec_minus_genMEtP4 = recMEtP4 - genMEtP4;
     double metPull         = rec_minus_genMEtP4.pt()/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, recMEtP4 - genMEtP4);
-    double metErrProjLeg1  = compProjVecXY(recMEtP4 - genMEtP4, svFitDaughter1P4);
-    double metPullProjLeg1 = metErrProjLeg1/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, svFitDaughter1P4);
-    double metErrProjLeg2  = compProjVecXY(recMEtP4 - genMEtP4, svFitDaughter2P4);
-    double metPullProjLeg2 = metErrProjLeg2/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, svFitDaughter2P4);
 
     for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
 	  plotEntry != plotEntries1_.end(); ++plotEntry ) {
@@ -224,8 +227,9 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	  plotEntry != plotEntries2_.end(); ++plotEntry ) {
       (*plotEntry)->fillHistograms(
         svFitIsValidSolution,			     
-	genLeg1P4, svFitDaughter1P4, genLeg2P4, svFitDaughter2P4, svFitMass, svFitSigma, diTauPt, prodAngle_rf,
-	metCov, rec_minus_genMEtP4, metPull, metErrProjLeg1, metPullProjLeg1, metErrProjLeg2, metPullProjLeg2, 
+	genLeg1P4, svFitDaughter1P4, genLeg2P4, svFitDaughter2P4, svFitMass, svFitSigma, svFitSigmaUp, svFitSigmaDown, 
+	diTauPt, prodAngle_rf,
+	metCov, rec_minus_genMEtP4, metPull, 
 	evtWeight);
     }
   }

@@ -112,7 +112,11 @@ void removePFJetOverlaps(std::list<const reco::PFJet*>& pfJets,
 
 TMatrixD PFMEtSignInterface::operator()(const std::list<const reco::Candidate*>& patLeptonList) const
 {
-  if ( this->verbosity_ ) std::cout << "<PFMEtSignInterface::operator()>:" << std::endl;
+  if ( this->verbosity_ ) {
+    std::cout << "<PFMEtSignInterface::operator()>:" << std::endl;
+    std::cout << " patLeptonList: #entries = " << patLeptonList.size() << std::endl;
+    std::cout << " pfJetList: #entries = " << pfJetList_.size() << std::endl;
+  }
 
   std::list<const reco::PFJet*> pfJetList_hypothesis = pfJetList_;
   removePFJetOverlaps(pfJetList_hypothesis, patLeptonList, dRoverlapPFJet_, dRoverlapPFCandidate_);  

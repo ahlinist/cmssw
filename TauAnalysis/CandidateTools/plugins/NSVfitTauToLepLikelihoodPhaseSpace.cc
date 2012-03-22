@@ -54,6 +54,7 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
   double decayAngle = hypothesis_T->decay_angle_rf();
   double nuMass = hypothesis_T->p4invis_rf().mass();
   if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
+  double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
   double visMass2 = square(visMass);
 
@@ -61,24 +62,32 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     std::cout << " tauLeptonMass2 = " << tauLeptonMass2 << std::endl;
     std::cout << " decayAngle = " << decayAngle << std::endl;
     std::cout << " nuMass = " << nuMass << std::endl;
+    std::cout << " visEnFracX = " << visEnFracX << std::endl;
     std::cout << " visMass = " << visMass << std::endl;
-    std::cout << " square(nuMass + visMass) = " << square(nuMass + visMass) << std::endl;
-    std::cout << " square(nuMass - visMass) = " << square(nuMass - visMass) << std::endl;
-    std::cout << " invisible rest frame p4: " << hypothesis_T->p4invis_rf() << std::endl;
   }
 
   // CV: normalize likelihood function such that 
   //               1
   //       integral  prob dX dMnunu = 1.
   //               0
-  //
   double term1 = tauLeptonMass2 - visMass2;
   double term2 = tauLeptonMass2 + visMass2;
   double term3 = tauLeptonMass*visMass;
   double term4 = square(term3);
   double norm_factor = 1./(0.25*(term1*term2 - 4.*term4*TMath::Log(term3) + 4.*term4*TMath::Log(visMass2)));
   //std::cout << "norm_factor = " << norm_factor << std::endl;
-  double prob = norm_factor*nuMass*TMath::Sqrt((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)));
+  double prob = 1.;
+  if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
+    double term5 = tauLeptonMass2 - square(nuMass + visMass);
+    double term6 = tauLeptonMass2 - square(nuMass - visMass);
+    prob = norm_factor*nuMass*TMath::Sqrt(term5*term6);
+  } else {                                                        // LB: unphysical solution
+    double nuMass_limit = TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2);
+    double term5_limit = tauLeptonMass2 - square(nuMass_limit + visMass);
+    double term6_limit = tauLeptonMass2 - square(nuMass_limit - visMass);
+    prob = norm_factor*nuMass_limit*TMath::Sqrt(term5_limit*term6_limit);
+    prob /= (1. + 1.e+6*square(nuMass - nuMass_limit));
+  }
   if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
 
   if ( applyVisPtCutCorrection_ ) {
@@ -87,9 +96,6 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
       double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
       probCorr = 1./((1. - xCut) + epsilon_regularization);
-    } else {
-      const double penalty_factor = 1.e-3;
-      probCorr = penalty_factor/((visPtCutThreshold_ - hypothesis_T->p4_fitted().pt()) + penalty_factor*epsilon_regularization);
     }
     if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
     prob *= probCorr;

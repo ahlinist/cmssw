@@ -24,7 +24,10 @@ NSVfitResonanceLikelihoodBreitWigner::~NSVfitResonanceLikelihoodBreitWigner()
 
 double NSVfitResonanceLikelihoodBreitWigner::operator()(const NSVfitResonanceHypothesis* resonance, int polHandedness) const 
 {
-  if ( this->verbosity_ ) std::cout << "<NSVfitResonanceLikelihoodBreitWigner::operator()>:" << std::endl;
+  if ( this->verbosity_ ) {
+    std::cout << "<NSVfitResonanceLikelihoodBreitWigner::operator()>:" << std::endl;
+    std::cout << " resonance: mass = " << resonance_mass_ << ", width = " << resonance_width_ << std::endl;
+  }
 
   double mass = resonance->mass();
   if ( this->verbosity_ ) std::cout << " mass = " << mass << std::endl;

@@ -24,7 +24,8 @@ NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2(const edm::ParameterSet& cf
   : NSVfitEventLikelihood(cfg),
     pfMEtSign_(0),
     pfMEtCov_(2, 2),
-    pfMEtCovInverse_(2, 2)
+    pfMEtCovInverse_(2, 2),
+    tailProbCorrFunction_(0)
 {
   power_ = ( cfg.exists("power") ) ?
     cfg.getParameter<double>("power") : 1.0;
@@ -34,11 +35,17 @@ NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2(const edm::ParameterSet& cf
   } else {
     pfMEtSign_ = new PFMEtSignInterface(cfg);
   }
+
+  if ( cfg.exists("tailProbCorr") ) {
+    edm::ParameterSet cfgTailProbCorr = cfg.getParameter<edm::ParameterSet>("tailProbCorr");
+    tailProbCorrFunction_ = new tailProbCorrFunctionType(pluginName_, cfgTailProbCorr);
+  }
 }
 
 NSVfitEventLikelihoodMEt2::~NSVfitEventLikelihoodMEt2()
 {
   delete pfMEtSign_;
+  delete tailProbCorrFunction_;
 }
 
 void NSVfitEventLikelihoodMEt2::beginJob(NSVfitAlgorithmBase* algorithm)
@@ -77,7 +84,7 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
       size_t numDaughters = resonance->numDaughters();
       for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
 	const NSVfitSingleParticleHypothesis* daughter = resonance->daughter(iDaughter);
-	daughterHypothesesList.push_back(daughter->particle().get());
+	if ( daughter->particle().isNonnull() ) daughterHypothesesList.push_back(daughter->particle().get());
       }
     }
     
@@ -126,9 +133,14 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
     // CV: avoid usage of TVectorD*(TMatrixD*TVectorD) notation
     //     and write exponent of multivariate Normal distribution in components instead,
     //     to avoid continuous allocation/deallocation of temporary objects (speed!)
-    nll = nllConstTerm_ 
-         + 0.5*(residual_fitted0_*(pfMEtCovInverse00_*residual_fitted0_ + pfMEtCovInverse01_*residual_fitted1_)
-	      + residual_fitted1_*(pfMEtCovInverse10_*residual_fitted0_ + pfMEtCovInverse11_*residual_fitted1_));
+    double pull = residual_fitted0_*(pfMEtCovInverse00_*residual_fitted0_ + pfMEtCovInverse01_*residual_fitted1_)
+	        + residual_fitted1_*(pfMEtCovInverse10_*residual_fitted0_ + pfMEtCovInverse11_*residual_fitted1_);
+    if ( tailProbCorrFunction_ ) {
+      double tailProbCorr = tailProbCorrFunction_->eval(pull);
+      if ( this->verbosity_ ) std::cout << "pull = " << pull << ": tailProbCorr = " << tailProbCorr << std::endl;
+      if ( tailProbCorr > 0.9 ) pull /= tailProbCorr;
+    }
+    nll = nllConstTerm_ + 0.5*pull;
   } else {
     nll = std::numeric_limits<float>::max();
   }
