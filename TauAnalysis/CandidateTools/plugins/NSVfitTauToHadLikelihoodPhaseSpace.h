@@ -22,11 +22,6 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
-#include "FWCore/ParameterSet/interface/FileInPath.h"
-
-#include <TFile.h>
-#include <TGraph.h>
-
 class NSVfitTauToHadLikelihoodPhaseSpace : public NSVfitSingleParticleLikelihood
 {
  public:
@@ -39,16 +34,6 @@ class NSVfitTauToHadLikelihoodPhaseSpace : public NSVfitSingleParticleLikelihood
 
  private:
   bool applySinThetaFactor_; 
-  edm::FileInPath VMshapeFileName_;
-  TFile* VMshapeFile_;
-  TGraph* rhoLPlus_;
-  TGraph* rhoNormLPlus_; 
-  TGraph* rhoLMinus_;
-  TGraph* rhoNormLMinus_; 
-  TGraph* rhoTPlus_;
-  TGraph* rhoNormTPlus_;
-  TGraph* rhoTMinus_;
-  TGraph* rhoNormTMinus_;
 };
 
 #endif
