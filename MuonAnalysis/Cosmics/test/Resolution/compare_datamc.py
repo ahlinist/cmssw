@@ -35,7 +35,7 @@ for n,v in [('Data filename', options.data_fn), ('MC filename', options.mc_fn), 
 
 ################################################################################
 
-from MuonAnalysis.Cosmics.ROOTTools import ROOT, plot_saver, tdr_style, integral, tfile_iterator, mkdir, differentiate_stat_box
+from MuonAnalysis.Cosmics.ROOTTools import ROOT, plot_saver, tdr_style, integral, tfile_iterator, mkdir, differentiate_stat_box, cumulative_histogram
 tdr_style()
 ps = plot_saver(options.plot_dir, size=(600,600))
 
@@ -45,9 +45,13 @@ mc   = ROOT.TFile(options.mc_fn)
 class HistogramNotFoundException(Exception):
     pass
 
-def draw(name, path, xtitle, ytitle, xrange=None, yrange=None,rebin=None, opt_stat=1111110, save=True):
-    hdata = data.Get(path).Clone('data')
-    hmc   = mc  .Get(path).Clone('mc')
+def draw(name, path, xtitle, ytitle, xrange=None, yrange=None,rebin=None, opt_stat=1111110, save=True, scale_mc=True, hist_cmds=[]):
+    if type(name) == str and type(path) == str:
+        hdata = data.Get(path).Clone('data')
+        hmc   = mc  .Get(path).Clone('mc')
+    else:
+        # hack
+        hdata, hmc = path
 
     if hdata.Class().GetName() == 'TObject' or hmc.Class().GetName() == 'TObject':
         raise HistogramNotFoundException(path)
@@ -62,17 +66,40 @@ def draw(name, path, xtitle, ytitle, xrange=None, yrange=None,rebin=None, opt_st
 
     for h in (hdata, hmc):
         h.SetTitle(';%s;%s' % (xtitle, ytitle))
+        h.GetXaxis().SetTitleSize(0.04)
+        h.GetXaxis().SetLabelSize(0.04)
+        h.GetYaxis().SetTitleSize(0.04)
+        h.GetYaxis().SetLabelSize(0.04)
         h.GetXaxis().SetLabelFont(42)
         h.GetYaxis().SetLabelFont(42)
         h.GetXaxis().SetTitleFont(42)
         h.GetYaxis().SetTitleFont(42)
+        h.GetXaxis().SetTitleOffset(1.2)
         h.GetYaxis().SetTitleOffset(1.8)
+        h.SetMarkerStyle(20)
+        h.SetMarkerSize(0)
         if xrange:
             h.GetXaxis().SetRangeUser(*xrange)
         if yrange:
             h.GetYaxis().SetRangeUser(*yrange)
+        for cmd in hist_cmds:
+            exec cmd
 
-    hmc.Scale(options.scale)
+    if scale_mc:
+        if options.scale is None:
+            xmin = hdata.GetXaxis().GetXmin()
+            xmax = hdata.GetXaxis().GetXmax()
+            if xmax - xmin > 1800:
+                xmin = 20
+            data_i = integral(hdata, xmin, xmax)
+            mc_i   = integral(hmc,   xmin, xmax)
+            if mc_i == 0:
+                raise ValueError('MC integral for scale factor is zero')
+            scale = data_i/float(mc_i)
+        else:
+            scale = options.scale
+        hmc.Scale(scale)
+    
     mc_color = 46
     hmc.SetMarkerColor(mc_color)
     hmc.SetFillColor(mc_color)
@@ -96,33 +123,21 @@ def draw(name, path, xtitle, ytitle, xrange=None, yrange=None,rebin=None, opt_st
             s = h.FindObject('stats')
             s.SetOptStat(opt_stat)
             s.SetX1NDC(0.76)
-            s.SetY1NDC(0.78)
+            if opt_stat == 1111110:
+                s.SetY1NDC(0.78)
         differentiate_stat_box(hmc, new_color=mc_color)
 
     if save:
         ps.save(name)
 
-################################################################################
-
-# If not overridden in the options, figure out the normalization
-# factor using the integral of ref_pt.
-
-ref_pt_data = data.Get('histos/pTall/ref_pt')
-ref_pt_mc   = mc  .Get('histos/pTall/ref_pt')
-
-if options.scale is None:
-    data_i = integral(ref_pt_data, 500, 2000)
-    mc_i   = integral(ref_pt_mc,   500, 2000)
-    if mc_i == 0:
-        raise ValueError('MC integral for scale factor is zero')
-    options.scale = data_i/float(mc_i)
-
-print 'MC normalization factor:', options.scale
+    return hdata, hmc
 
 ################################################################################
+
+ref_pt_data, ref_pt_mc = draw('ref_pt', 'histos/pTall/ref_pt', 'ref. p_{T} (GeV)', 'events/40 GeV', rebin=4)
+draw('ref_pt_cumulative', (cumulative_histogram(ref_pt_data), cumulative_histogram(ref_pt_mc)), 'ref. p_{T} (GeV)', 'events #geq ref. p_{T}', scale_mc=False, opt_stat=None) #, hist_cmds=['h.GetYaxis().SetTitleOffset(1.2)', 'h.GetXaxis().SetLabelSize(0.04)'])
 
 draw('ref_p',   'histos/pTall/ref_p',   'ref. p (GeV)',     'events/40 GeV', rebin=4)
-draw('ref_pt',  'histos/pTall/ref_pt',  'ref. p_{T} (GeV)', 'events/40 GeV', rebin=4)
 draw('ref_eta', 'histos/pTall/ref_eta', 'ref. #eta',        'events/0.06',   rebin=2, xrange=(-1.2,1.2))
 draw('ref_phi', 'histos/pTall/ref_phi', 'ref. #phi',        'events/0.063',  rebin=2, xrange=(-3.15, 0))
 draw('ref_dxy', 'histos/pTall/ref_dxy', 'ref. dxy',         'events/0.8 cm', rebin=2, xrange=(-20,20))
@@ -134,16 +149,14 @@ draw('pt2030_ref_eta', 'histos/pT2030/ref_eta', 'ref. #eta', 'events/0.12',   re
 draw('pt5002000_ref_eta', 'histos/pT5002000/ref_eta', 'ref. #eta', 'events/0.12',   rebin=4, xrange=(-1.2,1.2))
 draw('pt5002000_ref_phi', 'histos/pT5002000/ref_phi', 'ref. #phi', 'events/0.126',  rebin=4, xrange=(-3.15, 0.6))
 
-draw('pt5002000_glb_upper_muhits', 'histos/pT5002000/Global/muonhits/upper', 'muon hits on upper global track', 'events/6', rebin=6)
-draw('pt5002000_fms_upper_muhits', 'histos/pT5002000/TPFMS/muonhits/upper',  'muon hits on upper TPFMS track',  'events/6', rebin=6)
-draw('pt5002000_pck_upper_muhits', 'histos/pT5002000/Picky/muonhits/upper',  'muon hits on upper picky track',  'events/6', rebin=6)
-draw('pt5002000_glb_upper_sthits', 'histos/pT5002000/Global/striphits/upper', 'strip hits on upper global track', 'events')
-draw('pt5002000_glb_upper_pxlays', 'histos/pT5002000/Global/pixellayers/upper', 'pixel layers on upper global track', 'events')
-draw('pt5002000_glb_muhits', 'histos/pT5002000/Global/muonhits/lower', 'muon hits on lower global track', 'events/6', rebin=6)
-draw('pt5002000_fms_muhits', 'histos/pT5002000/TPFMS/muonhits/lower',  'muon hits on lower TPFMS track',  'events/6', rebin=6)
-draw('pt5002000_pck_muhits', 'histos/pT5002000/Picky/muonhits/lower',  'muon hits on lower picky track',  'events/6', rebin=6)
-draw('pt5002000_glb_sthits', 'histos/pT5002000/Global/striphits/lower', 'strip hits on lower global track', 'events')
-draw('pt5002000_glb_pxlays', 'histos/pT5002000/Global/pixellayers/lower', 'pixel layers on lower global track', 'events')
+draw('pt5002000_glb_chi2dof', 'histos/pT5002000/Global/chi2dof/lower', '#chi^2/dof for lower global track', 'events/0.5', rebin=5)
+draw('pt5002000_tko_chi2dof', 'histos/pT5002000/TkOnly/chi2dof/lower', '#chi^2/dof for lower tracker-only track', 'events/0.5', rebin=5)
+
+draw('pt5002000_glb_muhits', 'histos/pT5002000/Global/muonhits/lower', 'muon hits on lower global track', 'events/6', rebin=6, opt_stat=1000010)
+draw('pt5002000_fms_muhits', 'histos/pT5002000/TPFMS/muonhits/lower',  'muon hits on lower TPFMS track',  'events/6', rebin=6, opt_stat=1000010)
+draw('pt5002000_pck_muhits', 'histos/pT5002000/Picky/muonhits/lower',  'muon hits on lower picky track',  'events/6', rebin=6, opt_stat=1000010)
+draw('pt5002000_glb_sthits', 'histos/pT5002000/Global/striphits/lower', 'strip hits on lower global track', 'events', opt_stat=1000010)
+draw('pt5002000_glb_pxlays', 'histos/pT5002000/Global/pixellayers/lower', 'pixel layers on lower global track', 'events', opt_stat=1000010)
 
 
 sys.exit(0)
