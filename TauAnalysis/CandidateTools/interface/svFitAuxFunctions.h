@@ -39,7 +39,8 @@ namespace SVfit_namespace
 
   const double tauLeptonMass = 1.77685; // GeV
   const double tauLeptonMass2 = tauLeptonMass*tauLeptonMass;
-  const double tauLeptonMass3 = tauLeptonMass*tauLeptonMass*tauLeptonMass;
+  const double tauLeptonMass3 = tauLeptonMass2*tauLeptonMass;
+  const double tauLeptonMass4 = tauLeptonMass3*tauLeptonMass;
   const double cTauLifetime = 8.711e-3; // centimeters
 
   const double mZ = 91.188; // GeV

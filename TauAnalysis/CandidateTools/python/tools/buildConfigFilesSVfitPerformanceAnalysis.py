@@ -79,7 +79,7 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         else:
             raise ValueError("Failed to determine wether sample = %s is Z or Higgs sample !!" % sampleToAnalyze)
         
-        outputFileName = 'testSVfitVisPtCutCorrection_%s_%s_%i.root' % (sampleToAnalyze, channelToAnalyze, jobId + 1)
+        outputFileName = 'svFitPerformanceAnalysisPlots_%s_%s_%i.root' % (sampleToAnalyze, channelToAnalyze, jobId + 1)
         outputFileNames.append(outputFileName)
  
         replacements = []
@@ -90,7 +90,7 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         replacements.append([ 'inputFileNames', "[ '%s', ] " % inputFileName_sample ])
         replacements.append([ 'outputFileName', "'%s'" % outputFileName             ])
                 
-        configFileName = "testSVfitVisPtCutCorrection_%s_%s_%i_cfg.py" % (sampleToAnalyze, channelToAnalyze, jobId)
+        configFileName = "svFitPerformanceAnalysisPlots_%s_%s_%i_cfg.py" % (sampleToAnalyze, channelToAnalyze, jobId)
         configFileName_full = os.path.join(configFilePath, configFileName)
         replaceConfigFileParam(configFileName_template, configFileName_full, replacements)
         configFileNames.append(configFileName)

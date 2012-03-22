@@ -68,10 +68,9 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
   for ( std::vector<NSVfitParameter>::iterator fitParameter = fitParameters_.begin();
 	fitParameter != fitParameters_.end(); ++fitParameter ) {
     int fitParameterType = fitParameter->Type();
-    if ( fitParameterType == nSVfit_namespace::kTau_phi_lab   ||
-	 fitParameterType == nSVfit_namespace::kTauVM_phi_a1r ||
-	 fitParameterType == nSVfit_namespace::kNu_phi_lab    ||
-	 fitParameterType == nSVfit_namespace::kW_phi_lab     ) {
+    if ( fitParameterType == nSVfit_namespace::kTau_phi_lab ||
+	 fitParameterType == nSVfit_namespace::kNu_phi_lab  ||
+	 fitParameterType == nSVfit_namespace::kW_phi_lab   ) {
       double limit_disabled = std::numeric_limits<float>::quiet_NaN(); // CMSSSW_4_2_x version
       //double limit_disabled = TMath::QuietNaN();                     // CMSSSW_4_4_x version
       fitParameter->setLowerLimit(limit_disabled);
@@ -154,7 +153,7 @@ void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypo
     } else if ( getFitParameter(daughterName, nSVfit_namespace::kNu_energy_lab) != 0 ) {
       edm::LogWarning ("setMassResults") 
 	<< " Support for fitParameter type = Nu_energy_lab not implemented yet !!";
-    } else assert(0);
+    } else if ( getNumFitParameter(daughterName) > 0 ) assert(0);
   }
   
   resonance.massErrUp_   = resonance.mass_*TMath::Sqrt(massRelErrUp2);
@@ -196,7 +195,7 @@ double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const doubl
 
   if ( verbosity_ ) {
     std::cout << " penalty term = " << penalty << std::endl;
-    std::cout << " combined nll  = " << penalty + eventModel_->nll(currentEventHypothesis_) << std::endl;
+    std::cout << " combined nll = " << penalty + eventModel_->nll(currentEventHypothesis_) << std::endl;
   }
 
 //--- compute likelihood

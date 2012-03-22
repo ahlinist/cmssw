@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.19 $
+ * \version $Revision: 1.20 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.19 2012/03/14 16:34:42 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.20 2012/03/19 09:12:03 veelken Exp $
  *
  */
 
@@ -48,6 +48,7 @@ class NSVfitAlgorithmBase
 
   virtual void requestFitParameter(const std::string&, int, const std::string&);
 
+  virtual unsigned getNumFitParameter(const std::string&) const;
   virtual NSVfitParameter* getFitParameter(const std::string&, int) const;
   virtual NSVfitParameter* getFitParameter(int) const;
 
@@ -81,16 +82,18 @@ class NSVfitAlgorithmBase
       : daughterName_(daughterName),
 	prodParticleLabel_(cfg.getParameter<std::string>("prodParticleLabel"))
     {
-      typedef std::vector<edm::ParameterSet> vParameterSet;
-      vParameterSet cfg_likelihoods = cfg.getParameter<vParameterSet>("likelihoodFunctions");
-      for ( vParameterSet::iterator cfg_likelihood = cfg_likelihoods.begin();
-	    cfg_likelihood != cfg_likelihoods.end(); ++cfg_likelihood ) {
-	cfg_likelihood->addParameter<std::string>("prodParticleLabel", prodParticleLabel_);
-	std::string pluginType = cfg_likelihood->getParameter<std::string>("pluginType");
-	NSVfitSingleParticleLikelihood* likelihood =
-	  NSVfitSingleParticleLikelihoodPluginFactory::get()->create(pluginType, *cfg_likelihood);
-	likelihoods_.push_back(likelihood);
-	allLikelihoods.push_back(likelihood);
+      if ( cfg.exists("likelihoodFunctions") ) {
+	typedef std::vector<edm::ParameterSet> vParameterSet;
+	vParameterSet cfg_likelihoods = cfg.getParameter<vParameterSet>("likelihoodFunctions");
+	for ( vParameterSet::iterator cfg_likelihood = cfg_likelihoods.begin();
+	      cfg_likelihood != cfg_likelihoods.end(); ++cfg_likelihood ) {
+	  cfg_likelihood->addParameter<std::string>("prodParticleLabel", prodParticleLabel_);
+	  std::string pluginType = cfg_likelihood->getParameter<std::string>("pluginType");
+	  NSVfitSingleParticleLikelihood* likelihood =
+  	    NSVfitSingleParticleLikelihoodPluginFactory::get()->create(pluginType, *cfg_likelihood);
+	  likelihoods_.push_back(likelihood);
+	  allLikelihoods.push_back(likelihood);
+	}
       }
     }
     ~daughterModelType()
@@ -127,15 +130,17 @@ class NSVfitAlgorithmBase
 		       std::vector<NSVfitLikelihoodBase*>& allLikelihoods)
       : resonanceName_(resonanceName)
     {
-      typedef std::vector<edm::ParameterSet> vParameterSet;
-      vParameterSet cfg_likelihoods = cfg.getParameter<vParameterSet>("likelihoodFunctions");
-      for ( vParameterSet::const_iterator cfg_likelihood = cfg_likelihoods.begin();
-	    cfg_likelihood != cfg_likelihoods.end(); ++cfg_likelihood ) {
-	std::string pluginType = cfg_likelihood->getParameter<std::string>("pluginType");
-	NSVfitResonanceLikelihood* likelihood =
-	  NSVfitResonanceLikelihoodPluginFactory::get()->create(pluginType, *cfg_likelihood);
-	  likelihoods_.push_back(likelihood);
-	  allLikelihoods.push_back(likelihood);
+      if ( cfg.exists("likelihoodFunctions") ) {
+	typedef std::vector<edm::ParameterSet> vParameterSet;
+	vParameterSet cfg_likelihoods = cfg.getParameter<vParameterSet>("likelihoodFunctions");
+        for ( vParameterSet::const_iterator cfg_likelihood = cfg_likelihoods.begin();
+	      cfg_likelihood != cfg_likelihoods.end(); ++cfg_likelihood ) {
+  	  std::string pluginType = cfg_likelihood->getParameter<std::string>("pluginType");
+	  NSVfitResonanceLikelihood* likelihood =
+	    NSVfitResonanceLikelihoodPluginFactory::get()->create(pluginType, *cfg_likelihood);
+	    likelihoods_.push_back(likelihood);
+	    allLikelihoods.push_back(likelihood);
+        }
       }
 
       edm::ParameterSet cfg_daughters = cfg.getParameter<edm::ParameterSet>("daughters");
@@ -199,15 +204,17 @@ class NSVfitAlgorithmBase
       std::string pluginType_builder = cfg_builder.getParameter<std::string>("pluginType");
       builder_ = NSVfitEventBuilderPluginFactory::get()->create(pluginType_builder, cfg_builder);
 
-      typedef std::vector<edm::ParameterSet> vParameterSet;
-      vParameterSet cfg_likelihoods = cfg.getParameter<vParameterSet>("likelihoodFunctions");
-      for ( vParameterSet::const_iterator cfg_likelihood = cfg_likelihoods.begin();
-	    cfg_likelihood != cfg_likelihoods.end(); ++cfg_likelihood ) {
-	std::string pluginType = cfg_likelihood->getParameter<std::string>("pluginType");
-	NSVfitEventLikelihood* likelihood =
-	  NSVfitEventLikelihoodPluginFactory::get()->create(pluginType, *cfg_likelihood);
-	likelihoods_.push_back(likelihood);
-	allLikelihoods.push_back(likelihood);
+      if ( cfg.exists("likelihoodFunctions") ) {
+	typedef std::vector<edm::ParameterSet> vParameterSet;
+	vParameterSet cfg_likelihoods = cfg.getParameter<vParameterSet>("likelihoodFunctions");
+	for ( vParameterSet::const_iterator cfg_likelihood = cfg_likelihoods.begin();
+	      cfg_likelihood != cfg_likelihoods.end(); ++cfg_likelihood ) {
+	  std::string pluginType = cfg_likelihood->getParameter<std::string>("pluginType");
+	  NSVfitEventLikelihood* likelihood =
+  	    NSVfitEventLikelihoodPluginFactory::get()->create(pluginType, *cfg_likelihood);
+	  likelihoods_.push_back(likelihood);
+	  allLikelihoods.push_back(likelihood);
+	}
       }
 
       edm::ParameterSet cfg_resonances = cfg.getParameter<edm::ParameterSet>("resonances");
@@ -261,7 +268,7 @@ class NSVfitAlgorithmBase
 	  for ( unsigned idxPolState = 0; idxPolState < numPolStates; ++idxPolState ) {
 	    prob += TMath::Exp(-resonances_[iResonance]->nll(resonance_hypothesis, idxPolState));
 	  }
-	  retVal += TMath::Log(-prob);
+	  retVal -= TMath::Log(prob);
 	}
       }
       return retVal;

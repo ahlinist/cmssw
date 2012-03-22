@@ -10,20 +10,7 @@ NSVfitResonanceBuilderBase::NSVfitResonanceBuilderBase(const edm::ParameterSet& 
     prodResonanceLabel_(cfg.getParameter<std::string>("prodResonanceLabel")),
     numDaughterBuilders_(0)
 {
-  edm::ParameterSet cfg_daughters = cfg.getParameter<edm::ParameterSet>("daughters");
-  typedef std::vector<std::string> vstring;
-  vstring daughterNames = cfg_daughters.getParameterNamesForType<edm::ParameterSet>();
-  for ( vstring::const_iterator daughterName = daughterNames.begin();
-	daughterName != daughterNames.end(); ++daughterName ) {
-    edm::ParameterSet cfg_daughter = cfg_daughters.getParameter<edm::ParameterSet>(*daughterName);
-    edm::ParameterSet cfg_builder = cfg_daughter.getParameter<edm::ParameterSet>("builder");
-    cfg_builder.addParameter<std::string>("prodParticleLabel", *daughterName);
-    std::string pluginType = cfg_builder.getParameter<std::string>("pluginType");
-    NSVfitSingleParticleBuilderBase* daughterBuilder =
-      NSVfitSingleParticleBuilderPluginFactory::get()->create(pluginType, cfg_builder);
-    daughterBuilders_.push_back(daughterBuilder);
-    ++numDaughterBuilders_;
-  }
+// nothing to be done yet... 
 }
 
 NSVfitResonanceBuilderBase::~NSVfitResonanceBuilderBase()

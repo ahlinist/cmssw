@@ -395,7 +395,9 @@ void NSVfitAlgorithmByIntegration::setMassResults(
 
     //std::cout << "--> median = " << q[1] << ", maximum = " << histMassResult1d->GetBinCenter(binMaximum) << std::endl;
 
-    NSVfitAlgorithmBase::setMassResults(resonance, q[1], TMath::Abs(q[2] - q[1]), TMath::Abs(q[1] - q[0]));
+    double massErrUp   = TMath::Abs(q[2] - massMaxInterpol);
+    double massErrDown = TMath::Abs(massMaxInterpol - q[0]);
+    NSVfitAlgorithmBase::setMassResults(resonance, massMaxInterpol, massErrUp, massErrDown);
 
     resonance->massMean_ = histMassResult1d->GetMean();
     resonance->massMedian_ = q[1];

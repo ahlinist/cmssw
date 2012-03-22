@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.6 2011/06/04 08:39:32 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.7 2012/03/16 17:35:40 veelken Exp $
  *
  */
 
@@ -71,6 +71,49 @@ class NSVfitEventLikelihoodMEt2 : public NSVfitEventLikelihood
   mutable double residual_fitted1_;
 
   mutable double nllConstTerm_;
+
+  struct tailProbCorrFunctionType
+  {
+    tailProbCorrFunctionType(const std::string& pluginName, const edm::ParameterSet& cfg)
+      : function_(0)
+    {
+      std::string formula = cfg.getParameter<std::string>("formula");
+      std::string functionName = Form("%s_formula", pluginName.data());
+      function_ = new TFormula(functionName.data(), formula.data());
+      xMin_ = cfg.getParameter<double>("xMin");
+      xMax_ = cfg.getParameter<double>("xMax");
+      numParameter_ = function_->GetNpar();   
+      if ( numParameter_ > 0 ) {
+	edm::ParameterSet cfgPars = cfg.getParameter<edm::ParameterSet>("parameter");
+	parameter_.resize(numParameter_);
+	for ( int iParameter = 0; iParameter < numParameter_; ++iParameter ) {
+	  parameter_[iParameter] = cfgPars.getParameter<double>(Form("par%i", iParameter));
+	  function_->SetParameter(iParameter, parameter_[iParameter]);
+	}
+      }
+    }
+
+    ~tailProbCorrFunctionType()
+    {
+      delete function_;
+    }
+
+    double eval(double x) const
+    {
+      double x_limited = x;
+      if ( x_limited < xMin_ ) x_limited = xMin_;
+      if ( x_limited > xMax_ ) x_limited = xMax_;
+      return function_->Eval(x_limited);
+    }
+    
+    TFormula* function_;
+    double xMin_;
+    double xMax_;
+    int numParameter_;
+    std::vector<double> parameter_;
+  };
+
+  tailProbCorrFunctionType* tailProbCorrFunction_;
 };
 
 #endif

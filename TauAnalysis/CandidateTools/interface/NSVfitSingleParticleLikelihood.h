@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.12 2012/03/13 15:29:10 veelken Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.13 2012/03/14 16:34:43 veelken Exp $
  *
  */
 
@@ -38,12 +38,15 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
   NSVfitSingleParticleLikelihood(const edm::ParameterSet& cfg)
     : NSVfitLikelihoodBase(cfg),
       prodParticleLabel_(cfg.getParameter<std::string>("prodParticleLabel")),
-      applyVisPtCutCorrection_(false)
+      applyVisPtCutCorrection_(false),
+      visPtCutThreshold_(0.)
   {
     if ( cfg.exists("applyVisPtCutCorrection") ) {
       applyVisPtCutCorrection_ = cfg.getParameter<bool>("applyVisPtCutCorrection");
-      visPtCutThreshold_ = cfg.getParameter<double>("visPtCutThreshold");
-      if ( visPtCutThreshold_ < 0. ) visPtCutThreshold_ = 0.;
+      if ( applyVisPtCutCorrection_ ) {
+	visPtCutThreshold_ = cfg.getParameter<double>("visPtCutThreshold");
+	if ( visPtCutThreshold_ < 0. ) visPtCutThreshold_ = 0.;
+      }
     }
   }
 

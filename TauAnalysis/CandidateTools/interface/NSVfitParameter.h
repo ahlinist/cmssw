@@ -13,9 +13,7 @@ namespace nSVfit_namespace
     // fit parameters related to shifts of primary event vertex
     kPV_shiftX, kPV_shiftY, kPV_shiftZ,
     // fit parameters specific to tau decays
-    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass, kTau_pol,
-    kTauVM_theta_rho, kTauVM_mass2_rho,
-    kTauVM_theta_a1, kTauVM_theta_a1r, kTauVM_phi_a1r, kTauVM_mass2_a1,
+    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass,
     // fit parameters specific to electrons, muons not originating from tau decays
     kLep_shiftEn,
     // fit parameters specific to neutrinos (not originating from tau decays)
@@ -49,7 +47,12 @@ class NSVfitParameter
   void setLowerLimit(double lowerLimit) { lowerLimit_ = lowerLimit; }
   void setUpperLimit(double upperLimit) { upperLimit_ = upperLimit; }
 
-  void reset() { value_ = initialValue_; }
+  void reset() 
+  { 
+    value_ = initialValue_; 
+    errUp_ = stepSize_;
+    errDown_ = stepSize_;
+  }
 
   const std::string& Name() const { return name_; }
   std::string UniqueName() const { return get_name_incl_type(Name(), Type()); }

@@ -84,6 +84,7 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 	src != srcInputParticles_.end(); ++src ) {
     CandidateHandle inputParticleCollection;
     evt.getByLabel(*src, inputParticleCollection);
+    //std::cout << " src = " << src->label() << ": #entries = " << inputParticleCollection->size() << std::endl;
     inputParticleCollections.push_back(inputParticleCollection);
   }
 

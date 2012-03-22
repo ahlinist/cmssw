@@ -63,7 +63,7 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
   NSVfitParameter* fitParameter = getFitParameter(name, type);
 
   if ( !fitParameter ) {
-    assert(type >= 0 && type <= nSVfit_namespace::kW_mass);
+    assert(type >= 0 && type < nSVfit_namespace::kNumFitParameter);
     NSVfitParameter newFitParameter(fitParameterCounter_, name, type);
     fitParameters_.push_back(newFitParameter);
     fitParameter = &fitParameters_.back();
@@ -71,6 +71,18 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
   }
 
   fitParameter->regUsedBy(requester);
+}
+
+unsigned NSVfitAlgorithmBase::getNumFitParameter(const std::string& name) const
+{
+  unsigned retVal = 0;
+
+  for ( std::vector<NSVfitParameter>::iterator fitParameter = fitParameters_.begin();
+	fitParameter != fitParameters_.end(); ++fitParameter ) {
+    if ( fitParameter->Name() == name ) ++retVal;
+  }
+
+  return retVal;
 }
 
 NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(const std::string& name, int type) const
