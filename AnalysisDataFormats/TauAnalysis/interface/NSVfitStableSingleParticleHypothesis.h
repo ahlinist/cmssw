@@ -27,9 +27,7 @@ class NSVfitStableSingleParticleHypothesis : public NSVfitStableSingleParticleHy
   NSVfitStableSingleParticleHypothesis() {}
   NSVfitStableSingleParticleHypothesis(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
     : NSVfitStableSingleParticleHypothesisBaseT<NSVfitSingleParticleHypothesis>(particle, name, barcode)
-  {
-    p4_ = particle->p4();
-  }
+  {}
   NSVfitStableSingleParticleHypothesis(const NSVfitStableSingleParticleHypothesis& bluePrint)
     : NSVfitStableSingleParticleHypothesisBaseT<NSVfitSingleParticleHypothesis>(bluePrint)
   {}

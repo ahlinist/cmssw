@@ -28,10 +28,7 @@ class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
     : NSVfitSingleParticleHypothesisBase(particle, name, barcode),
       mother_(NULL),
       p4_(particle->p4())
-  {
-    //std::cout << "<NSVfitSingleParticleHypothesis::NSVfitSingleParticleHypothesis>:" << std::endl;
-    //std::cout << " constructor(const edm::Ptr<reco::Candidate>&, std::string, int)" << std::endl;
-  }
+  {}
   NSVfitSingleParticleHypothesis(const NSVfitSingleParticleHypothesis& bluePrint)
     : NSVfitSingleParticleHypothesisBase(bluePrint),
       mother_(bluePrint.mother_),
