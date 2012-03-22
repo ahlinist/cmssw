@@ -133,7 +133,7 @@ void NSVfitParameter::initializeDefaultValues()
   defaultInitialValues_[nSVfit_namespace::kLep_shiftEn]           =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_energy_lab]         =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_phi_lab]            =  0.;
-  defaultInitialValues_[nSVfit_namespace::kW_theta_lab]           =  0.50*TMath::Pi();
+  defaultInitialValues_[nSVfit_namespace::kW_theta_lab]           =  0.25*TMath::Pi();
   defaultInitialValues_[nSVfit_namespace::kW_phi_lab]             =  0.;
   defaultInitialValues_[nSVfit_namespace::kW_mass]                = 80.399; // GeV
 
@@ -148,7 +148,7 @@ void NSVfitParameter::initializeDefaultValues()
   defaultLimits_[nSVfit_namespace::kLep_shiftEn]                  = pdouble(          0.,          10.);  // relative to measured lepton energy
   defaultLimits_[nSVfit_namespace::kNu_energy_lab]                = pdouble(          0.,        1.e+3);  // GeV
   defaultLimits_[nSVfit_namespace::kNu_phi_lab]                   = pdouble(          0.,  TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kW_theta_lab]                  = pdouble(          0., 0.25*TMath::Pi()); // rad
+  defaultLimits_[nSVfit_namespace::kW_theta_lab]                  = pdouble(          0.,  TMath::Pi());  // rad
   defaultLimits_[nSVfit_namespace::kW_phi_lab]                    = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
   defaultLimits_[nSVfit_namespace::kW_mass]                       = pdouble(80.399 - 3.*2.085, 80.399 + 3.*2.085); // GeV
 
