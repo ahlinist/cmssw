@@ -18,9 +18,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: SVfitVMlineShapeIntegral.h,v 1.2 2010/09/08 16:37:41 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegral.h,v 1.3 2010/09/09 14:08:22 veelken Exp $
  *
  */
 
@@ -37,11 +37,12 @@ class SVfitVMlineShapeIntegral
 
   SVfitVMlineShapeIntegral& operator=(const SVfitVMlineShapeIntegral&);
 
-  double operator()(double, double, double) const;
+  double operator()(double, double) const;
 
  private:
   ROOT::Math::Integrator* integrator_;
   mutable SVfitVMlineShapeIntegrand* integrand_;
+
 
 //--- temporary variables to speed-up computations
 //    (computed once in constructor)
