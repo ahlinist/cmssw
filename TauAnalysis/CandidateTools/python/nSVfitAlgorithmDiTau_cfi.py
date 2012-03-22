@@ -62,7 +62,6 @@ nSVfitTauToMuBuilder = cms.PSet(
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
-    VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/shapes.root")
     applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
@@ -106,47 +105,47 @@ nSVfitResonanceLikelihoodPolarization = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodPolarization"),
     pluginType = cms.string("NSVfitResonanceLikelihoodPolarization"),
     LR = cms.PSet(
-        formula = cms.string("[0]"), # CV: linearly decrease weight of Z specific polarization
-                                                         #     between mZ and mZ + 20 GeV
+        formula = cms.string("[0]*([1] + [2] - x)/[2]"), # CV: linearly decrease weight of Z specific polarization
+                                                         #     between mZ and mZ + 30 GeV
         xMin = cms.double(91.188),
-        xMax = cms.double(111.188),
+        xMax = cms.double(121.188),
         parameter = cms.PSet(
             par0 = cms.double(0.576),
             par1 = cms.double(91.188), # mZ / GeV
-            par2 = cms.double(20.)     # width of transition region between Z and Higgs specific polarization
+            par2 = cms.double(30.)     # width of transition region between Z and Higgs specific polarization
         )
     ),
     RL = cms.PSet(
-        formula = cms.string("[0]"), # CV: linearly decrease weight of Z specific polarization
-                                                         #     between mZ and mZ + 20 GeV
+        formula = cms.string("[0]*([1] + [2] - x)/[2]"), # CV: linearly decrease weight of Z specific polarization
+                                                         #     between mZ and mZ + 30 GeV
         xMin = cms.double(91.188),
-        xMax = cms.double(111.188),
+        xMax = cms.double(121.188),
         parameter = cms.PSet(
             par0 = cms.double(0.424),
             par1 = cms.double(91.188), # mZ / GeV
-            par2 = cms.double(20.)     # width of transition region between Z and Higgs specific polarization
+            par2 = cms.double(30.)     # width of transition region between Z and Higgs specific polarization
         )
     ),
     LL = cms.PSet(
-        formula = cms.string("[0]"), # CV: linearly increase weight of Higgs specific polarization
-                                                   #     between mZ and mZ + 20 GeV
+        formula = cms.string("[0]*(x - [1])/[2]"), # CV: linearly increase weight of Higgs specific polarization
+                                                   #     between mZ and mZ + 30 GeV
         xMin = cms.double(91.188), 
-        xMax = cms.double(111.188),
+        xMax = cms.double(121.188),
         parameter = cms.PSet(
             par0 = cms.double(0.50),
             par1 = cms.double(91.188), # mZ / GeV
-            par2 = cms.double(20.),    # width of transition region between Z and Higgs specific polarization
+            par2 = cms.double(30.),    # width of transition region between Z and Higgs specific polarization
         )
     ),
     RR = cms.PSet(
-        formula = cms.string("[0]"), # CV: linearly increase weight of Higgs specific polarization
-                                                   #     between mZ and mZ + 20 GeV
+        formula = cms.string("[0]*(x - [1])/[2]"), # CV: linearly increase weight of Higgs specific polarization
+                                                   #     between mZ and mZ + 30 GeV
         xMin = cms.double(91.188), 
-        xMax = cms.double(111.188),
+        xMax = cms.double(121.188),
         parameter = cms.PSet(
             par0 = cms.double(0.50),
             par1 = cms.double(91.188), # mZ / GeV
-            par2 = cms.double(20.),    # width of transition region between Z and Higgs specific polarization
+            par2 = cms.double(30.),    # width of transition region between Z and Higgs specific polarization
         )
     ),
     power = cms.double(1.0)
@@ -170,9 +169,34 @@ nSVfitResonanceBuilder = cms.PSet(
     pluginName = cms.string("nSVfitResonanceBuilder"),
     pluginType = cms.string("NSVfitResonanceBuilder"),
     polStates = cms.vstring( # polarization states to be considered when evaluating likelihoods
-    "undefined"
-    #"LR", "RL", # Z case
-    #"LL", "RR"  # Higgs case
+        "LR", "RL", # Z case
+        "LL", "RR"  # Higgs case
+    )
+)
+
+tailProbCorr_Data_2011 = cms.PSet( # use for 2011 Data
+    formula = cms.string("[0] + [1]*x + [2]*0.5*(3.*x*x - 1.) + [3]*0.2*(5.*x*x*x -3.*x) + [4]*0.125*(35.*x*x*x*x - 30.*x*x + 3.)"),
+    xMin = cms.double(0.),
+    xMax = cms.double(5.),
+    parameter = cms.PSet(
+        par0 = cms.double(9.94505e-01),
+        par1 = cms.double(5.85923e-04),
+        par2 = cms.double(1.41680e-03),
+        par3 = cms.double(-6.20178e-05),
+        par4 = cms.double(5.55139e-05)
+    )
+)
+
+tailProbCorr_MC_2011 = cms.PSet( # use for 2011 Monte Carlo
+    formula = cms.string("[0] + [1]*x + [2]*0.5*(3.*x*x - 1.) + [3]*0.2*(5.*x*x*x -3.*x) + [4]*0.125*(35.*x*x*x*x - 30.*x*x + 3.)"),
+    xMin = cms.double(0.),
+    xMax = cms.double(5.),
+    parameter = cms.PSet(
+        par0 = cms.double(9.94448e-01),
+        par1 = cms.double(-6.74415e-04),
+        par2 = cms.double(1.52430e-03),
+        par3 = cms.double(1.07572e-04),
+        par4 = cms.double(5.27405e-05)
     )
 )
 
@@ -184,6 +208,7 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     resolution = met_config.METSignificance_params,
     dRoverlapPFJet = cms.double(0.3),
     dRoverlapPFCandidate = cms.double(0.1),
+    #tailProbCorr = tailProbCorr_MC_2011,
     power = cms.double(1.0),
     verbosity = cms.int32(0)
 )
