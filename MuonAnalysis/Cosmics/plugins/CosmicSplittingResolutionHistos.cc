@@ -252,7 +252,7 @@ struct Bin {
     h_strip_hits   = fac.Create("striphits",     25,  0, 25);
     h_pixel_layers = fac.Create("pixellayers",    5,  0,  5);
     h_strip_layers = fac.Create("striplayers",   15,  0, 15);
-    h_muon_hits    = fac.Create("muonhits",      55,  0, 55);
+    h_muon_hits    = fac.Create("muonhits",      60,  0, 60);
     h_charge       = fac.Create("charge",         3, -1,  2, 3, -3, 3);
     h_pt           = fac.Create("pt",           200/nbins_scale, min_pt, max_pt, 100/nbins_scale, -diff_scales[0], diff_scales[0], -res_scales[0], res_scales[0], -pull_scales[0], pull_scales[0]);
     h_inv_pt       = fac.Create("invpt",        200/nbins_scale, 0, 5/min_pt,    100/nbins_scale, -diff_scales[1], diff_scales[1], -res_scales[1], res_scales[1], -pull_scales[1], pull_scales[1]);
