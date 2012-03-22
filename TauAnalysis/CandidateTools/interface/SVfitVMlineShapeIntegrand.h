@@ -18,9 +18,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: SVfitVMlineShapeIntegrand.h,v 1.5 2010/09/26 16:50:07 veelken Exp $
+ * $Id: SVfitVMlineShapeIntegrand.h,v 1.6 2011/03/24 12:01:41 veelken Exp $
  *
  */
 
@@ -40,7 +40,7 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
 
   SVfitVMlineShapeIntegrand& operator=(const SVfitVMlineShapeIntegrand&);
   
-  void SetParameterTheta(double);
+  void SetParameterZ(double);
   void SetParameterTauLeptonPol(double);
 
   void SetVMtype(VMtype);
@@ -57,8 +57,8 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
   double Gammav(double) const;
   double fv(double) const;
   double Fv(double) const;
-  double decayL(double, double, double, double, double) const; 
-  double decayT(double, double, double, double, double) const;
+  double decayL(double, double, double, double, double, double) const; 
+  double decayT(double, double, double, double, double, double) const;
 
   double minMass2_;     // minimum value for mass^2 for which integrand is to be computed
 
@@ -67,7 +67,7 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
 
   VMmode mode_;
 
-  double theta_;        // angle between direction of vector meson in tau lepton rest-frame and tau momentum vector in laboratory frame
+  double z_;            // visible energy fraction of the vector in laboratory frame
   double tauLeptonPol_; // tau lepton polarization 
 
 //--- temporary variables to speed-up computations
@@ -75,9 +75,10 @@ class SVfitVMlineShapeIntegrand : public ROOT::Math::IGenFunction
   double m0_;           // resonance mass of vector meson
   double m0square_;
   double Gamma0_;       // width of vector meson resonance
-  double cosTheta_;
-  double sinTheta_;
-  double tanTheta_;
+  //double theta_;
+  //double cosTheta_;
+  //double sinTheta_;
+  //double tanTheta_;
   double fv0_;
 };
 
