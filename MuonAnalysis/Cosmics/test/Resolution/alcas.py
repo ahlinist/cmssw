@@ -183,6 +183,17 @@ MCStart42 = [
      ),
     ]
 
+MCStart44 = [
+    ('frontier://FrontierProd/CMS_COND_31X_ALIGNMENT', {
+        'TrackerAlignmentRcd': 'TrackerAlignment_2011Realistic_v1_mc',
+        }
+     ),
+    ('frontier://FrontierProd/CMS_COND_310X_ALIGN', {
+        'TrackerSurfaceDeformationRcd': 'TrackerSurfaceDeformations_2011Realistic_v1_mc',
+        }
+     ),
+    ]
+
 MCFixedDTTTrig = [
     ('frontier://FrontierPrep/CMS_COND_DT', {
         'DTTtrigRcd': ('DTTtrig_cosmics_mc_prep_V01', 'cosmics'),
@@ -213,3 +224,4 @@ MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode +
 MCCosMC42Peak           = 'COSMC_42_PEAK::All', []
 MCCosMC42PeakFixed      = 'COSMC_42_PEAK::All', MCFixedDTTTrig
 MCCosMC42PeakFixedIdeal = 'COSMC_42_PEAK::All', MCFixedDTTTrig + MCIdealAli
+MCCosMC42PeakFixedStart44 = 'COSMC_42_PEAK::All', MCFixedDTTTrig + MCStart44
