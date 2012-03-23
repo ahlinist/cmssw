@@ -17,5 +17,5 @@ void readmemh(std::string fname, ULLONG* mem, ULLONG astart, ULLONG afinish)
 		}
 	}
 	ifs.close();
-	std::cout << "LUT file: " << fname << " read out successfully." << std::endl;
+	//std::cout << "LUT file: " << fname << " read out successfully." << std::endl;
 }
