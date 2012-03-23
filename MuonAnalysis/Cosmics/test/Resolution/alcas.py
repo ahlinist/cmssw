@@ -203,12 +203,12 @@ NewTkNominalMu     = 'GR_R_44_V12::All', NewTk + NominalMu
 NewTkNewMu         = 'GR_R_44_V12::All', NewTk + NewMu
 NewTkNewMuWithAPEs = 'GR_R_44_V12::All', NewTk + NewMu + NewMuAPEs
 
-MCCosTrgPeakStart42  = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCStart42
-MCCosTrgPeakStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode
-MCCosTrgDecoStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsDecoMode
-MCCosTrgPeakIdealAli = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli
-MCCosTrgPeakMCV9B    = 'MC_44_V9B::All',   MCCosmicTrigger + MCStripsPeakMode
-MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCIdealAli2
+MCCosTrgPeakStart42  = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCStart42 + MCFixedDTTTrig
+MCCosTrgPeakStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCFixedDTTTrig
+MCCosTrgDecoStartV9B = 'START44_V9B::All', MCCosmicTrigger + MCStripsDecoMode + MCFixedDTTTrig
+MCCosTrgPeakIdealAli = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCFixedDTTTrig
+MCCosTrgPeakMCV9B    = 'MC_44_V9B::All',   MCCosmicTrigger + MCStripsPeakMode + MCFixedDTTTrig
+MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCIdealAli2 + MCFixedDTTTrig
 
 MCCosMC42Peak           = 'COSMC_42_PEAK::All', []
 MCCosMC42PeakFixed      = 'COSMC_42_PEAK::All', MCFixedDTTTrig
