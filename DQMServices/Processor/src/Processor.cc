@@ -339,9 +339,20 @@ void Processor::spawnChild(unsigned int i) {
   if(retval != 0) perror("error");
   retval = pthread_mutex_destroy(&start_lock_);
   if(retval != 0) perror("error");
+  pthread_mutex_destroy(&start_lock2_);
+  if(retval != 0) perror("error");
+  pthread_mutex_destroy(&pickup_lock_);
+  if(retval != 0) perror("error");
+  pthread_mutex_destroy(&cfg_refresh_lock_);
+  if(retval != 0) perror("error");
+  pthread_mutex_destroy(&sup_queue_lock_);
+  if(retval != 0) perror("error");
 
   //delete peer transport for child process
   try{
+    std::cout << "CHILD:Destroying the PeerTransport instance"<<std::endl;
+    //wait for connection handling to finish? (deadlock possibility if not)
+    usleep(100000);
     pt::PeerTransport * ptr =
       pt::getPeerTransportAgent()->getPeerTransport("http","soap",pt::Receiver);
     delete ptr;
@@ -355,6 +366,7 @@ void Processor::spawnChild(unsigned int i) {
   wCfg_.slot = i;
 
   //init python
+  std::cout << "SLAVE:Initializing Python configuration"<<std::endl;
   bool ret = initEDMConfiguration();
   if (!ret) {
     //terminate child process if configuration was not successful
@@ -383,6 +395,7 @@ void Processor::spawnChild(unsigned int i) {
   {
     std::cout << "exception " << (std::string)e.what() << std::endl;
   }
+  std::cout << "SLAVE:Enable Done" << std::endl;
 }
 
 //______________________________________________________________________________
