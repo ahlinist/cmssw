@@ -123,6 +123,7 @@ namespace dqmevf{
     // initialize the cmssw event processor
     void init(WrapperConfig & newCfg);
     bool enableSlaveAndWait();
+    void killMasterFDs();
 
   private:
     // stop the cmssw event processor

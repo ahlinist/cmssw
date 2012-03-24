@@ -348,17 +348,12 @@ void Processor::spawnChild(unsigned int i) {
   pthread_mutex_destroy(&sup_queue_lock_);
   if(retval != 0) perror("error");
 
-  //delete peer transport for child process
   try{
-    std::cout << "CHILD:Destroying the PeerTransport instance"<<std::endl;
-    //wait for connection handling to finish? (deadlock possibility if not)
-    usleep(100000);
-    pt::PeerTransport * ptr =
-      pt::getPeerTransportAgent()->getPeerTransport("http","soap",pt::Receiver);
-    delete ptr;
+    std::cout << "SLAVE: closing parent file descriptors"<<std::endl;
+    fwepWrapper_.killMasterFDs();
   }
   catch (pt::exception::PeerTransportNotFound & e ){
-    LOG4CPLUS_WARN(getApplicationLogger()," ***Slave Failed to shutdown ptHTTP");
+    LOG4CPLUS_WARN(getApplicationLogger()," ***Slave failed to close parent FD's");
   }
 
   wCfg_.runNumber=runNumber_.value_;
