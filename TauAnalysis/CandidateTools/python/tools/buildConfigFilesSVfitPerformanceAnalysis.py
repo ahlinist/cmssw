@@ -86,8 +86,8 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         replacements.append([ 'sample',         "'%s'" % sampleToAnalyze            ])
         replacements.append([ 'sample_type',    "'%s'" % sample_type                ])
         replacements.append([ 'channel',        "'%s'" % channelToAnalyze           ])
-        replacements.append([ 'maxEvents',      "%i" % -1                           ])
-        replacements.append([ 'inputFileNames', "[ '%s', ] " % inputFileName_sample ])
+        replacements.append([ 'maxEvents',      "%i" % 1000                         ])
+        replacements.append([ 'inputFileNames', "[ 'file:%s', ] " % inputFileName_sample ])
         replacements.append([ 'outputFileName', "'%s'" % outputFileName             ])
                 
         configFileName = "svFitPerformanceAnalysisPlots_%s_%s_%i_cfg.py" % (sampleToAnalyze, channelToAnalyze, jobId)

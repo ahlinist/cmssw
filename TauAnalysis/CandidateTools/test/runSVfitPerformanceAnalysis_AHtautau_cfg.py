@@ -28,6 +28,7 @@ channel = 'muTau'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
+outputFileName = 'svFitPerformanceAnalysisPlots_%s_2012Mar20.root' % sample
 maxEvents = 20
 #--------------------------------------------------------------------------------
 
@@ -388,55 +389,65 @@ process.svFitPerformanceAnalysisSequence += process.genMetFromGenParticles
 process.load("TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi")
 from TauAnalysis.CandidateTools.nSVfitAlgorithmVisPtCutCorrections_cfi import *
 
+nSVfitLeg1Builder                 = None
 srcGenLeg1                        = None
 srcRecLeg1                        = None
 nSVfitLeg1LikelihoodPhaseSpace    = None
 nSVfitLeg1LikelihoodMatrixElement = None
 nSVfitLeg1visPtCutThreshold       = None
+nSVfitLeg2Builder                 = None
 srcGenLeg2                        = None
 srcRecLeg2                        = None
 nSVfitLeg2LikelihoodPhaseSpace    = None
 nSVfitLeg2LikelihoodMatrixElement = None
 nSVfitLeg2visPtCutThreshold       = None
 if channel == 'muTau':
+    nSVfitLeg1Builder                 = process.nSVfitTauToMuBuilder
     srcGenLeg1                        = genMuonsFromTauDecays
     srcRecLeg1                        = 'patMuons'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitMuonLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitMuonLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 15.
+    nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
     nSVfitLeg2visPtCutThreshold       = 20.
 elif channel == 'eleTau':
+    nSVfitLeg1Builder                 = process.nSVfitTauToElecBuilder
     srcGenLeg1                        = genElectronsFromTauDecays
     srcRecLeg1                        = 'patElectrons'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitElectronLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitElectronLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 20.
+    nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
     nSVfitLeg2visPtCutThreshold       = 20.
 elif channel == 'eleMu':
+    nSVfitLeg1Builder                 = process.nSVfitTauToElecBuilder
     srcGenLeg1                        = genElectronsFromTauDecays
     srcRecLeg1                        = 'patElectrons'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitElectronLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitElectronLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 15.
+    nSVfitLeg2Builder                 = process.nSVfitTauToMuBuilder
     srcGenLeg2                        = genMuonsFromTauDecays
     srcRecLeg2                        = 'patMuons'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitMuonLikelihoodPhaseSpace 
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitMuonLikelihoodMatrixElement
     nSVfitLeg2visPtCutThreshold       = 15.
 elif channel == 'diTau':
+    nSVfitLeg1Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg1                        = genTauJetsFromTauDecays
     srcRecLeg1                        = 'patTaus'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 35.
+    nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
@@ -466,7 +477,7 @@ else:
     srcRecMEt = 'patType1CorrectedPFMet'
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
-for idxSVfitOption in range(12):
+for idxSVfitOption in range(18):
     ##if not (idxSVfitOption == 3):
     ##    continue
     nSVfitProducer = None
@@ -474,7 +485,9 @@ for idxSVfitOption in range(12):
         nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration)
     else:
         nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)
+    nSVfitProducer.config.event.resonances.A.daughters.leg1.builder = nSVfitLeg1Builder
     nSVfitProducer.config.event.resonances.A.daughters.leg1.src = cms.InputTag(srcRecLeg1)
+    nSVfitProducer.config.event.resonances.A.daughters.leg2.builder = nSVfitLeg2Builder
     nSVfitProducer.config.event.resonances.A.daughters.leg2.src = cms.InputTag(srcRecLeg2)
     resonanceLikelihoods = []
     # switch between simple phase-space and matrix element likelihoods
@@ -482,7 +495,7 @@ for idxSVfitOption in range(12):
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif idxSVfitOption >= 6 and idxSVfitOption <= 11:
+    elif idxSVfitOption >= 6 and idxSVfitOption <= 13:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMatrixElement.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodMatrixElement.clone())
         if idxSVfitOption >= 6 and idxSVfitOption <= 7:
@@ -531,11 +544,15 @@ for idxSVfitOption in range(12):
     if idxSVfitOption >= 0 and idxSVfitOption <= 1:
         resonanceLikelihoods.append(process.nSVfitResonanceLikelihoodLogM)
     # enable MET tail probability correction plus increase overall power of MET likelihood in the events 
-    if idxSVfitOption >= 12 and idxSVfitOption <= 13:
+    if idxSVfitOption >= 14 and idxSVfitOption <= 15:
         nSVfitProducer.config.event.likelihoodFunctions[0].tailProbCorr = process.tailProbCorr_MC_2011
         nSVfitProducer.config.event.likelihoodFunctions[0].power = cms.double(1.2)    
     # enable/disable prior likelihood (moving events with large sigmaSVfit towards the Z-peak)
-    if idxSVfitOption >= 14 and idxSVfitOption <= 15:
+    if idxSVfitOption >= 16 and idxSVfitOption <= 17:
+        nSVfitResonanceLikelihoodPrior_strength1 = copy.deepcopy(process.nSVfitResonanceLikelihoodPrior)
+        nSVfitResonanceLikelihoodPrior_strength1.parameter.par0 = cms.double(1.)
+        resonanceLikelihoods.append(nSVfitResonanceLikelihoodPrior_strength1)
+    if idxSVfitOption >= 18 and idxSVfitOption <= 19:
         nSVfitResonanceLikelihoodPrior_strength2 = copy.deepcopy(process.nSVfitResonanceLikelihoodPrior)
         nSVfitResonanceLikelihoodPrior_strength2.parameter.par0 = cms.double(2.)
         resonanceLikelihoods.append(nSVfitResonanceLikelihoodPrior_strength2)
@@ -561,7 +578,7 @@ for idxSVfitOption in range(12):
         srcPFMEtCovMatrix = cms.InputTag('pfMEtSignCovMatrix'),
         srcWeights = cms.VInputTag(),
         idxResonance = cms.int32(0),                               
-        dqmDirectory = cms.string("nSVfitAnalyzerOption%i" % idxSVfitOption)
+        dqmDirectory = cms.string("%s/%s/nSVfitAnalyzerOption%i" % (sample, channel, idxSVfitOption))
     )                                    
     nSVfitAnalyzerName = "nSVfitAnalyzer%i" % idxSVfitOption
     setattr(process, nSVfitAnalyzerName, nSVfitAnalyzer)
@@ -571,7 +588,7 @@ for idxSVfitOption in range(12):
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveSVfitPerformanceAnalysisPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('svFitPerformanceAnalysisPlots_%s_2012Mar20.root' % sample)
+    outputFileName = cms.string(outputFileName)
 )
 
 process.p = cms.Path(

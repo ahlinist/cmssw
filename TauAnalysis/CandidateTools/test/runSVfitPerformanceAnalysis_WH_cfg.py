@@ -52,12 +52,12 @@ process.svFitPerformanceAnalysisSequence = cms.Sequence()
 
 #--------------------------------------------------------------------------------
 # print-out generator level information
-process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
-    src = cms.InputTag("genParticles"),
-    maxEventsToPrint = cms.untracked.int32(1)
-)
-process.svFitPerformanceAnalysisSequence += process.printGenParticleList
+##process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+##process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
+##    src = cms.InputTag("genParticles"),
+##    maxEventsToPrint = cms.untracked.int32(1)
+##)
+##process.svFitPerformanceAnalysisSequence += process.printGenParticleList
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -366,11 +366,13 @@ process.load("TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi")
 process.load("TauAnalysis.CandidateTools.nSVfitAlgorithmWH_cfi")
 srcGenChargedLeptonFromWdecay     = None
 srcRecChargedLeptonFromWdecay     = None
+nSVfitLeg1Builder                 = None
 srcGenLeg1                        = None
 srcRecLeg1                        = None
 nSVfitLeg1LikelihoodPhaseSpace    = None
 nSVfitLeg1LikelihoodMatrixElement = None
 nSVfitLeg1visPtCutThreshold       = None
+nSVfitLeg2Builder                 = None
 srcGenLeg2                        = None
 srcRecLeg2                        = None
 nSVfitLeg2LikelihoodPhaseSpace    = None
@@ -385,44 +387,52 @@ elif channel.find('WtoMuNu') != -1:
 else:
     raise ValueError("Invalid channel = %s !!" % channel)
 if channel.find('HiggsToMuTau') != -1:
+    nSVfitLeg1Builder                 = process.nSVfitTauToMuBuilder
     srcGenLeg1                        = genMuonsFromTauDecays
     srcRecLeg1                        = 'patMuonsFromTauDecays'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitMuonLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitMuonLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 15.
+    nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
     nSVfitLeg2visPtCutThreshold       = 20.
 elif channel.find('HiggsToElecTau') != -1:
+    nSVfitLeg1Builder                 = process.nSVfitTauToElecBuilder
     srcGenLeg1                        = genElectronsFromTauDecays
     srcRecLeg1                        = 'patElectronsFromTauDecays'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitElectronLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitElectronLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 20.
+    nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
     nSVfitLeg2visPtCutThreshold       = 20.
 elif channel.find('HiggsToElecMu') != -1:
+    nSVfitLeg1Builder                 = process.nSVfitTauToElecBuilder
     srcGenLeg1                        = genElectronsFromTauDecays
     srcRecLeg1                        = 'patElectronsFromTauDecays'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitElectronLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitElectronLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 15.
+    nSVfitLeg2Builder                 = process.nSVfitTauToMuBuilder
     srcGenLeg2                        = genMuonsFromTauDecays
     srcRecLeg2                        = 'patMuonsFromTauDecays'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitMuonLikelihoodPhaseSpace 
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitMuonLikelihoodMatrixElement
     nSVfitLeg2visPtCutThreshold       = 15.
 elif channel.find('HiggsToDiTau') != -1:
+    nSVfitLeg1Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg1                        = genTauJetsFromTauDecays
     srcRecLeg1                        = 'patTaus'
     nSVfitLeg1LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
     nSVfitLeg1visPtCutThreshold       = 35.
+    nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
     nSVfitLeg2LikelihoodPhaseSpace    = process.nSVfitTauLikelihoodPhaseSpace
@@ -479,6 +489,7 @@ for idxSVfitOption in range(10):
         applyVisPtCutCorrection = True
     else:
         applyVisPtCutCorrection = False
+    resonanceConfig.daughters.leg1.builder = nSVfitLeg1Builder
     resonanceConfig.daughters.leg1.src = cms.InputTag(srcRecLeg1)
     resonanceConfig.daughters.leg1.likelihoodFunctions = cms.VPSet(
         nSVfitLeg1LikelihoodMatrixElement.clone(
@@ -486,6 +497,7 @@ for idxSVfitOption in range(10):
             visPtCutThreshold = cms.double(nSVfitLeg1visPtCutThreshold)
         )
     )
+    resonanceConfig.daughters.leg2.builder = nSVfitLeg2Builder
     resonanceConfig.daughters.leg2.src = cms.InputTag(srcRecLeg2)
     resonanceConfig.daughters.leg2.likelihoodFunctions = cms.VPSet(
         nSVfitLeg2LikelihoodPhaseSpace.clone(

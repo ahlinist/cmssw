@@ -107,6 +107,14 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     fitParameter->setErrDown(bestFitParameterErrors[fitParameter->index()]);
   }
 
+  unsigned numFitParameter = fitParameters_.size();
+  covMatrix_.ResizeTo(numFitParameter, numFitParameter);
+  for ( unsigned iRow = 0; iRow < numFitParameter; ++iRow ) {
+    for ( unsigned iColumn = 0; iColumn < numFitParameter; ++iColumn ) {
+      covMatrix_(iRow, iColumn) = minimizer_->CovMatrix(iRow, iColumn);
+    }
+  } 
+
 //--- get Minimizer status code, check if solution is valid:
 //
 //    0: Valid solution
@@ -137,27 +145,89 @@ void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypo
 {
   resonance.mass_ = resonance.p4_fitted().mass();
   
-  double massRelErrUp2   = 0.;
-  double massRelErrDown2 = 0.;
-  for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::iterator daughter = resonance.daughters_.begin();
-	daughter != resonance.daughters_.end(); ++daughter ) {
-    const std::string daughterName = daughter->name();
-    if ( getFitParameter(daughterName, nSVfit_namespace::kTau_visEnFracX) != 0 ) {
-      NSVfitParameter* fitParameter = getFitParameter(daughterName, nSVfit_namespace::kTau_visEnFracX);
-      massRelErrUp2   += square(0.5*fitParameter->ErrUp()/fitParameter->Value());
-      massRelErrDown2 += square(0.5*fitParameter->ErrDown()/fitParameter->Value());
-    } else if ( getFitParameter(daughterName, nSVfit_namespace::kLep_shiftEn) != 0 ) {
-      NSVfitParameter* fitParameter = getFitParameter(daughterName, nSVfit_namespace::kLep_shiftEn);
-      massRelErrUp2   += square(0.5*fitParameter->ErrUp()/(1. + fitParameter->Value()));
-      massRelErrDown2 += square(0.5*fitParameter->ErrDown()/(1. + fitParameter->Value()));
-    } else if ( getFitParameter(daughterName, nSVfit_namespace::kNu_energy_lab) != 0 ) {
-      edm::LogWarning ("setMassResults") 
-	<< " Support for fitParameter type = Nu_energy_lab not implemented yet !!";
-    } else if ( getNumFitParameter(daughterName) > 0 ) assert(0);
+  double massErrUp = 0.;
+  double massErrDown = 0.;
+  bool isMassErrComputed = false;
+  if ( resonance.numDaughters() == 2 ) {
+//--- special case for computing mass uncertainties:
+//    resonance has two daughters, both of which are either hadronic or leptonic tau decays
+    NSVfitSingleParticleHypothesisBase* daughter1 = resonance.daughter(0);
+    assert(daughter1);
+    const std::string daughter1Name = daughter1->name();
+    NSVfitSingleParticleHypothesisBase* daughter2 = resonance.daughter(1);
+    assert(daughter2);
+    const std::string daughter2Name = daughter2->name();
+    if ( getFitParameter(daughter1Name, nSVfit_namespace::kTau_visEnFracX) != 0 &&
+	 getFitParameter(daughter2Name, nSVfit_namespace::kTau_visEnFracX) != 0 ) {
+      NSVfitParameter* fitParameter1 = getFitParameter(daughter1Name, nSVfit_namespace::kTau_visEnFracX);  
+      NSVfitParameter* fitParameter2 = getFitParameter(daughter2Name, nSVfit_namespace::kTau_visEnFracX);
+    
+//--- compute uncertainty on product X1*X2 of visible energy fractions
+//   (formula 6 of: George W. Bohrnstedt, Arthur A. Goldberger,
+//                  "On the exact covariance of products of random variables",
+//                  Journal of the American Statistical Association, Vol. 64, No. 328 (1969), pp. 1439-1442)
+      double X1 = fitParameter1->Value();
+      double sigmaX1 = TMath::Sqrt(0.5*(square(fitParameter1->ErrDown()) + square(fitParameter1->ErrUp())));
+      //std::cout << "X1 = " << X1 << " +/- " << sigmaX1 << std::endl;
+      double X2 = fitParameter2->Value();
+      double sigmaX2 = TMath::Sqrt(0.5*(square(fitParameter2->ErrDown()) + square(fitParameter2->ErrUp())));
+      //std::cout << "X2 = " << X2 << " +/- " << sigmaX2 << std::endl;
+      double covX1X2 = covMatrix_(fitParameter1->index(), fitParameter2->index());
+      //std::cout << "corr(X1,X2) = " << TMath::Sqrt(covX1X2/(sigmaX1*sigmaX2)) << std::endl;
+      double X1timesX2err2 = square(X1*sigmaX2) + square(sigmaX1*X2) 
+                            + 2.*X1*X2*covX1X2 + square(sigmaX1*sigmaX2) + square(covX1X2);
+      //std::cout << "X1*X2 = " << (X1*X2) << " +/- " << TMath::Sqrt(X1timesX2err2) << std::endl;
+      
+//--- compute uncertainty on 1/mass^2:
+//
+//      mass^2 = visMass^2/(X1*X2)
+//
+//   --> sigma(1/mass^2)/(1/mass^2) = sigma(X1*X2)/(X1*X2)
+//
+      double massInv2RelErr = TMath::Sqrt(X1timesX2err2)/(X1*X2);
+      double massInv = 1./resonance.mass_;
+      double massInv2 = square(massInv);
+      double massInv2Up = massInv2*(1. + massInv2RelErr);
+      double massInv2Down = massInv2*(1. - massInv2RelErr);
+      double massInvUp = TMath::Sqrt(massInv2Up);
+      double visMassInv = massInv/(X1*X2);
+      if ( massInvUp   > visMassInv ) massInvUp   = visMassInv;
+      double massInvDown = TMath::Sqrt(massInv2Down);
+      const double epsilon = 1.e-6;
+      if ( massInvDown < epsilon ) massInvDown = epsilon;
+      massErrUp = (1./massInvDown) - resonance.mass_;
+      massErrDown = resonance.mass_ - (1./massInvUp);
+      //std::cout << "(1): massErrUp = " << massErrUp << ", massErrDown = " << massErrDown << std::endl;
+      isMassErrComputed = true;
+    }
   }
-  
-  resonance.massErrUp_   = resonance.mass_*TMath::Sqrt(massRelErrUp2);
-  resonance.massErrDown_ = resonance.mass_*TMath::Sqrt(massRelErrDown2);
+
+  if ( !isMassErrComputed ) {
+    double massRelErrUp2 = 0.;
+    double massRelErrDown2 = 0.;
+    for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::iterator daughter = resonance.daughters_.begin();
+	  daughter != resonance.daughters_.end(); ++daughter ) {
+      const std::string daughterName = daughter->name();
+      if ( getFitParameter(daughterName, nSVfit_namespace::kTau_visEnFracX) != 0 ) {
+	NSVfitParameter* fitParameter = getFitParameter(daughterName, nSVfit_namespace::kTau_visEnFracX);        
+	massRelErrUp2   += square(0.5*fitParameter->ErrDown()/fitParameter->Value());
+	massRelErrDown2 += square(0.5*fitParameter->ErrUp()/fitParameter->Value());
+      } else if ( getFitParameter(daughterName, nSVfit_namespace::kLep_shiftEn) != 0 ) {
+	NSVfitParameter* fitParameter = getFitParameter(daughterName, nSVfit_namespace::kLep_shiftEn);
+	massRelErrUp2   += square(0.5*fitParameter->ErrUp()/(1. + fitParameter->Value()));
+	massRelErrDown2 += square(0.5*fitParameter->ErrDown()/(1. + fitParameter->Value()));
+      } else if ( getFitParameter(daughterName, nSVfit_namespace::kNu_energy_lab) != 0 ) {
+	edm::LogWarning ("setMassResults") 
+	  << " Support for fitParameter type = Nu_energy_lab not implemented yet !!";
+      } else if ( getNumFitParameter(daughterName) > 0 ) assert(0);
+    }
+    massErrUp = resonance.mass_*TMath::Sqrt(massRelErrUp2);
+    massErrDown = resonance.mass_*TMath::Sqrt(massRelErrDown2);
+    //std::cout << "(2): massErrUp = " << massErrUp << ", massErrDown = " << massErrDown << std::endl;
+  }
+    
+  resonance.massErrUp_ = massErrUp;
+  resonance.massErrDown_ = massErrDown;
 
   //std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::setMassResults>:" << std::endl;
   //std::cout << "--> mass = " << resonance.mass_ 

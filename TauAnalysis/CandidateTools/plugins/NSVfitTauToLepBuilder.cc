@@ -7,11 +7,13 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.17 $
+ * \version $Revision: 1.18 $
  *
- * $Id: NSVfitTauToLepBuilder.cc,v 1.17 2011/06/25 10:19:07 veelken Exp $
+ * $Id: NSVfitTauToLepBuilder.cc,v 1.18 2011/07/22 15:01:55 veelken Exp $
  *
  */
+
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 
@@ -65,7 +67,9 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilder
   virtual std::vector<const reco::Track*> extractTracks(const reco::Candidate* candidate) const 
   {
     const T* objPtr = dynamic_cast<const T*>(candidate);
-    assert(objPtr);
+    if ( !objPtr ) 
+      throw cms::Exception("NSVfitTauToLepBuilder")
+	<< "Failed to extract tracks. Please check if correct Builder plugin type is used !!\n";
     return trackExtractor_(*objPtr);
   }
 
