@@ -15,8 +15,8 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
     #process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "muons", process.patMuons)
     #sequence += process.muonPFIsolationSequence
     
-    process.pfPileUpIso.PFCandidates = "particleFlow" # I don't know why I have to do this
-    process.pfNoPileUpIso.bottomCollection = "particleFlow"
+    process.pfPileUpIso.PFCandidates = "particleFlowTmp" # I don't know why I have to do this
+    process.pfNoPileUpIso.bottomCollection = "particleFlowTmp"
 
     jetCorr = ["L1FastJet", "L2Relative", "L3Absolute"]
     if isData:
