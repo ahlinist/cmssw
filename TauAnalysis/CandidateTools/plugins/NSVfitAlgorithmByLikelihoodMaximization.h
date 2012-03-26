@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitAlgorithmByLikelihoodMaximization.h,v 1.3 2011/04/12 12:02:29 friis Exp $
+ * $Id: NSVfitAlgorithmByLikelihoodMaximization.h,v 1.4 2011/04/13 17:09:49 veelken Exp $
  *
  */
 
@@ -18,8 +18,10 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include <Math/Minimizer.h>
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
+
+#include <Math/Minimizer.h>
+#include <TMatrixD.h>
 
 #include <vector>
 #include <string>
@@ -60,6 +62,7 @@ class NSVfitAlgorithmByLikelihoodMaximization : public NSVfitAlgorithmBase
   ROOT::Math::Minimizer* minimizer_;
   nSVfit_namespace::NSVfitObjectiveFunctionAdapter objectiveFunctionAdapter_;
   unsigned maxObjFunctionCalls_;
+  mutable TMatrixD covMatrix_;
 
   mutable long idxObjFunctionCall_;
 

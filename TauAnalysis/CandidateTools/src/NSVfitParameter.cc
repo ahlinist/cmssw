@@ -133,7 +133,7 @@ void NSVfitParameter::initializeDefaultValues()
   defaultInitialValues_[nSVfit_namespace::kLep_shiftEn]           =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_energy_lab]         =  0.;
   defaultInitialValues_[nSVfit_namespace::kNu_phi_lab]            =  0.;
-  defaultInitialValues_[nSVfit_namespace::kW_theta_lab]           =  0.25*TMath::Pi();
+  defaultInitialValues_[nSVfit_namespace::kW_theta_lab]           =  0.50*TMath::Pi();
   defaultInitialValues_[nSVfit_namespace::kW_phi_lab]             =  0.;
   defaultInitialValues_[nSVfit_namespace::kW_mass]                = 80.399; // GeV
 

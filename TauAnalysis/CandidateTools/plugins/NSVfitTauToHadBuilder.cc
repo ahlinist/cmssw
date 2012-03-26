@@ -7,14 +7,16 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.22 $
+ * \version $Revision: 1.23 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.22 2011/07/22 15:01:55 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.23 2012/03/22 11:27:23 veelken Exp $
  *
  */
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitTrackService.h"
+
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
@@ -88,7 +90,9 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilder
   virtual std::vector<const reco::Track*> extractTracks(const reco::Candidate* candidate) const
   {
     const pat::Tau* tauPtr = dynamic_cast<const pat::Tau*>(candidate);
-    assert(tauPtr);
+    if ( !tauPtr ) 
+      throw cms::Exception("NSVfitTauToHadBuilder")
+	<< "Failed to extract tracks. Please check if correct Builder plugin type is used !!\n";
     return trackExtractor_(*tauPtr);
   }
 
