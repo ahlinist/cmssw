@@ -8,7 +8,7 @@ scheduler               = glite
 [CMSSW]
 
 #datasetpath		= /DYtoTauTau_M-20_TuneP0_7TeV-pythia6-tauola/Summer11-PU_S4_START42_V11-v2/GEN-SIM-RAW
-#datasetpath		= /DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/GEN-RAW
+datasetpath		= /DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/GEN-RAW
 #datasetpath		= /QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v2/GEN-SIM-RAW
 #datasetpath		= /SingleMu/Run2011B-Tau-PromptSkim-v1/RAW-RECO
 #datasetpath		= /TTToHplusBWB_M-90_7TeV-pythia6-tauola/Fall11-E7TeV_Ave23_50ns-v2/GEN-SIM-RAW-HLTDEBUG-RECO
@@ -16,13 +16,13 @@ scheduler               = glite
 #datasetpath		= /TTToHplusBWB_M-160_7TeV-pythia6-tauola/Fall11-E7TeV_Ave23_50ns-v2/GEN-SIM-RAW-HLTDEBUG-RECO
 #datasetpath		= /TTToHplusBWB_M-160_7TeV-pythia6-tauola/Fall11-E7TeV_Ave32_50ns-v2/GEN-SIM-RAW-HLTDEBUG-RECO
 #datasetpath		= /SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall11-E7TeV_Ave23_50ns-v1/GEN-SIM-RAW-HLTDEBUG-RECO
-datasetpath		= /SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall11-E7TeV_Ave32_50ns-v1/GEN-SIM-RAW-HLTDEBUG-RECO
+#datasetpath		= /SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall11-E7TeV_Ave32_50ns-v1/GEN-SIM-RAW-HLTDEBUG-RECO
 
 pset                    = TTEffAnalysisSkim_cfg.py
 total_number_of_events  = -1
-events_per_job          = 1000
+events_per_job          = 5000
 #total_number_of_lumis 	= -1
-#lumis_per_job 		= 10
+#lumis_per_job 		= 100
 #lumi_mask		= /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON.txt
 #lumi_mask		= /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-180252_7TeV_PromptReco_Collisions11_JSON.txt
 output_file             = TTEffSkim.root
@@ -32,25 +32,26 @@ use_parent = 0
 [USER]
 return_data             = 0
 copy_data 		= 1
-####storage_element = srm-cms.cern.ch
-####storage_element         = T2_IT_Pisa
-storage_element		= cmsdcache.pi.infn.it
-storage_path=/srm/managerv2?SFN=/pnfs/pi.infn.it/data/cms
+#storage_element		= cmsdcache.pi.infn.it
+#storage_path=/srm/managerv2?SFN=/pnfs/pi.infn.it/data/cms
+storage_element = madhatter.csc.fi
+storage_path = /srm/managerv2?SFN=/pnfs/csc.fi/data/cms
 #user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/QCD_Pt_20_MuEnrichedPt_15_TuneZ2_7TeV_pythia6_Summer11_PU_S4_START42_V11_v2_RAW_TTEffSkim_v428_V00_09_05_v2
 #user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/DYtoTauTau_M_20_TuneP0_7TeV_pythia6_tauola_Summer11_PU_S4_START42_V11_v2_RAW_TTEffSkim_v428_V00_09_05_v3
-#user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall11_PU_S6_START42_V14B_v1_RAW_TTEffSkim_v428_V00_09_05_v4
-#user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/SingleMuRun2011B_Tau_PromptSkim_v1_RAW_RECO_TTEffSkim_v428_V00_09_05_v5
+user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall11_PU_S6_START42_V14B_v1_RAW_TTEffSkim_v444_V00_09_09_v2
+#user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/SingleMuRun2011B_Tau_PromptSkim_v1_RAW_RECO_TTEffSkim_v444_V00_09_09_v2
 #user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_v442p9_V00_09_08_v3
-user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/SUSYGluGluToHToTauTau_M_90_7TeV_pythia6_tauola_Fall11_E7TeV_Ave32_50ns_v1_RAW_RECO_TTEffSkim_v442p9_V00_09_08_v3
+#user_remote_dir=/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/SUSYGluGluToHToTauTau_M_90_7TeV_pythia6_tauola_Fall11_E7TeV_Ave32_50ns_v1_RAW_RECO_TTEffSkim_v442p9_V00_09_08_v3
 #role= priorityuser
 #user_remote_dir     	= TauTriggerEfficiencyMeasurementData
 srm_version             = srmv2
 ####eMail                   = sami.lehti@helsinki.fi
 publish_data            = 1
 #publish_data_name       = TauTriggerEff_QCD_Pt_20_MuEnrichedPt_15_TuneZ2_7TeV_pythia6_Summer11_PU_S4_START42_V11_v2_RAW_TTEffSkim_v428_V00_09_05_v2
-#publish_data_name       = TauTriggerEff_DYtoTauTau_M_20_TuneP0_7TeV_pythia6_tauola_Summer11_PU_S4_START42_V11_v2_RAW_TTEffSkim_v428_V00_09_05_v3
+publish_data_name       = TauTriggerEff_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall11_PU_S6_START42_V14B_v1_RAW_TTEffSkim_v444_V00_09_09_v2
+#publish_data_name	= TauTriggerEff_SingleMuRun2011B_Tau_PromptSkim_v1_RAW_RECO_TTEffSkim_v444_V00_09_09_v2
 #publish_data_name	= TauTriggerEff_TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_v442p9_V00_09_08_v3
-publish_data_name       = TauTriggerEff_SUSYGluGluToHToTauTau_M_90_7TeV_pythia6_tauola_Fall11_E7TeV_Ave32_50ns_v1_RAW_RECO_TTEffSkim_v442p9_V00_09_08_v3
+#publish_data_name       = TauTriggerEff_SUSYGluGluToHToTauTau_M_90_7TeV_pythia6_tauola_Fall11_E7TeV_Ave32_50ns_v1_RAW_RECO_TTEffSkim_v442p9_V00_09_08_v3
 #publish_data_name	= TauTriggerEff_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall11_PU_S6_START42_V14B_v1_RAW_TTEffSkim_v428_V00_09_05_v4
 #dbs_url_for_publication = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet
 dbs_url_for_publication = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet

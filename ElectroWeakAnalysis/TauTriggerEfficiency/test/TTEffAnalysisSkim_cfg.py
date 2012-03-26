@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 isData = False
-doRECO = False
+doRECO = True
 
 process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
@@ -16,8 +16,8 @@ process.load("FWCore/MessageService/MessageLogger_cfi")
 #process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 #process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus","IdentifiedTauFilter")
 
-process.load('Configuration/StandardSequences/GeometryIdeal_cff')
-process.load('Configuration/StandardSequences/MagneticField_cff')
+process.load('Configuration/StandardSequences/GeometryDB_cff')
+process.load('Configuration/StandardSequences/MagneticField_38T_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if isData:
   process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
@@ -28,9 +28,9 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_42_V21::All'
+    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
 else:
-    process.GlobalTag.globaltag = 'START44_V12::All'
+    process.GlobalTag.globaltag = 'START44_V13::All'
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(100)
@@ -45,9 +45,8 @@ if(isData):
 else:
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#	'/store/mc/Fall10/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/GEN-SIM-RECO/START38_V12-v1/0004/E6D9BDE2-86C8-DF11-9827-00215E221782.root'
-#        'file:/tmp/slehti/Fall10_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-SIM-RAW_START38_V12-v1_0000_8037FA24-3EC8-DF11-9725-00215E221B48.root'
-          "file:/tmp/mkortela/FCA4CF79-A5A6-E011-AA99-E0CB4E55366A.root"
+        'file:/tmp/slehti/Fall11_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-RAW_PU_S6_START42_V14B-v1_0000_86738BE8-EBF0-E011-8E03-003048C693E6.root'
+#          "file:/tmp/mkortela/FCA4CF79-A5A6-E011-AA99-E0CB4E55366A.root"
     )
   )
 
