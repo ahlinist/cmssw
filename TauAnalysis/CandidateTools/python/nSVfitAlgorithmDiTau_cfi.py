@@ -75,7 +75,7 @@ nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
 nSVfitTauLikelihoodMatrixElement = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodMatrixElement"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodMatrixElement"),
-    VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/shapes.root"),
+    VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/VMpdf.root"),
     applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
@@ -95,22 +95,15 @@ nSVfitResonanceLikelihoodPhaseSpace = cms.PSet(
 
 nSVfitResonanceLikelihoodLogM = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodLogM"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodRegularization"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
     nll = cms.string("TMath::Log(mass)"),
     power = cms.double(1.0)
 )
 
-nSVfitResonanceLikelihoodLogPt = cms.PSet(
-    pluginName = cms.string("nSVfitResonanceLikelihoodLogPt"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodRegularization"),
-    nll = cms.string("TMath::Log(pt)"),
-    power = cms.double(0.25)
-)
-
 nSVfitResonanceLikelihoodLogEff = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodEff_power100"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodMassRegularization"),
-    nll = cms.string("TMath::Log(TMath::Max(5.00e-3, 4.21e-2*(2.52e-2 + TMath::Erf((mass - 4.40e+1)*6.90e-3))))"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
+    nll = cms.string("TMath::Log(TMath::Max(5.00e-3, 4.21e-2*(2.52e-2 + TMath::Erf((x - 4.40e+1)*6.90e-3))))"),
     power = cms.double(1.0)
 )
 
@@ -161,7 +154,8 @@ nSVfitResonanceLikelihoodPolarization = cms.PSet(
             par2 = cms.double(30.),    # width of transition region between Z and Higgs specific polarization
         )
     ),
-    power = cms.double(1.0)
+    power = cms.double(1.0),
+    verbosity = cms.int32(0)
 )
 
 nSVfitResonanceLikelihoodPrior = cms.PSet(
