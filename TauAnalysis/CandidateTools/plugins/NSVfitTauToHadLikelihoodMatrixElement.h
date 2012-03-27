@@ -13,9 +13,9 @@
  *
  * \author Christian Veelken, Lorenzo Bianchini; LLR
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.3 2011/05/29 17:58:22 veelken Exp $
+ * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.1 2012/03/22 11:08:14 veelken Exp $
  *
  */
 
@@ -53,6 +53,29 @@ class NSVfitTauToHadLikelihoodMatrixElement : public NSVfitSingleParticleLikelih
   TGraph* rhoNormTPlus_;
   TGraph* rhoTMinus_;
   TGraph* rhoNormTMinus_;
+
+  TGraph* a1LPlus_;
+  TGraph* a1NormLPlus_; 
+  TGraph* a1LMinus_;
+  TGraph* a1NormLMinus_; 
+  TGraph* a1TPlus_;
+  TGraph* a1NormTPlus_;
+  TGraph* a1TMinus_;
+  TGraph* a1NormTMinus_;
+
+  TGraph* a1Lz_;
+  TGraph* a1Tz_;
+
+  TGraph* rhoyMinus_;
+  TGraph* rhoyNormMinus_;
+  TGraph* rhoyPlus_;
+  TGraph* rhoyNormPlus_;
+  TGraph* a1yMinus_;
+  TGraph* a1yNormMinus_;
+  TGraph* a1yPlus_;
+  TGraph* a1yNormPlus_;
+
+
 };
 
 #endif
