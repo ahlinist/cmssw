@@ -37,6 +37,11 @@ NSVfitEventHypothesisAnalyzerT<T>::NSVfitEventHypothesisAnalyzerT(const edm::Par
   idxResonance_ = ( cfg.exists("idxResonance") ) ?
     cfg.getParameter<int>("idxResonance") : 0;
 
+  numBinsSVfitMass_ = cfg.getParameter<int>("numBinsSVfitMass");
+  svFitMassMax_ = cfg.getParameter<double>("svFitMassMax");
+  numBinsSVfitSigma_ = cfg.getParameter<int>("numBinsSVfitSigma");
+  svFitSigmaMax_ = cfg.getParameter<double>("svFitSigmaMax");
+
   dqmDirectory_ = cfg.getParameter<std::string>("dqmDirectory");
 }
 
@@ -68,31 +73,51 @@ void NSVfitEventHypothesisAnalyzerT<T>::beginJob()
 
   svFitIsValidSolution_ = dqmStore.book1D("svFitIsValidSolution", "svFitIsValidSolution",  2, -0.5, 1.5);
 
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  -1.,  -1.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  -1.,  -1., +1));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  -1.,  -1., -1));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,   0.,  30.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  30.,  60.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  60.,  90.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_,  90., 120.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 120., 140.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 140., 160.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 160., 170.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 170., 175.,  0));
-  plotEntries1_.push_back(new plotEntryType1(dqmDirectory_, 175.,  -1.,  0));
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_,  -1.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_,  -1.,  -1., +1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_,  -1.,  -1., -1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_,   0.,  30.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_,  30.,  60.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_,  60.,  90.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_,  90., 120.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_, 120., 140.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_, 140., 160.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_, 160., 170.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_, 170., 175.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
+  plotEntries1_.push_back(new plotEntryType1(
+    dqmDirectory_, 175.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
   for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
 	plotEntry != plotEntries1_.end(); ++plotEntry ) {
     (*plotEntry)->bookHistograms(dqmStore);
   }
 
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  -1.,  -1.,  0));
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  -1.,  -1., +1));
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  -1.,  -1., -1));
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,   0.,  15.,  0));
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  15.,  25.,  0));
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  25.,  35.,  0));
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  35.,  45.,  0));
-  plotEntries2_.push_back(new plotEntryType2(dqmDirectory_,  45.,  -1.,  0));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,  -1.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,  -1.,  -1., +1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,  -1.,  -1., -1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,   0.,  15.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,  15.,  25.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,  25.,  35.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,  35.,  45.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
+  plotEntries2_.push_back(
+    new plotEntryType2(dqmDirectory_,  45.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
   for ( typename std::vector<plotEntryType2*>::iterator plotEntry = plotEntries2_.begin();
 	plotEntry != plotEntries2_.end(); ++plotEntry ) {
     (*plotEntry)->bookHistograms(dqmStore);
@@ -218,6 +243,7 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
       (*plotEntry)->fillHistograms(
         svFitIsValidSolution,			     
 	svFitDaughter1P4, svFitDaughter2P4, 
+	svFitMass,
 	svFitMass_mean, svFitMass_median, svFitMass_maximum, svFitMass_maxInterpol, 
 	svFitSigma, 
 	evtWeight);
