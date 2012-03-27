@@ -36,6 +36,11 @@ void NSVfitTauToLepLikelihoodMatrixElement<T>::beginJob(NSVfitAlgorithmBase* alg
 template <typename T>
 double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis, int polSign) const
 {
+
+
+  //polSign = -1;
+
+
 //--- compute negative log-likelihood for tau lepton decay 
 //    tau- --> e- nu nu (tau- --> mu- nu nu)
 //    to be compatible with matrix element of V-A electroweak decay
@@ -70,19 +75,32 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   //               0
   double prob = 1.;
   if ( polSign == +1 || polSign == -1 ) {
-    prob = (nuMass/(4.*tauLeptonMass4))*((tauLeptonMass2 + 2.*nuMass2)*(tauLeptonMass2 - nuMass2) 
-                                       + polSign*(tauLeptonMass2*(2.*visEnFracX - 1.) + nuMass2)*(-tauLeptonMass2 + 2.*nuMass2));
+
+    if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) {
+      prob = (nuMass/(4.*tauLeptonMass4))*((tauLeptonMass2 + 2.*nuMass2)*(tauLeptonMass2 - nuMass2) 
+					   + polSign*(tauLeptonMass2*(2.*visEnFracX - 1.) + nuMass2)*(-tauLeptonMass2 + 2.*nuMass2));
+    }else{
+      double nuMass_limit  = TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2);
+      double nuMass2_limit = square(nuMass_limit);
+      prob = (nuMass_limit/(4.*tauLeptonMass4))*((tauLeptonMass2 + 2.*nuMass2_limit)*(tauLeptonMass2 - nuMass2_limit) 
+					   + polSign*(tauLeptonMass2*(2.*visEnFracX - 1.) + nuMass2_limit)*(-tauLeptonMass2 + 2.*nuMass2_limit));
+      prob /= (1. + 1.e+6*square(nuMass - nuMass_limit));
+    }
+
     if ( applyVisPtCutCorrection_ ) {
       double probCorr = 1.;
       if ( hypothesis_T->p4_fitted().pt() > visPtCutThreshold_ ) {
 	double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
-	probCorr = (0.5*(1. + polSign)*(1./3.)*(0.5 - xCut + cube(xCut) - 0.5*fourth(xCut))
-		  + 0.5*(1. - polSign)*(1./3.)*(0.75 - xCut + 0.5*fourth(xCut)));
+	probCorr = 1./((0.5*(1. + polSign)*(1./3.)*(0.5 - xCut + cube(xCut) - 0.5*fourth(xCut))
+			+ 0.5*(1. - polSign)*(1./3.)*(0.75 - xCut + 0.25*fourth(xCut))));
       }
       if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
       prob *= probCorr;
     }
-  } else {
+  } 
+
+
+  else {
     if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
       prob = (13./square(tauLeptonMass2))*(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
     } else {                                                        // LB: unphysical solution
