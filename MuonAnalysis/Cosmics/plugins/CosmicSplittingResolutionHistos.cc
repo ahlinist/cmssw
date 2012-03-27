@@ -140,6 +140,7 @@ struct Bin {
   // JMTBAD make these globals or Histos::constants.
   bool use_unpropagated_values; // Whether to use the propagated values.
   bool flip_upper_charge;       // Whether to flip the charge of the upper tracks.
+  bool make_scatterplots;       // Whether to enable the (huge) TH2 scatterplots in ComparisonHists.
 
   // The cut parameters.
   unsigned nbins_scale;
@@ -232,7 +233,7 @@ struct Bin {
     TFileDirectory trkdir = bindir.mkdir(track_nicks[track]);
 
     const bool root2 = track != tk_staglb && track != tk_statko;
-    ComparisonHistsFactory fac(trkdir, "upper", "lower", is_mc, root2);
+    ComparisonHistsFactory fac(trkdir, "upper", "lower", is_mc, root2, make_scatterplots);
 
     // Explicitly use the vector copy constructor so we can change the
     // values if necessary below (scale by 10x for stand-alone, for
@@ -603,6 +604,7 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
       // JMTBAD rework these flags as in the above JMTBAD
       b->use_unpropagated_values = use_unpropagated_values;
       b->flip_upper_charge = pp_reco_mode;
+      b->make_scatterplots = cfg.getParameter<bool>("make_scatterplots");
       bins.push_back(b);
     }
 
