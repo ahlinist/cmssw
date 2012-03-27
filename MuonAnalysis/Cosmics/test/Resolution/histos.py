@@ -58,6 +58,8 @@ parser.add_argument('+require-not-tt25', action='store_true',
                     help='Require technical trigger bit 25 not to have fired in each event.')
 parser.add_argument('+bin-by-run', action='store_true',
                     help='Instead of binning by pT (default), bin by run number.')
+parser.add_argument('+make-scatterplots', action='store_true',
+                    help='Also make the huge TH2 scatterplots.')
 options = parser.parse_args()
 #JMTBAD groups
 
@@ -115,12 +117,14 @@ cfg = cms.PSet(
     require_not_tt25        = cms.bool(options.require_not_tt25),
     min_bfield              = cms.double(3.7),
     copy_selected_events    = cms.bool(options.copy_selected_events),
+    make_scatterplots       = cms.bool(options.make_scatterplots),
     )
 
 if options.bin_by_run:
     bins = make_bins('run', run_list)
 else:
     bins = make_bins('pt')
+    #bins = make_bins('phi', [x/100. for x in range(-320, 321, 32)])
 
 print 'configuring config:'
 
