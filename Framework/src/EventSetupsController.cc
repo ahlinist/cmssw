@@ -60,11 +60,11 @@ EventSetupsController::EventSetupsController()
 // member functions
 //
 boost::shared_ptr<EventSetupProvider> 
-EventSetupsController::makeProvider(ParameterSet& iPSet, const CommonParams& iParams)
+EventSetupsController::makeProvider(ParameterSet& iPSet)
 {
    boost::shared_ptr<EventSetupProvider> returnValue(makeEventSetupProvider(iPSet) );
 
-   fillEventSetupProvider(*returnValue, iPSet, iParams);
+   fillEventSetupProvider(*returnValue, iPSet);
    
    providers_.push_back(returnValue);
    
