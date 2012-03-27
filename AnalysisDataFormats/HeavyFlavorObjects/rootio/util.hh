@@ -11,10 +11,10 @@
 #include "TDirectory.h"
 #include "TColor.h"
 
-extern TFile  *gFile;
 extern TROOT  *gROOT;
 extern TStyle *gStyle;
-extern TDirectory  *gDirectory;
+// extern TFile  *gFile;
+// extern TDirectory  *gDirectory;
 
 // ======================================================================
 // General utilities
