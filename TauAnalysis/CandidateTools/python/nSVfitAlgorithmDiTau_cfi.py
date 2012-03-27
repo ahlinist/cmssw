@@ -95,14 +95,14 @@ nSVfitResonanceLikelihoodPhaseSpace = cms.PSet(
 
 nSVfitResonanceLikelihoodLogM = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodLogM"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodMassRegularization"),
     nll = cms.string("TMath::Log(mass)"),
     power = cms.double(1.0)
 )
 
 nSVfitResonanceLikelihoodLogEff = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodEff_power100"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodMassRegularization"),
     nll = cms.string("TMath::Log(TMath::Max(5.00e-3, 4.21e-2*(2.52e-2 + TMath::Erf((x - 4.40e+1)*6.90e-3))))"),
     power = cms.double(1.0)
 )

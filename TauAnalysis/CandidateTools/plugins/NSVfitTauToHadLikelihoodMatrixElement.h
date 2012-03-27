@@ -13,9 +13,9 @@
  *
  * \author Christian Veelken, Lorenzo Bianchini; LLR
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.1 2012/03/22 11:08:14 veelken Exp $
+ * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.2 2012/03/27 14:35:42 bianchi Exp $
  *
  */
 
@@ -29,6 +29,8 @@
 
 #include <TFile.h>
 #include <TGraph.h>
+#include <TMatrixD.h>
+#include <TVectorD.h>
 
 class NSVfitTauToHadLikelihoodMatrixElement : public NSVfitSingleParticleLikelihood
 {
@@ -38,13 +40,20 @@ class NSVfitTauToHadLikelihoodMatrixElement : public NSVfitSingleParticleLikelih
 
   void beginJob(NSVfitAlgorithmBase*);
 
+  void beginCandidate(const NSVfitSingleParticleHypothesis*);
+
   double operator()(const NSVfitSingleParticleHypothesis*, int) const;
 
  private:
+  double compProb_pionDecay(double, int, double) const;
+  double compProb_rhoDecay(double, double, int, double) const;
+  double compProb_a1Decay(double, double, int, double) const;
+
   bool applySinThetaFactor_; 
 
   edm::FileInPath inputFileName_;
   TFile* inputFile_;
+
   TGraph* rhoLPlus_;
   TGraph* rhoNormLPlus_; 
   TGraph* rhoLMinus_;
@@ -75,7 +84,13 @@ class NSVfitTauToHadLikelihoodMatrixElement : public NSVfitSingleParticleLikelih
   TGraph* a1yPlus_;
   TGraph* a1yNormPlus_;
 
+  std::vector<int> supportedTauDecayModes_;
+  unsigned numSupportedTauDecayModes_;
 
+  mutable TVectorD vRec_;
+  TMatrixD recToGenTauDecayModeMap_;
+  mutable TVectorD vGen_;
+  mutable TVectorD vProb_;
 };
 
 #endif
