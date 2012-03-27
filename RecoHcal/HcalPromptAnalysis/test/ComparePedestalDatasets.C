@@ -5,10 +5,15 @@ int IndRun=-1,IndRef=-1;
       if(peds[i]->get_run_number()==ref) IndRef=i;
   }
   if(IndRun<0 || IndRef<0) return;
-   TH1F *hb=new TH1F("diff hb","diff hb",500,-3,3);
-   TH1F *he=new TH1F("diff he","diff he",500,-3,3);
-   TH1F *ho=new TH1F("diff ho","diff ho",500,-3,3);
-   TH1F *hf=new TH1F("diff hf","diff hf",500,-3,3);
+  char str[100];
+  sprintf(str,"HB pedestal difference: r%i - r%i",run,ref);
+  TH1F *hb=new TH1F("hb",str,500,-3,3);
+  sprintf(str,"HE pedestal difference: r%i - r%i",run,ref);
+  TH1F *he=new TH1F("he",str,500,-3,3);
+  sprintf(str,"HO pedestal difference: r%i - r%i",run,ref);
+  TH1F *ho=new TH1F("ho",str,500,-3,3);
+  sprintf(str,"HF pedestal difference: r%i - r%i",run,ref);
+  TH1F *hf=new TH1F("hf",str,500,-3,3);
 
   double ped,ped0;
   for(int eta=-16;eta<=16;eta++) for(int phi=1;phi<=72;phi++)for(int depth=1;depth<=2;depth++){
