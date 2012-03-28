@@ -166,6 +166,11 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     jobOptions.append(('enableSysUncertainties',
                        sample_info['enableSysUncertainties']
                        and not disableSysUncertainties))
+    
+    # disable PFTau sequence if it's already in the event content
+    if sample_info.has_key('disablePFTauProduction'):
+        jobOptions.append(('disablePFTauProduction',
+                       sample_info['disablePFTauProduction']))
 
     # As the event selectors get reconfigured, do this AFTER enabling the sys
     # uncertainties
