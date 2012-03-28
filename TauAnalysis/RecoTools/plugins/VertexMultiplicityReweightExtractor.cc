@@ -20,7 +20,7 @@
 //    (extended up to 36 pile-up interactions by just adding zeros at the end)
 namespace 
 {
-  std::vector<float> gen_pileup_flat10_summer11mc()
+  std::vector<float> gen_pileup_summer11mc()
   {
     const int gen_pu_max = 36;
     const double npu_probs[gen_pu_max] = {
@@ -31,6 +31,27 @@ namespace
       0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000, 
       0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000, 0.0000000000,
       0.0000000000
+    };
+    std::vector<float> retVal(gen_pu_max);
+    for ( int i = 0; i < gen_pu_max; ++i ) {
+      retVal[i] = npu_probs[i];
+    }
+    return retVal;
+  }
+  std::vector<float> gen_pileup_fall11mc()
+  {
+    const int gen_pu_max = 50;
+    const double npu_probs[gen_pu_max] = {
+        0.003388501, 0.010357558, 0.024724258, 0.042348605, 0.058279812,
+        0.068851751, 0.072914824, 0.071579609, 0.066811668, 0.060672356,
+        0.054528356, 0.04919354,  0.044886042, 0.041341896, 0.0384679,
+        0.035871463, 0.03341952,  0.030915649, 0.028395374, 0.025798107,
+        0.023237445, 0.020602754, 0.0180688,   0.015559693, 0.013211063,
+        0.010964293, 0.008920993, 0.007080504, 0.005499239, 0.004187022,
+        0.003096474, 0.002237361, 0.001566428, 0.001074149, 0.000721755,
+        0.000470838, 0.00030268,  0.000184665, 0.000112883, 6.74043E-05,
+        3.82178E-05, 2.22847E-05, 1.20933E-05, 6.96173E-06, 3.4689E-06,
+        1.96172E-06, 8.49283E-07, 5.02393E-07, 2.15311E-07, 9.56938E-08
     };
     std::vector<float> retVal(gen_pu_max);
     for ( int i = 0; i < gen_pu_max; ++i ) {
@@ -59,10 +80,9 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     type_(kUndefined)
 {
   edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileName");
-  std::string lutName = cfg.getParameter<std::string>("lutName");
   if ( !inputFileName.isLocal()) throw cms::Exception("VertexMultiplicityReweightExtractor") 
     << " Failed to find File = " << inputFileName << " !!\n";
-
+  std::string lutName = cfg.getParameter<std::string>("lutName");
   std::string type_string = cfg.getParameter<std::string>("type");
   if      ( type_string == "gen"   ) type_ = kGenLevel;
   else if ( type_string == "gen3d" ) type_ = kGenLevel3d;
@@ -71,13 +91,21 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     << " Invalid Configuration Parameter 'type' = " << type_string << " !!\n";
 
   if ( type_ == kGenLevel || type_ == kGenLevel3d ) {
+    // get MC production cycle
+    std::string mcPeriod = cfg.getParameter<std::string>("mcPeriod");
+    if ( mcPeriod.compare("Spring11") && mcPeriod.compare("Summer11") && mcPeriod.compare("Fall11")) 
+      throw cms::Exception("VertexMultiplicityReweightExtractor")
+        << " Configuration parameter 'mcPeriod' must be 'Spring11', 'Summer11', or 'Fall11'.\n"; 
+    
     inputFile_ = new TFile(inputFileName.fullPath().data());
     puDist_data_ = dynamic_cast<TH1*>(inputFile_->Get(lutName.data()));
     if ( !puDist_data_ ) 
       throw cms::Exception("VertexMultiplicityReweightExtractor") 
 	<< " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
     
-    std::vector<float> gen_pileup_mc = gen_pileup_flat10_summer11mc();
+    std::vector<float> gen_pileup_mc = gen_pileup_summer11mc();
+    if( mcPeriod.compare("Fall11") )
+            gen_pileup_mc = gen_pileup_fall11mc();
     TH1* puDist_mc = new TH1D("MC_distr", "MC_distr", gen_pileup_mc.size(), 0., gen_pileup_mc.size());
     int numBins = puDist_mc->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
@@ -96,6 +124,7 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     if ( type_ == kGenLevel ) {
       genLumiReweight_ = new edm::LumiReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
     } else if ( type_ == kGenLevel3d ) {
+      std::string tmpStr("MC_distr");
       genLumiReweight3d_ = new edm::Lumi3DReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
       // CV: use pp inelastic cross-section of 73.5mb measured by TOTEM
       //     instead of CMS measurement of 68mb (default in Lumi3DReWeighting)
