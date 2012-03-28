@@ -186,6 +186,8 @@ def _setApplyVertexMultiplicityReweighting(process, enable, **kwargs):
             print "Applying Vertex multiplicity reweighting"
             enabler = getattr(mcToDataCorrectionTools, enablerName)
             enabler(process)
+            if isinstance(enable,str):
+                process.vertexMultiplicityReweight.mcPeriod = cms.string(enable)
         else:
             print "Warning: No Vertex multiplicity reweighting handler defined for channel %s" % channel
 
@@ -292,7 +294,11 @@ def _setGenFinalStateFilter(process, enable, **kwargs):
                         filterPlugins = getattr(processAttr, "filters")
                         setattr(filterPlugins[0], "src", tag)
                         
-
+def _disablePFTauSequence(process, disable, **kwargs):
+    # remove PFTau sequence from prePatProduction sequence
+    if disable:
+        print 'Removing PFTau sequence from pre-PAT production sequence'
+        process.producePrePat.remove(process.PFTau)
 
 def _setTriggerBits(process, triggerSelect, **kwargs):
     if hasattr(process, "Trigger"):
@@ -493,7 +499,8 @@ _METHOD_MAP = {
     'processName' : _changeProcessName,
     'changeTauId' : _changeTauId,
     'enableFakeRates' : _enableFakeRates,
-    'noRunLumiEventSave' : _setNoSaveRunLumiEventNumbers
+    'noRunLumiEventSave' : _setNoSaveRunLumiEventNumbers,
+    'disablePFTauProduction' : _disablePFTauSequence
 }
 
 def applyProcessOptions(process, jobInfo, options):
