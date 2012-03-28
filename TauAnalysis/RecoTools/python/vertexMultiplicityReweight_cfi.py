@@ -6,9 +6,9 @@ selectedPrimaryVerticesTrackPtSumGt10 = cms.EDFilter("VertexByTrackPtSumSelector
 )
 
 vertexMultiplicityReweight = cms.EDProducer("VertexMultiplicityReweightProducer",
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to173692.root"),
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to180252.root"),
     lutName = cms.string('pileup'),
     src = cms.InputTag('addPileupInfo'),
-    type = cms.string("gen3d")                            
+    type = cms.string("gen3d")
 )
 
