@@ -135,12 +135,12 @@ struct Bin {
 
   int track;        // Which track type, e.g. TPFMS.
   bool is_mc;       // Whether we're running on data or MC. // JMTBAD get this from the ntuple or from a global or from Histos::constants.
+  bool make_scatterplots; // Whether to enable the (huge) TH2 scatterplots in ComparisonHists. JMTBAD ditto
   std::string name; // A descriptive identifier, to be mangled below.
 
   // JMTBAD make these globals or Histos::constants.
   bool use_unpropagated_values; // Whether to use the propagated values.
   bool flip_upper_charge;       // Whether to flip the charge of the upper tracks.
-  bool make_scatterplots;       // Whether to enable the (huge) TH2 scatterplots in ComparisonHists.
 
   // The cut parameters.
   unsigned nbins_scale;
@@ -204,9 +204,10 @@ struct Bin {
     }
   }
 
-  Bin(const edm::ParameterSet& pset, const int track_, bool is_mc_)
+  Bin(const edm::ParameterSet& pset, const int track_, const bool is_mc_, const bool make_scatterplots_)
     : track(track_),
       is_mc(is_mc_),
+      make_scatterplots(make_scatterplots_),
       name(pset.getParameter<std::string>("name")),
       ref_ok(track == tk_tkonly)
   {
@@ -600,11 +601,10 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
   // track (e.g. {..., pT100200, pT2002000, ... } x {..., TkOnly, TPFMS, ... }
   for (int i = 0; i < n_tracks; ++i)
     BOOST_FOREACH(const edm::ParameterSet& bin_pset, cfg.getParameter<std::vector<edm::ParameterSet> >("bins")) {
-      Bin* b = new Bin(bin_pset, i, is_mc);
+      Bin* b = new Bin(bin_pset, i, is_mc, cfg.getParameter<bool>("make_scatterplots"));
       // JMTBAD rework these flags as in the above JMTBAD
       b->use_unpropagated_values = use_unpropagated_values;
       b->flip_upper_charge = pp_reco_mode;
-      b->make_scatterplots = cfg.getParameter<bool>("make_scatterplots");
       bins.push_back(b);
     }
 
