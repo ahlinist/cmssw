@@ -1,3 +1,11 @@
+#include <vector>
+#include "TMath.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include <iostream>
+#include "TFile.h"
+#include <string>
+
 double efficiency(double m, double m0, double sigma, double alpha,
      double n, double norm)
 {
@@ -31,68 +39,155 @@ double efficiency(double m, double m0, double sigma, double alpha,
   }
 }
 
-double tauTriggerCorrectionForMuTau(double pt, double muTauLooseTau10Weight, double muTauLooseTau15Weight, double muTauLooseTau20Weight) {
-    double muTauLooseTau10 = efficiency(pt, 16.7854, -0.69382, 4.57285, 94.1275, 0.883126);
-    double muTauLooseTau15 = efficiency(pt, 14.6677, 0.408165, 0.551949, 1.4477, 0.961277);
-    double muTauLooseTau20 = efficiency(pt, 19.1898, -1.35938, 2.82724, 1.02721, 1.50862);
-    double muTauLooseTau15MC = efficiency(pt, 14.5311, -0.0151916, 0.0022261, 1.6761, 0.891203);
-    double correction = (muTauLooseTau10*muTauLooseTau10Weight + muTauLooseTau15*muTauLooseTau15Weight + muTauLooseTau20*muTauLooseTau20Weight) / muTauLooseTau15MC;
-    return correction;
+struct TriggerEfficiencyParametersStruct {
+  double m0;
+  double sigma;
+  double alpha;
+  double n;
+  double norm;
+  double luminosity;
+};
+
+typedef struct TriggerEfficiencyParametersStruct TriggerEfficiencyParameters;
+
+
+TriggerEfficiencyParameters makeTriggerEfficiencyParameters(double m0, double sigma, double alpha, double n, double norm, double luminosity) {
+  TriggerEfficiencyParameters parameters;
+  parameters.m0 = m0;
+  parameters.m0 = m0;
+  parameters.sigma = sigma;
+  parameters.alpha = alpha;
+  parameters.n = n;
+  parameters.norm = norm;
+  parameters.luminosity = luminosity;
+  return parameters;
 }
 
-void makeTauTriggerCorrectionForMuTau(double muTauLooseTau10Weight, double muTauLooseTau15Weight, double muTauLooseTau20Weight) {
-  TH1F *hist= new TH1F("tauTriggerEfficiencyCorrectionForMuTau", "tauTriggerEfficiencyCorrectionForMuTau", 485, 15, 500);
-  // set under flow bin to value for pt 15
-  hist->SetBinContent(0,tauTriggerCorrectionForMuTau(15, muTauLooseTau10Weight, muTauLooseTau15Weight, muTauLooseTau20Weight));
-  for(double pt =15; pt <= 500; pt++) {
-    double correction = tauTriggerCorrectionForMuTau(pt, muTauLooseTau10Weight, muTauLooseTau15Weight, muTauLooseTau20Weight);
-    hist->Fill(pt, correction);
+double triggerCorrection(double m, TriggerEfficiencyParameters dataParameters, TriggerEfficiencyParameters mcParameters) {
+  double dataEfficiency = efficiency(m, dataParameters.m0, dataParameters.sigma, dataParameters.alpha, dataParameters.n, dataParameters.norm);
+  double mcEfficiency = efficiency(m, mcParameters.m0, mcParameters.sigma, mcParameters.alpha, mcParameters.n, mcParameters.norm);
+  return dataEfficiency / mcEfficiency;
+}
+
+void makeTriggerEfficiencyCorrections(std::string name, 
+                                      int numberOfBins,
+                                      double minValue,
+                                      double maxValue,
+                                      TriggerEfficiencyParameters mcTriggerEfficiencyParameters, 
+                                      std::vector<TriggerEfficiencyParameters> dataTriggerEfficiencyParameters) {
+  TH1F *hist = new TH1F(name.c_str(), name.c_str(), numberOfBins, minValue, maxValue);
+  double totalLuminosity = 0;
+  for(unsigned int i=0; i!=dataTriggerEfficiencyParameters.size(); i++) {
+    totalLuminosity += dataTriggerEfficiencyParameters[i].luminosity;
   }
-  TFile file("../data/tauTriggerEfficiencyCorrectionForMuTau.root","RECREATE");
+  for(double m=minValue; m<=maxValue; m+= (maxValue-minValue)/numberOfBins) {
+    double correction = 0;
+    for(unsigned int i=0; i!=dataTriggerEfficiencyParameters.size(); i++) {
+      correction += triggerCorrection(m,dataTriggerEfficiencyParameters[i], mcTriggerEfficiencyParameters)*dataTriggerEfficiencyParameters[i].luminosity/totalLuminosity;
+    }
+    if(m == minValue)
+      hist->SetBinContent(0, correction);
+    hist->Fill(m, correction);
+//    std::cout << "pt: " << m << " correction: " << correction << std::endl;
+  }
+  TFile file(std::string("../data/"+name+".root").c_str(),"RECREATE");
   hist->Write();
   file.Close();
 }
 
-double tauTriggerCorrectionForElecTau(double pt, double elecTauLooseTau20Weight, double elecTauMediumTau20Weight, double elecTauTightTau20Weight) {
-  double elecTauLooseTau20 = efficiency(pt, 19.6319, -0.986354, 1.94272, 1.02398, 1.91094);
-  double elecTauMediumTau20 = efficiency(pt, 19.3535, 0.369967, 0.158178, 3.31129, 0.76279);
-  double elecTauTightTau20 = efficiency(pt, 19.7197, 0.844386, 1.16726, 1.00747, 9.35089);
-  double elecTauMediumTau20MC = efficiency(pt, 19.451, -0.0554166, 0.0518694, 1.24892, 0.950397);
-  double correction = (elecTauLooseTau20*elecTauLooseTau20Weight + elecTauMediumTau20*elecTauMediumTau20Weight + elecTauTightTau20*elecTauTightTau20Weight) / elecTauMediumTau20MC;
-  return correction;
-}
-
-void makeTauTriggerCorrectionForElecTau(double elecTauLooseTau20Weight, double elecTauMediumTau20Weight, double elecTauTightTau20Weight) {
-  TH1F *hist= new TH1F("tauTriggerEfficiencyCorrectionForElecTau", "tauTriggerEfficiencyCorrectionForElecTau", 480, 20, 500);
-  hist->SetBinContent(0,tauTriggerCorrectionForElecTau(20, elecTauLooseTau20Weight, elecTauMediumTau20Weight, elecTauTightTau20Weight));
-  for(double pt =20; pt <= 500; pt++) {
-    double correction = tauTriggerCorrectionForElecTau(pt, elecTauLooseTau20Weight, elecTauMediumTau20Weight, elecTauTightTau20Weight);
-    hist->Fill(pt, correction);
-  }
-  TFile file("../data/tauTriggerEfficiencyCorrectionForElecTau.root","RECREATE");
-  hist->Write();
-  file.Close();
+void makeTriggerEfficiencyCorrections2D(std::string name, 
+        int numberOfBins,
+        double minValue,
+        double maxValue,
+        TriggerEfficiencyParameters mcTriggerEfficiencyParametersEB, 
+        TriggerEfficiencyParameters mcTriggerEfficiencyParametersEE, 
+        std::vector<TriggerEfficiencyParameters> dataTriggerEfficiencyParametersEB,
+        std::vector<TriggerEfficiencyParameters> dataTriggerEfficiencyParametersEE) {
+    
+    TH2F *hist = new TH2F(name.c_str(), name.c_str(), 4,-1.479*2,1.479*2,numberOfBins, minValue, maxValue);
+    
+    double totalLuminosity = 0;
+    for(unsigned int i=0; i!=dataTriggerEfficiencyParametersEB.size(); i++) {
+        totalLuminosity += dataTriggerEfficiencyParametersEB[i].luminosity;
+    }
+    
+    for(double m=minValue; m<=maxValue; m+= (maxValue-minValue)/numberOfBins) {
+        double correctionEB = 0;
+        for(unsigned int i=0; i!=dataTriggerEfficiencyParametersEB.size(); i++) {
+            correctionEB += triggerCorrection(m,dataTriggerEfficiencyParametersEB[i], mcTriggerEfficiencyParametersEB)*dataTriggerEfficiencyParametersEB[i].luminosity/totalLuminosity;
+        }
+        double correctionEE = 0;
+        for(unsigned int i=0; i!=dataTriggerEfficiencyParametersEE.size(); i++) {
+            correctionEE += triggerCorrection(m,dataTriggerEfficiencyParametersEE[i], mcTriggerEfficiencyParametersEE)*dataTriggerEfficiencyParametersEE[i].luminosity/totalLuminosity;
+        }
+        if(m == minValue) {
+            hist->SetBinContent(1,0,correctionEE);
+            hist->SetBinContent(2,0,correctionEB);
+            hist->SetBinContent(3,0,correctionEB);
+            hist->SetBinContent(4,0,correctionEE);
+        }
+        hist->Fill(-2,m,correctionEE);
+        hist->Fill(-1,m,correctionEB);
+        hist->Fill(1,m,correctionEB);
+        hist->Fill(2,m,correctionEE);
+        //    std::cout << "pt: " << m << " correction: " << correction << std::endl;
+    }
+    TFile file(std::string("../data/"+name+".root").c_str(),"RECREATE");
+    hist->Write();
+    file.Close();
 }
 
 void makeEfficiencyCorrectionRootFile() {
 
   std::cout << "Making tau trigger efficiency correction for mu tau" << std::endl;
-  double muTauLooseTau10Luminosity = 0.017;
-  double muTauLooseTau15Luminosity = 1.97;
-  double muTauLooseTau20Luminosity = 2.46;
-  double totalLuminosity = muTauLooseTau10Luminosity + muTauLooseTau15Luminosity + muTauLooseTau20Luminosity;
- makeTauTriggerCorrectionForMuTau(muTauLooseTau10Luminosity/totalLuminosity, muTauLooseTau15Luminosity/totalLuminosity, muTauLooseTau20Luminosity/totalLuminosity);
+  std::vector<TriggerEfficiencyParameters> muTauParameters;
+  // muTauLooseTau10
+  muTauParameters.push_back(makeTriggerEfficiencyParameters(16.7854, -0.69382, 4.57285, 94.1275, 0.883126, 0.017));
+  muTauParameters.push_back(makeTriggerEfficiencyParameters(14.6677, 0.408165, 0.551949, 1.4477, 0.961277, 1.97));
+  muTauParameters.push_back(makeTriggerEfficiencyParameters(19.1898, -1.35938, 2.82724, 1.02721, 1.50862, 2.46));
+
+  TriggerEfficiencyParameters muTauLooseTau15MCParameters = 
+    makeTriggerEfficiencyParameters(14.5311, -0.0151916, 0.0022261, 1.6761, 0.891203, 0);
+  makeTriggerEfficiencyCorrections("tauTriggerEfficiencyCorrectionForMuTau", 485, 15, 500, muTauLooseTau15MCParameters, muTauParameters);
 
   std::cout << "Making tau trigger efficiency correction for elec tau" << std::endl;
-  double elecTauLooseTau20Luminosity = 1.1;
-  double elecTauTightTau20Luminosity = 0.7;
-  double elecTauMediumTau20Luminosity = 1.7 + 0.9 + 0.0023;
-  double totalLuminosity = elecTauLooseTau20Luminosity + elecTauTightTau20Luminosity + elecTauMediumTau20Luminosity;  
-  makeTauTriggerCorrectionForElecTau(elecTauLooseTau20Luminosity/totalLuminosity, elecTauTightTau20Luminosity/totalLuminosity, elecTauMediumTau20Luminosity/totalLuminosity);
+  std::vector<TriggerEfficiencyParameters> elecTauParametersEB;
+  // elecTauLoose20
+  elecTauParametersEB.push_back(makeTriggerEfficiencyParameters(19.3916, 0.996964, 1.70131, 1.38002, 0.903245, 1.1));
+  // elecTauMedium20
+  elecTauParametersEB.push_back(makeTriggerEfficiencyParameters(19.5667, 1.15203, 1.68126, 1.40025, 0.848033, 0.7));
+  // elecTauTight20
+  elecTauParametersEB.push_back(makeTriggerEfficiencyParameters(19.6013, 0.987317, 1.08015, 1.88592, 0.776894, 1.7 + 0.9 + 0.0023));
+  TriggerEfficiencyParameters elecTauMediumTau20MCParametersEB = 
+    makeTriggerEfficiencyParameters(19.468, 0.0615381, 0.0349325, 1.59349, 0.860096, 0);
+  std::vector<TriggerEfficiencyParameters> elecTauParametersEE;
+  // elecTauLoose20
+  elecTauParametersEE.push_back(makeTriggerEfficiencyParameters(18.8166, 0.526632, 0.20666, 6.80392, 0.903245, 1.1));
+  // elecTauMedium20
+  elecTauParametersEE.push_back(makeTriggerEfficiencyParameters(18.8476, 0.528963, 0.16717, 3.65814, 0.749759, 0.7));
+  // elecTauTight20
+  elecTauParametersEE.push_back(makeTriggerEfficiencyParameters(18.8859, 0.271301, 0.128008, 1.50993, 0.825122, 1.7 + 0.9 + 0.0023));
+  TriggerEfficiencyParameters elecTauMediumTau20MCParametersEE = 
+    makeTriggerEfficiencyParameters(19.3862, 0.247148, 0.123187, 2.87108, 0.790894, 0);
+  makeTriggerEfficiencyCorrections2D("tauTriggerEfficiencyCorrectionForElecTau", 480, 20, 500, 
+          elecTauMediumTau20MCParametersEB, elecTauMediumTau20MCParametersEE, elecTauParametersEB, elecTauParametersEE);
+/*
+  std::cout << "Making electron trigger efficiency correction for elec tau" << std::endl;
+  std::vector<TriggerEfficiencyParameters> elecTauParameters;
+  // elecTauLoose20
+  electronParameters.push_back(makeTriggerEfficiencyParameters(19.6319, -0.986354, 1.94272, 1.02398, 1.91094, 1.1));
+  // elecTauMedium20
+  electronParameters.push_back(makeTriggerEfficiencyParameters(19.3535, 0.369967, 0.158178, 3.31129, 0.76279, 0.7));
+  // elecTauTight20
+  electronParameters.push_back(makeTriggerEfficiencyParameters(19.7197, 0.844386, 1.16726, 1.00747, 9.35089, 1.7 + 0.9 + 0.0023));
+  TriggerEfficiencyParameters electron18MCParameters = 
+    makeTriggerEfficiencyParameters(19.451, -0.0554166, 0.0518694, 1.24892, 0.950397, 0);
+  makeTriggerEfficiencyCorrections("electronTriggerEfficiencyCorrection", 480, 20, 500, electron18MCParameters, electronParameters);
+*/
 
     // numbers from AN-11-390 v6, Table 13
 
-    // do electron isolation/ID efficiency corrections
+  // do electron isolation/ID efficiency corrections
 
   std::cout << "Making electron isolation efficiency correction for elec tau" << std::endl;
     TH2F* elecIsoCorr = new TH2F("electronIsolationEfficiencyCorrection","electronIsolationEfficiencyCorrection",4,-1.479*2,1.479*2,98,10,500);
