@@ -9,7 +9,8 @@ tauTriggerEfficiencyCorrectionForElecTau = cms.EDProducer("PATTauEfficiencyCorre
             'selectedPatTausElectronVetoCumulative',
             'selectedPatTausPt20Cumulative'   # ("fall-back") collection to be checked last
         ),
-        x = cms.string("pt"),
+        x = cms.string("eta"),
+        y = cms.string("pt"),
     ),
     noObjectSubstituteValue = cms.double(0.) # weight returned in case all 'src' collections do not contain any entries
 )
