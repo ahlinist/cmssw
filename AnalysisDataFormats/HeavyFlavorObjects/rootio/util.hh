@@ -11,8 +11,8 @@
 #include "TDirectory.h"
 #include "TColor.h"
 
-extern TROOT  *gROOT;
-extern TStyle *gStyle;
+// extern TROOT  *gROOT;
+// extern TStyle *gStyle;
 // extern TFile  *gFile;
 // extern TDirectory  *gDirectory;
 

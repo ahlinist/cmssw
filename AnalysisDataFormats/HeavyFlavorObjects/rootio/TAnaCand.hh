@@ -38,7 +38,7 @@ public:
   TVector3    fPoca;
 
   // -- information on the associated primary vertex
-  int         fPvIdx; 
+  int         fPvIdx, fPvIdx2; 
   double      fPvLip, fPvLipE, fPvTip, fPvTipE;
   double      fPvLip2, fPvLipE2, fPvTip2, fPvTipE2; // Second best PV for pile-up detection
 
