@@ -25,6 +25,7 @@ public:
   double    fMuonChi2, fMuonZ, fMuonR;
   double    fCaloComp, fSegmComp, fIsolation; 
   int       fNhitsCSC, fNhitsDT,fNhitsRPC; 
+  int       fNmatchedStations;
   float     fTimeInOut, fTimeInOutE, fTimeOutIn, fTimeOutInE; 
   int       fTimeNdof;
 
