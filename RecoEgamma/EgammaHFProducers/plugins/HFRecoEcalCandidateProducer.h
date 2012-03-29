@@ -19,6 +19,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "RecoEgamma/EgammaHFProducers/interface/HFRecoEcalCandidateAlgo.h"
+#include "RecoEgamma/EgammaHFProducers/interface/HFValueStruct.h"
 //#include "MagneticField/Engine/interface/MagneticField.h"
 
 class HFRecoEcalCandidateProducer : public edm::EDProducer {
@@ -26,11 +27,13 @@ public:
   explicit HFRecoEcalCandidateProducer(edm::ParameterSet const& conf);
   virtual void produce(edm::Event& e, edm::EventSetup const& iSetup);
 private:
-  edm::InputTag hfclusters_;
-  bool CorrectForPileup_;
+ edm::InputTag hfclusters_;
+  int HFDBversion_;
+  std::vector<double> HFDBvector_;
+  reco::HFValueStruct::HFValueStruct hfvars_;
+  bool doPU_; 
   HFRecoEcalCandidateAlgo algo_;
-  std::vector<double> defaultSlope_;
-  std::vector<double> defaultIntercept_; 
+  std::vector<double> defaultDB_; 
 };
 
 #endif
