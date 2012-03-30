@@ -550,6 +550,8 @@ void GraphicalOutputSimple_root::add1dPlot(
     plotCommand += addLegendEntry(legendName,dataHistName,"L3 plus ALEPH LEP 2 Data","P", nLegendEntry++);
   else if((colliderRun == "hera")&&(experiment == "h1"))
     plotCommand += addLegendEntry(legendName,dataHistName,"H1 Data","P", nLegendEntry++);
+  else if(getenv("forceLegendDataEntry")!=NULL)
+    plotCommand += addLegendEntry(legendName,dataHistName,getenv("forceLegendDataEntry"),"P", nLegendEntry++);
   else
     plotCommand += addLegendEntry(legendName,dataHistName,"Data","P", nLegendEntry++);
 
@@ -678,11 +680,17 @@ void GraphicalOutputSimple_root::add1dPlot(
       plotCommand += dataHistName+"->Draw(\"e1psame\");\n";
     }
 
+  if( distributionNumber < windowLimitsLeft.size() ) {
+
 
   if ( distributionName.find("bump in",0) == string::npos && windowLimitsLeft[distributionNumber] < windowLimitsRight[distributionNumber]) // this is for the page where we show the mass variable, not the zoom in.
     plotCommand += markRegionOnAxis(distributionCode, windowLimitsLeft[distributionNumber], windowLimitsRight[distributionNumber]);
   if (distributionName.find("bump in",0) != string::npos && windowLimitsLeft[distributionNumber-1] < windowLimitsRight[distributionNumber-1]) // this is for the page where we zoom in at the bump. The window limits are found in the previous variable, which was the whole mass variable, not just the bump.
     plotCommand += markRegionOnAxis(distributionCode, windowLimitsLeft[distributionNumber-1], windowLimitsRight[distributionNumber-1]);
+
+
+  }
+
   plotCommand += legendName+"->Draw();\n";
   plotCommand += "gPad->RedrawAxis();\n"; // to redraw ticks
   plotCommand += "// End distribution "+distributionName1+"\n";
@@ -888,7 +896,10 @@ void GraphicalOutputSimple_root::add1dPlots(
 	      pawCommand += canvasName+"->Print(\"PLOTSFILE\");\n";
 
 	      //Georgios: make additional page with bump plot, if needed.
-	      if (windowLimitsLeft[k] < windowLimitsRight[k]) {
+	      if (k < windowLimitsLeft.size() && (windowLimitsLeft[k] < windowLimitsRight[k])) {
+
+		std::cout << windowLimitsLeft[k] << " " << windowLimitsRight[k] << " " << k << " " <<
+		  windowLimitsLeft.size() << std::endl;
 		double sizeOfBump=(windowLimitsRight[k] - windowLimitsLeft[k]);
 		double sizeOfPaddingOnEachSide=1;
 		if ( getenv("graphicalSizeOfPaddingOnEachSide")!=NULL)

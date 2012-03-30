@@ -97,7 +97,7 @@ public:
   double sumPt() const; 
 
   /// Return the missing energy in the event
-  HepLorentzVector getPmiss() const;
+  CLHEP::HepLorentzVector getPmiss() const;
 
   /// Collapse this object to a string
   std::string print() const;

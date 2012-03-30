@@ -32,7 +32,7 @@ public:
 
   /***  Constructor  ***/
   QuaeroRecoObject(std::string _objectType="", 
-		   const HepLorentzVector & p = HepLorentzVector(), 
+		   const CLHEP::HepLorentzVector & p = CLHEP::HepLorentzVector(), 
 		   double _idQuality = 0);
 
   /***  Methods  ***/
@@ -77,12 +77,12 @@ public:
   static double getEventEta(std::string name, std::string objectType, double deta, double zv);
 
   /// Return a 4-vector with specified mass, transverse momentum, pseudorapidity, and azimuthal angle
-  static HepLorentzVector setLorentzVectorMPtEtaPhi(double m, double pt, double eta, double phi); 
+  static CLHEP::HepLorentzVector setLorentzVectorMPtEtaPhi(double m, double pt, double eta, double phi); 
 
   /// Perform a chi-squared constrained fit of two particles, one of which is a neutrino, to a particle of known mass
   /// Here o2 is the neutrino, with pz unknown at a hadron collider
   /// Within the standard model, the decaying particle is the W boson, with mass equal to 80.41 (in units of GeV)
-  static void ChiSqdConstrainNeutrino(const HepLorentzVector & o1, HepLorentzVector & o2, double Mass = 80.41);
+  static void ChiSqdConstrainNeutrino(const CLHEP::HepLorentzVector & o1, CLHEP::HepLorentzVector & o2, double Mass = 80.41);
 
   
   static std::string viewVariable(std::string s);

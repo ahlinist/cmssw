@@ -85,6 +85,15 @@ PartitionRule::PartitionRule(std::string _ruleType)
     pmin_leptons = 0;
     pmin_pmiss = 0;
   }
+  if(ruleType.find("noCuts")!=string::npos) {
+    pmin=0;
+    pmin_leptons = 0;
+    pmin_pmiss = 0;
+  }
+  if(ruleType.find("onlyJetCuts")!=string::npos) {
+    pmin_leptons = 0;
+    pmin_pmiss = 0;
+  }
 
   if((ruleType.find("tev2-Vista")!=string::npos)||
      (ruleType.find("tev2-Quaero")!=string::npos))
@@ -163,6 +172,20 @@ PartitionRule::PartitionRule(std::string _ruleType)
     maximumNumberOfJetsToIdentify = 2;
   if(ruleType.find("oneJetInclusive")!=string::npos)
     maximumNumberOfJetsToIdentify = 1;
+  if(ruleType.find("upTo4Jets")!=string::npos) {
+    maximumNumberOfJetsToIdentify = 4;
+    pmin=50;
+  }
+
+  std::vector<std::string> ruleTypes;
+
+  ruleTypes.push_back("lowPtDileptons");
+  ruleTypes.push_back("oneJetInclusive");
+  ruleTypes.push_back("jetInclusive");
+  ruleTypes.push_back("upTo4Jets");
+  ruleTypes.push_back("jetIgnore");
+  ruleTypes.push_back("noCuts");
+  ruleTypes.push_back("onlyJetCuts");
 
 
   if((ruleType=="lep2-Vista") ||
@@ -173,7 +196,6 @@ PartitionRule::PartitionRule(std::string _ruleType)
      (ruleType=="tev1-Quaero") ||
 
      (ruleType=="tev2-Vista") ||
-     (ruleType=="tev2-Vista-") ||
      (ruleType=="tev2-Vista-lowPtDileptons") ||
      (ruleType=="tev2-TurboSim") ||
      (ruleType=="tev2-TurboSim-jetInclusive") ||
@@ -189,14 +211,25 @@ PartitionRule::PartitionRule(std::string _ruleType)
      (ruleType=="lhc-Vista-jetInclusive") ||
      (ruleType=="lhc-Vista-oneJetInclusive") ||
      (ruleType=="lhc-Vista-jetIgnore") ||
+     (ruleType=="lhc-Vista-upTo4Jets") ||
+     (ruleType=="tev2-Vista-noCuts") ||
+     (ruleType=="lhc-Vista-noCuts") ||
+     (ruleType=="lhc-Vista-onlyJetCuts") ||
+     (ruleType=="tev2-Vista-onlyJetCuts") ||
      (ruleType=="lhc-TurboSim") ||
      (ruleType=="lhc-Sleuth") ||
 
      (ruleType=="default"))
     ruleTypeUnderstood = true;
 
-  if(!ruleTypeUnderstood)
+  if(!ruleTypeUnderstood) {
     cout << "PartitionRule rule type " << ruleType << " not understood.  Aborting." << endl;
+    cout << " Try one of the following rules : " << endl;
+    for(std::vector<std::string>::const_iterator cit = ruleTypes.begin(); cit!=ruleTypes.end(); ++cit) {
+       cout << (*cit) << endl;
+    }
+
+  }
   assert(ruleTypeUnderstood);
   std::cout << "Partition rule is " << ruleType << std::endl;
   std::cout << "Partition cuts are " << std::endl;
@@ -250,8 +283,8 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
   int mu_plus = event.numberOfObjects("mu+",pmin_leptons);
   int mu_minus = event.numberOfObjects("mu-",pmin_leptons);
 
-  int tau_plus = event.numberOfObjects("tau+",pmin);
-  int tau_minus = event.numberOfObjects("tau-",pmin);
+  int tau_plus = event.numberOfObjects("tau+",pmin_leptons);
+  int tau_minus = event.numberOfObjects("tau-",pmin_leptons);
   int ph = event.numberOfObjects("ph",pmin);
   int j = event.numberOfObjects("j",pmin);
   int b = event.numberOfObjects("b",pmin);
@@ -319,11 +352,12 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
     }
 	
       
-  HepLorentzVector pmiss = event.getPmiss();
+  CLHEP::HepLorentzVector pmiss = event.getPmiss();
 
   int met = ((pmiss.perp() > pmin_pmiss) &&
 	     (pmiss.e() > pmin_pmiss)); // 3*sqrt(sumpt));
-  if(event.collider()=="tev2")
+//Mrenna:  remove these TeV specific cuts
+  if(event.collider()=="tev2" && false )
     {
       if((event.numberOfObjects("e")==0) &&
 	 (event.numberOfObjects("mu")==0) &&
@@ -447,7 +481,7 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
 
       /*** Missing momentum should not be within deltaR<1 of one of the clustered objects ***/
       // calculate neutrino 4 vector
-      HepLorentzVector pAllVisible;
+      CLHEP::HepLorentzVector pAllVisible;
       for(size_t i=0; i<objects.size(); i++)
 	pAllVisible = pAllVisible+objects[i].getFourVector();
       double electronEnergy = 27.5; // units are GeV
@@ -459,7 +493,7 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
       double NuPtSqd = pAllVisible.perp()*pAllVisible.perp();
       double fNuE  =   (empzbal/2.) + (NuPtSqd/(2.*empzbal));
       double fNuPz =  -(empzbal/2.) + (NuPtSqd/(2.*empzbal)); // E+pz = P_T^2 / (E-Pz)  
-      HepLorentzVector ppmiss(fNuE,Hep3Vector(-pAllVisible.px(),-pAllVisible.py(),fNuPz));
+      CLHEP::HepLorentzVector ppmiss(fNuE,CLHEP::Hep3Vector(-pAllVisible.px(),-pAllVisible.py(),fNuPz));
       for(size_t i=0; i<objects.size(); i++)
 	if((objects[i].getObjectType()!="uncl")&&
 	   (objects[i].getFourVector().perp()>pmin)&&
@@ -576,7 +610,7 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
       // combine e+e- into a Z if 82<mee<100
       if((e_plus==1)&&(e_minus==1)&&(mu_plus==0)&&(mu_minus==0)&&(met==0))
 	{
-	  HepLorentzVector ee = modifiedEvent.getThisObject("e+")->getFourVector() + modifiedEvent.getThisObject("e-")->getFourVector();
+	  CLHEP::HepLorentzVector ee = modifiedEvent.getThisObject("e+")->getFourVector() + modifiedEvent.getThisObject("e-")->getFourVector();
 	  if((82<ee.m())&&(ee.m()<100))
 	    {
 	      QuaeroRecoObject zobj = QuaeroRecoObject("z",ee);
@@ -593,7 +627,7 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
 	  // combine e+e-ph into a Z if 82<meeph<100
 	  if((ee.m()<82)&&(ph==1))
 	    {
-	      HepLorentzVector eeph = 
+	      CLHEP::HepLorentzVector eeph = 
 		modifiedEvent.getThisObject("e+")->getFourVector() + 
 		modifiedEvent.getThisObject("e-")->getFourVector() + 
 		modifiedEvent.getThisObject("ph")->getFourVector();
@@ -617,7 +651,7 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
       // combine e+ met into a W if the enu transverse mass < 110 GeV
       if((e_plus+e_minus+mu_plus+mu_minus==1)&&(met==1))
 	{
-	  HepLorentzVector nu = modifiedEvent.getPmiss();
+	  CLHEP::HepLorentzVector nu = modifiedEvent.getPmiss();
 	  string w = "";
 	  string lepton="";
 	  if((e_plus==1)||(mu_plus==1))
@@ -636,8 +670,8 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
 		lepton = "mu-";
 	      w="w-";
 	    }	  
-	  HepLorentzVector l = modifiedEvent.getThisObject(lepton)->getFourVector();
-	  HepLorentzVector enu = l+nu;
+	  CLHEP::HepLorentzVector l = modifiedEvent.getThisObject(lepton)->getFourVector();
+	  CLHEP::HepLorentzVector enu = l+nu;
 	  if(enu.mt()<110)
 	    {
 	      QuaeroRecoObject::ChiSqdConstrainNeutrino(l,nu); // this function changes nu

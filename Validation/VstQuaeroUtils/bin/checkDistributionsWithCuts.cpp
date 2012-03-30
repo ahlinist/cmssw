@@ -22,6 +22,7 @@ CheckDistributions with cuts
 #include "Validation/VstQuaeroUtils/interface/JargonReduction.hh"
 #include "Validation/VstQuaeroUtils/interface/RelevantVariables.hh"
 using namespace std;
+using namespace CLHEP;
 
 //This should be a runtime parameter?
 namespace {
@@ -35,15 +36,20 @@ namespace {
 
 bool passesMyCutQ(string finalState, QuaeroEvent& e, double sumPtCut)
 {
-  if(e.sumPt()<sumPtCut)
+  if(e.sumPt()<sumPtCut) {
+    std::cout << e.sumPt() << " < " << sumPtCut << std::endl;
     return(false);
+  }
   bool ans = true;
   
-  if(false)
+  if(!ans)
     {
       ans=false;
-      HepLorentzVector o1 = e.getThisObject("e+",1)->getFourVector();  
-      HepLorentzVector o2 = e.getThisObject("e-",1)->getFourVector();  
+      CLHEP::HepLorentzVector o1 = e.getThisObject("j",1)->getFourVector();  
+      CLHEP::HepLorentzVector o2 = e.getThisObject("j",2)->getFourVector();  
+      HepLorentzVector o12 = o1 + o2;
+//      if( o12.perp() < 50.0 || o12.m()<100.0 ) return(ans);
+      if( o12.perp() < 50.0 ) return(ans);
       /*
       HepLorentzVector tau2 = e.getThisObject("tau+",2)->getFourVector();  
       HepLorentzVector e1 = e.getThisObject("e+",1)->getFourVector();  
@@ -74,11 +80,11 @@ bool passesMyCutQ(string finalState, QuaeroEvent& e, double sumPtCut)
       if(location=="pp")
 	ans = true;
       */
-      double detEta = QuaeroRecoObject::getDetectorEta("cdf", "ph", Math::theta2eta(o2.theta()), e.getZVtx());
+      /*double detEta = QuaeroRecoObject::getDetectorEta("cdf", "ph", Math::theta2eta(o2.theta()), e.getZVtx());
       if((o1.perp()>25)&&
 	 (o2.perp()>25)&&
 	 (fabs(detEta)>1.1)&&
-	 (fabs(detEta)<1.35))
+	 (fabs(detEta)<1.35)) */
 	ans = true;
     }
 
@@ -95,8 +101,8 @@ void checkDistributionsWithCuts(string baseDirectory,
 				string colliderRun, string experiment, 
 				string finalState, double sumPtCut, 
 				string jargonReductionFileName="", 
-				bool useRootForGraphics=false, 
-				int NBkgContributionsforRoot=5, 
+				bool useRootForGraphics=true, 
+				int NBkgContributionsforRoot=6, 
 				string specificDistribution="all", 
 				double multiplicativeFactor=1,
 				bool bumpHunting=false,
@@ -119,6 +125,7 @@ void checkDistributionsWithCuts(string baseDirectory,
   QuaeroItemFile<QuaeroEvent> fbkg((baseDirectory+"/"+type1+"/"+type1+"_"+finalState+".txt"));
   vector<string> sources;
   vector<double> sourcesWeight;
+  if(getenv("vistaLegendDataEntry")==NULL) setenv("forceLegendDataEntry",type2.c_str(),1);
 
   JargonReduction jargonReduction;
   if(jargonReductionFileName!="")

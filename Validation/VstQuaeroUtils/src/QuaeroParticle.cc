@@ -8,19 +8,19 @@ Bruce Knuteson 2003
 
 /*****  Constructors  *****/
 
-QuaeroParticle::QuaeroParticle(std::string _objectType, const HepLorentzVector & p): fourVector(p)
+QuaeroParticle::QuaeroParticle(std::string _objectType, const CLHEP::HepLorentzVector & p): fourVector(p)
 {
   componentType = _objectType;
 }
 
 /*****   Accessors   *****/
 
-HepLorentzVector& QuaeroParticle::getFourVector()
+CLHEP::HepLorentzVector& QuaeroParticle::getFourVector()
 {
   return(fourVector);
 }
 
-const HepLorentzVector& QuaeroParticle::getFourVector() const
+const CLHEP::HepLorentzVector& QuaeroParticle::getFourVector() const
 {
   return(fourVector);
 }
@@ -97,8 +97,8 @@ bool QuaeroParticle::approximatelyEqualTo(const QuaeroParticle& rhs, double tol)
   bool ans = true;
   if(getComponentType()!=rhs.getComponentType())
     ans = false;
-  HepLorentzVector p1 = getFourVector();
-  HepLorentzVector p2 = rhs.getFourVector();
+  CLHEP::HepLorentzVector p1 = getFourVector();
+  CLHEP::HepLorentzVector p2 = rhs.getFourVector();
   if(p1.perp()+p2.perp() > 20)
     {
       double deltaPt = 2*fabs(p1.perp()-p2.perp())/(p1.perp()+p2.perp());

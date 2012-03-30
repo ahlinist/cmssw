@@ -21,15 +21,15 @@ public:
 
   /***  Constructor  ***/
 
-  QuaeroParticle(std::string _objectType="", const HepLorentzVector & p = HepLorentzVector());
+  QuaeroParticle(std::string _objectType="", const CLHEP::HepLorentzVector & p = CLHEP::HepLorentzVector());
 
   /***  Accessors  ***/
 
   /// Return 4-vector
-  HepLorentzVector& getFourVector();
+  CLHEP::HepLorentzVector& getFourVector();
 
   /// Return 4-vector
-  const HepLorentzVector& getFourVector() const;
+  const CLHEP::HepLorentzVector& getFourVector() const;
 
   /// Return particle type
   std::string getObjectType() const;
@@ -61,7 +61,7 @@ public:
   void chargeConjugate();
 
 protected:
-  HepLorentzVector fourVector; ///< Lorentz 4-vector
+  CLHEP::HepLorentzVector fourVector; ///< Lorentz 4-vector
 
 };
 

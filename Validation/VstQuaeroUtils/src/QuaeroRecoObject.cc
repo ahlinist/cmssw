@@ -16,7 +16,7 @@ using namespace std;
 
 /*****  Constructor  *****/
 
-QuaeroRecoObject::QuaeroRecoObject(std::string _objectType, const HepLorentzVector & p, double _idQuality): QuaeroParticle(_objectType, p), idQuality(_idQuality)
+QuaeroRecoObject::QuaeroRecoObject(std::string _objectType, const CLHEP::HepLorentzVector & p, double _idQuality): QuaeroParticle(_objectType, p), idQuality(_idQuality)
 {
 }
 
@@ -223,7 +223,7 @@ double QuaeroRecoObjectType::mass(string objecttype)
 
 double QuaeroRecoObject::mass(vector<QuaeroRecoObject> objects)
 {
-  HepLorentzVector p = HepLorentzVector();  
+  CLHEP::HepLorentzVector p = CLHEP::HepLorentzVector();  
   for(size_t i=0; i<objects.size(); i++)
     p = p + objects[i].getFourVector();
   return(p.m());
@@ -460,7 +460,7 @@ bool QuaeroRecoObject::read(istream& fin, const string& format)
       if((objectType=="weirdO_emu")||(objectType=="weirdO_multiMu"))
 	objectType="kill";
 
-      *this = QuaeroRecoObject(objectType, HepLorentzVector(e, Hep3Vector(px, py, pz)), idQuality);
+      *this = QuaeroRecoObject(objectType, CLHEP::HepLorentzVector(e, CLHEP::Hep3Vector(px, py, pz)), idQuality);
     }
   return(true);
 } 
@@ -512,7 +512,7 @@ bool QuaeroRecoObject::operator==(const QuaeroRecoObject & rhs) const
 // This routine takes two HepLorentzVectors, the second of which is a neutrino (pz not specified).
 // The pz of o2 is calculated by forcing mass(o1+o2) to be as close to the input "Mass" as possible.
 
-void QuaeroRecoObject::ChiSqdConstrainNeutrino(const HepLorentzVector & o1, HepLorentzVector & o2, double Mass)
+void QuaeroRecoObject::ChiSqdConstrainNeutrino(const CLHEP::HepLorentzVector & o1, CLHEP::HepLorentzVector & o2, double Mass)
 {
   // o2 is pmiss; o1 is the sum of the other objects
   double obj1e = o1.e();
@@ -573,8 +573,8 @@ void QuaeroRecoObject::ChiSqdConstrainNeutrino(const HepLorentzVector & o1, HepL
     else
       obj2pz = 0.;
   double massbeforefitting = (o1+o2).m();
-  Hep3Vector pmiss3v = Hep3Vector(o2.px(), o2.py(), obj2pz);
-  o2 = HepLorentzVector(pmiss3v.mag(),pmiss3v);
+  CLHEP::Hep3Vector pmiss3v = CLHEP::Hep3Vector(o2.px(), o2.py(), obj2pz);
+  o2 = CLHEP::HepLorentzVector(pmiss3v.mag(),pmiss3v);
   double massafterfitting = (o1+o2).m();
   assert(
 	 Math::MPEquality(massafterfitting,Mass,0.01)||
@@ -594,7 +594,7 @@ void QuaeroRecoObject::ChiSqdConstrainNeutrino(const HepLorentzVector & o1, HepL
 double QuaeroRecoObject::getDetectorEta(string name, string objectType, double eta, double zv)
 {
 
-  if((name=="l3")||(name=="aleph")||(name=="all"))
+   if((name=="l3")||(name=="aleph")||(name=="all")||(name=="cms"))
     return(eta); // collision occurs at zvtx = 0 to very good approximation
 
   assert((name=="cdf")||
@@ -728,16 +728,16 @@ double QuaeroRecoObject::getEventEta(string name, string objectType, double deta
 
 // Set a HepLorentzVector by setting its mass, pt, eta, and phi
 
-HepLorentzVector QuaeroRecoObject::setLorentzVectorMPtEtaPhi(double m, double pt, double eta, double phi)
+CLHEP::HepLorentzVector QuaeroRecoObject::setLorentzVectorMPtEtaPhi(double m, double pt, double eta, double phi)
 {
   if(fabs(eta)>10)
-    return(HepLorentzVector(Hep3Vector(pt*cos(phi),pt*sin(phi),0),sqrt(pt*pt+m*m)));
+    return(CLHEP::HepLorentzVector(CLHEP::Hep3Vector(pt*cos(phi),pt*sin(phi),0),sqrt(pt*pt+m*m)));
   double theta = Math::eta2theta(eta);
   double p = pt/sin(theta);
   double e = sqrt(p*p+m*m);
   double px = pt*cos(phi);
   double py = pt*sin(phi);
   double pz = p*cos(theta);
-  return(HepLorentzVector(Hep3Vector(px,py,pz),e));
+  return(CLHEP::HepLorentzVector(CLHEP::Hep3Vector(px,py,pz),e));
 }
 

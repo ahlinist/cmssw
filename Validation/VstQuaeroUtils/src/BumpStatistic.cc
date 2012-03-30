@@ -370,8 +370,8 @@ void BumpStatistic::readWindowAndSidebands(const vector<double>& points, const d
     totalLeft = total = totalRight = 0;
     return;
   }
-  int initialIndex=0;
-  for(int skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
+  size_t initialIndex=0;
+  for(size_t skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
     //  if(debug) cout << "skipSize= " << skipSize << " ";
     while ( (initialIndex + skipSize) < points.size() ) {
       //	if(debug) cout << "i=" << initialIndex << " datapts.size=" << points.size() << " " << flush;
@@ -414,8 +414,8 @@ void BumpStatistic::readWindowAndSidebands(const std::vector<double>& points, co
     return;
   }
   
-  int initialIndex=0;
-  for(int skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
+  size_t initialIndex=0;
+  for(size_t skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
     //  if(debug) cout << "skipSize= " << skipSize << " ";
     while ( (initialIndex + skipSize) < points.size() ) {
       //	if(debug) cout << "i=" << initialIndex << " datapts.size=" << points.size() << " " << flush;
@@ -469,8 +469,8 @@ void BumpStatistic::readWindowCentral(const std::vector<double>& points, const s
     return;
   }
   
-  int initialIndex=0;
-  for(int skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
+  size_t initialIndex=0;
+  for(size_t skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
     //  if(debug) cout << "skipSize= " << skipSize << " ";
     while ( (initialIndex + skipSize) < points.size() ) {
       //	if(debug) cout << "i=" << initialIndex << " datapts.size=" << points.size() << " " << flush;
@@ -510,8 +510,8 @@ void BumpStatistic::readWindowJustData(const vector<double>& points, BumpCandida
     bc.qualifies=false;
     return;
   }
-  int initialIndex=0;
-  for(int skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
+  size_t initialIndex=0;
+  for(size_t skipSize = max(2,(int)points.size()/2); skipSize >= 2; skipSize /= 2) {
     //  if(debug) cout << "skipSize= " << skipSize << " ";
     while ( (initialIndex + skipSize) < points.size() ) {
       //	if(debug) cout << "i=" << initialIndex << " datapts.size=" << points.size() << " " << flush;
@@ -802,8 +802,8 @@ double BumpStatistic::spikeWeightInRegion(const vector<double>& points, const ve
   if ( points.empty() || weights.empty() ) {
     return (0);
   }
-  int initialIndex=0;
-  int skipSize = max(10,(int)points.size()/100 );
+  size_t initialIndex=0;
+  size_t skipSize = max(10,(int)points.size()/100 );
   //  if(debug) cout << "skipSize= " << skipSize << " ";
   while ( (initialIndex + skipSize) < points.size() ) {
     //  if(debug) cout << "i=" << initialIndex << " datapts.size=" << points.size() << " " << flush;
@@ -1163,7 +1163,8 @@ vector<double> BumpStatistic::trimBumpsFromData(const std::vector<double>& _data
       thisIsland.start=allBumpsJustData[i].windowStart;
       thisIsland.leftHeight=allBumpsJustData[i].dataLeft/(allBumpsJustData[i].windowStart-allBumpsJustData[i].leftBandStart);
       thisIsland.leftAveragePosition=allBumpsJustData[i].averagePositionLeft;
-      int j=i;
+//      int j=i;
+      size_t j=i;
       while(j<allBumpsJustData.size() && allBumpsJustData[j].pval <= pvalue) {
 	++j;
       }
@@ -1178,7 +1179,7 @@ vector<double> BumpStatistic::trimBumpsFromData(const std::vector<double>& _data
   if(debug) cout << "Found in total " << islands.size() << " islands." << endl;
   for(size_t i=0; i<_datapts.size(); ++i){
     bool shouldBeKept=true;
-    for(int j=0; j<islands.size(); ++j) {
+    for(size_t j=0; j<islands.size(); ++j) {
       if(islands[j].start<=_datapts[i] && _datapts[i]<=islands[j].end) {
 	shouldBeKept=false;
 	break;
@@ -1435,7 +1436,7 @@ vector<double> BumpStatistic::producePseudoDataTrialAndError(const vector<double
   }
   
   if(numOfData==-1) numOfData = Math::poisson(sum_bkg);
-  if(debug) printf("total bkg: %.1f, data to generate: %d\n", sum_bkg, numOfData);
+  if(debug) printf("total bkg: %.1f, data to generate: %d\n", sum_bkg, (int) numOfData);
   vector<double> pseudoDataPts;
   pseudoDataPts.clear();
   long int producedData = 0;
@@ -1475,7 +1476,7 @@ vector<double> BumpStatistic::producePseudoData(const vector<double>& _bkgpts, c
     biggestBkgBinContent = 0; 
     smallestBkgPosition=100000;
     biggestBkgPosition=0;
-    for (int i=0; i< _bkgpts.size(); ++i){
+    for (size_t i=0; i< _bkgpts.size(); ++i){
       sum_bkg += _bkgwt[i];
       int bkgBinNumber = (int)(_bkgpts[i]/bkgBinSize);
       assert(bkgBinNumber < nBkgBins);
@@ -1496,7 +1497,7 @@ vector<double> BumpStatistic::producePseudoData(const vector<double>& _bkgpts, c
   }
   
   if(numOfData==-1) numOfData = Math::poisson(sum_bkg);
-  if(debug) printf("total bkg: %.1f, data to generate: %d\n", sum_bkg, numOfData);
+  if(debug) printf("total bkg: %.1f, data to generate: %d\n", sum_bkg, (int) numOfData);
   vector<double> pseudoDataPts;
   pseudoDataPts.clear();
   long int producedData = 0;
@@ -1788,7 +1789,7 @@ double BumpStatistic::probabilityWithPseudoData(const double& targetPvalmin, dou
       if(nTrials==0) cout << "Trials progress:" << flush;
       int currentTime=time(0);
       if( currentTime-auxiliaryTime >= 60 ) { //report every minute
-	printf(" %d/%d=%g +- %.1f\%, ", nMoreInteresting, nTrials, fractionOfMoreInterestingPseudodata, deltaFraction/fractionOfMoreInterestingPseudodata*100);
+	printf(" %d / %d=%g +- %.1f   ", nMoreInteresting, nTrials, fractionOfMoreInterestingPseudodata, deltaFraction/fractionOfMoreInterestingPseudodata*100);
 	cout << flush;
 	auxiliaryTime=currentTime; //reset timer
       }
@@ -2042,7 +2043,7 @@ double BumpStatistic::massResolution(double mass) {
   if(internalFunctionDebug) cout << "Parentheses found at: " << openPar << ".." << closePar << endl;
 
   vector<int> commaLocations;
-  int nextComma = massVariableEffective.find(",",openPar);
+  size_t nextComma = massVariableEffective.find(",",openPar);
   while ( nextComma != string::npos ) {
     if(internalFunctionDebug) cout << "nextComma= " << nextComma << " " ;
     commaLocations.push_back(nextComma);

@@ -5,6 +5,8 @@ Bruce Knuteson 2003
 
 #include <iostream>
 #include <string>
+#include <cassert>
+#include <cstdlib>
 
 
 /*****  Constructors  *****/

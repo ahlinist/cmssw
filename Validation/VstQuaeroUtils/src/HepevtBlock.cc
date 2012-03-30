@@ -36,9 +36,9 @@ HepevtParticle::HepevtParticle():
 }
 
 
-HepLorentzVector HepevtParticle::getFourVector() const
+CLHEP::HepLorentzVector HepevtParticle::getFourVector() const
 {
-  HepLorentzVector v = HepLorentzVector(phep[3],Hep3Vector(phep[0],phep[1],phep[2]));
+  CLHEP::HepLorentzVector v = CLHEP::HepLorentzVector(phep[3],CLHEP::Hep3Vector(phep[0],phep[1],phep[2]));
   return(v);
 }
 
