@@ -264,7 +264,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
   bool useMoreSophisticatedVariables = (!useOnlyMostBasicVariables);
 
   // Fill o with all important objects in this event
-  vector<HepLorentzVector> o = vector<HepLorentzVector>(0);
+  vector<CLHEP::HepLorentzVector> o = vector<CLHEP::HepLorentzVector>(0);
   vector<double> nullVector = vector<double>(0);
   vector<string> oType = vector<string>(0);
   bool noPmissObject = true;
@@ -332,7 +332,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       // fHighPt is the 4 vector of the sum of high pt particles
 
       // derive neutrino 4 vector from unclustered energy
-      HepLorentzVector pAllVisible;
+      CLHEP::HepLorentzVector pAllVisible;
       for(size_t i=0; i<o.size(); i++)
 	if( noPmissObject || i!=pmissObject)
 	  pAllVisible = pAllVisible+o[i];
@@ -420,7 +420,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
   if( noPmissObject &&
      event.hadronMachine())
     {
-      HepLorentzVector p;
+      CLHEP::HepLorentzVector p;
       for(size_t i=0; i<o.size(); i++)
 	p = p + o[i];
       // ans.push_back(p.perp());
@@ -437,7 +437,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	ans.push_back(0);
       
       // clusteredObjectsRecoil_pt
-      HepLorentzVector clusteredObjectsRecoil = event.getPmiss();
+      CLHEP::HepLorentzVector clusteredObjectsRecoil = event.getPmiss();
       if(event.getThisObject("uncl")!=NULL)
 	clusteredObjectsRecoil = clusteredObjectsRecoil + event.getThisObject("uncl")->getFourVector();
       ans.push_back(clusteredObjectsRecoil.perp());
@@ -449,10 +449,10 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	 (oType[0]!="pmiss")&&
 	 (oType[1]!="pmiss"))
 	{	  
-	  Hep3Vector xyThrustAxis = (o[0]-o[1]).vect();
+	  CLHEP::Hep3Vector xyThrustAxis = (o[0]-o[1]).vect();
 	  xyThrustAxis.setZ(0);
 	  xyThrustAxis = xyThrustAxis.unit();
-	  Hep3Vector xyClusteredObjectsRecoil = clusteredObjectsRecoil.vect();
+	  CLHEP::Hep3Vector xyClusteredObjectsRecoil = clusteredObjectsRecoil.vect();
 	  xyClusteredObjectsRecoil.setZ(0);
 	  double clusteredObjectsRecoil_pt_T = 0;
 	  if(fabs(xyThrustAxis.x()*xyClusteredObjectsRecoil.y()-xyThrustAxis.y()*xyClusteredObjectsRecoil.x())>1e-7) // avoid a bug in this version of CLHEP 
@@ -503,8 +503,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	      o = o2;
 	  assert(o!=0);
 	  
-	  HepLorentzVector k(27.5,Hep3Vector(0,0,-27.5));
-	  HepLorentzVector k1 = o->getFourVector();
+	  CLHEP::HepLorentzVector k(27.5,CLHEP::Hep3Vector(0,0,-27.5));
+	  CLHEP::HepLorentzVector k1 = o->getFourVector();
 	  double Qsqd = -(k-k1).mag2();
 	  ans.push_back(Qsqd);
 	}
@@ -527,7 +527,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       count(oType.begin(),oType.end(),"e-")+
       count(oType.begin(),oType.end(),"mu-")==1))
     {
-      HepLorentzVector l, v;
+      CLHEP::HepLorentzVector l, v;
       for(size_t i=0; i<o.size(); i++)
 	if(oType[i]=="pmiss")
 	  v = o[i];
@@ -537,8 +537,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 		(oType[i]=="mu-"))
 	  l = o[i];
       QuaeroRecoObject::ChiSqdConstrainNeutrino(l,v);
-      HepLorentzVector w = l+v;
-      HepLorentzVector totalSystem=w;
+      CLHEP::HepLorentzVector w = l+v;
+      CLHEP::HepLorentzVector totalSystem=w;
       for(size_t i=0; i<o.size(); i++)
 	if((oType[i]!="pmiss")&&
 	   (oType[i]!="e+")&&
@@ -561,7 +561,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       ans.push_back(w.pz());
     }
 
-  vector<HepLorentzVector> jets;
+  vector<CLHEP::HepLorentzVector> jets;
   for(size_t i=0; i<o.size(); i++)
     if((oType[i]=="j")||
        (oType[i]=="b"))
@@ -570,8 +570,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
     for(size_t j=i+1; j<jets.size(); j++)
       if(jets[i].perp()<jets[j].perp())
 	swap(jets[i],jets[j]);     // put jets into pT order
-  vector<HepLorentzVector> leptons;
-  vector<HepLorentzVector> leptons_positivelyCharged;
+  vector<CLHEP::HepLorentzVector> leptons;
+  vector<CLHEP::HepLorentzVector> leptons_positivelyCharged;
   for(size_t i=0; i<o.size(); i++)
     {
       if((oType[i]=="e+")||
@@ -591,8 +591,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
   if((leptons.size()==2)&&
      (jets.size()==2))
     {
-      Hep3Vector leptonPlaneNormalVector = leptons[0].vect().cross(leptons[1].vect()).unit();
-      Hep3Vector jetPlaneNormalVector = jets[0].vect().cross(jets[1].vect()).unit();
+      CLHEP::Hep3Vector leptonPlaneNormalVector = leptons[0].vect().cross(leptons[1].vect()).unit();
+      CLHEP::Hep3Vector jetPlaneNormalVector = jets[0].vect().cross(jets[1].vect()).unit();
       double angleBetweenPlanes = fabs(acos(leptonPlaneNormalVector.dot(jetPlaneNormalVector)));
       ans.push_back(angleBetweenPlanes);
     }
@@ -600,8 +600,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
   if((leptons.size()==2)&&
      (jets.size()==1))
     {
-      Hep3Vector leptonPlaneNormalVector = leptons[0].vect().cross(leptons[1].vect()).unit();
-      Hep3Vector jetBeamPlaneNormalVector = jets[0].vect().cross(Hep3Vector(0,0,1)).unit();
+      CLHEP::Hep3Vector leptonPlaneNormalVector = leptons[0].vect().cross(leptons[1].vect()).unit();
+      CLHEP::Hep3Vector jetBeamPlaneNormalVector = jets[0].vect().cross(CLHEP::Hep3Vector(0,0,1)).unit();
       double angleBetweenPlanes = fabs(acos(leptonPlaneNormalVector.dot(jetBeamPlaneNormalVector)));
       ans.push_back(angleBetweenPlanes);
     }
@@ -609,10 +609,10 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
   if((leptons.size()==2)&&
      (leptons_positivelyCharged.size()==1))
     {
-      HepLorentzVector Z = leptons[0]+leptons[1];
-      Hep3Vector ZDirection = Z.vect().unit(); // get 3spatial component.
+      CLHEP::HepLorentzVector Z = leptons[0]+leptons[1];
+      CLHEP::Hep3Vector ZDirection = Z.vect().unit(); // get 3spatial component.
       double beta = Z.beta();
-      HepLorentzVector positivelyChargedLepton = leptons_positivelyCharged[0];
+      CLHEP::HepLorentzVector positivelyChargedLepton = leptons_positivelyCharged[0];
       positivelyChargedLepton.boost(-ZDirection,beta);
       double cosThetaStar = positivelyChargedLepton.vect().unit().dot(ZDirection);
       ans.push_back(cosThetaStar);
@@ -621,8 +621,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
   // Montreal Opal Lep 1 4-jet angle, from http://arxiv.org/pdf/hep-ex/0611048
   if((jets.size()==3))
     {
-      Hep3Vector jet01PlaneNormalVector = jets[0].vect().cross(Hep3Vector(0,0,1)).unit();
-      Hep3Vector jet23PlaneNormalVector = jets[1].vect().cross(jets[2].vect()).unit();
+      CLHEP::Hep3Vector jet01PlaneNormalVector = jets[0].vect().cross(CLHEP::Hep3Vector(0,0,1)).unit();
+      CLHEP::Hep3Vector jet23PlaneNormalVector = jets[1].vect().cross(jets[2].vect()).unit();
       double angleBetweenPlanes = fabs(acos(jet01PlaneNormalVector.dot(jet23PlaneNormalVector)));
       if(angleBetweenPlanes>M_PI/2)
 	angleBetweenPlanes = M_PI-angleBetweenPlanes;
@@ -637,13 +637,13 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       double minDeltaMjj = FLT_MAX;
       double mjj = 0;
       int theBestI=0; // it will be the index of the jet that couples best with the 0'th jet. I.e. if theBestI=2 then X_1-->02 and X_2-->13
-      HepLorentzVector allJets;
+      CLHEP::HepLorentzVector allJets;
       for(int i=0; i<4; i++)
 	allJets += jets[i]; 
       for(int i=1; i<4; i++)
 	{
-	  HepLorentzVector jj1 = jets[0]+jets[i];
-	  HepLorentzVector jj2 = allJets-jj1;
+	  CLHEP::HepLorentzVector jj1 = jets[0]+jets[i];
+	  CLHEP::HepLorentzVector jj2 = allJets-jj1;
 	  double mjj1 = fabs(jj1.m());
 	  double mjj2 = fabs(jj2.m());
 	  double deltaMjj = fabs(mjj1-mjj2);
@@ -667,8 +667,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       // allJets is already defined above
       for(int i=1; i<4; i++)
 	{
-	  HepLorentzVector jj1 = jets[0]+jets[i];
-	  HepLorentzVector jj2 = allJets-jj1;
+	  CLHEP::HepLorentzVector jj1 = jets[0]+jets[i];
+	  CLHEP::HepLorentzVector jj2 = allJets-jj1;
 	  double mjj1 = fabs(jj1.m());
 	  double mjj2 = fabs(jj2.m());
 	  double deltaMjj_20 = (fabs(mjj1-20) + fabs(mjj2-20))/2;
@@ -687,12 +687,12 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       // best match the hypothesis of XX.
       // allJets is already defined above
       
-      Hep3Vector boostDirection = allJets.vect(); // get 3spatial component.
+      CLHEP::Hep3Vector boostDirection = allJets.vect(); // get 3spatial component.
       double beta = allJets.beta();
       
-      HepLorentzVector pJcouple1member1=jets[0];
-      HepLorentzVector pJcouple1member2=jets[theBestI];
-      HepLorentzVector pJcouple2member1, pJcouple2member2;
+      CLHEP::HepLorentzVector pJcouple1member1=jets[0];
+      CLHEP::HepLorentzVector pJcouple1member2=jets[theBestI];
+      CLHEP::HepLorentzVector pJcouple2member1, pJcouple2member2;
       vector<int> thoseNotSelectedAlready;
       for(int i=1; i<4; i++)
 	if (i != theBestI) thoseNotSelectedAlready.push_back(i);
@@ -747,7 +747,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	( (count(oType.begin(),oType.end(),"mu+")==1)&&
 	  (count(oType.begin(),oType.end(),"mu-")==1) ) )
       {
-	HepLorentzVector z;
+	CLHEP::HepLorentzVector z;
 	for(size_t i=0; i<o.size(); i++)
 	  if((oType[i]=="e+")||
 	     (oType[i]=="e-")||
@@ -767,7 +767,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       if(nObs>=2) // don't use the mass of a single final state object -- only use the invariant mass of combinations 
 	if( useOnlyMostBasicVariables || (nObs<=3) )  // only use pairwise or triplet masses unless we have the full variable list
 	{
-	  HepLorentzVector o1(0,Hep3Vector(0,0,0));
+	  CLHEP::HepLorentzVector o1(0,CLHEP::Hep3Vector(0,0,0));
 	  string massType = "invariant";
 	  bool containsPmiss = false;
 	  vector<string> oType1;
@@ -903,10 +903,11 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       for(size_t i=0; i<o.size(); i++)
 	ans.push_back(o[i].phi());
       
+//MRENNA-1
       // object detector eta's
-      for(size_t i=0; i<o.size(); i++)
+/*      for(size_t i=0; i<o.size(); i++)
 	if(oType[i]!="pmiss")
-	  ans.push_back(QuaeroRecoObject::getDetectorEta("cdf",oType[i],Math::theta2eta(o[i].theta()),event.getZVtx()));
+    ans.push_back(QuaeroRecoObject::getDetectorEta("cdf",oType[i],Math::theta2eta(o[i].theta()),event.getZVtx())); */
       
       // sum eta of muon pair
       int nMu = 0;
@@ -988,7 +989,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 		  vector<int> counter = Math::getDigits(i,2,4);
 		  if(accumulate(counter.begin(),counter.end(),0)!=2)
 		    continue;
-		  HepLorentzVector p1, p2;
+		  CLHEP::HepLorentzVector p1, p2;
 		  for(size_t j=0; j<counter.size(); j++)
 		    if(counter[j]==0)
 		      p1 = p1 + o[j];
@@ -1039,7 +1040,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 		  }
 	  if(foundWindices)
 	    {
-	      HepLorentzVector objectsOtherThanW;
+	      CLHEP::HepLorentzVector objectsOtherThanW;
 	      for(size_t i=0; i<o.size(); i++)
 		if((i!=w_ki)&&(i!=w_kj))
 		  objectsOtherThanW = objectsOtherThanW + o[i];
@@ -1047,7 +1048,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	    }
 	  if(foundZindices)
 	    {
-	      HepLorentzVector objectsOtherThanZ;
+	      CLHEP::HepLorentzVector objectsOtherThanZ;
 	      for(size_t i=0; i<o.size(); i++)
 		if((i!=z_ki)&&(i!=z_kj))
 		  objectsOtherThanZ = objectsOtherThanZ + o[i];
@@ -1092,7 +1093,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       int nb = count(oType.begin(),oType.end(),"b");
       if(nj+nb>=2)
 	{
-	  HepLorentzVector p;
+	  CLHEP::HepLorentzVector p;
 	  for(size_t i=0; i<o.size(); i++)
 	    if((oType[i]=="j")||(oType[i]=="b"))
 	      p = p + o[i];
@@ -1206,7 +1207,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	count(oType.begin(),oType.end(),"mu+")+
 	count(oType.begin(),oType.end(),"mu-")==1))
       {
-	HepLorentzVector b, l, v, j;
+	CLHEP::HepLorentzVector b, l, v, j;
 	for(size_t i=0; i<oType.size(); i++)
 	  if(oType[i]=="b")
 	    b = o[i];
@@ -1218,8 +1219,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	    l = o[i];
 	QuaeroRecoObject::ChiSqdConstrainNeutrino(l,v);
 	//double mtop = 175., mw = 80.4;  // units are GeV
-	HepLorentzVector w = l+v;
-	HepLorentzVector h = j+b;
+	CLHEP::HepLorentzVector w = l+v;
+	CLHEP::HepLorentzVector h = j+b;
 	ans.push_back((w+h).m()-w.m()-h.m());
       }
 
@@ -1229,8 +1230,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
        (count(oType.begin(),oType.end(),"e+")==2)&&
        (count(oType.begin(),oType.end(),"e-")==1))
       {
-	vector<HepLorentzVector> ePlus;
-	HepLorentzVector eMinus;
+	vector<CLHEP::HepLorentzVector> ePlus;
+	CLHEP::HepLorentzVector eMinus;
 	for(size_t i=0; i<oType.size(); i++)
 	  if(oType[i]=="e+")
 	    ePlus.push_back(o[i]);
@@ -1257,9 +1258,9 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	count(oType.begin(),oType.end(),"mu+")+
 	count(oType.begin(),oType.end(),"mu-")==1))
       {
-	HepLorentzVector b, l, v;  vector<HepLorentzVector> j;
-	HepLorentzVector top_lvb, top_jjb;
-	pair<vector<HepLorentzVector>,vector<HepLorentzVector> > decayProducts;
+	CLHEP::HepLorentzVector b, l, v;  vector<CLHEP::HepLorentzVector> j;
+	CLHEP::HepLorentzVector top_lvb, top_jjb;
+	pair<vector<CLHEP::HepLorentzVector>,vector<CLHEP::HepLorentzVector> > decayProducts;
 	for(size_t i=0; i<oType.size(); i++)
 	  if(oType[i]=="b")
 	    b = o[i];
@@ -1272,16 +1273,16 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	assert(j.size()==3);
 	QuaeroRecoObject::ChiSqdConstrainNeutrino(l,v);
 	double mtop = 175., mw = 80.4;  // units are GeV
-	decayProducts.first = decayProducts.second = vector<HepLorentzVector>(3);
+	decayProducts.first = decayProducts.second = vector<CLHEP::HepLorentzVector>(3);
 	decayProducts.first[0]=l;
 	decayProducts.first[1]=v;
 	decayProducts.first[2]=b;
 	double chiSqd = FLT_MAX;
-	HepLorentzVector j123 = j[0]+j[1]+j[2];
+	CLHEP::HepLorentzVector j123 = j[0]+j[1]+j[2];
 	double chiSqd_lvb = pow((l+v+b).m()-mtop,2) + pow(j123.m()-mtop,2);
 	for(int i=0; i<3; i++)
 	  {
-	    HepLorentzVector j23 = j123-j[i];
+	    CLHEP::HepLorentzVector j23 = j123-j[i];
 	    double x = pow(j23.m()-mw,2.);
 	    if(chiSqd_lvb+x<chiSqd)
 	      {
@@ -1295,7 +1296,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	  }
 	for(int i=0; i<3; i++)
 	  {
-	    HepLorentzVector j1 = j[i], j23 = j123-j[i];	    
+	    CLHEP::HepLorentzVector j1 = j[i], j23 = j123-j[i];	    
 	    double x = pow((l+v+j1).m()-mtop,2) + pow((b+j23).m()-mtop,2) + pow(j23.m()-mw,2);
 	    if(x<chiSqd)
 	      {
@@ -1308,8 +1309,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 		top_jjb = j23+b;
 	      }
 	  }
-	HepLorentzVector ttbar = top_lvb+top_jjb;
-	HepLorentzVector t, tbar, bbar;
+	CLHEP::HepLorentzVector ttbar = top_lvb+top_jjb;
+	CLHEP::HepLorentzVector t, tbar, bbar;
 	if(count(oType.begin(),oType.end(),"e+")+
 	   count(oType.begin(),oType.end(),"mu+")==1)
 	  {
@@ -1326,8 +1327,8 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	    b = decayProducts.second[2];
 	    bbar = decayProducts.first[2];
 	  }
-	HepLorentzVector w_lv = l+v;
-	HepLorentzVector w_jj = decayProducts.second[0]+decayProducts.second[1];
+	CLHEP::HepLorentzVector w_lv = l+v;
+	CLHEP::HepLorentzVector w_jj = decayProducts.second[0]+decayProducts.second[1];
 
 	ans.push_back(chiSqd);
 	ans.push_back(v.pz());
@@ -1361,10 +1362,10 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 
   
   // deltaEta_jj
-  if((event.collider()=="tev2")&&
+  if((event.collider()=="tev2" || event.collider()=="lhc")&&
      (count(oType.begin(),oType.end(),"j")==2))
       {
-	vector<HepLorentzVector> j;
+	vector<CLHEP::HepLorentzVector> j;
 	for(size_t i=0; i<oType.size(); i++)
 	  if(oType[i]=="j")
 	    j.push_back(o[i]);
@@ -1374,10 +1375,21 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	double deltaEta_jj = Math::theta2eta(j[0].theta())-Math::theta2eta(j[1].theta());
 	ans.push_back(fabs(deltaEta_jj));
       }
+
+  // pT_jj
+  if((event.collider()=="tev2" || event.collider()=="lhc")&&
+     (count(oType.begin(),oType.end(),"j")>=2))
+  {
+     CLHEP::HepLorentzVector vpair = o[0]+o[1];
+     ans.push_back( vpair.perp() );
+  }
   
   // mass(j), mass(b)
   // mass(j)/j_pt
   // minMass(j)
+
+//MRENNA-2
+/*
   if(useOnlyMostBasicVariables &&
      ( (event.collider()=="tev2") ||
        (event.collider()=="lhc") ))
@@ -1397,7 +1409,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       if((minMass<FLT_MAX)&&(nJets>1))
 	ans.push_back(minMass);
     }
-
+*/
 
   // extremum kinematics for dileptons
   double maxEta=0, minPt=FLT_MAX;
@@ -1809,10 +1821,11 @@ vector<string> RelevantVariables::getAllVariableNamesForThisEvent(string finalst
       for(size_t i=0; i<o.size(); i++)
 	ans.push_back(o[i]+underscore+"phi");
       
+//MRENNA-1
       // object detector eta's
-      for(size_t i=0; i<o.size(); i++)
+/*      for(size_t i=0; i<o.size(); i++)
 	if(objectType[i]!="pmiss")
-	  ans.push_back(o[i]+underscore+"detEta");
+    ans.push_back(o[i]+underscore+"detEta"); */
 
       // sum eta of muon pair
       int nMu = 0;
@@ -1991,16 +2004,22 @@ vector<string> RelevantVariables::getAllVariableNamesForThisEvent(string finalst
 	ans.push_back("(W->jj)"+underscore+"pt");
 	ans.push_back("(W->jj)"+underscore+"pz");
       }
-
+ 
   // deltaEta_jj
-  if((colliderRun=="tev2")&&
+  if((colliderRun=="tev2" || colliderRun=="lhc" )&&
      (count(objectType.begin(),objectType.end(),"j")==2))
     ans.push_back("deltaEta(j1,j2)");
+
+  // pT_jj
+  if((colliderRun=="tev2" || colliderRun=="lhc" )&&
+     (count(objectType.begin(),objectType.end(),"j")>=2))
+    ans.push_back("pT(j1,j2)");
 
   // mass(j), mass(b)
   // mass(j)/j_pt
   // minMass(j)
-  if(useOnlyMostBasicVariables &&
+//MRENNA-2
+/*  if(useOnlyMostBasicVariables &&
      ( (colliderRun=="tev2") ||
        (colliderRun=="lhc") ))
     {
@@ -2014,6 +2033,7 @@ vector<string> RelevantVariables::getAllVariableNamesForThisEvent(string finalst
       if(numberOfJetsOrBjets>=2)
 	ans.push_back("minMass(j)");
     }
+*/
 
   // extremum kinematics for dileptons
   if((colliderRun=="tev2"))

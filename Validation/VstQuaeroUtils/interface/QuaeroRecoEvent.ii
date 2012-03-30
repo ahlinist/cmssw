@@ -252,14 +252,21 @@ std::string QuaeroRecoEvent<T>::collider() const
     ans = "hera";
   else if((collisionType=="ppbar")&&(Math::MPEquality(rootS,1800,0.1)))
     ans = "tev1";
-  else if((collisionType=="ppbar")&&(Math::MPEquality(rootS,1960,0.1)))
+  else if((collisionType=="pp")&&(Math::MPEquality(rootS,1960,0.2)))
+    ans = "tev2";
+  else if((collisionType=="ppbar")&&(Math::MPEquality(rootS,1960,0.2)))
     ans = "tev2";
   else if((collisionType=="pp")&&(Math::MPEquality(rootS,14000,0.1)))
     ans = "lhc";
   else if((collisionType=="pp")&&(Math::MPEquality(rootS,10000,0.1)))
     ans = "lhc";
+  else if((collisionType=="pp")&&(Math::MPEquality(rootS,7000,0.1)))
+    ans = "lhc";
   else
+    {
+    cout << "collisionType = " << collisionType << endl;
     cout << "rootS = " << rootS << endl;
+    }
   assert(ans!="");
   return(ans);
 }
@@ -301,9 +308,9 @@ void QuaeroRecoEvent<T>::reVertex(double _zVtx)
 /*********   Methods   *********/
 
 template<class T>
-HepLorentzVector QuaeroRecoEvent<T>::getPmiss() const
+CLHEP:: HepLorentzVector QuaeroRecoEvent<T>::getPmiss() const
 {
-  HepLorentzVector pmiss = HepLorentzVector(rootS, Hep3Vector(0,0,0));
+  CLHEP::HepLorentzVector pmiss = CLHEP::HepLorentzVector(rootS, CLHEP::Hep3Vector(0,0,0));
   for(size_t i=0; i<this->components.size(); i++)
     if((this->components[i].getComponentType()!="jf")&&
        (this->components[i].getComponentType()!="jb")&&
@@ -321,13 +328,13 @@ HepLorentzVector QuaeroRecoEvent<T>::getPmiss() const
        (this->components[i].getComponentType()!="qb"))
       pmiss -= this->components[i].getFourVector();
   if(hadronMachine())
-    pmiss = HepLorentzVector(Math::addInQuadrature(pmiss.px(),pmiss.py()),Hep3Vector(pmiss.px(),pmiss.py(),0.));
+    pmiss = CLHEP::HepLorentzVector(Math::addInQuadrature(pmiss.px(),pmiss.py()),CLHEP::Hep3Vector(pmiss.px(),pmiss.py(),0.));
   if(pmiss.e()<0)
-    pmiss = HepLorentzVector(0,Hep3Vector(0,0,0));
+    pmiss = CLHEP::HepLorentzVector(0,CLHEP::Hep3Vector(0,0,0));
   if(pmiss.m()<0)
     {
-      pmiss = HepLorentzVector(Math::addInQuadrature(pmiss.perp(),pmiss.pz()),
-                               Hep3Vector(pmiss.px(),pmiss.py(),pmiss.pz()));
+      pmiss = CLHEP::HepLorentzVector(Math::addInQuadrature(pmiss.perp(),pmiss.pz()),
+                               CLHEP::Hep3Vector(pmiss.px(),pmiss.py(),pmiss.pz()));
     }
   return(pmiss);
 }
@@ -492,7 +499,7 @@ bool QuaeroRecoEvent<T>::approximatelyEqualTo(const QuaeroRecoEvent<T>& rhs, dou
 template<class T>
 void QuaeroRecoEvent<T>::mergeObjectsOfThisType(std::string objectType)
 {
-  HepLorentzVector v = HepLorentzVector();
+  CLHEP::HepLorentzVector v = CLHEP::HepLorentzVector();
   for(size_t i=0; i<this->components.size(); i++)
     if(this->components[i].getObjectType()==objectType)
       {
@@ -500,7 +507,7 @@ void QuaeroRecoEvent<T>::mergeObjectsOfThisType(std::string objectType)
 	this->components.erase(this->components.begin()+i);
 	i--;
       }
-  if(v!=HepLorentzVector())
+  if(v!=CLHEP::HepLorentzVector())
     this->components.push_back(T(objectType,v));
   return;
 }

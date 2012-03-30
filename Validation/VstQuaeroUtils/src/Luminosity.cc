@@ -6,6 +6,7 @@ Bruce Knuteson 2003
 
 #include "Validation/VstQuaeroUtils/interface/Luminosity.hh"
 #include <cassert>
+#include <cstdlib>
 using namespace std;
 
 /***  Constructors  ***/

@@ -21,7 +21,7 @@ void refine(int level, double minWt, string collider, string experiment, vector<
   Refine refine(collider, experiment, partitionRuleName, level);
   refine.setMinWt(fabs(minWt));
   double runningWeight = 0;
-  for(int i=0; i<inputFilenames.size(); i++)
+  for(size_t i=0; i<inputFilenames.size(); i++)
     {
       QuaeroItemFile<QuaeroEvent> ef(inputFilenames[i]);
       QuaeroEvent e;

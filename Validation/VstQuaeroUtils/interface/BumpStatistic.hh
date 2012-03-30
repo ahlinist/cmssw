@@ -5,6 +5,7 @@ Georgios Choudalakis, September 2006
 
 #include <vector>
 #include <string>
+#include <limits>
 
 class BumpStatistic
 {

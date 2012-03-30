@@ -12,7 +12,7 @@ class HepevtParticle
   friend std::ostream& operator<<(std::ostream&, const HepevtParticle&);
 public:
   HepevtParticle();
-  HepLorentzVector getFourVector() const;
+  CLHEP::HepLorentzVector getFourVector() const;
 
 public:
   int isthep, idhep;
