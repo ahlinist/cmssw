@@ -5,7 +5,7 @@
 // 
 /**\class Ntuple2txt Ntuple2txt.cc Validation/VstNtuple2txt/src/Ntuple2txt.cc
 
- Description: Converts HepMC info to (text file)
+ Description: Converts CLHEP::HepMC info to (text file)
    Vista file
 
  Implementation:
@@ -14,7 +14,7 @@
 //
 // Original Author:  Stephen Mrenna
 //         Created:  Wed Oct 10 12:52:50 CDT 2007
-// $Id: VstNtuple2txt.cc,v 1.2 2008/07/03 17:17:08 mrenna Exp $
+// $Id: VstNtuple2txt.cc,v 1.3 2008/11/04 16:41:56 mrenna Exp $
 //
 //
 
@@ -27,16 +27,18 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Framework/interface/DataViewImpl.h"
+//#include "FWCore/Framework/interface/DataViewImpl.h"
 #include "FWCore/Framework/interface/Run.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/Particle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
 #include "DataFormats/Candidate/interface/CandMatchMap.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/RefProd.h"
@@ -44,16 +46,16 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
+//#include "PhysicsTools/UtilAlgos/interface/ObjectSelector.h"
 
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
-#include "SimDataFormats/HepMCProduct/interface/GenInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 
-//#include "HepMC/GenParticle.h"
-//#include "HepMC/GenEvent.h"
-//#include "HepMC/GenVertex.h"
+
+
+//#include "CLHEP::HepMC/GenParticle.h"
+//#include "CLHEP::HepMC/GenEvent.h"
+//#include "CLHEP::HepMC/GenVertex.h"
 
 #include "Validation/VstTurboSim/interface/QuaeroPartonObject.hh"
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
@@ -61,8 +63,8 @@
 //#include "CLHEP/Vector/ThreeVector.h"
 #include <iostream>
 #include <fstream>
-//#include "Validation/VstTurboSim/interface/hepevt2parton.hh"
-//#include "Validation/VstQuaeroUtils/interface/HepevtBlock.hh"
+//#include "Validatio/VstTurboSim/interface/hepevt2parton.hh"
+//#include "Validation/VstQuaeroUtils/interface/CLHEP::HepevtBlock.hh"
 #include <sstream>
 
 
@@ -70,8 +72,8 @@
 // class declaration
 //
 
-//void hepevt2partonEvent(ofstream& , const HepevtEvent& );
-//void stdhep2partonWrapSimple(std::string, const HepevtEvent& );
+//void hepevt2partonEvent(ofstream& , const CLHEP::HepevtEvent& );
+//void stdhep2partonWrapSimple(std::string, const CLHEP::HepevtEvent& );
 
 
 
@@ -80,7 +82,7 @@
 #include <set>
 #include <algorithm>
 //namespace edm { class ParameterSet; }
-//namespace HepMC { class GenParticle; class GenEvent; }
+//namespace CLHEP::HepMC { class GenParticle; class GenEvent; }
 //namespace reco { class GenParticleCandidate; }
 
 ///using namespace edm;
@@ -107,6 +109,7 @@ private:
   int numberOfEvents_;
   edm::RunNumber_t thisRun_;
   edm::ESHandle<ParticleDataTable> pdt_;
+  bool inclusiveNames_;
       // ----------member data ---------------------------
 };
 
@@ -124,11 +127,22 @@ private:
 Ntuple2txt::Ntuple2txt(const edm::ParameterSet& iConfig) :
   fileName_(iConfig.getParameter<std::string>("fileName_"))
 ,
-  outputFile_(fileName_.c_str()) 
+  outputFile_(fileName_.c_str()) , inclusiveNames_(true)
 {
   if(!outputFile_.good()) {
     std::cerr << " Cannot open file " << std::endl;
   }
+  //check optional parameters includeList and excludeList
+  const std::string incNames("inclusiveNames");
+  std::vector<std::string> vBoolParams = iConfig.getParameterNamesForType<bool>();
+  std::cout << vBoolParams.size() << std::endl;
+  for( std::vector<std::string>::const_iterator cit=vBoolParams.begin(); cit!=vBoolParams.end(); ++cit) {
+     std::cout << (*cit) << std::endl;
+     std::cout << iConfig.getParameter<bool>( (*cit) ) << std::endl;
+  }
+  // check for include list
+  bool found = std::find( vBoolParams.begin(), vBoolParams.end(), incNames) != vBoolParams.end();
+  if ( found ) inclusiveNames_ = iConfig.getParameter<bool>( incNames );  
 }
 
 
@@ -150,10 +164,15 @@ void
 Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  numberOfEvents_++;
   //Handle<reco::CandidateCollection> genParticles;
   Handle<reco::GenParticleCollection> genParticles;
-  iEvent.getByLabel("genParticles",genParticles);
+
+  try {
+     iEvent.getByLabel("genParticles",genParticles);
+   } catch (std::exception& ex) {
+     return;
+   }
+  numberOfEvents_++;
 
   Handle<reco::CandidateCollection> particles;
   iEvent.getByLabel ("mergerVst",particles);
@@ -175,16 +194,16 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // used parton ids in jets to get jet type
 //  size_t psize = jetParticles->size();
   size_t psize = generatorJet->size();
-  std::vector<HepLorentzVector> newJets;
+  std::vector<CLHEP::HepLorentzVector> newJets;
   std::vector<int> jetId;
   std::vector<double> partonPt;
   for( reco::GenJetCollection::const_iterator it = generatorJet->begin(); it!= generatorJet->end(); ++it) {
     //create a 0 vector for all jets
-    newJets.push_back(HepLorentzVector(it->px(),it->py(),it->pz(),it->energy()));
+    newJets.push_back(CLHEP::HepLorentzVector(it->px(),it->py(),it->pz(),it->energy()));
     jetId.push_back(0);
     partonPt.push_back(0.0);
 /*
-//    newJets.push_back(HepLorentzVector(0,0,0,0));
+//    newJets.push_back(CLHEP::HepLorentzVector(0,0,0,0));
     //get mc particles in jet
     std::vector<const reco::GenParticleCandidate*> mcparts = it->getConstituents();
     std::vector<const reco::GenParticleCandidate*>::const_iterator mcbegin = mcparts.begin(); 
@@ -220,7 +239,7 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		<< " mass = " << cref->mass() << " " << newJets[f->val.key()].perp();
 		std::cout << " [*]" << std::endl; 
       }
-//      newJets[f->val.key()] += HepLorentzVector(cref->px(),cref->py(),cref->pz(),cref->energy());
+//      newJets[f->val.key()] += CLHEP::HepLorentzVector(cref->px(),cref->py(),cref->pz(),cref->energy());
     }
     //    std::cout << std::endl;
   }
@@ -230,7 +249,7 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::string printFormat = "(m)-pt-eta-phi(deg)";
 
-  HepLorentzVector rootS = HepLorentzVector(0,0,0,0);
+  CLHEP::HepLorentzVector rootS = CLHEP::HepLorentzVector(0,0,0,0);
   double genSumPt = 0.0;
   std::string process_id="";
 
@@ -245,41 +264,49 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //  for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
   for( reco::GenParticleCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
     if(imc->status()==1) {
-      rootS += HepLorentzVector(imc->px(),imc->py(),imc->pz(),imc->energy());
+      rootS += CLHEP::HepLorentzVector(imc->px(),imc->py(),imc->pz(),imc->energy());
       genSumPt += imc->pt();
-    } else if (imc->status()==3) {
+    } else if (imc->status()>=3 && imc->status()<30 ) {
       int nMo = imc->numberOfMothers();
       // check if mothers are 4 and 5?
       if(nMo != 0) {
-	int iMo1=-1;
-        int iMo2=-1;
-	found = find(mcands.begin(), mcands.end(), imc->mother(0));
-	if(found != mcands.end()) iMo1 = found - mcands.begin() ;
-	found = find(mcands.begin(), mcands.end(), imc->mother(nMo-1));
-	if(found != mcands.end()) iMo2 = found - mcands.begin() ;
+         int iMo1=-1;
+         int iMo2=-1;
+         found = find(mcands.begin(), mcands.end(), imc->mother(0));
+         if(found != mcands.end()) iMo1 = found - mcands.begin() ;
+         found = find(mcands.begin(), mcands.end(), imc->mother(nMo-1));
+         if(found != mcands.end()) iMo2 = found - mcands.begin() ;
 
-	if( iMo1==4 || iMo2==5 ) {
+         if( (imc->status()==3 && (iMo1==4 || iMo2==5))||(imc->status()>21) ) {
 
 // Particle Name
-	  int id = imc->pdgId();
+//   add mod to account for SUSY particles
+            int id = imc->pdgId() % 1000000;
 	  // is this causing some trouble?
-	  const ParticleData * pd = pdt_ ->particle(id);
+//	  const ParticleData * pd = pdt_ ->particle(id);
 	  //std::string particleName = "";
-	  std::string particleName = pd == 0 ? "???" : pd->name();
-	  if( abs(id)<6 || abs(id)==21 ) particleName = "j";
-	  if( id==6 ) particleName = "t";
-	  if( id==-6 ) particleName = "tb";
-	  if( abs(id)==23 ) particleName = "Z0";
-	  if( id==24 ) particleName = "Wp";
-	  if( id==-24 ) particleName = "Wm";
-	  if( id==22 ) particleName = "A";
-	  process_id += particleName;
-	  /*	if( process_id == "" ) {
-	    process_id += particleName;
-	    } else {
-	    process_id += '_'+particleName;
-	    } */
-	}
+//	  std::string particleName = pd == 0 ? "???" : pd->name();
+            std::string particleName;
+            if(inclusiveNames_ && (abs(id)<6 || abs(id)==21) ) {
+               particleName = "j";
+            }
+            else if( abs(id)<6  ) 
+               particleName = "q";
+            else if( abs(id)==21 ) 
+               particleName = "g";
+            if( id==6 ) particleName = "T";
+            if( id==-6 ) particleName = "UU";
+            if( abs(id)==23 ) particleName = "ZZ";
+            if( id==24 ) particleName = "WW";
+            if( id==-24 ) particleName = "XX";
+            if( id==22 ) particleName = "A";
+            process_id += particleName;
+            /*	if( process_id == "" ) {
+              process_id += particleName;
+              } else {
+              process_id += '_'+particleName;
+              } */
+         }
       } 
     } 
   }
@@ -293,7 +320,39 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(idx< 10 && nMo>0) {
 	std::cout << " * " << idx << " " << imc->pdgId() << " " << imc->status() << " " << imc->mother(0)->status() << " " << imc->mother(0)->pdgId() << std::endl;
       }
-    } 
+    }
+  }
+  else {
+     std::string s(process_id.begin(),process_id.end());
+     sort( s.begin(), s.end() );
+
+     size_t result = s.find("T");
+     while (result != std::string::npos) {
+        s.replace(result,1,"t");
+        result = s.find("T");
+     }
+     result = s.find("UU");
+     while (result != std::string::npos) {
+        s.replace(result,2,"tb");
+        result = s.find("UU");
+     }
+     result = s.find("ZZ");
+     while (result != std::string::npos) {
+        s.replace(result,2,"Z0");
+        result = s.find("ZZ");
+     }
+     result = s.find("WW");
+     while (result != std::string::npos) {
+        s.replace(result,2,"Wp");
+        result = s.find("WW");
+     }
+     result = s.find("XX");
+     while (result != std::string::npos) {
+        s.replace(result,2,"Wm");
+        result = s.find("XX");
+     }
+     process_id = s;
+
   }
   double energyCMS = rootS.e();
   if( fabs(energyCMS-14000) < .01 ) energyCMS = 14000;
@@ -323,7 +382,7 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       objectType="ph";
     }
 
-    hepEvtStream << QuaeroPartonObject(objectType,HepLorentzVector(p->px(),p->py(),p->pz(),p->energy())).print(printFormat) << " ";
+    hepEvtStream << QuaeroPartonObject(objectType,CLHEP::HepLorentzVector(p->px(),p->py(),p->pz(),p->energy())).print(printFormat) << " ";
   }
 
   // add this in later --> maybe just treat as a jet!
@@ -332,7 +391,7 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   /*  for( reco::GenJetCollection::const_iterator p  = tauJet->begin();
        p != tauJet->end(); ++p) {
     std::string objectType="tau";
-    hepEvtStream << QuaeroPartonObject(objectType,HepLorentzVector(p->px(),p->py(),p->pz(),p->energy())).print(printFormat) << " ";
+    hepEvtStream << QuaeroPartonObject(objectType,CLHEP::HepLorentzVector(p->px(),p->py(),p->pz(),p->energy())).print(printFormat) << " ";
     }*/
 
   for( size_t c = 0; c != psize; ++ c ) {
@@ -352,7 +411,8 @@ Ntuple2txt::beginJob(const edm::EventSetup& e)
 {
   using namespace edm;
 
-  e.getData( pdt_ );
+//  e.getData( pdt_ );
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -370,12 +430,12 @@ void Ntuple2txt::beginRun(const edm::Run & r, const edm::EventSetup & e) {
   thisRun_ = r.run();
   std::cout << "Run number is " << thisRun_ << std::endl;
 
-  Handle< GenInfoProduct > gi;
+  Handle< GenRunInfoProduct > gi;
   if( r.getByLabel("source", gi) ) {
 
-    double auto_cross_section = gi->cross_section(); 
+     double auto_cross_section = gi->internalXSec();
 // calculated at the end of RUN --  units in nb
-    double external_cross_section = gi->external_cross_section(); 
+     double external_cross_section = gi->externalXSecLO();
 // is the precalculated one written in the cfg file -- units is pb
 
     std::cout << auto_cross_section << " " << external_cross_section << std::endl;

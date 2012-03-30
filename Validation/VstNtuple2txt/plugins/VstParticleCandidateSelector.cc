@@ -50,6 +50,8 @@ class VstParticleCandidateSelector : public edm::EDProducer {
   bool stableOnly_;
   /// output string for debug
   std::string caseString_;
+      /// 
+
   /// set of excluded particle id's
   std::set<int> pIds_;
   double ptMinParticle_;
@@ -58,6 +60,7 @@ class VstParticleCandidateSelector : public edm::EDProducer {
   double etaMaxShower_;
   /// verbose flag
   bool verbose_;
+  bool unDoLeptonRadiation;
 };
 
 
@@ -83,7 +86,9 @@ VstParticleCandidateSelector::VstParticleCandidateSelector( const ParameterSet &
   ptMinShower_( p.getUntrackedParameter<double>( "ptMinShower" ,1.0 )),  
   etaMaxParticle_( p.getUntrackedParameter<double>( "etaMaxParticle" ,5.0 )),  
   etaMaxShower_( p.getUntrackedParameter<double>( "etaMaxShower" ,5.0 )),  
-  verbose_( p.getUntrackedParameter<bool>( "verbose" ) ) {
+  verbose_( p.getUntrackedParameter<bool>( "verbose" ) ),
+  unDoLeptonRadiation(false)
+{
 
   produces<CandidateCollection>(electronCollection);
   produces<CandidateCollection>(muonCollection);
@@ -104,6 +109,13 @@ VstParticleCandidateSelector::VstParticleCandidateSelector( const ParameterSet &
   // check for exclude list
   found = std::find( vPdtParams.begin(), vPdtParams.end(), excludeString) != vPdtParams.end();
   if ( found ) excludeList = p.getParameter<vpdt>( excludeString );
+
+  vector<string> boolParams = p.getParameterNamesForType<bool>();
+  const std::string leptonRadiation("unDoLeptonRadiation");
+  
+  found = std::find( boolParams.begin(), boolParams.end(), leptonRadiation ) != boolParams.end();
+
+  if ( found ) unDoLeptonRadiation = p.getParameter<bool>( leptonRadiation );
 
 
   // checking configuration cases
@@ -159,6 +171,16 @@ void VstParticleCandidateSelector::produce( Event& evt, const EventSetup& ) {
   auto_ptr<CandidateCollection> otherStableVst( new CandidateCollection );
 
 
+// map the pointers
+  std::vector<const reco::Candidate *> cands;
+  std::vector<const Candidate *>::const_iterator found = cands.begin();
+  for(GenParticleCollection::const_iterator p = particles->begin();
+      p != particles->end(); ++ p) {
+     cands.push_back(&*p);
+  }
+
+
+
   //  for( CandidateCollection::const_iterator p = particles->begin();
   // Change 2.
   for( GenParticleCollection::const_iterator p = particles->begin(); 
@@ -175,42 +197,78 @@ void VstParticleCandidateSelector::produce( Event& evt, const EventSetup& ) {
       // CandidateBaseRef ref( CandidateRef( particles, idx ) );
       CandidateBaseRef ref( GenParticleRef( particles, idx ) );
       if( idabs == 11 || idabs == 13) {
-	if( nMo>0 && ( p->mother(0)->status()==3 || abs(p->mother(0)->pdgId())==idabs || 
-		       abs(p->mother(0)->pdgId())==15 ) ) {
-	  if( idabs == 11 ) {
-	    electronVst->push_back( new ShallowCloneCandidate( ref ) );
-	  } else {
-	    muonVst->push_back( new ShallowCloneCandidate( ref ) );
-	  }
-	} else {
-	  otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
-	}
+
+         if(unDoLeptonRadiation && nMo>0) {
+
+            size_t c=idx;
+            found = find(cands.begin(), cands.end(), p->mother(0));
+            if(found != cands.end()) c = found - cands.begin() ;
+            CandidateBaseRef tref( GenParticleRef( particles, c ) );
+            
+//            if( tref->pdgId() == p->pdgId() && tref->status()== 3 ) ref = tref;
+            if( tref->pdgId() == p->pdgId() && tref->status()>= 3 ) ref = tref;
+
+         }
+
+
+
+//         if( nMo>0 && ( p->mother(0)->status()==3 || abs(p->mother(0)->pdgId())==idabs ) ) {
+         if( nMo>0 && ( p->mother(0)->status()>=3 || abs(p->mother(0)->pdgId())==idabs ) ) {
+            if( idabs == 11 ) {
+               electronVst->push_back( new ShallowCloneCandidate( ref ) );
+            } else {
+               muonVst->push_back( new ShallowCloneCandidate( ref ) );
+            }
+         } else if ( nMo>0 && abs(p->mother(0)->pdgId())==15 ) {
+            const reco::Candidate *ptau = p->mother(0);
+            if( ptau->numberOfMothers() > 0 ) {
+               const reco::Candidate *pmom = ptau->mother(0);
+               int amomId = abs(pmom->pdgId());
+               if( (amomId>400 && amomId<600) || (amomId>4000 && amomId<6000) ) {
+                  otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
+               } else {
+                  if( idabs == 11 ) {
+                     electronVst->push_back( new ShallowCloneCandidate( ref ) );
+                  } else {
+                     muonVst->push_back( new ShallowCloneCandidate( ref ) );
+                  }
+               }
+               
+            } else {
+               otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
+            }
+         } else {
+            otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
+         }
 	// I am not satisfied with this 
 	// probably won't work for tauola
 	// probably won't work if rho->pi pi in tau decay products
 	//      } else if ( (nMo>0 && abs(p->mother(0)->pdgId() )==15) && idabs!=12 && idabs!=14 && idabs!=16) {
 	//	tauVst->push_back( new ShallowCloneCandidate( ref ) );
       } else if ( idabs==22 ) {
-	if( p->mother(0)->status()==3 || abs(p->mother(0)->pdgId())==11  || abs(p->mother(0)->pdgId())==13 || 
-	    abs(p->mother(0)->pdgId())==15 || abs(p->mother(0)->pdgId())<7) {
-	  photonVst->push_back( new ShallowCloneCandidate( ref ) );
-	} else {
-	  otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
-	}
-      } else if( idabs!=12 && idabs!=14 && idabs!=16) {
-	otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
-      }
-    } else if ( p->status() == 2 ) {
-      if ( nDa > 0 && ( p->daughter(0)->pdgId() == 91 || p->daughter(0)->pdgId() == 92 ||
-					   p->daughter(0)->pdgId() == 93) ) {
-	if(p->pt() > ptMinShower_ && fabs(p->eta())<etaMaxShower_) {
-	  //          CandidateBaseRef ref( CandidateRef( particles, idx ) );
-          CandidateBaseRef ref( GenParticleRef( particles, idx ) );
-          partonShowerVst->push_back( new ShallowCloneCandidate( ref ) );
-	}
-      }
-    }
 
+//         if( p->mother(0)->status()==3 || abs(p->mother(0)->pdgId())==11  || abs(p->mother(0)->pdgId())==13 || 
+         if( p->mother(0)->status()>=3 || abs(p->mother(0)->pdgId())==11  || abs(p->mother(0)->pdgId())==13 || 
+             abs(p->mother(0)->pdgId())==15 || abs(p->mother(0)->pdgId())<7) {
+            if( !unDoLeptonRadiation ) photonVst->push_back( new ShallowCloneCandidate( ref ) );
+         } else {
+            otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
+         }
+      } else if( idabs!=12 && idabs!=14 && idabs!=16) {
+         otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
+      }
+//    } else if ( p->status() == 2 ) {
+    } else if ( p->status() == 2 || ( p->status()>70 && p->status()<80) ) {
+       if ( nDa > 0 && ( p->daughter(0)->pdgId() == 91 || p->daughter(0)->pdgId() == 92 ||
+                          p->daughter(0)->pdgId() == 93 || p->status()>70 ) ) {
+          if(p->pt() > ptMinShower_ && fabs(p->eta())<etaMaxShower_) {
+	  //          CandidateBaseRef ref( CandidateRef( particles, idx ) );
+             CandidateBaseRef ref( GenParticleRef( particles, idx ) );
+             partonShowerVst->push_back( new ShallowCloneCandidate( ref ) );
+          }
+       }
+    }
+    
   }
 
   evt.put( electronVst,electronCollection);
