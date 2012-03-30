@@ -1,0 +1,8 @@
+<use   name="hepmc"/>
+<use   name="ktjet"/>
+<use   name="clhep"/>
+<use   name="Validation/VstMathUtils"/>
+<use   name="Validation/VstQuaeroUtils"/>
+<export>
+  <lib   name="ValidationVstTurboSim"/>
+</export>

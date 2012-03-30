@@ -1,0 +1,4 @@
+<use   name=""/>
+<bin   name="randomPoisson" file="randomPoisson.cpp">
+  <use   name="Validation/VstMathUtils"/>
+</bin>
