@@ -2,6 +2,7 @@
 #define __ExpectedEvidence
 
 #include <string>
+#include <cassert>
 
 class ExpectedEvidence
 {
