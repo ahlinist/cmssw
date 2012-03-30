@@ -1,0 +1,9 @@
+<use   name="clhep"/>
+<use   name="Validation/VstOptimalBinning"/>
+<use   name="Validation/VstFewKDE"/>
+<use   name="Validation/VstMathUtils"/>
+<use   name="Validation/VstQuaeroUtils"/>
+<use   name="gsl"/>
+<export>
+  <lib   name="ValidationVstQuaero"/>
+</export>
