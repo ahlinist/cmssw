@@ -57,7 +57,8 @@ void GlobalLikelihood::unflattenParameters(vector<double>& wt, vector<vector<dou
 {
   int n = x.size()/(1+d+d);
   assert(x.size()%n==0);
-  int k=0;
+//  int k=0;
+  size_t k=0;
   wt = vector<double>(n);
   mu = vector<vector<double> >(n, vector<double>(d));
   sigma = vector<vector<vector<double> > >(n,vector<vector<double> >(d,vector<double>(d)));
@@ -99,7 +100,7 @@ double GlobalLikelihood::operator()(const vector<double>& x)
 
   vector<double> sumPerKernel(n), sumSqdPerKernel(n);
   double ans = 0.;
-  for(int i=0; i<data.size(); i++)
+  for(size_t i=0; i<data.size(); i++)
     {
       double x = max(kernelEstimate.evaluate(data[i]),1e-10);
       ans += wt[i]*log(x);
@@ -135,7 +136,7 @@ FewKDE::FewKDE(const std::vector<double>& _weights, const std::vector<Kernel>& _
 {
   n = _weights.size();
   setNFewKdeTrials();
-  assert(n==_kernels.size());
+  assert((size_t) n==_kernels.size());
   weights = _weights;
   double totalWeight = 0.;
   for(int i=0; i<n; i++)
@@ -154,9 +155,9 @@ FewKDE::FewKDE(double w1, const FewKDE& ke1, double w2, const FewKDE& ke2)
   vector<Kernel> kernels = ke1.kernels;
   kernels.insert(kernels.end(), ke2.kernels.begin(), ke2.kernels.end());
   vector<double> weights;
-  for(int i=0; i<ke1.weights.size(); i++)
+  for(size_t i=0; i<ke1.weights.size(); i++)
     weights.push_back(w1*ke1.weights[i]);
-  for(int i=0; i<ke2.weights.size(); i++)
+  for(size_t i=0; i<ke2.weights.size(); i++)
     weights.push_back(w2*ke2.weights[i]);
   *this = FewKDE(weights,kernels);
 }
@@ -184,7 +185,7 @@ void FewKDE::enclose(const std::vector<std::vector<double> >& data)
   for(int i=0; i<d; i++)
     {
       dataTranspose[i] = vector<double>(data.size());
-      for(int j=0; j<data.size(); j++)
+      for(size_t j=0; j<data.size(); j++)
 	dataTranspose[i][j] = data[j][i];
     }
   for(int i=0; i<d; i++)
@@ -235,13 +236,13 @@ void FewKDE::derive(const vector<vector<double> >& data,
     wt = vector<double>(data.size(),1);
   assert(wt.size()==data.size());
   double totalWeight = 0;
-  for(int i=0; i<wt.size(); i++)
+  for(size_t i=0; i<wt.size(); i++)
     {
       assert(wt[i]>=0);
       totalWeight += wt[i];
     }
   assert(totalWeight>0);
-  for(int i=0; i<wt.size(); i++)
+  for(size_t i=0; i<wt.size(); i++)
     wt[i] /= totalWeight;
 
   enclose(data);
@@ -289,10 +290,10 @@ void FewKDE::derive(const vector<vector<double> >& data,
 	      weights = wt;
 	      n = weights.size();
 	      totalWeight = Math::computeSum(weights);
-	      for(int i=0; i<weights.size(); i++)
-		weights[i] /= totalWeight;
+	      for(size_t i=0; i<weights.size(); i++)
+             weights[i] /= totalWeight;
 	      for(int i=0; i<n; i++)
-		kernels.push_back(Kernel(mu[i],sigma[i],boundaries));
+             kernels.push_back(Kernel(mu[i],sigma[i],boundaries));
 	    }
 	}
       // cout << endl;
