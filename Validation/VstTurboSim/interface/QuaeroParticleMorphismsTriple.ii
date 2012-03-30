@@ -71,7 +71,7 @@ void QuaeroParticleMorphismsTriple<T1,T2>::shimmy(vector<T2>& result, const std:
 {
   if(closestKey0.size()==0) // no tree found with this name
     {
-      HepLorentzVector v = HepLorentzVector();
+      CLHEP::HepLorentzVector v = CLHEP::HepLorentzVector();
       for(size_t i=0; i<targetKey0.size(); i++)
         v += targetKey0[i].getFourVector();
       result = vector<T2>(1,T2("j",v));
@@ -102,7 +102,7 @@ void QuaeroParticleMorphismsTriple<T1,T2>::shimmy(vector<T2>& result, const std:
       result[i] = T2(result[i].getObjectType(),
 		     QuaeroRecoObject::setLorentzVectorMPtEtaPhi(result[i].getFourVector().m(),
 					       max(0.,result[i].getFourVector().perp()+nearbyTargetKey.getFourVector().perp()-nearbyClosestKey.getFourVector().perp()),
-					       QuaeroRecoObject::getEventEta("cdf",result[i].getObjectTypeSansSign(), Math::theta2eta(result[i].getFourVector().theta()),zvtx)+(Math::theta2eta(nearbyTargetKey.getFourVector().theta())-Math::theta2eta(nearbyClosestKey.getFourVector().theta())),
+					       QuaeroRecoObject::getEventEta("cms",result[i].getObjectTypeSansSign(), Math::theta2eta(result[i].getFourVector().theta()),zvtx)+(Math::theta2eta(nearbyTargetKey.getFourVector().theta())-Math::theta2eta(nearbyClosestKey.getFourVector().theta())),
 					       result[i].getFourVector().phi()+(nearbyTargetKey.getFourVector().phi()-nearbyClosestKey.getFourVector().phi()) 
 					       ));
     }

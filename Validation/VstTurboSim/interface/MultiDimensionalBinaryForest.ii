@@ -40,11 +40,14 @@ findClosest( T0 treeName,
 template<class T0, class T1, class T2>
 void MultiDimensionalBinaryForest<T0,T1,T2>::
 clear() {
-
+  //   std::cout << "in forest clear " << endl;
+  //Mrenna
    for ( size_t i = 0; i < trees.size(); i++ )
-      trees[ i ].clear();
+     trees[ i ].clear();  
    trees.clear();
+   std::cout << "in forest clear 1 " << endl;
    treeNames.clear();
+   std::cout << "in forest clear 2 " << endl;
 }
 
 

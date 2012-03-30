@@ -108,7 +108,7 @@ Add( const T1& key,
 	     setLorentzVectorMPtEtaPhi( value[i].getFourVector().m(),
 					value[i].getFourVector().perp(),
 					QuaeroRecoObject::
-					getDetectorEta( "cdf",
+					getDetectorEta( "cms",
 							value[i].getObjectTypeSansSign(),
 							Math::
 							theta2eta( value[i].getFourVector().theta() ),
@@ -192,7 +192,7 @@ getKey( const T1& quaeroParticle, double zvtx ) {
     std::vector< double > targetKey = 
       std::vector< double >( dimensions );
    targetKey[0] = quaeroParticle.getFourVector().perp();
-   targetKey[1] = QuaeroRecoObject::getDetectorEta( "cdf", 
+   targetKey[1] = QuaeroRecoObject::getDetectorEta( "cms", 
 						    quaeroParticle.getObjectTypeSansSign(), 
 						    Math::theta2eta( quaeroParticle.getFourVector().theta() ), 
 						    zvtx );
@@ -224,15 +224,15 @@ shimmy( T2& quaeroParticle,
 							* ( fabs( targetKey[0] - quaeroParticle.getFourVector().perp() ) < 
 							    0.4 * ( targetKey[0] + quaeroParticle.getFourVector().perp() ) / 2 ) ),
 						   QuaeroRecoObject::
-						   getEventEta( "cdf",
+						   getEventEta( "cms",
 								quaeroParticle.getObjectTypeSansSign(),
 								Math::theta2eta(quaeroParticle.getFourVector().theta()),
 								zvtx) +
-						   ( QuaeroRecoObject::getEventEta( "cdf",
+						   ( QuaeroRecoObject::getEventEta( "cms",
 										    quaeroParticle.getObjectTypeSansSign(),
 										    targetKey[1],
 										    zvtx ) - 
-						     QuaeroRecoObject::getEventEta( "cdf",
+						     QuaeroRecoObject::getEventEta( "cms",
 										    quaeroParticle.getObjectTypeSansSign(),
 										    closestKey[1],
 										    zvtx) ),
@@ -243,6 +243,7 @@ shimmy( T2& quaeroParticle,
 
 template<class T1, class T2>
 void QuaeroParticleMorphismsSingle<T1,T2>::clear() {
+//MRENNA
    forest.clear();
 }
 

@@ -13,8 +13,8 @@
 using namespace std;
  
 
-double TurboSimMorphisms1::deltaAngle(const HepLorentzVector& v1, 
-				      const HepLorentzVector& v2,
+double TurboSimMorphisms1::deltaAngle(const CLHEP::HepLorentzVector& v1, 
+				      const CLHEP::HepLorentzVector& v2,
 				      AngleMeasure angleMeasureMethod) {
   
  
@@ -89,7 +89,7 @@ string shortObjectType2String(short objectType)
 template<class T>
 T makeQuaeroObjectFromSimpleObject(const SimpleObject& simpleObject)
 {
-  T quaeroObject = T(shortObjectType2String(simpleObject.objectType),HepLorentzVector(simpleObject.e,Hep3Vector(simpleObject.px, simpleObject.py, simpleObject.pz)));
+  T quaeroObject = T(shortObjectType2String(simpleObject.objectType),CLHEP::HepLorentzVector(simpleObject.e,CLHEP::Hep3Vector(simpleObject.px, simpleObject.py, simpleObject.pz)));
   return quaeroObject;
 }
 
@@ -154,13 +154,18 @@ TurboSimMorphisms1::TurboSimMorphisms1()
   angleMeasureStick = DELTA_ANGLE;
   
   //angleMeasureFat
-  if ( getenv( "angleMeasureFat" ) == "manhattanDistance" )
+  char* angMeasure = getenv( "angleMeasureFat" );
+  std::string str1 = "manhattanDistance";
+  std::string str2 = "deltaR";
+  std::string str3 = "deltaAngle";
+  std::string str4 = "kT-Durham";
+  if ( str1.compare( angMeasure) == 0 )
     angleMeasureFat = MANHATTAN_DISTANCE;
-  else if ( getenv( "angleMeasureFat" ) == "deltaR" )
+  else if ( str2.compare( angMeasure ) == 0 )
     angleMeasureFat = DELTA_R;
-  else if ( getenv( "angleMeasureFat" ) == "deltaAngle" )
+  else if ( str3.compare( angMeasure ) == 0 )
     angleMeasureFat = DELTA_ANGLE;
-  else if ( getenv( "angleMeasureFat" ) == "kT-Durham" )
+  else if ( str4.compare( angMeasure ) == 0 )
     angleMeasureFat = DELTA_R;
   else 
     angleMeasureFat = KT_DURHAM;
@@ -232,19 +237,18 @@ void TurboSimMorphisms1::create(const std::string & partonFileName,
 	if(partonEvent.hadronMachine())
 	  objectPrintFormat = "(m)-pt-eta-phi(deg)"; // hadron collider
       counter++;
-      if(counter%10000==0)
-	cout << counter << " " << flush;
-      if((partonEvent.getObjects().size()==0))
-	if(recoEvent.getObjects().size()==0)
-	  continue;
-	else
-	  {
-	    cout << endl << "Warning!  This event has no parton-level objects:" << endl;
-	    cout << partonEvent << endl;
-	    cout << "But does have reconstructed-level objects:" << endl;
-	    cout << recoEvent << endl;
-	  }
-
+      if(counter%10000==0) {cout << counter << " " << flush;}
+      if((partonEvent.getObjects().size()==0)) {
+         if(recoEvent.getObjects().size()==0)
+            continue;
+         else
+         {
+            cout << endl << "Warning!  This event has no parton-level objects:" << endl;
+            cout << partonEvent << endl;
+            cout << "But does have reconstructed-level objects:" << endl;
+            cout << recoEvent << endl;
+         }
+      }
       clusterObjects(partonEvent.getObjects(), recoEvent.getObjects(), partonObjectsList, recoObjectsList);
       assert(partonObjectsList.size()==recoObjectsList.size());
       
@@ -493,13 +497,13 @@ void TurboSimMorphisms1::readFromFile(const string & filename)
 	      continue; // skip fakes
 
 	  assert((partonObjects.size()<=3));
-	  if(partonObjects.size()==1)
-	    if(partonObjects[0].getFourVector().perp()<0.002)
+	  if(partonObjects.size()==1) {
+         if(partonObjects[0].getFourVector().perp()<0.002) {
 	      continue;
-	    else
-	      {
-		turboSimMorphismsForestSingle.Add(partonObjects[0], fsObjects, zvtx, identifier);
-	      }
+         } else {
+            turboSimMorphismsForestSingle.Add(partonObjects[0], fsObjects, zvtx, identifier);
+         }
+      }
 	  if(partonObjects.size()==2)
 	    turboSimMorphismsForestDouble.Add(partonObjects[0], partonObjects[1], fsObjects, zvtx, identifier);
 	  if(partonObjects.size()==3)
@@ -671,7 +675,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& _parto
 	  }
       }
   
-  HepLorentzVector smallOffset = HepLorentzVector(0.007*sqrt(7.),Hep3Vector(0.007*sqrt(1.),0.007*sqrt(2.),0.007*sqrt(3.))); // ensure that find(...) below doesn't fail because of numerical roundoff
+  CLHEP::HepLorentzVector smallOffset = CLHEP::HepLorentzVector(0.007*sqrt(7.),CLHEP::Hep3Vector(0.007*sqrt(1.),0.007*sqrt(2.),0.007*sqrt(3.))); // ensure that find(...) below doesn't fail because of numerical roundoff
   for(size_t i=0; i<partonObjects.size(); i++)
     partonObjects[i] = QuaeroPartonObject(partonObjects[i].getObjectType(),partonObjects[i].getFourVector()+smallOffset);
   for(size_t i=0; i<partonObjects.size(); i++)
@@ -741,7 +745,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& _parto
 	{
 	  if(partonObjectsList[n].size()>1)
 	    {
-	      vector<HepLorentzVector> mergedJets = vector<HepLorentzVector>(partonObjectsList[n].size(),0);
+	      vector<CLHEP::HepLorentzVector> mergedJets = vector<CLHEP::HepLorentzVector>(partonObjectsList[n].size(),0);
 	      //	      int jetMerged, jetIndex, jetSwallowerIndex;
 	      //double jetPt;
 	      for(size_t i=0; i<partonObjectsList[n].size(); i++)
@@ -754,7 +758,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& _parto
 		  if(((partonObjectsList[n][i].getObjectType()=="j")||(partonObjectsList[n][i].getObjectType()=="b"))&&
 		     ((partonObjectsList[n][j].getObjectType()=="j")||(partonObjectsList[n][j].getObjectType()=="b"))&&
 		     (deltaAngle(partonObjectsList[n][i].getFourVector(),partonObjectsList[n][j].getFourVector()) < swallowDistance))		    {
-		      HepLorentzVector newFourVector =  partonObjectsList[n][i].getFourVector() + partonObjectsList[n][j].getFourVector();
+		      CLHEP::HepLorentzVector newFourVector =  partonObjectsList[n][i].getFourVector() + partonObjectsList[n][j].getFourVector();
 		      string newType = "j";
 		      if((partonObjectsList[n][i].getObjectType()=="b")||(partonObjectsList[n][j].getObjectType()=="b"))
 			newType = "b";
@@ -818,7 +822,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& _parto
 			}
 		    if((closestObject>=0)) 
 		      {
-			HepLorentzVector newFourVector =  partonObjectsList[n][i].getFourVector() + partonObjectsList[n][closestObject].getFourVector();
+			CLHEP::HepLorentzVector newFourVector =  partonObjectsList[n][i].getFourVector() + partonObjectsList[n][closestObject].getFourVector();
 			partonObjectsList[n][closestObject] = QuaeroPartonObject(partonObjectsList[n][closestObject].getObjectType(), newFourVector); 
 			partonObjectsList[n].erase(partonObjectsList[n].begin()+i, partonObjectsList[n].begin()+i+1);
 			i--;
@@ -831,7 +835,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& _parto
   
   // Put very low pt objects into "uncl"
   // ===================================
-  HepLorentzVector unclFourVector;
+  CLHEP::HepLorentzVector unclFourVector;
   for(size_t i=0; i<partonObjectsList.size(); i++)
     {
       double sum = 0;
@@ -936,7 +940,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& _parto
 			  }
 		      if(closestObject>=0) 
 			{
-			  HepLorentzVector newFourVector =  partonObjectsList[n][minIndex].getFourVector() + partonObjectsList[n][closestObject].getFourVector();
+			  CLHEP::HepLorentzVector newFourVector =  partonObjectsList[n][minIndex].getFourVector() + partonObjectsList[n][closestObject].getFourVector();
 			  string newType = "j";
 			  if((partonObjectsList[n][minIndex].getObjectType()=="b")||(partonObjectsList[n][closestObject].getObjectType()=="b"))
 			    newType = "b";
@@ -1168,7 +1172,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& parton
       vector<double> lhs_px, lhs_py, rhs_px, rhs_py, x, y;
       for(size_t i=0; i<partonObjectsList.size(); i++)
 	{
-	  HepLorentzVector lhs, rhs, lhs_mu, rhs_mu, lhs_uncl, lhs_btau;
+	  CLHEP::HepLorentzVector lhs, rhs, lhs_mu, rhs_mu, lhs_uncl, lhs_btau;
 	  for(size_t j=0; j<partonObjectsList[i].size(); j++)
 	    {
 	      lhs += partonObjectsList[i][j].getFourVector();
@@ -1196,7 +1200,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& parton
 	    }
 	  if((lhs_mu.perp()>1)&&(rhs_mu.perp()<1))
 	    {
-	      lhs = rhs = HepLorentzVector(0,0,0,0);
+	      lhs = rhs = CLHEP::HepLorentzVector(0,0,0,0);
 	    }
 	  lhs_px.push_back(lhs.px());
 	  lhs_py.push_back(lhs.py());
@@ -1213,7 +1217,7 @@ void TurboSimMorphisms1::clusterObjects(const vector<QuaeroPartonObject>& parton
 	  double chiSqd_y = Math::minimize(y,&unclLikelihood_y);
 	  for(size_t i=0; i<partonObjectsList.size(); i++)
 	    {
-	      HepLorentzVector v = HepLorentzVector(Math::addInQuadrature(x[i],y[i]),Hep3Vector(x[i],y[i],0));
+	      CLHEP::HepLorentzVector v = CLHEP::HepLorentzVector(Math::addInQuadrature(x[i],y[i]),CLHEP::Hep3Vector(x[i],y[i],0));
 	      recoObjectsList[i].push_back(QuaeroRecoObject("uncl",v));
 	    }
 	  double chiSqd = Math::addInQuadrature(chiSqd_x,chiSqd_y);

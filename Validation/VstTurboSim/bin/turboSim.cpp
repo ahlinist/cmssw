@@ -30,6 +30,7 @@ First implementation: Summer 2003, at Fermilab and the University of Chicago
 #include "Validation/VstTurboSim/interface/stdhep2partonWrap.hh"
 #include "Validation/VstTurboSim/interface/hepevt2parton.hh"
 #include <unistd.h>
+#include <cassert>
 using namespace std;
 
 void turboSim(string, ofstream &, TurboSimMorphisms1 &);
@@ -67,7 +68,7 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  assert(argc >= 4);  //Throws error if invalid number of arguments is passed to TurboSim.
+//  assert(argc >= 4);  //Throws error if invalid number of arguments is passed to TurboSim.
 
   cout << "TurboSim" << endl;
 
@@ -95,7 +96,7 @@ int main(int argc, char* argv[]) {
     string txtFileName = argv[3];
     //char* stdhepFileNameC = (char*)stdhepFileName.c_str();
     //char* txtFileNameC = (char*)txtFileName.c_str();
-    stdhep2partonWrap(stdhepFileName, txtFileName);
+//    stdhep2partonWrap(stdhepFileName, txtFileName);
   }
   
   

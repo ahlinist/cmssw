@@ -10,6 +10,8 @@
 #include "Validation/VstTurboSim/interface/QuaeroPartonEvent.hh"
 #include "Validation/VstMathUtils/interface/Math.hh"
 #include "CLHEP/Vector/ThreeVector.h"
+#include <cstdlib>
+#include <stdio.h>
 
 using namespace std;
 
@@ -59,8 +61,8 @@ TurboSimMorphisms2::TurboSimMorphisms2() {
 }
 
 
-double TurboSimMorphisms2::deltaAngle( const HepLorentzVector& v1, 
-				       const HepLorentzVector& v2, 
+double TurboSimMorphisms2::deltaAngle( const CLHEP::HepLorentzVector& v1, 
+				       const CLHEP::HepLorentzVector& v2, 
 				       AngleMeasure angleMeasureMethod ) {
 
    if ( angleMeasureMethod == DEFAULT )
@@ -207,11 +209,11 @@ void TurboSimMorphisms2::create( std::string partonFileName,
    // for all k, 0 <= k < 5, where k is steps of 0.15 radians.
    for ( size_t i = 0; i < objectTypes.size(); i++ )
       for ( size_t j = 0; j < objectTypes.size(); j++ )
-	 for ( size_t k = 0; k < 4; k++ ) {
-	    clustersInThisAngleRange_total[ objectTypes[i] + objectTypes[j] ][k] = 0;
-	    clustersInThisAngleRange_paired[ objectTypes[i] + objectTypes[j] ][k] = 0;
-	    fractionOfClustersInThisAngleRangeToPair[ objectTypes[i] + objectTypes[j] ][k] = 0;
-	 }
+         for ( size_t k = 0; k < 4; k++ ) {
+            clustersInThisAngleRange_total[ objectTypes[i] + objectTypes[j] ][k] = 0;
+            clustersInThisAngleRange_paired[ objectTypes[i] + objectTypes[j] ][k] = 0;
+            fractionOfClustersInThisAngleRangeToPair[ objectTypes[i] + objectTypes[j] ][k] = 0;
+         }
 
 
    // output to user
@@ -225,12 +227,15 @@ void TurboSimMorphisms2::create( std::string partonFileName,
    cout << "Initial Clustering . . . " << endl;
    while ( partonEventFile.nextEvent( partonEvent ) ) {
 
+//      cout << "parton " << partonEvent << endl;
       // Read in Reco Event
       if ( !recoEventFile.nextEvent( recoEvent ) ) {
-	 cerr << "\tParton Events File and Reco Events File contain different number of events." << endl
-	      << "Fatal Error." << endl;
-	 exit( EXIT_FAILURE ); 
+         cerr << "\tParton Events File and Reco Events File contain different number of events." << endl
+              << "Fatal Error." << endl;
+         exit( EXIT_FAILURE ); 
       }
+
+//      cout << "reco   " << recoEvent << endl;
 
       // Ensure objects are from same run
       if ( ( partonEvent.getEventType() != recoEvent.getEventType() ) ||
@@ -248,25 +253,25 @@ void TurboSimMorphisms2::create( std::string partonFileName,
       recoObjectsList.clear();
       
       if ( counter == 0 )
-	 if ( partonEvent.hadronMachine() )
-	    objectPrintFormat = "(m)-pt-eta-phi(deg)"; // hadron collider
+         if ( partonEvent.hadronMachine() )
+            objectPrintFormat = "(m)-pt-eta-phi(deg)"; // hadron collider
      
       counter++;
       //cout << endl << "\tProcessing Event " << counter << ": " << flush;
  
       // More error checking
-      if ( ( partonEvent.getObjects().size() == 0 ) )
-	 if ( recoEvent.getObjects().size() == 0 )
-	    continue; // If event is empty, don't include it.
+      if ( ( partonEvent.getObjects().size() == 0 ) ) {
+         if ( recoEvent.getObjects().size() == 0 ) 
+            continue; // If event is empty, don't include it.
       // continue to next iteration of while loop 
-	 else {
-	    cout << "\tWarning! Event in line #" << counter 
-		 << " has no parton-level objects:" << endl 
-		 << "\t   Parton:" << partonEvent << endl 
-		 << "\t But does have reconstructed-level objects:" << endl
-		 << "\t   Reco:  " << recoEvent << endl;
-	 }
-      
+         else {
+            cout << "\tWarning! Event in line #" << counter 
+                 << " has no parton-level objects:" << endl 
+                 << "\t   Parton:" << partonEvent << endl 
+                 << "\t But does have reconstructed-level objects:" << endl
+                 << "\t   Reco:  " << recoEvent << endl;
+         }
+      }
 
       // Decide how to cluster objects in event (pairing).
       // (i.e. which parton objects are the cause of which reco objects.)
@@ -276,7 +281,7 @@ void TurboSimMorphisms2::create( std::string partonFileName,
 		      partonObjectsList, recoObjectsList,
 		      clustersInThisAngleRange_total, 
 		      clustersInThisAngleRange_paired );
-      //cout << "objects clustered. " << flush;
+//      cout << "objects clustered. " << flush;
 
       // Assert that clusterObjects( ... ) provided one-to-one mapping of
       // parton objects (or pairs) to reco objects (singles, pairs, triplets, etc.).
@@ -285,10 +290,10 @@ void TurboSimMorphisms2::create( std::string partonFileName,
       // Iterate through the returned ObjectsLists and output the result to the
       // TurboSimMorphisms table
       for ( size_t i = 0; i < partonObjectsList.size(); i++ ) {
-	 if ( chargeConjugationRequiredQ( partonObjectsList[ i ] ) ) {
-	    chargeConjugate( partonObjectsList[ i ] );  // Modifies parameter
-	    chargeConjugate( recoObjectsList[ i ] );
-	 }
+         if ( chargeConjugationRequiredQ( partonObjectsList[ i ] ) ) {
+            chargeConjugate( partonObjectsList[ i ] );  // Modifies parameter
+            chargeConjugate( recoObjectsList[ i ] );
+         }
 
 	 
 	 // Read the partonObject type. Can be a pair or singlet.
@@ -386,6 +391,7 @@ void TurboSimMorphisms2::create( std::string partonFileName,
 	    } 
 	 } // close if (direct mapping of singlet -> singlet)
       } // end for -- iterate over all parton objects
+//      cout << "SM got here " << endl;
    } // end while -- read in events from file
    
    cout << "Initial Clustering Done. " << endl;
@@ -488,9 +494,9 @@ void TurboSimMorphisms2::create( std::string partonFileName,
      
       // MultiDimensional Binary Trees for Singlets
       // for morphing Reco to Parton
-      QuaeroParticleMorphismsSingle< QuaeroRecoObject, QuaeroPartonObject > quaeroMorphRP;
+//      QuaeroParticleMorphismsSingle< QuaeroRecoObject, QuaeroPartonObject > quaeroMorphRP;
       // for morphing Parton to Reco
-      QuaeroParticleMorphismsSingle< QuaeroPartonObject, QuaeroRecoObject > quaeroMorphPR;
+//      QuaeroParticleMorphismsSingle< QuaeroPartonObject, QuaeroRecoObject > quaeroMorphPR;
 	
 
       // debuging destructor
@@ -514,135 +520,200 @@ void TurboSimMorphisms2::create( std::string partonFileName,
       }
       cout << "destructor okay." << endl;
 
-      // foreach singletMorphisms_reco2parton file 
-      for( map< vector< string >, ifstream* >::iterator i = 
-	      singletMorphismsFiles_reco2parton_in.begin();
-	   i != singletMorphismsFiles_reco2parton_in.end(); 
-	   ++i ) {
-	 
-	 vector< string > tag = i->first;
-	 string tagString = "";
-	 for ( size_t k = 0; k < tag.size(); k++ )
-	    tagString += tag[ k ];
-	 ifstream& fin = *( i->second );
-	 assert( fin );
-	 string s;
-	 bool successfulRead = true;
 
-	 // read in table file
-	 while ( fin >> s ) {
+      for( map< vector< string >, ifstream* >::const_iterator i = 
+              singletMorphismsFiles_reco2parton_in.begin();
+           i != singletMorphismsFiles_reco2parton_in.end(); 
+           ++i ) {
+      // MultiDimensional Binary Trees for Singlets
+      // for morphing Reco to Parton
+         QuaeroParticleMorphismsSingle< QuaeroRecoObject, QuaeroPartonObject > quaeroMorphRP;
+      // for morphing Parton to Reco
+         QuaeroParticleMorphismsSingle< QuaeroPartonObject, QuaeroRecoObject > quaeroMorphPR;
+	 
+         vector< string > tag = i->first;
+         string tagString = "";
+         for ( size_t k = 0; k < tag.size(); k++ )
+            tagString += tag[ k ];
+         ifstream& fin = *( i->second );
+         assert( fin );
+         string s;
+         bool successfulRead = true;
+
+         // read in table file
+         while ( fin >> s ) {	    
+            // read in an entry
+            if ( s != "*" )
+               cout << "s = " << s << endl;
+            assert( s == "*" );
+
+
+            // center of vertex
+            double zvtx;
+            fin >> zvtx;
+
+            QuaeroPartonObject pO;
+            QuaeroRecoObject rO;
 	    
-	    // read in an entry
-	    if ( s != "*" )
-	       cout << "s = " << s << endl;
-	    assert( s == "*" );
-	    
-	    // center of vertex
-	    double zvtx;
-	    fin >> zvtx;
-	    
-	    // reco object
-	    successfulRead = recoObject.read( fin, objectPrintFormat );
-	    assert( successfulRead );
+            // reco object
+//            successfulRead = recoObject.read( fin, objectPrintFormat );
+            successfulRead = rO.read( fin, objectPrintFormat );
+            assert( successfulRead );
 	    
 	    fin >> s; assert( s == ";" );
 	    fin >> s; assert( s == "->" );
 	    
-	    // parton object
-	    successfulRead = partonObject.read(fin,objectPrintFormat);
-	    assert( successfulRead );
+            // parton object
+//            successfulRead = partonObject.read(fin,objectPrintFormat);
+            successfulRead = pO.read(fin,objectPrintFormat);
+            assert( successfulRead );
 
-	    fin >> s; assert( s == ";" );
-	    
-	    // add entry to recon particles singlet tree
-	    quaeroMorphRP.Add( recoObject, vector< QuaeroPartonObject >( 1, partonObject ), zvtx );
+            fin >> s; assert( s == ";" );
+
+            // add entry to recon particles singlet tree
+//            quaeroMorphRP.Add( recoObject, vector< QuaeroPartonObject >( 1, partonObject ), zvtx );
+            quaeroMorphRP.Add( rO, vector< QuaeroPartonObject >( 1, pO ), zvtx );
 	 
-	 } // end while (read in events from TODO:(temporary?) singletMorphism files)
+         } // end while (read in events from TODO:(temporary?) singletMorphism files)
+         fin.close();
+
+     cout << "morphismsFiles_in " << morphismsFiles_in.size() << endl;
+
+//     int iknt=0;
 	 
 	 // foreach morphism file that contains parton pairs
-	 for ( map< vector< string >, ifstream* >::iterator j = morphismsFiles_in.begin(); 
-	       j != morphismsFiles_in.end(); 
-	       j++ ) {
+	 for ( map< vector< string >, ifstream* >::const_iterator j = morphismsFiles_in.begin(); 
+	       j != morphismsFiles_in.end(); ++j ) {
 
-	    // if this file contains parton singlets, (i.e. there is only one 
-	    // parton in each row on the left-hand side of the table), continue
-	    // to next file.
-	    if ( ( j->first ).size() <= 1 ) 
-	       continue;
+        
+            // if this file contains parton singlets, (i.e. there is only one 
+            // parton in each row on the left-hand side of the table), continue
+            // to next file.
+            if ( ( j->first ).size() <= 1 ) 
+               continue;
 
-	    // output to user
-	    cout << getFileName( targetTurboSimMorphisms2FileName, j->first, "" ) << endl;
-	 
-	    ofstream fout( getFileName( targetTurboSimMorphisms2FileName, j->first, "modified" ).c_str());
-	    ifstream fin2( getFileName( targetTurboSimMorphisms2FileName, j->first, "" ).c_str());
-	    string s; // tmp var
-	    fin2 >> s; assert( s == objectPrintFormat ); fout << s << endl << endl;
-	    Identifier identifier;
-	    double zvtx;
+            // output to user
+            std::string fileName(getFileName( targetTurboSimMorphisms2FileName, j->first, "" ));
+/*            char * cstr;
+            cstr = new char [fileName.size()+1];
+            strcpy (cstr, fileName.c_str()); */
 
-	    // read in morphism file & write to new file: 'modified'
-	    while ( fin2 >> s ) {
+            std::string fileNameModified(getFileName( targetTurboSimMorphisms2FileName, j->first, "modified" ));
 
-	       cout << s;
-	       assert ( s == "*" ); fout << "* ";
-	       fin2 >> identifier; fout << identifier << " ";
-	       fin2 >> zvtx; fout << zvtx << " ";
+            cout << fileName << " * " << fileNameModified << endl;
 
-	       // parton object unchanged: stream in and stream out.
-	       while ( partonObject.read( fin2, objectPrintFormat ) )
-		  fout << partonObject.print( objectPrintFormat ) << " ";
+//            system("sleep 1");
+            ifstream fin2( fileName.c_str() );
+
+            if (!fin2.good()) {
+               cout << " Cannot open file " << fileName  << endl;
+            } else {
+               cout << "opened " << fileName << endl;
+            }
+
+            ofstream fout( fileNameModified.c_str(),ios_base::app );
+
+            if (!fout.good()) {
+               cout << " Cannot open modified file " << fileNameModified  << endl;
+            } else {
+               cout << "opened " << fileNameModified << endl;
+            }
+
+               
+ 
+            string s; // tmp var
+            fin2 >> s; assert( s == objectPrintFormat ); fout << s << endl << endl;
+            Identifier identifier;
+            double zvtx;
+
+            // read in morphism file & write to new file: 'modified'
+            while ( fin2 >> s ) {
+
+               cout << s;
+               assert ( s == "*" ); fout << "* ";
+               fin2 >> identifier; fout << identifier << " ";
+               fin2 >> zvtx; fout << zvtx << " ";
+
+               // parton object unchanged: stream in and stream out.
+               while ( partonObject.read( fin2, objectPrintFormat ) )
+                  fout << partonObject.print( objectPrintFormat ) << " ";
 	       
 	       fout << " ; ";
 	       fin2 >> s; assert( s == "->" ); fout << " -> ";
 	       
-	       // read in reco object(s). 
-	       // iterate through reco objects
-	       // o1 is a RECO object
-	       while ( o1.read ( fin2, objectPrintFormat ) ) {
+               // read in reco object(s). 
+               // iterate through reco objects
+               // o1 is a RECO object
+               QuaeroRecoObject oo1;
+               while ( oo1.read ( fin2, objectPrintFormat ) ) {
 		  
-		  bool cc = chargeConjugationRequiredQ( vector< QuaeroRecoObject >( 1, o1 ) );
-		  if ( cc )
-		     o1.chargeConjugate(); // modifies o1
-		  string identifierString = identifier.getString();
+                  bool cc = chargeConjugationRequiredQ( vector< QuaeroRecoObject >( 1, oo1 ) );
+                  if ( cc )
+                     oo1.chargeConjugate(); // modifies o1
+                  string identifierString = identifier.getString();
 		  
-		  // find the closest
-		  // link is a PARTON object
-		  vector< QuaeroPartonObject > link = quaeroMorphRP.findClosest( o1, zvtx, identifierString );
+                  // find the closest
+                  // link is a PARTON object
+                  vector< QuaeroPartonObject > link = quaeroMorphRP.findClosest( oo1, zvtx, identifierString );
 		  
-		  if ( link.size() == 1 ) {
-		     // o2 is a PARTON object
-		     QuaeroPartonObject o2 = link[ 0 ];
-		     if ( cc )
-			o2.chargeConjugate();
-		     // we print a PARTON object in a reco object field to the file!
-		     // And not only a parton object, but an object from a
-		     // different event!
-		     fout << o2.print ( objectPrintFormat ) << "  ";
-		  }
-		  else {
-		     if ( cc )
-			o1.chargeConjugate();
-		     // we print a RECO object in reco object field to the file
-		     // this is the original reco object (i.e. from the same
-		     // event, so this is okay)
-		     fout << o1.print ( objectPrintFormat ) << "  ";			  
-		  }
-	       }
-	       fout << " ; " << endl;
-	    } // end while read in morphism file and output changes
-	    fout.close();
-	    fin2.close();
-	    system( ( "mv " + getFileName( targetTurboSimMorphisms2FileName, j->first, "modified" ) +
-		      " " + getFileName( targetTurboSimMorphisms2FileName, j->first, "" ) ).c_str() );
-	 } // end foreach morphism file containing doublet parton events
-	 system( ("rm " + getFileName( targetTurboSimMorphisms2FileName, tag, "singlet_reco2parton" ) ).c_str());
+                  if ( link.size() == 1 ) {
+                     // o2 is a PARTON object
+                     QuaeroPartonObject o2 = link[ 0 ];
+                     if ( cc )
+                        o2.chargeConjugate();
+                     // we print a PARTON object in a reco object field to the file!
+                     // And not only a parton object, but an object from a
+                     // different event!
+                     fout << o2.print ( objectPrintFormat ) << "  ";
+                  }
+                  else {
+                     if ( cc )
+                        oo1.chargeConjugate();
+                     // we print a RECO object in reco object field to the file
+                     // this is the original reco object (i.e. from the same
+                     // event, so this is okay)
+                     fout << oo1.print ( objectPrintFormat ) << "  ";			  
+                  }
+               }
+               fout << " ; " << endl;
+            } // end while read in morphism file and output changes
+            fout.close();
+            cout << "closed fout " << endl;
+            fin2.close();
+            cout << "closed fin2 " << endl;
+/*            ifstream f1(fileNameModified.c_str(), fstream::binary);
+            ofstream f2(fileName.c_str(), fstream::trunc|fstream::binary);
+            f2 << f1.rdbuf();
+            f1.close();
+            f2.close(); */
+            rename(fileNameModified.c_str(), fileName.c_str() );
+
+//            system( ( "mv " + getFileName( targetTurboSimMorphisms2FileName, j->first, "modified" ) +
+
+            cout << "at the end of this loop " << endl;
+         } // end foreach morphism file containing doublet parton events
+//MRENNA         system( ("rm " + getFileName( targetTurboSimMorphisms2FileName, tag, "singlet_reco2parton" ) ).c_str());
+         
+         remove( getFileName( targetTurboSimMorphisms2FileName, tag, "singlet_reco2parton" ).c_str());
+         cout << "and at the end of this loop " << endl;
       }  // end foreach singlet_reco2parton (temporary) file
       
       cout << "Reading singlet_parton2reco tmp files: " << flush;
       // foreach singlet_parton2reco temporary file
-      for( map<vector<string>,ifstream*>::iterator i = singletMorphismsFiles_parton2reco_in.begin(); 
-	   i != singletMorphismsFiles_parton2reco_in.end();
-	   i++) {
+//SM
+      cout << singletMorphismsFiles_parton2reco_in.size() << endl;
+
+
+      for( map<vector<string>,ifstream*>::const_iterator i = singletMorphismsFiles_parton2reco_in.begin(); 
+           i != singletMorphismsFiles_parton2reco_in.end();  ++i) {
+
+
+      // MultiDimensional Binary Trees for Singlets
+      // for morphing Reco to Parton
+	QuaeroParticleMorphismsSingle< QuaeroRecoObject, QuaeroPartonObject > quaeroMorphRP;
+      // for morphing Parton to Reco
+	QuaeroParticleMorphismsSingle< QuaeroPartonObject, QuaeroRecoObject > quaeroMorphPR;
+
 	 
 	 // read singlet_parton2reco file in quaeroMorphPR tree
 	 vector< string > tag = i->first;
@@ -664,9 +735,8 @@ void TurboSimMorphisms2::create( std::string partonFileName,
 	 fin.close();
 	 cout << "read file. " << flush;
 	 // foreach morphism file (some modified already)
-	 for ( map<vector<string>,ifstream*>::iterator j = morphismsFiles_in.begin(); 
-	       j != morphismsFiles_in.end(); 
-	       j++) {
+	 for ( map<vector<string>,ifstream*>::const_iterator j = morphismsFiles_in.begin(); 
+	       j != morphismsFiles_in.end(); ++j) {
 	    if ( j->first.size() <= 1 ) // want parton singlets only 
 	                                // ( "ph" ) is okay, ( "j" . "j") is not
 	       continue;
@@ -719,34 +789,37 @@ void TurboSimMorphisms2::create( std::string partonFileName,
 						     zvtx, 
 						     identifierString);
 		     
-		     // if it maps to nothing, or unclustered energy :(
-		     // assign it to itself.
-		     if ( ( link.empty() ) || 
-			  ( ( link.size() == 1 ) && 
-			    ( link[ 0 ].getObjectType() == "uncl") ) ) 
-			fout << partonObjects[k].print(objectPrintFormat) << " ";
-		  }
-	       }
-	       fout << " ; " << endl;
-	    }
-	    fout.close();
-	    fin2.close();
-	    system(("mv "+getFileName(targetTurboSimMorphisms2FileName,j->first,"modified")+
-		    " "+getFileName(targetTurboSimMorphisms2FileName,j->first,"")).c_str());
-	 }
-	 system(("rm "+getFileName(targetTurboSimMorphisms2FileName,tag,"singlet_parton2reco")).c_str());
+                     // if it maps to nothing, or unclustered energy :(
+                     // assign it to itself.
+                     if ( ( link.empty() ) || 
+                          ( ( link.size() == 1 ) && 
+                            ( link[ 0 ].getObjectType() == "uncl") ) ) 
+                        fout << partonObjects[k].print(objectPrintFormat) << " ";
+                  }
+               }
+               fout << " ; " << endl;
+            }
+            fout.close();
+            fin2.close();
+/*            system(("mv "+getFileName(targetTurboSimMorphisms2FileName,j->first,"modified")+
+                    " "+getFileName(targetTurboSimMorphisms2FileName,j->first,"")).c_str()); */
+            rename(getFileName(targetTurboSimMorphisms2FileName,j->first,"modified").c_str(),
+                   getFileName(targetTurboSimMorphisms2FileName,j->first,"").c_str()); 
+         }
+//         system(("rm "+getFileName(targetTurboSimMorphisms2FileName,tag,"singlet_parton2reco")).c_str());
+         remove(getFileName(targetTurboSimMorphisms2FileName,tag,"singlet_parton2reco").c_str());
       } // end foreach singlet_parton2reco file
       cout << "done" << endl;
    }
    
    cout << "cleaning up" << endl;
    for(map<vector<string>,ifstream*>::iterator i=singletMorphismsFiles_parton2reco_in.begin();
-       i!=singletMorphismsFiles_parton2reco_in.end(); i++) {
+       i!=singletMorphismsFiles_parton2reco_in.end(); ++i) {
       i->second->close(); delete(i->second); i->second = 0;
    }
    
    for(map<vector<string>,ifstream*>::iterator i=singletMorphismsFiles_reco2parton_in.begin(); 
-       i!=singletMorphismsFiles_reco2parton_in.end(); i++) {
+       i!=singletMorphismsFiles_reco2parton_in.end(); ++i) {
       i->second->close(); delete(i->second); i->second = 0;
    }
    cout << "done cleanup. " << endl;
@@ -774,78 +847,79 @@ void TurboSimMorphisms2::readFromFile(string filename) {
 	// Read the object format:  lepton or hadron machine
 	fin >> objectPrintFormat;
 	while(fin >> marker)
-	  {
-	    k++;
-	    if(k%100000==0)
+    {
+       k++;
+       if(k%100000==0)
 	      cout << k << " " << flush;
-	    assert(marker=="*");
-	    fin >> partonTrainingLineNumber >> eventType >> runNumber;
-	    //  identifier = runNumber;
-	    identifier = eventType + " " + runNumber;
-	    fin >> zvtx; // vertex position
+       assert(marker=="*");
+       fin >> partonTrainingLineNumber >> eventType >> runNumber;
+       //  identifier = runNumber;
+       identifier = eventType + " " + runNumber;
+       fin >> zvtx; // vertex position
 	    
-	       QuaeroPartonObject partonObject;
-	       vector<QuaeroPartonObject> partonObjects;
-	       QuaeroRecoObject fsObject;
-	       vector<QuaeroRecoObject> fsObjects;
+       QuaeroPartonObject partonObject;
+       vector<QuaeroPartonObject> partonObjects;
+       QuaeroRecoObject fsObject;
+       vector<QuaeroRecoObject> fsObjects;
 	       
-	       bool parton_NoLeptons = true;
-	       while(partonObject.read(fin,objectPrintFormat))
-		 {
-		   if(partonObject.getObjectType()!="uncl")
+       bool parton_NoLeptons = true;
+       while(partonObject.read(fin,objectPrintFormat))
+       {
+          if(partonObject.getObjectType()!="uncl")
 		     partonObjects.push_back(partonObject);
-		   if((partonObject.getObjectType()=="j")||
-		      (partonObject.getObjectType()=="b")||
-		      (partonObject.getObjectType()=="uncl")||
-		      (partonObject.getObjectType()=="ph"))
+          if((partonObject.getObjectType()=="j")||
+             (partonObject.getObjectType()=="b")||
+             (partonObject.getObjectType()=="uncl")||
+             (partonObject.getObjectType()=="ph"))
 		     ;
-		   else
+          else
 		     parton_NoLeptons = false;
-
-		   identifier += " " + partonObject.print(objectPrintFormat);
-		 }
+          
+          identifier += " " + partonObject.print(objectPrintFormat);
+       }
 	       
-	       fin >> marker;
-	       assert(marker=="->");
-	       identifier += " -> ";
+       fin >> marker;
+       assert(marker=="->");
+       identifier += " -> ";
 	       
-	       bool fs_ContainsLepton = false;
-	       while(fsObject.read(fin,objectPrintFormat))
-		 {
-		   fsObjects.push_back(fsObject);
-		   if((fsObject.getObjectTypeSansSign()=="e")||
-		      (fsObject.getObjectTypeSansSign()=="mu")||
-		      (fsObject.getObjectTypeSansSign()=="tau"))
+       bool fs_ContainsLepton = false;
+       while(fsObject.read(fin,objectPrintFormat))
+       {
+          fsObjects.push_back(fsObject);
+          if((fsObject.getObjectTypeSansSign()=="e")||
+             (fsObject.getObjectTypeSansSign()=="mu")||
+             (fsObject.getObjectTypeSansSign()=="tau"))
 		     fs_ContainsLepton = true;
-		   //identifier += ( "/" + fsObject.getObjectType() + 
-		   //	   "/" + Math::ftoa( fsObject.getFourVector().e() ) );
-		   identifier += " " + fsObject.print(objectPrintFormat);
-		 }
+          //identifier += ( "/" + fsObject.getObjectType() + 
+          //	   "/" + Math::ftoa( fsObject.getFourVector().e() ) );
+          identifier += " " + fsObject.print(objectPrintFormat);
+       }
 	       
-	       if(skipFakes)
-		 if(parton_NoLeptons && fs_ContainsLepton)
-		   continue; // skip fakes
+       if(skipFakes)
+          if(parton_NoLeptons && fs_ContainsLepton)
+             continue; // skip fakes
 	       
-	       assert((partonObjects.size()<=3));
-	       //cout << "TurboSimMorphisms2::readFromFile:identifier = " << identifier << endl;
-	       if ( partonObjects.size() == 1 )
-		 if ( partonObjects[0].getFourVector().perp()<0.002 )
-		   continue;
-		 else
-		   {
+       assert((partonObjects.size()<=3));
+       //cout << "TurboSimMorphisms2::readFromFile:identifier = " << identifier << endl;
+       if ( partonObjects.size() == 1 ) {
+          if ( partonObjects[0].getFourVector().perp()<0.002 )
+             continue;
+          else
+          {
 		     turboSimMorphismsForestSingle.Add(partonObjects[0], fsObjects, zvtx, identifier);
-		   }
-	       if(partonObjects.size()==2)
-		 turboSimMorphismsForestDouble.Add(partonObjects[0], partonObjects[1], fsObjects, zvtx, identifier);
-	       if(partonObjects.size()==3)
-		 turboSimMorphismsForestTriple.Add(partonObjects, fsObjects, zvtx, identifier);
+          }
+       }
+       if(partonObjects.size()==2)
+          turboSimMorphismsForestDouble.Add(partonObjects[0], partonObjects[1], fsObjects, zvtx, identifier);
+       if(partonObjects.size()==3)
+          turboSimMorphismsForestTriple.Add(partonObjects, fsObjects, zvtx, identifier);
 	       
-	    }
+    }
       }
    else
-     {
-       cout << "warning, " << filename << " does not exist." << endl;
-     }
+   {
+      cout << "warning, " << filename << " does not exist." << endl;
+   }
    fin.close();
    return;
 }
@@ -1087,7 +1161,9 @@ void TurboSimMorphisms2::morph(string turboSimMorphismsFile,
       // reinsert leading *
       system( string( "sed 's/\\(.*\\)/* \\1/' tmp2.txt > " + completeRecoFileNames[i] ).c_str() );
    }
-   system( "rm tmp.txt tmp2.txt" );
+   remove("tmp.txt");
+   remove("tmp2.txt");
+//   system( "rm tmp.txt tmp2.txt" );
 
    map<ifstream*,int> counterInEachCompleteRecoFile;
    map<ifstream*,string> filenames;
@@ -1447,7 +1523,8 @@ void TurboSimMorphisms2::clusterObjects( const vector< QuaeroPartonObject >& _pa
 	 ( recoObjects[ i ].getObjectTypeSansSign() != "jtau" ) )  // Do not consider jf or jtau objects   
        {
       if ( ( recoObjects[ i ].getObjectType() != "uncl" ) ) {  
-	 double minDistance = FLT_MAX, 
+//	 double minDistance = FLT_MAX, 
+	 double minDistance = FLT_MAX,
 	        distance;
 	 int closestPartonObject = -1;
 	 for ( size_t k = 0; k < partonObjectsList.size(); k++ )
@@ -1515,6 +1592,12 @@ void TurboSimMorphisms2::clusterObjects( const vector< QuaeroPartonObject >& _pa
    // are the same sign: i.e. both antiparticles, 
    // or both particles. Must be particle, antiparticle
    // pair.
+
+   double separationCut = 0.75;
+
+   double howMuchWeLikeToKeepSinglets = 2;
+   if ( getenv("TurboSimKeepSinglets") != NULL )
+      howMuchWeLikeToKeepSinglets = atof( getenv("TurboSimKeepSinglets") );
    
    // for each partonObject pair: i, j  (i != j)
    for ( size_t i = 0; i < partonObjectsList.size(); i++ )
@@ -1533,7 +1616,7 @@ void TurboSimMorphisms2::clusterObjects( const vector< QuaeroPartonObject >& _pa
 	    //	 << ", " << flush;
 
 	    // Find Parton Object Momentas
- 	    HepLorentzVector pip, pjp; // 4-momentum of i^th, j^th parton cluster
+ 	    CLHEP::HepLorentzVector pip, pjp; // 4-momentum of i^th, j^th parton cluster
 	    pip = partonObjectsList[ i ][ 0 ].getFourVector();
 	    pjp = partonObjectsList[ j ][ 0 ].getFourVector();
 	
@@ -1543,7 +1626,7 @@ void TurboSimMorphisms2::clusterObjects( const vector< QuaeroPartonObject >& _pa
 	    double separation = deltaAngle( pip, pjp, DELTA_ANGLE );
 
 	    // if particles close together
-	    if ( separation < .75 ) { // .75 radian or 45 degrees separation
+	    if ( separation < separationCut ) { // .75 radian or 45 degrees separation
 	       //cout << "clustering, " << flush;
 
 	       // create paired tag
@@ -1562,47 +1645,54 @@ void TurboSimMorphisms2::clusterObjects( const vector< QuaeroPartonObject >& _pa
 	       double eip = pip.e();  // total energy of i^th parton cluster
 	       double ejp = pjp.e();  // total energy of j^th parton cluster
 	 
-	       // Find reco object energies
-	       double eir = 0; // total energy of i^th reco cluster 
-	       double ejr = 0; // total energy of j^th reco cluster
-	       for ( size_t k = 0; k < recoObjectsList[i].size(); k++ )
-		  eir = recoObjectsList[i][k].getFourVector().e();
-	       for ( size_t k = 0; k < recoObjectsList[j].size(); k++ )
-		  ejr = recoObjectsList[j][k].getFourVector().e();
+               // Find reco object energies
+//MRENNA: is this correct?    
+               double eir = 0; // total energy of i^th reco cluster 
+               double ejr = 0; // total energy of j^th reco cluster
+               size_t iSize = recoObjectsList[i].size();
+               for ( size_t k = 0; k < iSize; k++ ) {
+                  eir += recoObjectsList[i][k].getFourVector().e();
+                  //   if( iSize>1 ) cout << "iSize " << k << " " << eir << endl;
+               }
+//                  eir = recoObjectsList[i][k].getFourVector().e();
+               size_t jSize = recoObjectsList[j].size();
+               for ( size_t k = 0; k < jSize; k++ ) {
+                  ejr += recoObjectsList[j][k].getFourVector().e();
+                  //   if( jSize>1 ) cout << "jSize " << k << " " << ejr << endl;
+               }
+//                  ejr = recoObjectsList[j][k].getFourVector().e();
 	   
 	       // q1 is how good the Parton[i]-> Reco[i] and Parton[j] -> Reco[j]
 	       // make sense individually. Large q1 means don't make sense.
-	       double q1 = 
-		  Math::addInQuadrature( ( eip - eir ) / sqrt( eip ),
-					 ( ejp - ejr ) / sqrt( ejp ) ) / sqrt( 2. );
+	       double q1 = Math::addInQuadrature( ( eip - eir ) / sqrt( eip ),
+                                              ( ejp - ejr ) / sqrt( ejp ) ) / sqrt( 2. );
 	    
 	       // q2 is how good Parton[i] + Parton[j] -> Reco[i] + Reco[j]
 	       // makes sense (together). Large q2 means _does_ make sense.
-	       double q2 = 
-		  fabs( ( eip + ejp ) - ( eir + ejr ) ) / sqrt( eip + ejp );
+	       double q2 = fabs( ( eip + ejp ) - ( eir + ejr ) ) / sqrt( eip + ejp );
 	    
-	       double howMuchWeLikeToKeepSinglets = 2;
+	   /*    double howMuchWeLikeToKeepSinglets = 2;
 	       if ( getenv("TurboSimKeepSinglets") != NULL )
 		  howMuchWeLikeToKeepSinglets = 
-		     atof( getenv("TurboSimKeepSinglets") );
+		     atof( getenv("TurboSimKeepSinglets") ); */
 
 	       //cout << "pairing, " << flush;
 	       
 	       if ( ( q1 > howMuchWeLikeToKeepSinglets ) && // if Pi -> Ri and Pj -> Rj don't make sense individually
-		    ( q1 > howMuchWeLikeToKeepSinglets * q2)) {  // AND Pi + Pj -> Ri + Rj makes more sense
-		  // then pair objects
+                ( q1 > howMuchWeLikeToKeepSinglets * q2)) {  // AND Pi + Pj -> Ri + Rj makes more sense
+              // then pair objects
 		  
-		  partonObjectsList[i].insert(partonObjectsList[i].end(), 
-					      partonObjectsList[j].begin(), 
-					      partonObjectsList[j].end());
-		  partonObjectsList.erase(partonObjectsList.begin()+j);
-		  recoObjectsList[i].insert(recoObjectsList[i].end(), 
-					    recoObjectsList[j].begin(), 
-					    recoObjectsList[j].end());
-		  recoObjectsList.erase(recoObjectsList.begin()+j);
+              partonObjectsList[i].insert(partonObjectsList[i].end(), 
+                                          partonObjectsList[j].begin(), 
+                                          partonObjectsList[j].end());
+              partonObjectsList.erase(partonObjectsList.begin()+j);
+              recoObjectsList[i].insert(recoObjectsList[i].end(), 
+                                        recoObjectsList[j].begin(), 
+                                        recoObjectsList[j].end());
+              recoObjectsList.erase(recoObjectsList.begin()+j);
 		  
-		  clustersInThisAngleRange_paired[s][int(separation / 0.15)]++;
-		  break;
+              clustersInThisAngleRange_paired[s][int(separation / 0.15)]++;
+              break;
 		  
 		  //cout << "paired. ";
 		  

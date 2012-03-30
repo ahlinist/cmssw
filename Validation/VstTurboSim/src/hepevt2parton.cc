@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <string.h>
 #include "Validation/VstMathUtils/interface/Math.hh"
 #include "Validation/VstQuaeroUtils/interface/HepevtBlock.hh"
 #include "Validation/VstTurboSim/interface/QuaeroPartonObject.hh"
@@ -10,6 +11,7 @@
 #include "KtJet/KtUtil.h"
 #include "Validation/VstTurboSim/interface/hepevt2parton.hh"
 using namespace std;
+using namespace CLHEP;
 
 
 void hepevt2partonEvent(ofstream& fParton, const HepevtEvent& e)

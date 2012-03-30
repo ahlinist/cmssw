@@ -13,7 +13,7 @@ using namespace std;
 
 // Creation Constructor
 TurboSimParticle::TurboSimParticle( const TurboSimParticleType &type,
-                                    const HepLorentzVector &lv )
+                                    const CLHEP::HepLorentzVector &lv )
 :  
    TurboSimParticleType( type ),
    _lorentzVector( lv ) {}
@@ -22,7 +22,7 @@ TurboSimParticle::TurboSimParticle( const TurboSimParticleType &type,
 TurboSimParticle::TurboSimParticle( ) 
 :
    TurboSimParticleType( DefinitionOf::NULL_PARTICLE ),
-   _lorentzVector( HepLorentzVector( 0, Hep3Vector( 0, 0, 0 ) ) )
+   _lorentzVector( CLHEP::HepLorentzVector( 0, CLHEP::Hep3Vector( 0, 0, 0 ) ) )
 {}
 
 // Accessors 
@@ -294,7 +294,7 @@ bool TurboSimParticle::read ( istream &source,
       e = px = py = pz = 0;
    }
    
-   _lorentzVector = HepLorentzVector( e, Hep3Vector( px, py, pz ) );
+   _lorentzVector = CLHEP::HepLorentzVector( e, CLHEP::Hep3Vector( px, py, pz ) );
 
    return true;
 }

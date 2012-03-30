@@ -27,7 +27,7 @@ public:
 		    std::string _fullString="");
 
   //mrenna 
-  virtual ~QuaeroPartonEvent() {}
+//  virtual ~QuaeroPartonEvent() {}
 
 };
 
