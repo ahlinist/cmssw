@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import sys
 import os
 from array import array
@@ -9,9 +11,7 @@ import ROOT
 from ROOT import RooWorkspace, TFile, TH1, TChain, RooDataHist, \
      RooHistFunc, RooFit, RooSimultaneous, RooDataSet, TH1F, \
      RooRealVar, RooBinning, RooThresholdCategory, RooCategory, \
-     RooArgSet, RooArgList, TH2F, TTree, TF2, RooFormulaVar, TCanvas, \
-     RooStats
-
+     RooArgSet, RooArgList, TH2F, TTree, TF2, RooFormulaVar, TCanvas
 #pretty plots stuff from Irakli
 from beautify import beautify
 from initCMSStyle import initCMSStyle
@@ -37,66 +37,13 @@ def main(options,args):
                                              RooFit.NumCPU(1),
                                              RooFit.ConditionalObservables(ws.set('condObs')),
                                              RooFit.Verbose(True))
+
+    ws.saveSnapshot('standardmodel',ws.allVars())
     
     minuit = ROOT.RooMinuit(theNLL)
     minuit.setPrintLevel(1)
     minuit.setPrintEvalErrors(-1)
     minuit.setErrorLevel(.5)
-
-   
-
-    ws.defineSet('POI',
-                 ROOT.RooArgSet(ws.var('%s_%s'%(cfg.get('Global','par1Name'),
-                                                cfg.get('Global','couplingType'))),
-                                ws.var('%s_%s'%(cfg.get('Global','par2Name'),
-                                                cfg.get('Global','couplingType')))))
-
-    #set POI to SM and savesnapshot to make NULL model    
-    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
-                    cfg.get('Global','couplingType'))).setVal(0.0)
-    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
-                    cfg.get('Global','couplingType'))).setVal(0.0)
-
-    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
-                    cfg.get('Global','couplingType'))).setConstant(True)
-    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
-                    cfg.get('Global','couplingType'))).setConstant(True)
-    
-    
-    ws.saveSnapshot('standardmodel',ws.allVars())
-    
-    smModel = RooStats.ModelConfig('smModel',ws)
-    smModel.SetPdf(ws.pdf('TopLevelPdf'))
-    smModel.SetConditionalObservables(ws.set('condObs'))
-    smModel.SetNuisanceParameters(ws.set('nuis'))
-    smModel.SetParametersOfInterest(ws.set('POI'))
-    smModel.SetGlobalObservables(ws.set('glbObs'))
-    smModel.SetSnapshot(ws.set('POI'))
-
-    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
-                    cfg.get('Global','couplingType'))).setConstant(False)
-    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
-                    cfg.get('Global','couplingType'))).setConstant(False)
-
-    atgcModel = RooStats.ModelConfig('smModel',ws)
-    atgcModel.SetPdf(ws.pdf('TopLevelPdf'))
-    atgcModel.SetConditionalObservables(ws.set('condObs'))
-    atgcModel.SetNuisanceParameters(ws.set('nuis'))
-    atgcModel.SetParametersOfInterest(ws.set('POI'))
-    atgcModel.SetGlobalObservables(ws.set('glbObs'))
-    atgcModel.SetSnapshot(ws.set('POI'))
-
-    #limitCalc = RooStats.FeldmanCousins(ws.data('allcountingdata'),
-    #                                    atgcModel)
-
-    limitCalc = RooStats.ProfileLikelihoodCalculator(ws.data('allcountingdata'),
-                                                     atgcModel)
-
-    hypoTest = limitCalc.GetHypoTest()
-
-    print hypoTest.CLs()
-
-    exit(1)
     
     #find the values of the parameters that minimize the likelihood
     minuit.setStrategy(2)
@@ -108,11 +55,13 @@ def main(options,args):
     #ws.var('err_gs').setConstant(True)
     #ws.var('err_gb').setConstant(True)
 
+    ws.defineSet('POI',
+                 ROOT.RooArgSet(ws.var('%s_%s'%(cfg.get('Global','par1Name'),cfg.get('Global','couplingType'))),
+                                ws.var('%s_%s'%(cfg.get('Global','par2Name'),cfg.get('Global','couplingType')))))
+
     ws.saveSnapshot('%s_fitresult'%cfg.get('Global','couplingType'),
                     ws.allVars())
-
-    exit(1)
-
+        
     #create profile likelihood       
     level_68 = ROOT.TMath.ChisquareQuantile(.68,2)/2.0 # delta NLL for 68% confidence level for -log(LR)
     level_95 = ROOT.TMath.ChisquareQuantile(.95,2)/2.0 # delta NLL for 95% confidence level for -log(LR)
@@ -249,6 +198,11 @@ def main(options,args):
     
     output.Close()
 
+    if options.makeCards:
+        print
+        print "Creating cards for Higgs Combined Limit calculator!"
+        makeHCLCards(ws,cfg)
+
     return 0
     #really, that's all I had to do??
     
@@ -283,7 +237,6 @@ def setupWorkspace(ws,options):
 
     #first pass: process the backgrounds, signal and data into
     # simultaneous counting pdfs over the bins
-    ws.defineSet('nuis',RooArgSet(ws.var('err_gl')))    
     for section in fit_sections:
         #create the basic observable, this is used behind the scenes
         #in the background and signal models
@@ -292,7 +245,9 @@ def setupWorkspace(ws,options):
         channel_cat.setLabel(section)
         print 'Building pdf for configuration section:',section        
 
-        ws.factory('backgroundError_%s[%f]'%(section,exp(cfg.getfloat(section,'background_err'))))
+        for it,bkg in getBackgroundsInCfg(section,cfg).iteritems():
+            ws.factory('backgroundError_%s_%s[%f]'%(section,it,exp(bkg[1])))
+        
         ws.factory('selectionError_%s[%f]'%(section,exp(cfg.getfloat(section,'selection_err'))))
 
         processFittingData(ws,cfg,section)        
@@ -303,7 +258,7 @@ def setupWorkspace(ws,options):
 
         createPdfForChannel(ws,cfg,section)
 
-        ws.data('countingdata_%s'%section).addColumn(channel_cat)    
+        ws.data('countingdata_%s'%section).addColumn(channel_cat)
 
     getattr(ws,'import')(channel_cat)
 
@@ -312,18 +267,15 @@ def setupWorkspace(ws,options):
                           ws.cat('channels'))    
     alldatavars = RooArgSet(ws.cat('channels'))
     conditionals = RooArgSet()
-    glbObs = RooArgSet()
                                  
     #second pass: process counting pdfs into simultaneous pdf over channels
     for section in fit_sections:
         top.addPdf(ws.pdf('countingpdf_%s'%section),section)
         alldatavars.add(ws.var('%s_%s'%(cfg.get(section,'obsVar'),section)))
         conditionals.add(ws.var('%s_%s'%(cfg.get(section,'obsVar'),section)))
-        alldatavars.add(ws.var('n_observed_%s'%section))
-        glbObs.add(ws.var('n_observed_%s'%section))
+        alldatavars.add(ws.var('n_observed_%s'%section))         
     getattr(ws,'import')(top)
 
-    ws.defineSet('glbObs',glbObs)
     ws.defineSet('condObs',conditionals)
 
     allcountingdata = RooDataSet('allcountingdata',
@@ -338,7 +290,8 @@ def setupWorkspace(ws,options):
         print 'countingdata_%s has %d entries'%(section,current.numEntries())
         for i in range(current.numEntries()):            
             alldatavars = current.get(i)
-            allcountingdata.add(alldatavars)    
+            allcountingdata.add(alldatavars)
+
 
 def fitATGCExpectedYields(ws,cfg,section):
     pwd = ROOT.gDirectory.GetPath()
@@ -374,6 +327,8 @@ def fitATGCExpectedYields(ws,cfg,section):
     par2GridMax = par2GridMax + par2PadSize
     par1GridMin = par1GridMin - par1PadSize #add padding to put values at bin centers, assuming evently spaced points
     par2GridMin = par2GridMin - par2PadSize
+
+    print "printing:::::::::",par1PadSize,' ', par2PadSize,' ', par1GridMin,' ', par1GridMax,' ',par2GridMin,' ',par2GridMax
     
     #create the variables for the nxn grid, doesn't go in the workspace
     obs_mc = ws.var('%s_%s'%(cfg.get(section,'obsVar'),section))    
@@ -397,6 +352,7 @@ def fitATGCExpectedYields(ws,cfg,section):
             binMin = bins[i-1]
             binMax = bins[i]
             print obs_mc.GetName(),' > ',str(binMin),' && ',obs_mc.GetName(),' < ',str(binMax)
+            print obs_mc.GetName(),' > ', str(binMin),' && ', cfg.get(section,'obsVar'),' < ', str(binMax),')'
             sigObj.Draw(par2Name+'_grid:'+par1Name+'_grid >> theBaseData_'+section+'_'+str(i),
                         weight.GetName()+'*('+cfg.get(section,'obsVar') + #
                         ' > ' + str(binMin) +
@@ -404,6 +360,7 @@ def fitATGCExpectedYields(ws,cfg,section):
                         ' < ' + str(binMax)+')','goff')
         else:
             print obs_mc.GetName(),' > ',str(bins[len(bins)-2])
+#            print obs_mc.GetName(),' > ',str(binMin)
             sigObj.Draw(par2Name+'_grid:'+par1Name+'_grid >> theBaseData_'+section+'_'+str(i),
                         weight.GetName()+'*('+cfg.get(section,'obsVar')+#
                         ' > ' + str(bins[len(bins)-2])+')','goff')
@@ -444,62 +401,64 @@ def processBackgroundModel(ws,cfg,section):
     bins = [float(i) for i in cfg.get(section,'obsBins').split(',')]
     pwd = ROOT.gDirectory.GetPath()
 
-    bkgFile = cfg.get(section,'background_model').split(':')[0]
-    bkgObj  = cfg.get(section,'background_model').split(':')[1]    
+    for it,bkg in getBackgroundsInCfg(section,cfg).iteritems():
 
-    bkgFile = TFile.Open(bkgFile)
-    ROOT.gDirectory.cd(pwd)    
-    bkgObj = bkgFile.Get(bkgObj)
-    if isinstance(bkgObj,ROOT.TTree):
-        bkgObj = bkgObj.CloneTree()
-    else:
-        bkgObj = bkgObj.Clone()    
-    bkgFile.Close()
-    ROOT.gDirectory.cd(pwd)
+        bkgFile = bkg[0].split(':')[0]
+        bkgObj  = bkg[0].split(':')[1]    
 
-    if isinstance(bkgObj,ROOT.TH1) and bkgObj.GetDimension() == 1:
-        print 'Background model for channel: "%s" is a TH1'%section
-        print 'Binning from config is overridden, consistency with other inputs will be checked.'
-        bkgObj.SetName('%s_input_data'%section)
-        bkgObj.SetTitle('Background Model')
+        bkgFile = TFile.Open(bkgFile)
+        ROOT.gDirectory.cd(pwd)    
+        bkgObj = bkgFile.Get(bkgObj)
+        if isinstance(bkgObj,ROOT.TTree):
+            bkgObj = bkgObj.CloneTree()
+        else:
+            bkgObj = bkgObj.Clone()    
+        bkgFile.Close()
+        ROOT.gDirectory.cd(pwd)
 
-        for i in range(1,len(bins)+1):
-            print i,bkgObj.GetBinContent(i)
+        if isinstance(bkgObj,ROOT.TH1) and bkgObj.GetDimension() == 1:
+            print 'Background model for channel: "%s:%s" is a TH1'%(section,it)
+            print 'Binning from config is overridden, consistency with other inputs will be checked.'
+            bkgObj.SetName('%s_%s_input_data'%(section,it))
+            bkgObj.SetTitle('Background Model : %s'%(it))
 
-        if not histogramsAreCompatible(ws.obj('%s_input_data'%section),
-                                       bkgObj):
-            print '%s_input_data binning : '%(section),binEdges(ws.obj('%s_input_data'%section))
-            print ' is not equal to '
-            print bkgObj.GetName(),'binning :',binEdges(bkgObj)
-            exit(1)
+            for i in range(1,len(bins)+1):
+                print i,bkgObj.GetBinContent(i)
 
-        if not histogramsAreCompatible(ws.obj('%s_signal_hc_input'%section),
-                                       bkgObj):
-            print '%s_signal_hc_input binning : '%s,binEdges(ws.obj('%s_signal_model_sm'%section))
-            print ' is not equal to '
-            print bkgObj.GetName(),'binning :',binEdges(bkgObj)
-            exit(1)
-        
-        histoToRooHistFunc(ws,cfg,section,bkgObj,'background')        
-    elif isinstance(bkgObj,ROOT.TTree):
-        print 'Background model for channel: "%s" is a TTree'%section
+            if not histogramsAreCompatible(ws.obj('%s_input_data'%section),
+                                           bkgObj):
+                print '%s_input_data binning : '%(section),binEdges(ws.obj('%s_input_data'%section))
+                print ' is not equal to '
+                print bkgObj.GetName(),'binning :',binEdges(bkgObj)
+                exit(1)
 
-        obsVar = cfg.get(section,'obsVar')        
-        bins = [float(i) for i in cfg.get(section,'obsBins').split(',')]
-        temp = TH1F('%s_background_input'%section,
-                    '',
-                    len(bins)-1,array('d',bins))        
-        bkgObj.Draw('%s >> %s_background_input'%(obsVar,section),
-                    cfg.get(section,'bkg_weight_var'),
-                    'goff')
+            if not histogramsAreCompatible(ws.obj('%s_signal_hc_input'%section),
+                                           bkgObj):
+                print '%s_signal_hc_input binning : '%s,binEdges(ws.obj('%s_signal_model_sm'%section))
+                print ' is not equal to '
+                print bkgObj.GetName(),'binning :',binEdges(bkgObj)
+                exit(1)
+                
+            histoToRooHistFunc(ws,cfg,section,bkgObj,it)        
+        elif isinstance(bkgObj,ROOT.TTree):
+            print 'Background model for channel: "%s" is a TTree'%section
+            
+            obsVar = cfg.get(section,'obsVar')        
+            bins = [float(i) for i in cfg.get(section,'obsBins').split(',')]
+            temp = TH1F('%s_%s_input_data'%(section,it),
+                        '',
+                        len(bins)-1,array('d',bins))        
+            bkgObj.Draw('%s >> %s_%s_input_data'%(obsVar,section,it),
+                        cfg.get(section,'bkg_weight_var'),
+                        'goff')
 
-        for i in range(1,len(bins)):
-            print i,temp.GetBinContent(i)
+            for i in range(1,len(bins)):
+                print i,temp.GetBinContent(i)
 
-        histoToRooHistFunc(ws,cfg,section,temp,'background')        
-    else:
-        print 'Invalid input data type: "%s"\nExiting!'%(bkgObj.IsA())
-        exit(1)    
+            histoToRooHistFunc(ws,cfg,section,temp,it)        
+        else:
+            print 'Invalid input data type: "%s"\nExiting!'%(bkgObj.IsA())
+            exit(1)  
     
 
 #create the signal model from the fitted input data
@@ -545,17 +504,17 @@ def processFittingData(ws,cfg,section):
     getattr(ws,'import')(obs)
     n_observed = RooRealVar('n_observed_%s'%section,
                             'n_observed_%s'%section,
-                            1.0,0,1e6)
-    #n_observed.removeMax()
+                            1.0,0,10)
+    n_observed.removeMax()
     countingSet = RooDataSet('countingdata_%s'%section,
                              'countingdata_%s'%section,
                              RooArgSet(obs,n_observed))       
-    
+
     if isinstance(inpObj,ROOT.TH1) and inpObj.GetDimension() == 1:
         print 'Input fitting data for channel: "%s" is a TH1'%section
         cfg.set(section,'obsBins',binEdges(inpObj))        
         print 'Config binning is overridden, new binning is:',cfg.get(section,'obsBins')
-        inpObj.SetName('%s_background_input'%section)       
+        inpObj.SetName('%s_input_data'%section)       
 
         for i in range(1,len(bins)+1):
             print i,inpObj.GetBinContent(i)
@@ -590,26 +549,27 @@ def processFittingData(ws,cfg,section):
 #the expected number of events for this bin
 def createPdfForChannel(ws,cfg,section):
     #systematic variations
+    bkgs = getBackgroundsInCfg(section,cfg)
+    for it,bkg in bkgs.iteritems():        
+        ws.factory('RooLognormal::backgroundErr_%s_%s(%s_%s_err_gb[1,0.001,50],1,backgroundError_%s_%s)'%(section,it,
+                                                                                                          section,it,
+                                                                                                          section,it))
+        ws.factory('prod::bkgExp_%s_%s(%s_%s_model,%s_%s_err_gb)'%(section,it,
+                                                                   section,it,
+                                                                   section,it))
+
     ws.factory('RooLognormal::selectionErr_%s(%s_err_gs[1,0.001,50],1,selectionError_%s)'%(section,section,section))
-    ws.factory('RooLognormal::backgroundErr_%s(%s_err_gb[1,0.001,50],1,backgroundError_%s)'%(section,section,section))
-    
     ws.factory('prod::sigExp_%s(%s_signal_model,%s_err_gs,err_gl)'%(section,section,section))
-    ws.factory('prod::bkgExp_%s(%s_background_model,%s_err_gb)'%(section,section,section))
-    ws.factory('Uniform::dummysig_%s(n_observed_%s)'%(section,section))
-    ws.factory('Uniform::dummybkg_%s(n_observed_%s)'%(section,section))
-    ws.factory('sum::expected_%s(sigExp_%s,bkgExp_%s)'%(section,section,section)) # for easy plotting 
-    #ws.factory('RooPoisson::pois_%s(n_observed_%s,expected_%s)'%(section,
-    #                                                             section,
-    #                                                             section))    
-    #ws.factory('PROD::countingpdf_%s(pois_%s,selectionErr_%s,backgroundErr_%s,lumiErr)'%(section,section,section,section))
+
+    ws.factory('sum::allbkgs_%s('%(section) +
+               ','.join('bkgExp_%s_%s'%(section,it) for it in bkgs) +
+               ')')
     
-    ws.factory('SUM::model_%s(sigExp_%s*dummysig_%s,bkgExp_%s*dummybkg_%s)'%(section,
-                                                                             section,section,
-                                                                             section,section))
-    ws.factory('PROD::countingpdf_%s(model_%s,selectionErr_%s,backgroundErr_%s,lumiErr)'%(section,section,
-                                                                                          section,section))
-    ws.set('nuis').add(RooArgSet(ws.var('%s_err_gs'%section),
-                                 ws.var('%s_err_gb'%section)))
+    ws.factory('sum::expected_%s(sigExp_%s,allbkgs_%s)'%(section,section,section))
+    ws.factory('RooPoisson::pois_%s(n_observed_%s,expected_%s)'%(section,section,section))
+    ws.factory('PROD::countingpdf_%s(pois_%s,selectionErr_%s,'%(section,section,section)+
+               ','.join('backgroundErr_%s_%s'%(section,it) for it in bkgs) +
+               ',lumiErr)')        
 
 #adds the overflow bin to the last bin of a histogram
 def makeLastBinOverflow(h,nBins):
@@ -738,7 +698,8 @@ def prettyContour(c,cfg):
     
    
     bea.beautifyLegend(legend)
-    legend.SetHeader("CMS Preliminary, #int L = 4.7  fb^{-1}");
+    legend.SetHeader("CMS Preliminary");
+#    legend.SetHeader("CMS Preliminary, #int L = 2.17  fb^{-1}");
     legend.AddEntry(cont68,"68% CL","l")
     legend.AddEntry(cont95,"95% CL","l")
     legend.Draw()
@@ -784,7 +745,7 @@ def prettyObsPlots(ws,cfg):
     for section in fit_sections:
         obsVar = ws.var('%s_%s'%(cfg.get(section,'obsVar'),section))
         obsHist = ws.obj('%s_input_data'%section)
-        bkgHist = ws.obj('%s_background_input'%section)        
+        bkgHist = ws.obj('allbkgs_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
 
         ws.loadSnapshot('%s_fitresult'%cfg.get('Global','couplingType'))
         bestFit = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
@@ -794,12 +755,11 @@ def prettyObsPlots(ws,cfg):
         sm = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
         sm.SetName('%s_sm'%section)
 
-        
         ws.var('%s_%s'%(cfg.get('Global','par1Name'),
-                        cfg.get('Global','couplingType'))).setVal(cfg.getfloat(section,'par1GridMax'))
-        ws.var('%s_%s'%(cfg.get('Global','par2Name'),
                         cfg.get('Global','couplingType'))).setVal(0)
-        
+        ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                        cfg.get('Global','couplingType'))).setVal(cfg.getfloat(section,'par2GridMax'))
+
         gridPoint = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
         gridPoint.SetName('%s_gridpoint'%section)
         
@@ -816,6 +776,7 @@ def prettyObsPlots(ws,cfg):
         obsHist.SetTitle('')
         obsHist.Draw('E')
 
+        
         bkgHist.SetLineColor(4)
         bkgHist.SetFillStyle(3001)
         bkgHist.SetFillColor(4)
@@ -838,19 +799,218 @@ def prettyObsPlots(ws,cfg):
                               9.15322580645161255e-01,9.23728813559322015e-01)
         legend.SetNColumns(2)
         bea.beautifyLegend(legend)
-        legend.SetHeader("CMS Preliminary, #int L = 4.7  fb^{-1}");
+ #       legend.SetTextSize(16.)
+        legend.SetHeader("CMS Preliminary");
+#        legend.SetHeader("CMS Preliminary, #int L = 4.7  fb^{-1}");
         legend.AddEntry(obsHist,"Data","lpe")
         legend.AddEntry(bkgHist,"Background","f")
         legend.AddEntry(sm,"Standard Model","l")
         legend.AddEntry(bestFit,"Best Fit","l")
         legend.AddEntry(gridPoint,
-                        "Anomalous Coupling %s = %.3f"%(cfg.get('Global','par1Name'),
+                        "Anomalous Coupling %s = %.3f"%(cfg.get('Global','par2Name'),
                                                         cfg.getfloat(section,'par1GridMax')),
                         "l")
+
         legend.Draw()
 
         canv.Write()
 
+def makeHCLCards(ws,cfg):
+    fit_sections = cfg.sections()
+    fit_sections.remove('Global')
+
+    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                    cfg.get('Global','couplingType'))).removeMin()
+    ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                    cfg.get('Global','couplingType'))).removeMax()
+
+    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                    cfg.get('Global','couplingType'))).removeMin()
+    ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                    cfg.get('Global','couplingType'))).removeMax()
+
+    for section in fit_sections:
+        bkgs = getBackgroundsInCfg(section,cfg)
+
+        obsVar = ws.var('%s_%s'%(cfg.get(section,'obsVar'),section))
+        obsHist = ws.obj('%s_input_data'%section)
+        bkgHists = [ws.obj('%s_%s_input'%(section,it)) for it in bkgs]
+        
+        ws.loadSnapshot('standardmodel')
+        smCard = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
+        smCard.SetName('%s_sm'%section)
+
+        sm = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
+        sm.SetName('%s_sm'%section)
+
+        par1Min=cfg.getfloat(section,'par1GridMinCard')
+        par1Max=cfg.getfloat(section,'par1GridMaxCard')
+        par2Min=cfg.getfloat(section,'par2GridMinCard')
+        par2Max=cfg.getfloat(section,'par2GridMaxCard')
+        parPoints=cfg.getint(section,'nGridParBinsCard')
+
+        par1gap=(par1Max-par1Min)/(parPoints-1)
+        par2gap=(par2Max-par2Min)/(parPoints-1)
+
+        for card_par1 in range(1,cfg.getint(section,'nGridParBinsCard')+1):
+            for card_par2 in range(1,cfg.getint(section,'nGridParBinsCard')+1):                
+                # create signal aTGC histo for grid point
+                # use fitted bin content for every point, also for SM
+                par1value=par1Min+par1gap*(card_par1-1);
+                par2value=par2Min+par2gap*(card_par2-1);
+                print 'making datacard ',par1value,',', par2value
+
+                nameCard = '%s_%s_%s%.4f_%s%.4f_%iGRIDpoints.txt'%(cfg.get(section,'cardName'),
+                                                                   section,
+                                                                   cfg.get('Global','par1Name'),par1value,
+                                                                   cfg.get('Global','par2Name'),par2value,
+                                                                   parPoints**2)
+                
+                ws.var('%s_%s'%(cfg.get('Global','par1Name'),
+                                cfg.get('Global','couplingType'))).setVal(par1value)
+                ws.var('%s_%s'%(cfg.get('Global','par2Name'),
+                                cfg.get('Global','couplingType'))).setVal(par2value)
+                gridPointCard = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
+                gridPointCard.SetName('%s_gridpoint'%section)
+
+                #replace with something real later
+                            
+                nBins=len(cfg.get(section,'obsBins').split(','))-1
+                jmax = 1+ len(bkgHists)
+                line_imax='\nimax %i number of bins'%(nBins)
+                line_jmax='\njmax %i number of bkg'%(jmax)
+                line_kmax='\nkmax %i number of syst'%(2 + len(bkgHists)) # replace with 2 + nbkg syst later
+                line_border='\n--------------------------------------------------'
+                bin = '\nbin\t\t'
+                bin_s = '\nbin\t\t'
+                process = '\nprocess\t'
+                process_numb = '\nprocess\t'
+                rate = '\nrate\t\t\t'
+                obs = '\nobservation'
+                for i in range(1,nBins+1):
+                    for j in range(jmax+1):
+                        bin += 'bin'+str(i)+'\t'
+                    bin_s += 'bin'+str(i)+'\t'
+                    obs += '\t' + str(obsHist.GetBinContent(i))
+                    process += '\tatgc_%s\tsm_%s\t'%(section,section)
+                    process += '\t'.join('%s_%s'%(section,it) for it in bkgs)
+                    process_numb += ''.join('\t%i'%ch for ch in range(jmax+1))
+
+                rate='\nrate\t'
+                ratenew='\nrate\t'
+                obs='\nobservation\t'
+                jmax= 2 + len(bkgHists)
+                nBins=sm.GetNbinsX()
+                for i in range(1,nBins+1):
+                    aTGC_rate=gridPointCard.GetBinContent(i)-smCard.GetBinContent(i)
+                    if (aTGC_rate**2 < 0.001**2):
+                        aTGC_rate=0.001
+
+                    #to do: multiple backgrounds
+                    bkgRates = [bkgHist.GetBinContent(i) for bkgHist in bkgHists]
+                    smRate = smCard.GetBinContent(i) - sum(bkgRates)
+                    
+                    rate+= '\t%.3f\t%.3f\t'%(aTGC_rate,smRate) + '\t'.join('%.3f'%b for b in bkgRates)                   
+                    
+                    obs+='\t'+str(obsHist.GetBinContent(i))
+
+                err_l = '\nlumi\tlnN\t'
+                lumi_err = 1+cfg.getfloat('Global','lumi_err')
+
+                err_bkg = {}
+                bkg_err = {}
+
+                for it,bkginfo in bkgs.iteritems():
+                    err_bkg[it] = '\n%s_err\tlnN\t'%(it)
+                    bkg_err[it] = 1+bkginfo[1]
+                    
+                err_sel = '\nsignal_err\tlnN\t'
+                sel_err = 1+cfg.getfloat(section,'selection_err')
+                
+                for i in range(1,nBins+1):
+                    err_l += '\t'+str(lumi_err)+'\t'+str(lumi_err)+''.join('\t-' for i in range(len(err_bkg)))
+
+                    ibkg = 0
+                    for it in err_bkg:
+                        err_bkg[it] += '\t-\t-' + ''.join('\t-' for i in range(ibkg)) + '\t%.3f'%(bkg_err[it]) + ''.join('\t-' for i in range(len(bkgs) - ibkg - 1))
+                        
+                        ibkg += 1
+                    
+                    err_sel += '\t'+str(sel_err)+'\t'+str(sel_err)+''.join('\t-' for i in range(len(err_bkg)))
+
+
+                f_card = open(nameCard, 'a')
+
+                f_card.write(line_imax)
+                f_card.write(line_jmax)
+                f_card.write(line_kmax)
+                f_card.write(line_border)
+                f_card.write(bin_s)
+                f_card.write(obs)
+                f_card.write(line_border)
+                f_card.write(bin)
+                f_card.write(process)
+                f_card.write(process_numb)
+
+                f_card.write(rate)
+                f_card.write(line_border)
+                f_card.write(err_l)
+                for it in err_bkg:
+                    f_card.write(err_bkg[it])
+                f_card.write(err_sel)
+
+                # make file containing run commands for created datacards
+                run_file_name='run_dataCards_'+section+'_'+str(parPoints)+'GRIDpoints'
+                f_run = open(run_file_name, 'a')
+                run_comand='print "POINT: '
+                run_comand+='_'+str(cfg.get('Global','par1Name'))+str(par1value)[:6]
+                run_comand+='_'+str(cfg.get('Global','par2Name'))+str(par2value)[:6]
+                run_comand+='"'
+                run_comand+='\n'
+                run_comand+='combine -M Asymptotic '
+                run_comand+=nameCard
+                run_comand+=' -n '
+                run_comand+='_'+str(cfg.get('Global','par1Name'))+str(par1value)[:6]
+                run_comand+='_'+str(cfg.get('Global','par2Name'))+str(par2value)[:6]
+                run_comand+='  --rMax 2'
+                run_comand+='\n'
+                f_run.write(run_comand)
+
+
+                # make file containing list of root output files by Higgs code, par1value, par2value
+                f_root = open('root_output_'+section+'_'+str(parPoints)+'GRIDpoints', 'a')
+                root_name='higgsCombine'
+                root_name+='_'+str(cfg.get('Global','par1Name'))+str(par1value)[:6]
+                root_name+='_'+str(cfg.get('Global','par2Name'))+str(par2value)[:6]
+                root_name+='.Asymptotic.mH120.root'
+                root_name+='\t'+str(par1value)+'\t'+str(par2value)+'\n'
+                f_root.write(root_name)
+
+def getBackgroundsInCfg(section,cfg):
+    # harvest the names of backgrounds in this config section "bkg_" in option name
+    bkgs = {}
+
+    for opt in cfg.options(section):
+        if 'bkg_' in opt:
+            bkgs[opt.split('_')[-1]] = [0,0]
+    
+    for opt in cfg.options(section):
+        if 'bkg_' in opt:
+            if 'err' not in opt:
+                bkgs[opt.split('_')[-1]][0] = cfg.get(section,opt)
+            if 'err' in opt:
+                bkgs[opt.split('_')[-1]][1] = cfg.getfloat(section,opt)
+            
+    sane = True
+    
+    for it in bkgs:
+        if not isinstance(bkgs[it][0],str) or bkgs[it][1] == 0:
+            print "background '%s' is missing a file or systematic error. Fix this."%it
+            sane = False
+    if not sane:
+        exit(1)
+
+    return bkgs
 
 if __name__ == "__main__":
     parser = OptionParser(description="%prog : A RooStats Implementation of Anomalous Triple Gauge Coupling Analysis.",
@@ -867,6 +1027,8 @@ if __name__ == "__main__":
     parser.add_option("--coverageTest",dest="coverageTest",help="Run a coverage test with 1000 pseudodata samples",
                       default=False,action="store_true")
     parser.add_option("--noBackground",dest="noBackground",help="Run without a background estimate.",
+                      default=False,action="store_true")
+    parser.add_option("--makeCards",dest="makeCards",help="Create Higgs Combined Limit calculator cards from aTGC model",
                       default=False,action="store_true")
     
     (options,args) = parser.parse_args()
