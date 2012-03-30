@@ -1124,7 +1124,7 @@ void Math::amoeba(matrix & p, vector<double> & y, int ndim,
 			if (y[i] > y[ihi]) {
 				inhi=ihi;
 				ihi=i;
-			} else if (y[i] > y[inhi] && i != ihi) inhi=i;
+			} else if (y[i] > y[inhi] && i != (size_t) ihi) inhi=i;
 		}
 		//cout << "y[ihi]=" << y[ihi] << endl;
 		//cout << "y[ilo]=" << y[ilo] << endl;
@@ -1133,7 +1133,7 @@ void Math::amoeba(matrix & p, vector<double> & y, int ndim,
 		    (stoppable&&(ifstream("stop").good()))) {
 		  //cout << "rtol=" << rtol << endl;
 			SWAP(y[0],y[ilo])
-			for (i=0;i<ndim;i++) SWAP(p[0][i],p[ilo][i])
+            for (i=0;i<(size_t)ndim;i++) SWAP(p[0][i],p[ilo][i])
 			for (i=0; i<y.size(); i++) y[i]= MINMAX * y[i];
 			break;
 		}
@@ -1153,7 +1153,7 @@ void Math::amoeba(matrix & p, vector<double> & y, int ndim,
 			ytry=amotry(p,y,psum,ndim,funk,ihi,0.5);
 			if (ytry >= ysave) {
 				for (i=0;i<mpts;i++) {
-					if (i != ilo) {
+                   if (i != (size_t) ilo) {
 						for (j=0;j<ndim;j++)
 							p[i][j]=psum[j]=0.5*(p[i][j]+p[ilo][j]);
 						y[i]=MINMAX*funk->operator()(psum);

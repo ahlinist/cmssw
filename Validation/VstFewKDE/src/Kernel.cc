@@ -65,7 +65,7 @@ Kernel::Kernel()
 Kernel::Kernel(const vector<double>& _mu, const vector<vector<double> >& _sigma, const vector<vector<double> >& _boundaries)
 {
   d = _mu.size();
-  assert(d==_sigma.size());
+  assert((size_t) d==_sigma.size());
   mu = _mu;
   sigmaDet = 1;
   sigma = matrix(0,0);
@@ -90,7 +90,7 @@ Kernel::Kernel(const vector<double>& _mu, const vector<vector<double> >& _sigma,
     }  
   else
     boundaries = _boundaries;
-  assert(d==boundaries.size());
+  assert((size_t) d==boundaries.size());
   for(int i=0; i<d; i++)
     assert(boundaries[i][0] <= boundaries[i][1]);
 
@@ -128,7 +128,7 @@ double Kernel::evaluate(const std::vector<double>& x) const
 // each direction i for which integrateOutThisDirection[i]==true will be integrated over
 Kernel Kernel::collapse(const vector<bool>& integrateOutThisDirection) const
 {
-  assert(d==integrateOutThisDirection.size());
+   assert((size_t)d==integrateOutThisDirection.size());
   matrix _sigma = sigma;
   vector<double> _mu = mu;
   vector<vector<double> > _boundaries = boundaries;

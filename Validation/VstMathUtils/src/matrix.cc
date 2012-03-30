@@ -53,8 +53,8 @@ const vector<double> & matrix::operator[](matrix::size_type row) const { return 
 
 void matrix::resize(matrix::size_type n, matrix::size_type m)
 {
-  if(n<0) n=0;
-  if(m<0) m=0;
+//  if(n<0) n=0;
+//  if(m<0) m=0;
   matrix::size_type n0 = nrows();
   matrix::size_type m0 = ncols();
   if(n0>n)
