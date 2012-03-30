@@ -471,7 +471,7 @@ void GraphicalOutput::addSummary(map<string,double> logLikelihoods)
   command = command + "zone 1 1\n";
   command = command + "opt ntic\n null 0 1 0 1 AB\n opt tic\n";
   command = command + "gr/set txci 1\n";
-  int ipos;
+  size_t ipos;
   string requestorName = RCPParameters::requestorInfo[0];
   while((ipos = requestorName.find("'")) != string::npos)
     {

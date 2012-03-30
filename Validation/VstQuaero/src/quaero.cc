@@ -19,10 +19,9 @@ Bruce Knuteson 2003
 #include <cmath>
 #include <algorithm>
 #include <numeric>
-//#include <stdlib>
-#include "gsl/gsl_math.h"
-#include "gsl/gsl_monte.h"
-#include "gsl/gsl_monte_miser.h"
+//#include "gsl/gsl_math.h"
+//#include "gsl/gsl_monte.h"
+//#include "gsl/gsl_monte_miser.h"
 #include "Validation/VstMathUtils/interface/Math.hh"
 #include "Validation/VstQuaeroUtils/interface/QuaeroEvent.hh"
 #include "Validation/VstQuaeroUtils/interface/QuaeroItemFile.hh"

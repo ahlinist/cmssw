@@ -167,7 +167,7 @@ void SystematicShift::reShift(std::vector<double> _systematicShift)
     }
   else
     {
-      assert(_systematicShift.size()==nSystematicErrorSources);
+      assert(_systematicShift.size()==(size_t) nSystematicErrorSources);
       
       // convert from uniform distribution to gaussian in each shift
       for(int i=0; i<nSystematicErrorSources; i++)

@@ -340,7 +340,7 @@ void QuaeroIO::generateModelMadEvent(string colliderRun, vector<double>& resonan
 	    signalCrossSection *= kFactor;
 
 	  double myLumi = 0;
-	  assert(iColliderSubRunCount<=lumi.size());
+	  assert((size_t) iColliderSubRunCount<=lumi.size());
 	  myLumi = lumi[iColliderSubRunCount-1];
 	  cout << "(" << myLumi/1000 << "fb^-1) " << flush;
 	  int numberOfEventsToGenerate = (int)(signalCrossSection*myLumi);
@@ -373,7 +373,7 @@ void QuaeroIO::generateModelMadEvent(string colliderRun, vector<double>& resonan
 	      if(RCPParameters::debugLevel>=4)
 		system(("cp "+getFilename("tmpMadEventDirectory")+"/Template/Events/unweighted_events.dat "+getFilename("MadEventLesHouchesEventFile",colliderRun,iColliderSubRun->second,Math::ftoa(iParticlesInFinalState))).c_str());
 	      vector<string> outStdhepFiles = Math::getFilesInDirectory(getFilename("tmpMadEventDirectory")+"/Template/Events/","out.stdhep_*");
-	      for(int i=0; i<outStdhepFiles.size(); i++)
+	      for(size_t i=0; i<outStdhepFiles.size(); i++)
 		{
 		  if(outStdhepFiles[i].substr(outStdhepFiles[i].length()-1)!="*")
 		    {
@@ -466,7 +466,7 @@ void QuaeroIO::generateModelMadEvent(string colliderRun, vector<double>& resonan
   else
     {
       string xsecString = "";
-      for(int i=0; i<xsec.size(); i++)
+      for(size_t i=0; i<xsec.size(); i++)
 	xsecString += Math::ftoa(Math::nice(xsec[i],+1))+" pb" + (i<xsec.size()-1 ? ", " : " ");
       system(("echo '  MadEvent cross section at "+colliderRun+" = "
 	      +xsecString+"' >> "+getFilename("answer")).c_str());     

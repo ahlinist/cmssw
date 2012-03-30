@@ -15,7 +15,7 @@ double QuaeroSysObject::parseSystematicallyAffectedNumber(const string& blah)
   vector<int> errorNumber;
   vector<double> errorMagnitude;
   string readType = "nominal";
-  for(int i=0; i<blah.length(); i++)
+  for(size_t i=0; i<blah.length(); i++)
     {
       if(blah.substr(i,1)=="{")
 	{
@@ -90,10 +90,10 @@ pair<string,double> QuaeroSysObject::parseSystematicallyAffectedIdentity(const s
 
   string blah = _blah;
   double _idQuality = 0;
-  for(int i=0; i<blah.length(); i++)
+  for(size_t i=0; i<blah.length(); i++)
     if(blah.substr(i,1)=="(")
       {
-	for(int j=i+1; j<blah.length(); j++)
+	for(size_t j=i+1; j<blah.length(); j++)
 	  if(blah.substr(j,1)==")")
 	    {
 	      _idQuality = atof(blah.substr(i+1,j-i-1).c_str());
@@ -102,7 +102,7 @@ pair<string,double> QuaeroSysObject::parseSystematicallyAffectedIdentity(const s
 	    }
       }
 
-  for(int i=0; i<blah.length(); i++)
+  for(size_t i=0; i<blah.length(); i++)
     {
       if(blah.substr(i,1)=="{")
 	{
@@ -281,7 +281,7 @@ bool QuaeroSysObject::read(istream& fin, const string& format)
 	  objectType=="uncl";
 	  e = px = py = pz = 0;
 	}
-      *this = QuaeroSysObject(objectType, HepLorentzVector(e, Hep3Vector(px, py, pz)), idQuality);
+      *this = QuaeroSysObject(objectType, CLHEP::HepLorentzVector(e, CLHEP::Hep3Vector(px, py, pz)), idQuality);
     }
   return(true);
 } 
