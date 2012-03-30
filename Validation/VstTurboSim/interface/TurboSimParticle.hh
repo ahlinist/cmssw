@@ -31,11 +31,11 @@ public:
    
    // Constructors
    TurboSimParticle( const TurboSimParticleType &type, 
-                     const HepLorentzVector& );
+                     const CLHEP::HepLorentzVector& );
    TurboSimParticle( ); // default
    
    // Accessors
-   const HepLorentzVector &lorentzVector() const { return _lorentzVector; }
+   const CLHEP::HepLorentzVector &lorentzVector() const { return _lorentzVector; }
    double mass() const { return _lorentzVector.m(); }
    double restMass() const { return TurboSimParticleType::mass(); }
    std::string toString( int format,
@@ -64,7 +64,7 @@ public:
    
 private:   
    
-   HepLorentzVector _lorentzVector;
+   CLHEP::HepLorentzVector _lorentzVector;
    
    // Utility Function
    enum ParseException { DELIMITER_EXCEPTION = 0 };

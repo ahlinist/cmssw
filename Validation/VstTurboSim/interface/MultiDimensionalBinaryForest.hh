@@ -22,9 +22,9 @@ public:
    MultiDimensionalBinaryForest() {}
 
    ~MultiDimensionalBinaryForest() { 
-     //cout << "Forest Destructor . . . " << flush;
+     cout << "Forest Destructor . . . " << flush;
       clear();
-     //cout << "Forest Destructed." << endl; 
+     cout << "Forest Destructed." << endl; 
    }
 
    void Add( T0 treeName, std::vector<T1> key, T2 value );

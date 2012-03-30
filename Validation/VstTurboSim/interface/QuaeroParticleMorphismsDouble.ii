@@ -15,7 +15,7 @@ void QuaeroParticleMorphismsDouble<T1,T2>::Add(const T1& key1, const T1& key2, c
     _value[i] = T2(value[i].getObjectType(),
 		      QuaeroRecoObject::setLorentzVectorMPtEtaPhi(value[i].getFourVector().m(),
 						value[i].getFourVector().perp(),
-						QuaeroRecoObject::getDetectorEta("cdf",value[i].getObjectTypeSansSign(),Math::theta2eta(value[i].getFourVector().theta()),zvtx),
+						QuaeroRecoObject::getDetectorEta("cms",value[i].getObjectTypeSansSign(),Math::theta2eta(value[i].getFourVector().theta()),zvtx),
 						value[i].getFourVector().phi()
 						));
   node.particles = _value;
@@ -73,7 +73,7 @@ void QuaeroParticleMorphismsDouble<T1,T2>::shimmy(vector<T2>& result, const T1& 
 {
   std::vector<double> targetKey = getKey(targetKey1, targetKey2, zvtx);
   std::vector<double> closestKey = getKey(closestKey1, closestKey2, zvtx);
-  HepLorentzVector net;
+  CLHEP::HepLorentzVector net;
   for(size_t i=0; i<result.size(); i++)
     net += result[i].getFourVector();
   for(size_t i=0; i<result.size(); i++)
@@ -96,9 +96,9 @@ void QuaeroParticleMorphismsDouble<T1,T2>::shimmy(vector<T2>& result, const T1& 
       result[i] = T2(result[i].getObjectType(),
 		     QuaeroRecoObject::setLorentzVectorMPtEtaPhi(result[i].getFourVector().m(),
 					       max(0.,result[i].getFourVector().perp()+nearbyTargetKey.getFourVector().perp()-nearbyClosestKey.getFourVector().perp()),
-					       QuaeroRecoObject::getEventEta("cdf",result[i].getObjectTypeSansSign(), Math::theta2eta(result[i].getFourVector().theta()),zvtx)+
-						(QuaeroRecoObject::getEventEta("cdf",nearbyTargetKey.getObjectTypeSansSign(), Math::theta2eta(nearbyTargetKey.getFourVector().theta()),zvtx)-
-						QuaeroRecoObject::getEventEta("cdf",nearbyClosestKey.getObjectTypeSansSign(), Math::theta2eta(nearbyClosestKey.getFourVector().theta()),zvtx)),
+					       QuaeroRecoObject::getEventEta("cms",result[i].getObjectTypeSansSign(), Math::theta2eta(result[i].getFourVector().theta()),zvtx)+
+						(QuaeroRecoObject::getEventEta("cms",nearbyTargetKey.getObjectTypeSansSign(), Math::theta2eta(nearbyTargetKey.getFourVector().theta()),zvtx)-
+						QuaeroRecoObject::getEventEta("cms",nearbyClosestKey.getObjectTypeSansSign(), Math::theta2eta(nearbyClosestKey.getFourVector().theta()),zvtx)),
 					       result[i].getFourVector().phi()+(nearbyTargetKey.getFourVector().phi()-nearbyClosestKey.getFourVector().phi()) 
 					       ));
     }

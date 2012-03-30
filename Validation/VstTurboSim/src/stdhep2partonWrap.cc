@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <cstdlib>
 //#include "Validation/VstStdhep/interface/stdhep_mcfio.h"
 //#include "Validation/VstStdhep/interface/stdhep_declarations.h"

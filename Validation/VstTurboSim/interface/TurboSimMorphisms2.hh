@@ -83,7 +83,7 @@ private:
   double clusterDistanceStick, clusterDistanceFat, swallowDistance, mergeMass, mergeEnergy, ignoreEnergy;
   int maximumNumberOfMorphismTableRowsAbleToBeHeldInMemoryAtOneTime, maxPartonObjectsOnOneLine;
 
-  double deltaAngle(const HepLorentzVector& v1, const HepLorentzVector& v2, AngleMeasure angleMeasure = DEFAULT);
+  double deltaAngle(const CLHEP::HepLorentzVector& v1, const CLHEP::HepLorentzVector& v2, AngleMeasure angleMeasure = DEFAULT);
 
 };
 

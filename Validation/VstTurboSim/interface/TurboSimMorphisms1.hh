@@ -99,8 +99,8 @@ private:
   int maximumNumberOfMorphismTableRowsAbleToBeHeldInMemoryAtOneTime, maxPartonObjectsOnOneLine;
 
  
-  double deltaAngle(const HepLorentzVector& v1, 
-		    const HepLorentzVector& v2,
+  double deltaAngle(const CLHEP::HepLorentzVector& v1, 
+		    const CLHEP::HepLorentzVector& v2,
   		    AngleMeasure angleMeasureMethod = DEFAULT);
 
 

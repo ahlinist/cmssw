@@ -41,7 +41,7 @@ public:
    double weight() const { return _weight; }
    int numParticles() const { return size(); }
    const TurboSimEventData *eventData() const { return _eventData; }
-   HepLorentzVector lorentzVector() const;
+   CLHEP::HepLorentzVector lorentzVector() const;
    double mass() const;
    TurboSimParticle::StringFormat defaultStringFormat() const;
    std::string toString( ) const { return toString( defaultStringFormat() ); }

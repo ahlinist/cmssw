@@ -10,6 +10,8 @@ Comments: This file is simply a wrapper for the fortran code
 #include "Validation/VstTurboSim/interface/stdhep2partonWrap.hh"
 #include <unistd.h>
 #include <iostream>
+#include <cassert>
+#include <cstdlib>
 using namespace std;
 
 int main(int argc, char* argv[])
