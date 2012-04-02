@@ -1030,11 +1030,11 @@ def getBackgroundsInCfg(section,cfg):
     bkgs = {}
 
     for opt in cfg.options(section):
-        if 'bkg_' in opt:
+        if 'bkg_' in opt and 'weight' not in opt:
             bkgs[opt.split('_')[-1]] = [0,0]
     
     for opt in cfg.options(section):
-        if 'bkg_' in opt:
+        if 'bkg_' in opt and 'weight' not in opt:
             if 'err' not in opt:
                 bkgs[opt.split('_')[-1]][0] = cfg.get(section,opt)
             if 'err' in opt:
