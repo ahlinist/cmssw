@@ -10,6 +10,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TH3F.h>
+#include <TPRegexp.h>
 
 #include <limits>
 
@@ -61,68 +62,14 @@ NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration(const edm::ParameterS
     ++numMassParameters_;
 
     std::string replaceBy_string = cfg_replacement.getParameter<std::string>("by");
-    size_t pos_token0 = -1;
-    size_t pos = 0;
-    std::set<std::string> tokens;
-    while ( pos < replaceBy_string.length() ) {
-      bool isSymbol = (replaceBy_string[pos] == '(' || replaceBy_string[pos] == ')' ||
-		       replaceBy_string[pos] == '*' || replaceBy_string[pos] == '/' ||
-		       replaceBy_string[pos] == '+' || replaceBy_string[pos] == '-');      
-      if ( (isSymbol || pos == (replaceBy_string.length() - 1)) && (pos - pos_token0) > 1 ) {
-	size_t num = ( pos != (replaceBy_string.length() - 1) ) ? pos - (pos_token0 + 1) : pos - pos_token0;
-	std::string token = std::string(replaceBy_string, pos_token0 + 1, num);	
-	tokens.insert(token);
-      }
-      if ( isSymbol ) pos_token0 = pos;
-      ++pos;
-    }
-
-    std::string formula_string = replaceBy_string;
-    int errorFlag = 0;    
-    replacement->numParForReplacements_ = 0;
-    for ( std::set<std::string>::const_iterator token = tokens.begin();
-	  token != tokens.end(); ++token ) {
-      if        ( (*token) == (*replacementName) ) {
-	formula_string = replace_string(formula_string, *token, "x", 0, 1000, errorFlag);
-      } else {
-	size_t posSeparator = token->find(".");
-	if ( posSeparator == std::string::npos ) {
-	  throw cms::Exception("NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration")
-	    << " Parameter token = " << (*token) << " has invalid format;" 
-	    << " expected format is 'daughter.type' !!\n";
-	}
-	
-	std::string particleName = std::string(*token, 0, posSeparator);
-	std::string value_string = std::string(*token, posSeparator + 1);
-	
-	if        ( isDaughter(particleName)  ) {
-	  replaceParByFitParameter* parForReplacement = new replaceParByFitParameter();	  
-	  parForReplacement->fitParameterName_ = (*token);
-	  parForReplacement->iPar_ = replacement->numParForReplacements_;
-	  std::ostringstream par_string;
-	  par_string << "[" << parForReplacement->iPar_ << "]";
-	  formula_string = replace_string(formula_string, *token, par_string.str(), 0, 1000, errorFlag);
-	  replacement->parForReplacements_.push_back(parForReplacement);
-	  ++replacement->numParForReplacements_;
-	} else if ( isResonance(particleName) ) {
-	  replaceParByResonanceHypothesis* parForReplacement = new replaceParByResonanceHypothesis();	  
-	  parForReplacement->resonanceName_ = particleName;
-	  parForReplacement->valueExtractor_ = new StringObjectFunction<NSVfitResonanceHypothesis>(value_string);
-	  parForReplacement->iPar_ = replacement->numParForReplacements_;
-	  std::ostringstream par_string;
-	  par_string << "[" << parForReplacement->iPar_ << "]";
-	  formula_string = replace_string(formula_string, *token, par_string.str(), 0, 1000, errorFlag);
-	  replacement->parForReplacements_.push_back(parForReplacement);
-	  ++replacement->numParForReplacements_;
-	} else {
-	  throw cms::Exception("NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration")
-	    << " No resonance/daughter of name = " << particleName << " defined !!\n";
-	}
-      } 
-    }
-
-    std::string formulaName = std::string(*replacementName).append("_formula");    
-    replacement->replaceBy_ = new TFormula(formulaName.data(), formula_string.data());
+    replacement->replaceBy_ = 
+      makeReplacementFormula(replaceBy_string, *replacementName, 
+			     replacement->parForReplacements_, replacement->numParForReplacements_);
+    
+    std::string deltaFuncDerrivative_string = cfg_replacement.getParameter<std::string>("deltaFuncDerrivative");
+    replacement->deltaFuncDerrivative_ = 
+      makeReplacementFormula(deltaFuncDerrivative_string, *replacementName, 
+			     replacement->parForDeltaFuncDerrivative_, replacement->numParForDeltaFuncDerrivative_);
 
     fitParameterReplacements_.push_back(replacement);
   }
@@ -444,6 +391,84 @@ bool NSVfitAlgorithmByIntegration::isResonance(const std::string& resonanceName)
   return isResonance;
 }
 
+TFormula* NSVfitAlgorithmByIntegration::makeReplacementFormula(
+            const std::string& expression, const std::string& replacementName,
+	    std::vector<replaceParBase*>& parForReplacements, int& numParForReplacements)
+{
+  size_t pos_token0 = -1;
+  size_t pos = 0;
+  std::set<std::string> tokens;
+  while ( pos < expression.length() ) {
+    bool isSymbol = (expression[pos] == '(' || expression[pos] == ')' ||
+		     expression[pos] == '*' || expression[pos] == '/' ||
+		     expression[pos] == '+' || expression[pos] == '-');      
+    if ( (isSymbol || pos == (expression.length() - 1)) && (pos - pos_token0) > 1 ) {
+      size_t num = ( pos != (expression.length() - 1) ) ? pos - (pos_token0 + 1) : pos - pos_token0;
+      std::string token = std::string(expression, pos_token0 + 1, num);	
+//--- skip tokens that are constant numbers     
+      std::string regexpParser_notNumber_string = std::string("[^0-9.]+");
+      TPRegexp regexpParser_notNumber(regexpParser_notNumber_string.data());
+      if ( regexpParser_notNumber.Match(token.data()) ) {
+	//std::cout << "adding token = " << token << std::endl;
+	tokens.insert(token);
+      } else {
+	//std::cout << "skipping token = " << token << std::endl;
+      }
+    }
+    if ( isSymbol ) pos_token0 = pos;
+    ++pos;
+  }
+
+  std::string formula_string = expression;
+  int errorFlag = 0;    
+  numParForReplacements = 0;
+  for ( std::set<std::string>::const_iterator token = tokens.begin();
+	token != tokens.end(); ++token ) {
+    if ( (*token) == replacementName ) {
+      formula_string = replace_string(formula_string, *token, "x", 0, 1000, errorFlag);
+    } else {
+      size_t posSeparator = token->find(".");
+      if ( posSeparator == std::string::npos ) {
+	throw cms::Exception("NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration")
+	  << " Parameter token = " << (*token) << " has invalid format;" 
+	  << " expected format is 'daughter.type' !!\n";
+      }
+	
+      std::string particleName = std::string(*token, 0, posSeparator);
+      std::string value_string = std::string(*token, posSeparator + 1);
+	
+      if ( isDaughter(particleName)  ) {
+	replaceParByFitParameter* parForReplacement = new replaceParByFitParameter();	  
+	parForReplacement->fitParameterName_ = (*token);
+	parForReplacement->iPar_ = numParForReplacements;
+	std::ostringstream par_string;
+	par_string << "[" << parForReplacement->iPar_ << "]";
+	formula_string = replace_string(formula_string, *token, par_string.str(), 0, 1000, errorFlag);
+	parForReplacements.push_back(parForReplacement);
+	++numParForReplacements;
+      } else if ( isResonance(particleName) ) {
+	replaceParByResonanceHypothesis* parForReplacement = new replaceParByResonanceHypothesis();	  
+	parForReplacement->resonanceName_ = particleName;
+	parForReplacement->valueExtractor_ = new StringObjectFunction<NSVfitResonanceHypothesis>(value_string);
+	parForReplacement->iPar_ = numParForReplacements;
+	std::ostringstream par_string;
+	par_string << "[" << parForReplacement->iPar_ << "]";
+	formula_string = replace_string(formula_string, *token, par_string.str(), 0, 1000, errorFlag);
+	parForReplacements.push_back(parForReplacement);
+	++numParForReplacements;
+      } else {
+	throw cms::Exception("NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration")
+	  << " No resonance/daughter of name = " << particleName << " defined !!\n";
+      }
+    } 
+  }
+
+  std::string formulaName = std::string(replacementName).append("_formula");    
+  TFormula* formula = new TFormula(formulaName.data(), formula_string.data());
+
+  return formula;
+}
+
 NSVfitParameter* NSVfitAlgorithmByIntegration::getFitParameter(const std::string& token)
 {
   size_t posSeparator = token.find(".");
@@ -474,14 +499,17 @@ double NSVfitAlgorithmByIntegration::nll(const double* x, const double* param) c
   for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
 	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
     TFormula* formula = (*fitParameterReplacement)->replaceBy_;
+    //std::cout << "formula = " << formula->GetTitle() << std::endl;
 
     for ( int iPar = 0; iPar < (*fitParameterReplacement)->numParForReplacements_; ++iPar ) {
       formula->SetParameter(iPar, (*(*fitParameterReplacement)->parForReplacements_[iPar])(fitParameterValues_));
+      //std::cout << "par #" << iPar << " = " << formula->GetParameter(iPar) << std::endl;
     }
 
 //--- check if fitParameter is within limits;
 //    return probability zero if not
     double fitParameterValue = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
+    //std::cout << "value = " << fitParameterValue << std::endl;
     if ( fitParameterValue >= fitParameters_[(*fitParameterReplacement)->idxToReplace_].LowerLimit() &&
 	 fitParameterValue <= fitParameters_[(*fitParameterReplacement)->idxToReplace_].UpperLimit() ) {
       fitParameterValues_[(*fitParameterReplacement)->idxToReplace_] = fitParameterValue;
@@ -493,8 +521,29 @@ double NSVfitAlgorithmByIntegration::nll(const double* x, const double* param) c
 //--- build event, resonance and particle hypotheses
   eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
 
-//--- compute likelihood
-  return eventModel_->nll(currentEventHypothesis_);
+//--- compute likelihood;
+//    add derrivatives of delta functions for each fit parameter that is replaced in integration
+//   (cf. http://en.wikipedia.org/wiki/Dirac_delta_function )
+  double nll = eventModel_->nll(currentEventHypothesis_);
+
+   for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
+	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
+    TFormula* formula = (*fitParameterReplacement)->deltaFuncDerrivative_;
+    //std::cout << "formula = " << formula->GetTitle() << std::endl;
+
+    for ( int iPar = 0; iPar < (*fitParameterReplacement)->numParForDeltaFuncDerrivative_; ++iPar ) {
+      formula->SetParameter(iPar, (*(*fitParameterReplacement)->parForDeltaFuncDerrivative_[iPar])(fitParameterValues_));
+      //std::cout << "par #" << iPar << " = " << formula->GetParameter(iPar) << std::endl;
+    }
+
+    double probCorr = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
+    //std::cout << "value = " << probCorr << std::endl;
+    if ( probCorr > 0. && !TMath::IsNaN(probCorr) ) {
+      nll -= TMath::Log(probCorr);
+    }
+  }
+
+  return nll;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

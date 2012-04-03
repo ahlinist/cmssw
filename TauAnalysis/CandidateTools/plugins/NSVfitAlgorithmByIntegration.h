@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.7 2011/06/13 17:57:28 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.8 2012/03/14 09:51:31 veelken Exp $
  *
  */
 
@@ -61,6 +61,15 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
 
   bool isDaughter(const std::string&);
   bool isResonance(const std::string&);
+
+  struct replaceParBase
+  {
+    virtual void beginJob(NSVfitAlgorithmByIntegration*) {}
+    virtual double operator()(const double*) const = 0;
+    int iPar_;
+  };
+
+  TFormula* makeReplacementFormula(const std::string&, const std::string&, std::vector<replaceParBase*>&, int&);
   
   NSVfitParameter* getFitParameter(const std::string&);
   
@@ -78,13 +87,6 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   edm::RunNumber_t currentRunNumber_;
   edm::LuminosityBlockNumber_t currentLumiSectionNumber_;
   edm::EventNumber_t currentEventNumber_;
-
-  struct replaceParBase
-  {
-    virtual void beginJob(NSVfitAlgorithmByIntegration*) {}
-    virtual double operator()(const double*) const = 0;
-    int iPar_;
-  };
 
   struct replaceParByFitParameter : replaceParBase
   {
@@ -168,6 +170,10 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
 	    par != parForReplacements_.end(); ++par ) {
 	(*par)->beginJob(algorithm);
       }
+      for ( std::vector<replaceParBase*>::iterator par = parForDeltaFuncDerrivative_.begin();
+	    par != parForDeltaFuncDerrivative_.end(); ++par ) {
+	(*par)->beginJob(algorithm);
+      }
     }
     std::string name_;
     double iterLowerLimit_;
@@ -180,9 +186,12 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     std::string toReplace_;
     int idxToReplace_;
     TFormula* replaceBy_;
+    TFormula* deltaFuncDerrivative_;
     int idxMassParameter_;
     std::vector<replaceParBase*> parForReplacements_;
     int numParForReplacements_;
+    std::vector<replaceParBase*> parForDeltaFuncDerrivative_;
+    int numParForDeltaFuncDerrivative_;
   };
 
   std::vector<fitParameterReplacementType*> fitParameterReplacements_;
