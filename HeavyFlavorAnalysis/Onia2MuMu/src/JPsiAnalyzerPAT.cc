@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.52 2011/07/18 21:05:49 hwoehri Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.53 2011/08/16 13:26:20 hwoehri Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -583,6 +583,15 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    // check HLT TriggerReuslts
    this->hltReport(iEvent, iSetup);
 
+<<<<<<< JPsiAnalyzerPAT.cc
+   bool trigOK = false;
+   for (unsigned int iTrig = 0 ; iTrig < HLTBitNames_.size() ; iTrig++) {
+     if (mapTriggerNameToIntFired_[HLTBitNames_.at(iTrig)] == 3) trigOK = true;
+   }
+   if (requireTriggerMatching_ && !trigOK && !_storeAllMCEvents) return;
+
+=======
+>>>>>>> 1.53
    // Event related infos
    eventNb= iEvent.id().event() ;
    runNb=iEvent.id().run() ;
