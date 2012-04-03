@@ -2,12 +2,14 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include "DataFormats/Common/interface/Handle.h"
-
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/View.h"
+#include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
@@ -73,6 +75,27 @@ void NSVfitEventHypothesisAnalyzerT<T>::beginJob()
 
   svFitIsValidSolution_ = dqmStore.book1D("svFitIsValidSolution", "svFitIsValidSolution",  2, -0.5, 1.5);
 
+  svFitMassVsSigmaXL_ = 
+    dqmStore.book2D("svFitMassVsVisMassXL", 
+		    "svFitMassVsVisMassXL", 
+		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+  svFitMassVsSigmaXL_oneProng0pi0_ = 
+    dqmStore.book2D("svFitMassVsVisMassXL_oneProng0pi0", 
+		    "svFitMassVsVisMassXL_oneProng0pi0", 
+		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+  svFitMassVsSigmaXL_oneProng1pi0_ = 
+    dqmStore.book2D("svFitMassVsVisMassXL_oneProng1pi0", 
+		    "svFitMassVsVisMassXL_oneProng1pi0", 
+		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+  svFitMassVsSigmaXL_oneProng2pi0_ = 
+    dqmStore.book2D("svFitMassVsVisMassXL_oneProng2pi0", 
+		    "svFitMassVsVisMassXL_oneProng2pi0", 
+		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+  svFitMassVsSigmaXL_threeProng0pi0_ = 
+    dqmStore.book2D("svFitMassVsVisMassXL_threeProng0pi0", 
+		    "svFitMassVsVisMassXL_threeProng0pi0", 
+		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+  
   plotEntries1_.push_back(new plotEntryType1(
     dqmDirectory_,  -1.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
   plotEntries1_.push_back(new plotEntryType1(
@@ -156,16 +179,19 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 {
   edm::Handle<NSVfitEventHypothesisCollection> svFitEventHypotheses;
   evt.getByLabel(srcEventHypotheses_, svFitEventHypotheses);
-  
+
   typedef edm::View<reco::Candidate> CandidateView;
   edm::Handle<CandidateView> genLeg1;
   evt.getByLabel(srcGenLeg1_, genLeg1);
-  if ( !(genLeg1->size() == 1) ) return;
-  const reco::Candidate::LorentzVector& genLeg1P4 = genLeg1->front().p4();
   edm::Handle<CandidateView> genLeg2;
   evt.getByLabel(srcGenLeg2_, genLeg2);
-  if ( !(genLeg2->size() == 1) ) return;
-  const reco::Candidate::LorentzVector& genLeg2P4 = genLeg2->front().p4();
+
+  int numGenTauDecays = genLeg1->size();
+  if ( srcGenLeg2_.label() != srcGenLeg1_.label() ) numGenTauDecays += genLeg2->size();
+  if ( !(numGenTauDecays == 2) ) return;
+  const reco::Candidate::LorentzVector& genLeg1P4 = genLeg1->at(0).p4();
+  const reco::Candidate::LorentzVector& genLeg2P4 = ( srcGenLeg2_.label() != srcGenLeg1_.label() ) ?
+    genLeg2->at(0).p4() : genLeg1->at(1).p4();
 
   typedef edm::View<reco::MET> MEtView;
   edm::Handle<MEtView> genMEt;
@@ -203,6 +229,8 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     double svFitSigmaDown = svFitResonanceHypothesis->massErrDown();
     double svFitSigma     = TMath::Sqrt(square(svFitSigmaUp) + square(svFitSigmaDown));
 
+    svFitMassVsSigmaXL_->Fill(svFitSigma, svFitMass, evtWeight);
+    
     assert(svFitResonanceHypothesis->numDaughters() == 2);
     const NSVfitSingleParticleHypothesis* svFitDaughter1 = dynamic_cast<const NSVfitSingleParticleHypothesis*>(
       svFitResonanceHypothesis->daughter(0));
@@ -210,6 +238,31 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     const NSVfitSingleParticleHypothesis* svFitDaughter2 = dynamic_cast<const NSVfitSingleParticleHypothesis*>(
       svFitResonanceHypothesis->daughter(1));
     const reco::Candidate::LorentzVector& svFitDaughter2P4 = svFitDaughter2->p4();
+
+    double dRcombination1 = square(deltaR(svFitDaughter1P4, genLeg1P4)) + square(deltaR(svFitDaughter2P4, genLeg2P4));
+    double dRcombination2 = square(deltaR(svFitDaughter1P4, genLeg2P4)) + square(deltaR(svFitDaughter2P4, genLeg1P4));
+    reco::Candidate::LorentzVector genLeg1P4_matched, genLeg2P4_matched;
+    if ( dRcombination1 < dRcombination2 ) {
+      genLeg1P4_matched = genLeg1P4;
+      genLeg2P4_matched = genLeg2P4;
+    } else {
+      genLeg1P4_matched = genLeg2P4;
+      genLeg2P4_matched = genLeg1P4;
+    }
+
+    if ( dynamic_cast<const pat::Tau*>(svFitDaughter1->particle().get()) == 0 &&
+	 dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get()) != 0 ) { // tau-pair decay to lepton + tau-jet
+      const pat::Tau* tau = dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get());
+      int tauDecayMode = tau->decayMode();
+      if ( tauDecayMode == reco::PFTau::kOneProng0PiZero ) 
+	svFitMassVsSigmaXL_oneProng0pi0_->Fill(svFitSigma, svFitMass, evtWeight);
+      else if ( tauDecayMode == reco::PFTau::kOneProng1PiZero )
+	svFitMassVsSigmaXL_oneProng1pi0_->Fill(svFitSigma, svFitMass, evtWeight);
+      else if ( tauDecayMode == reco::PFTau::kOneProng2PiZero ) 
+	svFitMassVsSigmaXL_oneProng2pi0_->Fill(svFitSigma, svFitMass, evtWeight);
+      else if ( tauDecayMode == reco::PFTau::kThreeProng0PiZero )
+	svFitMassVsSigmaXL_threeProng0pi0_->Fill(svFitSigma, svFitMass, evtWeight);
+    }
 
     double diTauPt, prodAngle_rf;
     if ( dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis) ) {
@@ -234,9 +287,9 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     reco::Candidate::LorentzVector recMEtP4 = svFitEventHypothesis->met()->p4();
     TVectorD covEigenValues(2);
     pfMEtSignCovMatrix->EigenVectors(covEigenValues);
-    double metCov          = TMath::Power(square(covEigenValues(0)) + square(covEigenValues(1)), 0.25);
+    double metCov = TMath::Power(square(covEigenValues(0)) + square(covEigenValues(1)), 0.25);
     reco::Candidate::LorentzVector rec_minus_genMEtP4 = recMEtP4 - genMEtP4;
-    double metPull         = rec_minus_genMEtP4.pt()/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, recMEtP4 - genMEtP4);
+    double metPull = rec_minus_genMEtP4.pt()/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, recMEtP4 - genMEtP4);
 
     for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
 	  plotEntry != plotEntries1_.end(); ++plotEntry ) {
@@ -246,6 +299,7 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	svFitMass,
 	svFitMass_mean, svFitMass_median, svFitMass_maximum, svFitMass_maxInterpol, 
 	svFitSigma, 
+	recMEtP4.pt(),
 	evtWeight);
     }
     
@@ -253,9 +307,9 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	  plotEntry != plotEntries2_.end(); ++plotEntry ) {
       (*plotEntry)->fillHistograms(
         svFitIsValidSolution,			     
-	genLeg1P4, svFitDaughter1P4, genLeg2P4, svFitDaughter2P4, svFitMass, svFitSigma, svFitSigmaUp, svFitSigmaDown, 
+	genLeg1P4_matched, svFitDaughter1P4, genLeg2P4_matched, svFitDaughter2P4, svFitMass, svFitSigma, svFitSigmaUp, svFitSigmaDown, 
 	diTauPt, prodAngle_rf,
-	metCov, rec_minus_genMEtP4, metPull, 
+	recMEtP4, genMEtP4, metCov, metPull, 
 	evtWeight);
     }
   }
