@@ -76,6 +76,7 @@ nSVfitTauLikelihoodMatrixElement = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodMatrixElement"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodMatrixElement"),
     VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/VMpdf.root"),
+    recToGenTauDecayModeMapFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/recToGenTauDecayModeMap.root"),
     applySinThetaFactor = cms.bool(True),
     verbosity = cms.int32(0)
 )
@@ -95,14 +96,14 @@ nSVfitResonanceLikelihoodPhaseSpace = cms.PSet(
 
 nSVfitResonanceLikelihoodLogM = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodLogM"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodMassRegularization"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodRegularization"),
     nll = cms.string("TMath::Log(mass)"),
     power = cms.double(1.0)
 )
 
 nSVfitResonanceLikelihoodLogEff = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodEff_power100"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodMassRegularization"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodRegularization"),
     nll = cms.string("TMath::Log(TMath::Max(5.00e-3, 4.21e-2*(2.52e-2 + TMath::Erf((x - 4.40e+1)*6.90e-3))))"),
     power = cms.double(1.0)
 )
@@ -266,7 +267,8 @@ nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
                 stepSizeFactor = cms.double(1.025), # nextM = max(stepSizeFactor*currentM, minStepSize)
                 minStepSize = cms.double(2.5),      
                 replace = cms.string("leg1.x"),
-                by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
+                by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x"),
+                deltaFuncDerrivative = cms.string("2.*leg1.x/mass_A")                                                   
             )
         ),
         vegasOptions = cms.PSet(
