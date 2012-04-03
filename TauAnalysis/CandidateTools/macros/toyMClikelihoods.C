@@ -295,7 +295,7 @@ void runToyMC(TF1* likelihoodFunctionX1, TF1* likelihoodFunctionX2, TF1* likelih
   
   TRandom3 rnd;
 
-  const int numToys = 10000;
+  const int numToys = 100000;
   for ( int iToy = 0; iToy < numToys; ++iToy ) {
     if ( (iToy % 1000) == 0 ) std::cout << "running Toy " << iToy << std::endl;
 
@@ -409,6 +409,7 @@ void toyMClikelihoods()
       //showFunction2d(likelihoodFunctionX1and2, testValuesX, testValuesY, metResolution, metErr, "M", "log(L)", outputFileName.Data());
     }
     TString outputFileName_toyMC = Form("plots/toyMC_metRes%1.2f.root", metResolution);
+    outputFileName_toyMC.ReplaceAll(".", "_");
     runToyMC(likelihoodFunctionX1, likelihoodFunctionX2, likelihoodFunctionX1and2, 
 	     metResolution, "M", "#sigma_{M}", outputFileName_toyMC.Data());
   }
