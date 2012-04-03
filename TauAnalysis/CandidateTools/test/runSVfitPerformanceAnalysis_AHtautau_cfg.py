@@ -26,7 +26,7 @@ channel = 'muTau'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-outputFileName = 'svFitPerformanceAnalysisPlots_%s_2012Mar20.root' % sample
+outputFileName = 'svFitPerformanceAnalysisPlots_AHtautau_%s_2012Mar28.root' % sample
 maxEvents = 20
 #--------------------------------------------------------------------------------
 
@@ -63,6 +63,16 @@ if inputFileNames is None:
         inputFile_regex = \
           r"[a-zA-Z0-9_/:.]*skimGenZtoMuTauWithinAcc_Ztautau_2012Jan11_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root"
         sample_type = 'Z'
+    elif sample == 'vbfHiggs120':
+        inputFilePath = '/data1/veelken/CMSSW_4_2_x/skims/user/v/veelken/CMSSW_4_2_x/skims/GenAHtoMuTauWithinAcc/vbfHiggs120/'
+        inputFile_regex = \
+          r"[a-zA-Z0-9_/:.]*skimGenAHtoMuTauWithinAcc_vbfHiggs120_2012Jan30_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root"
+        sample_type = 'Higgs'
+    elif sample == 'vbfHiggs130':
+        inputFilePath = '/data1/veelken/CMSSW_4_2_x/skims/user/v/veelken/CMSSW_4_2_x/skims/GenAHtoMuTauWithinAcc/vbfHiggs130/'
+        inputFile_regex = \
+          r"[a-zA-Z0-9_/:.]*skimGenAHtoMuTauWithinAcc_vbfHiggs130_2012Jan11_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root"
+        sample_type = 'Higgs'
     else:
         raise ValueError("Invalid sample = %s !!" % sample)
 
@@ -122,8 +132,37 @@ elif sample_type == 'Higgs':
 else:
     raise ValueError("Invalid sample type = %s !!" % sample_type)
 
-process.genMatchedElectrons = cms.EDFilter("GsfElectronAntiOverlapSelector",
+ptCutElectrons = None 
+ptCutMuons     = None
+ptCutTauJets   = None
+if channel.find('muTau') != -1:
+    ptCutElectrons =  0.
+    ptCutMuons     = 15.
+    ptCutTauJets   = 20.
+elif channel.find('elecTau') != -1:
+    ptCutElectrons = 20.
+    ptCutMuons     =  0.
+    ptCutTauJets   = 20.
+elif channel.find('elecMu') != -1:
+    ptCutElectrons = 15.
+    ptCutMuons     = 15.
+    ptCutTauJets   = 20.
+elif channel.find('diTau') != -1:
+    ptCutElectrons =  0.
+    ptCutMuons     =  0.
+    ptCutTauJets   = 35.
+else:
+    raise ValueError("Invalid channel = %s !!" % channel)
+
+process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
     src = cms.InputTag('gsfElectrons'),
+    cut = cms.string("pt > %f" % ptCutElectrons),
+    filter = cms.bool(False)                                     
+)                                         
+process.svFitPerformanceAnalysisSequence += process.selectedElectrons                                      
+
+process.genMatchedElectrons = cms.EDFilter("GsfElectronAntiOverlapSelector",
+    src = cms.InputTag('selectedElectrons'),
     srcNotToBeFiltered = cms.VInputTag(genElectronsFromTauDecays),
     dRmin = cms.double(0.3),
     invert = cms.bool(True),
@@ -131,8 +170,15 @@ process.genMatchedElectrons = cms.EDFilter("GsfElectronAntiOverlapSelector",
 )                                                  
 process.svFitPerformanceAnalysisSequence += process.genMatchedElectrons
 
-process.genMatchedMuons = cms.EDFilter("MuonAntiOverlapSelector",
+process.selectedMuons = cms.EDFilter("MuonSelector",
     src = cms.InputTag('muons'),
+    cut = cms.string("pt > %f" % ptCutMuons),
+    filter = cms.bool(False)                                     
+)                                         
+process.svFitPerformanceAnalysisSequence += process.selectedMuons
+
+process.genMatchedMuons = cms.EDFilter("MuonAntiOverlapSelector",
+    src = cms.InputTag('selectedMuons'),
     srcNotToBeFiltered = cms.VInputTag(genMuonsFromTauDecays),
     dRmin = cms.double(0.3),
     invert = cms.bool(True),
@@ -152,7 +198,7 @@ process.selectedTauJets = cms.EDFilter("PFTauSelector",
             selectionCut = cms.double(0.5)
         )                        
     ),
-    cut = cms.string("pt > 20. & abs(eta) < 2.3")                        
+    cut = cms.string("pt > %f & abs(eta) < 2.3" % ptCutTauJets)                        
 )
 process.svFitPerformanceAnalysisSequence += process.selectedTauJets
 
@@ -415,7 +461,7 @@ if channel == 'muTau':
     nSVfitLeg1LikelihoodMC_all        = process.nSVfitMuonLikelihoodMC_energy_angle_all
     nSVfitLeg1LikelihoodMC_selected   = nSVfitMuonLikelihoodMC_energy_angle_selected
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitMuonLikelihoodMatrixElement
-    nSVfitLeg1visPtCutThreshold       = 15.
+    nSVfitLeg1visPtCutThreshold       = ptCutMuons
     nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
@@ -423,7 +469,7 @@ if channel == 'muTau':
     nSVfitLeg2LikelihoodMC_all        = process.nSVfitTauToHadLikelihoodMC_energy_angle_all
     nSVfitLeg2LikelihoodMC_selected   = nSVfitTauToHadLikelihoodMC_energy_angle_selected
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
-    nSVfitLeg2visPtCutThreshold       = 20.
+    nSVfitLeg2visPtCutThreshold       = ptCutTauJets
 elif channel == 'eleTau':
     nSVfitLeg1Builder                 = process.nSVfitTauToElecBuilder
     srcGenLeg1                        = genElectronsFromTauDecays
@@ -432,7 +478,7 @@ elif channel == 'eleTau':
     nSVfitLeg1LikelihoodMC_all        = process.nSVfitElectronLikelihoodMC_energy_angle_all
     nSVfitLeg1LikelihoodMC_selected   = nSVfitElectronLikelihoodMC_energy_angle_selected
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitElectronLikelihoodMatrixElement
-    nSVfitLeg1visPtCutThreshold       = 20.
+    nSVfitLeg1visPtCutThreshold       = ptCutElectrons
     nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
@@ -440,7 +486,7 @@ elif channel == 'eleTau':
     nSVfitLeg2LikelihoodMC_all        = process.nSVfitTauToHadLikelihoodMC_energy_angle_all
     nSVfitLeg2LikelihoodMC_selected   = nSVfitTauToHadLikelihoodMC_energy_angle_selected
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
-    nSVfitLeg2visPtCutThreshold       = 20.
+    nSVfitLeg2visPtCutThreshold       = ptCutTauJets
 elif channel == 'eleMu':
     nSVfitLeg1Builder                 = process.nSVfitTauToElecBuilder
     srcGenLeg1                        = genElectronsFromTauDecays
@@ -449,7 +495,7 @@ elif channel == 'eleMu':
     nSVfitLeg1LikelihoodMC_all        = process.nSVfitElectronLikelihoodMC_energy_angle_all
     nSVfitLeg1LikelihoodMC_selected   = nSVfitElectronLikelihoodMC_energy_angle_selected
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitElectronLikelihoodMatrixElement
-    nSVfitLeg1visPtCutThreshold       = 15.
+    nSVfitLeg1visPtCutThreshold       = ptCutElectrons
     nSVfitLeg2Builder                 = process.nSVfitTauToMuBuilder
     srcGenLeg2                        = genMuonsFromTauDecays
     srcRecLeg2                        = 'patMuons'
@@ -457,7 +503,7 @@ elif channel == 'eleMu':
     nSVfitLeg2LikelihoodMC_all        = process.nSVfitMuonLikelihoodMC_energy_angle_all
     nSVfitLeg2LikelihoodMC_selected   = nSVfitMuonLikelihoodMC_energy_angle_selected
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitMuonLikelihoodMatrixElement
-    nSVfitLeg2visPtCutThreshold       = 15.
+    nSVfitLeg2visPtCutThreshold       = ptCutMuons
 elif channel == 'diTau':
     nSVfitLeg1Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg1                        = genTauJetsFromTauDecays
@@ -466,7 +512,7 @@ elif channel == 'diTau':
     nSVfitLeg1LikelihoodMC_all        = process.nSVfitTauToHadLikelihoodMC_energy_angle_all
     nSVfitLeg1LikelihoodMC_selected   = nSVfitTauToHadLikelihoodMC_energy_angle_selected
     nSVfitLeg1LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
-    nSVfitLeg1visPtCutThreshold       = 35.
+    nSVfitLeg1visPtCutThreshold       = ptCutTauJets
     nSVfitLeg2Builder                 = process.nSVfitTauToHadBuilder
     srcGenLeg2                        = genTauJetsFromTauDecays
     srcRecLeg2                        = 'patTaus'
@@ -474,7 +520,7 @@ elif channel == 'diTau':
     nSVfitLeg2LikelihoodMC_all        = process.nSVfitTauToHadLikelihoodMC_energy_angle_all
     nSVfitLeg2LikelihoodMC_selected   = nSVfitTauToHadLikelihoodMC_energy_angle_selected
     nSVfitLeg2LikelihoodMatrixElement = process.nSVfitTauLikelihoodMatrixElement
-    nSVfitLeg2visPtCutThreshold       = 35.
+    nSVfitLeg2visPtCutThreshold       = ptCutTauJets
 else:
     raise ValueError("Invalid channel = %s !!" % channel)
 
@@ -484,8 +530,9 @@ if sample == 'ZplusJets':
 else:
     sample_type_Higgs_regex = "(gg|bb|vbf)(Higgs|Phi)(?P<massPoint>[0-9]+)"
     sample_type_Higgs_matcher = re.compile(sample_type_Higgs_regex)
-    if sample_type_Higgs_matcher.match(sample):
-        massPoint = float(sample_type_Higgs_matcher.group('massPoint'))
+    sample_type_Higgs_match = sample_type_Higgs_matcher.match(sample)
+    if sample_type_Higgs_match:
+        massPoint = float(sample_type_Higgs_match.group('massPoint'))
 if massPoint is None:
     raise ValueError("Invalid sample = %s !!" % sample)
 
@@ -515,7 +562,7 @@ else:
     srcRecMEt = 'patType1CorrectedPFMet'
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
-for idxSVfitOption in range(26):
+for idxSVfitOption in range(28):
     ##if not (idxSVfitOption == 3):
     ##    continue
     nSVfitProducer = None
@@ -529,28 +576,33 @@ for idxSVfitOption in range(26):
     nSVfitProducer.config.event.resonances.A.daughters.leg2.src = cms.InputTag(srcRecLeg2)
     resonanceLikelihoods = []
     # switch between simple phase-space and matrix element likelihoods
-    if idxSVfitOption >= 0 and idxSVfitOption <= 3:
+    if idxSVfitOption >= 0 and idxSVfitOption <= 7:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif idxSVfitOption >= 4 and idxSVfitOption <= 5:
+    elif idxSVfitOption >= 8 and idxSVfitOption <= 9:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMC_all.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodMC_all.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif idxSVfitOption >= 6 and idxSVfitOption <= 7:
+    elif idxSVfitOption >= 10 and idxSVfitOption <= 11:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMC_selected.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodMC_selected.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif idxSVfitOption >= 12 and idxSVfitOption <= 19:
+    elif (idxSVfitOption >= 12 and idxSVfitOption <= 13) or \
+         (idxSVfitOption >= 24 and idxSVfitOption <= 27):
+        nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMatrixElement.clone())
+        nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodPhaseSpace.clone())
+        nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
+    elif (idxSVfitOption >= 14 and idxSVfitOption <= 23):
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMatrixElement.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodMatrixElement.clone())
-        if idxSVfitOption >= 12 and idxSVfitOption <= 13:
+        if idxSVfitOption >= 14 and idxSVfitOption <= 15:
             nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("LR", "RL")
             nSVfitResonanceLikelihoodPolarization_Z = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
             nSVfitResonanceLikelihoodPolarization_Z.LR.formula = cms.string("[0]")
             nSVfitResonanceLikelihoodPolarization_Z.RL.formula = cms.string("[0]")            
             resonanceLikelihoods.append(nSVfitResonanceLikelihoodPolarization_Z)
-        elif idxSVfitOption >= 14 and idxSVfitOption <= 15:
+        elif idxSVfitOption >= 16 and idxSVfitOption <= 17:
             nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("LL", "RR")
             nSVfitResonanceLikelihoodPolarization_Higgs = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
             nSVfitResonanceLikelihoodPolarization_Higgs.LL.formula = cms.string("[0]")
@@ -569,10 +621,12 @@ for idxSVfitOption in range(26):
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
     # enable/disable visible Pt cut correction in tau decay likelihoods
-    if idxSVfitOption >= 18 and idxSVfitOption <= 19:
+    if (idxSVfitOption >=  6 and idxSVfitOption <=  7) or \
+       (idxSVfitOption >= 12 and idxSVfitOption <= 21) or \
+       (idxSVfitOption >= 24 and idxSVfitOption <= 27) :
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applyVisPtCutCorrection = cms.bool(True)
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].visPtCutThreshold = \
-          cms.double(nSVfitLeg2visPtCutThreshold)
+          cms.double(nSVfitLeg1visPtCutThreshold)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applyVisPtCutCorrection = cms.bool(True)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].visPtCutThreshold = \
           cms.double(nSVfitLeg2visPtCutThreshold)
@@ -580,25 +634,26 @@ for idxSVfitOption in range(26):
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applyVisPtCutCorrection = cms.bool(False)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applyVisPtCutCorrection = cms.bool(False)
     # enable/disable sin(theta) term in tau decay likelihoods in case SVfit is run in fit/integration mode
-    if (idxSVfitOption % 2) == 0:
+    if ((idxSVfitOption % 2) == 0) or \
+       (idxSVfitOption >= 0 and idxSVfitOption <= 1):
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)
     else:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
     # enable/disable log(M) regularization term in resonance likelihood
-    if idxSVfitOption >= 2 and idxSVfitOption <= 3:
+    if idxSVfitOption >= 0 and idxSVfitOption <= 3:
         resonanceLikelihoods.append(process.nSVfitResonanceLikelihoodLogM)
     # enable MET tail probability correction plus increase overall power of MET likelihood in the events 
     if idxSVfitOption >= 20 and idxSVfitOption <= 21:
         nSVfitProducer.config.event.likelihoodFunctions[0].tailProbCorr = process.tailProbCorr_MC_2011
         nSVfitProducer.config.event.likelihoodFunctions[0].power = cms.double(1.2)    
     # enable/disable prior likelihood (moving events with large sigmaSVfit towards the Z-peak)
-    if idxSVfitOption >= 22 and idxSVfitOption <= 23:
+    if idxSVfitOption >= 24 and idxSVfitOption <= 25:
         nSVfitResonanceLikelihoodPrior_strength1 = copy.deepcopy(process.nSVfitResonanceLikelihoodPrior)
         nSVfitResonanceLikelihoodPrior_strength1.parameter.par0 = cms.double(1.)
         resonanceLikelihoods.append(nSVfitResonanceLikelihoodPrior_strength1)
-    if idxSVfitOption >= 24 and idxSVfitOption <= 25:
+    if idxSVfitOption >= 26 and idxSVfitOption <= 27:
         nSVfitResonanceLikelihoodPrior_strength2 = copy.deepcopy(process.nSVfitResonanceLikelihoodPrior)
         nSVfitResonanceLikelihoodPrior_strength2.parameter.par0 = cms.double(2.)
         resonanceLikelihoods.append(nSVfitResonanceLikelihoodPrior_strength2)

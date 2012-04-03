@@ -31,7 +31,7 @@ def replaceConfigFileParam(configFileName_template, configFileName_output, repla
 
 def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnalyze,
                                                  configFileName_template,
-                                                 inputFilePath,
+                                                 inputFilePath, numInputFilesPerJob,
                                                  configFilePath, logFilePath, outputFilePath):
 
     """Build cfg.py file to run SVfit algorithm and fill histograms of SVfit reconstructed mass""" 
@@ -48,29 +48,46 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
     # check if inputFile matches sampleToAnalyze
     inputFileNames_sample = []
     for inputFileName in inputFileNames:        
-        if inputFileName.find("".join(['_', sampleToAnalyze, '_'])) != -1:
+        if inputFileName.find("".join(['_', sampleToAnalyze, '_'])) != -1 or \
+           inputFileName.find("".join(['/', sampleToAnalyze, '_'])) != -1:
             # CV: assume that input file gets copied to local directory before cmsRun gets started
             inputFileNames_sample.append(os.path.basename(inputFileName))
 
     #print(sampleToAnalyze)
-    #print(inputFiles_sample)
+    #print(inputFileNames_sample)
 
     if len(inputFileNames_sample) == 0:
         print("Sample %s, channel = %s has no input files --> skipping !!" % (sampleToAnalyze, channelToAnalyze))
         return
 
+    inputFileNameGroups_sample = []
+    numJobs = (len(inputFileNames_sample) / numInputFilesPerJob)
+    if (len(inputFileNames_sample) % numInputFilesPerJob) != 0:
+        numJobs = numJobs +1
+    for jobId in range(numJobs):
+        inputFileIdx_first = jobId*numInputFilesPerJob
+        inputFileIdx_last = inputFileIdx_first + numInputFilesPerJob
+        if inputFileIdx_last >= len(inputFileNames_sample):
+            inputFileIdx_last = len(inputFileNames_sample) - 1
+        inputFileNameGroups_sample.append(inputFileNames_sample[inputFileIdx_first:inputFileIdx_last])
+
+    #print "inputFileNameGroups_sample = %s" % inputFileNameGroups_sample
+
     configFileNames = []
     outputFileNames = []
     logFileNames    = []
 
-    for jobId in range(len(inputFileNames_sample)):
+    for jobId in range(numJobs):
         
-        inputFileName_sample = inputFileNames_sample[jobId]
+        inputFileNames_string = "[ "
+        for inputFileName_sample in inputFileNameGroups_sample[jobId]:
+            inputFileNames_string += "'file:%s', " % inputFileName_sample
+        inputFileNames_string += " ]"
 
         sample_type = None
-        sample_type_Z_regex = "[Ztautau|ZplusJets]"
+        sample_type_Z_regex = "[Ztautau|ZplusJets|ZToTauTau]"
         sample_type_Z_matcher = re.compile(sample_type_Z_regex)
-        sample_type_Higgs_regex = "(gg|bb|vbf)(Higgs|Phi)[0-9]+"
+        sample_type_Higgs_regex = "(((gg|bb|vbf)(Higgs|Phi))|HToTauTau_M-)[0-9]+"
         sample_type_Higgs_matcher = re.compile(sample_type_Higgs_regex)
         if sample_type_Z_matcher.match(sampleToAnalyze):
             sample_type = 'Z'
@@ -83,12 +100,12 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         outputFileNames.append(outputFileName)
  
         replacements = []
-        replacements.append([ 'sample',         "'%s'" % sampleToAnalyze            ])
-        replacements.append([ 'sample_type',    "'%s'" % sample_type                ])
-        replacements.append([ 'channel',        "'%s'" % channelToAnalyze           ])
-        replacements.append([ 'maxEvents',      "%i" % 1000                         ])
-        replacements.append([ 'inputFileNames', "[ 'file:%s', ] " % inputFileName_sample ])
-        replacements.append([ 'outputFileName', "'%s'" % outputFileName             ])
+        replacements.append([ 'sample',         "'%s'" % sampleToAnalyze       ])
+        replacements.append([ 'sample_type',    "'%s'" % sample_type           ])
+        replacements.append([ 'channel',        "'%s'" % channelToAnalyze      ])
+        replacements.append([ 'maxEvents',      "%i"   % 1000                  ])
+        replacements.append([ 'inputFileNames', "%s"   % inputFileNames_string ])
+        replacements.append([ 'outputFileName', "'%s'" % outputFileName        ])
                 
         configFileName = "svFitPerformanceAnalysisPlots_%s_%s_%i_cfg.py" % (sampleToAnalyze, channelToAnalyze, jobId)
         configFileName_full = os.path.join(configFilePath, configFileName)
@@ -100,7 +117,7 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         logFileNames.append(logFileName)
 
     retVal = {}
-    retVal['inputFileNames']  = inputFileNames_sample
+    retVal['inputFileNames']  = inputFileNameGroups_sample
     retVal['configFileNames'] = configFileNames
     retVal['outputFileNames'] = outputFileNames
     retVal['logFileNames']    = logFileNames
