@@ -28,7 +28,7 @@ void normalizeMatrixColumns(TMatrixD& matrix)
 	matrix(iRow, iColumn) /= sum;
       }
     } else {
-      edm::LogError("normalizeMatrixRows") 
+      edm::LogError("normalizeMatrixColumns") 
 	<< " Sum of elements = " << sum << " for column = " << iColumn << " --> matrix will **not** be normalized !!";
     }
   }
@@ -170,7 +170,7 @@ NSVfitTauToHadLikelihoodMatrixElement::NSVfitTauToHadLikelihoodMatrixElement(con
 	<< " Failed to load Histogram mapping reconstructed to generated Tau decay modes from File = " << inputFileName_ << " !!\n";
     for ( unsigned iRow = 0; iRow < numSupportedTauDecayModes_; ++iRow ) {
       for ( unsigned iColumn = 0; iColumn < numSupportedTauDecayModes_; ++iColumn ) {
-	recToGenTauDecayModeMap_(iRow, iColumn) = recToGenTauDecayModeMap_histogram->GetBinContent(iRow + 1, iColumn + 1);
+	recToGenTauDecayModeMap_(iRow, iColumn) = recToGenTauDecayModeMap_histogram->GetBinContent(iColumn + 1, iRow + 1);
       }
     }
     normalizeMatrixColumns(recToGenTauDecayModeMap_);
@@ -259,6 +259,9 @@ void NSVfitTauToHadLikelihoodMatrixElement::beginCandidate(const NSVfitSinglePar
     std::cout << " vGen:" << std::endl;
     vGen_.Print();
   }
+
+  numWarningsUnphysicalDecay_rho_ = 0;
+  numWarningsUnphysicalDecay_a1_  = 0;
 }
 
 double getZdistinguishablePion_oneProngHypothesis(const pat::Tau* tauJet)
@@ -313,10 +316,12 @@ double NSVfitTauToHadLikelihoodMatrixElement::compProb_rhoDecay(double visEnFrac
     (rhoNormTPlus_->Eval(1.0)  - rhoNormTPlus_->Eval(xCut)) :
     (rhoNormTMinus_->Eval(1.0) - rhoNormTMinus_->Eval(xCut));
   if ( mL <= 0. && mT <= 0. ) {
-    edm::LogWarning ("NSVfitTauToHadLikelihoodMatrixElement::compProb_rhoDecay")
-      << "Vector meson mass computes to zero for all polarization hypotheses !!" << std::endl;
+    if ( numWarningsUnphysicalDecay_rho_ < 3 ) 
+      edm::LogWarning ("NSVfitTauToHadLikelihoodMatrixElement::compProb_rhoDecay")
+	<< "Failed to compute vector meson line-shape integral, xCut = " << xCut << " !!" << std::endl;
     mL = 1.e-3;
     mT = 1.e-3;
+    ++numWarningsUnphysicalDecay_rho_;
   }
   double prob = (probLz*probLx + probTz*probTx)/(mL*probLz + mT*probTz);
   return prob;
@@ -371,10 +376,12 @@ double NSVfitTauToHadLikelihoodMatrixElement::compProb_a1Decay(double visEnFracX
     (a1NormTPlus_->Eval(1.0)  - a1NormTPlus_->Eval(xCut)) :
     (a1NormTMinus_->Eval(1.0) - a1NormTMinus_->Eval(xCut));
   if ( mL <= 0. && mT <= 0. ) {
-    edm::LogWarning ("NSVfitTauToHadLikelihoodMatrixElement::compProb_a1Decay")
-      << "Vector meson mass computes to zero for all polarization hypotheses !!" << std::endl;
+    if ( numWarningsUnphysicalDecay_a1_ < 3 ) 
+      edm::LogWarning ("NSVfitTauToHadLikelihoodMatrixElement::compProb_a1Decay")
+	<< "Failed to compute vector meson line-shape integral, xCut = " << xCut << " !!" << std::endl;
     mL = 1.e-3;
     mT = 1.e-3;
+    ++numWarningsUnphysicalDecay_a1_;
   }
   double prob = (probLz*probLx + probTz*probTx)/(mL*probLz + mT*probTz);
   return prob;
@@ -401,12 +408,17 @@ double NSVfitTauToHadLikelihoodMatrixElement::operator()(const NSVfitSingleParti
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodMatrixElement::operator()>:" << std::endl;
   
   double decayAngle = hypothesis_T->decay_angle_rf();  
-  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;  
   double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
   if ( visMass < chargedPionMass ) visMass = chargedPionMass;
   if ( visMass > tauLeptonMass   ) visMass = tauLeptonMass;
   double visMass2 = square(visMass);
+
+  if ( this->verbosity_ ) {
+    std::cout << " decayAngle = " << decayAngle << std::endl;
+    std::cout << " visMass = " << visMass << std::endl;
+    std::cout << " visEnFracX = " << visEnFracX << std::endl;
+  }
 
   if ( !(polSign == +1 || polSign == -1) )
     throw cms::Exception("NSVfitTauToHadLikelihoodMatrixElement") 
