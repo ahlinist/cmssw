@@ -55,8 +55,9 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'VVsum',
-    'TTplusJets_madgraph_skim',
+    #'VVsum',
+    #'TTplusJets_madgraph_skim',
+    'TTplusJets_madgraph_skim_summer11',
     'WplusJets_madgraph_skim',
     'ZeeSum',
     #'EWsum',
@@ -79,39 +80,42 @@ SAMPLES_TO_PRINT.append('ZtautauEmbeddedSum')
 SAMPLES_TO_PRINT.append('Ztautau_powheg_skim')
 
 # add alternate VV sample
-SAMPLES_TO_PRINT.append('VVtoLLsum')
+#SAMPLES_TO_PRINT.append('VVtoLLsum')
 
-SAMPLES_TO_PRINT.append('A100Sum')
-SAMPLES_TO_PRINT.append('A120Sum')
-SAMPLES_TO_PRINT.append('A130Sum')
-SAMPLES_TO_PRINT.append('A140Sum')
-SAMPLES_TO_PRINT.append('A160Sum')
-SAMPLES_TO_PRINT.append('A180Sum')
-SAMPLES_TO_PRINT.append('A200Sum')
-SAMPLES_TO_PRINT.append('A250Sum')
-SAMPLES_TO_PRINT.append('A300Sum')
-SAMPLES_TO_PRINT.append('A350Sum')
-SAMPLES_TO_PRINT.append('A400Sum')
-SAMPLES_TO_PRINT.append('A450Sum')
-SAMPLES_TO_PRINT.append('A500Sum')
-SAMPLES_TO_PRINT.append('A600Sum')
-SAMPLES_TO_PRINT.append('A700Sum')
-SAMPLES_TO_PRINT.append('A800Sum')
-SAMPLES_TO_PRINT.append('A900Sum')
+includeAllSamples = False
 
-SAMPLES_TO_PRINT.append('h95Sum')
-SAMPLES_TO_PRINT.append('h100Sum')
-SAMPLES_TO_PRINT.append('h105Sum')
-SAMPLES_TO_PRINT.append('h110Sum')
-SAMPLES_TO_PRINT.append('h115Sum')
-SAMPLES_TO_PRINT.append('h120Sum')
-SAMPLES_TO_PRINT.append('h125Sum')
-SAMPLES_TO_PRINT.append('h130Sum')
-SAMPLES_TO_PRINT.append('h135Sum')
-SAMPLES_TO_PRINT.append('h140Sum')
-SAMPLES_TO_PRINT.append('h145Sum')
+if includeAllSamples:
+    SAMPLES_TO_PRINT.append('A100Sum')
+    SAMPLES_TO_PRINT.append('A120Sum')
+    SAMPLES_TO_PRINT.append('A130Sum')
+    #SAMPLES_TO_PRINT.append('A140Sum')
+    SAMPLES_TO_PRINT.append('A160Sum')
+    SAMPLES_TO_PRINT.append('A180Sum')
+    SAMPLES_TO_PRINT.append('A200Sum')
+    SAMPLES_TO_PRINT.append('A250Sum')
+    SAMPLES_TO_PRINT.append('A300Sum')
+    SAMPLES_TO_PRINT.append('A350Sum')
+    SAMPLES_TO_PRINT.append('A400Sum')
+    SAMPLES_TO_PRINT.append('A450Sum')
+    SAMPLES_TO_PRINT.append('A500Sum')
+    SAMPLES_TO_PRINT.append('A600Sum')
+    SAMPLES_TO_PRINT.append('A700Sum')
+    SAMPLES_TO_PRINT.append('A800Sum')
+    SAMPLES_TO_PRINT.append('A900Sum')
 
-SAMPLES_TO_PRINT.append('QCDsum_MC')
+    SAMPLES_TO_PRINT.append('h95Sum')
+    SAMPLES_TO_PRINT.append('h100Sum')
+    SAMPLES_TO_PRINT.append('h105Sum')
+    SAMPLES_TO_PRINT.append('h110Sum')
+    SAMPLES_TO_PRINT.append('h115Sum')
+    SAMPLES_TO_PRINT.append('h120Sum')
+    #SAMPLES_TO_PRINT.append('h125Sum')
+    SAMPLES_TO_PRINT.append('h130Sum')
+    SAMPLES_TO_PRINT.append('h135Sum')
+    SAMPLES_TO_PRINT.append('h140Sum')
+    SAMPLES_TO_PRINT.append('h145Sum')
+
+    SAMPLES_TO_PRINT.append('QCDsum_MC')
 
 SAMPLE_DEFAULTS = ZtoElecTau.SAMPLE_DEFAULTS
 
@@ -288,11 +292,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
     },
     'A120_skim' : {
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/jkolb-skimElecTau_424_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola-7f65814f89474459e41f353668c9096b/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 2196560,
         'number_of_jobs' : 100,
-        'skim_eff' : 322250./2196560,
+        'skim_eff' : 366414./2196560,
         'x_sec' : (
               36542.*_femtobarns*0.126386 # (gg -> h0)*(h0->tautau)
            +  48111.*_femtobarns*0.125494 # (gg -> A0)*(A0->tautau)
