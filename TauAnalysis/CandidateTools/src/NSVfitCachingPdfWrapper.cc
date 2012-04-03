@@ -40,9 +40,9 @@ NSVfitCachingPdfWrapper::NSVfitCachingPdfWrapper(RooAbsPdf* pdf,
 void NSVfitCachingPdfWrapper::initializeCache(
     size_t nXBins, double xLow, double xHigh,
     size_t nYBins, double yLow, double yHigh) {
-  std::cout << "<NSVfitCachingPdfWrapper::initializeCache>:" << std::endl;
-  std::cout << " nXBins = " << nXBins << std::endl;
-  std::cout << " nYBins = " << nYBins << std::endl;
+  //std::cout << "<NSVfitCachingPdfWrapper::initializeCache>:" << std::endl;
+  //std::cout << " nXBins = " << nXBins << std::endl;
+  //std::cout << " nYBins = " << nYBins << std::endl;
 
   cache_.reset(new TH2F("cache", "cache",
         nXBins, xLow, xHigh, nYBins, yLow, yHigh));
@@ -56,7 +56,7 @@ void NSVfitCachingPdfWrapper::initializeCache(
   yHigh_ = cache_->GetYaxis()->GetXmax() - 0.5*yBinWidth;
 
   for (int xBin = 1; xBin < cache_->GetNbinsX()+1; ++xBin) {
-    std::cout << "processing xBin = " << xBin << std::endl;
+    //std::cout << "processing xBin = " << xBin << std::endl;
     for (int yBin = 1; yBin < cache_->GetNbinsY()+1; ++yBin) {
       double xVal = cache_->GetXaxis()->GetBinCenter(xBin);
       double yVal = cache_->GetYaxis()->GetBinCenter(yBin);
@@ -67,7 +67,7 @@ void NSVfitCachingPdfWrapper::initializeCache(
     }
   }
 
-  std::cout << "done." << std::endl;
+  //std::cout << "done." << std::endl;
 }
 
 double NSVfitCachingPdfWrapper::getVal(double x, double y) const {
