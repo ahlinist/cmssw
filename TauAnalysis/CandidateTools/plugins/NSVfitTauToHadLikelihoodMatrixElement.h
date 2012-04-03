@@ -13,9 +13,9 @@
  *
  * \author Christian Veelken, Lorenzo Bianchini; LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.2 2012/03/27 14:35:42 bianchi Exp $
+ * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.3 2012/03/27 16:55:07 veelken Exp $
  *
  */
 
@@ -91,6 +91,9 @@ class NSVfitTauToHadLikelihoodMatrixElement : public NSVfitSingleParticleLikelih
   TMatrixD recToGenTauDecayModeMap_;
   mutable TVectorD vGen_;
   mutable TVectorD vProb_;
+
+  mutable long numWarningsUnphysicalDecay_rho_;
+  mutable long numWarningsUnphysicalDecay_a1_;
 };
 
 #endif
