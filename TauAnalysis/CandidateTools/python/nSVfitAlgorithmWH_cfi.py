@@ -80,6 +80,7 @@ nSVfitConfigWH_template = cms.PSet(
                         builder = nSVfitTauToHadBuilder
                     )
                 ),
+                likelihoodFunctions = cms.VPSet(),
                 builder = nSVfitResonanceBuilderHiggs
             ),
             W = cms.PSet(
