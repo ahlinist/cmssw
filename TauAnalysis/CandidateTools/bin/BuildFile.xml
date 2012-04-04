@@ -37,3 +37,17 @@
   <use name="rootcintex"/>
   <use name="root"/>
 </bin>
+
+
+<bin   file="computeCalibration.cc" name="computeCalibration">
+  <use   name="DataFormats/FWLite"/>
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="Bianchi/Utilities"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="roofit"/>
+  <use   name="root"/>
+  <use   name="rootgraphics"/>
+</bin>
