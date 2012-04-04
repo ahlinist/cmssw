@@ -189,13 +189,14 @@ text.SetBorderSize(0)
 text.AddText("95% CL Limit on "+"#bf{%s} and #bf{%s}"%(par1Latex,par2Latex))
 text.AddText("#intL dt= 4.7 fb^{-1}, #sqrt{s} = 7 TeV")
 
+
 text.Draw()
 
-text2 = TPaveText(0.173,0.199,0.423,0.242,"NDC")
+text2 = TPaveText(0.155,0.199,0.974,0.244,"NDC")
 text2.SetFillStyle(0)
 text2.SetBorderSize(0)
 
-text2.AddText("CLs Limits")
+text2.AddText("CLs Limits    aTGC values outside contour excluded.")
 
 text2.Draw()
 
