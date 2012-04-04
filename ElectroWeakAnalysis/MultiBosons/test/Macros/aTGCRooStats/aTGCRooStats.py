@@ -861,6 +861,9 @@ def makeHCLCards(ws,cfg):
         par1gap=(par1Max-par1Min)/(parPoints-1)
         par2gap=(par2Max-par2Min)/(parPoints-1)
 
+        run_comand=''
+        root_name=''
+
         for card_par1 in range(1,cfg.getint(section,'nGridParBinsCard')+1):
             for card_par2 in range(1,cfg.getint(section,'nGridParBinsCard')+1):                
                 # create signal aTGC histo for grid point
@@ -970,8 +973,8 @@ def makeHCLCards(ws,cfg):
 
                 # make file containing run commands for created datacards
                 run_file_name='run_dataCards_'+section+'_'+str(parPoints**2)+'GRIDpoints'
-                f_run = open(run_file_name, 'w')
-                run_comand='print "POINT: '
+#                f_run = open(run_file_name, 'w')
+                run_comand+='print "POINT: '
                 run_comand+='_%s%.3g'%(cfg.get('Global','par1Name'),par1value)
                 run_comand+='_%s%.3g'%(cfg.get('Global','par2Name'),par2value)
                 run_comand+='"'
@@ -984,18 +987,20 @@ def makeHCLCards(ws,cfg):
                 run_comand+='_%s'%(section)
                 run_comand+='  --rMax 2'
                 run_comand+='\n'
-                f_run.write(run_comand)
+#                f_run.write(run_comand)
 
 
                 # make file containing list of root output files by Higgs code, par1value, par2value
-                f_root = open('root_output_'+section+'_'+str(parPoints**2)+'GRIDpoints', 'w')
                 root_name='higgsCombine'
                 root_name+='_%s%.3g'%(cfg.get('Global','par1Name'),par1value)
                 root_name+='_%s%.3g'%(cfg.get('Global','par2Name'),par2value)
                 root_name+='_%s'%(section)
                 root_name+='.Asymptotic.mH120.root'
                 root_name+='\t%.3g\t%.3g\n'%(par1value,par2value)
-                f_root.write(root_name)
+        f_run = open(run_file_name, 'w')
+        f_run.write(run_comand)
+    f_root = open('root_output_'+section+'_'+str(parPoints**2)+'GRIDpoints', 'w')
+    f_root.write(root_name)
 
 
     
@@ -1008,48 +1013,55 @@ def makeHCLCards(ws,cfg):
     par1gap=(par1Max-par1Min)/(parPoints-1)
     par2gap=(par2Max-par2Min)/(parPoints-1)
     
-    par1gap=(par1Max-par1Min)/(parPoints-1)
-    par2gap=(par2Max-par2Min)/(parPoints-1)
 
-    for card_par1 in range(1,cfg.getint('Global','nGridParBinsCard')+1):
-        for card_par2 in range(1,cfg.getint('Global','nGridParBinsCard')+1):                
-            par1value=par1Min+par1gap*(card_par1-1)
-            par2value=par2Min+par2gap*(card_par2-1)
-            print 'making Combined datacard command ',par1value,',', par2value
-
-            combCards='combineCards.py'
-            n_channel=0
-            for section in fit_sections:
-                n_channel+=1
-                combCards+=' %s='%(section)
-                nameCard = '%s_%s_%s%.3g_%s%.3g_%iGRIDpoints.txt'%(cfg.get(section,'cardName'),
-                                                                   section,
-                                                                   cfg.get('Global','par1Name'),par1value,
-                                                                   cfg.get('Global','par2Name'),par2value,
-                                                                   parPoints**2)
-                combCards+=nameCard
+    # prepare for combined channels:
+    print '-----> do I have more then 1 channel?'
+    combCardsRun=''
+    if len(fit_sections) > 1:
+        print 'yes! -> prepare for combining limits'
+        combCards=''
+        for card_par1 in range(1,cfg.getint('Global','nGridParBinsCard')+1):
+            for card_par2 in range(1,cfg.getint('Global','nGridParBinsCard')+1):                
+                par1value=par1Min+par1gap*(card_par1-1)
+                par2value=par2Min+par2gap*(card_par2-1)
+                print 'making Combined datacard command ',par1value,',', par2value
+                
+                combCards+='combineCards.py'
+                n_channel=0
+                for section in fit_sections:
+                    n_channel+=1
+                    combCards+=' %s='%(section)
+                    nameCard = '%s_%s_%s%.3g_%s%.3g_%iGRIDpoints.txt'%(cfg.get(section,'cardName'),
+                                                                       section,
+                                                                       cfg.get('Global','par1Name'),par1value,
+                                                                       cfg.get('Global','par2Name'),par2value,
+                                                                       parPoints**2)
+                    combCards+=nameCard
             
-            nameCombCard = '%s_%s_%s%.3g_%s%.3g_%iGRIDpoints.txt'%(cfg.get(section,'cardName'),
-                                                                   'Combined',
-                                                                   cfg.get('Global','par1Name'),par1value,
-                                                                   cfg.get('Global','par2Name'),par2value,
-                                                                   parPoints**2)
-            combCards+=' > '+nameCombCard
-            combCards+='\n'
-            combCardsRun='combine -M Asymptotic '
-            combCardsRun+=nameCombCard
-            combCardsRun+=' -n '
-            combCardsRun+='_%s%.3g'%(cfg.get('Global','par1Name'),par1value)
-            combCardsRun+='_%s%.3g'%(cfg.get('Global','par2Name'),par2value)
-            combCardsRun+='_Combined'
-            combCardsRun+='  --rMax 2'
-            combCardsRun+='\n'
-            f_comb = open('run_combine_dataCards', 'w')
-            f_comb.write(combCards)
-            f_combRun = open('run_combine_limits', 'w')
-            f_combRun.write(combCardsRun)
+                    nameCombCard = '%s_%s_%s%.3g_%s%.3g_%iGRIDpoints.txt'%(cfg.get(section,'cardName'),
+                                                                           'Combined',
+                                                                           cfg.get('Global','par1Name'),par1value,
+                                                                           cfg.get('Global','par2Name'),par2value,
+                                                                           parPoints**2)
+                combCards+=' > '+nameCombCard
+                combCards+='\n'
+                combCardsRun+='combine -M Asymptotic '
+                combCardsRun+=nameCombCard
+                combCardsRun+=' -n '
+                combCardsRun+='_%s%.3g'%(cfg.get('Global','par1Name'),par1value)
+                combCardsRun+='_%s%.3g'%(cfg.get('Global','par2Name'),par2value)
+                combCardsRun+='_Combined'
+                combCardsRun+='  --rMax 2'
+                combCardsRun+='\n'
+                
+        f_comb = open('run_combine_dataCards', 'w')
+        f_comb.write(combCards)
+        f_combRun = open('run_combine_limits', 'w')
+        f_combRun.write(combCardsRun)
 
-    
+    else:
+        print '\t\tno! nothing to combine'
+   
 
 def getBackgroundsInCfg(section,cfg):
     # harvest the names of backgrounds in this config section "bkg_" in option name
