@@ -40,11 +40,14 @@ if options.par2 is None:
     exit(1)
 
 def extractParValue(par,file):
-    pattern = r'%s[0-9,\-]{1,2}\.[0-9]*'%par
+    pattern = r'%s\-?[0-9]*\.?[0-9]*e?\-?[0-9]*'%par
     match = re.search(pattern,file)
     val = 0.0
 
     if match is not None:
+        print file
+        print match.group(0),match.group(0).split(par)[-1]
+        
         temp = match.group(0)
         val = float(temp.split(par)[-1])
         #print val
