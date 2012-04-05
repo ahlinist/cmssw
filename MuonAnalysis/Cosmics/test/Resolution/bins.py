@@ -89,6 +89,7 @@ def make_bins(bin_by, bin_extra=None):
         for i in xrange(len(raw_bins)-1):
             bin  = Bin('pT2030%s%i'    % (bin_by, i), min_pt=20.,   max_pt=30.,    diff_scales=(  5., 0.003,  0.01,  0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5))
             bin2 = Bin('pT5002000%s%i' % (bin_by, i), min_pt=500.,  max_pt=2000.,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. ))
+            bin.use_by_bin=False
             for b in (bin, bin2):
                 setattr(b, 'min_%s' % bin_by, raw_bins[i])
                 setattr(b, 'max_%s' % bin_by, raw_bins[i+1])
