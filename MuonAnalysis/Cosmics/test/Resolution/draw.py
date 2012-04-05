@@ -185,7 +185,7 @@ class Drawer:
 if __name__ == '__main__':
     fn = sys.argv[1]
     print fn
-    fn_name = fn.replace('.histos', '').replace('.root', '')
+    fn_name = os.path.basename(fn.replace('.histos', '').replace('.root', ''))
     plot_path = os.path.join('plots/cosmicres', fn_name)
 
     drawer = Drawer(fn)
