@@ -25,6 +25,12 @@ t1 = f1.Get('t')
 f2 = ROOT.TFile(fn2)
 t2 = f2.Get('t')
 
+if len(sys.argv) > 3:
+    nice1 = sys.argv[3]
+    nice2 = sys.argv[4]
+else:
+    nice1, nice2 = 'f1', 'f2'
+
 print 'f1:', fn1
 print 'f2:', fn2
 
@@ -42,9 +48,13 @@ z2 = foo(t2)
 z1_rle = set(z1.keys())
 z2_rle = set(z2.keys())
 
-print 'events in f1:', len(z1_rle)
-print 'events in f2:', len(z2_rle)
-print 'events in both f1 and f2:', len(z1_rle & z2_rle)
+n1 = len(z1_rle)
+n2 = len(z2_rle)
+n1and2 = len(z1_rle & z2_rle)
+
+print 'events in f1:', n1
+print 'events in f2:', n2
+print 'events in both f1 and f2:', n1and2
 
 x,y = [],[]
 for rle in z1_rle & z2_rle:
@@ -55,9 +65,9 @@ for rle in z1_rle & z2_rle:
     x.append(v1)
     y.append(v2)
 
-h0 = ROOT.TH1F('h0','',100,-0.75,0.75)
 h1 = ROOT.TH1F('h1','',100,-0.75,0.75)
-hs = h0,h1
+h2 = ROOT.TH1F('h2','',100,-0.75,0.75)
+hs = h1,h2
 
 for i,z in enumerate((x,y)):
     h = hs[i]
@@ -71,22 +81,19 @@ g.SetMarkerStyle(20)
 g.SetMarkerSize(0.8)
 g.Draw('AP')
 wt = track_nicks[which]
-g.SetTitle(';R(q/p_{T}) for %s using hits;R(q/p_{T}) for %s using segments' % (wt,wt))
+g.SetTitle(';R(q/p_{T}) for %s using %s;R(q/p_{T}) for %s using %s' % (wt,nice1,wt,nice2))
 
-title = '#splitline{for events in both:}{#splitline{hits RMS = %.3f}{segs RMS = %.3f}}' % (h0.GetRMS(), h1.GetRMS())
-t = ROOT.TPaveLabel(0.227, 0.712, 0.488, 0.747, title, 'brNDC')
+t = ROOT.TPaveText(0.186, 0.657, 0.529, 0.925, 'brNDC')
+t.SetTextAlign(12)
 t.SetBorderSize(0)
 t.SetFillColor(ROOT.kWhite)
-t.SetTextSize(1.05)
 t.SetTextFont(42)
+t.AddText('%i in %s, %i in %s' % (n1, nice1, n2, nice2))
+t.AddText('%i in both' % n1and2)
+t.AddText('')
+t.AddText('for events in both:')
+t.AddText('%s RMS = %.3f' % (nice1, h1.GetRMS()))
+t.AddText('%s RMS = %.3f' % (nice2, h2.GetRMS()))
 t.Draw()
-
-title = '#splitline{%i in hits, %i in segs}{%i in both}' % (len(z1_rle), len(z2_rle), h0.GetEntries())
-t2 = ROOT.TPaveLabel(0.302, 0.827, 0.485, 0.862, title, 'brNDC')
-t2.SetBorderSize(0)
-t2.SetFillColor(ROOT.kWhite)
-t2.SetTextSize(1.05)
-t2.SetTextFont(42)
-t2.Draw()
 
 ps.save('versus', log=False)
