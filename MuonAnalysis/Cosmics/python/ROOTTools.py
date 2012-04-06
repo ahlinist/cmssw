@@ -1,5 +1,4 @@
-import sys, os
-from array import array
+import array, sys, os, tempfile
 sys.argv.append('-b')       # Start ROOT in batch mode;
 import ROOT; ROOT.TCanvas   # make sure libGui gets initialized while '-b' is specified;
 assert sys.argv[-1] == '-b' # and don't mess up sys.argv.
@@ -56,7 +55,7 @@ def binomial_divide(h1, h2, confint=binomial_clopper_pearson):
         y.append(p_hat)
         eyl.append(p_hat - a)
         eyh.append(b - p_hat)
-    eff = ROOT.TGraphAsymmErrors(len(x), *[array('d', obj) for obj in (x,y,exl,exh,eyl,eyh)])
+    eff = ROOT.TGraphAsymmErrors(len(x), *[array.array('d', obj) for obj in (x,y,exl,exh,eyl,eyh)])
     return eff
 
 def core_gaussian(hist, factor, i=[0]):
@@ -117,7 +116,7 @@ def detree(t, branches='run:lumi:event', cut='', xform=lambda x: tuple(int(y) fo
     xform parameter specifies the function transforming the tuple of
     strings into the desired format."""
     
-    tmp_fn = os.tmpnam()
+    tmp_fn = tempfile.mktemp()
     t.GetPlayer().SetScanRedirect(True)
     t.GetPlayer().SetScanFileName(tmp_fn)
     t.Scan(branches, cut, 'colsize=50')
