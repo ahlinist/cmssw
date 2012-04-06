@@ -590,6 +590,7 @@ if options.dumps and options.foo:
     process.EventDump.muon_labels = vinputtagize(['muons'])
     if not options.pp_reco_mode:
         process.EventDump.track_labels = vinputtagize([
+            'ctfWithMaterialTracksP5LHCNavigation'
             'cosmicMuons',
             'globalCosmicMuons',
             'UTstmGlobal1',
