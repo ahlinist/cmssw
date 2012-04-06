@@ -221,6 +221,8 @@ MCCosTrgPeakIdealAli = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + 
 MCCosTrgPeakMCV9B    = 'MC_44_V9B::All',   MCCosmicTrigger + MCStripsPeakMode + MCFixedDTTTrig
 MCCosTrgPeakIdealAli2 = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCIdealAli + MCIdealAli2 + MCFixedDTTTrig
 
+MCCosTrgPeakStartV9BwMuAPEs = 'START44_V9B::All', MCCosmicTrigger + MCStripsPeakMode + MCFixedDTTTrig + NewMuAPEs
+
 MCCosMC42Peak           = 'COSMC_42_PEAK::All', []
 MCCosMC42PeakFixed      = 'COSMC_42_PEAK::All', MCFixedDTTTrig
 MCCosMC42PeakFixedIdeal = 'COSMC_42_PEAK::All', MCFixedDTTTrig + MCIdealAli
