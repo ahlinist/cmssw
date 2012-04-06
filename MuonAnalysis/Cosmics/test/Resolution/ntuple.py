@@ -63,8 +63,8 @@ group.add_argument('+submit-mc', action='store_true',
                    help='Submit jobs using MC samples.')
 group.add_argument('+submit-data', action='store_true',
                    help='Submit jobs using real data.')
-group.add_argument('+submit-highpt2010only', action='store_true',
-                   help='Submit only those jobs using the selected list of lumisections having high-pT cosmics for 2010 data. Implies +submit-data.')
+group.add_argument('+submit-mask',
+                   help='Take the lumi mask for submission from the specified file.')
 group.add_argument('+submit-debug', action='store_true',
                    help='Debug the batch submission.')
 group.add_argument('+submit-only', metavar='DATASET_NAME', action='append',
@@ -156,6 +156,8 @@ if options.debug_data_event or options.debug_mc_event:
     options.debug = True
     options.files = [filename]
     options.run_events = [(run, event)]
+    print 'next time, run with'
+    print '+file %s +run-event %i,%i' % (filename, run, event)
 
 if options.run_events:
     for i,x in enumerate(options.run_events):
@@ -181,6 +183,9 @@ for i, fn in enumerate(options.files):
 if options.debug_mc_event:
     options.is_mc = True
 
+if options.edm_output_all:
+    options.edm_output = True
+
 # If not overriden, make up the batch_name out of alca_set and other options.
 if not options.batch_name:
     options.batch_name = options.alca_set
@@ -202,8 +207,6 @@ if not options.batch_name:
         options.batch_name += 'EDMOut'
 
 # Figure out the submitter options.
-if options.submit_highpt2010only:
-    options.submit_data = True
 options.submit = options.submit_mc or options.submit_data
 
 # Advertise options.
@@ -653,15 +656,6 @@ lumis_per_job = 50
 lumi_mask = tmp.json
 '''
 
-    # For tests, option to run just on a few LS that contained high-pT
-    # muons in 2010 cosmic dataset.
-    job_control_highpt2010only = '''
-lumi_mask = highpt2010.json
-split_by_lumi = 1
-lumis_per_job = 100
-total_number_of_lumis = -1
-'''
-
     # Submitting jobs just locally on FNAL LPC (may set scheduler
     # based on the individual datasets below in future).
     scheduler = 'condor' if not options.submit_grid else 'glite'
@@ -726,12 +720,11 @@ options.run_events = None
             submit(locals())
 
     if options.submit_data:
-        if options.submit_highpt2010only:
-            job_control = job_control_highpt2010only
-            datasets = datasets[:4]
+        job_control = job_control_data
+
+        if options.submit_mask:
+            job_control.replace('tmp.json', options.submit_mask)
         else:
-            job_control = job_control_data
-            
             # Build a loose run list that is the superset of any run list we
             # might want to apply later: require STRIP & (DT | CSC), for any
             # run type.
@@ -739,7 +732,6 @@ options.run_events = None
             data_runs = runs.get_run_list(run_types='any', muon_subdet='either', require_pixels=False)
             json = ['"%i": [[1,26296]]' % r for r in data_runs]
             open('tmp.json', 'wt').write('{' + ', '.join(json) + '}')
-            lumi_mask = 'lumi_mask = tmp.json'
 
         for sample_name, dataset_path, run_min, run_max in datasets_data:
             if options.submit_highpt2010only:
