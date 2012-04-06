@@ -113,6 +113,7 @@ protected:
   Float_t  pdf_[7];
   Float_t  pthat_;
   Float_t  processID_;
+  Float_t  TrueNI_;
   Int_t    nBX_;
   Int_t    nPU_[maxP];
   Int_t    BXPU_[maxP];
@@ -294,6 +295,7 @@ protected:
   Int_t    eleConvFlag_[maxP];
   Int_t    eleConvMissinghit_[maxP];
   Float_t  eleConvPoint_[maxP][3];
+  Float_t  eleConversionveto_[maxP];
   Float_t  eleESRatio_[maxP];
   Float_t  eleESProfileFront_[maxP][123];
   Float_t  eleESProfileRear_[maxP][123];
@@ -307,6 +309,7 @@ protected:
   Int_t    nPho_;
   Int_t    phoTrg_[maxP][14];
   Bool_t   phoIsPhoton_[maxP];
+  Bool_t   phoElectronveto_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];
   Float_t  phoPz_[maxP];
