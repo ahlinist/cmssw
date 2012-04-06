@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
-# Try to compute the charge mis-identification probability by
-# comparing charges reconstructed in opposite halves of the
-# detector. In one half of the detector, we tag tracks of a particular
-# charge by requiring that the tracker-only, global, and TPFMS fits
-# have the same charge. (The charge mis-id rate when all three agree
-# is much smaller than for any of them.) Then we compare the tag
-# charge to the charge of whichever track in the opposite half.
+__doc__ = '''
+Try to compute the charge mis-identification probability by
+comparing charges reconstructed in opposite halves of the
+detector. In one half of the detector, we tag tracks of a particular
+charge by requiring that the tracker-only, global, and TPFMS fits
+have the same charge. (The charge mis-id rate when all three agree
+is much smaller than for any of them.) Then we compare the tag
+charge to the charge of whichever track in the opposite half.
+'''
 
 import sys, argparse, os
 from array import array
 
 ################################################################################
 
-parser = argparse.ArgumentParser(description='duh')
+parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('filename',
                     help='Input filename for ntuple (already having run selection applied).')
 parser.add_argument('--mc', action='store_true',
