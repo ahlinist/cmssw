@@ -60,6 +60,9 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
+// New veto
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+
 using namespace std;
 using namespace pat;
 using namespace edm;
@@ -138,6 +141,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
     tree_->Branch("processID", &processID_, "processID/F");
+    tree_->Branch("TrueNI", &TrueNI_, "TrueNI/F");
     tree_->Branch("nBX", &nBX_, "nBX/I");
     tree_->Branch("nPU", nPU_, "nPU[nBX]/I");
     tree_->Branch("BXPU", BXPU_, "BXPU[nBX]/I");
@@ -302,6 +306,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleConvRadius", eleConvRadius_, "eleConvRadius[nEle]/F");
   tree_->Branch("eleConvFlag", eleConvFlag_, "eleConvFlag[nEle]/I");
   tree_->Branch("eleConvMissinghit", eleConvMissinghit_, "eleConvMissinghit[nEle]/I");
+  tree_->Branch("eleConversionveto", eleConversionveto_, "eleConversionveto[nEle]/O");
   tree_->Branch("eleESRatio", eleESRatio_, "eleESRatio[nEle]/F");
   tree_->Branch("eleESProfileFront", eleESProfileFront_, "eleESProfileFront[nEle][123]/F");
   tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
@@ -315,6 +320,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][14]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
+  tree_->Branch("phoElectronveto", phoElectronveto_, "phoElectronveto[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
   tree_->Branch("phoPz", phoPz_, "phoPz[nPho]/F");
@@ -580,6 +586,9 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
 
+  edm::Handle<reco::ConversionCollection> hConversions;
+  e.getByLabel("allConversions", hConversions);
+
   // get the channel status from the DB
   edm::ESHandle<EcalChannelStatus> chStatus;
   es.get<EcalChannelStatusRcd>().get(chStatus);
@@ -722,10 +731,14 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     std::vector<PileupSummaryInfo>::const_iterator PVI;
 
     nBX_ = 0;
+    TrueNI_ = -1;
     for(PVI = PUInfo->begin(); PVI != PUInfo->end(); ++PVI) {
 
       nPU_[nBX_] = PVI->getPU_NumInteractions();
       BXPU_[nBX_] = PVI->getBunchCrossing();
+
+      if (PVI->getBunchCrossing() == 0)
+        TrueNI_ = PVI->getTrueNumInteractions(); 
 
       nBX_ += 1;
     }
@@ -1407,6 +1420,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const reco::HitPattern& p_inner = eleTrk->trackerExpectedHitsInner(); 
       eleConvMissinghit_[nEle_] = p_inner.numberOfHits();
 
+      eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*iEle, hConversions, beamSpotHandle->position());
+
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
       vector<float> eleCov;
@@ -1574,6 +1589,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
       
+      edm::Handle<reco::GsfElectronCollection> hElectrons;
+      e.getByLabel("gsfElectrons", hElectrons);
+      phoElectronveto_[nPho_] = ConversionTools::hasMatchedPromptElectron(iPho->superCluster(), hElectrons, hConversions, beamSpotHandle->position());
+
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
