@@ -554,6 +554,12 @@ private:
   // The copied ntuple (see copy_selected_events comment above).
   TTree* events_used;
 
+  // We keep a separate simple ntuple to record the cuts by
+  // run/lumi/event number.
+  unsigned error_tree_run, error_tree_lumi, error_tree_event;
+  int error_tree_code;
+  TTree* error_tree;
+
   // Used by cut() to check whether the run is in the good run list.
   bool run_is_bad(unsigned run);
 
@@ -677,6 +683,12 @@ CosmicSplittingResolutionHistos::CosmicSplittingResolutionHistos(const edm::Para
     events_used = fs->make<TTree>("events_used", "");
     write_to_tree(events_used, nt);
   }
+
+  error_tree = fs->make<TTree>("error_t", "");
+  error_tree->Branch("run", &error_tree_run, "run/i");
+  error_tree->Branch("lumi", &error_tree_lumi, "lumi/i");
+  error_tree->Branch("event", &error_tree_event, "event/i");
+  error_tree->Branch("error_code", &error_tree_code, "error_code/I");
 }
 
 CosmicSplittingResolutionHistos::~CosmicSplittingResolutionHistos() {
@@ -843,8 +855,14 @@ void CosmicSplittingResolutionHistos::analyze(const edm::Event&, const edm::Even
 
     error_code e = cut();
     errors->Fill(e);
-    if (e != error_none)
+    if (e != error_none) {
+      error_tree_run = nt->run;
+      error_tree_lumi = nt->lumi;
+      error_tree_event = nt->event;
+      error_tree_code = e;
+      error_tree->Fill();
       continue;
+    }
 
     h_global_upper_inner_pos_xy->Fill(nt->inner_pos[tk_global][upper][0], nt->inner_pos[tk_global][upper][1]);
     h_global_upper_outer_pos_xy->Fill(nt->outer_pos[tk_global][upper][0], nt->outer_pos[tk_global][upper][1]);
