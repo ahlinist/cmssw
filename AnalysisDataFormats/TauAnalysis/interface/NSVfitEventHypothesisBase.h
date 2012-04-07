@@ -29,6 +29,14 @@ class NSVfitEventHypothesisBase
   const std::string& name() const { return name_; }
   int barcode() const { return barcode_; }
 
+  /// mean and median reconstructed mass,
+  /// -1 sigma and +1 sigma limits on reconstructed mass
+  double mass() const { return mass_; }
+  double massErrUp() const { return massErrUp_; }
+  double massErrDown() const { return massErrDown_; }
+
+  bool isValidSolution() const { return isValidSolution_; }
+
   /// pointer to MET object from which this hypothesis was made
   virtual const edm::Ptr<reco::Candidate>& met() const { return met_; }
 
@@ -45,7 +53,7 @@ class NSVfitEventHypothesisBase
 
   const AlgebraicVector3& eventVertexShiftSVrefitted() const { return eventVertexPositionShift_; }
 
-  /// fit hypotheses of lepton resonances
+  /// fit hypotheses of lepton-pair resonances
   size_t numResonances() const { return resonances_.size(); }
   NSVfitResonanceHypothesisBase* resonance(size_t idx) { return &resonances_[idx]; }
   const NSVfitResonanceHypothesisBase* resonance(size_t idx) const { return &resonances_[idx]; }
@@ -76,6 +84,8 @@ class NSVfitEventHypothesisBase
 
   friend class NSVfitEventBuilderBase;
   friend class NSVfitAlgorithmBase;
+  friend class NSVfitAlgorithmByLikelihoodMaximization;
+  friend class NSVfitAlgorithmByIntegration2;
 
  protected:
 
@@ -100,6 +110,15 @@ class NSVfitEventHypothesisBase
 
   /// fit hypotheses for daughter particles
   edm::OwnVector<NSVfitResonanceHypothesisBase> resonances_;
+
+  /// "best fit" reconstructed mass,
+  /// -1 sigma and +1 sigma limits on reconstructed mass
+  double mass_;
+  double massErrUp_;
+  double massErrDown_;
+
+  /// flag indicating that computed mass hypotheses are physically "valid" solutions
+  bool isValidSolution_;
 };
 
 // CV: implementation of operator< needed to store NSVfitEventHypothesisBase objects in edm::OwnVector

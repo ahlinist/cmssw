@@ -61,6 +61,7 @@ class NSVfitResonanceHypothesisBase
   friend class NSVfitResonanceBuilderW;
   friend class NSVfitAlgorithmBase;
   friend class NSVfitAlgorithmByLikelihoodMaximization;
+  friend class NSVfitAlgorithmByIntegration2;
 
  protected:
 
