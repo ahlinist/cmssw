@@ -8,7 +8,11 @@ NSVfitEventHypothesisBase::NSVfitEventHypothesisBase(const NSVfitEventHypothesis
     eventVertexPositionErr_(bluePrint.eventVertexPositionErr_),
     eventVertexPositionShift_(bluePrint.eventVertexPositionShift_),
     eventVertexIsValid_(bluePrint.eventVertexIsValid_),
-    resonances_(bluePrint.resonances_)
+    resonances_(bluePrint.resonances_),
+    mass_(bluePrint.mass_),
+    massErrUp_(bluePrint.massErrUp_),
+    massErrDown_(bluePrint.massErrDown_),
+    isValidSolution_(bluePrint.isValidSolution_)
 {}
 
 NSVfitEventHypothesisBase& NSVfitEventHypothesisBase::operator=(const NSVfitEventHypothesisBase& bluePrint)
@@ -21,6 +25,10 @@ NSVfitEventHypothesisBase& NSVfitEventHypothesisBase::operator=(const NSVfitEven
   eventVertexPositionShift_ = bluePrint.eventVertexPositionShift_;
   eventVertexIsValid_ = bluePrint.eventVertexIsValid_;
   resonances_ = bluePrint.resonances_;
+  mass_ = bluePrint.mass_;
+  massErrUp_ = bluePrint.massErrUp_;
+  massErrDown_ = bluePrint.massErrDown_;
+  isValidSolution_ = bluePrint.isValidSolution_;
   return (*this);
 }
 

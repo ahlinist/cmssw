@@ -71,12 +71,14 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   unsigned numPolStates() const { return numPolStates_; }
   int polHandedness(unsigned idx) const { return polHandedness_[idx]; }
 
-  enum { kPolUndefined, kPolLR, kPolRL, kPolLL, kPolRR };
+  enum { kPolUndefined, kPolLR, kPolRL, kPolLL, kPolRR, kPolWL, kPolWR, kPolWT };
 
+  friend class NSVfitEventBuilder;
   friend class NSVfitResonanceBuilderBase;
   friend class NSVfitResonanceBuilder;
   friend class NSVfitResonanceBuilderW;
   friend class NSVfitAlgorithmByLikelihoodMaximization;
+  friend class NSVfitResonanceLikelihoodMatrixElementW;
   template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
 
  private:
@@ -98,6 +100,7 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
 
   /// different possible polarization states
   std::vector<int> polHandedness_;
+  std::vector<int> polSign_;
   unsigned numPolStates_;
 };
 
