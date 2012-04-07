@@ -6,6 +6,7 @@
  * Plugin for computing likelihood for tau lepton decay 
  *  tau- --> X nu
  * to be compatible with matrix element of V-A electroweak decay
+ * (taking tau lepton polarization effects into account)
  *
  * NOTE: the system of hadrons X can either be pi-, rho- --> pi- pi0,
  *       a1- --> pi- pi0 pi0 or a1- --> pi- pi+ pi-;
@@ -13,9 +14,9 @@
  *
  * \author Christian Veelken, Lorenzo Bianchini; LLR
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.3 2012/03/27 16:55:07 veelken Exp $
+ * $Id: NSVfitTauToHadLikelihoodMatrixElement.h,v 1.4 2012/04/03 10:11:28 veelken Exp $
  *
  */
 

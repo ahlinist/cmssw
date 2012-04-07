@@ -5,12 +5,13 @@
  *
  * Concrete implementation of (n)SVfit algorithm
  * by integration of likelihood functions
+ * (based on VEGAS integration algorithm)
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.8 2012/03/14 09:51:31 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.9 2012/04/03 10:17:08 veelken Exp $
  *
  */
 
@@ -33,8 +34,9 @@
 #include <gsl/gsl_monte.h>
 #include <gsl/gsl_monte_vegas.h>
 
-#include <TFormula.h>
 #include <TArrayF.h>
+#include <TFormula.h>
+#include <TH1.h>
 #include <TMath.h>
 
 #include <vector>
@@ -209,9 +211,9 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   double maxChi2_;
   unsigned maxIntEvalIter_;
   double precision_;
-  size_t numDimensions_;
+  unsigned numDimensions_;
 
-  size_t numMassParameters_;
+  unsigned numMassParameters_;
   IndepCombinatoricsGeneratorT<int>* massParForReplacements_;
 };
 

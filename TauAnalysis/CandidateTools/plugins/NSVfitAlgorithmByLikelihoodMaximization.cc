@@ -137,6 +137,11 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     setMassResults(*resonance);
   }
 
+  currentEventHypothesis_->mass_            = currentEventHypothesis_->p4_fitted().mass();
+  currentEventHypothesis_->massErrUp_       = 0.;
+  currentEventHypothesis_->massErrDown_     = 0.;
+  currentEventHypothesis_->isValidSolution_ = isValidSolution;
+
   fittedEventHypothesis_ = currentEventHypothesis_;
   fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
 }

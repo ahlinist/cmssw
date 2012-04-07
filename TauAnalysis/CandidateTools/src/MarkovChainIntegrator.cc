@@ -100,7 +100,7 @@ void MarkovChainIntegrator::setIntegrand(const ROOT::Math::Functor& integrand)
   x_ = new double[numDimensions_];
 
   xMin_.resize(numDimensions_); 
-  xMax_.resize(numDimensions_); 
+  xMax_.resize(numDimensions_);  
 
   dqDerr_.resize(numDimensions_); 
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
@@ -113,14 +113,15 @@ void MarkovChainIntegrator::setIntegrand(const ROOT::Math::Functor& integrand)
   prob_ = 0.;
 
   u_.resize(2*numDimensions_);   // first N entries = "significant" components, last N entries = "dummy" components
-  pProposal_.resize(2*numDimensions_); 
+  pProposal_.resize(2*numDimensions_);
   qProposal_.resize(numDimensions_);
 
-  probSum_.resize(numChains_*numBatches_);
+  probSum_.resize(numChains_*numBatches_);  
   for ( std::vector<double>::iterator probSum_i = probSum_.begin();
 	probSum_i != probSum_.end(); ++probSum_i ) {
     (*probSum_i) = 0.;
   }
+  integral_.resize(numChains_*numBatches_);  
 }
 
 void MarkovChainIntegrator::registerCallBackFunction(const ROOT::Math::Functor& function)
@@ -143,6 +144,14 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
     xMin_[iDimension] = xMin[iDimension];
     xMax_[iDimension] = xMax[iDimension];
   }
+  
+  volume_ = 1.;
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    volume_ *= (xMax_[iDimension] - xMin_[iDimension]);
+  }
+
+  numMoves_accepted_ = 0;
+  numMoves_rejected_ = 0;
 
   unsigned k = numChains_*numBatches_;  
   unsigned m = numIterSampling_/numBatches_;
@@ -173,9 +182,14 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 	(**callBackFunction)(x_);
       }
 
-      if ( iMove == m ) ++idxBatch;
+      if ( iMove >= m && (iMove % m) == 0 ) ++idxBatch;
       probSum_[idxBatch] += prob_;
     }
+  }
+
+  for ( unsigned idxBatch = 0; idxBatch < probSum_.size(); ++idxBatch ) {  
+    integral_[idxBatch] = volume_*probSum_[idxBatch]/m;
+    //if ( verbosity_ ) std::cout << "integral[" << idxBatch << "] = " << integral_[idxBatch] << std::endl;
   }
 
   if ( verbosity_ ) print(std::cout);
@@ -184,27 +198,16 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 //   (eqs. (6.39) and (6.40) in [1])   
   integral = 0.;
   for ( unsigned i = 0; i < k; ++i ) {    
-    double integral_i = probSum_[i]/m;
-    integral += integral_i;
+    integral += integral_[i];
   }
   integral /= k;
 
   integralErr = 0.;
   for ( unsigned i = 0; i < k; ++i ) {
-    double integral_i = probSum_[i]/m;
-    integralErr += square(integral_i - integral);
+    integralErr += square(integral_[i] - integral);
   }
-  integralErr /= (k*(k - 1));
+  if ( k >= 2 ) integralErr /= (k*(k - 1));
   integralErr = TMath::Sqrt(integralErr);
-
-//--- scale integral value and uncertainty by volume
-//    of integration region
-  double volume = 1.;
-  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    volume *= (xMax_[iDimension] - xMin_[iDimension]);
-  }
-  integral *= volume;
-  integralErr *= volume;
 
   if ( verbosity_ ) std::cout << "--> returning integral = " << integral << " +/- " << integralErr << std::endl;
 }
@@ -212,37 +215,28 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 void MarkovChainIntegrator::print(std::ostream& stream) const
 {
   stream << "<MarkovChainIntegrator::print>:" << std::endl;
-  unsigned m = numIterSampling_/numBatches_;
-  std::cout << " m = " << m << std::endl;  
   for ( unsigned iChain = 0; iChain < numChains_; ++iChain ) {
     double integral = 0.;
     for ( unsigned iBatch = 0; iBatch < numBatches_; ++iBatch ) {    
-      double integral_i = probSum_[iChain*numChains_ + iBatch]/m;
-      std::cout << "batch #" << iBatch << ": integral = " << integral_i << std::endl;
+      double integral_i = integral_[iChain*numBatches_ + iBatch];
+      //std::cout << "batch #" << iBatch << ": integral = " << integral_i << std::endl;
       integral += integral_i;
     }
     integral /= numBatches_;
-    std::cout << "<integral> = " << integral << std::endl;
+    //std::cout << "<integral> = " << integral << std::endl;
     
     double integralErr = 0.;
     for ( unsigned iBatch = 0; iBatch < numBatches_; ++iBatch ) { 
-      double integral_i = probSum_[iChain*numChains_ + iBatch]/m;
+      double integral_i = integral_[iChain*numBatches_ + iBatch];
       integralErr += square(integral_i - integral);
     }
-    integralErr /= (numBatches_*(numBatches_ - 1));
+    if ( numBatches_ >= 2 ) integralErr /= (numBatches_*(numBatches_ - 1));
     integralErr = TMath::Sqrt(integralErr);
-
-//--- scale integral value and uncertainty by volume
-//    of integration region
-    double volume = 1.;
-    for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-      volume *= (xMax_[iDimension] - xMin_[iDimension]);
-    }
-    integral *= volume;
-    integralErr *= volume;
 
     std::cout << " chain #" << iChain << ": integral = " << integral << " +/- " << integralErr << std::endl;
   }
+  std::cout << "moves: accepted = " << numMoves_accepted_ << ", rejected = " << numMoves_rejected_ 
+	    << " (fraction = " << (double)numMoves_accepted_/(numMoves_accepted_ + numMoves_rejected_)*100. << "%)" << std::endl;
 }
 
 //
@@ -266,16 +260,10 @@ void MarkovChainIntegrator::initializeStartPosition_and_Momentum()
     }
   }
 
-//--- randomly choose initialize momentum
-  for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
-    p_[iDimension] = sqrtT0_*rnd_.Gaus(0., 1.);
-  }
-
-  if ( verbosity_ ) {
-    std::cout << "<MarkovChainIntegrator::initializeStartPosition_and_Momentum>:" << std::endl;
-    std::cout << " q = " << format_vdouble(q_) << std::endl;
-    std::cout << " p = " << format_vdouble(p_) << std::endl;
-  }
+  //if ( verbosity_ ) {
+  //  std::cout << "<MarkovChainIntegrator::initializeStartPosition_and_Momentum>:" << std::endl;
+  //  std::cout << " q = " << format_vdouble(q_) << std::endl;
+  //}
 }
 
 void MarkovChainIntegrator::sampleSphericallyRandom()
@@ -303,19 +291,15 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
 {
 //--- perform "stochastic" move
 //   (eq. 24 in [2])
-  if ( verbosity_ ) {
-    std::cout << "<MarkovChainIntegrator::makeStochasticMove>:" << std::endl;
-    std::cout << " idx = " << idxMove << std::endl;
-  }
+  //if ( verbosity_ ) {
+  //  std::cout << "<MarkovChainIntegrator::makeStochasticMove>:" << std::endl;
+  //  std::cout << " idx = " << idxMove << std::endl;
+  //}
 
 //--- perform random updates of momentum components
   if ( idxMove < numIterSimAnnealingPhase1_ ) {
     for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
       p_[iDimension] = sqrtT0_*rnd_.Gaus(0., 1.);
-    }
-    if ( verbosity_ ) {
-      std::cout << "sim. Anealing Phase 1: T0 = " << T0_ << "," 
-		<< " p(proposed) = " << format_vdouble(p_) << std::endl;
     }
   } else if ( idxMove < numIterSimAnnealingPhase1plus2_ ) {
     double pMag2 = 0.;
@@ -328,28 +312,25 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
     for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
       p_[iDimension] = alpha_*pMag*u_[iDimension] + (1. - alpha2_)*rnd_.Gaus(0., 1.);
     }
-    if ( verbosity_ ) {
-      std::cout << "sim. Anealing Phase 2: alpha = " << alpha_ << "," 
-		<< " p(proposed) = " << format_vdouble(p_) << std::endl;
-    }
   } else {
     for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
       p_[iDimension] = rnd_.Gaus(0., 1.);
     }
-    if ( verbosity_ ) std::cout << "p(proposed) = " << format_vdouble(p_) << std::endl;
   }
+
+  if ( verbosity_ ) std::cout << "p(updated) = " << format_vdouble(p_) << std::endl;
 
 //--- choose random step size 
   double C = rnd_.BreitWigner(0., 1.);
   double epsilon = epsilon0_*TMath::Exp(nu_*C);
+  if ( verbosity_ ) std::cout << " epsilon = " << epsilon << std::endl;
 
   if        ( moveMode_ == kMetropolis ) { // Metropolis algorithm: move according to eq. (27) in [2]
 //--- update position components
 //    by single step of chosen size in direction of the momentum components
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {    
-      qProposal_[iDimension] = q_[iDimension] + epsilon*pProposal_[iDimension];
+      qProposal_[iDimension] = q_[iDimension] + epsilon*p_[iDimension];
     }
-    if ( verbosity_ ) std::cout << "Metropolis: q(proposed) = " << format_vdouble(qProposal_) << std::endl;
   } else if ( moveMode_ == kHybrid     ) { // Hybrid algorithm: move according to eqs. (20)-(23) in [2]
 //--- initialize position components
     for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
@@ -357,9 +338,13 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
     }
 //--- evolve momentum and position components
 //    according to discretized Hamiltonian mechanics 
+    for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+      pProposal_[iDimension] = p_[iDimension];
+    }
     makeDynamicMoves(epsilon);
-    if ( verbosity_ ) std::cout << "Hybrid: q(proposed) = " << format_vdouble(qProposal_) << std::endl;
   } else assert(0);
+
+  if ( verbosity_ ) std::cout << "q(proposed) = " << format_vdouble(qProposal_) << std::endl;
 
 //--- check if proposed move of Markov Chain to new position is accepted or not:
 //    compute change in phase-space volume for "dummy" momentum components
@@ -370,10 +355,10 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
 //--- check that proposed new point is within defined integration region
   bool isWithinBounds = true;
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {     
-    double q_i = q_[iDimension];
+    double q_i = qProposal_[iDimension];
     if ( !(q_i > 0. && q_i < 1.) ) {
       if ( verbosity_ ) {
-	std::cout << "q[" << iDimension << "] = " << q_i << " outside bounds" 
+	std::cout << " q[" << iDimension << "] = " << q_i << " outside bounds" 
 		  << " --> setting prob(proposed) = 0 !!" << std::endl;
       }
       isWithinBounds = false;
@@ -387,7 +372,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
   else if ( probProposal > 0.               ) deltaE = -std::numeric_limits<double>::max();
   else if (                      prob_ > 0. ) deltaE = +std::numeric_limits<double>::max();
   else assert(0);
-  if ( verbosity_ ) std::cout << "deltaE = " << deltaE << std::endl;
+  if ( verbosity_ ) std::cout << " deltaE = " << deltaE << std::endl;
 
   double deltaE_or_H = deltaE;
   if ( moveMode_ == kHybrid ) {
@@ -397,23 +382,27 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
   }
 
   double Kd = evalK(p_, numDimensions_, 2*numDimensions_);
-  if ( verbosity_ ) std::cout << "Kd = " << Kd << std::endl;
+  if ( verbosity_ ) std::cout << " Kd = " << Kd << std::endl;
   double base = 1. - deltaE_or_H/Kd;
   double rho = ( base > 0. ) ?
     TMath::Power(base, 0.5*numDimensions_ - 1.) : 0.;
-  if ( verbosity_ ) std::cout << "rho = " << rho << std::endl;
+  if ( verbosity_ ) std::cout << " rho = " << rho << std::endl;
   
   if ( rnd_.Uniform(0., 1.) < rho ) {
     if ( verbosity_ ) std::cout << "move accepted." << std::endl;
-    //for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {     
-    //  p_[iDimension] = pProposal_[iDimension];
-    //}
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {    
       q_[iDimension] = qProposal_[iDimension];
     }
+    if ( moveMode_ == kHybrid ) {
+      for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+	p_[iDimension] = pProposal_[iDimension];
+      }
+    }
     prob_ = evalProb(q_);
+    ++numMoves_accepted_;
   } else {
     if ( verbosity_ ) std::cout << "move rejected." << std::endl;
+    ++numMoves_rejected_;
   }
 }
 
@@ -484,7 +473,6 @@ void MarkovChainIntegrator::updateGradE(std::vector<double>& q)
     double dqDerr_i = dqDerr_[iDimension];
     double dq = ( (q_i + dqDerr_i) < 1. ) ? +dqDerr_i : -dqDerr_i;
     double q_plus_dq = q_i + dq;
-    assert(q_plus_dq > 0. && q_plus_dq < 1.);
     q[iDimension] = q_plus_dq;
     double prob_q_plus_dq = evalProb(q);
     double gradE_i = -(prob_q_plus_dq - prob_q)/dq;

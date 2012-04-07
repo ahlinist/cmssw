@@ -89,7 +89,7 @@ NSVfitAlgorithmByIntegration::~NSVfitAlgorithmByIntegration()
     delete (*it);
   }
 
-  delete fitParameterValues_;
+  delete [] fitParameterValues_;
 
   delete [] xl_;
   delete [] xu_;
@@ -282,6 +282,11 @@ void NSVfitAlgorithmByIntegration::fitImp() const
       const_cast<NSVfitResonanceHypothesisBase*>(persistentEventHypothesis->NSVfitEventHypothesisBase::resonance(resonanceName));
     setMassResults(dynamic_cast<NSVfitResonanceHypothesisByIntegration*>(resonance), histResults, iMassParameter);
   }
+  
+  persistentEventHypothesis->mass_            = 0.;
+  persistentEventHypothesis->massErrUp_       = 0.;
+  persistentEventHypothesis->massErrDown_     = 0.;
+  persistentEventHypothesis->isValidSolution_ = false;
 
   fittedEventHypothesis_ = persistentEventHypothesis;
   fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
@@ -292,64 +297,46 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 void NSVfitAlgorithmByIntegration::setMassResults(
        NSVfitResonanceHypothesisByIntegration* resonance, const TH1* histMassResults, unsigned iDimension) const
 {
-  const TH1* histMassResult1d = 0;
-  if      ( histMassResults->GetDimension() == 1 ) histMassResult1d = histMassResults;
+  const TH1* histMassResult1d_density = 0;
+  if      ( histMassResults->GetDimension() == 1 ) histMassResult1d_density = histMassResults;
   else if ( histMassResults->GetDimension() == 2 ) {
     const TH2* histMassResults2d = dynamic_cast<const TH2*>(histMassResults);
     assert(histMassResults2d);
-    if      ( iDimension == 0 ) histMassResult1d = histMassResults2d->ProjectionX();
-    else if ( iDimension == 1 ) histMassResult1d = histMassResults2d->ProjectionY();
+    if      ( iDimension == 0 ) histMassResult1d_density = histMassResults2d->ProjectionX();
+    else if ( iDimension == 1 ) histMassResult1d_density = histMassResults2d->ProjectionY();
   }
-  assert(histMassResult1d);
+  assert(histMassResult1d_density);
 
-  //for ( int iBin = 1; iBin <= histMassResult1d->GetNbinsX(); ++iBin ) {
-  //  std::cout << " iBin " << iBin << " (" << histMassResult1d->GetBinCenter(iBin) <<  "):" 
-  //	        << " " << histMassResult1d->GetBinContent(iBin) << std::endl;
+  //for ( int iBin = 1; iBin <= histMassResult1d_density->GetNbinsX(); ++iBin ) {
+  //  std::cout << " iBin " << iBin << " (" << histMassResult1d_density->GetBinCenter(iBin) <<  "):" 
+  //	        << " " << histMassResult1d_density->GetBinContent(iBin) << std::endl;
   //}
   
-//--- compute median, -1 sigma and +1 sigma limits on reconstructed mass
-  if ( histMassResult1d->Integral() > 0. ) {
-    Double_t q[3];
-    Double_t probSum[3];
-    probSum[0] = 0.16;
-    probSum[1] = 0.50;
-    probSum[2] = 0.84;
-    (const_cast<TH1*>(histMassResult1d))->GetQuantiles(3, q, probSum);
+  std::string histMassResult1dName = std::string(histMassResult1d_density->GetName()).append("_cloned");
+  TH1* histMassResult1d = (TH1*)histMassResult1d_density->Clone(histMassResult1dName.data());
+  for ( int iBin = 1; iBin <= histMassResult1d->GetNbinsX(); ++iBin ) {
+    double binContent = histMassResult1d_density->GetBinContent(iBin);
+    double binError = histMassResult1d_density->GetBinError(iBin);
+    double binWidth = histMassResult1d_density->GetBinWidth(iBin);
+    histMassResult1d->SetBinContent(iBin, binContent*binWidth);
+    histMassResult1d->SetBinError(iBin, binError*binWidth);
+  }
+
+  if ( histMassResult1d_density->Integral() > 0. ) {
+    double massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084;
+    extractHistogramProperties(histMassResult1d, histMassResult1d_density,
+			       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
-    int binMaximum = histMassResult1d->GetMaximumBin();
-    double massMaxInterpol = 0.;
-    if ( binMaximum > 1 && binMaximum < histMassResult1d->GetNbinsX() ) {
-      double xMaximum = histMassResult1d->GetBinCenter(binMaximum);
-      double yMaximum = histMassResult1d->GetBinContent(binMaximum);
-      
-      int binLeft     = binMaximum - 1;
-      double xLeft    = histMassResult1d->GetBinCenter(binLeft);
-      double yLeft    = histMassResult1d->GetBinContent(binLeft);    
-      
-      int binRight    = binMaximum + 1;
-      double xRight   = histMassResult1d->GetBinCenter(binRight);
-      double yRight   = histMassResult1d->GetBinContent(binRight); 
-      
-      double xMinus   = xLeft - xMaximum;
-      double yMinus   = yLeft - yMaximum;
-      double xPlus    = xRight - xMaximum;
-      double yPlus    = yRight - yMaximum;
-      
-      massMaxInterpol = xMaximum + 0.5*(yPlus*square(xMinus) - yMinus*square(xPlus))/(yPlus*xMinus - yMinus*xPlus);
-    } else {
-      massMaxInterpol = histMassResult1d->GetBinCenter(binMaximum);
-    }
+    //std::cout << "--> median = " << massQuantile050 << ", maximum = " << massMaximum << std::endl;
 
-    //std::cout << "--> median = " << q[1] << ", maximum = " << histMassResult1d->GetBinCenter(binMaximum) << std::endl;
+    double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
+    double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
+    NSVfitAlgorithmBase::setMassResults(resonance, massMaximum_interpol, massErrUp, massErrDown);
 
-    double massErrUp   = TMath::Abs(q[2] - massMaxInterpol);
-    double massErrDown = TMath::Abs(massMaxInterpol - q[0]);
-    NSVfitAlgorithmBase::setMassResults(resonance, massMaxInterpol, massErrUp, massErrDown);
-
-    resonance->massMean_ = histMassResult1d->GetMean();
-    resonance->massMedian_ = q[1];
-    resonance->massMaximum_ = histMassResult1d->GetBinCenter(binMaximum);
-    resonance->massMaxInterpol_ = massMaxInterpol;
+    resonance->massMean_ = massMean;
+    resonance->massMedian_ = massQuantile050;
+    resonance->massMaximum_ = massMaximum;
+    resonance->massMaxInterpol_ = massMaximum_interpol;
     resonance->isValidSolution_ = true;
     
     //std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
@@ -361,7 +348,8 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     resonance->isValidSolution_ = false;
   }
   
-  if ( histMassResult1d != histMassResults ) delete histMassResult1d;
+  if ( histMassResult1d_density != histMassResults ) delete histMassResult1d_density;
+  delete histMassResult1d;
 }
 
 bool NSVfitAlgorithmByIntegration::isDaughter(const std::string& daughterName)

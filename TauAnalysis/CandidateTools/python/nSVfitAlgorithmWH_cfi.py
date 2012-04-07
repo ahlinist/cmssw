@@ -64,7 +64,7 @@ nSVfitConfigWH_template = cms.PSet(
                         likelihoodFunctions = cms.VPSet(
                             nSVfitMuonLikelihoodMatrixElement.clone(
                                 applySinThetaFactor = cms.bool(False),
-                                applyVisPtCutCorrection = cms.bool(True)
+                                applyVisPtCutCorrection = cms.bool(False)
                             )
                         ),
                         builder = nSVfitTauToMuBuilder
@@ -74,7 +74,7 @@ nSVfitConfigWH_template = cms.PSet(
                         likelihoodFunctions = cms.VPSet(
                             nSVfitTauLikelihoodPhaseSpace.clone(
                                 applySinThetaFactor = cms.bool(False),
-                                applyVisPtCutCorrection = cms.bool(True)
+                                applyVisPtCutCorrection = cms.bool(False)
                             )
                         ),
                         builder = nSVfitTauToHadBuilder
@@ -116,7 +116,8 @@ nSVfitProducerByIntegrationWH = cms.EDProducer("NSVfitProducerByIntegration",
                 stepSizeFactor = cms.double(1.025), # nextM = max(stepSizeFactor*currentM, minStepSize)
                 minStepSize = cms.double(2.5),      
                 replace = cms.string("leg1.x"),
-                by = cms.string("(Higgs.p4.mass/mass_Higgs)*(Higgs.p4.mass/mass_Higgs)/leg2.x")
+                by = cms.string("(Higgs.p4.mass/mass_Higgs)*(Higgs.p4.mass/mass_Higgs)/leg2.x"),
+                deltaFuncDerrivative = cms.string("2.*leg1.x/mass_Higgs")                                                            
             )
         ),
         vegasOptions = cms.PSet(

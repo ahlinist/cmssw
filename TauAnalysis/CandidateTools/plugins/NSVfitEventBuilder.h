@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitEventBuilder.h,v 1.2 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitEventBuilder.h,v 1.3 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
@@ -25,9 +25,7 @@ class NSVfitEventBuilder : public NSVfitEventBuilderBase
 {
  public:
 
-  NSVfitEventBuilder(const edm::ParameterSet& cfg) 
-    : NSVfitEventBuilderBase(cfg)
-  {}
+  NSVfitEventBuilder(const edm::ParameterSet&);
   ~NSVfitEventBuilder() {}
 
   void beginJob(NSVfitAlgorithmBase*);
@@ -37,6 +35,9 @@ class NSVfitEventBuilder : public NSVfitEventBuilderBase
   NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
   
  private:
+  /// different possible polarization states of W bosons
+  std::vector<int> polHandedness_;
+  unsigned numPolStates_;
 
   NSVfitAlgorithmBase* algorithm_;
 };

@@ -18,7 +18,7 @@ import TauAnalysis.Configuration.tools.castor as castor
 version = '2012Mar13'
 
 inputFilePath  = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/SVfitStudies/'
-harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Mar29/'
+harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr04/'
 outputFilePath = '/tmp/veelken/svFitStudies/' 
 
 samplesToAnalyze = [
@@ -46,8 +46,10 @@ channelsToAnalyze = [
 
 #runSVfitEventHypothesisAnalyzer = True
 runSVfitEventHypothesisAnalyzer = False
-runLXBatchHarvesting = True
-#runLXBatchHarvesting = False
+#runLXBatchHarvesting = True
+runLXBatchHarvesting = False
+# Note: you need one run with runSVfitEventHypothesisAnalyzer = False && runLXBatchHarvesting = False
+#       to copy .root files to outputFilePath on the local disk and run the final harvesting at the very end
 
 def createFilePath_recursively(filePath):
     filePath_items = filePath.split('/')

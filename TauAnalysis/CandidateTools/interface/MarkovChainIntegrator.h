@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.1 $
  *
- * $Id: MarkovChainIntegrator.h,v 1.9 2012/04/03 10:17:08 veelken Exp $
+ * $Id: MarkovChainIntegrator.h,v 1.1 2012/04/07 12:48:21 veelken Exp $
  *
  */
 
@@ -87,11 +87,13 @@ class MarkovChainIntegrator
   //  numDimensions: dimensionality of integration region (Hypercube)
   //  xMin:          lower boundaries of integration region 
   //  xMax:          upper boundaries of integration region
+  //  volume:        volume of integration region (volume of Hypercube in Euclidean space)
   //  initMode:      flag indicating how initial position of Markov Chain is chosen (uniform/Gaus distribution)
   unsigned numDimensions_;
   double* x_;
   std::vector<double> xMin_; // index = dimension
   std::vector<double> xMax_; // index = dimension
+  double volume_; 
   int initMode_;
 
   // parameters defining number of "stochastic moves" performed per integration
@@ -148,6 +150,10 @@ class MarkovChainIntegrator
   std::vector<double> qProposal_;
 
   std::vector<double> probSum_; // index = chain*numBatches + batch 
+  std::vector<double> integral_;
+
+  long numMoves_accepted_;
+  long numMoves_rejected_;
 
   int verbosity_; // flag to enable/disable debug output
 };

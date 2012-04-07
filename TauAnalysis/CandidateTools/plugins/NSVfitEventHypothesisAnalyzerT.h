@@ -59,11 +59,17 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 
   MonitorElement* svFitIsValidSolution_;
   
-  MonitorElement* svFitMassVsSigmaXL_;
-  MonitorElement* svFitMassVsSigmaXL_oneProng0pi0_;
-  MonitorElement* svFitMassVsSigmaXL_oneProng1pi0_;
-  MonitorElement* svFitMassVsSigmaXL_oneProng2pi0_;
-  MonitorElement* svFitMassVsSigmaXL_threeProng0pi0_;
+  MonitorElement* svFitMassVsSigmaDownXL_;
+  MonitorElement* svFitMassVsSigmaDownXL_oneProng0pi0_;
+  MonitorElement* svFitMassVsSigmaDownXL_oneProng1pi0_;
+  MonitorElement* svFitMassVsSigmaDownXL_oneProng2pi0_;
+  MonitorElement* svFitMassVsSigmaDownXL_threeProng0pi0_;
+
+  MonitorElement* svFitMassVsMEtXL_;
+  MonitorElement* svFitMassVsMEtXL_oneProng0pi0_;
+  MonitorElement* svFitMassVsMEtXL_oneProng1pi0_;
+  MonitorElement* svFitMassVsMEtXL_oneProng2pi0_;
+  MonitorElement* svFitMassVsMEtXL_threeProng0pi0_;
 
   struct plotEntryType1
   {

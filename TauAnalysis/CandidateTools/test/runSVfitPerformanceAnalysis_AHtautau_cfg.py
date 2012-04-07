@@ -26,7 +26,7 @@ channel = 'muTau'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-outputFileName = 'svFitPerformanceAnalysisPlots_AHtautau_%s_2012Mar28.root' % sample
+outputFileName = 'svFitPerformanceAnalysisPlots_AHtautau_%s_2012Apr04.root' % sample
 maxEvents = 20
 #--------------------------------------------------------------------------------
 
@@ -562,7 +562,7 @@ else:
     srcRecMEt = 'patType1CorrectedPFMet'
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
-for idxSVfitOption in range(28):
+for idxSVfitOption in range(26):
     ##if not (idxSVfitOption == 3):
     ##    continue
     nSVfitProducer = None
@@ -576,33 +576,33 @@ for idxSVfitOption in range(28):
     nSVfitProducer.config.event.resonances.A.daughters.leg2.src = cms.InputTag(srcRecLeg2)
     resonanceLikelihoods = []
     # switch between simple phase-space and matrix element likelihoods
-    if idxSVfitOption >= 0 and idxSVfitOption <= 7:
+    if idxSVfitOption >= 0 and idxSVfitOption <= 5:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif idxSVfitOption >= 8 and idxSVfitOption <= 9:
+    elif idxSVfitOption >= 6 and idxSVfitOption <= 7:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMC_all.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodMC_all.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif idxSVfitOption >= 10 and idxSVfitOption <= 11:
+    elif idxSVfitOption >= 8 and idxSVfitOption <= 9:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMC_selected.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodMC_selected.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif (idxSVfitOption >= 12 and idxSVfitOption <= 13) or \
-         (idxSVfitOption >= 24 and idxSVfitOption <= 27):
+    elif (idxSVfitOption >= 10 and idxSVfitOption <= 11) or \
+         (idxSVfitOption >= 20 and idxSVfitOption <= 25):
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMatrixElement.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodPhaseSpace.clone())
         nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
-    elif (idxSVfitOption >= 14 and idxSVfitOption <= 23):
+    elif idxSVfitOption >= 12 and idxSVfitOption <= 19:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMatrixElement.clone())
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodMatrixElement.clone())
-        if idxSVfitOption >= 14 and idxSVfitOption <= 15:
+        if idxSVfitOption >= 12 and idxSVfitOption <= 13:
             nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("LR", "RL")
             nSVfitResonanceLikelihoodPolarization_Z = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
             nSVfitResonanceLikelihoodPolarization_Z.LR.formula = cms.string("[0]")
             nSVfitResonanceLikelihoodPolarization_Z.RL.formula = cms.string("[0]")            
             resonanceLikelihoods.append(nSVfitResonanceLikelihoodPolarization_Z)
-        elif idxSVfitOption >= 16 and idxSVfitOption <= 17:
+        elif idxSVfitOption >= 14 and idxSVfitOption <= 15:
             nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("LL", "RR")
             nSVfitResonanceLikelihoodPolarization_Higgs = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
             nSVfitResonanceLikelihoodPolarization_Higgs.LL.formula = cms.string("[0]")
@@ -611,19 +611,16 @@ for idxSVfitOption in range(28):
         else:
             nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("LR", "RL", "LL", "RR")
             nSVfitResonanceLikelihoodPolarization_interpol = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
-            nSVfitResonanceLikelihoodPolarization_interpol.LR.formula = cms.string("[0]*([1] + [2] - x)/[2]")
-            nSVfitResonanceLikelihoodPolarization_interpol.RL.formula = cms.string("[0]*([1] + [2] - x)/[2]")
-            nSVfitResonanceLikelihoodPolarization_interpol.LL.formula = cms.string("[0]*(x - [1])/[2]")
-            nSVfitResonanceLikelihoodPolarization_interpol.RR.formula = cms.string("[0]*(x - [1])/[2]")            
+            nSVfitResonanceLikelihoodPolarization_interpol.LR.formula = cms.string("[0]")
+            nSVfitResonanceLikelihoodPolarization_interpol.RL.formula = cms.string("[0]")
+            nSVfitResonanceLikelihoodPolarization_interpol.LL.formula = cms.string("[0]")
+            nSVfitResonanceLikelihoodPolarization_interpol.RR.formula = cms.string("[0]")            
             resonanceLikelihoods.append(nSVfitResonanceLikelihoodPolarization_interpol)
     else:
-        nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLeg1LikelihoodMatrixElement.clone())
-        nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLeg2LikelihoodPhaseSpace.clone())
-        nSVfitProducer.config.event.resonances.A.builder.polStates = cms.vstring("undefined")
+        raise ValueError("Invalid SVfit option = %i !!" % idxSVfitOption)
     # enable/disable visible Pt cut correction in tau decay likelihoods
-    if (idxSVfitOption >=  6 and idxSVfitOption <=  7) or \
-       (idxSVfitOption >= 12 and idxSVfitOption <= 21) or \
-       (idxSVfitOption >= 24 and idxSVfitOption <= 27) :
+    if (idxSVfitOption >=  4 and idxSVfitOption <=  5) or \
+       (idxSVfitOption >= 18 and idxSVfitOption <= 19):
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applyVisPtCutCorrection = cms.bool(True)
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].visPtCutThreshold = \
           cms.double(nSVfitLeg1visPtCutThreshold)
@@ -634,26 +631,23 @@ for idxSVfitOption in range(28):
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applyVisPtCutCorrection = cms.bool(False)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applyVisPtCutCorrection = cms.bool(False)
     # enable/disable sin(theta) term in tau decay likelihoods in case SVfit is run in fit/integration mode
-    if ((idxSVfitOption % 2) == 0) or \
-       (idxSVfitOption >= 0 and idxSVfitOption <= 1):
+    if (idxSVfitOption % 2) == 0:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)
     else:
         nSVfitProducer.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
         nSVfitProducer.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
     # enable/disable log(M) regularization term in resonance likelihood
-    if idxSVfitOption >= 0 and idxSVfitOption <= 3:
+    if idxSVfitOption >= 0 and idxSVfitOption <= 1:
         resonanceLikelihoods.append(process.nSVfitResonanceLikelihoodLogM)
-    # enable MET tail probability correction plus increase overall power of MET likelihood in the events 
-    if idxSVfitOption >= 20 and idxSVfitOption <= 21:
+    # enable/disable MET tail probability correction
+    # (plus option to increase overall power of MET likelihood in the events)
+    if idxSVfitOption >= 20 and idxSVfitOption <= 23:
         nSVfitProducer.config.event.likelihoodFunctions[0].tailProbCorr = process.tailProbCorr_MC_2011
-        nSVfitProducer.config.event.likelihoodFunctions[0].power = cms.double(1.2)    
+        if idxSVfitOption >= 22 and idxSVfitOption <= 23:
+            nSVfitProducer.config.event.likelihoodFunctions[0].power = cms.double(1.2)    
     # enable/disable prior likelihood (moving events with large sigmaSVfit towards the Z-peak)
     if idxSVfitOption >= 24 and idxSVfitOption <= 25:
-        nSVfitResonanceLikelihoodPrior_strength1 = copy.deepcopy(process.nSVfitResonanceLikelihoodPrior)
-        nSVfitResonanceLikelihoodPrior_strength1.parameter.par0 = cms.double(1.)
-        resonanceLikelihoods.append(nSVfitResonanceLikelihoodPrior_strength1)
-    if idxSVfitOption >= 26 and idxSVfitOption <= 27:
         nSVfitResonanceLikelihoodPrior_strength2 = copy.deepcopy(process.nSVfitResonanceLikelihoodPrior)
         nSVfitResonanceLikelihoodPrior_strength2.parameter.par0 = cms.double(2.)
         resonanceLikelihoods.append(nSVfitResonanceLikelihoodPrior_strength2)
