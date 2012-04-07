@@ -9,6 +9,8 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
+#include <TH1.h>
+
 namespace SVfit_namespace
 {
   //-----------------------------------------------------------------------------
@@ -114,7 +116,7 @@ namespace SVfit_namespace
   reco::Candidate::Vector motherDirection(const reco::Candidate::Vector&, double, double);
 
   /// Compute the tau four vector given the tau direction and momentum
-    reco::Candidate::LorentzVector motherP4(const reco::Candidate::Vector&, double, double);
+  reco::Candidate::LorentzVector motherP4(const reco::Candidate::Vector&, double, double);
 
   /// Compute decay angle in rest frame given momentum of tau lepton and visible decay product in lab frame
   double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
@@ -207,6 +209,8 @@ namespace SVfit_namespace
       - 0.5*TMath::Log(det)
       - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
   }
+
+  void extractHistogramProperties(const TH1*, const TH1*, double&, double&, double&, double&, double&, double&);
 }
 
 #endif

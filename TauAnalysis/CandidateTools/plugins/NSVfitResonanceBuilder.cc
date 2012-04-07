@@ -46,8 +46,9 @@ NSVfitResonanceBuilder::NSVfitResonanceBuilder(const edm::ParameterSet& cfg)
 
 NSVfitResonanceHypothesis* NSVfitResonanceBuilder::build(const inputParticleMap& inputParticles) const
 {
-//--- set polarization status for resonance
   NSVfitResonanceHypothesis* resonance = NSVfitResonanceBuilderBase::build(inputParticles);
+
+//--- set polarization status for resonance
   resonance->polHandedness_ = polHandedness_;
   resonance->numPolStates_ = numPolStates_;
 
@@ -79,7 +80,7 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilder::build(const inputParticleMap&
 	int daughter_polSign = 0;
 	// CV: left-handed  tau- and right-handed tau+ are assigned polarization -1,
 	//     right-handed tau- and left-handed  tau+ are assigned polarization +1
-	if ( daughter_polHandedness == NSVfitSingleParticleHypothesis::kPolL ) {
+	if        ( daughter_polHandedness == NSVfitSingleParticleHypothesis::kPolL ) {
 	  if      ( daughter->particle()->charge() < -0.5 ) daughter_polSign = -1;
 	  else if ( daughter->particle()->charge() > +0.5 ) daughter_polSign = +1;
 	} else if ( daughter_polHandedness == NSVfitSingleParticleHypothesis::kPolR ) {

@@ -243,8 +243,7 @@ nSVfitConfig_template = cms.PSet(
                         builder = nSVfitTauToHadBuilder
                     )
                 ),
-                likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM),
-                #likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogEff),
+                likelihoodFunctions = cms.VPSet(),
                 builder = nSVfitResonanceBuilder
             )
         ),
@@ -256,7 +255,7 @@ nSVfitConfig_template = cms.PSet(
 )
 
 nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
-    config = nSVfitConfig_template,
+    config = nSVfitConfig_template.clone(),
     algorithm = cms.PSet(
         pluginName = cms.string("nSVfitAlgorithmByIntegration"),
         pluginType = cms.string("NSVfitAlgorithmByIntegration"),
@@ -283,9 +282,13 @@ nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
     dRmin = cms.double(0.3),
     instanceLabel = cms.string("")
 )
+nSVfitProducerByIntegration.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(False)
+nSVfitProducerByIntegration.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(False)
 
 nSVfitProducerByLikelihoodMaximization = cms.EDProducer("NSVfitProducer",
-    config = nSVfitConfig_template,
+    config = nSVfitConfig_template.clone(),
     algorithm = cms.PSet(
         pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
         pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),
@@ -296,3 +299,7 @@ nSVfitProducerByLikelihoodMaximization = cms.EDProducer("NSVfitProducer",
     dRmin = cms.double(0.3),
     instanceLabel = cms.string("")
 )
+nSVfitProducerByLikelihoodMaximization.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(True)
+nSVfitProducerByLikelihoodMaximization.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(True)

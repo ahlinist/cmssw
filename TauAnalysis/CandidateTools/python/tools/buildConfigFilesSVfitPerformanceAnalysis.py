@@ -103,7 +103,7 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         replacements.append([ 'sample',         "'%s'" % sampleToAnalyze       ])
         replacements.append([ 'sample_type',    "'%s'" % sample_type           ])
         replacements.append([ 'channel',        "'%s'" % channelToAnalyze      ])
-        replacements.append([ 'maxEvents',      "%i"   % 1000                  ])
+        replacements.append([ 'maxEvents',      "%i"   % 500                   ])
         replacements.append([ 'inputFileNames', "%s"   % inputFileNames_string ])
         replacements.append([ 'outputFileName', "'%s'" % outputFileName        ])
                 

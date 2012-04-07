@@ -536,7 +536,7 @@ for idxSVfitOption in range(10):
     if resonanceConfig is None:
         raise ValueError("Failed to access Configuration Parameters for resonance = %s !!" % resonanceName)
     applyVisPtCutCorrection = None
-    if idxSVfitOption <= 1 or idxSVfitOption >= 4:
+    if idxSVfitOption >= 4 and idxSVfitOption <= 5:
         applyVisPtCutCorrection = True
     else:
         applyVisPtCutCorrection = False
@@ -588,10 +588,10 @@ for idxSVfitOption in range(10):
        (idxSVfitOption >= 8 and idxSVfitOption <= 9):
         resonanceConfig.builder.polStates = cms.vstring("LR", "RL", "LL", "RR")
         nSVfitResonanceLikelihoodPolarization_interpol = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
-        nSVfitResonanceLikelihoodPolarization_interpol.LR.formula = cms.string("[0]*([1] + [2] - x)/[2]")
-        nSVfitResonanceLikelihoodPolarization_interpol.RL.formula = cms.string("[0]*([1] + [2] - x)/[2]")
-        nSVfitResonanceLikelihoodPolarization_interpol.LL.formula = cms.string("[0]*(x - [1])/[2]")
-        nSVfitResonanceLikelihoodPolarization_interpol.RR.formula = cms.string("[0]*(x - [1])/[2]")            
+        nSVfitResonanceLikelihoodPolarization_interpol.LR.formula = cms.string("[0]")
+        nSVfitResonanceLikelihoodPolarization_interpol.RL.formula = cms.string("[0]")
+        nSVfitResonanceLikelihoodPolarization_interpol.LL.formula = cms.string("[0]")
+        nSVfitResonanceLikelihoodPolarization_interpol.RR.formula = cms.string("[0]")            
         resonanceLikelihoods.append(nSVfitResonanceLikelihoodPolarization_interpol)
     else:
         resonanceConfig.builder.polStates = cms.vstring('undefined')
@@ -630,7 +630,7 @@ for idxSVfitOption in range(10):
         svFitMassMax = cms.double(400.),
         numBinsSVfitSigma = cms.int32(100),
         svFitSigmaMax = cms.double(100.),                                    
-        dqmDirectory = cms.string("nSVfitAnalyzerOption%i" % idxSVfitOption)
+        dqmDirectory = cms.string("%s/%s/nSVfitAnalyzerOption%i" % (sample, channel, idxSVfitOption))
     )                                    
     nSVfitAnalyzerName = "nSVfitAnalyzer%i" % idxSVfitOption
     setattr(process, nSVfitAnalyzerName, nSVfitAnalyzer)

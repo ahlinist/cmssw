@@ -6,13 +6,13 @@
  * Plugin for computing likelihood for tau lepton decay 
  *  tau- --> e- nu nu (tau- --> mu- nu nu)
  * to be compatible with matrix element of V-A electroweak decay
- * (ignoring tau lepton polarization effects)
+ * (taking tau lepton polarization effects into account)
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitTauToLepLikelihoodMatrixElement.h,v 1.2 2012/03/14 09:46:58 veelken Exp $
+ * $Id: NSVfitTauToLepLikelihoodMatrixElement.h,v 1.3 2012/03/14 16:34:47 veelken Exp $
  *
  */
 

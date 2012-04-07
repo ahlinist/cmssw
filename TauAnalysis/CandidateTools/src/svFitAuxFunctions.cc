@@ -11,8 +11,8 @@
 
 #include <limits>
 
-namespace SVfit_namespace {
-
+namespace SVfit_namespace 
+{
   // Adapted for our vector types from TVector3 class
   reco::Candidate::Vector rotateUz(const math::RThetaPhiVector& toRotate, const reco::Candidate::Vector& newUzVector)
   {
@@ -142,9 +142,9 @@ namespace SVfit_namespace {
     return decayAngle_rf;
   }
 
-//
-//-------------------------------------------------------------------------------
-//
+  //
+  //-------------------------------------------------------------------------------
+  //
 
   double logGaussian(double residual, double sigma)
   {
@@ -157,4 +157,60 @@ namespace SVfit_namespace {
     }
   }
 
+  //
+  //-------------------------------------------------------------------------------
+  //
+
+  void extractHistogramProperties(const TH1* histogram, const TH1* histogram_density,
+				  double& xMaximum,  double& xMaximum_interpol, 
+				  double& xMean,
+				  double& xQuantile016, double& xQuantile050, double& xQuantile084)
+  {
+//--- compute median, -1 sigma and +1 sigma limits on reconstructed mass
+    if ( histogram->Integral() > 0. ) {
+      Double_t q[3];
+      Double_t probSum[3];
+      probSum[0] = 0.16;
+      probSum[1] = 0.50;
+      probSum[2] = 0.84;
+      (const_cast<TH1*>(histogram))->GetQuantiles(3, q, probSum);
+      xQuantile016 = q[0];
+      xQuantile050 = q[1];
+      xQuantile084 = q[2];
+    } else {
+      xQuantile016 = 0.;
+      xQuantile050 = 0.;
+      xQuantile084 = 0.;
+    }
+    
+    xMean = histogram->GetMean();
+    
+    if ( histogram_density->Integral() > 0. ) {    
+      int binMaximum = histogram_density->GetMaximumBin();
+      xMaximum = histogram_density->GetBinCenter(binMaximum);
+      if ( binMaximum > 1 && binMaximum < histogram_density->GetNbinsX() ) {
+	double yMaximum   = histogram_density->GetBinContent(binMaximum);
+	
+	int binLeft       = binMaximum - 1;
+	double xLeft      = histogram_density->GetBinCenter(binLeft);
+	double yLeft      = histogram_density->GetBinContent(binLeft);    
+	
+	int binRight      = binMaximum + 1;
+	double xRight     = histogram_density->GetBinCenter(binRight);
+	double yRight     = histogram_density->GetBinContent(binRight); 
+	
+	double xMinus     = xLeft - xMaximum;
+	double yMinus     = yLeft - yMaximum;
+	double xPlus      = xRight - xMaximum;
+	double yPlus      = yRight - yMaximum;
+	
+	xMaximum_interpol = xMaximum + 0.5*(yPlus*square(xMinus) - yMinus*square(xPlus))/(yPlus*xMinus - yMinus*xPlus);
+      } else {
+	xMaximum_interpol = xMaximum;
+      }
+    } else {
+      xMaximum = 0.;
+      xMaximum_interpol = 0.;
+    }
+  }
 }

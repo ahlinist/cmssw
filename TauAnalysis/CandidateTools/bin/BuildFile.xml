@@ -37,8 +37,6 @@
   <use name="rootcintex"/>
   <use name="root"/>
 </bin>
-
-
 <bin   file="computeCalibration.cc" name="computeCalibration">
   <use   name="DataFormats/FWLite"/>
   <use   name="FWCore/FWLite"/>
@@ -50,4 +48,10 @@
   <use   name="roofit"/>
   <use   name="root"/>
   <use   name="rootgraphics"/>
+</bin>
+<bin   file="testMarkovChainIntegration.cc" name="testMarkovChainIntegration">
+  <use name="FWCore/ParameterSet"/>
+  <use name="TauAnalysis/CandidateTools"/>
+  <use name="root"/>
+  <use name="rootmath"/>
 </bin>
