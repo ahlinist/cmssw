@@ -7,7 +7,7 @@ import re
 process = cms.Process("runSVfitPerformanceAnalysisWH")
 
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
@@ -22,7 +22,7 @@ channel = 'ElecNu'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-maxEvents = -1
+maxEvents = 20
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -235,6 +235,40 @@ process.svFitPerformanceAnalysisSequence += process.genMetFromGenParticles
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# find gen. W bosons
+process.genParticlesFromAHs = cms.EDProducer("GenParticlePruner",
+    src = cms.InputTag("genParticles"),
+    select = cms.vstring(
+        "drop * ", # this is the default
+        "keep+ pdgId = {h0}",                                        
+        "drop pdgId = {h0}",
+        "keep+ pdgId = {H0}",                                        
+        "drop pdgId = {H0}",
+        "keep+ pdgId = {A0}",                                        
+        "drop pdgId = {A0}"        
+    )
+)
+process.svFitPerformanceAnalysisSequence += process.genParticlesFromAHs
+
+process.genWsFromAHs = cms.EDProducer("GenParticlePruner",
+  src = cms.InputTag("genParticlesFromAHs"),
+  select = cms.vstring(
+    "drop * ",
+    "keep pdgId = {W+}",
+    "keep pdgId = {W-}"
+  )
+)
+process.svFitPerformanceAnalysisSequence += process.genWsFromAHs
+
+process.genAHdecayToWs = cms.EDProducer("CandViewShallowCloneCombiner",
+    checkCharge = cms.bool(True),
+    cut = cms.string('charge = 0'),
+    decay = cms.string("genWsFromAHs@+ genWsFromAHs@-")
+)
+process.svFitPerformanceAnalysisSequence += process.genAHdecayToWs
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # run SVfit with different options, make plots
 
 process.load("TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi")
@@ -276,78 +310,83 @@ else:
     srcRecMEt = 'patType1CorrectedPFMet'
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
-process.nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)
-process.nSVfitProducer.config.event.resonances = cms.PSet(
-    W1 = cms.PSet(
-        daughters = cms.PSet(
-            chargedLepton1 = cms.PSet(
-                src = cms.InputTag(srcRecChargedLeptonFromWdecay1)
+for idxSVfitOption in range(6):
+    if not (idxSVfitOption == 0 or idxSVfitOption == 1):
+        continue
+    nSVfitProducer = None
+    if idxSVfitOption == 0 or idxSVfitOption == 3:
+        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)
+    elif idxSVfitOption == 1 or idxSVfitOption == 4:
+        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration2)
+        nSVfitProducer.algorithm.markovChainOptions.mode = cms.string("Metropolis")
+        nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(15000)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(50000)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(1000)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(13000)
+        nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.9995)
+        nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(1)
+        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-4)
+    elif idxSVfitOption == 2 or idxSVfitOption == 5:
+        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration2)
+        nSVfitProducer.algorithm.markovChainOptions.mode = cms.string("Hybrid")
+        nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(150)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(3500)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(130)
+        nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.95)
+        nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(100)
+        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-6)
+    else:
+        raise ValueError("Invalid SVfit option = %i !!" % idxSVfitOption)
+    resonanceLikelihoods = [ process.nSVfitResonanceLikelihoodBreitWignerW ]
+    if idxSVfitOption <= 2:
+        resonanceLikelihoods.append(process.nSVfitResonanceLikelihoodPhaseSpaceW)
+    else:
+        resonanceLikelihoods.append(cms.PSet(
+            pluginName = cms.string("nSVfitResonanceLikelihoodMatrixElementW"),
+            pluginType = cms.string("NSVfitResonanceLikelihoodMatrixElementW"),
+            power = cms.double(1.0),
+            verbosity = cms.int32(0)
+        ))
+        nSVfitProducer.config.event.builder.polStates = cms.vstring("WLWL", "WRWR", "WTWT")
+    nSVfitProducer.config.event.resonances = cms.PSet(
+        W1 = cms.PSet(
+            daughters = cms.PSet(
+                chargedLepton1 = cms.PSet(
+                    src = cms.InputTag(srcRecChargedLeptonFromWdecay1)
+                ),
+                neutrino1 = cms.PSet()
             ),
-            neutrino1 = cms.PSet()
+            likelihoodFunctions = cms.VPSet(resonanceLikelihoods),
+            builder = nSVfitBuilderW1
         ),
-        likelihoodFunctions = cms.VPSet(
-            process.nSVfitResonanceLikelihoodBreitWignerW,
-            process.nSVfitResonanceLikelihoodPhaseSpaceW
-        ),
-        builder = nSVfitBuilderW1
-    ),
-    W2 = cms.PSet(
-        daughters = cms.PSet(
-            chargedLepton2 = cms.PSet(
-                src = cms.InputTag(srcRecChargedLeptonFromWdecay2)
+        W2 = cms.PSet(
+            daughters = cms.PSet(
+                chargedLepton2 = cms.PSet(
+                    src = cms.InputTag(srcRecChargedLeptonFromWdecay2)
+                ),
+                neutrino2 = cms.PSet()
             ),
-            neutrino2 = cms.PSet()
-        ),
-        likelihoodFunctions = cms.VPSet(
-            process.nSVfitResonanceLikelihoodBreitWignerW,
-            process.nSVfitResonanceLikelihoodPhaseSpaceW
-        ),
-        builder = nSVfitBuilderW2
+            likelihoodFunctions = cms.VPSet(resonanceLikelihoods),
+            builder = nSVfitBuilderW2
+        )
     )
-)
-process.nSVfitProducer.config.event.srcMEt = cms.InputTag('patType1CorrectedPFMet')
-##process.nSVfitProducer.algorithm.verbosity = cms.int32(1)
-process.svFitPerformanceAnalysisSequence += process.nSVfitProducer
+    nSVfitProducer.config.event.srcMEt = cms.InputTag('patType1CorrectedPFMet')
+    ##nSVfitProducer.algorithm.verbosity = cms.int32(1)
+    nSVfitProducerName = "nSVfitProducer%i" % idxSVfitOption
+    setattr(process, nSVfitProducerName, nSVfitProducer)
+    process.svFitPerformanceAnalysisSequence += nSVfitProducer
 
-process.genParticlesFromAHs = cms.EDProducer("GenParticlePruner",
-    src = cms.InputTag("genParticles"),
-    select = cms.vstring(
-        "drop * ", # this is the default
-        "keep+ pdgId = {h0}",                                        
-        "drop pdgId = {h0}",
-        "keep+ pdgId = {H0}",                                        
-        "drop pdgId = {H0}",
-        "keep+ pdgId = {A0}",                                        
-        "drop pdgId = {A0}"        
+    nSVfitAnalyzer = cms.EDAnalyzer("NSVfitEventHypothesisAnalyzerWW",
+        srcEventHypotheses = cms.InputTag(nSVfitProducerName),
+        srcGenMass = cms.InputTag('genAHdecayToWs'),               
+        srcWeights = cms.VInputTag(),
+        dqmDirectory = cms.string("nSVfitAnalyzer"),
+        ##verbosity = cms.int32(1)                                        
     )
-)
-process.svFitPerformanceAnalysisSequence += process.genParticlesFromAHs
-
-process.genWsFromAHs = cms.EDProducer("GenParticlePruner",
-  src = cms.InputTag("genParticlesFromAHs"),
-  select = cms.vstring(
-    "drop * ",
-    "keep pdgId = {W+}",
-    "keep pdgId = {W-}"
-  )
-)
-process.svFitPerformanceAnalysisSequence += process.genWsFromAHs
-
-process.genAHdecayToWs = cms.EDProducer("CandViewShallowCloneCombiner",
-    checkCharge = cms.bool(True),
-    cut = cms.string('charge = 0'),
-    decay = cms.string("genWsFromAHs@+ genWsFromAHs@-")
-)
-process.svFitPerformanceAnalysisSequence += process.genAHdecayToWs
-
-process.nSVfitAnalyzer = cms.EDAnalyzer("NSVfitEventHypothesisAnalyzerWW",
-    srcEventHypotheses = cms.InputTag('nSVfitProducer'),
-    srcGenMass = cms.InputTag('genAHdecayToWs'),               
-    srcWeights = cms.VInputTag(),
-    dqmDirectory = cms.string("nSVfitAnalyzer"),
-    ##verbosity = cms.int32(1)                                        
-)                                    
-process.svFitPerformanceAnalysisSequence += process.nSVfitAnalyzer
+    nSVfitAnalyzerName = "nSVfitAnalyzer%i" % idxSVfitOption
+    setattr(process, nSVfitAnalyzerName, nSVfitAnalyzer)
+    process.svFitPerformanceAnalysisSequence += nSVfitAnalyzer
 #--------------------------------------------------------------------------------
 
 process.DQMStore = cms.Service("DQMStore")

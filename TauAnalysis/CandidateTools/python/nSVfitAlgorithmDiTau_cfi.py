@@ -287,6 +287,36 @@ nSVfitProducerByIntegration.config.event.resonances.A.daughters.leg1.likelihoodF
 nSVfitProducerByIntegration.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
   cms.bool(False)
 
+nSVfitProducerByIntegration2 = cms.EDProducer("NSVfitProducerByIntegration",
+    config = nSVfitConfig_template.clone(),
+    algorithm = cms.PSet(
+        pluginName = cms.string("nSVfitAlgorithmByIntegration2"),
+        pluginType = cms.string("NSVfitAlgorithmByIntegration2"),
+        markovChainOptions = cms.PSet(
+            mode = cms.string("Metropolis"),
+            initMode = cms.string("Gaus"),
+            numIterBurnin = cms.uint32(15000),
+            numIterSampling = cms.uint32(50000),
+            numIterSimAnnealingPhase1 = cms.uint32(1000),
+            numIterSimAnnealingPhase2 = cms.uint32(13000),
+            T0 = cms.double(15.),
+            alpha = cms.double(0.9995),
+            numChains = cms.uint32(10),
+            numBatches = cms.uint32(10),
+            L = cms.uint32(1),
+            epsilon0 = cms.double(1.e-4),
+            nu = cms.double(0.71)
+        ),
+        verbosity = cms.int32(0)
+    ),
+    dRmin = cms.double(0.3),
+    instanceLabel = cms.string("")
+)
+nSVfitProducerByIntegration2.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(False)
+nSVfitProducerByIntegration2.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(False)
+
 nSVfitProducerByLikelihoodMaximization = cms.EDProducer("NSVfitProducer",
     config = nSVfitConfig_template.clone(),
     algorithm = cms.PSet(
