@@ -56,9 +56,11 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilder::build(const inputParticleMap&
   if ( resonance->numDaughters() == 2 ) {
     for ( size_t iDaughter = 0; iDaughter < resonance->numDaughters(); ++iDaughter ) {
       NSVfitSingleParticleHypothesis* daughter = resonance->daughter(iDaughter);
+
       daughter->polHandedness_.resize(numPolStates_);
       daughter->polSign_.resize(numPolStates_);
       daughter->numPolStates_ = numPolStates_;
+
       for ( unsigned iPolState = 0; iPolState < numPolStates_; ++iPolState ) {
 	int resonance_polHandedness = polHandedness_[iPolState];
 	int daughter_polHandedness = -1;
@@ -77,6 +79,7 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilder::build(const inputParticleMap&
 	} 
 	assert(daughter_polHandedness != -1);
 	daughter->polHandedness_[iPolState] = daughter_polHandedness;
+
 	int daughter_polSign = 0;
 	// CV: left-handed  tau- and right-handed tau+ are assigned polarization -1,
 	//     right-handed tau- and left-handed  tau+ are assigned polarization +1

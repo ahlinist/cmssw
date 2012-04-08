@@ -72,6 +72,7 @@ NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2(const edm::Paramete
     auxFillProbHistograms_(0)
 {
   edm::ParameterSet cfgMarkovChainOptions = cfg.getParameter<edm::ParameterSet>("markovChainOptions");
+  cfgMarkovChainOptions.addParameter<int>("verbosity", verbosity_);
   integrator_ = new MarkovChainIntegrator(cfgMarkovChainOptions);
 }
 
@@ -98,9 +99,11 @@ void NSVfitAlgorithmByIntegration2::beginJob()
 {
   NSVfitAlgorithmBase::beginJob();
 
+  numDimensions_ = fitParameters_.size();
+
   integrand_ = new Integrand(this);
   integrator_->setIntegrand(*integrand_);
-  numDimensions_ = fitParameters_.size();
+
   intBoundaryLower_.resize(numDimensions_);
   intBoundaryUpper_.resize(numDimensions_);
   for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
@@ -215,7 +218,7 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     extractHistogramProperties(histMassResult, histMassResult_density,
 			       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
-    //std::cout << "--> median = " << massQuantile050 << ", maximum = " << massMaximum << std::endl;
+    std::cout << "--> median = " << massQuantile050 << ", maximum = " << massMaximum << std::endl;
 
     double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
     double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
@@ -223,9 +226,9 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
   
     resonance->isValidSolution_ = true;
     
-    //std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
-    //std::cout << "--> mass = " << resonance->mass_ << std::endl;
-    //resonance_->print(std::cout);
+    std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
+    std::cout << "--> mass = " << resonance->mass_ << std::endl;
+    resonance->print(std::cout);
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration2::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";

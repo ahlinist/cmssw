@@ -113,7 +113,7 @@ void MarkovChainIntegrator::setIntegrand(const ROOT::Math::Functor& integrand)
   prob_ = 0.;
 
   u_.resize(2*numDimensions_);   // first N entries = "significant" components, last N entries = "dummy" components
-  pProposal_.resize(2*numDimensions_);
+  pProposal_.resize(numDimensions_);
   qProposal_.resize(numDimensions_);
 
   probSum_.resize(numChains_*numBatches_);  
@@ -145,11 +145,6 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
     xMax_[iDimension] = xMax[iDimension];
   }
   
-  volume_ = 1.;
-  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    volume_ *= (xMax_[iDimension] - xMin_[iDimension]);
-  }
-
   numMoves_accepted_ = 0;
   numMoves_rejected_ = 0;
 
@@ -173,8 +168,10 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 
     for ( unsigned iMove = 0; iMove < numIterSampling_; ++iMove ) {
 //--- propose Markov Chain transition to new, randomly chosen, point;
-//    evaluate "call-back" functions at this point    
-      makeStochasticMove(iMove);
+//    evaluate "call-back" functions at this point
+      //std::cout << "move #" << iMove << ":" << std::endl;
+      //verbosity_ = 1;
+      makeStochasticMove(numIterBurnin_ + iMove);
 
       updateX(q_);
       for ( std::vector<const ROOT::Math::Functor*>::const_iterator callBackFunction = callBackFunctions_.begin();
@@ -188,7 +185,7 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
   }
 
   for ( unsigned idxBatch = 0; idxBatch < probSum_.size(); ++idxBatch ) {  
-    integral_[idxBatch] = volume_*probSum_[idxBatch]/m;
+    integral_[idxBatch] = probSum_[idxBatch]/m;
     //if ( verbosity_ ) std::cout << "integral[" << idxBatch << "] = " << integral_[idxBatch] << std::endl;
   }
 
@@ -294,14 +291,17 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
   //if ( verbosity_ ) {
   //  std::cout << "<MarkovChainIntegrator::makeStochasticMove>:" << std::endl;
   //  std::cout << " idx = " << idxMove << std::endl;
+  //  std::cout << " Ks = " << evalK(p_, 0, numDimensions_) << std::endl;
   //}
 
 //--- perform random updates of momentum components
   if ( idxMove < numIterSimAnnealingPhase1_ ) {
+    //std::cout << "case 1" << std::endl;
     for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
       p_[iDimension] = sqrtT0_*rnd_.Gaus(0., 1.);
     }
   } else if ( idxMove < numIterSimAnnealingPhase1plus2_ ) {
+    //std::cout << "case 2" << std::endl;
     double pMag2 = 0.;
     for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
       double p_i = p_[iDimension];
@@ -313,17 +313,22 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
       p_[iDimension] = alpha_*pMag*u_[iDimension] + (1. - alpha2_)*rnd_.Gaus(0., 1.);
     }
   } else {
+    //std::cout << "case 3" << std::endl;
     for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
       p_[iDimension] = rnd_.Gaus(0., 1.);
     }
   }
 
-  if ( verbosity_ ) std::cout << "p(updated) = " << format_vdouble(p_) << std::endl;
+  //if ( verbosity_ ) {
+  //  std::cout << "p(updated) = " << format_vdouble(p_) << std::endl;
+  //  std::cout << " Ks = " << evalK(p_, 0, numDimensions_) << std::endl;
+  //  std::cout << " Kd = " << evalK(p_, numDimensions_, 2*numDimensions_) << std::endl;
+  //}
 
 //--- choose random step size 
   double C = rnd_.BreitWigner(0., 1.);
   double epsilon = epsilon0_*TMath::Exp(nu_*C);
-  if ( verbosity_ ) std::cout << " epsilon = " << epsilon << std::endl;
+  //if ( verbosity_ ) std::cout << "epsilon = " << epsilon << std::endl;
 
   if        ( moveMode_ == kMetropolis ) { // Metropolis algorithm: move according to eq. (27) in [2]
 //--- update position components
@@ -333,7 +338,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
     }
   } else if ( moveMode_ == kHybrid     ) { // Hybrid algorithm: move according to eqs. (20)-(23) in [2]
 //--- initialize position components
-    for ( unsigned iDimension = 0; iDimension < 2*numDimensions_; ++iDimension ) {
+    for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
       qProposal_[iDimension] = q_[iDimension];
     }
 //--- evolve momentum and position components
@@ -344,23 +349,23 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
     makeDynamicMoves(epsilon);
   } else assert(0);
 
-  if ( verbosity_ ) std::cout << "q(proposed) = " << format_vdouble(qProposal_) << std::endl;
+  //if ( verbosity_ ) std::cout << "q(proposed) = " << format_vdouble(qProposal_) << std::endl;
 
 //--- check if proposed move of Markov Chain to new position is accepted or not:
 //    compute change in phase-space volume for "dummy" momentum components
 //   (eqs. 25 in [2])
   double probProposal = evalProb(qProposal_);
-  if ( verbosity_ ) std::cout << "prob(proposed) = " << probProposal << std::endl;
+  //if ( verbosity_ ) std::cout << "prob(proposed) = " << probProposal << std::endl;
   
 //--- check that proposed new point is within defined integration region
   bool isWithinBounds = true;
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {     
     double q_i = qProposal_[iDimension];
     if ( !(q_i > 0. && q_i < 1.) ) {
-      if ( verbosity_ ) {
-	std::cout << " q[" << iDimension << "] = " << q_i << " outside bounds" 
-		  << " --> setting prob(proposed) = 0 !!" << std::endl;
-      }
+      //if ( verbosity_ ) {
+      //  std::cout << " q[" << iDimension << "] = " << q_i << " outside bounds" 
+      //	    << " --> setting prob(proposed) = 0 !!" << std::endl;
+      //}
       isWithinBounds = false;
       break;
     }
@@ -372,24 +377,25 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
   else if ( probProposal > 0.               ) deltaE = -std::numeric_limits<double>::max();
   else if (                      prob_ > 0. ) deltaE = +std::numeric_limits<double>::max();
   else assert(0);
-  if ( verbosity_ ) std::cout << " deltaE = " << deltaE << std::endl;
+  //if ( verbosity_ ) std::cout << " deltaE = " << deltaE << std::endl;
 
   double deltaE_or_H = deltaE;
   if ( moveMode_ == kHybrid ) {
     double Ks = evalK(p_, 0, numDimensions_);
     double KsProposal = evalK(pProposal_, 0, numDimensions_);
     deltaE_or_H += (KsProposal - Ks);
+    //if ( verbosity_ ) std::cout << " deltaH = " << deltaE_or_H << std::endl;
   }
-
+  
   double Kd = evalK(p_, numDimensions_, 2*numDimensions_);
-  if ( verbosity_ ) std::cout << " Kd = " << Kd << std::endl;
+  //if ( verbosity_ ) std::cout << " Kd = " << Kd << std::endl;
   double base = 1. - deltaE_or_H/Kd;
-  double rho = ( base > 0. ) ?
+  double rho = ( base > 0. ) ? 
     TMath::Power(base, 0.5*numDimensions_ - 1.) : 0.;
-  if ( verbosity_ ) std::cout << " rho = " << rho << std::endl;
+  //if ( verbosity_ ) std::cout << " rho = " << rho << std::endl;
   
   if ( rnd_.Uniform(0., 1.) < rho ) {
-    if ( verbosity_ ) std::cout << "move accepted." << std::endl;
+    //if ( verbosity_ ) std::cout << "move accepted." << std::endl;
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {    
       q_[iDimension] = qProposal_[iDimension];
     }
@@ -401,7 +407,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
     prob_ = evalProb(q_);
     ++numMoves_accepted_;
   } else {
-    if ( verbosity_ ) std::cout << "move rejected." << std::endl;
+    //if ( verbosity_ ) std::cout << "move rejected." << std::endl;
     ++numMoves_rejected_;
   }
 }
@@ -411,19 +417,34 @@ void MarkovChainIntegrator::makeDynamicMoves(double epsilon)
 //--- perform "dynamical move"
 //   (execute series of L "leap-frog" steps, eqs. 20-23 in [2])
   for ( unsigned iLeapFrogStep = 0; iLeapFrogStep < L_; ++iLeapFrogStep ) {
+    //if ( verbosity_ ) std::cout << "leap-frog step #" << iLeapFrogStep << ":" << std::endl;    
     updateGradE(qProposal_);
-    double step_p = ( iLeapFrogStep == 0 ) ? 0.5*epsilon : epsilon;
+    //if ( verbosity_ ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
+    double step_p = ( iLeapFrogStep == 0 ) ? 
+      0.5*epsilon : epsilon;
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
       pProposal_[iDimension] -= step_p*gradE_[iDimension];
       qProposal_[iDimension] += epsilon*pProposal_[iDimension];
     }
-    updateGradE(qProposal_);
-    if ( iLeapFrogStep == (L_ - 1) ) {
-      for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-	pProposal_[iDimension] -= 0.5*epsilon*gradE_[iDimension];
-      }
-    }
+    //if ( verbosity_ ) {
+    //  std::cout << " p(" << (iLeapFrogStep + 0.5) << ") = " << format_vdouble(pProposal_) << std::endl;
+    //  std::cout << " q(" << (iLeapFrogStep + 1) << ") = " << format_vdouble(qProposal_) << std::endl;
+    //  std::cout << "(prob = " << evalProb(qProposal_) << ", E = " << evalE(qProposal_) << "," 
+    //	  	  << " Ks = " << evalK(pProposal_, 0, numDimensions_) << ","
+    //		  << " E + Ks = " << (evalE(qProposal_) + evalK(pProposal_, 0, numDimensions_)) << ")" << std::endl;
+    //}
   }
+  updateGradE(qProposal_);
+  //if ( verbosity_ ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    pProposal_[iDimension] -= 0.5*epsilon*gradE_[iDimension];
+  }
+  //if ( verbosity_ ) {  
+  //  std::cout << " p(" << L_ << ") = " << format_vdouble(pProposal_) << std::endl;
+  //  std::cout << "(prob = " << evalProb(qProposal_) << ", E = " << evalE(qProposal_) << "," 
+  //	        << " Ks = " << evalK(pProposal_, 0, numDimensions_) << ","
+  //	        << " E + Ks = " << (evalE(qProposal_) + evalK(pProposal_, 0, numDimensions_)) << ")" << std::endl;
+  //}
 }
 
 void MarkovChainIntegrator::updateX(const std::vector<double>& q)
@@ -434,6 +455,8 @@ void MarkovChainIntegrator::updateX(const std::vector<double>& q)
     double q_i = q[iDimension];
     x_[iDimension] = (1. - q_i)*xMin_[iDimension] + q_i*xMax_[iDimension];
     //std::cout << " x[" << iDimension << "] = " << x_[iDimension] << std::endl;
+    //std::cout << "(xMin[" << iDimension << "] = " << xMin_[iDimension] << ","
+    //	        << " xMax[" << iDimension << "] = " << xMax_[iDimension] << ")" << std::endl;
   }
 }
 
@@ -455,9 +478,10 @@ double MarkovChainIntegrator::evalK(const std::vector<double>& p, unsigned idxFi
 {
 //--- compute "kinetic energy"
 //   (of either the "significant" or "dummy" momentum components) 
+  assert(idxLast <= p.size());
   double K = 0.;
   for ( unsigned iDimension = idxFirst; iDimension < idxLast; ++iDimension ) {
-    double p_i = p_[iDimension];
+    double p_i = p[iDimension];
     K += (p_i*p_i);
   }
   K *= 0.5;
@@ -467,7 +491,14 @@ double MarkovChainIntegrator::evalK(const std::vector<double>& p, unsigned idxFi
 void MarkovChainIntegrator::updateGradE(std::vector<double>& q)
 {
 //--- numerically compute gradient of "potential energy" E = -log(P(q)) at point q
+  //if ( verbosity_ ) {
+  //  std::cout << "<MarkovChainIntegrator::updateGradE>:" << std::endl;
+  //  std::cout << " q(1) = " << format_vdouble(q) << std::endl;
+  //}
+
   double prob_q = evalProb(q);  
+  //if ( verbosity_ ) std::cout << " prob(q) = " << prob_q << std::endl;
+
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     double q_i = q[iDimension];
     double dqDerr_i = dqDerr_[iDimension];
@@ -480,4 +511,9 @@ void MarkovChainIntegrator::updateGradE(std::vector<double>& q)
     gradE_[iDimension] = gradE_i;
     q[iDimension] = q_i;
   }
+
+  //if ( verbosity_ ) {
+  //  std::cout << " q(2) = " << format_vdouble(q) << std::endl;
+  //  std::cout << "--> gradE = " << format_vdouble(gradE_) << std::endl;
+  //}
 }
