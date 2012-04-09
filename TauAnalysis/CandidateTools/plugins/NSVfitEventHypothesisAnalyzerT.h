@@ -86,6 +86,8 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     {
       TString dqmDirectory_full = dqmDirectory.data();
       if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
+      dqmDirectory_full.Append("plotEntryType1");
+      if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
       if      ( minDPhi12_ <= 0. && 
 		maxDPhi12_ <= 0. ) dqmDirectory_full.Append("");
       else if ( minDPhi12_ <= 0. ) dqmDirectory_full.Append(Form("dPhiLt%1.0f", maxDPhi12_));
@@ -216,6 +218,8 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     {
       TString dqmDirectory_full = dqmDirectory.data();
       if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
+      dqmDirectory_full.Append("plotEntryType2");
+      if ( !dqmDirectory_full.EndsWith("/") ) dqmDirectory_full.Append("/");
       if      ( minSVfitSigma_ <= 0. && 
 		maxSVfitSigma_ <= 0. ) dqmDirectory_full.Append("");
       else if ( minSVfitSigma_ <= 0. ) dqmDirectory_full.Append(Form("sigmaSVfitLt%1.0f", maxSVfitSigma_));
@@ -288,6 +292,7 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	dqmStore.book2D("svFitSigmaVsMEt",             
 			"svFitSigmaVsMEt", 100, 0., 0.5*svFitMassMax_, 100, 0., svFitSigmaMax_);
 
+      metPt_    = dqmStore.book1D("metPt",    "metPt",    numBinsSVfitMass_/2, 0., 0.5*svFitMassMax_);
       metErrPx_ = dqmStore.book1D("metErrPx", "metErrPx", 200, -100., +100.);
       metErrPy_ = dqmStore.book1D("metErrPy", "metErrPy", 200, -100., +100.);
       metErrPt_ = dqmStore.book1D("metErrPt", "metErrPt", 250,    0.,  250.);
@@ -346,6 +351,7 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	svFitMassVsMEt_->Fill(recMEtP4.pt(), svFitMass, evtWeight);
 	svFitSigmaVsMEt_->Fill(recMEtP4.pt(), svFitSigma, evtWeight);
 
+	metPt_->Fill(recMEtP4.pt(), evtWeight);
 	metErrPx_->Fill(rec_minus_genMEtP4.px(), evtWeight);
 	metErrPy_->Fill(rec_minus_genMEtP4.py(), evtWeight);
 	metErrPt_->Fill(metErr, evtWeight);
@@ -401,6 +407,7 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* svFitMassVsMEt_;
     MonitorElement* svFitSigmaVsMEt_;
 
+    MonitorElement* metPt_;
     MonitorElement* metErrPx_;
     MonitorElement* metErrPy_;
     MonitorElement* metErrPt_;

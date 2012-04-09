@@ -32,6 +32,8 @@ class NSVfitResonanceLikelihoodMatrixElementW : public NSVfitResonanceLikelihood
 
  private:
 
+  bool applySinThetaFactor_; 
+
   double power_;
 };
 

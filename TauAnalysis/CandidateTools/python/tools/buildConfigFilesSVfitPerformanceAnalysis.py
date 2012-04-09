@@ -29,9 +29,9 @@ def replaceConfigFileParam(configFileName_template, configFileName_output, repla
         configFile_output.write("%s" % line_output)
     configFile_output.close()
 
-def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnalyze,
+def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnalyze, metResolution, 
                                                  configFileName_template,
-                                                 inputFilePath, numInputFilesPerJob,
+                                                 inputFilePath, numInputFilesPerJob, maxEvents,
                                                  configFilePath, logFilePath, outputFilePath):
 
     """Build cfg.py file to run SVfit algorithm and fill histograms of SVfit reconstructed mass""" 
@@ -95,6 +95,13 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
             sample_type = 'Higgs'
         else:
             raise ValueError("Failed to determine wether sample = %s is Z or Higgs sample !!" % sampleToAnalyze)
+
+        metResolution_string = "None"
+        metResolution_label  = "pfMEtResMC"
+        if metResolution is not None:
+            metResolution_string = "%f" % metResolution
+            metResolution_label  = "pfMEtRes%1.0f" % metResolution
+            metResolution_label  = metResolution_label.replace(".", "_")
         
         outputFileName = 'svFitPerformanceAnalysisPlots_%s_%s_%i.root' % (sampleToAnalyze, channelToAnalyze, jobId + 1)
         outputFileNames.append(outputFileName)
@@ -103,11 +110,13 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         replacements.append([ 'sample',         "'%s'" % sampleToAnalyze       ])
         replacements.append([ 'sample_type',    "'%s'" % sample_type           ])
         replacements.append([ 'channel',        "'%s'" % channelToAnalyze      ])
-        replacements.append([ 'maxEvents',      "%i"   % 500                   ])
+        replacements.append([ 'metResolution',  "%s"   % metResolution_string  ])
+        replacements.append([ 'maxEvents',      "%i"   % maxEvents             ])
         replacements.append([ 'inputFileNames', "%s"   % inputFileNames_string ])
         replacements.append([ 'outputFileName', "'%s'" % outputFileName        ])
                 
-        configFileName = "svFitPerformanceAnalysisPlots_%s_%s_%i_cfg.py" % (sampleToAnalyze, channelToAnalyze, jobId)
+        configFileName = "svFitPerformanceAnalysisPlots_%s_%s_%s_%i_cfg.py" % \
+          (sampleToAnalyze, channelToAnalyze, metResolution_label, jobId)
         configFileName_full = os.path.join(configFilePath, configFileName)
         replaceConfigFileParam(configFileName_template, configFileName_full, replacements)
         configFileNames.append(configFileName)

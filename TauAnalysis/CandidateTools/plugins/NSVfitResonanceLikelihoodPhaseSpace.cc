@@ -5,6 +5,9 @@
 NSVfitResonanceLikelihoodPhaseSpace::NSVfitResonanceLikelihoodPhaseSpace(const edm::ParameterSet& cfg)
   : NSVfitResonanceLikelihood(cfg)
 {
+  applySinThetaFactor_ = cfg.exists("applySinThetaFactor") ?
+    cfg.getParameter<bool>("applySinThetaFactor") : false;
+
   power_ = cfg.getParameter<double>("power");
 }
 
@@ -20,7 +23,9 @@ double NSVfitResonanceLikelihoodPhaseSpace::operator()(const NSVfitResonanceHypo
   double prodAngle_rf = resonance->prod_angle_rf();
   if ( this->verbosity_ ) std::cout << " prodAngle_rf = " << prodAngle_rf << std::endl;
 
-  double prob = TMath::Sin(prodAngle_rf);
+  double prob = 1.;
+  if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(prodAngle_rf)); // phase-space factor 
+				                                      // (to be used only in "fit", **not** in integration mode)
 
   double nll = 0.;
   if ( prob > 0. ) {

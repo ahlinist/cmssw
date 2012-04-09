@@ -14,10 +14,15 @@
 #include "TauAnalysis/CandidateTools/interface/IndepCombinatoricsGeneratorT.h"
 
 template<typename T>
+unsigned NSVfitProducerT<T>::instanceCounter_ = 0;
+
+template<typename T>
 NSVfitProducerT<T>::NSVfitProducerT(const edm::ParameterSet& cfg)
   : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
     algorithm_(0),
-    numInputParticles_(0)
+    numInputParticles_(0),
+    timer_(0),
+    numSVfitCalls_(0)
 {
   edm::ParameterSet cfg_config = cfg.getParameter<edm::ParameterSet>("config");
   edm::ParameterSet cfg_event = cfg_config.getParameter<edm::ParameterSet>("event");
@@ -54,6 +59,11 @@ NSVfitProducerT<T>::NSVfitProducerT(const edm::ParameterSet& cfg)
   instanceLabel_ = cfg.exists("instanceLabel") ?
     cfg.getParameter<std::string>("instanceLabel") : "";
 
+  timer_ = new TStopwatch();
+  timer_->Stop();
+  instanceId_ = instanceCounter_;
+  ++instanceCounter_;
+
   produces<NSVfitEventHypothesisCollection>(instanceLabel_);
 }
 
@@ -61,6 +71,8 @@ template<typename T>
 NSVfitProducerT<T>::~NSVfitProducerT()
 {
   delete algorithm_;
+  
+  delete timer_;
 }
 
 template<typename T>
@@ -76,6 +88,8 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
   //std::cout << " moduleLabel = " << moduleLabel_;
   //if ( instanceLabel_ != "" ) std::cout << ", instanceLabel = " << instanceLabel_;
   //std::cout << std::endl;
+
+  timer_->Start(false);
 
   typedef edm::View<reco::Candidate> CandidateView;
   typedef edm::Handle<CandidateView> CandidateHandle;
@@ -156,15 +170,33 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
     }
 
     if ( !(isCombinatorialDuplicate || isOverlap) ) {
-      std::auto_ptr<T> hypothesis(dynamic_cast<T*>(algorithm_->fit(inputParticles, eventVertex)));
+      std::auto_ptr<T> hypothesis(dynamic_cast<T*>(algorithm_->fit(inputParticles, eventVertex)));      
       assert(hypothesis.get());
       nSVfitEventHypothesisCollection->push_back(*hypothesis);
+      ++numSVfitCalls_;
     }
 
     inputParticleCombination.next();
   }
 
+  timer_->Stop();
+
   evt.put(nSVfitEventHypothesisCollection, instanceLabel_);
+}
+
+template<typename T>
+void NSVfitProducerT<T>::endJob()
+{
+  std::cout << "<NSVfitProducer::endJob>:" << std::endl;
+  std::cout << " moduleLabel = " << moduleLabel_ << " (instance = #" << instanceId_ << ")" << std::endl;
+  std::cout << " real/CPU time = " 
+	    << timer_->RealTime() << "/" 
+	    << timer_->CpuTime() << " seconds" << std::endl;
+  std::cout << " SVfit calls = " << numSVfitCalls_ << std::endl;
+  std::cout << " real/CPU time per call = " 
+	    << timer_->RealTime()/(double)numSVfitCalls_ << "/" 
+	    << timer_->CpuTime()/(double)numSVfitCalls_ << " seconds" << std::endl;
+  std::cout << std::endl;
 }
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
@@ -172,11 +204,13 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 
 typedef NSVfitProducerT<NSVfitEventHypothesis> NSVfitProducer;
 typedef NSVfitProducerT<NSVfitEventHypothesisByIntegration> NSVfitProducerByIntegration;
+typedef NSVfitProducerT<NSVfitEventHypothesis> NSVfitProducerByIntegration2;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_FWK_MODULE(NSVfitProducer);
 DEFINE_FWK_MODULE(NSVfitProducerByIntegration);
+DEFINE_FWK_MODULE(NSVfitProducerByIntegration2);
 
 
 

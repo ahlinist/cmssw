@@ -31,6 +31,10 @@ namespace
 
     virtual double DoEval(const double* x) const
     {
+      //unsigned numDimensions = NDim();
+      //for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
+      //  std::cout << "x[" << iDimension << "] = " << x[iDimension] << std::endl;
+      //}
       double nll = algorithm_->nll(x, 0);
       double retVal = TMath::Exp(-nll);
       //static long callCounter = 0;
@@ -72,6 +76,7 @@ NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2(const edm::Paramete
     auxFillProbHistograms_(0)
 {
   edm::ParameterSet cfgMarkovChainOptions = cfg.getParameter<edm::ParameterSet>("markovChainOptions");
+  cfgMarkovChainOptions.addParameter<std::string>("name", pluginName_);
   cfgMarkovChainOptions.addParameter<int>("verbosity", verbosity_);
   integrator_ = new MarkovChainIntegrator(cfgMarkovChainOptions);
 }
@@ -172,7 +177,7 @@ TH1* NSVfitAlgorithmByIntegration2::bookMassHistogram(const std::string& histogr
 
 void NSVfitAlgorithmByIntegration2::fitImp() const
 {
-  //std::cout << "<NSVfitAlgorithmByIntegration::fitImp>:" << std::endl;
+  //std::cout << "<NSVfitAlgorithmByIntegration2::fitImp>:" << std::endl;
 
   double integral, integralErr;
   integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr);
@@ -188,6 +193,8 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     setMassResults(resonance, histogram->second);
   }
 
+  //currentEventHypothesis_->print(std::cout);
+
   fittedEventHypothesis_ = currentEventHypothesis_;
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     double valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084;
@@ -196,8 +203,6 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     fitParameterValues_[iDimension] = valueMaximum_interpol;
   }
   fittedEventHypothesis_nll_ = this->nll(fitParameterValues_, 0);
-
-  delete currentEventHypothesis_;
 }
 
 void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase* resonance, const TH1* histMassResult) const
@@ -218,7 +223,7 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     extractHistogramProperties(histMassResult, histMassResult_density,
 			       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
-    std::cout << "--> median = " << massQuantile050 << ", maximum = " << massMaximum << std::endl;
+    //std::cout << "--> median = " << massQuantile050 << ", maximum = " << massMaximum << std::endl;
 
     double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
     double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
@@ -226,9 +231,9 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
   
     resonance->isValidSolution_ = true;
     
-    std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
-    std::cout << "--> mass = " << resonance->mass_ << std::endl;
-    resonance->print(std::cout);
+    //std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
+    //std::cout << "--> mass = " << resonance->mass_ << std::endl;
+    //resonance->print(std::cout);
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration2::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";
@@ -241,7 +246,7 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
 double NSVfitAlgorithmByIntegration2::nll(const double* x, const double* param) const
 {
 //--- build event, resonance and particle hypotheses
-  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
+  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, x);
 
 //--- compute likelihood;
   double nll = eventModel_->nll(currentEventHypothesis_);

@@ -142,6 +142,8 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
   currentEventHypothesis_->massErrDown_     = 0.;
   currentEventHypothesis_->isValidSolution_ = isValidSolution;
 
+  //currentEventHypothesis_->print(std::cout);
+
   fittedEventHypothesis_ = currentEventHypothesis_;
   fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
 }
@@ -234,10 +236,10 @@ void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypo
   resonance.massErrUp_ = massErrUp;
   resonance.massErrDown_ = massErrDown;
 
-  std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::setMassResults>:" << std::endl;
-  std::cout << "--> mass = " << resonance.mass_ 
-	    << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ << std::endl;
-  resonance.print(std::cout);
+  //std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::setMassResults>:" << std::endl;
+  //std::cout << "--> mass = " << resonance.mass_ 
+  //	      << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ << std::endl;
+  //resonance.print(std::cout);
 }
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const

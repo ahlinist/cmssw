@@ -21,9 +21,16 @@ double square(double x)
 }
 
 MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
-  : integrand_(0),
-    x_(0)
+  : name_(""),
+    integrand_(0),
+    x_(0),
+    numIntegrationCalls_(0),
+    numMovesTotal_accepted_(0),
+    numMovesTotal_rejected_(0)
 {
+  if ( cfg.exists("name") ) 
+    name_ = cfg.getParameter<std::string>("name");
+
   std::string moveMode_string = cfg.getParameter<std::string>("mode");
   if      ( moveMode_string == "Metropolis" ) moveMode_ = kMetropolis;
   else if ( moveMode_string == "Hybrid"     ) moveMode_ = kHybrid;
@@ -88,6 +95,13 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
 
 MarkovChainIntegrator::~MarkovChainIntegrator()
 {
+  std::cout << "<MarkovChainIntegrator::~MarkovChainIntegrator>:" << std::endl;
+  std::cout << " name = " << name_ << std::endl;
+  std::cout << " integration calls = " << numIntegrationCalls_ << std::endl;
+  std::cout << " moves: accepted = " << numMovesTotal_accepted_ << ", rejected = " << numMovesTotal_rejected_ 
+	    << " (fraction = " << (double)numMovesTotal_accepted_/(numMovesTotal_accepted_ + numMovesTotal_rejected_)*100. 
+	    << "%)" << std::endl;
+
   delete [] x_;
 }
 
@@ -153,10 +167,19 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 
   for ( unsigned iChain = 0; iChain < numChains_; ++iChain ) {
     bool isValidStartPos = false;
+    unsigned iTry = 0;
     while ( !isValidStartPos ) {
       initializeStartPosition_and_Momentum();
       prob_ = evalProb(q_);
-      if ( prob_ > 0. ) isValidStartPos = true;
+      if ( prob_ > 0. ) {
+	isValidStartPos = true;
+      } else {
+	if ( iTry > 0 && (iTry % 1000) == 0 ) {
+	  std::cout << "try #" << iTry << ": did not find valid start-position yet." << std::endl;
+	  std::cout << "(q = " << format_vdouble(q_) << ", prob = " << prob_ << ")" << std::endl;
+	}
+      }
+      ++iTry;
     }
 
     for ( unsigned iMove = 0; iMove < numIterBurnin_; ++iMove ) {
@@ -179,7 +202,7 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 	(**callBackFunction)(x_);
       }
 
-      if ( iMove >= m && (iMove % m) == 0 ) ++idxBatch;
+      if ( iMove > 0 && (iMove % m) == 0 ) ++idxBatch;
       probSum_[idxBatch] += prob_;
     }
   }
@@ -189,7 +212,7 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
     //if ( verbosity_ ) std::cout << "integral[" << idxBatch << "] = " << integral_[idxBatch] << std::endl;
   }
 
-  if ( verbosity_ ) print(std::cout);
+  //if ( verbosity_ ) print(std::cout);
 
 //--- compute integral value and uncertainty
 //   (eqs. (6.39) and (6.40) in [1])   
@@ -206,7 +229,11 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
   if ( k >= 2 ) integralErr /= (k*(k - 1));
   integralErr = TMath::Sqrt(integralErr);
 
-  if ( verbosity_ ) std::cout << "--> returning integral = " << integral << " +/- " << integralErr << std::endl;
+  //if ( verbosity_ ) std::cout << "--> returning integral = " << integral << " +/- " << integralErr << std::endl;
+
+  ++numIntegrationCalls_;
+  numMovesTotal_accepted_ += numMoves_accepted_;
+  numMovesTotal_rejected_ += numMoves_rejected_;
 }
 
 void MarkovChainIntegrator::print(std::ostream& stream) const
@@ -233,7 +260,8 @@ void MarkovChainIntegrator::print(std::ostream& stream) const
     std::cout << " chain #" << iChain << ": integral = " << integral << " +/- " << integralErr << std::endl;
   }
   std::cout << "moves: accepted = " << numMoves_accepted_ << ", rejected = " << numMoves_rejected_ 
-	    << " (fraction = " << (double)numMoves_accepted_/(numMoves_accepted_ + numMoves_rejected_)*100. << "%)" << std::endl;
+	    << " (fraction = " << (double)numMoves_accepted_/(numMoves_accepted_ + numMoves_rejected_)*100. 
+	    << "%)" << std::endl;
 }
 
 //
@@ -291,8 +319,11 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
   //if ( verbosity_ ) {
   //  std::cout << "<MarkovChainIntegrator::makeStochasticMove>:" << std::endl;
   //  std::cout << " idx = " << idxMove << std::endl;
+  //  std::cout << " q = " << format_vdouble(q_) << std::endl;
+  //  std::cout << " prob = " << prob_ << std::endl;
   //  std::cout << " Ks = " << evalK(p_, 0, numDimensions_) << std::endl;
   //}
+  //if ( (idxMove % 1000) == 0 ) std::cout << "computing move #" << idxMove << "..." << std::endl;
 
 //--- perform random updates of momentum components
   if ( idxMove < numIterSimAnnealingPhase1_ ) {
@@ -430,7 +461,7 @@ void MarkovChainIntegrator::makeDynamicMoves(double epsilon)
     //  std::cout << " p(" << (iLeapFrogStep + 0.5) << ") = " << format_vdouble(pProposal_) << std::endl;
     //  std::cout << " q(" << (iLeapFrogStep + 1) << ") = " << format_vdouble(qProposal_) << std::endl;
     //  std::cout << "(prob = " << evalProb(qProposal_) << ", E = " << evalE(qProposal_) << "," 
-    //	  	  << " Ks = " << evalK(pProposal_, 0, numDimensions_) << ","
+    //		  << " Ks = " << evalK(pProposal_, 0, numDimensions_) << ","
     //		  << " E + Ks = " << (evalE(qProposal_) + evalK(pProposal_, 0, numDimensions_)) << ")" << std::endl;
     //}
   }
