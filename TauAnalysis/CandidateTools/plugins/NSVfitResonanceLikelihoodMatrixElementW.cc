@@ -9,6 +9,9 @@ using namespace SVfit_namespace;
 NSVfitResonanceLikelihoodMatrixElementW::NSVfitResonanceLikelihoodMatrixElementW(const edm::ParameterSet& cfg)
   : NSVfitResonanceLikelihood(cfg)
 {
+  applySinThetaFactor_ = cfg.exists("applySinThetaFactor") ?
+    cfg.getParameter<bool>("applySinThetaFactor") : false;
+
   power_ = cfg.getParameter<double>("power");
 }
 
@@ -21,8 +24,9 @@ double NSVfitResonanceLikelihoodMatrixElementW::operator()(const NSVfitResonance
 {
   if ( verbosity_ ) {
     std::cout << "<NSVfitResonanceLikelihoodMatrixElementW::operator()>:" << std::endl;
+    std::cout << " resonance = " << resonance->name() << ":" << resonance->barcode() << std::endl;
     std::string polHandedness_string = "undefined";
-    if      ( polHandedness == NSVfitResonanceHypothesis::kPolWL ) polHandedness_string = "WT";
+    if      ( polHandedness == NSVfitResonanceHypothesis::kPolWL ) polHandedness_string = "WL";
     else if ( polHandedness == NSVfitResonanceHypothesis::kPolWR ) polHandedness_string = "WR";
     else if ( polHandedness == NSVfitResonanceHypothesis::kPolWT ) polHandedness_string = "WT";
     std::cout << " polHandedness = " << polHandedness_string << std::endl;
@@ -31,7 +35,7 @@ double NSVfitResonanceLikelihoodMatrixElementW::operator()(const NSVfitResonance
   double prodAngle_rf = resonance->prod_angle_rf();
   if ( this->verbosity_ ) std::cout << " prodAngle_rf = " << prodAngle_rf << std::endl;
 
-  double prob = TMath::Sin(prodAngle_rf); // phase-space factor
+  double prob = 1.;
   // CV: the probabilities for polarized W decays are taken from
   //       http://www.hep.phy.cam.ac.uk/~thomson/lectures/partIIIparticles/Handout13_2009.pdf
   if ( polHandedness == NSVfitResonanceHypothesis::kPolWL ||
@@ -43,12 +47,15 @@ double NSVfitResonanceLikelihoodMatrixElementW::operator()(const NSVfitResonance
 	break;
       }
     }
+    //std::cout << "polSign = " << polSign << std::endl;
     if      ( polSign == -1 ) prob *= 0.25*square(1. + TMath::Cos(prodAngle_rf)); // left-handed  W- or right-handed W+ 
     else if ( polSign == +1 ) prob *= 0.25*square(1. - TMath::Cos(prodAngle_rf)); // right-handed W- or left-handed  W+ 
     else assert(0);
   } else if ( polHandedness == NSVfitResonanceHypothesis::kPolWT ) {
     prob *= 0.5*square(TMath::Sin(prodAngle_rf));
   } else assert(0); 
+  if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(prodAngle_rf)); // phase-space factor 
+				                                      // (to be used only in "fit", **not** in integration mode)
 
   double nll = 0.;
   if ( prob > 0. ) {

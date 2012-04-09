@@ -7,7 +7,7 @@ import re
 process = cms.Process("runSVfitPerformanceAnalysisWH")
 
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
@@ -22,7 +22,7 @@ channel = 'ElecNu'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-maxEvents = 20
+maxEvents = 100
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -311,40 +311,60 @@ else:
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
 for idxSVfitOption in range(6):
-    if not (idxSVfitOption == 0 or idxSVfitOption == 1):
+    if idxSVfitOption == 5:
+        continue
+    if idxSVfitOption != 4:
         continue
     nSVfitProducer = None
+    applySinThetaFactor = None
     if idxSVfitOption == 0 or idxSVfitOption == 3:
         nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)
+        applySinThetaFactor = True
     elif idxSVfitOption == 1 or idxSVfitOption == 4:
         nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration2)
         nSVfitProducer.algorithm.markovChainOptions.mode = cms.string("Metropolis")
-        nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(15000)
-        nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(50000)
-        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(1000)
-        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(13000)
-        nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.9995)
+        nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(1500)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(5000)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(100)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(1300)
+        nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.995)
+        nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(10)
+        ##nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(150)
+        ##nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(100)
+        ##nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10)
+        ##nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(130)
+        ##nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.95)
+        ##nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(1)
         nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(1)
-        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-4)
+        ##nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(2.5e-3)
+        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-2)
+        applySinThetaFactor = False
     elif idxSVfitOption == 2 or idxSVfitOption == 5:
         nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration2)
         nSVfitProducer.algorithm.markovChainOptions.mode = cms.string("Hybrid")
         nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(150)
-        nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(3500)
+        nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(350)
         nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10)
         nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(130)
         nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.95)
-        nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(100)
-        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-6)
+        nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(10)
+        nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(200)
+        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(2.5e-4)
+        applySinThetaFactor = False
     else:
         raise ValueError("Invalid SVfit option = %i !!" % idxSVfitOption)
+    nSVfitProducer.algorithm.pluginName = cms.string("nSVfitProducer%i" % idxSVfitOption)
     resonanceLikelihoods = [ process.nSVfitResonanceLikelihoodBreitWignerW ]
     if idxSVfitOption <= 2:
-        resonanceLikelihoods.append(process.nSVfitResonanceLikelihoodPhaseSpaceW)
+        resonanceLikelihoods.append(process.nSVfitResonanceLikelihoodPhaseSpaceW.clone(
+            applySinThetaFactor = cms.bool(applySinThetaFactor),
+            verbosity = cms.int32(0)
+        ))
     else:
         resonanceLikelihoods.append(cms.PSet(
             pluginName = cms.string("nSVfitResonanceLikelihoodMatrixElementW"),
             pluginType = cms.string("NSVfitResonanceLikelihoodMatrixElementW"),
+            applySinThetaFactor = cms.bool(applySinThetaFactor),
             power = cms.double(1.0),
             verbosity = cms.int32(0)
         ))
@@ -371,6 +391,7 @@ for idxSVfitOption in range(6):
             builder = nSVfitBuilderW2
         )
     )
+    nSVfitProducer.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
     nSVfitProducer.config.event.srcMEt = cms.InputTag('patType1CorrectedPFMet')
     ##nSVfitProducer.algorithm.verbosity = cms.int32(1)
     nSVfitProducerName = "nSVfitProducer%i" % idxSVfitOption
@@ -381,7 +402,7 @@ for idxSVfitOption in range(6):
         srcEventHypotheses = cms.InputTag(nSVfitProducerName),
         srcGenMass = cms.InputTag('genAHdecayToWs'),               
         srcWeights = cms.VInputTag(),
-        dqmDirectory = cms.string("nSVfitAnalyzer"),
+        dqmDirectory = cms.string("%s/%s/nSVfitAnalyzerOption%i" % (sample, channel, idxSVfitOption))
         ##verbosity = cms.int32(1)                                        
     )
     nSVfitAnalyzerName = "nSVfitAnalyzer%i" % idxSVfitOption
@@ -392,7 +413,7 @@ for idxSVfitOption in range(6):
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveSVfitPerformanceAnalysisPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('svFitPerformanceAnalysisPlots_WW_%s_2012Mar26.root' % sample)
+    outputFileName = cms.string('svFitPerformanceAnalysisPlots_WW_%s_2012Apr09.root' % sample)
 )
 
 process.p = cms.Path(

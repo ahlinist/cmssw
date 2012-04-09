@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitProducerT.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: NSVfitProducerT.h,v 1.2 2011/03/23 17:46:39 veelken Exp $
  *
  */
 
@@ -21,6 +21,8 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
+
+#include <TStopwatch.h>
 
 #include <vector>
 #include <string>
@@ -35,6 +37,8 @@ class NSVfitProducerT : public edm::EDProducer
   void beginJob();
 
   void produce(edm::Event&, const edm::EventSetup&);
+
+  void endJob();
 
  private:
   std::string moduleLabel_;
@@ -55,6 +59,11 @@ class NSVfitProducerT : public edm::EDProducer
 
   edm::InputTag srcMEt_;
   edm::InputTag srcPrimaryVertex_;
+
+  TStopwatch* timer_;
+  long numSVfitCalls_;
+  unsigned instanceId_;
+  static unsigned instanceCounter_;
 };
 
 #endif

@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: MarkovChainIntegrator.h,v 1.2 2012/04/07 15:44:43 veelken Exp $
+ * $Id: MarkovChainIntegrator.h,v 1.3 2012/04/08 12:47:58 veelken Exp $
  *
  */
 
@@ -76,10 +76,12 @@ class MarkovChainIntegrator
   
   void updateGradE(std::vector<double>&);
 
+  std::string name_;
+
   const ROOT::Math::Functor* integrand_;
 
   std::vector<const ROOT::Math::Functor*> callBackFunctions_;
-  
+    
   // parameter defining whether to run integration in "Metropolis" or "Hybrid" mode
   int moveMode_;
 
@@ -152,6 +154,10 @@ class MarkovChainIntegrator
 
   long numMoves_accepted_;
   long numMoves_rejected_;
+
+  long numIntegrationCalls_;
+  long numMovesTotal_accepted_;
+  long numMovesTotal_rejected_;
 
   int verbosity_; // flag to enable/disable debug output
 };

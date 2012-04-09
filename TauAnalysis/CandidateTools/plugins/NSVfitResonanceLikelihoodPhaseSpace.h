@@ -32,6 +32,8 @@ class NSVfitResonanceLikelihoodPhaseSpace : public NSVfitResonanceLikelihood
 
  private:
 
+  bool applySinThetaFactor_; 
+
   double power_;
 };
 

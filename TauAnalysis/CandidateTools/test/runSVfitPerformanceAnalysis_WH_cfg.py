@@ -35,6 +35,7 @@ maxEvents = 20
 #__sample = '#sample#'
 #__sample_type = '#sample_type#'
 #__channel = '#channel#'
+#__metResolution = #metResolution#
 #__maxEvents = #maxEvents#
 #__inputFileNames = #inputFileNames#
 #__outputFileName = '#outputFileName#'

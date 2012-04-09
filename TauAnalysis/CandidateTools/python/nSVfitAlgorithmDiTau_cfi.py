@@ -287,7 +287,7 @@ nSVfitProducerByIntegration.config.event.resonances.A.daughters.leg1.likelihoodF
 nSVfitProducerByIntegration.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
   cms.bool(False)
 
-nSVfitProducerByIntegration2 = cms.EDProducer("NSVfitProducerByIntegration",
+nSVfitProducerByIntegration2 = cms.EDProducer("NSVfitProducerByIntegration2",
     config = nSVfitConfig_template.clone(),
     algorithm = cms.PSet(
         pluginName = cms.string("nSVfitAlgorithmByIntegration2"),

@@ -1,6 +1,7 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitEventBuilder.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -45,11 +46,14 @@ void setFitParameterStepSize(NSVfitAlgorithmBase* algorithm, int fitParameterIdx
 
 NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
 {
+  //std::cout << "<NSVfitEventBuilder::build>:" << std::endl;
+
   NSVfitEventHypothesis* event = NSVfitEventBuilderBase::build(inputParticles, eventVertex);
 
 //--- set polarization status for resonance
   event->polHandedness_ = polHandedness_;
   event->numPolStates_ = numPolStates_;
+  //std::cout << "event: polHandedness = " << format_vint(event->polHandedness_) << std::endl;
 
 //--- set polarization status for daughters 
   if ( event->numResonances() == 2 ) {
@@ -102,6 +106,9 @@ NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputPa
 	} else assert(0);
 	resonance->polSign_[iPolState] = resonance_polSign;
       }
+
+      //std::cout << "resonance: polHandedness = " << format_vint(resonance->polHandedness_) << "," 
+      //	  << " polSign = " << format_vint(resonance->polSign_) << std::endl;
     }
   } else if ( !(numPolStates_ == 1 || polHandedness_[0] == NSVfitEventHypothesis::kPolUndefined) ) 
     throw cms::Exception("NSVfitEventBuilder")
