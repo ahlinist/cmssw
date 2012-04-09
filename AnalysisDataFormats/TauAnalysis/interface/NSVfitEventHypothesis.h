@@ -57,6 +57,12 @@ class NSVfitEventHypothesis : public NSVfitEventHypothesisBase
 
   enum { kPolUndefined, kPolWLWL, kPolWRWR, kPolWTWT };
 
+  virtual void print(std::ostream& stream) const 
+  {
+    NSVfitEventHypothesisBase::print(stream);
+    stream << " sqrt(s) = " << p4_fitted().mass() << std::endl;
+  }
+
   friend class NSVfitEventBuilderBase;
   friend class NSVfitEventBuilder;
 
