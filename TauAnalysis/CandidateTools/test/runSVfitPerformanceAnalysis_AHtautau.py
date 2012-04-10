@@ -18,7 +18,7 @@ import TauAnalysis.Configuration.tools.castor as castor
 version = '2012Mar13'
 
 inputFilePath  = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/SVfitStudies/'
-harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr09/'
+harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr10/'
 outputFilePath = '/tmp/veelken/svFitStudies/' 
 
 samplesToAnalyze = [
@@ -53,8 +53,8 @@ metResolutions = [
     25.
 ]    
 
-#runSVfitEventHypothesisAnalyzer = True
-runSVfitEventHypothesisAnalyzer = False
+runSVfitEventHypothesisAnalyzer = True
+#runSVfitEventHypothesisAnalyzer = False
 #runLXBatchHarvesting = True
 runLXBatchHarvesting = False
 # Note: you need one run with runSVfitEventHypothesisAnalyzer = False && runLXBatchHarvesting = False
@@ -129,7 +129,7 @@ def getMEtResolution_label(metResolution):
     retVal = "MEtResMC"
     if metResolution is not None:
         retVal = "MEtRes%1.0f" % metResolution
-        retVal = metResolution_label.replace(".", "_")
+        retVal = retVal.replace(".", "_")
     return retVal
 
 #--------------------------------------------------------------------------------
@@ -284,7 +284,7 @@ for sampleToAnalyze in samplesToAnalyze:
             bsubFileNames_harvesting[sampleToAnalyze][channelToAnalyze][metResolution_label] = retVal_make_harvest_scripts
 
             bsubJobName = "harvest%s%s%s" % (sampleToAnalyze, channelToAnalyze, metResolution_label)
-            bsubJobNames_harvesting[sampleToAnalyze][channelToAnalyze] = bsubJobName
+            bsubJobNames_harvesting[sampleToAnalyze][channelToAnalyze][metResolution_label] = bsubJobName
 
             if len(retVal_make_harvest_scripts['final_harvest_files']) > 0:
                 bsubJobNames_harvesting_all.append(bsubJobName)

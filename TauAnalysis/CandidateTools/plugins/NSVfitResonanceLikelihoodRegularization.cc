@@ -29,12 +29,14 @@ double NSVfitResonanceLikelihoodRegularization::operator()(const NSVfitResonance
   double x = resonance->p4_fitted().mass();
   double y = resonance->p4_fitted().pt();
 
-  double nll = power_*nll_formula_->Eval(x, y);
+  double nll = nll_formula_->Eval(x, y);
   //std::cout << "<NSVfitResonanceLikelihoodRegularization::operator()>:" << std::endl;
   //std::cout << " formula = " << nll_formula_->GetTitle() << ":" 
   //          << " mass = " << x << ", pt = " << y << " --> nll = " << nll << std::endl;
+
+  double prob = TMath::Exp(-power_*nll);
   
-  return nll;
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

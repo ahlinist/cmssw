@@ -36,11 +36,6 @@ void NSVfitTauToLepLikelihoodMatrixElement<T>::beginJob(NSVfitAlgorithmBase* alg
 template <typename T>
 double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis, int polSign) const
 {
-
-
-  //polSign = -1;
-
-
 //--- compute negative log-likelihood for tau lepton decay 
 //    tau- --> e- nu nu (tau- --> mu- nu nu)
 //    to be compatible with matrix element of V-A electroweak decay
@@ -55,7 +50,7 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
     dynamic_cast<const NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>*>(hypothesis);
   assert(hypothesis_T != 0);
 
-  if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodMatrixElement::operator()>:" << std::endl;
+  //if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodMatrixElement::operator()>:" << std::endl;
   
   double decayAngle = hypothesis_T->decay_angle_rf();
   double nuMass = hypothesis_T->p4invis_rf().mass();
@@ -63,11 +58,11 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   double nuMass2 = square(nuMass);
   double visEnFracX = hypothesis_T->visEnFracX();
 
-  if ( this->verbosity_ ) {
-    std::cout << " decayAngle = " << decayAngle << std::endl;
-    std::cout << " nuMass = " << nuMass << std::endl;
-    std::cout << " visEnFracX = " << visEnFracX << std::endl;
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << " decayAngle = " << decayAngle << std::endl;
+  //  std::cout << " nuMass = " << nuMass << std::endl;
+  //  std::cout << " visEnFracX = " << visEnFracX << std::endl;
+  //}
 
   // LB: normalize likelihood function such that 
   //               1
@@ -94,7 +89,7 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
 	probCorr = 1./((0.5*(1. + polSign)*(1./3.)*(0.5 - xCut + cube(xCut) - 0.5*fourth(xCut))
 			+ 0.5*(1. - polSign)*(1./3.)*(0.75 - xCut + 0.25*fourth(xCut))));
       }
-      if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
+      //if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
       prob *= probCorr;
     }
   } 
@@ -116,22 +111,15 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
 	double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
 	probCorr = 1./((3. - 5.*xCut + 3.*cube(xCut) - fourth(xCut)) + epsilon_regularization);
       } 
-      if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
+      //if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
       prob *= probCorr;
     }
   }
   if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
-  
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -TMath::Log(prob);
-  } else {
-    nll = std::numeric_limits<float>::max();
-  }
-  
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+    
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  return nll;
+  return prob;
 }
 
 #include "DataFormats/PatCandidates/interface/Electron.h"

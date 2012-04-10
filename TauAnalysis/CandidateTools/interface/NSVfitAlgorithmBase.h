@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.21 $
+ * \version $Revision: 1.22 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.21 2012/03/22 11:27:21 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.22 2012/04/09 16:48:47 veelken Exp $
  *
  */
 
@@ -110,12 +110,12 @@ class NSVfitAlgorithmBase
 	(*likelihood)->beginCandidate(hypothesis);
       }
     }
-    double nll(const NSVfitSingleParticleHypothesis* hypothesis, int idxPolState) const
+    double prob(const NSVfitSingleParticleHypothesis* hypothesis, int idxPolState) const
     {
-      double retVal = 0.;
+      double retVal = 1.;
       for ( std::vector<NSVfitSingleParticleLikelihood*>::const_iterator likelihood = likelihoods_.begin();
 	    likelihood != likelihoods_.end(); ++likelihood ) {
-	retVal += (**likelihood)(hypothesis, hypothesis->polSign(idxPolState));
+	retVal *= (**likelihood)(hypothesis, hypothesis->polSign(idxPolState));
       }
       return retVal;
     }
@@ -176,16 +176,16 @@ class NSVfitAlgorithmBase
 	daughters_[iDaughter]->beginCandidate(hypothesis->daughter(iDaughter));
       }
     }
-    double nll(const NSVfitResonanceHypothesis* hypothesis, int idxPolState) const
+    double prob(const NSVfitResonanceHypothesis* hypothesis, int idxPolState) const
     {
-      double retVal = 0.;
+      double retVal = 1.;
       for ( std::vector<NSVfitResonanceLikelihood*>::const_iterator likelihood = likelihoods_.begin();
 	    likelihood != likelihoods_.end(); ++likelihood ) {
-	retVal += (**likelihood)(hypothesis, hypothesis->polHandedness(idxPolState));
+	retVal *= (**likelihood)(hypothesis, hypothesis->polHandedness(idxPolState));
       }
       assert(hypothesis->numDaughters() == numDaughters_);
       for ( unsigned iDaughter = 0; iDaughter < numDaughters_; ++iDaughter ) {
-	retVal += daughters_[iDaughter]->nll(hypothesis->daughter(iDaughter), idxPolState);
+	retVal *= daughters_[iDaughter]->prob(hypothesis->daughter(iDaughter), idxPolState);
       }
       return retVal;
     }
@@ -252,12 +252,12 @@ class NSVfitAlgorithmBase
     }
     double nll(const NSVfitEventHypothesis* hypothesis) const
     {
-      double retVal = 0.;
+      double prob = 1.;
       for ( std::vector<NSVfitEventLikelihood*>::const_iterator likelihood = likelihoods_.begin();
 	    likelihood != likelihoods_.end(); ++likelihood ) {
-	retVal += (**likelihood)(hypothesis);
+	prob *= (**likelihood)(hypothesis);
       }
-      //std::cout << "retVal (1) = " << retVal << std::endl;
+      //std::cout << "prob (1) = " << prob << std::endl;
       assert(hypothesis->numResonances() == numResonances_);
       unsigned numPolStates_event = hypothesis->numPolStates();
       if ( numPolStates_event == 1 ) { // Htautau and WH case
@@ -265,24 +265,21 @@ class NSVfitAlgorithmBase
 	  const NSVfitResonanceHypothesis* resonance_hypothesis = hypothesis->resonance(iResonance);
 	  unsigned numPolStates_resonance = resonance_hypothesis->numPolStates();
 	  if ( numPolStates_resonance == 1 ) {          
-	    retVal += resonances_[iResonance]->nll(resonance_hypothesis, 0);
+	    prob *= resonances_[iResonance]->prob(resonance_hypothesis, 0);
 	  } else {
-	    double prob = 0.;
+	    double prob_polSum = 0.;
 	    for ( unsigned idxPolState = 0; idxPolState < numPolStates_resonance; ++idxPolState ) {
 	      //std::cout << "idxPolState = " << idxPolState << ":" << std::endl;
-	      double nll = resonances_[iResonance]->nll(resonance_hypothesis, idxPolState);
-	      //std::cout << " nll = " << nll << std::endl;
-	      double prob_pol = TMath::Exp(-nll);
+	      double prob_pol = resonances_[iResonance]->prob(resonance_hypothesis, idxPolState);
 	      //std::cout << " prob_pol = " << prob_pol << std::endl;
-	      prob += prob_pol;
+	      prob_polSum += prob_pol;
 	    }
-	    //std::cout << "prob = " << prob << std::endl;
-	    if ( prob > 0. ) retVal -= TMath::Log(prob);
-	    else retVal = std::numeric_limits<float>::max();
+	    //std::cout << "prob_polSum = " << prob_polSum << std::endl;
+	    prob *= prob_polSum;
 	  }
 	}
       } else { // WW case
-	double prob = 0.;
+	double prob_polSum = 0.;
 	for ( unsigned idxPolState = 0; idxPolState < numPolStates_event; ++idxPolState ) {
 	  //std::cout << "idxPolState = " << idxPolState << ":" << std::endl;
 	  double prob_pol = 1.;
@@ -290,18 +287,18 @@ class NSVfitAlgorithmBase
 	    const NSVfitResonanceHypothesis* resonance_hypothesis = hypothesis->resonance(iResonance);
 	    unsigned numPolStates_resonance = resonance_hypothesis->numPolStates();
 	    assert(numPolStates_resonance == numPolStates_event);
-	    double nll = resonances_[iResonance]->nll(resonance_hypothesis, idxPolState);
-	    //std::cout << " nll = " << nll << std::endl;
-	    prob_pol *= TMath::Exp(-nll);
+	    prob_pol *= resonances_[iResonance]->prob(resonance_hypothesis, idxPolState);
 	  }
 	  //std::cout << " prob_pol = " << prob_pol << std::endl;
-	  prob += prob_pol;
+	  prob_polSum += prob_pol;
 	}
-	//std::cout << "prob = " << prob << std::endl;
-	if ( prob > 0. ) retVal -= TMath::Log(prob);
-	else retVal = std::numeric_limits<float>::max();
+	//std::cout << "prob_polSum = " << prob_polSum << std::endl;
+	prob *= prob_polSum;
       }
-      //std::cout << "--> retVal (2) = " << retVal << std::endl;
+      //std::cout << "--> prob (2) = " << prob << std::endl;
+      double retVal;
+      if ( prob > 0. ) retVal = -TMath::Log(prob);
+      else retVal = std::numeric_limits<float>::max();
       return retVal;
     }
     NSVfitEventBuilderBase* builder_;

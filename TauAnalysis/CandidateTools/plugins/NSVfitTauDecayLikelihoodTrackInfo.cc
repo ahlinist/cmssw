@@ -232,10 +232,11 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
 //--- add a penalty term in case the SV is 'behind' the PV
   nll += backwardsPenaltyTerm(hypothesis_T->flightPath(), hypothesis_T->p4(), this->verbosity_);
 
-  if ( this->verbosity_ )
-    std::cout << "--> total nll = " << nll << std::endl;
+  double prob = TMath::Exp(-nll);
 
-  return nll;
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
+
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

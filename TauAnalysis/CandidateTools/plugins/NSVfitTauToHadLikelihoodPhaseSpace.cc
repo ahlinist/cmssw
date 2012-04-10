@@ -38,15 +38,13 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
 //          K. Nakamura et al. (Particle Data Group), J. Phys. G 37, 075021 (2010);
 //          formula 38.20a
 //
-  //std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
-
   const NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<const NSVfitTauToHadHypothesis*>(hypothesis);
   assert(hypothesis_T != 0);
 
-  if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
+  //if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
   
   double decayAngle = hypothesis_T->decay_angle_rf();  
-  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;  
+  //if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;  
   double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
   if ( visMass < chargedPionMass ) visMass = chargedPionMass;
@@ -75,20 +73,13 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
       double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();      
       probCorr = 1./((1. - xCut) + epsilon_regularization);
     }
-    if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
+    //if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
     prob *= probCorr;
   }
-
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -TMath::Log(prob);
-  } else {
-    nll = std::numeric_limits<float>::max();
-  }
   
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  return nll;
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

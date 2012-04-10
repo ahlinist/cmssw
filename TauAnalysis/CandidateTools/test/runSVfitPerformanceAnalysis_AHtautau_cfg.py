@@ -599,8 +599,8 @@ for idxSVfitOption1 in range(16):                       # determines likelihood 
            (idxSVfitOption1 in [ 10, 11, 13 ] and idxSVfitOption2 in [ 'a', 'd' ]) or \
            (idxSVfitOption1 in [ 14 ] and idxSVfitOption2 in [ 'a' ])):
             continue
-        if not (idxSVfitOption1 == 12 and idxSVfitOption2 == 'd'):
-            continue
+        ##if not (idxSVfitOption1 == 12 and idxSVfitOption2 == 'd'):
+        ##    continue
         nSVfitProducer = None
         if idxSVfitOption2 in [ 'a' ]:
             nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)

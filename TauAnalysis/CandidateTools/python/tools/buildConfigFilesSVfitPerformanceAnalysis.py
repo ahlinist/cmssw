@@ -103,7 +103,8 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
             metResolution_label  = "pfMEtRes%1.0f" % metResolution
             metResolution_label  = metResolution_label.replace(".", "_")
         
-        outputFileName = 'svFitPerformanceAnalysisPlots_%s_%s_%i.root' % (sampleToAnalyze, channelToAnalyze, jobId + 1)
+        outputFileName = 'svFitPerformanceAnalysisPlots_%s_%s_%s_%i.root' % \
+          (sampleToAnalyze, channelToAnalyze, metResolution_label, jobId + 1)
         outputFileNames.append(outputFileName)
  
         replacements = []

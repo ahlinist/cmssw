@@ -32,14 +32,16 @@ double NSVfitEventLikelihoodTrackInfo::operator()(const NSVfitEventHypothesis* h
 //    to be compatible with estimated covariance matrix,
 //    determined by vertex refit
 
-  if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodTrackInfo::operator()>:" << std::endl;
+  //if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodTrackInfo::operator()>:" << std::endl;
 
   double nll = 0.;
   if ( hypothesis->eventVertexSVrefittedIsValid() )
     nll -= logGaussianNd(hypothesis->eventVertexShiftSVrefitted(), hypothesis->eventVertexErrSVrefitted());
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  //if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
-  return nll;
+  double prob = TMath::Exp(-nll);
+
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
