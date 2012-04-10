@@ -22,18 +22,18 @@ NSVfitResonanceLikelihoodMatrixElementW::~NSVfitResonanceLikelihoodMatrixElement
 
 double NSVfitResonanceLikelihoodMatrixElementW::operator()(const NSVfitResonanceHypothesis* resonance, int polHandedness) const 
 {
-  if ( verbosity_ ) {
-    std::cout << "<NSVfitResonanceLikelihoodMatrixElementW::operator()>:" << std::endl;
-    std::cout << " resonance = " << resonance->name() << ":" << resonance->barcode() << std::endl;
-    std::string polHandedness_string = "undefined";
-    if      ( polHandedness == NSVfitResonanceHypothesis::kPolWL ) polHandedness_string = "WL";
-    else if ( polHandedness == NSVfitResonanceHypothesis::kPolWR ) polHandedness_string = "WR";
-    else if ( polHandedness == NSVfitResonanceHypothesis::kPolWT ) polHandedness_string = "WT";
-    std::cout << " polHandedness = " << polHandedness_string << std::endl;
-  }
+  //if ( verbosity_ ) {
+  //  std::cout << "<NSVfitResonanceLikelihoodMatrixElementW::operator()>:" << std::endl;
+  //  std::cout << " resonance = " << resonance->name() << ":" << resonance->barcode() << std::endl;
+  //  std::string polHandedness_string = "undefined";
+  //  if      ( polHandedness == NSVfitResonanceHypothesis::kPolWL ) polHandedness_string = "WL";
+  //  else if ( polHandedness == NSVfitResonanceHypothesis::kPolWR ) polHandedness_string = "WR";
+  //  else if ( polHandedness == NSVfitResonanceHypothesis::kPolWT ) polHandedness_string = "WT";
+  //  std::cout << " polHandedness = " << polHandedness_string << std::endl;
+  //}
 
   double prodAngle_rf = resonance->prod_angle_rf();
-  if ( this->verbosity_ ) std::cout << " prodAngle_rf = " << prodAngle_rf << std::endl;
+  //if ( this->verbosity_ ) std::cout << " prodAngle_rf = " << prodAngle_rf << std::endl;
 
   double prob = 1.;
   // CV: the probabilities for polarized W decays are taken from
@@ -57,16 +57,9 @@ double NSVfitResonanceLikelihoodMatrixElementW::operator()(const NSVfitResonance
   if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(prodAngle_rf)); // phase-space factor 
 				                                      // (to be used only in "fit", **not** in integration mode)
 
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -power_*TMath::Log(prob);
-  } else {
-    nll = std::numeric_limits<float>::max();
-  }
-  
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  return nll;
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

@@ -39,37 +39,29 @@ void NSVfitResonanceLikelihoodPolarization::initializePolProbFunction(int polHan
 
 double NSVfitResonanceLikelihoodPolarization::operator()(const NSVfitResonanceHypothesis* resonance, int polHandedness) const 
 {
-  if ( verbosity_ ) {
-    std::cout << "<NSVfitResonanceLikelihoodPolarization::operator()>:" << std::endl;
-    std::cout << " mass = " << resonance->p4_fitted().mass() << std::endl;
-    std::string polHandedness_string = "undefined";
-    if      ( polHandedness == NSVfitResonanceHypothesis::kPolLR ) polHandedness_string = "LR";
-    else if ( polHandedness == NSVfitResonanceHypothesis::kPolRL ) polHandedness_string = "RL";
-    else if ( polHandedness == NSVfitResonanceHypothesis::kPolLL ) polHandedness_string = "LL";
-    else if ( polHandedness == NSVfitResonanceHypothesis::kPolRR ) polHandedness_string = "RR";
-    std::cout << " polHandedness = " << polHandedness_string << std::endl;
-  }
+  //if ( verbosity_ ) {
+  //  std::cout << "<NSVfitResonanceLikelihoodPolarization::operator()>:" << std::endl;
+  //  std::cout << " mass = " << resonance->p4_fitted().mass() << std::endl;
+  //  std::string polHandedness_string = "undefined";
+  //  if      ( polHandedness == NSVfitResonanceHypothesis::kPolLR ) polHandedness_string = "LR";
+  //  else if ( polHandedness == NSVfitResonanceHypothesis::kPolRL ) polHandedness_string = "RL";
+  //  else if ( polHandedness == NSVfitResonanceHypothesis::kPolLL ) polHandedness_string = "LL";
+  //  else if ( polHandedness == NSVfitResonanceHypothesis::kPolRR ) polHandedness_string = "RR";
+  //  std::cout << " polHandedness = " << polHandedness_string << std::endl;
+  //}
 
   assert(resonance);
 
   double prob = 0.;
-
   std::map<int, polProbFunctionType*>::const_iterator polProbFunction = polProbFunctions_.find(polHandedness);
   if ( polProbFunction != polProbFunctions_.end() ) {
     double x = resonance->p4_fitted().mass();
     prob = polProbFunction->second->eval(x);
   }
-   
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -TMath::Log(prob);
-  } else {
-    nll = std::numeric_limits<float>::max();
-  }
   
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  return nll;
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

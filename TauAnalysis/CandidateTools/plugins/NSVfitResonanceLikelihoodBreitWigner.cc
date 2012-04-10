@@ -37,17 +37,11 @@ double NSVfitResonanceLikelihoodBreitWigner::operator()(const NSVfitResonanceHyp
   const double const_factor = 2.*TMath::Sqrt(2.)*resonance_width_/TMath::Pi();
   double norm_factor = const_factor*mass*gamma/TMath::Sqrt(mass2 + gamma);
   double prob = norm_factor/(square(mass2 - resonance_mass2_) + mass2*resonance_width2_);
-
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -power_*TMath::Log(prob);
-  } else {
-    nll = std::numeric_limits<float>::max();
-  }
+  if ( prob > 0. && power_ != 1. ) prob = TMath::Power(prob, power_); 
   
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
   
-  return nll;
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

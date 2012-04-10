@@ -22,7 +22,7 @@ channel = 'ElecNu'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-maxEvents = 100
+maxEvents = 2500
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -313,8 +313,8 @@ else:
 for idxSVfitOption in range(6):
     if idxSVfitOption == 5:
         continue
-    if idxSVfitOption != 4:
-        continue
+    ##if idxSVfitOption != 4:
+    ##    continue
     nSVfitProducer = None
     applySinThetaFactor = None
     if idxSVfitOption == 0 or idxSVfitOption == 3:
@@ -336,7 +336,6 @@ for idxSVfitOption in range(6):
         ##nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.95)
         ##nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(1)
         nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(1)
-        ##nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(2.5e-3)
         nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-2)
         applySinThetaFactor = False
     elif idxSVfitOption == 2 or idxSVfitOption == 5:
@@ -349,7 +348,7 @@ for idxSVfitOption in range(6):
         nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.95)
         nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(10)
         nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(200)
-        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(2.5e-4)
+        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-3)
         applySinThetaFactor = False
     else:
         raise ValueError("Invalid SVfit option = %i !!" % idxSVfitOption)

@@ -63,17 +63,17 @@ double NSVfitEventLikelihoodMEt::operator()(const NSVfitEventHypothesis* hypothe
 //
 //    NB: MET likelihood is split into perp/par components along (leptonic) leg1 of the diTau object
 //
-  if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodMEt::operator()>:" << std::endl;
+  //if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodMEt::operator()>:" << std::endl;
 
   double parSigma = parSigma_->Eval(qT_);
   if ( parSigma < parSigmaMin ) parSigma = parSigmaMin;
   double parBias = parBias_->Eval(qT_);
-  if ( this->verbosity_ ) std::cout << " parSigma = " << parSigma << ", parBias = " << parBias << std::endl;
+  //if ( this->verbosity_ ) std::cout << " parSigma = " << parSigma << ", parBias = " << parBias << std::endl;
 
   double perpSigma = perpSigma_->Eval(qT_);
   if ( perpSigma < perpSigmaMin ) perpSigma = perpSigmaMin;
   double perpBias = perpBias_->Eval(qT_);
-  if ( this->verbosity_ ) std::cout << " perpSigma = " << perpSigma << ", perpBias = " << perpBias << std::endl;
+  //if ( this->verbosity_ ) std::cout << " perpSigma = " << perpSigma << ", perpBias = " << perpBias << std::endl;
 
   double projCosPhi = 0.;
   double projSinPhi = 0.;
@@ -84,22 +84,24 @@ double NSVfitEventLikelihoodMEt::operator()(const NSVfitEventHypothesis* hypothe
 
   double pxResidual_fitted = hypothesis->dp4MEt_fitted().px();
   double pyResidual_fitted = hypothesis->dp4MEt_fitted().py();
-  if ( this->verbosity_ ) {
-    std::cout << "pxResidual_fitted = " << pxResidual_fitted << std::endl;
-    std::cout << "pyResidual_fitted = " << pyResidual_fitted << std::endl;
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << "pxResidual_fitted = " << pxResidual_fitted << std::endl;
+  //  std::cout << "pyResidual_fitted = " << pyResidual_fitted << std::endl;
+  //}
 
   double parResidual_fitted  = (pxResidual_fitted*projCosPhi + pyResidual_fitted*projSinPhi) - parBias;
   double perpResidual_fitted = (pxResidual_fitted*projSinPhi - pyResidual_fitted*projCosPhi) - perpBias;
-  if ( this->verbosity_ ) {
-    std::cout << " parResidual_fitted  = " << parResidual_fitted  << std::endl;
-    std::cout << " perpResidual_fitted = " << perpResidual_fitted << std::endl;
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << " parResidual_fitted  = " << parResidual_fitted  << std::endl;
+  //  std::cout << " perpResidual_fitted = " << perpResidual_fitted << std::endl;
+  //}
 
   double nll = -(logGaussian(parResidual_fitted, parSigma) + logGaussian(perpResidual_fitted, perpSigma));
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  //if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
-  return power_*nll;
+  double prob = TMath::Exp(-power_*nll);
+
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

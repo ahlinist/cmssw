@@ -401,12 +401,11 @@ double NSVfitTauToHadLikelihoodMatrixElement::operator()(const NSVfitSingleParti
 //             S. Raychaudhuri and D.P. Roy,
 //             Phys. Rev.  D52 (1995) 1556.           
 //
-
   const NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<const NSVfitTauToHadHypothesis*>(hypothesis);
   assert(hypothesis_T != 0);
-
-  if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodMatrixElement::operator()>:" << std::endl;
   
+  //if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodMatrixElement::operator()>:" << std::endl;
+
   double decayAngle = hypothesis_T->decay_angle_rf();  
   double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
@@ -414,11 +413,11 @@ double NSVfitTauToHadLikelihoodMatrixElement::operator()(const NSVfitSingleParti
   if ( visMass > tauLeptonMass   ) visMass = tauLeptonMass;
   double visMass2 = square(visMass);
 
-  if ( this->verbosity_ ) {
-    std::cout << " decayAngle = " << decayAngle << std::endl;
-    std::cout << " visMass = " << visMass << std::endl;
-    std::cout << " visEnFracX = " << visEnFracX << std::endl;
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << " decayAngle = " << decayAngle << std::endl;
+  //  std::cout << " visMass = " << visMass << std::endl;
+  //  std::cout << " visEnFracX = " << visEnFracX << std::endl;
+  //}
 
   if ( !(polSign == +1 || polSign == -1) )
     throw cms::Exception("NSVfitTauToHadLikelihoodMatrixElement") 
@@ -439,10 +438,10 @@ double NSVfitTauToHadLikelihoodMatrixElement::operator()(const NSVfitSingleParti
   vProb_(2) = compProb_a1Decay(visEnFracX, z_oneProngHypothesis, polSign, tauLeptonPt);
   vProb_(3) = compProb_a1Decay(visEnFracX, z_threeProngHypothesis, polSign, tauLeptonPt);
 
-  if ( this->verbosity_ ) {
-    std::cout << " vProb:" << std::endl;
-    vProb_.Print();
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << " vProb:" << std::endl;
+  //  vProb_.Print();
+  //}
 
   double prob = (vGen_*vProb_);
   if ( visEnFracX < (visMass2/tauLeptonMass2) ) {
@@ -453,17 +452,10 @@ double NSVfitTauToHadLikelihoodMatrixElement::operator()(const NSVfitSingleParti
     prob /= (1. + 1.e+6*square(visEnFracX - visEnFracX_limit));
   }
   if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
-  
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -TMath::Log(prob);
-  } else {
-    nll = std::numeric_limits<float>::max();
-  }
-  
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+    
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  return nll;
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

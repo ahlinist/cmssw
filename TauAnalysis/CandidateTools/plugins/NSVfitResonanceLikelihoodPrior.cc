@@ -37,10 +37,10 @@ NSVfitResonanceLikelihoodPrior::~NSVfitResonanceLikelihoodPrior()
 
 double NSVfitResonanceLikelihoodPrior::operator()(const NSVfitResonanceHypothesis* resonance, int polHandedness) const 
 {
-  if ( verbosity_ ) {
-    std::cout << "<NSVfitResonanceLikelihoodPrior::operator()>:" << std::endl;
-    std::cout << " mass = " << resonance->p4_fitted().mass() << std::endl;
-  }
+  //if ( verbosity_ ) {
+  //  std::cout << "<NSVfitResonanceLikelihoodPrior::operator()>:" << std::endl;
+  //  std::cout << " mass = " << resonance->p4_fitted().mass() << std::endl;
+  //}
 
   assert(resonance);
 
@@ -49,17 +49,10 @@ double NSVfitResonanceLikelihoodPrior::operator()(const NSVfitResonanceHypothesi
   if ( x > xMax_ ) x = xMax_;
 
   double prob = function_->Eval(x);
-    
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -TMath::Log(prob);
-  } else {
-    nll = std::numeric_limits<float>::max();
-  }
   
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  return nll;
+  return prob;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

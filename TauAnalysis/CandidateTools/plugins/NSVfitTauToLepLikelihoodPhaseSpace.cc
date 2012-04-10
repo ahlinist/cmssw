@@ -49,7 +49,7 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     dynamic_cast<const NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>*>(hypothesis);
   assert(hypothesis_T != 0);
 
-  if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
+  //if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
 
   double decayAngle = hypothesis_T->decay_angle_rf();
   double nuMass = hypothesis_T->p4invis_rf().mass();
@@ -58,13 +58,13 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
   double visMass = hypothesis_T->p4vis_rf().mass();
   double visMass2 = square(visMass);
 
-  if ( this->verbosity_ ) {
-    std::cout << " tauLeptonMass2 = " << tauLeptonMass2 << std::endl;
-    std::cout << " decayAngle = " << decayAngle << std::endl;
-    std::cout << " nuMass = " << nuMass << std::endl;
-    std::cout << " visEnFracX = " << visEnFracX << std::endl;
-    std::cout << " visMass = " << visMass << std::endl;
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << " tauLeptonMass2 = " << tauLeptonMass2 << std::endl;
+  //  std::cout << " decayAngle = " << decayAngle << std::endl;
+  //  std::cout << " nuMass = " << nuMass << std::endl;
+  //  std::cout << " visEnFracX = " << visEnFracX << std::endl;
+  //  std::cout << " visMass = " << visMass << std::endl;
+  //}
 
   // CV: normalize likelihood function such that 
   //               1
@@ -97,23 +97,13 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
       double xCut = visPtCutThreshold_/hypothesis_T->p4_fitted().pt();
       probCorr = 1./((1. - xCut) + epsilon_regularization);
     }
-    if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
+    //if ( this->verbosity_ ) std::cout << "probCorr (lep) = " << probCorr << std::endl;
     prob *= probCorr;
   }
   
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -TMath::Log(prob);
-  } else {
-    if ( prob < 0. )
-      edm::LogWarning ("NSVfitTauToLepLikelihoodPhaseSpace::operator()")
-	<< " Unphysical solution: prob = " << prob << " --> returning very large positive number !!";
-    nll = std::numeric_limits<float>::max();
-  }
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
-
-  return nll;
+  return prob;
 }
 
 #include "DataFormats/PatCandidates/interface/Electron.h"

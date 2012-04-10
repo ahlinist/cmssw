@@ -215,25 +215,14 @@ double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypot
     //currentDecayModeParameter_->mom_->setVal(momValue);
     //currentDecayModeParameter_->sepTimesMom_->setVal(momValue*sepValue);
 
-    prob = currentDecayModeParameter_->decayPdf_.getVal(
-        momValue*sepValue, momValue);
+    prob = currentDecayModeParameter_->decayPdf_.getVal(momValue*sepValue, momValue);
   } else {
     prob = 0.5;
   }
 
-  double nll = 0.;
-  if ( prob > 0. ) {
-    nll = -TMath::Log(prob);
-  } else {
-    if ( prob < 0. )
-      edm::LogWarning ("NSVfitTauDecayLikelihoodMC::operator()")
-	<< " Unphysical solution: prob = " << prob << " --> returning very large negative number !!";
-    nll = std::numeric_limits<float>::max();
-  }
+  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
-
-  return nll;
+  return prob;
 }
 
 typedef NSVfitTauDecayLikelihoodMC<pat::Electron> NSVfitTauToElecLikelihoodMC;
