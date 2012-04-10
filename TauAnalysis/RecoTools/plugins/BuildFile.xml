@@ -33,6 +33,7 @@
   <use   name="TrackingTools/TransientTrack"/>
   <use   name="TrackingTools/Records"/>
   <use   name="RecoEgamma/EgammaTools"/>
+  <use   name="HiggsAnalysis/HiggsToWW2Leptons"/>
   <use   name="AnalysisDataFormats/TauAnalysis"/>
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="TauAnalysis/BgEstimationTools"/>

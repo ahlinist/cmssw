@@ -42,7 +42,6 @@
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
-  <use   name="Bianchi/Utilities"/>
   <use   name="PhysicsTools/FWLite"/>
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="roofit"/>
