@@ -68,12 +68,9 @@ class NSVfitParameter
   double UpperLimit() const { return upperLimit_; }
 
   bool IsFixed() const { return isFixed_; }
-  bool IsDoubleBound() const { return (!isnan(lowerLimit_) && !isnan(upperLimit_)); } // CMSSW_4_1_x version
-  bool HasLowerLimit() const { return (!isnan(lowerLimit_)); }
-  bool HasUpperLimit() const { return (!isnan(upperLimit_)); }
-  //bool IsDoubleBound() const { return (!TMath::IsNaN(lowerLimit_) && !TMath::IsNaN(upperLimit_)); } // CMSSW_4_2_x version
-  //bool HasLowerLimit() const { return (!TMath::IsNaN(lowerLimit_)); }
-  //bool HasUpperLimit() const { return (!TMath::IsNaN(upperLimit_)); }
+  bool IsDoubleBound() const { return (!std::isnan(lowerLimit_) && !std::isnan(upperLimit_)); } 
+  bool HasLowerLimit() const { return (!std::isnan(lowerLimit_)); }
+  bool HasUpperLimit() const { return (!std::isnan(upperLimit_)); }
 
   int index() const { return idx_; }
 

@@ -72,10 +72,10 @@ void NSVfitCachingPdfWrapper::initializeCache(
 
 double NSVfitCachingPdfWrapper::getVal(double x, double y) const {
   // Dont' let nans get to the Interpolate function, it will crash.
-  if (isnan(x)) {
+  if (std::isnan(x)) {
     return x;
   }
-  if (isnan(y))
+  if (std::isnan(y))
     return y;
 
   // Don't actually go past limits

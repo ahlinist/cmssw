@@ -61,7 +61,7 @@ void printGenMatrixProbabilities(std::ostream& stream, BinningBase* binningResul
 
 //--- check that exactly two bins are defined in each dimension,
 //    as expected for binning used by generalized matrix method
-  if ( (int)binGrid->numBins() != TMath::Nint(TMath::Power(2, binGrid->dimensions())) ) {
+  if ( (int)binGrid->numBins() != TMath::Nint(TMath::Power(2., (double)binGrid->dimensions())) ) {
     edm::LogError ("printGenMatrixProbabilities") << "Invalid binning for use by generalized matrix method !!";
     std::cout << "(numBins = " << binGrid->numBins() << ", numDimensions = " << binGrid->dimensions() << ")" << std::endl;
     return;
@@ -72,20 +72,20 @@ void printGenMatrixProbabilities(std::ostream& stream, BinningBase* binningResul
   unsigned numDimensions = binGrid->dimensions();
   for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
     std::vector<double> binCenter0 = binGrid->binCenter(0);
-    std::vector<double> binCenter1 = binGrid->binCenter(TMath::Nint(TMath::Power(2, iDimension)));
+    std::vector<double> binCenter1 = binGrid->binCenter(TMath::Nint(TMath::Power(2., (double)iDimension)));
 
     stream << objVarNames[iDimension] << ": " << binCenter0[iDimension] << " --> " << binCenter1[iDimension] << std::endl;
 
     unsigned numBins = binGrid->numBins();
     for ( unsigned iBin_ref = 0; iBin_ref < numBins; ++iBin_ref ) {
 
-      if ( ((int)iBin_ref & TMath::Nint(TMath::Power(2, iDimension))) != 0 ) continue;
+      if ( ((int)iBin_ref & TMath::Nint(TMath::Power(2., (double)iDimension))) != 0 ) continue;
 
       std::vector<binResultType> binResult_ref = binningResult->getBinResults(iBin_ref);
       double binContent_ref = getBinContent(binResult_ref, "rec");
       double binErr2_ref = getBinSumw2(binResult_ref, "rec");
 
-      unsigned iBin_flip = iBin_ref + TMath::Nint(TMath::Power(2, iDimension));
+      unsigned iBin_flip = iBin_ref + TMath::Nint(TMath::Power(2., (double)iDimension));
 
       std::vector<binResultType> binResult_flip = binningResult->getBinResults(iBin_flip);
       double binContent_flip = getBinContent(binResult_flip, "rec");

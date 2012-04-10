@@ -48,10 +48,6 @@ SVfitVMlineShapeIntegrand& SVfitVMlineShapeIntegrand::operator=(const SVfitVMlin
 void SVfitVMlineShapeIntegrand::SetParameterZ(double z) 
 { 
   z_ = z; 
-
-  //cosTheta_ = TMath::Cos(theta_);
-  //sinTheta_ = TMath::Sin(theta_);
-  //tanTheta_ = TMath::Tan(theta_);
 }
 
 void SVfitVMlineShapeIntegrand::SetParameterTauLeptonPol(double tauLeptonPol)
@@ -130,28 +126,20 @@ double SVfitVMlineShapeIntegrand::Fv(double mSquare) const
 
 double SVfitVMlineShapeIntegrand::decayL(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega, double theta) const
 { 
-  //return (0.5*a2/(1. + 2*a2))*(sinOmega2 + cosOmega2/a2 
-  //+ tauLeptonPol_*cosTheta_*((sin2Omega/a)*tanTheta_ + cosOmega2/a2 - sinOmega2))*sinTheta_;      // [2], formula (32)
-
-  double sinTheta = TMath::Sin(theta);
   double cosTheta = TMath::Cos(theta);
   double tanTheta = TMath::Tan(theta);
 
   return a2/((1-a2)*(1+2*a2))*
-    (cosOmega2/a2 + sinOmega2 + tauLeptonPol_*cosTheta*(cosOmega2/a2 + sin2Omega/a*tanTheta - sinOmega2) );
+    (cosOmega2/a2 + sinOmega2 + tauLeptonPol_*cosTheta*(cosOmega2/a2 + sin2Omega/a*tanTheta - sinOmega2)); // [2], formula (32)
 }
 
 double SVfitVMlineShapeIntegrand::decayT(double a, double a2, double cosOmega2, double sinOmega2, double sin2Omega, double theta) const
 {
-  //return (0.5*a2/(1. + 2*a2))*(1. + cosOmega2 + sinOmega2/a2
-  //+ tauLeptonPol_*cosTheta_*(sinOmega2/a2 - (sin2Omega/a)*tanTheta_ - cosOmega2 - 1.))*sinTheta_; // [2], formula (33)
-
-  double sinTheta = TMath::Sin(theta);
   double cosTheta = TMath::Cos(theta);
   double tanTheta = TMath::Tan(theta);
   
   return a2/((1-a2)*(1+2*a2))*
-    (sinOmega2/a2 + 1 + cosOmega2 + tauLeptonPol_*cosTheta*(sinOmega2/a2 - sin2Omega/a*tanTheta - 1 - cosOmega2) );
+    (sinOmega2/a2 + 1 + cosOmega2 + tauLeptonPol_*cosTheta*(sinOmega2/a2 - sin2Omega/a*tanTheta - 1 - cosOmega2) ); // [2], formula (33)
 }
 
 double SVfitVMlineShapeIntegrand::DoEval(double mSquare) const

@@ -281,13 +281,13 @@ std::string GenMatrixFit::modelNdEntryType::getRegionTitle(unsigned region, cons
 {
   unsigned numVar = model1dEntries_.size();
 
-  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  unsigned numRegions = TMath::Nint(TMath::Power(2., (double)numVar));
   if ( region < numRegions ) {
     std::ostringstream regionTitle;
     for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
       const std::string& varName = varNames[iVar];
       
-      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));
+      unsigned bitValue = TMath::Nint(TMath::Power(2., (double)iVar));
       
       std::string operator_string;
       if ( region & bitValue ) {
@@ -311,14 +311,14 @@ std::string GenMatrixFit::modelNdEntryType::getContrTitle(unsigned region)
 {
   unsigned numVar = model1dEntries_.size();
 
-  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  unsigned numRegions = TMath::Nint(TMath::Power(2., (double)numVar));
   if ( region < numRegions ) {
     std::ostringstream contrTitle;
     contrTitle << "Norm * ";
 
     for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
       
-      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));
+      unsigned bitValue = TMath::Nint(TMath::Power(2., (double)iVar));
 
       std::ostringstream probDescription;
       if ( region & bitValue ) {
@@ -342,7 +342,7 @@ double GenMatrixFit::modelNdEntryType::getContr(unsigned region)
 {
   unsigned numVar = model1dEntries_.size();
 
-  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  unsigned numRegions = TMath::Nint(TMath::Power(2., (double)numVar));
   if ( region < numRegions ) {
 
     double contribution = norm_->getVal();
@@ -353,7 +353,7 @@ double GenMatrixFit::modelNdEntryType::getContr(unsigned region)
       const Double_t* binBoundaries = model1dEntry->pdf1d_->getLimits();
       double prob = getProbability(model1dEntry->prob_->getVal(), binBoundaries);
             
-      unsigned bitValue = TMath::Nint(TMath::Power(2, iVar));    
+      unsigned bitValue = TMath::Nint(TMath::Power(2., (double)iVar));    
       if ( region & bitValue ) 
 	contribution *= prob;
       else 
@@ -806,7 +806,7 @@ double GenMatrixFit::compChi2red()
 
   unsigned numVar = objVarEntries_.size();
 
-  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  unsigned numRegions = TMath::Nint(TMath::Power(2., (double)numVar));
 
   for ( unsigned iRegion = 0; iRegion < numRegions; ++iRegion ) {
     std::vector<binResultType> binResults = dataBinningResults_->getBinResults(iRegion);
@@ -819,7 +819,7 @@ double GenMatrixFit::compChi2red()
     for ( modelNdEntryMap::iterator modelNdEntry = modelNdEntries_.begin();
 	  modelNdEntry != modelNdEntries_.end(); ++modelNdEntry ) {
       numFit += modelNdEntry->second->getContr(iRegion);
-      numFitErr2 += TMath::Power(modelNdEntry->second->getContrErr(iRegion), 2);
+      numFitErr2 += TMath::Power(modelNdEntry->second->getContrErr(iRegion), 2.);
     }
     
     double diff = numData - numFit;
@@ -920,7 +920,7 @@ void GenMatrixFit::makeControlPlots()
 
   unsigned numVar = varNames_.size();
 
-  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  unsigned numRegions = TMath::Nint(TMath::Power(2., (double)numVar));
 
   int numBinsX = numRegions;
   double minX = -0.5;
@@ -1044,7 +1044,7 @@ void GenMatrixFit::print(std::ostream& stream)
   }
 
   stream << "Contributions to Regions:" << std::endl;
-  unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
+  unsigned numRegions = TMath::Nint(TMath::Power(2., (double)numVar));
   for ( unsigned iRegion = 0; iRegion < numRegions; ++iRegion ) {
     if ( modelNdEntries_.begin() != modelNdEntries_.end() ) {
       stream << " " << modelNdEntries_.begin()->second->getRegionTitle(iRegion, varNames_) << std::endl;
