@@ -884,92 +884,12 @@ def makeHCLCards(ws,cfg):
                                 cfg.get('Global','couplingType'))).setVal(par2value)
                 gridPointCard = ws.function('expected_%s'%section).createHistogram(section,obsVar,RooFit.Scaling(False))
                 gridPointCard.SetName('%s_gridpoint'%section)
-
-                #replace with something real later
-                            
-                nBins=len(cfg.get(section,'obsBins').split(','))-1
-                jmax = 1+ len(bkgHists)
-                line_imax='\nimax %i number of bins'%(nBins)
-                line_jmax='\njmax %i number of bkg'%(jmax)
-                line_kmax='\nkmax %i number of syst'%(2 + len(bkgHists)) # replace with 2 + nbkg syst later
-                line_border='\n--------------------------------------------------'
-                bin = '\nbin\t\t'
-                bin_s = '\nbin\t\t'
-                process = '\nprocess\t'
-                process_numb = '\nprocess\t'
-                rate = '\nrate\t\t\t'
-                obs = '\nobservation'
-                for i in range(1,nBins+1):
-                    for j in range(jmax+1):
-                        bin += 'bin'+str(i)+'\t'
-                    bin_s += 'bin'+str(i)+'\t'
-                    obs += '\t' + str(obsHist.GetBinContent(i))
-                    process += '\tatgc_%s\tsm_%s\t'%(section,section)
-                    process += '\t'.join('%s_%s'%(section,it) for it in bkgs)
-                    process_numb += ''.join('\t%i'%ch for ch in range(jmax+1))
-
-                rate='\nrate\t'
-                ratenew='\nrate\t'
-                obs='\nobservation\t'
-                jmax= 2 + len(bkgHists)
-                nBins=sm.GetNbinsX()
-                for i in range(1,nBins+1):
-                    aTGC_rate=gridPointCard.GetBinContent(i)-smCard.GetBinContent(i)
-                    if (aTGC_rate**2 < 0.001**2):
-                        aTGC_rate=0.001
-
-                    #to do: multiple backgrounds
-                    bkgRates = [bkgHist.GetBinContent(i) for bkgHist in bkgHists]
-                    smRate = smCard.GetBinContent(i) - sum(bkgRates)
-                    
-                    rate+= '\t%.3f\t%.3f\t'%(aTGC_rate,smRate) + '\t'.join('%.3f'%b for b in bkgRates)                   
-                    
-                    obs+='\t'+str(obsHist.GetBinContent(i))
-
-                err_l = '\nlumi\tlnN\t'
-                lumi_err = 1+cfg.getfloat('Global','lumi_err')
-
-                err_bkg = {}
-                bkg_err = {}
-
-                for it,bkginfo in bkgs.iteritems():
-                    err_bkg[it] = '\n%s_err\tlnN\t'%(it)
-                    bkg_err[it] = 1+bkginfo[1]
-                    
-                err_sel = '\nsignal_err\tlnN\t'
-                sel_err = 1+cfg.getfloat(section,'selection_err')
-                
-                for i in range(1,nBins+1):
-                    err_l += '\t'+str(lumi_err)+'\t'+str(lumi_err)+''.join('\t-' for i in range(len(err_bkg)))
-
-                    ibkg = 0
-                    for it in err_bkg:
-                        err_bkg[it] += '\t-\t-' + ''.join('\t-' for i in range(ibkg)) + '\t%.3f'%(bkg_err[it]) + ''.join('\t-' for i in range(len(bkgs) - ibkg - 1))
-                        
-                        ibkg += 1
-                    
-                    err_sel += '\t'+str(sel_err)+'\t'+str(sel_err)+''.join('\t-' for i in range(len(err_bkg)))
-
-
+               
                 f_card = open(nameCard, 'w')
 
-                f_card.write(line_imax)
-                f_card.write(line_jmax)
-                f_card.write(line_kmax)
-                f_card.write(line_border)
-                f_card.write(bin_s)
-                f_card.write(obs)
-                f_card.write(line_border)
-                f_card.write(bin)
-                f_card.write(process)
-                f_card.write(process_numb)
+                thecard = buildCard(cfg,section,obsHist,gridPointCard,smCard,bkgHists)
 
-                f_card.write(rate)
-                f_card.write(line_border)
-                f_card.write(err_l)
-                for it in err_bkg:
-                    f_card.write(err_bkg[it])
-                f_card.write(err_sel)
+                f_card.write(thecard)
 
                 # make file containing run commands for created datacards
                 run_file_name='run_dataCards_'+section+'_'+str(parPoints**2)+'GRIDpoints'
@@ -1015,7 +935,7 @@ def makeHCLCards(ws,cfg):
     
 
     # prepare for combined channels:
-    print '-----> do I have more then 1 channel?'
+    print '-----> do I have more than one channel?'
     combCardsRun=''
     if len(fit_sections) > 1:
         print 'yes! -> prepare for combining limits'
@@ -1025,7 +945,9 @@ def makeHCLCards(ws,cfg):
                 par1value=par1Min+par1gap*(card_par1-1)
                 par2value=par2Min+par2gap*(card_par2-1)
                 print 'making Combined datacard command ',par1value,',', par2value
-                
+
+                #combCards+='echo %s = %.3g %s = %.3g\n'%(cfg.get('Global','par1Name'),par1value,
+                #                                         cfg.get('Global','par2Name'),par2value)
                 combCards+='combineCards.py'
                 n_channel=0
                 for section in fit_sections:
@@ -1062,6 +984,97 @@ def makeHCLCards(ws,cfg):
     else:
         print '\t\tno! nothing to combine'
    
+
+def buildCard(cfg,section,obsHist,gridPointCard,smCard,bkgHists):
+    bkgs = getBackgroundsInCfg(section,cfg)
+    
+    nBins=len(cfg.get(section,'obsBins').split(','))-1
+    jmax = 1+ len(bkgHists)
+    line_imax='\nimax %i number of bins'%(nBins)
+    line_jmax='\njmax %i number of bkg'%(jmax)
+    line_kmax='\nkmax %i number of syst'%(2 + len(bkgHists)) # replace with 2 + nbkg syst later
+    line_border='\n--------------------------------------------------'
+    bin = '\nbin\t\t'
+    bin_s = '\nbin\t\t'
+    process = '\nprocess\t'
+    process_numb = '\nprocess\t'
+    rate = '\nrate\t\t\t'
+    obs = '\nobservation'
+    for i in range(1,nBins+1):
+        for j in range(jmax+1):
+            bin += 'bin'+str(i)+'\t'
+        bin_s += 'bin'+str(i)+'\t'
+        obs += '\t' + str(obsHist.GetBinContent(i))
+        process += '\tatgc_%s\tsm_%s\t'%(section,section)
+        process += '\t'.join('%s_%s'%(section,it) for it in bkgs)
+        process_numb += ''.join('\t%i'%ch for ch in range(jmax+1))
+
+    rate='\nrate\t'
+    ratenew='\nrate\t'
+    obs='\nobservation\t'
+    jmax= 2 + len(bkgHists)
+    nBins=smCard.GetNbinsX()
+    for i in range(1,nBins+1):
+        aTGC_rate=gridPointCard.GetBinContent(i)-smCard.GetBinContent(i)
+        if (aTGC_rate**2 < 0.001**2):
+            aTGC_rate=0.001
+            
+            #to do: multiple backgrounds
+        bkgRates = [bkgHist.GetBinContent(i) for bkgHist in bkgHists]
+        smRate = smCard.GetBinContent(i) - sum(bkgRates)
+        
+        rate+= '\t%.3f\t%.3f\t'%(aTGC_rate,smRate) + '\t'.join('%.3f'%b for b in bkgRates)                   
+                    
+        obs+='\t'+str(obsHist.GetBinContent(i))
+
+    err_l = '\nlumi\tlnN\t'
+    lumi_err = 1+cfg.getfloat('Global','lumi_err')
+    
+    err_bkg = {}
+    bkg_err = {}
+    
+    for it,bkginfo in bkgs.iteritems():
+        err_bkg[it] = '\n%s_err\tlnN\t'%(it)
+        bkg_err[it] = 1+bkginfo[1]
+        
+    err_sel = '\nsignal_err\tlnN\t'
+    sel_err = 1+cfg.getfloat(section,'selection_err')
+    
+    for i in range(1,nBins+1):
+        err_l += '\t'+str(lumi_err)+'\t'+str(lumi_err)+''.join('\t-' for j in range(len(err_bkg)))
+        
+        ibkg = 0
+        for it in err_bkg:
+            err_bkg[it] += ('\t-\t-' +
+                            ''.join('\t-' for j in range(ibkg)) +
+                            '\t%.3f'%(bkg_err[it]) +
+                            ''.join('\t-' for j in range(len(bkgs) - ibkg - 1)))
+                        
+            ibkg += 1
+            
+        err_sel += '\t'+str(sel_err)+'\t'+str(sel_err)+''.join('\t-' for j in range(len(err_bkg)))
+
+    result = str(line_imax)
+    
+    result += line_jmax 
+    result += line_kmax
+    result += line_border
+    result += bin_s
+    result += obs
+    result += line_border
+    result += bin
+    result += process
+    result += process_numb
+    
+    result += rate
+    result += line_border
+    result += err_l
+    for it in err_bkg:
+        result += err_bkg[it]
+    result += err_sel
+
+    return result
+
 
 def getBackgroundsInCfg(section,cfg):
     # harvest the names of backgrounds in this config section "bkg_" in option name
