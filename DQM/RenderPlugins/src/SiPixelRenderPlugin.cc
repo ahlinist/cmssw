@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.48 $
-  \date $Date: 2011/09/09 11:53:43 $
+  \version $Revision: 1.49 $
+  \date $Date: 2012/04/10 09:44:09 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -219,6 +219,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
 
       if( o.name.find( "endcapOccupancyMap" ) != std::string::npos ) obj->SetTitle("Endcap Digi Occupancy Map");
       if( o.name.find( "hitmap" ) != std::string::npos  ||
+	  o.name.find( "rocmap" ) != std::string::npos  ||
           o.name.find( "Occupancy" ) != std::string::npos ||
 	  o.name.find( "position_siPixelClusters" ) != std::string::npos ||
 	  (o.name.find( "TRKMAP" ) != std::string::npos && o.name.find( "Layer" ) != std::string::npos) ||
@@ -236,7 +237,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
           gPad->SetRightMargin(0.15);
           obj->SetOption("colz");
           obj->SetMaximum(1.0);
-          obj->SetMinimum(0.90);
+          obj->SetMinimum(0.95);
           return;
         }
       if( o.name.find( "HitEfficiency_D" ) != std::string::npos)
@@ -347,16 +348,16 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       if( o.name.find( "SUMCLU_charge_Endcap" ) != std::string::npos ){ obj->SetMaximum(65.); }
       if( o.name.find( "SUMCLU_nclusters_Endcap" ) != std::string::npos ){ obj->SetMaximum(4.); }
       if( o.name.find( "SUMCLU_size_Endcap" ) != std::string::npos ){ obj->SetMaximum(4.); }
-      if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ obj->SetMinimum(75.); obj->SetMaximum(120.); }
-      if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ obj->SetMinimum(0.0); obj->SetMaximum(60.0); }
-      if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ obj->SetMinimum(80.); obj->SetMaximum(130.); }
-      if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ obj->SetMinimum(2.5); obj->SetMaximum(6.); }
-      if( o.name.find( "SUMOFF_charge_OnTrack_Barrel" ) != std::string::npos ){ obj->SetMinimum(10.); obj->SetMaximum(40.); }
-      if( o.name.find( "SUMOFF_nclusters_OnTrack_Barrel" ) != std::string::npos ){ obj->SetMinimum(0.0); obj->SetMaximum(6.0); }
-      if( o.name.find( "SUMOFF_size_OnTrack_Barrel" ) != std::string::npos ){ obj->SetMinimum(1.5); obj->SetMaximum(6.5); }
-      if( o.name.find( "SUMOFF_charge_OnTrack_Endcap" ) != std::string::npos ){ obj->SetMinimum(10.); obj->SetMaximum(40.); }
-      if( o.name.find( "SUMOFF_nclusters_OnTrack_Endcap" ) != std::string::npos ){ obj->SetMinimum(0.8); obj->SetMaximum(1.9); }
-      if( o.name.find( "SUMOFF_size_OnTrack_Endcap" ) != std::string::npos ){ obj->SetMinimum(1.2); obj->SetMaximum(2.5); }
+      if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ obj->SetMinimum(-5.0); obj->SetMaximum(150.); }
+      if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ obj->SetMinimum(-5.0); obj->SetMaximum(60.0); }
+      if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ obj->SetMinimum(-10.0); obj->SetMaximum(150.); }
+      if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ obj->SetMinimum(-1.0); obj->SetMaximum(8.); }
+      if( o.name.find( "SUMOFF_charge_OnTrack_Barrel" ) != std::string::npos ){ obj->SetMinimum(-5.); obj->SetMaximum(40.); }
+      if( o.name.find( "SUMOFF_nclusters_OnTrack_Barrel" ) != std::string::npos ){ obj->SetMinimum(-1.0); obj->SetMaximum(6.0); }
+      if( o.name.find( "SUMOFF_size_OnTrack_Barrel" ) != std::string::npos ){ obj->SetMinimum(-1.); obj->SetMaximum(8.); }
+      if( o.name.find( "SUMOFF_charge_OnTrack_Endcap" ) != std::string::npos ){ obj->SetMinimum(-5.); obj->SetMaximum(45.); }
+      if( o.name.find( "SUMOFF_nclusters_OnTrack_Endcap" ) != std::string::npos ){ obj->SetMinimum(-0.1); obj->SetMaximum(2.5); }
+      if( o.name.find( "SUMOFF_size_OnTrack_Endcap" ) != std::string::npos ){ obj->SetMinimum(-0.1); obj->SetMaximum(4.); }
       
    
      // prettify for shifters:
@@ -402,8 +403,8 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       assert( obj );
       
       if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,91.,193.,91.); 
-        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,110.,193.,110.); 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,85.,193.,85.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,115.,193.,115.); 
       }
       else if( o.name.find( "SUMDIG_adc_Barrel" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,85.,769.,85.); 
@@ -411,7 +412,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       }
       else if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,95.,97.,95.); 
-        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,110.,97.,110.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,115.,97.,115.); 
       }
       else if( o.name.find( "SUMDIG_adc_Endcap" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,85.,673.,85.); 
@@ -427,7 +428,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       }
       else if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ 
         obj->SetMaximum(8.);
-        TLine tl; tl.SetLineColor(4); tl.DrawLine(1.,4.5,97.,4.5); 
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(1.,3.5,97.,3.5); 
         TLine t2; t2.SetLineColor(4); t2.DrawLine(1.,6.,97.,6.); 
       }
       else if( o.name.find( "SUMDIG_ndigis_Endcap" ) != std::string::npos ){ 
@@ -436,7 +437,7 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       }
       else if( o.name.find( "SUMOFF_charge_OnTrack_Barrel" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,22.5,193.,22.5); 
-        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,31.0,193.,31.0); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,35.0,193.,35.0); 
       }
       else if( o.name.find( "SUMOFF_nclusters_OnTrack_Barrel" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,1.2,193.,1.2); 
@@ -460,15 +461,15 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       }
       else if( o.name.find( "SUMOFF_charge_OnTrack_Endcap" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,19.,97.,19.); 
-        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,26.,97.,26.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,27.,97.,27.); 
       }
       else if( o.name.find( "SUMOFF_nclusters_OnTrack_Endcap" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,1.25,97.,1.25); 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,1.15,97.,1.15); 
         TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,1.65,97.,1.65); 
       }
       else if( o.name.find( "SUMOFF_size_OnTrack_Endcap" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,1.75,97.,1.75); 
-        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,2.15,97.,2.15); 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,1.7,97.,1.7); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(1.,2.2,97.,2.2); 
       }
       else if( o.name.find( "SUMCLU_charge_Endcap" ) != std::string::npos ){ 
         TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(1.,23.,673.,23.); 
