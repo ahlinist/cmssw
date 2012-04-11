@@ -113,9 +113,9 @@ done
 cd $TOPDIR
 # remove temporary directory holding the local patches
 #rm -rf $TOPDIR/$CMSSW_VERSION
-ln -s /opt/cmssw/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION                   opt/cmssw/$AREA/base
+ln -s /opt/cmssw/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION                opt/cmssw/$AREA/base
 ln -s /opt/cmssw/$AREA/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION  opt/cmssw/$AREA/patch
-ln -s $ROOTSYS                                                                       opt/cmssw/$AREA/root
+ln -s $ROOTSYS                                                               opt/cmssw/$AREA/root
 CMSSW_VERSION_CLEAN=`echo $CMSSW_VERSION | tr -d "-"`
 
 echo "CMSSW_VERSION now $CMSSW_VERSION"
