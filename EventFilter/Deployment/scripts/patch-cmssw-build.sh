@@ -131,6 +131,7 @@ Source: none
 %define _tmppath $TOPDIR/patch-cmssw
 BuildRoot: %{_tmppath}
 BuildArch: $BUILD_ARCH
+AutoReqProv: no
 Provides:/opt/cmssw/$AREA/lib
 Provides:/opt/cmssw/$AREA/python
 Provides:/opt/cmssw/$AREA/base
