@@ -9,7 +9,20 @@ import ElectroWeakAnalysis.TauTriggerEfficiency.MuonPFIsolation as MuonPFIsolati
 def addPat(process, isData, doTTEffShrinkingConePFTau):
     sequence = cms.Sequence()
 
+    # If running together with RECO
+    # We get another kt6PFJets from PAT, and as-is they clash producing an exception
+    runningWithReco = hasattr(process, "recoAllPFJets")
+    if runningWithReco:
+        process.recoAllPFJets.remove(process.kt6PFJets)
+        process.recoPFJets.remove(process.kt6PFJets)
+    
     process.load("PhysicsTools.PatAlgos.patSequences_cff")
+
+    if runningWithReco:
+        process.recoAllPFJets.replace(process.kt4PFJets, process.kt4PFJets*process.kt6PFJets)
+        process.recoPFJets.replace(process.kt4PFJets, process.kt4PFJets*process.kt6PFJets)
+
+#    process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 
     # Calculate PF isolation of the muon
     #process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "muons", process.patMuons)
@@ -29,6 +42,7 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
         coreTools.removeSpecificPATObjects(process, ["Electrons", "Photons", "METs"], outputModules = [])
     tauTools.addTauCollection(process, cms.InputTag('hpsPFTauProducer'),
                               algoLabel = "hps", typeLabel = "PFTau")
+    
     jetTools.switchJetCollection(process, cms.InputTag('ak5PFJets'),   
                                  doJTA            = True,            
                                  doBTagging       = True,            
@@ -38,7 +52,7 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
                                  doJetID      = False,
                                  jetIdLabel   = "ak5",
                                  outputModules = [])
-
+    
     # If the reference tau should be the old TTEff shrinking cone
     # if doTTEffShrinkingConePFTau:
     #     process.patTaus.tauSource = "TTEffShrinkingConePFTauProducer"
@@ -54,5 +68,4 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
     #     process.selectedPatTaus.cut = "pt() > 15 && abs(eta()) < 2.5 && tauID('leadingPionPtCut')"
 
     sequence += process.patDefaultSequence
-
     return sequence
