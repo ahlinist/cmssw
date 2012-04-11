@@ -153,13 +153,13 @@ tar -C $TOPDIR -c opt/cmssw | tar -xC \$RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root, -)
-/opt/cmssw/$AREA/lib
-/opt/cmssw/$AREA/python
 /opt/cmssw/$AREA/env.txt
 /opt/cmssw/$AREA/base
+/opt/cmssw/$AREA/lib
 /opt/cmssw/$AREA/patch
-/opt/cmssw/$AREA/root
 /opt/cmssw/$AREA/patches
+/opt/cmssw/$AREA/python
+/opt/cmssw/$AREA/root
 EOF
 mkdir -p RPMBUILD/{RPMS/{i386,i586,i686,x86_64},SPECS,BUILD,SOURCES,SRPMS}
 rpmbuild --define "_topdir `pwd`/RPMBUILD" -bb patch-cmssw.spec
