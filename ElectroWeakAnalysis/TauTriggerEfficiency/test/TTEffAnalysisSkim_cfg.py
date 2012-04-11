@@ -1,12 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = False
+isData = True
 doRECO = True
 
 process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
 
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load("FWCore/MessageService/MessageLogger_cfi")
 #process.MessageLogger.destinations = cms.untracked.vstring("cout")
 #process.MessageLogger.cout = cms.untracked.PSet(
@@ -17,18 +19,19 @@ process.load("FWCore/MessageService/MessageLogger_cfi")
 #process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus","IdentifiedTauFilter")
 
 process.load('Configuration/StandardSequences/GeometryDB_cff')
-process.load('Configuration/StandardSequences/MagneticField_38T_cff')
+process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if isData:
   process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
+  process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
 else:
   process.load('Configuration.StandardSequences.RawToDigi_cff')
+  process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.L1Reco_cff')
-process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
+    process.GlobalTag.globaltag = 'GR_R_52_V7::All'
 else:
     process.GlobalTag.globaltag = 'START44_V13::All'
 
@@ -39,7 +42,7 @@ process.maxEvents = cms.untracked.PSet(
 if(isData):
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-          'file:/tmp/slehti/muTau_HLT-AOD.root'
+          'file:/tmp/slehti/Run2012A_Tau_RAW_14FDA8A5-DF82-E111-B7F8-001D09F29597.root'
     )
   )
 else:
@@ -106,9 +109,9 @@ process.TTEffSkimFilter = cms.Path(
 
 # Produce the rho for L1FastJet
 #process.load('RecoJets.Configuration.RecoPFJets_cff')
-process.kt6PFJets.doRhoFastjet = True
-process.ak5PFJets.doAreaFastjet = True
-process.ak5PFJetSequence = cms.Sequence(process.kt6PFJets*process.ak5PFJets)
+#process.kt6PFJets.doRhoFastjet = True
+#process.ak5PFJets.doAreaFastjet = True
+#process.ak5PFJetSequence = cms.Sequence(process.kt6PFJets*process.ak5PFJets)
 
 # Output definition
 process.FEVTEventContent.outputCommands.extend([
@@ -164,7 +167,7 @@ process.PFTau_step = cms.Path(process.PFTau)
 
 if(doRECO):
     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
-    process.recoPFJets.replace(process.ak5PFJets, process.ak5PFJetSequence)
+#    process.recoPFJets.replace(process.ak5PFJets, process.ak5PFJetSequence)
 else:
     process.schedule = cms.Schedule(process.PFTau_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
-    process.TTEffSkimFilter += process.ak5PFJetSequence
+#    process.TTEffSkimFilter += process.ak5PFJetSequence
