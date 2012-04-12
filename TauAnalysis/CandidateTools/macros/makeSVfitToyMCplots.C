@@ -35,17 +35,18 @@ TH1* getHistogram(TFile* inputFile, const TString& dqmDirectory, const TString& 
   else if ( !histogram) 
     std::cerr << "Failed to load histogram = " << histogramName << " from file = " << inputFile->GetName() << " !!" << std::endl;
 
-  if ( histogram->Integral() > 0. ) histogram->Scale(histogram->GetEntries()/histogram->Integral());
+  //if ( histogram->Integral() > 0. ) histogram->Scale(histogram->GetEntries()/histogram->Integral());
+  if ( histogram->Integral() > 0. ) histogram->Scale(1./histogram->Integral());
 
   return histogram;
 }
 
-void showHistograms1d(std::vector<TH1*>& histograms, const std::vector<std::string>& legendEntries, 
+void showHistograms1d(std::vector<TH1*>& histograms, double massPoint, const std::vector<std::string>& legendEntries, 
 		      const TString& xAxisTitle, const TString& yAxisTitle,
 		      const std::string& outputFileName)
 {
   if ( histograms.size() == 0 ) return;
-  assert(legendEntries.size() == histograms.size());
+  assert(legendEntries.size() >= histograms.size());
 
   double yMin = +1.e+6;
   double yMax = -1.e+6;
@@ -61,12 +62,13 @@ void showHistograms1d(std::vector<TH1*>& histograms, const std::vector<std::stri
   yMin -= 0.06*(yMax - yMin);
   yMax += 0.06*(yMax - yMin);
 
-  TCanvas* canvas = new TCanvas("canvas", "canvas", 1200, 600);
+  yMin = 0.;
+
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
   
   canvas->SetLeftMargin(0.12);
-  canvas->SetRightMargin(0.40);
   canvas->SetBottomMargin(0.12);
 
   TH1* refHistogram = histograms.front();
@@ -83,21 +85,34 @@ void showHistograms1d(std::vector<TH1*>& histograms, const std::vector<std::stri
   yAxis->SetTitle(yAxisTitle.Data());
   yAxis->SetTitleOffset(1.30);
 
-  int colors[] = { 1, 2, 3, 4, 5, 6, 7, 15 };
+  int colors[] = { 1, 4, 12 };
+  int lineStyles[] = { 1, 7, 4 };
   int numHistograms = histograms.size();
-  if ( numHistograms > 8 ) {
+  if ( numHistograms > 3 ) {
     std::cerr << "<showHistograms1d>:" << std::endl;
-    std::cerr << "Number of histograms must not exceed 8 !!" << std::endl;
+    std::cerr << "Number of histograms must not exceed 3 !!" << std::endl;
     assert(0);
   }
 
-  TLegend* legend = new TLegend(0.445, 0.64 - 0.06*histograms.size(), 0.995, 0.64, "", "brNDC"); 
+  double legendX0, legendY0;
+  if ( xAxisTitle.CompareTo("X_{1}") == 0 ) {
+    legendX0 = 0.64;
+    legendY0 = 0.87 - 0.06*histograms.size();
+  } else if ( xAxisTitle.CompareTo("X_{2}") == 0 ) {
+    legendX0 = 0.64;
+    legendY0 = 0.19;
+  } else {
+    std::cerr << "Undefined x-axis title = " << xAxisTitle.Data() << " !!" << std::endl;
+    assert(0);
+  }
+  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.25, legendY0 + 0.06*histograms.size(), "", "brNDC"); 
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
 
   for ( int iHistogram = 0; iHistogram < numHistograms; ++iHistogram ) {
     TH1* histogram = histograms[iHistogram];
     histogram->SetLineColor(colors[iHistogram]);
+    histogram->SetLineStyle(lineStyles[iHistogram]);
     histogram->SetLineWidth(2);
 
     std::string drawOption = "hist";
@@ -105,11 +120,32 @@ void showHistograms1d(std::vector<TH1*>& histograms, const std::vector<std::stri
     histogram->Draw(drawOption.data());
 
     std::string legendEntry = legendEntries[iHistogram];
-    legendEntry.append(Form(" (mean = %1.2f, rms = %1.2f)", histogram->GetMean(), histogram->GetRMS()));
     legend->AddEntry(histogram, legendEntry.data(), "l");
   }
 
   legend->Draw();
+
+  double labelX0, labelY0;
+  if ( xAxisTitle.CompareTo("X_{1}") == 0 ) {
+    labelX0 = 0.16;
+    labelY0 = 0.14;
+  } else if ( xAxisTitle.CompareTo("X_{2}") == 0 ) {
+    labelX0 = 0.16;
+    labelY0 = 0.69;
+  } else {
+    std::cerr << "Undefined x-axis title = " << xAxisTitle.Data() << " !!" << std::endl;
+    assert(0);
+  }
+  TPaveText* label = new TPaveText(labelX0, labelY0, labelX0 + 0.28, labelY0 + 0.17, "brNDC");
+  if ( massPoint < 95. ) label->AddText("Z #rightarrow #tau#tau MC");
+  else label->AddText("Higgs #rightarrow #tau#tau MC");
+  label->AddText(Form("M = %1.0f GeV", massPoint));
+  label->SetFillColor(10);
+  label->SetBorderSize(0);
+  label->SetTextColor(1);
+  label->SetTextAlign(11);
+  label->SetTextSize(0.04);
+  label->Draw();
 
   canvas->Update();
   size_t idx = outputFileName.find_last_of('.');
@@ -120,12 +156,14 @@ void showHistograms1d(std::vector<TH1*>& histograms, const std::vector<std::stri
   canvas->Print(std::string(outputFileName_plot).append(".root").data());
   
   delete legend;
+  delete label;
   delete canvas;
 }
 
 void makeSVfitToyMCplots()
 {
-  std::string inputFileName = Form("../test/studySVfitVisPtCuts_2012Mar04.root");
+  //std::string inputFileName = Form("../test/studySVfitVisPtCuts_2012Mar04.root");
+  std::string inputFileName = Form("../test/studySVfitVisPtCuts_2012Apr10.root");
   TFile* inputFile = new TFile(inputFileName.data());
 
   gROOT->SetBatch(true);
@@ -144,12 +182,12 @@ void makeSVfitToyMCplots()
  
   std::vector<std::string> histogramNames;
   histogramNames.push_back(std::string("histogramLeg1X"));
-  histogramNames.push_back(std::string("histogramLeg1VisMass"));
-  histogramNames.push_back(std::string("histogramLeg1NuMass"));
+  //histogramNames.push_back(std::string("histogramLeg1VisMass"));
+  //histogramNames.push_back(std::string("histogramLeg1NuMass"));
   histogramNames.push_back(std::string("histogramLeg2X"));
-  histogramNames.push_back(std::string("histogramLeg2VisMass"));
-  histogramNames.push_back(std::string("histogramLeg2NuMass"));
-  histogramNames.push_back(std::string("histogramSVfitMassFromGenInput"));
+  //histogramNames.push_back(std::string("histogramLeg2VisMass"));
+  //histogramNames.push_back(std::string("histogramLeg2NuMass"));
+  //histogramNames.push_back(std::string("histogramSVfitMassFromGenInput"));
 
   std::map<std::string, std::string> plotLabels;
   plotLabels["histogramLeg1X"]                  = "X1";
@@ -190,8 +228,8 @@ void makeSVfitToyMCplots()
  */
   std::vector<std::string> legendEntries;
   legendEntries.push_back(std::string("TAUOLA"));
-  legendEntries.push_back(std::string("Toy MC (PS)"));
-  legendEntries.push_back(std::string("Toy MC (ME)"));
+  legendEntries.push_back(std::string("PS model"));
+  legendEntries.push_back(std::string("ME model"));
 
   for ( std::vector<double>::const_iterator massPoint = massPoints.begin();
 	massPoint != massPoints.end(); ++massPoint ) {
@@ -217,11 +255,11 @@ void makeSVfitToyMCplots()
 	std::vector<TH1*> histograms;
 	histograms.push_back(histogram);
 	histograms.push_back(histogram_toyMCps);
-	histograms.push_back(histogram_toyMCme);
+	if ( (*histogramName) != "histogramLeg2X" ) histograms.push_back(histogram_toyMCme);
 	std::string outputFileName = 
 	  Form("plots/makeSVfitToyMCplots_%s_m%1.0f_%s.eps", 
 	       plotLabels[*histogramName].data(), *massPoint, selectionLabels[*directory].data());
-	showHistograms1d(histograms, legendEntries, xAxisTitles[*histogramName].data(), "a.u", outputFileName);
+	showHistograms1d(histograms, *massPoint, legendEntries, xAxisTitles[*histogramName].data(), "a.u", outputFileName);
       }
     }
   }
