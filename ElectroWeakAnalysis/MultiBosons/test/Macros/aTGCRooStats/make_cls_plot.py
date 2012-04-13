@@ -346,6 +346,7 @@ def make1DLimit(options):
     limconts['+2s'].SetTitle()
     limconts['+2s'].GetXaxis().SetTitle(par1Latex)
     limconts['+2s'].GetXaxis().SetTitleFont(132)
+    limconts['+2s'].GetXaxis().SetNdivisions(520)
     limconts['+2s'].GetYaxis().SetTitle(par2Latex)
     limconts['+2s'].GetYaxis().SetTitleFont(132)
     limconts['+2s'].GetYaxis().SetTitleOffset(1.20)
