@@ -14,22 +14,33 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
-isMC = True
-##isMC = False
+#--------------------------------------------------------------------------------
+# define configuration parameter default values
+
+isMC = True # use for MC
+##isMC = False # use for Data
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# define "hooks" for replacing configuration parameters
+# in case running jobs on the CERN batch system/grid
+#
+#__isMC = #isMC#
+#
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
-# (only relevant for HPS tau reconstruction algorithm)
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START42_V13::All')
+    process.GlobalTag.globaltag = cms.string('START52_V9::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_42_V20::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_52_V7::All')
 #--------------------------------------------------------------------------------    
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_data_runs160329to163869_selZmumuCands_met80to100_AOD.root',
-        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_data_runs165071to167913_selZmumuCands_met80to100_AOD.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/ZplusJets/simZplusJets_AOD_1_1_ZkM.root'
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/data/data2012runA_doubleMu_AOD_1_1_Fzg.root'                        
     )
 )
 
@@ -69,20 +80,20 @@ process.eventCounterPath = cms.Path(process.processedEventsSkimming)
 # save events passing "golden" VTBF Z --> mu+ mu- selection
 #--------------------------------------------------------------------------------
 
-process.goldenZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
+process.skimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     goldenZmumuEventContent,
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('goldenZmumuSkimPath')
     ),
-    fileName = cms.untracked.string('goldenZmumuEvents_data_runs160329to167913_selZmumuCands_met80to100_AOD.root')
+    fileName = cms.untracked.string('goldenZmumuEvents_AOD.root')
 )
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.o = cms.EndPath(process.goldenZmumuSkimOutputModule)
+process.o = cms.EndPath(process.skimOutputModule)
 
-rocessDumpFile = open('skimGoldenZmumu.dump' , 'w')
+processDumpFile = open('skimGoldenZmumu.dump' , 'w')
 print >> processDumpFile, process.dumpPython()
 

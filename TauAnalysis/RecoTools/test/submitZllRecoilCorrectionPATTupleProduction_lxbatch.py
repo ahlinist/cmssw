@@ -10,117 +10,40 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v4_10addResidualJES'
+version = 'v5_0'
 
 samples = {
-    'Data_runs160329to163869' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs160329to163869/DoubleMu_v2/',
+    'Data_runs190450to190892' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
-    'Data_runs165071to167913' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs165071to167913/DoubleMu_v2/',
-        'numInputFilesPerJob' : 5,
-        'HLTprocessName' : 'HLT',
-        'isMC' : False
-    },
-    'Data_runs170053to172619' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs170053to172619/DoubleMu_v2/',
-        'numInputFilesPerJob' : 5,
-        'HLTprocessName' : 'HLT',
-        'isMC' : False
-    },
-    'Data_runs172620to175770' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs172620to175770/DoubleMu_v2/',
-        'numInputFilesPerJob' : 5,
-        'HLTprocessName' : 'HLT',
-        'isMC' : False
-    },
-    'Data_runs175832to180252' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/runs175832to180252/DoubleMu_v2/',
-        'numInputFilesPerJob' : 5,
-        'HLTprocessName' : 'HLT',
-        'isMC' : False
-    },
-    'simDYtoMuMu' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/',
+    'ZplusJets_madgraph' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
-    'simDYtoMuMu_highPUscenario' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu_highPUscenario/',
+    'TTplusJets_madgraph' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
-    },
-    'simZplusJets_Summer11' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZplusJets_Summer11/DoubleMu_v2/',
-        'numInputFilesPerJob' : 3,
-        'HLTprocessName' : 'HLT',
-        'isMC' : True
-    },
-    ##'simZplusJets_Fall11' : {
-    ##    'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZplusJets_Fall11/DoubleMu_v2/',
-    ##    'numInputFilesPerJob' : 3,
-    ##    'HLTprocessName' : 'HLT',
-    ##    'isMC' : True
-    ##},
-    'simWW' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWW/DoubleMu_v2/',
-        'numInputFilesPerJob' : 3,
-        'HLTprocessName' : 'HLT',
-        'isMC' : True
-    },
-    'simWZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simWZ/DoubleMu_v2/',
-        'numInputFilesPerJob' : 3,
-        'HLTprocessName' : 'HLT',
-        'isMC' : True
-    },
-    'simZZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simZZ/DoubleMu_v2/',
-        'numInputFilesPerJob' : 3,
-        'HLTprocessName' : 'HLT',
-        'isMC' : True
-    },
-    'simTTplusJets' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simTTplusJets/DoubleMu_v2/',
-        'numInputFilesPerJob' : 3,
-        'HLTprocessName' : 'HLT',
-        'isMC' : True
-    },
-    'simQCD' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simQCD/DoubleMu_v2/',
-        'numInputFilesPerJob' : 5,
-        'HLTprocessName' : 'HLT',
-        'isMC' : True 
     }
 }
 
 lxbatch_queue = '1nw'
 
 samplesToAnalyze = [
-    'Data_runs160329to163869',
-    'Data_runs165071to167913',
-    'Data_runs170053to172619',
-    'Data_runs172620to175770',
-    'Data_runs175832to180252',
-    'simDYtoMuMu',
-    'simDYtoMuMu_highPUscenario',
-    'simZplusJets_Summer11',
-    ##'simZplusJets_Fall11', # CV: needs new pile-up reweighting target for Fall'11 samples
-    'simWW',
-    'simWZ',
-    'simZZ',
-    'simTTplusJets',
-    'simQCD'
+    #'Data_runs190450to190892',
+    'ZplusJets_madgraph',
+    #'TTplusJets_madgraph'
 ]
 
 skipExistingPATtuples = True
 
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s" % version
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s" % version
 
 executable_bsub = 'bsub'
 executable_waitForLXBatchJobs = 'python %s/src/TauAnalysis/Configuration/python/tools/waitForLXBatchJobs.py' % os.environ['CMSSW_BASE']
@@ -147,9 +70,10 @@ if not os.path.isdir("lxbatch_log"):
 logFilePath = os.path.join(os.getcwd(), "lxbatch_log")
 
 # Function that maps a sample name to its skim file
-def input_mapper(inputFileNames):
+def input_mapper(inputFileNames, sampleToAnalyze):
     inputFile_regex = \
-      r"[a-zA-Z0-9_/:.]*goldenZmumuEvents_[a-zA-Z0-9_]+_AOD_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" 
+      r"[a-zA-Z0-9_/:.]*goldenZmumuEvents_%s_[a-zA-Z0-9]+_AOD_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % \
+        sampleToAnalyze
     inputFile_matcher = re.compile(inputFile_regex)
     for input_file in inputFileNames:
         if inputFile_matcher.match(input_file):
@@ -220,7 +144,7 @@ for sampleToAnalyze in samplesToAnalyze:
     inputFileNames = [ file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
     #print " inputFileNames = %s" % inputFileNames
     
-    inputFileNames_matched = [ os.path.basename(input_file) for input_file in input_mapper(inputFileNames) ]
+    inputFileNames_matched = [ os.path.basename(input_file) for input_file in input_mapper(inputFileNames, sampleToAnalyze) ]
     #print "inputFileNames_matched = %s" % inputFileNames_matched
     print "--> found %i inputFiles" % len(inputFileNames_matched)
     

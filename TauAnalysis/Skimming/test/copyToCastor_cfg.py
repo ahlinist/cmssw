@@ -11,7 +11,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START42_V13::All')
+process.GlobalTag.globaltag = cms.string('START52_V9::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -45,12 +45,9 @@ dummyEventSelection = cms.untracked.PSet(
 )
 
 process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",
-    #tauAnalysisEventContent,
     AODSIMEventContent,                                  
     fileName = cms.untracked.string(
-        #'/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/debug/debugTauIdEffMeasSample_data_all_2011Feb03bV2_RECO.root'
-        #'/data1/veelken/CMSSW_4_2_x/skims/skimGenZtoMuTauWithinAcc_Ztautau_2011Jun30v2_AOD.root'
-        'minBias_Z2_AOD.root'                                                
+        'data2012runA_doubleMu_AOD.root'
     ),
     maxSize = cms.untracked.int32(1000000000)                                                
 )

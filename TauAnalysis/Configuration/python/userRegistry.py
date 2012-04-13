@@ -44,12 +44,12 @@ userSettings = {
         }
     },
     'veelken': {
-        'current' : {
+        'current' : {            
             'HiggsToElecMu'     : '2011Oct06ii',
             'muonIsoPATtuple'   : '2011Oct10v5',
             'ZtoMuTau'          : '2011Sep09',
-            'ZtoMuTau_tauIdEff' : '2011Oct30'
-            #'ZtoMuTau_tauIdEff' : '2011Dec15'
+            'ZtoMuTau_tauIdEff' : '2011Oct30',
+            'goldenZmumu'       : '2012Apr12'
         },
         'jobs' : {
             '2011Dec15' : {
@@ -79,7 +79,13 @@ userSettings = {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/HiggsToElecMu/2011Oct06/",
                     'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/HiggsToElecMu/2011Oct06/"
                 }
-            }
+            },
+            '2012Apr12'  : {   
+                'goldenZmumu' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/"
+                }
+            },
         },
         'global' : {
             'drawOptions' : {

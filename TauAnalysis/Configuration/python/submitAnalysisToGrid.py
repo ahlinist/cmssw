@@ -33,11 +33,10 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          enableEventDumps = False,
                          enableFakeRates = False,
                          processName = None,
-                         saveFinalEvents = False,
+                         savePlots = True, saveFinalEvents = False,
                          outsideCERN = False,
                          useCastor = True,
-			 doApplyCfgOptions = True     
-                         ):
+			 doApplyCfgOptions = True):
     """
     Submit analysis job (event selection, filling of histogram)
     via crab
@@ -99,6 +98,13 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         if outputFileMap is not None:
             output_file = outputFileMap(channel, sample, jobId)
 
+        #--------------------------------------------------------------------
+        # CV: temporary "hack" for producing (ED)Ntuples/skims
+        jobCustomizations = []
+        jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
+        jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
+        #jobCustomizations.append("print process.dumpPython()")
+        #--------------------------------------------------------------------    
 
         prepareConfigFile(
           configFile = configFile, jobInfo = jobInfo, newConfigFile = newConfigFile,
@@ -110,6 +116,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
           enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
           processName = processName,
           saveFinalEvents = saveFinalEvents,
+          customizations = jobCustomizations,
           doApplyOptions = doApplyCfgOptions)
 
         output_files = []
@@ -117,14 +124,15 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             output_files.append(output_file)
 
         # Always include the plot files
-        output_files.append("%s_%s_%s_%s.root" % (
-            PLOT_FILES_PREFIX, jobInfo['channel'],
-            jobInfo['sample'], jobInfo['id']))
+        if savePlots:
+            output_files.append("%s_%s_%s_%s.root" % (
+              PLOT_FILES_PREFIX, jobInfo['channel'],
+              jobInfo['sample'], jobInfo['id']))
 
         # Add our final event skim as well
         if saveFinalEvents:
             output_files.append("final_events_%s_%s_%s.root" % (
-             jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
+              jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
 
         # Check if we need to reformat the output file path
         if outputFilePath.startswith('/castor/cern.ch'):

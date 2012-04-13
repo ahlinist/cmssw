@@ -2,46 +2,26 @@
 
 from TauAnalysis.TauIdEfficiency.tools.buildConfigFilesTauIdEffAnalysis import buildConfigFile_hadd
 from TauAnalysis.RecoTools.tools.buildConfigFilesZllRecoilCorrectionAnalysis import *
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import RECO_SAMPLES
+from TauAnalysis.Skimming.recoSampleDefinitionsGoldenZmumu_7TeV_grid_cfi import RECO_SAMPLES
 
 import os
 
-version = 'v4_10addResidualJES'
+version = 'v5_0'
 
-inputFilePath = '/data2/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
-               + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
+inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
+               + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
 outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 
 samplesToAnalyze = {
-    'Data_2011RunA' : {
+    'Data_2012RunA' : {
         'samples' : [
-            'Data_runs160329to163869',
-            'Data_runs165071to167913',
-            'Data_runs170053to172619',
-            'Data_runs172620to175770'
+            'Data_runs190450to190892'
         ],
         'isMC' : False
     },
-    'Data_2011RunB' : {
+    'ZplusJets_madgraph' : {
         'samples' : [
-            'Data_runs175832to180252'
-        ],
-        'isMC' : False
-    },
-    ##'simDYtoMuMu' : {
-    ##    'samples' : [
-    ##        'simDYtoMuMu'
-    ##    ],
-    ##    'allEvents_DBS' : RECO_SAMPLES['Zmumu_powheg']['events_processed'],
-    ##    'xSection' : RECO_SAMPLES['Zmumu_powheg']['x_sec'],
-    ##    'isMC' : True,
-    ##    'Type' : 'Signal',
-    ##    'applyRhoNeutralReweighting' : True,
-    ##    'scaleFactor' : 1.
-    ##},
-    'simZplusJets' : {
-        'samples' : [
-            'simZplusJets_Summer11'
+            'ZplusJets_madgraph'
         ],
         'allEvents_DBS' : RECO_SAMPLES['ZplusJets_madgraph']['events_processed'],
         'xSection' : RECO_SAMPLES['ZplusJets_madgraph']['x_sec'],
@@ -50,42 +30,9 @@ samplesToAnalyze = {
         'applyRhoNeutralReweighting' : True,
         'scaleFactor' : 1.
     },
-    'simWW' : {
-       'samples' : [
-           'simWW'
-       ],
-       'allEvents_DBS' : RECO_SAMPLES['WW']['events_processed'],
-       'xSection' : RECO_SAMPLES['WW']['x_sec'],
-       'isMC' : True,
-       'Type' : 'Background',
-       'applyRhoNeutralReweighting' : False,
-       'scaleFactor' : 1.
-    },
-    'simWZ' : {
-       'samples' : [
-           'simWZ'
-       ],
-       'allEvents_DBS' : RECO_SAMPLES['WZ']['events_processed'],
-       'xSection' : RECO_SAMPLES['WZ']['x_sec'],
-       'isMC' : True,
-       'Type' : 'Background',
-       'applyRhoNeutralReweighting' : False,
-        'scaleFactor' : 1.
-    },
-    'simZZ' : {
-       'samples' : [
-           'simZZ'
-       ],
-       'allEvents_DBS' : RECO_SAMPLES['ZZ']['events_processed'],
-       'xSection' : RECO_SAMPLES['ZZ']['x_sec'],
-       'isMC' : True,
-       'Type' : 'Background',
-       'applyRhoNeutralReweighting' : False,
-        'scaleFactor' : 1.
-    },
-    'simTTplusJets' : {
+    'TTplusJets_madgraph' : {
         'samples' : [
-            'simTTplusJets'
+            'TTplusJets_madgraph'
         ],
         'allEvents_DBS' : RECO_SAMPLES['TTplusJets_madgraph']['events_processed'],
         'xSection' : RECO_SAMPLES['TTplusJets_madgraph']['x_sec'],
@@ -93,22 +40,10 @@ samplesToAnalyze = {
         'Type' : 'Background',
         'applyRhoNeutralReweighting' : False,
         'scaleFactor' : 1.
-    },
-    'simQCD' : {
-        'samples' : [
-            'simQCD'
-        ],
-        'allEvents_DBS' : RECO_SAMPLES['PPmuXptGt20Mu15']['events_processed'],
-        'xSection' : RECO_SAMPLES['PPmuXptGt20Mu15']['x_sec'],
-        'isMC' : True,
-        'Type' : 'Background',
-        'applyRhoNeutralReweighting' : False,
-        'scaleFactor' : 1.
     }
 }
 
-#runPeriod = '2011RunA'
-runPeriod = '2011RunB'
+runPeriod = '2012RunA'
 
 #maxEvents = 25000
 maxEvents = -1
@@ -116,42 +51,20 @@ maxEvents = -1
 intLumiData = None
 hltPaths = None
 srcWeights = None
-if runPeriod == '2011RunA':
-    samplesToAnalyze['Data'] = samplesToAnalyze['Data_2011RunA']
-    intLumiData = 1522.7 # runs 160431-173198
+if runPeriod == '2012RunA':
+    samplesToAnalyze['Data'] = samplesToAnalyze['Data_2012RunA']
+    intLumiData = 1522.7 # runs 190450-190892
     hltPaths = {
         'Data' : [
-            'HLT_DoubleMu7_v1',
-            'HLT_DoubleMu7_v2',
-            'HLT_Mu13_Mu8_v2',
-            'HLT_Mu13_Mu8_v4',
-            'HLT_Mu13_Mu8_v6',
-            'HLT_Mu13_Mu8_v7'
+            'HLT_Mu17_Mu8_v16'
         ],
         'smMC' : [
-            'HLT_DoubleMu7_v1'
+            'HLT_Mu17_Mu8_v13'
         ]
     }
     srcWeights = {
         'Data' : [],
-        'smMC' : [ 'vertexMultiplicityReweight3dRunA' ]
-    }
-elif runPeriod == '2011RunB':
-    samplesToAnalyze['Data'] = samplesToAnalyze['Data_2011RunB']
-    intLumiData = 2.53e+3 # runs 175860-180252 
-    hltPaths = {
-        'Data' : [
-            'HLT_Mu17_Mu8_v7',
-            'HLT_Mu17_Mu8_v10',
-            'HLT_Mu17_Mu8_v11'
-        ],
-        'smMC' : [
-            'HLT_DoubleMu7_v1'
-        ]
-    }
-    srcWeights = {
-        'Data' : [],
-        'smMC' : [ 'vertexMultiplicityReweight3dRunB' ]
+        'smMC' : []
     }
 else:
     raise ValueError("Invalid runPeriod = %s !!" % runPeriod)

@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 import os
 
-from Configuration.PyReleaseValidation.autoCond import autoCond
+from Configuration.AlCa.autoCond import autoCond
 
 from TauAnalysis.Configuration.cfgOptionMethods import copyCfgFileAndApplyOptions
 

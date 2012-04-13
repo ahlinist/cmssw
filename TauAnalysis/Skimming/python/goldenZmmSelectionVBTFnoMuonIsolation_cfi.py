@@ -18,6 +18,8 @@ from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import TransientTrac
 from CommonTools.ParticleFlow.pfNoPileUp_cff import *
 pfPileUp.Enable = cms.bool(True)
 pfPileUp.checkClosestZVertex = cms.bool(True)
+pfPileUp.PFCandidates = cms.InputTag('particleFlow')
+pfNoPileUp.bottomCollection = cms.InputTag('particleFlow')
 
 from CommonTools.ParticleFlow.pfParticleSelection_cff import *
 
@@ -25,8 +27,11 @@ from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import patMuons
 
 # compute muon IsoDeposits and add muon isolation sums to pat::Muon objects
 from RecoMuon.MuonIsolation.muonPFIsolation_cff import *
-import PhysicsTools.PatAlgos.tools.helpers as patutils
-patutils.massSearchReplaceAnyInputTag(muonPFIsolationDepositsSequence, cms.InputTag('muons1stStep'), cms.InputTag('muons'))
+muPFIsoDepositCharged.src = cms.InputTag('muons')
+muPFIsoDepositNeutral.src = cms.InputTag('muons')
+muPFIsoDepositGamma.src = cms.InputTag('muons')
+muPFIsoDepositChargedAll.src = cms.InputTag('muons')
+muPFIsoDepositPU.src = cms.InputTag('muons')
 patMuons.isoDeposits = cms.PSet(
     # CV: strings for IsoDeposits defined in PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc
     pfChargedHadrons = cms.InputTag("muPFIsoDepositCharged"),
@@ -83,43 +88,10 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
 zmmHLTFilter.HLTPaths = [
-    # single muon triggers (early 2011 Run A and MC)
-    #'HLT_IsoMu17_v5',
-    #'HLT_IsoMu17_v6',
-    #'HLT_IsoMu17_v8',
-    #'HLT_IsoMu17_v9',
-    #'HLT_IsoMu17_v10',
-    #'HLT_IsoMu17_v11',
-    #'HLT_IsoMu17_v13',
-    #'HLT_IsoMu17_v14',
-    # single muon triggers (late 2011 Run A and all of Run B and MC)
-    #'HLT_IsoMu24_v1',
-    #'HLT_IsoMu24_v2',
-    #'HLT_IsoMu24_v4',
-    #'HLT_IsoMu24_v5',
-    #'HLT_IsoMu24_v6',
-    #'HLT_IsoMu24_v7',
-    #'HLT_IsoMu24_v8',
-    #'HLT_IsoMu24_v9',
-    #'HLT_IsoMu24_v12'
-    # double muon triggers (all of 2011 Run A)
-    'HLT_Mu13_Mu8_v1',
-    'HLT_Mu13_Mu8_v2',
-    'HLT_Mu13_Mu8_v3',
-    'HLT_Mu13_Mu8_v4',
-    'HLT_Mu13_Mu8_v6',
-    'HLT_Mu13_Mu8_v7',
-    'HLT_Mu13_Mu8_v10',
-    # double muon triggers (all of 2011 Run B)
-    'HLT_Mu17_Mu8_v1',
-    'HLT_Mu17_Mu8_v2',
-    'HLT_Mu17_Mu8_v3',
-    'HLT_Mu17_Mu8_v4',
-    'HLT_Mu17_Mu8_v6',
-    'HLT_Mu17_Mu8_v7',
-    'HLT_Mu17_Mu8_v10',
-    # double muon triggers (Summer'11 MC)
-    'HLT_DoubleMu7_v1'
+    # double muon triggers (all of 2012 Run A)
+    'HLT_Mu17_Mu8_v16',
+    # double muon triggers (Summer'12 MC, produced with CMSSW_5_2_x)
+    'HLT_Mu17_Mu8_v13',
 ]
 zmmHLTFilter.throw = cms.bool(False)
 
