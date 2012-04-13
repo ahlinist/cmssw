@@ -14,11 +14,9 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #--------------------------------------------------------------------------------
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_9_1_T1A.root'
-        #'file:/data1/veelken/CMSSW_4_2_x/skims/skimByHLTpath_IsoMu12_run167830_AOD_11_1_lSt.root'
-        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_77_0_2OV.root'
-        #'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_runs175832to179431_AOD_99_1_d1y.root'
-        'file:/data1/veelken/CMSSW_4_2_x/skims/selEvents_checkMEtSmearing_unclusteredEnDown_AOD.root'                        
+        #'file:/data1/veelken/CMSSW_5_2_x/skims/simZplusJets_AOD_1_1_ZkM.root'
+        #'file:/data1/veelken/CMSSW_5_2_x/skims/data2012runA_doubleMu_AOD_1_1_Fzg.root'
+        'file:../../Skimming/test/goldenZmumuEvents_AOD.root'                       
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
@@ -30,8 +28,8 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-isMC = True # use for MC
-##isMC = False # use for Data
+##isMC = True # use for MC
+isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2011 Data
 HLTprocessName = "HLT" # use for Summer'11 MC
 #type1JetPtThreshold = 20.0 # increased jet Pt threshold to reduce sensitivity of Type 1 corrected MET to pile-up
@@ -52,10 +50,10 @@ jetCorrUncertaintyTag = "SubTotalDataMC"
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START42_V17::All')
+    process.GlobalTag.globaltag = cms.string('START52_V9::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_42_V23::All')
-#--------------------------------------------------------------------------------    
+    process.GlobalTag.globaltag = cms.string('GR_R_52_V7::All')
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # compute neutral particle density for out-of-time pile-up reweighting
@@ -117,11 +115,13 @@ process.prePatProductionSequence += process.selectPrimaryVertex
 process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
 process.vertexMultiplicityReweight3dRunA = process.vertexMultiplicityReweight.clone(
     inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs160404to173692.root"),
-    type = cms.string("gen3d")
+    type = cms.string("gen3d"),
+    mcPeriod = cms.string("Summer11")
 )
 process.vertexMultiplicityReweight3dRunB = process.vertexMultiplicityReweight.clone(
     inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs175832to180252.root"),
-    type = cms.string("gen3d")
+    type = cms.string("gen3d"),
+    mcPeriod = cms.string("Summer11")
 )
 
 process.selectedPrimaryVerticesTrackPtSumGt5 = process.selectedPrimaryVerticesTrackPtSumGt10.clone(
@@ -152,7 +152,7 @@ for objSelAttrName in dir(process.patMuons):
 if not isMC:
     # remove MC matching from standard PAT sequences
     from PhysicsTools.PatAlgos.tools.coreTools import *
-    removeMCMatching(process, ["All"], outputInProcess = False)
+    removeMCMatching(process, ["All"], outputModules = [])
 
 process.patIsoMuons = process.patMuons.clone(
     muonSource = cms.InputTag('goodIsoMuons')
@@ -175,7 +175,7 @@ switchJetCollection(
     doType1MET = False,
     doJetID = True,
     jetIdLabel = "ak5",
-    outputModule = ''
+    outputModules = []
 )
 
 # configure pat::MET production

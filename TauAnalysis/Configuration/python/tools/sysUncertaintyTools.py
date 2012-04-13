@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.tools.helpers import listModules
 from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 from TauAnalysis.RecoTools.patJetSelection_cff import patJetSelConfigurator
 from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import \
-     patJetSelConfiguratorForAHtoMuTauJetTag, patJetSelConfiguratorForAHtoMuTauBtag
+     patJetSelConfiguratorForAHtoMuTau, patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation
 from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import \
      patJetSelConfiguratorForAHtoElecTauJetTag, patJetSelConfiguratorForAHtoElecTauBtag
 from TauAnalysis.RecoTools.patJetSelectionForWTauNu_cff import patJetSelConfiguratorForWTauNu, patJetSelConfiguratorForWTauNu2

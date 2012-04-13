@@ -4,6 +4,12 @@ import FWCore.ParameterSet.Config as cms
 # compute neutral particle density for out-of-time pile-up reweighting
 
 from CommonTools.ParticleFlow.pfNoPileUp_cff import *
+pfPileUp.Enable = cms.bool(True)
+pfPileUp.checkClosestZVertex = cms.bool(True)
+pfPileUp.PFCandidates = cms.InputTag('particleFlow')
+pfNoPileUp.bottomCollection = cms.InputTag('particleFlow')
+
+from CommonTools.ParticleFlow.pfNoPileUpIso_cff import *
 
 from CommonTools.ParticleFlow.ParticleSelectors.pfAllNeutralHadrons_cfi import pfAllNeutralHadrons
 from CommonTools.ParticleFlow.ParticleSelectors.pfAllPhotons_cfi import pfAllPhotons
@@ -51,6 +57,7 @@ vertexMultiplicityVsRhoPFNeutralReweight = cms.EDProducer("VertexMultiplicityVsR
 
 produceVertexMultiplicityVsRhoPFNeutralReweights = cms.Sequence(
     pfNoPileUpSequence
+   * pfNoPileUpIsoSequence
    * pfNeutralCands
    * kt6PFNeutralJetsForVtxMultReweighting
    * pfChargedHadronNoPileUpCands
