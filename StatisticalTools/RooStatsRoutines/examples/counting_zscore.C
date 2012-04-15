@@ -28,19 +28,19 @@ void zscore( void ){
   //
 
   double ilum = 1.0;
-  double slum = 0.1;
+  double slum = 0.0;
   double  eff = 1.0;
-  double seff = 0.1;
+  double seff = 0.0;
   double  bkg = 1.0;
-  double sbkg = 0.1;
+  double sbkg = 0.0;
 
   int    data = 2;
 
   // optional: set some parameters
-  SetParameter("RandomSeed", 1111);
+  SetParameter("RandomSeed", 0);
   SetParameter("CalculatorType", 0); // 0 for frequentist
   SetParameter("TestStatType", 2); // LHC-style profile likelihood
-  SetParameter("NToys", 1000);
+  SetParameter("NToys", 10000);
   SetParameter("Optimize", true);
 
   double zscore = roostats_zscore(ilum,slum, eff,seff, bkg,sbkg, data);
