@@ -34,6 +34,8 @@ group.add_argument('+edm-output', action='store_true',
                    help='Write out (and retrieve in batch mode) the EDM ROOT file (default is to just get the ntuple).')
 group.add_argument('+edm-output-all', action='store_true',
                    help='Ignore the event selection when writing the EDM output file.')
+group.add_argument('+tunep-tune', nargs=2, type=float, default=(30.,0.), metavar=('TUNE1','TUNE2'),
+                   help='Set the Tune P tunes to TUNE1, TUNE2 (default is 30,0).')
 
 group = parser.add_argument_group('Interactive-only options (controlling the files/events run over, and debugging output)')
 group.add_argument('+is-mc', action='store_true',
@@ -553,6 +555,8 @@ for reco_kind in label_names.keys():
                                                dyt_map_label             = kind_tag('refitMapTPFMS'), # Don't use DYT for now. Just copy TPFMS to avoid changing the code.
                                                trackeronly_map_label     = kind_tag('refitMapTkOnly'),
                                                tmr_cut                   = cms.double(4),
+                                               tunep_tune1               = cms.double(options.tunep_tune[0]),
+                                               tunep_tune2               = cms.double(options.tunep_tune[1]),
                                                n_sigma_switch            = cms.double(2),
                                                sigma_switch_pt_threshold = cms.double(200),
                                                max_delta_phi             = cms.double(0.1),
