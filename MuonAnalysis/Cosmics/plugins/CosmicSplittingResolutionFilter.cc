@@ -87,6 +87,8 @@ reco::TrackRef TunePCocktail(const reco::TrackRef& trackerTrack,
 			     const reco::TrackRef& gmrTrack,
 			     const reco::TrackRef& fmsTrack,
 			     const reco::TrackRef& pmrTrack,
+			     const double tune1=30,
+			     const double tune2=0,
 			     unsigned short* which=0) {
   const reco::TrackRef refit[4] = {
     trackerTrack,
@@ -108,8 +110,8 @@ reco::TrackRef TunePCocktail(const reco::TrackRef& trackerTrack,
     else if (prob[0]>0.) chosen=0;
   }
 
-  if ( prob[0]>0. && prob[3]>0. && ((prob[3]-prob[0]) > 30.) ) chosen=0;
-  if ( prob[2]>0. && ((prob[chosen]-prob[2]) > 0.) ) chosen=2;
+  if ( prob[0]>0. && prob[3]>0. && ((prob[3]-prob[0]) > tune1) ) chosen=0;
+  if ( prob[2]>0. && ((prob[chosen]-prob[2]) > tune2) ) chosen=2;
 
   if (which) *which = chosen;
 
@@ -235,6 +237,8 @@ private:
   edm::InputTag trackeronly_map_label;
   // The "cut" value in the TMR algorithm.
   double tmr_cut;
+  // The tune values for Tune P.
+  double tunep_tune1, tunep_tune2;
   // Parameters controlling the sigma switch.
   double n_sigma_switch;
   double sigma_switch_pt_threshold;
@@ -297,6 +301,8 @@ CosmicSplittingResolutionFilter::CosmicSplittingResolutionFilter(const edm::Para
     dyt_map_label(cfg.getParameter<edm::InputTag>("dyt_map_label")),
     trackeronly_map_label(cfg.getParameter<edm::InputTag>("trackeronly_map_label")),
     tmr_cut(cfg.getParameter<double>("tmr_cut")),
+    tunep_tune1(cfg.getParameter<double>("tunep_tune1")),
+    tunep_tune2(cfg.getParameter<double>("tunep_tune2")),
     n_sigma_switch(cfg.getParameter<double>("n_sigma_switch")),
     sigma_switch_pt_threshold(cfg.getParameter<double>("sigma_switch_pt_threshold")),
     max_delta_phi(cfg.getParameter<double>("max_delta_phi")),
@@ -619,7 +625,7 @@ bool CosmicSplittingResolutionFilter::filter(edm::Event& event, const edm::Event
 
     // PiotrMuonCocktail, as tuned in 310pWhatever on MC by Piotr.
     unsigned short tunep = 99;
-    tracks[tk_tunep][j] = TunePCocktail(tko, glb, fms, pmr, &tunep);
+    tracks[tk_tunep][j] = TunePCocktail(tko, glb, fms, pmr, tunep_tune1, tunep_tune2, &tunep);
     static const unsigned short map[] = {tk_tkonly, tk_global, tk_tpfms, tk_picky}; // Need to reorder the values from the function to our scheme.
     nt->choice_tunep[j] = tunep < 4 ? map[tunep] : 99;
   }
