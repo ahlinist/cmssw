@@ -723,7 +723,7 @@ options.run_events = None
         job_control = job_control_data
 
         if options.submit_mask:
-            job_control.replace('tmp.json', options.submit_mask)
+            job_control = job_control.replace('tmp.json', options.submit_mask)
         else:
             # Build a loose run list that is the superset of any run list we
             # might want to apply later: require STRIP & (DT | CSC), for any
@@ -734,8 +734,8 @@ options.run_events = None
             open('tmp.json', 'wt').write('{' + ', '.join(json) + '}')
 
         for sample_name, dataset_path, run_min, run_max in datasets_data:
-            if options.submit_highpt2010only:
-                sample_name += 'HighPt2010'
+            if options.submit_mask:
+                sample_name += options.submit_mask.replace('.json','')
             # No data-only lines for now, as the defaults are all set for data.
             write_new_py()
             submit(locals())
