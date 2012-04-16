@@ -12,6 +12,7 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
+#include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 #include <TMath.h>
@@ -65,6 +66,8 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
   MonitorElement* svFitMassVsSigmaDownXL_oneProng2pi0_;
   MonitorElement* svFitMassVsSigmaDownXL_threeProng0pi0_;
 
+  MonitorElement* svFitMassVsNLL_;
+
   MonitorElement* svFitMassVsMEtXL_;
   MonitorElement* svFitMassVsMEtXL_oneProng0pi0_;
   MonitorElement* svFitMassVsMEtXL_oneProng1pi0_;
@@ -103,8 +106,9 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     void bookHistograms(DQMStore& dqmStore)
     {
       dqmStore.setCurrentFolder(dqmDirectory_.data());
-      
-      svFitMass_             = dqmStore.book1D("svFitMass",             "svFitMass",             numBinsSVfitMass_, 0., svFitMassMax_);
+            
+      dPhi12_ = dqmStore.book1D("dPhi12", "dPhi12", 180, 0., 180.);
+
       svFitMass_mean_        = dqmStore.book1D("svFitMass_mean",        "svFitMass_mean",        numBinsSVfitMass_, 0., svFitMassMax_);
       svFitMass_median_      = dqmStore.book1D("svFitMass_median",      "svFitMass_median",      numBinsSVfitMass_, 0., svFitMassMax_);
       svFitMass_maximum_     = dqmStore.book1D("svFitMass_maximum",     "svFitMass_maximum",     numBinsSVfitMass_, 0., svFitMassMax_);
@@ -134,9 +138,47 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       svFitSigmaVsMEt_ = 
 	dqmStore.book2D("svFitSigmaVsMEt",             
 			"svFitSigmaVsMEt", 100, 0., 0.5*svFitMassMax_, 100, 0., svFitSigmaMax_);
+
+      svFitMass_ = 
+	dqmStore.book1D("svFitMass",             
+			"svFitMass", numBinsSVfitMass_, 0., svFitMassMax_);
+      svFitMass_oneProng0pi0_ = 
+	dqmStore.book1D("svFitMass_oneProng0pi0",             
+			"svFitMass_oneProng0pi0", numBinsSVfitMass_, 0., svFitMassMax_);
+      svFitMass_oneProng1pi0_ = 
+	dqmStore.book1D("svFitMass_oneProng1pi0",             
+			"svFitMass_oneProng1pi0", numBinsSVfitMass_, 0., svFitMassMax_);
+      svFitMass_oneProng2pi0_ = 
+	dqmStore.book1D("svFitMass_oneProng2pi0",             
+			"svFitMass_oneProng2pi0", numBinsSVfitMass_, 0., svFitMassMax_);
+      svFitMass_threeProng0pi0_ = 
+	dqmStore.book1D("svFitMass_threeProng0pi0",             
+			"svFitMass_threeProng0pi0", numBinsSVfitMass_, 0., svFitMassMax_);
+      
+      svFitMassVsMEtXL_ = 
+	dqmStore.book2D("svFitMassVsMEtXL", 
+			"svFitMassVsMEtXL", 
+			TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
+      svFitMassVsMEtXL_oneProng0pi0_ = 
+	dqmStore.book2D("svFitMassVsMEtXL_oneProng0pi0", 
+			"svFitMassVsMEtXL_oneProng0pi0", 
+			TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
+      svFitMassVsMEtXL_oneProng1pi0_ = 
+	dqmStore.book2D("svFitMassVsMEtXL_oneProng1pi0", 
+			"svFitMassVsMEtXL_oneProng1pi0", 
+			TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
+      svFitMassVsMEtXL_oneProng2pi0_ = 
+	dqmStore.book2D("svFitMassVsMEtXL_oneProng2pi0", 
+			"svFitMassVsMEtXL_oneProng2pi0", 
+			TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
+      svFitMassVsMEtXL_threeProng0pi0_ = 
+	dqmStore.book2D("svFitMassVsMEtXL_threeProng0pi0", 
+			"svFitMassVsMEtXL_threeProng0pi0", 
+			TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
     }      
     void fillHistograms(bool isValidSolution,
-			const reco::Candidate::LorentzVector& recLeg1P4, const reco::Candidate::LorentzVector& recLeg2P4,  
+			const reco::Candidate::LorentzVector& recLeg1P4, int recLeg1DecayMode,
+			const reco::Candidate::LorentzVector& recLeg2P4, int recLeg2DecayMode,
 			double svFitMass,
 			double svFitMass_mean, double svFitMass_median, double svFitMass_maximum, double svFitMass_maxInterpol,
 			double svFitSigma,
@@ -152,7 +194,8 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       if ( (dPhi12 > minDPhi12_ || minDPhi12_ <= 0.) &&
 	   (dPhi12 < maxDPhi12_ || maxDPhi12_ <= 0.) ) {
 
-	svFitMass_->Fill(svFitMass, evtWeight);
+	dPhi12_->Fill(dPhi12, evtWeight);
+
 	svFitMass_mean_->Fill(svFitMass_mean, evtWeight);
 	svFitMass_median_->Fill(svFitMass_median, evtWeight);
 	svFitMass_maximum_->Fill(svFitMass_maximum, evtWeight);
@@ -168,6 +211,22 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 
 	svFitMassVsMEt_->Fill(recMEtPt, svFitMass, evtWeight);
 	svFitSigmaVsMEt_->Fill(recMEtPt, svFitSigma, evtWeight);
+
+	svFitMass_->Fill(svFitMass, evtWeight);
+	svFitMassVsMEtXL_->Fill(recMEtPt, svFitMass, evtWeight);
+	if ( recLeg1DecayMode == reco::PFTau::kOneProng0PiZero ) {
+	  svFitMass_oneProng0pi0_->Fill(svFitMass, evtWeight);
+	  svFitMassVsMEtXL_oneProng0pi0_->Fill(recMEtPt, svFitMass, evtWeight);
+	} else if ( recLeg1DecayMode == reco::PFTau::kOneProng1PiZero ) {	
+	  svFitMass_oneProng1pi0_->Fill(svFitMass, evtWeight);
+	  svFitMassVsMEtXL_oneProng1pi0_->Fill(recMEtPt, svFitMass, evtWeight);
+	} else if ( recLeg1DecayMode == reco::PFTau::kOneProng2PiZero ) {
+	  svFitMass_oneProng2pi0_->Fill(svFitMass, evtWeight);
+	  svFitMassVsMEtXL_oneProng2pi0_->Fill(recMEtPt, svFitMass, evtWeight);
+	} else if ( recLeg1DecayMode == reco::PFTau::kThreeProng0PiZero ) {	
+	  svFitMass_threeProng0pi0_->Fill(svFitMass, evtWeight);
+	  svFitMassVsMEtXL_threeProng0pi0_->Fill(recMEtPt, svFitMass, evtWeight);
+	}
       }
     }
 
@@ -184,8 +243,9 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     double svFitMassMax_;
     int numBinsSVfitSigma_;
     double svFitSigmaMax_;
+    
+    MonitorElement* dPhi12_;
 
-    MonitorElement* svFitMass_;
     MonitorElement* svFitMass_mean_;
     MonitorElement* svFitMass_median_;
     MonitorElement* svFitMass_maximum_;
@@ -201,6 +261,18 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 
     MonitorElement* svFitMassVsMEt_;
     MonitorElement* svFitSigmaVsMEt_;
+
+    MonitorElement* svFitMass_;
+    MonitorElement* svFitMass_oneProng0pi0_;
+    MonitorElement* svFitMass_oneProng1pi0_;
+    MonitorElement* svFitMass_oneProng2pi0_;
+    MonitorElement* svFitMass_threeProng0pi0_;    
+
+    MonitorElement* svFitMassVsMEtXL_;
+    MonitorElement* svFitMassVsMEtXL_oneProng0pi0_;
+    MonitorElement* svFitMassVsMEtXL_oneProng1pi0_;
+    MonitorElement* svFitMassVsMEtXL_oneProng2pi0_;
+    MonitorElement* svFitMassVsMEtXL_threeProng0pi0_;
   };
 
   struct plotEntryType2

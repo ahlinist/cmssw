@@ -49,6 +49,10 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
   numIterBurnin_ = cfg.getParameter<unsigned>("numIterBurnin");
   numIterSampling_ = cfg.getParameter<unsigned>("numIterSampling");
 
+//--- get parameters defining maximum number of attempts to find a valid starting-position for the Markov Chain
+  maxCallsStartingPos_ = ( cfg.exists("maxCallsStartingPos") ) ?
+    cfg.getParameter<unsigned>("maxCallsStartingPos") : 10000000;
+
 //--- get parameters defining "simulated annealing" stage at beginning of integration
   numIterSimAnnealingPhase1_ = cfg.getParameter<unsigned>("numIterSimAnnealingPhase1");
   numIterSimAnnealingPhase2_ = cfg.getParameter<unsigned>("numIterSimAnnealingPhase2");
@@ -144,7 +148,7 @@ void MarkovChainIntegrator::registerCallBackFunction(const ROOT::Math::Functor& 
 }
 
 void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std::vector<double>& xMax, 
-				      double& integral, double& integralErr)
+				      double& integral, double& integralErr, int& errorFlag)
 {
   if ( !integrand_ )
     throw cms::Exception("MarkovChainIntegrator::integrate")
@@ -159,16 +163,22 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
     xMax_[iDimension] = xMax[iDimension];
   }
   
+//--- CV: set random number generator used to initialize starting-position
+//        for each integration, in order to make integration results independent of processing history
+  rnd_.SetSeed(12345);
+
   numMoves_accepted_ = 0;
   numMoves_rejected_ = 0;
 
   unsigned k = numChains_*numBatches_;  
   unsigned m = numIterSampling_/numBatches_;
 
+  numChainsRun_ = 0; 
+
   for ( unsigned iChain = 0; iChain < numChains_; ++iChain ) {
     bool isValidStartPos = false;
     unsigned iTry = 0;
-    while ( !isValidStartPos ) {
+    while ( !isValidStartPos && iTry < maxCallsStartingPos_ ) {
       initializeStartPosition_and_Momentum();
       prob_ = evalProb(q_);
       if ( prob_ > 0. ) {
@@ -181,10 +191,12 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
       }
       ++iTry;
     }
+    if ( !isValidStartPos ) continue;
 
     for ( unsigned iMove = 0; iMove < numIterBurnin_; ++iMove ) {
 //--- propose Markov Chain transition to new, randomly chosen, point
-      makeStochasticMove(iMove);
+      bool isAccepted = false;
+      makeStochasticMove(iMove, isAccepted);
     }
 
     unsigned idxBatch = iChain*numBatches_;
@@ -194,7 +206,15 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 //    evaluate "call-back" functions at this point
       //std::cout << "move #" << iMove << ":" << std::endl;
       //verbosity_ = 1;
-      makeStochasticMove(numIterBurnin_ + iMove);
+      bool isAccepted = false;
+      makeStochasticMove(numIterBurnin_ + iMove, isAccepted);
+      if ( isAccepted ) {
+	//if ( verbosity_ ) std::cout << "move accepted." << std::endl;
+	++numMoves_accepted_;
+      } else {
+	//if ( verbosity_ ) std::cout << "move rejected." << std::endl;
+	++numMoves_rejected_;
+      }
 
       updateX(q_);
       for ( std::vector<const ROOT::Math::Functor*>::const_iterator callBackFunction = callBackFunctions_.begin();
@@ -205,6 +225,8 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
       if ( iMove > 0 && (iMove % m) == 0 ) ++idxBatch;
       probSum_[idxBatch] += prob_;
     }
+
+    ++numChainsRun_;
   }
 
   for ( unsigned idxBatch = 0; idxBatch < probSum_.size(); ++idxBatch ) {  
@@ -230,6 +252,9 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
   integralErr = TMath::Sqrt(integralErr);
 
   //if ( verbosity_ ) std::cout << "--> returning integral = " << integral << " +/- " << integralErr << std::endl;
+
+  errorFlag = ( numChainsRun_ >= 0.5*numChains_ ) ?
+    0 : 1;
 
   ++numIntegrationCalls_;
   numMovesTotal_accepted_ += numMoves_accepted_;
@@ -312,7 +337,7 @@ void MarkovChainIntegrator::sampleSphericallyRandom()
   }
 }
 
-void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
+void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepted)
 {
 //--- perform "stochastic" move
 //   (eq. 24 in [2])
@@ -426,7 +451,6 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
   //if ( verbosity_ ) std::cout << " rho = " << rho << std::endl;
   
   if ( rnd_.Uniform(0., 1.) < rho ) {
-    //if ( verbosity_ ) std::cout << "move accepted." << std::endl;
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {    
       q_[iDimension] = qProposal_[iDimension];
     }
@@ -436,10 +460,9 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove)
       }
     }
     prob_ = evalProb(q_);
-    ++numMoves_accepted_;
+    isAccepted = true;
   } else {
-    //if ( verbosity_ ) std::cout << "move rejected." << std::endl;
-    ++numMoves_rejected_;
+    isAccepted = false;
   }
 }
 

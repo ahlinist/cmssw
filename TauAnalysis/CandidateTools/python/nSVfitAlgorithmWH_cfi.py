@@ -132,6 +132,10 @@ nSVfitProducerByIntegrationWH = cms.EDProducer("NSVfitProducerByIntegration",
     dRmin = cms.double(0.3),
     instanceLabel = cms.string("")
 )
+nSVfitProducerByIntegrationWH.config.event.resonances.Higgs.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(False)
+nSVfitProducerByIntegrationWH.config.event.resonances.Higgs.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(False)
 
 nSVfitProducerByLikelihoodMaximizationWH = cms.EDProducer("NSVfitProducer",
     config = nSVfitConfigWH_template,
@@ -145,3 +149,7 @@ nSVfitProducerByLikelihoodMaximizationWH = cms.EDProducer("NSVfitProducer",
     dRmin = cms.double(0.3),
     instanceLabel = cms.string("")
 )
+nSVfitProducerByLikelihoodMaximizationWH.config.event.resonances.Higgs.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(True)
+nSVfitProducerByLikelihoodMaximizationWH.config.event.resonances.Higgs.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
+  cms.bool(True)

@@ -8,7 +8,6 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
@@ -78,44 +77,49 @@ void NSVfitEventHypothesisAnalyzerT<T>::beginJob()
   svFitMassVsSigmaDownXL_ = 
     dqmStore.book2D("svFitMassVsSigmaDownXL", 
 		    "svFitMassVsSigmaDownXL", 
-		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsSigmaDownXL_oneProng0pi0_ = 
     dqmStore.book2D("svFitMassVsSigmaDownXL_oneProng0pi0", 
 		    "svFitMassVsSigmaDownXL_oneProng0pi0", 
-		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsSigmaDownXL_oneProng1pi0_ = 
     dqmStore.book2D("svFitMassVsSigmaDownXL_oneProng1pi0", 
 		    "svFitMassVsSigmaDownXL_oneProng1pi0", 
-		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsSigmaDownXL_oneProng2pi0_ = 
     dqmStore.book2D("svFitMassVsSigmaDownXL_oneProng2pi0", 
 		    "svFitMassVsSigmaDownXL_oneProng2pi0", 
-		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsSigmaDownXL_threeProng0pi0_ = 
     dqmStore.book2D("svFitMassVsSigmaDownXL_threeProng0pi0", 
 		    "svFitMassVsSigmaDownXL_threeProng0pi0", 
-		    TMath::Nint(svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitSigmaMax_), 0., svFitSigmaMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
+
+  svFitMassVsNLL_ = 
+    dqmStore.book2D("svFitMassVsNLL", 
+		    "svFitMassVsNLL", 
+		    400, 0., 10., TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
 
   svFitMassVsMEtXL_ = 
     dqmStore.book2D("svFitMassVsMEtXL", 
 		    "svFitMassVsMEtXL", 
-		    TMath::Nint(svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsMEtXL_oneProng0pi0_ = 
     dqmStore.book2D("svFitMassVsMEtXL_oneProng0pi0", 
 		    "svFitMassVsMEtXL_oneProng0pi0", 
-		    TMath::Nint(svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsMEtXL_oneProng1pi0_ = 
     dqmStore.book2D("svFitMassVsMEtXL_oneProng1pi0", 
 		    "svFitMassVsMEtXL_oneProng1pi0", 
-		    TMath::Nint(svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsMEtXL_oneProng2pi0_ = 
     dqmStore.book2D("svFitMassVsMEtXL_oneProng2pi0", 
 		    "svFitMassVsMEtXL_oneProng2pi0", 
-		    TMath::Nint(svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
   svFitMassVsMEtXL_threeProng0pi0_ = 
     dqmStore.book2D("svFitMassVsMEtXL_threeProng0pi0", 
 		    "svFitMassVsMEtXL_threeProng0pi0", 
-		    TMath::Nint(svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(svFitMassMax_), 0., svFitMassMax_);
+		    TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
 
   plotEntries1_.push_back(new plotEntryType1(
     dqmDirectory_,  -1.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
@@ -253,15 +257,22 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     reco::Candidate::LorentzVector recMEtP4 = svFitEventHypothesis->met()->p4();
 
     svFitMassVsSigmaDownXL_->Fill(svFitSigmaDown, svFitMass, evtWeight);
+    svFitMassVsNLL_->Fill(svFitEventHypothesis->nll(), svFitMass, evtWeight);
     svFitMassVsMEtXL_->Fill(recMEtP4.pt(), svFitMass, evtWeight);
     
     assert(svFitResonanceHypothesis->numDaughters() == 2);
     const NSVfitSingleParticleHypothesis* svFitDaughter1 = dynamic_cast<const NSVfitSingleParticleHypothesis*>(
       svFitResonanceHypothesis->daughter(0));
     const reco::Candidate::LorentzVector& svFitDaughter1P4 = svFitDaughter1->p4();
+    int daughter1DecayMode = reco::PFTau::kNull;
+    if ( dynamic_cast<const pat::Tau*>(svFitDaughter1->particle().get()) != 0 )
+      daughter1DecayMode = (dynamic_cast<const pat::Tau*>(svFitDaughter1->particle().get()))->decayMode();
     const NSVfitSingleParticleHypothesis* svFitDaughter2 = dynamic_cast<const NSVfitSingleParticleHypothesis*>(
       svFitResonanceHypothesis->daughter(1));
     const reco::Candidate::LorentzVector& svFitDaughter2P4 = svFitDaughter2->p4();
+    int daughter2DecayMode = reco::PFTau::kNull;
+    if ( dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get()) != 0 )
+      daughter2DecayMode = (dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get()))->decayMode();
 
     double dRcombination1 = square(deltaR(svFitDaughter1P4, genLeg1P4)) + square(deltaR(svFitDaughter2P4, genLeg2P4));
     double dRcombination2 = square(deltaR(svFitDaughter1P4, genLeg2P4)) + square(deltaR(svFitDaughter2P4, genLeg1P4));
@@ -274,20 +285,18 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
       genLeg2P4_matched = genLeg1P4;
     }
 
-    if ( dynamic_cast<const pat::Tau*>(svFitDaughter1->particle().get()) == 0 &&
-	 dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get()) != 0 ) { // tau-pair decay to lepton + tau-jet
-      const pat::Tau* tau = dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get());
-      int tauDecayMode = tau->decayMode();
-      if ( tauDecayMode == reco::PFTau::kOneProng0PiZero ) {
+    if ( daughter1DecayMode == reco::PFTau::kNull &&
+	 daughter2DecayMode != reco::PFTau::kNull ) { // tau-pair decay to lepton + tau-jet
+      if ( daughter2DecayMode == reco::PFTau::kOneProng0PiZero ) {
 	svFitMassVsSigmaDownXL_oneProng0pi0_->Fill(svFitSigmaDown, svFitMass, evtWeight);
 	svFitMassVsMEtXL_oneProng0pi0_->Fill(recMEtP4.pt(), svFitMass, evtWeight);
-      } else if ( tauDecayMode == reco::PFTau::kOneProng1PiZero ) {	
+      } else if ( daughter2DecayMode == reco::PFTau::kOneProng1PiZero ) {	
 	svFitMassVsSigmaDownXL_oneProng1pi0_->Fill(svFitSigmaDown, svFitMass, evtWeight);
 	svFitMassVsMEtXL_oneProng1pi0_->Fill(recMEtP4.pt(), svFitMass, evtWeight);
-      } else if ( tauDecayMode == reco::PFTau::kOneProng2PiZero ) {
+      } else if ( daughter2DecayMode == reco::PFTau::kOneProng2PiZero ) {
 	svFitMassVsSigmaDownXL_oneProng2pi0_->Fill(svFitSigmaDown, svFitMass, evtWeight);
 	svFitMassVsMEtXL_oneProng2pi0_->Fill(recMEtP4.pt(), svFitMass, evtWeight);
-      } else if ( tauDecayMode == reco::PFTau::kThreeProng0PiZero ) {	
+      } else if ( daughter2DecayMode == reco::PFTau::kThreeProng0PiZero ) {	
 	svFitMassVsSigmaDownXL_threeProng0pi0_->Fill(svFitSigmaDown, svFitMass, evtWeight);
 	svFitMassVsMEtXL_threeProng0pi0_->Fill(recMEtP4.pt(), svFitMass, evtWeight);
       }
@@ -323,7 +332,8 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	  plotEntry != plotEntries1_.end(); ++plotEntry ) {
       (*plotEntry)->fillHistograms(
         svFitIsValidSolution,			     
-	svFitDaughter1P4, svFitDaughter2P4, 
+	svFitDaughter1P4, daughter1DecayMode,
+	svFitDaughter2P4, daughter2DecayMode,
 	svFitMass,
 	svFitMass_mean, svFitMass_median, svFitMass_maximum, svFitMass_maxInterpol, 
 	svFitSigma, 

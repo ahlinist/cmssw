@@ -3,6 +3,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
@@ -72,7 +73,7 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
 {
   if ( this->verbosity_ ) {
     std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
-    std::cout << " hypothesis = " << hypothesis << std::endl;
+    //std::cout << " hypothesis = " << hypothesis << std::endl;
   }
   
   if ( srcMEtCovMatrix_.label() == "" ) {
@@ -92,6 +93,12 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
   }
 
   if ( this->verbosity_ ) {
+    std::cout << "pfMEt:" << std::endl;
+    std::cout << " Px = " << hypothesis->met()->px() << ", Py = " << hypothesis->met()->py() << std::endl;
+    if ( dynamic_cast<const pat::MET*>(hypothesis->met().get()) != 0 ) {
+      const reco::GenMET* genMET = (dynamic_cast<const pat::MET*>(hypothesis->met().get()))->genMET();
+      std::cout << "(genMEt: Px = " << genMET->px() << ", Py = " << genMET->py() << ")" << std::endl;
+    }
     std::cout << "pfMEtCov:" << std::endl;
     pfMEtCov_.Print();
   }

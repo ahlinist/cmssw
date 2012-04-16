@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATLeptonDzSelector.h,v 1.5 2010/09/28 11:23:36 jkolb Exp $
+ * $Id: PATLeptonDzSelector.h,v 1.1 2011/04/24 13:20:19 veelken Exp $
  *
  */
 
@@ -21,6 +21,7 @@
 #include "TauAnalysis/RecoTools/interface/PATLeptonTrackExtractor.h"
 
 #include <vector>
+#include <string>
 
 template <typename T>
 class PATLeptonDzSelector
@@ -41,6 +42,8 @@ class PATLeptonDzSelector
 
   private:
     std::vector<const T*> selected_;
+
+    std::string moduleLabel_;
 
     edm::InputTag vertexSrc_;
 

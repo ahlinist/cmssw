@@ -289,7 +289,13 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   persistentEventHypothesis->isValidSolution_ = false;
 
   fittedEventHypothesis_ = persistentEventHypothesis;
-  fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
+  //fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
+  double prob = 0.;
+  if ( histResults->Integral() > 0. ) prob = histResults->GetBinContent(histResults->GetMaximumBin())/histResults->Integral();
+  double nll;
+  if ( prob > 0. ) nll = -TMath::Log(prob);
+  else nll = std::numeric_limits<float>::max();
+  fittedEventHypothesis_nll_ = nll;
 
   delete currentEventHypothesis_;
 }
@@ -327,8 +333,6 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     extractHistogramProperties(histMassResult1d, histMassResult1d_density,
 			       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
-    //std::cout << "--> median = " << massQuantile050 << ", maximum = " << massMaximum << std::endl;
-
     double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
     double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
     NSVfitAlgorithmBase::setMassResults(resonance, massMaximum_interpol, massErrUp, massErrDown);
@@ -341,7 +345,8 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     
     //std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
     //std::cout << "--> mass = " << resonance->mass_ << std::endl;
-    //resonance_->print(std::cout);
+    //std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
+    //resonance->print(std::cout);
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";

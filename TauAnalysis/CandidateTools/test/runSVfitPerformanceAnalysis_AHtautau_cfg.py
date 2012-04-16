@@ -26,7 +26,8 @@ channel = 'muTau'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-outputFileName = 'svFitPerformanceAnalysisPlots_AHtautau_%s_2012Apr09.root' % sample
+outputFileName = 'svFitPerformanceAnalysisPlots_AHtautau_%s_2012Apr12.root' % sample
+skipEvents = 0
 maxEvents = 100
 #--------------------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ maxEvents = 100
 #__sample_type = '#sample_type#'
 #__channel = '#channel#'
 #__metResolution = #metResolution#
+#__skipEvents = #skipEvents#
 #__maxEvents = #maxEvents#
 #__inputFileNames = #inputFileNames#
 #__outputFileName = '#outputFileName#'
@@ -49,7 +51,8 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring(),
+    skipEvents = cms.untracked.uint32(skipEvents)
 )
 
 #--------------------------------------------------------------------------------
