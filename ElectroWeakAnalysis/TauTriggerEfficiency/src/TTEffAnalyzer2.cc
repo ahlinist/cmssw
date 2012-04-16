@@ -107,9 +107,10 @@ private:
     }
     void fill(const edm::Event& iEvent) {
       edm::Handle<edm::View<reco::MET> > hmet;
-      iEvent.getByLabel(src, hmet);
-      et = hmet->front().et();
-      phi = hmet->front().phi();
+      if(iEvent.getByLabel(src, hmet)){
+        et = hmet->front().et();
+        phi = hmet->front().phi();
+      }
     }
     void reset() { et=0; phi=0;}
     edm::InputTag src;
@@ -449,9 +450,11 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     nPU_ = npv/3.;
   }
 
+  nGoodOfflinePV_ = 0;
   edm::Handle<edm::View<reco::Vertex> > hoffvertex;
-  iEvent.getByLabel(offlinePrimaryVertexSrc_, hoffvertex);
-  nGoodOfflinePV_ = hoffvertex->size();  
+  if(iEvent.getByLabel(offlinePrimaryVertexSrc_, hoffvertex)){
+    nGoodOfflinePV_ = hoffvertex->size();  
+  }
 
   // HLT bits
   edm::Handle<edm::TriggerResults> hltresults;
@@ -525,8 +528,12 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   // L25 stuff
   edm::Handle<reco::PFTauCollection> hl25taus;
   iEvent.getByLabel(l25TauSrc_, hl25taus);
+
+  primaryVertexIsValid_ = false;
   edm::Handle<edm::View<reco::Vertex> > hvertices;
-  iEvent.getByLabel(primaryVertexSrc_, hvertices);
+  if(iEvent.getByLabel(primaryVertexSrc_, hvertices)){
+    primaryVertexIsValid_ = hvertices->size() > 0;
+  }
 
   for(size_t i=0; i<l25TauDiscriminators_.size(); ++i) {
     iEvent.getByLabel(l25TauDiscriminators_[i].src, l25TauDiscriminators_[i].handle);
@@ -535,13 +542,11 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     iEvent.getByLabel(l25TauSelectedTaus_[i].src, l25TauSelectedTaus_[i].handle);
   }
 
-  primaryVertexIsValid_ = hvertices->size() > 0;
-
 
   // Jets
-  edm::Handle<edm::View<reco::PFJet> > hjets;
-  iEvent.getByLabel(pfJetSrc_, hjets);
   edm::PtrVector<reco::PFJet> selectedPFJets;
+  edm::Handle<edm::View<reco::PFJet> > hjets;
+  if(iEvent.getByLabel(pfJetSrc_, hjets)){
   for(size_t i=0; i<hjets->size(); ++i) {
     edm::Ptr<reco::PFJet> jet = hjets->ptrAt(i);
     if(jet->pt() > 30 && // kinematics
@@ -587,7 +592,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       PFJet_l1JetMatchDR_.push_back(jetMinDR);
     }
   }
-
+  }
   // Reference taus
   edm::Handle<edm::View<pat::Tau> > htaus;
   iEvent.getByLabel(pfTauSrc_, htaus);
@@ -648,6 +653,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     // Matching to L2
     const reco::CaloJet *foundL2 = 0;
     jetMinDR = 99999999.;
+    if(hl2TauAssoc.isValid()){
     for(reco::L2TauInfoAssociation::const_iterator it = hl2TauAssoc->begin(); it != hl2TauAssoc->end(); ++it) {
       const reco::CaloJet& l2Jet = *(it->key);
       double DR = deltaR(l2Jet, tau);
@@ -655,6 +661,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
         jetMinDR = DR;
         foundL2 = &l2Jet;
       }
+    }
     }
 
     bool hasMatchedL2Jet = false;
@@ -679,6 +686,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     // Matching to L25
     const reco::PFTau *foundL25 = 0;
     size_t l25Index = 0;
+    if(hl25taus.isValid()){
     jetMinDR = 999999.;
     for(reco::PFTauCollection::const_iterator it = hl25taus->begin(); it != hl25taus->end(); ++it) {
       const reco::PFTau& l25tau = *it;
@@ -688,6 +696,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
         foundL25 = &l25tau;
         l25Index = (it-hl25taus->begin());
       }
+    }
     }
 
     bool hasMatchedL25Tau = false;
