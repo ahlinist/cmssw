@@ -201,7 +201,8 @@ process.fitZllRecoilCorrection = cms.PSet(
     return retVal
 
 def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
-                                                      sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
+                                                      sampleName, runPeriod,
+                                                      metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
                                                       central_or_shift, srcMEt, srcJets, hltPaths, srcWeights, 
                                                       ZllRecoilCorrectionParameterFileNames, intLumiData):
 
@@ -254,6 +255,33 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
             ZllRecoilCorrectionParameterFile.close()
         recoZllRecoilCorrectionParameters_string += "        )\n"
         recoZllRecoilCorrectionParameters_string += "    ),\n"
+
+    shiftedMEtCorrX_string = None
+    shiftedMEtCorrY_string = None
+    if runPeriod == "2011RunA":
+        if processType == 'Data':
+            ##shiftedMEtCorrX_string = "-3.365e-1 + 4.801e-3*x" # CV: x = sumEt, y = numVertices
+            ##shiftedMEtCorrY_string = "+2.578e-1 - 6.124e-3*x"
+            shiftedMEtCorrX_string = "+3.87339e-01 + 2.58294e-01*y"
+            shiftedMEtCorrY_string = "-7.83502e-01 - 2.88899e-01*y"
+        else:
+            ##shiftedMEtCorrX_string = "-9.389e-2 + 1.815e-4*x"
+            ##shiftedMEtCorrY_string = "+1.571e-1 - 3.710e-3*x"
+            shiftedMEtCorrX_string = "-1.94451e-02 - 4.38986e-03*y"
+            shiftedMEtCorrY_string = "-4.31368e-01 - 1.90753e-01*y"
+    elif runPeriod == "2011RunB":
+        if processType == 'Data':
+            ##shiftedMEtCorrX_string = "-3.265e-1 + 5.162e-3*x" # CV: x = sumEt, y = numVertices
+            ##shiftedMEtCorrY_string = "-1.956e-2 - 6.299e-3*x"
+            shiftedMEtCorrX_string = "+6.64470e-01 + 2.71292e-01*y"
+            shiftedMEtCorrY_string = "-1.23999e+00 - 3.18661e-01*y"
+        else:
+            ##shiftedMEtCorrX_string = "-1.070e-1 + 9.587e-5*x"
+            ##shiftedMEtCorrY_string = "-1.517e-2 - 3.357e-3*x"
+            shiftedMEtCorrX_string = "-9.89706e-02 + 6.64796e-03*y"
+            shiftedMEtCorrY_string = "-5.32495e-01 - 1.82195e-01*y"
+    else:
+        raise ValueError("No sys. MET shifts defined for run-period = %s !!" % runPeriod)
 
     hltPaths_string = make_inputFileNames_vstring(hltPaths)
     srcWeights_string = make_inputFileNames_vstring(srcWeights)
@@ -323,6 +351,11 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcJets = cms.InputTag('%s'),
     srcPFCandidates = cms.InputTag('particleFlow'),
 
+    shiftedMEtCorrX = cms.string('%s'),
+    shiftedMEtCorrY = cms.string('%s'),
+    ##applyMEtShiftCorr = cms.bool(True),
+    applyMEtShiftCorr = cms.bool(False),
+
     srcTrigger = cms.InputTag('TriggerResults::HLT'),
     hltPaths = cms.vstring(%s),
 
@@ -346,7 +379,8 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 )
 """ % (maxEvents, fwliteInput_fileNames, outputFileName_full, directory,
        processType, recoZllRecoilCorrectionParameters_string,
-       srcMEt, srcJets, hltPaths_string, srcWeights_string, srcGenPileUpInfo, addPUreweight_string,
+       srcMEt, srcJets, shiftedMEtCorrX_string, shiftedMEtCorrY_string,
+       hltPaths_string, srcWeights_string, srcGenPileUpInfo, addPUreweight_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
 
     configFileName = "analyzeZllRecoilCorrectionPATtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, central_or_shift)
