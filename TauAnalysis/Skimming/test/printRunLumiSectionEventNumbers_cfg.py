@@ -11,7 +11,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+process.GlobalTag.globaltag = cms.string('START42_V13::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -19,12 +19,14 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/f/friis/weirdMuonSpike/2010B_data_muonSpike.root'
-        'file:/data1/veelken/CMSSW_3_8_x/skims/debug/debugTauIdEffMeasSample_data_all_2011Feb03bV2_RECO.root                         '
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauFakeRate_WJets_RunB_fromArun/selEvents_Data_2011RunB_Wmunu_AOD.root'
     )
 )
 
-process.printRunLumiSectionEventNumbers = cms.EDAnalyzer("PrintRunLumiSectionEventNumber")
+process.printRunLumiSectionEventNumbers = cms.EDAnalyzer("PrintRunLumiSectionEventNumber",
+    output = cms.string('printRunLumiSectionEventNumbers.txt'),
+    separator = cms.string('\t')
+)
 
 process.o = cms.EndPath(process.printRunLumiSectionEventNumbers)
 
