@@ -57,18 +57,32 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramJetResAbsEta17to23_ = book1D(dir, "jetResAbsEta17to23", "Jet res. (1.7 < |#eta_{jet}| < 2.3)",     40,         -1. ,         +1.);
   histogramJetPtAbsEtaGt23_    = book1D(dir, "jetPtAbsEtaGt23",    "P_{T}^{jet} (|#eta_{jet}| > 2.3)",       100,          0. ,         250.);
   histogramJetResAbsEtaGt23_   = book1D(dir, "jetResAbsEtaGt23",   "Jet res. (|#eta_{jet}| > 2.3)",           40,         -1. ,         +1.);
+  
+  histogramNumBTagJetsCorrPtGt20_ = book1D(dir, "numBTagJetsCorrPtGt20", "Num. Jets (P_{T}^{corr} > 20 GeV && b-tag)", 10, -0.5, 9.5);
+  histogramNumBTagJetsCorrPtGt30_ = book1D(dir, "numBTagJetsCorrPtGt30", "Num. Jets (P_{T}^{corr} > 30 GeV && b-tag)", 10, -0.5, 9.5);
+  histogramNumBTagJetsCorrPtGt40_ = book1D(dir, "numBTagJetsCorrPtGt40", "Num. Jets (P_{T}^{corr} > 40 GeV && b-tag)", 10, -0.5, 9.5);
 
   histogramMEtS_               = book1D(dir, "metS",               "E_{T}^{miss}",                            30,          0.0,         60.0);
   histogramMEtL_               = book1D(dir, "metL",               "E_{T}^{miss}",                            75,          0.0,        150.0);
   histogramMEtProjParlZ_       = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",           75,        -75.0,        +75.0);
+  histogramMEtProjParlZxl_     = book1D(dir, "metProjParlZxl",     "E_{T}^{miss} Proj. parallel Z",          300,       -150.0,       +150.0);
   histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              50,        -50.0,        +50.0);
+  histogramMEtProjPerpZxl_     = book1D(dir, "metProjPerpZxl",     "E_{T}^{miss} Proj. perp. Z",             200,       -100.0,       +100.0);
   histogramMEtX_               = book1D(dir, "metX",               "E_{X}^{miss}",                            75,        -75.0,        +75.0);
   histogramMEtY_               = book1D(dir, "metY",               "E_{Y}^{miss}",                            75,        -75.0,        +75.0);
-  
 
   histogramUparl_              = book1D(dir, "uParl",              "u_{#parallel}",                          140,       -275.0,        +75.0);
   histogramUperp_              = book1D(dir, "uPerp",              "u_{#perp}",                               50,        -50.0,        +50.0);
 
+  histogramMEtXvsSumEt_       = book2D(dir, "metXvsSumEt", "E_{X}^{miss} vs. #Sigma E_{T}",           
+				       100, 0., 1000., 150, -75.0, +75.0);
+  histogramMEtXvsNumVertices_ = book2D(dir, "metXvsNumVertices", "E_{X}^{miss} vs. Num. Vertices",           
+				       35, -0.5, 34.5, 150, -75.0, +75.0);
+  histogramMEtYvsSumEt_       = book2D(dir, "metYvsSumEt", "E_{Y}^{miss} vs. #Sigma E_{T}",           
+				       100, 0., 1000., 150, -75.0, +75.0);
+  histogramMEtYvsNumVertices_ = book2D(dir, "metYvsNumVertices", "E_{Y}^{miss} vs. Num. Vertices",           
+				       35, -0.5, 34.5, 150, -75.0, +75.0);
+  
   const int qTnumBins = 34;
   double qTbinning[qTnumBins + 1] = { 
     0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5, 20., 22.5, 25., 27.5, 30., 35., 40., 45., 50., 
@@ -176,7 +190,13 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   int numJetsCorrPtGt17 = 0;
   int numJetsRawPtGt20 = 0;
   int numJetsCorrPtGt20 = 0;
-  
+
+  int numBTagJetsCorrPtGt20 = 0;
+  int numBTagJetsCorrPtGt30 = 0;
+  int numBTagJetsCorrPtGt40 = 0;
+  const std::string bTagDiscr = "trackCountingHighEffBJetTags";
+  double bTagDiscr_cut = 3.3;
+    
   for ( std::vector<pat::Jet>::const_iterator jet = jets.begin();
 	jet != jets.end(); ++jet ) {
     bool isMuonOverlap = false;
@@ -218,6 +238,12 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
       if ( corrJetP4.pt() > 15. ) ++numJetsCorrPtGt15;
       if ( corrJetP4.pt() > 17. ) ++numJetsCorrPtGt17;
       if ( corrJetP4.pt() > 20. ) ++numJetsCorrPtGt20;
+
+      if ( jet->bDiscriminator(bTagDiscr.data()) > bTagDiscr_cut ) {
+	if ( corrJetP4.pt() > 20. ) ++numBTagJetsCorrPtGt20;
+	if ( corrJetP4.pt() > 30. ) ++numBTagJetsCorrPtGt30;
+	if ( corrJetP4.pt() > 40. ) ++numBTagJetsCorrPtGt40;
+      }
     }
   }
 
@@ -235,26 +261,37 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   histogramNumJetsCorrPtGt17_->Fill(numJetsCorrPtGt17, evtWeight);
   histogramNumJetsCorrPtGt20_->Fill(numJetsCorrPtGt20, evtWeight);
 
+  histogramNumBTagJetsCorrPtGt20_->Fill(numBTagJetsCorrPtGt20, evtWeight);
+  histogramNumBTagJetsCorrPtGt30_->Fill(numBTagJetsCorrPtGt30, evtWeight);
+  histogramNumBTagJetsCorrPtGt40_->Fill(numBTagJetsCorrPtGt40, evtWeight);
+
   histogramMEtS_->Fill(met.pt(), evtWeight);
   histogramMEtL_->Fill(met.pt(), evtWeight);
 
-  if ( ZllCand.pt() > 0. && met.pt() < 60. ) { // CV: fit Z-recoil correction parameters for events with MEt < 60 GeV only,
-                                               //     as di-boson and TTbar backgrounds dominate in high MEt tail
+  if ( ZllCand.mass() > 76. && ZllCand.mass() < 106. && numBTagJetsCorrPtGt30 == 0 ) { // cuts to suppress TTbar background
+    
     double qT = ZllCand.pt();
     double qX = ZllCand.px();
     double qY = ZllCand.py();
     
     double metPx = met.px();
     double metPy = met.py();
-
+    double sumEt = met.sumEt();
+    
     double metProjParlZ = (qX*metPx + qX*metPy)/qT;
     double metProjPerpZ = (qX*metPy - qY*metPx)/qT;
     
     histogramMEtProjParlZ_->Fill(metProjParlZ, evtWeight);
+    histogramMEtProjParlZxl_->Fill(metProjParlZ, evtWeight);
     histogramMEtProjPerpZ_->Fill(metProjPerpZ, evtWeight);
-
+    histogramMEtProjPerpZxl_->Fill(metProjPerpZ, evtWeight);
+    
     histogramMEtX_->Fill(metPx, evtWeight);
+    histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
+    histogramMEtXvsNumVertices_->Fill(vtxMultiplicity, metPx, evtWeight);
     histogramMEtY_->Fill(metPy, evtWeight);
+    histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
+    histogramMEtYvsNumVertices_->Fill(vtxMultiplicity, metPy, evtWeight);
 
     int errorFlag = 0;
     std::pair<double, double> uT = compMEtProjU(ZllCand.p4(), met.px(), met.py(), errorFlag);
@@ -280,6 +317,10 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	  if ( qT > 0. ) (*it)->histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
 	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
 	  (*it)->histogramQt_->Fill(qT, evtWeight);
+	  (*it)->histogramMEtX_->Fill(metPx, evtWeight);
+	  (*it)->histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
+	  (*it)->histogramMEtY_->Fill(metPy, evtWeight);
+	  (*it)->histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
 	}
       }
       
@@ -292,6 +333,10 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	  if ( qT > 0. ) (*it)->histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
 	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
 	  (*it)->histogramQt_->Fill(qT, evtWeight);
+	  (*it)->histogramMEtX_->Fill(metPx, evtWeight);
+	  (*it)->histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
+	  (*it)->histogramMEtY_->Fill(metPy, evtWeight);
+	  (*it)->histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
 	}
       }
     }

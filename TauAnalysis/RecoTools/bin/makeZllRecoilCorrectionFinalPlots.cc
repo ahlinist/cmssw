@@ -132,18 +132,16 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
     const std::string& sysShiftUp = sysShiftsUp[iSysShift];
     std::string directory_sysShiftUp = getDirectorySysErr(directory, sysShiftUp);
     TH1* meMC_sysShiftUp = loadHistogram(inputFile, directory_sysShiftUp, mcScaleFactors, variable.meName_);
-    meMC_sysShiftUp->Scale(mcToDataScaleFactor);
     
     const std::string& sysShiftDown = sysShiftsDown[iSysShift];
     std::string directory_sysShiftDown = getDirectorySysErr(directory, sysShiftDown);
     TH1* meMC_sysShiftDown = loadHistogram(inputFile, directory_sysShiftDown, mcScaleFactors, variable.meName_);
-    meMC_sysShiftDown->Scale(mcToDataScaleFactor);
     
     int numBins = meMC_sysShiftUp->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
       double value_central      = meMC_central->GetBinContent(iBin);
-      double value_sysShiftUp   = meMC_sysShiftUp->GetBinContent(iBin);
-      double value_sysShiftDown = meMC_sysShiftDown->GetBinContent(iBin);
+      double value_sysShiftUp   = mcToDataScaleFactor*meMC_sysShiftUp->GetBinContent(iBin);
+      double value_sysShiftDown = mcToDataScaleFactor*meMC_sysShiftDown->GetBinContent(iBin);
 
       std::cout << "bin = " << iBin << ": central = " << value_central << "," 
 		<< " " << sysShiftUp << " = " << value_sysShiftUp << ", " << sysShiftDown << " = " << value_sysShiftDown << std::endl;
@@ -160,10 +158,11 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
 		     const std::string& directoryData, const std::string& directoryMC_signal, const vstring& directoryMCs_background, 
 		     const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
 		     const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
-		     bool scaleMCtoData,
+		     bool scaleMCtoData, bool drawDataToMCratio, bool useLogScaleY, bool drawSysUncertainty,
 		     const std::string& outputFileName)
 {
-  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 900);
+  int canvasSizeY = ( drawDataToMCratio ) ? 900 : 600;
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, canvasSizeY);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
 
@@ -263,27 +262,38 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   stack_smSum.Add(meMC_signal_cloned);
   if ( meMC_bgrSum ) stack_smSum.Add(meMC_bgrSum);
 
-  TPad* topPad = new TPad("topPad", "topPad", 0.00, 0.35, 1.00, 1.00);
-  topPad->SetFillColor(10);
-  topPad->SetTopMargin(0.04);
-  topPad->SetLeftMargin(0.15);
-  topPad->SetBottomMargin(0.03);
-  topPad->SetRightMargin(0.05);
+  TPad* topPad = 0;
+  TPad* bottomPad = 0;
+  if ( drawDataToMCratio ) {
+    topPad = new TPad("topPad", "topPad", 0.00, 0.35, 1.00, 1.00);
+    topPad->SetFillColor(10);
+    topPad->SetTopMargin(0.04);
+    topPad->SetLeftMargin(0.15);
+    topPad->SetBottomMargin(0.03);
+    topPad->SetRightMargin(0.05);
 
-  TPad* bottomPad = new TPad("bottomPad", "bottomPad", 0.00, 0.00, 1.00, 0.35);
-  bottomPad->SetFillColor(10);
-  bottomPad->SetTopMargin(0.02);
-  bottomPad->SetLeftMargin(0.15);
-  bottomPad->SetBottomMargin(0.20);
-  bottomPad->SetRightMargin(0.05);
+    bottomPad = new TPad("bottomPad", "bottomPad", 0.00, 0.00, 1.00, 0.35);
+    bottomPad->SetFillColor(10);
+    bottomPad->SetTopMargin(0.02);
+    bottomPad->SetLeftMargin(0.15);
+    bottomPad->SetBottomMargin(0.20);
+    bottomPad->SetRightMargin(0.05);
 
-  canvas->cd();
-  topPad->Draw();
-  topPad->cd();
-  topPad->SetLogy(true);
+    canvas->cd();
+    topPad->Draw();
+    topPad->cd();
+    topPad->SetLogy(useLogScaleY);
+  } else {
+    canvas->SetLogy(useLogScaleY);
+  }
 
-  stack_smSum.SetMaximum(7.e1*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
-  stack_smSum.SetMinimum(5.e-1);
+  if ( useLogScaleY ) {
+    stack_smSum.SetMaximum(7.5e1*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
+    stack_smSum.SetMinimum(5.e-1);
+  } else {
+    stack_smSum.SetMaximum(1.55*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
+    stack_smSum.SetMinimum(0.);
+  }
   stack_smSum.SetTitle("");
 
   stack_smSum.Draw("hist");
@@ -292,28 +302,35 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   TAxis* xAxis_top = stack_smSum.GetXaxis();
   xAxis_top->SetTitle(variable.xAxisTitle_.data());
   xAxis_top->SetTitleOffset(1.2);
-  xAxis_top->SetLabelColor(10);
-  xAxis_top->SetTitleColor(10);
+  if ( drawDataToMCratio ) {
+    xAxis_top->SetLabelColor(10);
+    xAxis_top->SetTitleColor(10);
+  }
 
   TAxis* yAxis_top = stack_smSum.GetYaxis();
   yAxis_top->SetTitle("Events");
   yAxis_top->SetTitleOffset(1.4);
 
-  if ( meMC_smErr ) meMC_smErr->Draw("e2same");
+  if ( drawSysUncertainty && meMC_smErr ) meMC_smErr->Draw("e2same");
 
   meData->Draw("e1psame");
   
-  TLegend legend(0.185, 0.715, 0.52, 0.955, "", "brNDC"); 
+  double legendPosX = ( drawDataToMCratio ) ? 0.715 : 0.65;
+  TLegend legend(0.185, legendPosX, 0.52, legendPosX + 0.24, "", "brNDC"); 
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
   legend.AddEntry(meData, std::string(runPeriod).append(" Data").data(), "p");
-  legend.AddEntry(meMC_signal, "exp. Signal", "l");
+  //legend.AddEntry(meMC_signal, "exp. Signal", "l");
+  legend.AddEntry(meMC_signal, "exp. Z #rightarrow #mu^{+}#mu^{-}", "l");
   if ( meMC_bgrSum ) legend.AddEntry(meMC_bgrSum, "exp. Background", "f");
-  if ( meMC_smErr  ) legend.AddEntry(meMC_smErr, "Sys. Uncertainty", "f");
+  if ( drawSysUncertainty && meMC_smErr ) legend.AddEntry(meMC_smErr, "Sys. Uncertainty", "f");
   legend.Draw();
   
-  double stats_x1 = ( meMC_smErrUp && meMC_smErrDown ) ? 0.64 : 0.70;
-  TPaveText statsData(stats_x1, 0.84, 0.94, 0.94, "brNDC"); 
+  double statsSizeX = ( meMC_smErrUp && meMC_smErrDown ) ? 0.30 : 0.26;
+  double statsPosX = ( drawDataToMCratio ) ? 0.94 : 0.89;
+  statsPosX -= statsSizeX;
+  double statsPosY = ( drawDataToMCratio ) ? 0.84 : 0.79;
+  TPaveText statsData(statsPosX, statsPosY, statsPosX + statsSizeX, statsPosY + 0.10, "brNDC"); 
   statsData.SetBorderSize(0);
   statsData.SetFillColor(0);
    std::cout << "Data: mean = " << meData->GetMean() << std::endl;
@@ -323,16 +340,16 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   statsData.SetTextSize(0.045);
   statsData.Draw();
 
-  TPaveText statsMC(stats_x1, 0.73, 0.94, 0.83, "brNDC"); 
+  TPaveText statsMC(statsPosX, statsPosY - 0.11, statsPosX + statsSizeX, statsPosY - 0.01, "brNDC"); 
   statsMC.SetBorderSize(0);
   statsMC.SetFillColor(0);
-  if ( meMC_smErrUp && meMC_smErrDown ) {
+  if ( drawSysUncertainty && meMC_smErrUp && meMC_smErrDown ) {
     double mcMeanErr = TMath::Sqrt(square(meMC_smSum->GetMean() - meMC_smErrUp->GetMean()) 
                                  + square(meMC_smSum->GetMean() - meMC_smErrDown->GetMean()));
     std::cout << "MC: mean = " << meMC_smSum->GetMean() << " +/- " << mcMeanErr << std::endl;
     statsMC.AddText(Form("Mean = %2.2f #pm %2.2f", meMC_smSum->GetMean(), mcMeanErr));
     double mcRMSerr = TMath::Sqrt(square(meMC_smSum->GetRMS() - meMC_smErrUp->GetRMS()) 
-                                + square(meMC_smSum->GetRMS() - meMC_smErrDown->GetRMS()));
+				+ square(meMC_smSum->GetRMS() - meMC_smErrDown->GetRMS()));
     statsMC.AddText(Form("RMS  = %2.2f #pm %2.2f", meMC_smSum->GetRMS(), mcRMSerr));
   } else {
     std::cout << "MC: mean = " << meMC_smSum->GetMean() << std::endl;
@@ -343,102 +360,108 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   statsMC.SetTextSize(0.045);
   statsMC.Draw();
 
-  canvas->cd();
-  bottomPad->Draw();
-  bottomPad->cd();
-  bottomPad->SetLogy(false);
-
-  TH1* dummyHistogram_bottom = (TH1*)meData->Clone("dummyHistogram_bottom");
-  dummyHistogram_bottom->SetTitle("");
-  dummyHistogram_bottom->SetStats(false);  
-
-  assert(meMC_smSum->GetNbinsX() == meData->GetNbinsX());
-  int numBins = meMC_smSum->GetNbinsX();
-  TGraphErrors* graphDataToMCdiff = new TGraphErrors(numBins);
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    double x = meMC_smSum->GetBinCenter(iBin);
-
-    double y_data = meData->GetBinContent(iBin);
-    double yErr_data = meData->GetBinError(iBin);
-
-    double y_smSum = meMC_smSum->GetBinContent(iBin);
-    if ( !(y_smSum > 0.) ) continue;
-    double yErr_smSum = meMC_smSum->GetBinError(iBin);
-
-    double diff = (y_data - y_smSum)/y_smSum;
-    double diffErr2 = 0.;
-    if ( y_data  > 0. ) diffErr2 += square(yErr_data/y_data);
-    diffErr2 += square(yErr_smSum/y_smSum);
-    diffErr2 *= square(y_data/y_smSum);
-
-    graphDataToMCdiff->SetPoint(iBin - 1, x, diff);
-    graphDataToMCdiff->SetPointError(iBin - 1, 0., TMath::Sqrt(diffErr2));
-  }
-
-  TGraphErrors* graphMCerr = 0;
-  if ( meMC_smErr ) {
-    graphMCerr = new TGraphErrors(numBins);
+  TH1* dummyHistogram_bottom = 0;
+  TGraphErrors* graphDataToMCdiff = 0;
+  if ( drawDataToMCratio ) {
+    canvas->cd();
+    bottomPad->Draw();
+    bottomPad->cd();
+    bottomPad->SetLogy(false);
+    
+    dummyHistogram_bottom = (TH1*)meData->Clone("dummyHistogram_bottom");
+    dummyHistogram_bottom->SetTitle("");
+    dummyHistogram_bottom->SetStats(false);  
+    
+    assert(meMC_smSum->GetNbinsX() == meData->GetNbinsX());
+    int numBins = meMC_smSum->GetNbinsX();
+    graphDataToMCdiff = new TGraphErrors(numBins);
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
       double x = meMC_smSum->GetBinCenter(iBin);
       
-      if ( !(meMC_smSum->GetBinContent(iBin) > 0.) ) continue;
-      double rel = (meMC_smErr->GetBinContent(iBin)/meMC_smSum->GetBinContent(iBin)) - 1.;
-      double relErr = meMC_smErr->GetBinError(iBin)/meMC_smSum->GetBinContent(iBin);
-      //std::cout << "variable = " << variable.meName_ << ", bin = " << iBin << ":" 
-      //	  << " rel. = " << rel << " +/- " << relErr << std::endl;
+      double y_data = meData->GetBinContent(iBin);
+      double yErr_data = meData->GetBinError(iBin);
       
-      graphMCerr->SetPoint(iBin - 1, x, rel);
-      graphMCerr->SetPointError(iBin - 1, 0.5*meMC_smSum->GetBinWidth(iBin), relErr);
+      double y_smSum = meMC_smSum->GetBinContent(iBin);
+      if ( !(y_smSum > 0.) ) continue;
+      double yErr_smSum = meMC_smSum->GetBinError(iBin);
+      
+      double diff = (y_data - y_smSum)/y_smSum;
+      double diffErr2 = 0.;
+      if ( y_data  > 0. ) diffErr2 += square(yErr_data/y_data);
+      diffErr2 += square(yErr_smSum/y_smSum);
+      diffErr2 *= square(y_data/y_smSum);
+      
+      graphDataToMCdiff->SetPoint(iBin - 1, x, diff);
+      graphDataToMCdiff->SetPointError(iBin - 1, 0., TMath::Sqrt(diffErr2));
     }
-  }
-
-  TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
-  xAxis_bottom->SetTitle(variable.xAxisTitle_.data());
-  xAxis_bottom->SetTitleOffset(1.20);
-  xAxis_bottom->SetNdivisions(505);
-  xAxis_bottom->SetTitleOffset(1.1);
-  xAxis_bottom->SetTitleSize(0.08);
-  xAxis_bottom->SetLabelOffset(0.02);
-  xAxis_bottom->SetLabelSize(0.08);
-  xAxis_bottom->SetTickLength(0.055);
     
-  TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
-  yAxis_bottom->SetTitle("#frac{Data - Simulation}{Simulation}");
-  yAxis_bottom->SetTitleOffset(1.10);
-  yAxis_bottom->CenterTitle();
-  yAxis_bottom->SetTitleOffset(0.9);
-  yAxis_bottom->SetTitleSize(0.08);
-  yAxis_bottom->SetLabelSize(0.08);
-  yAxis_bottom->SetTickLength(0.04);
+    TGraphErrors* graphMCerr = 0;
+    if ( meMC_smErr ) {
+      graphMCerr = new TGraphErrors(numBins);
+      for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+	double x = meMC_smSum->GetBinCenter(iBin);
+	
+	if ( !(meMC_smSum->GetBinContent(iBin) > 0.) ) continue;
+	double rel = (meMC_smErr->GetBinContent(iBin)/meMC_smSum->GetBinContent(iBin)) - 1.;
+	double relErr = meMC_smErr->GetBinError(iBin)/meMC_smSum->GetBinContent(iBin);
+	//std::cout << "variable = " << variable.meName_ << ", bin = " << iBin << ":" 
+	//	  << " rel. = " << rel << " +/- " << relErr << std::endl;
+	
+	graphMCerr->SetPoint(iBin - 1, x, rel);
+	graphMCerr->SetPointError(iBin - 1, 0.5*meMC_smSum->GetBinWidth(iBin), relErr);
+      }
+    }
     
-  double maxDiff = 0.;    
-  for ( int iPoint = 0; iPoint < numBins; ++iPoint ) {
-    double x, diff;
-    graphDataToMCdiff->GetPoint(iPoint, x, diff);
-    double err = graphDataToMCdiff->GetErrorY(iPoint);
-    diff = TMath::Max(TMath::Abs(diff + err), TMath::Abs(diff - err));
-    if ( diff > maxDiff ) maxDiff = diff;
+    TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
+    xAxis_bottom->SetTitle(variable.xAxisTitle_.data());
+    xAxis_bottom->SetTitleOffset(1.20);
+    xAxis_bottom->SetNdivisions(505);
+    xAxis_bottom->SetTitleOffset(1.1);
+    xAxis_bottom->SetTitleSize(0.08);
+    xAxis_bottom->SetLabelOffset(0.02);
+    xAxis_bottom->SetLabelSize(0.08);
+    xAxis_bottom->SetTickLength(0.055);
+    
+    TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
+    yAxis_bottom->SetTitle("#frac{Data - Simulation}{Simulation}");
+    yAxis_bottom->SetTitleOffset(1.10);
+    yAxis_bottom->CenterTitle();
+    yAxis_bottom->SetTitleOffset(0.9);
+    yAxis_bottom->SetTitleSize(0.08);
+    yAxis_bottom->SetLabelSize(0.08);
+    yAxis_bottom->SetTickLength(0.04);
+    
+    double maxDiff = 0.;    
+    for ( int iPoint = 0; iPoint < numBins; ++iPoint ) {
+      double x, diff;
+      graphDataToMCdiff->GetPoint(iPoint, x, diff);
+      double err = graphDataToMCdiff->GetErrorY(iPoint);
+      diff = TMath::Max(TMath::Abs(diff + err), TMath::Abs(diff - err));
+      if ( diff > maxDiff ) maxDiff = diff;
+    }
+    double maxDiff01 = 0.1*TMath::Ceil(1.2*maxDiff*10.);
+    //dummyHistogram_bottom->SetMaximum(+maxDiff01);
+    //dummyHistogram_bottom->SetMinimum(-maxDiff01);
+    dummyHistogram_bottom->SetMaximum(+1.5);
+    dummyHistogram_bottom->SetMinimum(-1.5);
+    
+    dummyHistogram_bottom->Draw("axis");
+    
+    if ( drawSysUncertainty && graphMCerr ) {
+      graphMCerr->SetMarkerStyle(meMC_smErr->GetMarkerStyle());
+      graphMCerr->SetMarkerSize(meMC_smErr->GetMarkerSize());
+      graphMCerr->SetLineColor(meMC_smErr->GetLineColor());
+      graphMCerr->SetLineWidth(meMC_smErr->GetLineWidth());
+      graphMCerr->SetFillColor(meMC_smErr->GetFillColor());
+      graphMCerr->SetFillStyle(meMC_smErr->GetFillStyle());
+      graphMCerr->Draw("2"); 
+    }
+    
+    graphDataToMCdiff->SetMarkerStyle(meData->GetMarkerStyle());
+    graphDataToMCdiff->SetMarkerColor(meData->GetMarkerColor());
+    graphDataToMCdiff->SetLineColor(meData->GetLineColor());
+    graphDataToMCdiff->Draw("P");   
   }
-  double maxDiff01 = 0.1*TMath::Ceil(1.2*maxDiff*10.);
-  dummyHistogram_bottom->SetMaximum(+maxDiff01);
-  dummyHistogram_bottom->SetMinimum(-maxDiff01);
-  
-  dummyHistogram_bottom->Draw("axis");
-
-  if ( graphMCerr ) {
-    graphMCerr->SetMarkerStyle(meMC_smErr->GetMarkerStyle());
-    graphMCerr->SetMarkerSize(meMC_smErr->GetMarkerSize());
-    graphMCerr->SetLineColor(meMC_smErr->GetLineColor());
-    graphMCerr->SetLineWidth(meMC_smErr->GetLineWidth());
-    graphMCerr->SetFillColor(meMC_smErr->GetFillColor());
-    graphMCerr->SetFillStyle(meMC_smErr->GetFillStyle());
-    graphMCerr->Draw("2"); 
-  }
-
-  graphDataToMCdiff->SetMarkerStyle(meData->GetMarkerStyle());
-  graphDataToMCdiff->SetMarkerColor(meData->GetMarkerColor());
-  graphDataToMCdiff->SetLineColor(meData->GetLineColor());
-  graphDataToMCdiff->Draw("P");   
 
   canvas->Update();
 
@@ -446,6 +469,8 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   outputFileName_plot.append("_").append(variable.meName_);
   if ( scaleMCtoData ) outputFileName_plot.append("_scaled");
+  if ( useLogScaleY ) outputFileName_plot.append("_log");
+  else outputFileName_plot.append("_linear");
   if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
@@ -485,7 +510,7 @@ struct plotUvsQtNumObjType
       loadHistogram(inputFile, directoryData, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
 
     graphUparlResponseData_ = makeGraph_uParl_div_qT(
-      "graph_uParl_div_qT_mean_data", "<u_{#parallel} >/q_{T} as function of q_{T}",
+      "graph_uParl_div_qT_mean_data", "<-u_{#parallel} >/q_{T} as function of q_{T}",
       meUparlVsQtData_, meQtData_);
     graphUparlResolutionData_ = makeGraph_rms(
       "graph_uParl_rms_data", "RMS(u_{#parallel} ) as function of q_{T}", 
@@ -504,7 +529,7 @@ struct plotUvsQtNumObjType
       loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
 
     graphUparlResponseMC_ = makeGraph_uParl_div_qT(
-      "graph_uParl_div_qT_mean_mc", "<u_{#parallel} >/q_{T} as function of q_{T}",
+      "graph_uParl_div_qT_mean_mc", "<-u_{#parallel} >/q_{T} as function of q_{T}",
       meUparlVsQtMC_, meQtMC_);
     graphUparlResolutionMC_ = makeGraph_rms(
       "graph_uParl_rms_mc", "RMS(u_{#parallel} ) as function of q_{T}", 
@@ -537,7 +562,7 @@ struct plotUvsQtNumObjType
       meQtMCsysUncertainty_.push_back(meQtMCsysUncertainty_sysUncertainty);
 
       graphUparlResponseMCsysUncertainty_.push_back(makeGraph_uParl_div_qT(
-	Form("graph_uParl_div_qT_mean_mc_%s", sysUncertainty->data()), "<u_{#parallel} >/q_{T} as function of q_{T}",
+	Form("graph_uParl_div_qT_mean_mc_%s", sysUncertainty->data()), "<-u_{#parallel} >/q_{T} as function of q_{T}",
         meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
       graphUparlResolutionMCsysUncertainty_.push_back(makeGraph_rms(
         Form("graph_uParl_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#parallel} ) as function of q_{T}", 
@@ -639,11 +664,11 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
 
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseData_, f_uParl_div_qT_mean_data,
-			  "Data", 0.62, 0.165, false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			  "Data", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitData");
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseMC_, f_uParl_div_qT_mean_mc,
-			 "Simulation", 0.62, 0.165, false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			 "Simulation", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitMC",
 			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_, &f_uParl_div_qT_mean_mcSysUncertainties);  
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
@@ -667,7 +692,7 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
 
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			   plotUvsQtNumObj->graphUparlResponseData_, plotUvsQtNumObj->graphUparlResponseMC_, 
-			   "Data", "Simulation", 0.62, 0.165, false, true, "u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			   "Data", "Simulation", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
 			   outputFileName, "uParlResponseData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_);
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
@@ -692,6 +717,100 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
     delete f_uParl_rms_mcSysUncertainties[iSysUncertainty];
     delete f_uPerp_rms_mcSysUncertainties[iSysUncertainty];
   }
+
+  delete canvas;
+  delete dummyHistogram;
+}
+ 
+template<typename T>
+void deleteAll(std::vector<T*>& objs)
+{
+  for ( typename std::vector<T*>::iterator it = objs.begin();
+	it != objs.end(); ++it ) {
+    delete (*it);
+  }
+}
+
+void fitAndCompare(std::vector<plotUvsQtNumObjType*>& plotUvsQtNumObjs, const std::vector<std::string>& legendEntries,
+		   bool drawGraphs, bool drawFits, bool showMC, bool showData,
+		   const std::string& outputFileName)
+{
+  assert(plotUvsQtNumObjs.size() == legendEntries.size());
+
+  const double xMin = 0.;
+  const double xMax = 200.;
+
+  std::vector<TGraphAsymmErrors*> graphs_uParl_div_qT_mean_data;
+  std::vector<TF1*> fitFunctions_uParl_div_qT_mean_data;
+  std::vector<TGraphAsymmErrors*> graphs_uParl_rms_data;
+  std::vector<TF1*> fitFunctions_uParl_rms_data;
+  std::vector<TGraphAsymmErrors*> graphs_uPerp_rms_data;
+  std::vector<TF1*> fitFunctions_uPerp_rms_data;
+  
+  std::vector<TGraphAsymmErrors*> graphs_uParl_div_qT_mean_mc;
+  std::vector<TF1*> fitFunctions_uParl_div_qT_mean_mc;
+  std::vector<TGraphAsymmErrors*> graphs_uParl_rms_mc;
+  std::vector<TF1*> fitFunctions_uParl_rms_mc;
+  std::vector<TGraphAsymmErrors*> graphs_uPerp_rms_mc;
+  std::vector<TF1*> fitFunctions_uPerp_rms_mc;
+
+  size_t numObjs = plotUvsQtNumObjs.size();
+  for ( size_t iObj = 0; iObj < numObjs; ++iObj ) {
+    plotUvsQtNumObjType* plotUvsQtNumObj = plotUvsQtNumObjs[iObj];
+
+    graphs_uParl_div_qT_mean_data.push_back(plotUvsQtNumObj->graphUparlResponseData_);
+    fitFunctions_uParl_div_qT_mean_data.push_back(
+      fitGraph_uParl_div_qT("f_uParl_div_qT_mean_data", plotUvsQtNumObj->graphUparlResponseData_, xMin, xMax));
+    graphs_uParl_rms_data.push_back(plotUvsQtNumObj->graphUparlResolutionData_);
+    fitFunctions_uParl_rms_data.push_back(
+      fitGraph_uParl_rms("f_uParl_rms_data", plotUvsQtNumObj->graphUparlResolutionData_, xMin, xMax));
+    graphs_uPerp_rms_data.push_back(plotUvsQtNumObj->graphUperpResolutionData_);
+    fitFunctions_uPerp_rms_data.push_back(
+      fitGraph_uPerp_rms("f_uPerp_rms_data", plotUvsQtNumObj->graphUperpResolutionData_, xMin, xMax));
+
+    graphs_uParl_div_qT_mean_mc.push_back(plotUvsQtNumObj->graphUparlResponseMC_);
+    fitFunctions_uParl_div_qT_mean_mc.push_back(
+      fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc", plotUvsQtNumObj->graphUparlResponseMC_, xMin, xMax));
+    graphs_uParl_rms_mc.push_back(plotUvsQtNumObj->graphUparlResolutionMC_);
+    fitFunctions_uParl_rms_mc.push_back(
+      fitGraph_uParl_rms("f_uParl_rms_mc", plotUvsQtNumObj->graphUparlResolutionMC_, xMin, xMax));
+    graphs_uPerp_rms_mc.push_back(plotUvsQtNumObj->graphUperpResolutionMC_);
+    fitFunctions_uPerp_rms_mc.push_back(
+      fitGraph_uPerp_rms("f_uPerp_rms_mc", plotUvsQtNumObj->graphUperpResolutionMC_, xMin, xMax));
+  }
+
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
+  canvas->SetFillColor(10);
+  canvas->SetBorderSize(2);
+
+  canvas->SetLeftMargin(0.12);
+  canvas->SetBottomMargin(0.12);
+
+  TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", (xMax - xMin)/10., xMin, xMax);
+
+  drawZllRecoilFitResult(canvas, dummyHistogram, 
+			 graphs_uParl_div_qT_mean_mc, fitFunctions_uParl_div_qT_mean_mc, drawGraphs && showMC, drawFits && showMC,
+			 graphs_uParl_div_qT_mean_data, fitFunctions_uParl_div_qT_mean_data, drawGraphs && showData, drawFits && showData,
+			 legendEntries, 0.61, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2,
+			 outputFileName, "uParlResponseFit");
+  drawZllRecoilFitResult(canvas, dummyHistogram, 
+			 graphs_uParl_rms_mc, fitFunctions_uParl_rms_mc, drawGraphs && showMC, drawFits && showMC,
+			 graphs_uParl_rms_data, fitFunctions_uParl_rms_data, drawGraphs && showData, drawFits && showData,
+			 legendEntries, 0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., 
+			 outputFileName, "uParlResolutionFit");
+  drawZllRecoilFitResult(canvas, dummyHistogram, 
+			 graphs_uPerp_rms_mc, fitFunctions_uPerp_rms_mc, drawGraphs && showMC, drawFits && showMC,
+			 graphs_uPerp_rms_data, fitFunctions_uPerp_rms_data, drawGraphs && showData, drawFits && showData,
+			 legendEntries, 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50.,
+			 outputFileName, "uPerpResolutionFit");
+  
+  deleteAll(fitFunctions_uParl_div_qT_mean_data);
+  deleteAll(fitFunctions_uParl_rms_data);
+  deleteAll(fitFunctions_uPerp_rms_data);
+
+  deleteAll(fitFunctions_uParl_div_qT_mean_mc);
+  deleteAll(fitFunctions_uParl_rms_mc);
+  deleteAll(fitFunctions_uPerp_rms_mc);
 
   delete canvas;
   delete dummyHistogram;
@@ -782,9 +901,11 @@ int main(int argc, const char* argv[])
   for ( std::vector<variableEntryType>::const_iterator variable = variables.begin();
 	variable != variables.end(); ++variable ) {
     drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, mcScaleFactors, runPeriod,
-		    sysShiftsUp, sysShiftsDown, false, outputFileName);
+		    sysShiftsUp, sysShiftsDown, false, true,  true,  true,  outputFileName);
     drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, mcScaleFactors, runPeriod,
-		    sysShiftsUp, sysShiftsDown, true,  outputFileName);
+		    sysShiftsUp, sysShiftsDown, true,  true,  true,  true,  outputFileName);
+    drawHistogram1d(inputFile, *variable, directoryData, directoryMC_signal, directoryMCs_background, mcScaleFactors, runPeriod,
+		    sysShiftsUp, sysShiftsDown, true,  false, false, false, outputFileName);
   }
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
@@ -811,6 +932,33 @@ int main(int argc, const char* argv[])
     new plotUvsQtNumObjType(inputFile, "NumJets", 3, -1, "jet", 
 			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
   fitAndMakeControlPlots(plotUvsQtNumJetsGe3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsGe3->meLabel_));
+
+//--- make plots of mean(uParl)/qT, rms(uParl)/qT and rms(uPerp)/qT
+//    in different bins of reconstructed vertex multiplicity (pile-up)
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq1 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices",  1,  1, "vertex", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq5 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices",  5,  5, "vertex", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq8 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices",  8,  8, "vertex", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq11 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices", 11, 11, "vertex", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  std::vector<plotUvsQtNumObjType*> plotUvsQtNumObjs;
+  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq1);
+  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq5);
+  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq8);
+  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq11);
+  std::vector<std::string> legendEntries;
+  legendEntries.push_back("1 Vertex (No PU)");
+  legendEntries.push_back("5 Vertices");
+  legendEntries.push_back("8 Vertices");
+  legendEntries.push_back("11 Vertices");
+  fitAndCompare(plotUvsQtNumObjs, legendEntries, true, false, true, false, getOutputFileName_plot(outputFileName, "puDependenceMC"));
+  fitAndCompare(plotUvsQtNumObjs, legendEntries, true, false, true, false, getOutputFileName_plot(outputFileName, "puDependenceData"));
 
   delete inputFile;
 

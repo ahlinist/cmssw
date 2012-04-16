@@ -1,6 +1,8 @@
 #ifndef TauAnalysis_RecoTools_fitZllRecoilCorrectionAuxFunctions_h
 #define TauAnalysis_RecoTools_fitZllRecoilCorrectionAuxFunctions_h
 
+#include "FWCore/Utilities/interface/Exception.h"
+
 #include <TCanvas.h>
 #include <TH1.h>
 #include <TH2.h>
@@ -407,6 +409,17 @@ void cloneStyleOptions(TGraphAsymmErrors* graph, const TGraphAsymmErrors* graph_
   graph->SetFillStyle(graph_ref->GetFillStyle());
 }
 
+template <typename T>
+void applyStyleOptions(T* obj, int color, int markerStyle, int markerSize, int lineStyle, int lineWidth)
+{
+  obj->SetMarkerStyle(markerStyle);
+  obj->SetMarkerSize(markerSize);
+  obj->SetMarkerColor(color);
+  obj->SetLineStyle(lineStyle);
+  obj->SetLineWidth(lineWidth);
+  obj->SetLineColor(color);
+}
+
 void drawZllRecoilFitResult(
        TCanvas* canvas, 
        TH1* dummyHistogram, 
@@ -655,6 +668,128 @@ void drawZllRecoilFitResult(
   delete graphErr_sysUncertainty_bottom;
   delete graph_fitErr_sysUncertainty_bottom;
   delete bottomPad;
+}
+
+void drawZllRecoilFitResult(
+       TCanvas* canvas, 
+       TH1* dummyHistogram, 
+       std::vector<TGraphAsymmErrors*>& graphs_mc, std::vector<TF1*>& fitFunctions_mc, bool showGraphs_mc, bool showFits_mc,
+       std::vector<TGraphAsymmErrors*>& graphs_data, std::vector<TF1*>& fitFunctions_data, bool showGraphs_data, bool showFits_data,
+       const std::vector<std::string>& legendEntries, double legendX0, double legendY0,
+       bool showIdLine, bool showConstLine, 
+       const std::string& yAxisLabel, double yMin, double yMax, 
+       const std::string& outputFileName, const std::string& outputFileLabel)
+{
+  assert(graphs_mc.size()         == legendEntries.size());
+  assert(fitFunctions_mc.size()   == legendEntries.size());
+  assert(graphs_data.size()       == legendEntries.size());
+  assert(fitFunctions_data.size() == legendEntries.size());
+  
+  canvas->SetLogy(false);
+  canvas->Clear();
+  canvas->SetLeftMargin(0.15);
+  canvas->SetBottomMargin(0.15);
+
+  TAxis* xAxis = dummyHistogram->GetXaxis();
+  xAxis->SetTitle("q_{T} / GeV");
+  xAxis->SetTitleOffset(1.15);
+  xAxis->SetTitleSize(0.06);
+
+  TAxis* yAxis = dummyHistogram->GetYaxis();
+  yAxis->SetTitle(yAxisLabel.data());
+  yAxis->SetTitleOffset(1.15);
+  yAxis->SetTitleSize(0.06);
+
+  dummyHistogram->SetTitle("");
+  dummyHistogram->SetStats(false);
+  dummyHistogram->SetMaximum(yMax);
+  dummyHistogram->SetMinimum(yMin);
+  dummyHistogram->SetMarkerColor(1);
+  dummyHistogram->SetMarkerStyle(20);
+  dummyHistogram->Draw("axis");
+
+  int colors[4] = { kOrange + 9, 1, 38, 896 };
+  int markerStyles[4] = { 20, 24, 25, 26 };
+  int markerStyles_mc[4] = { 20, 21, 22, 33 };
+  int markerStyles_data[4] = { 24, 25, 26, 27 };
+  int lineStyles[4] = { 1, 1, 1, 1 };
+  int lineStyles_mc[4] = { 2, 2, 2, 2 };
+  int lineStyles_data[4] = { 1, 1, 1, 1 };
+
+  size_t numEntries = legendEntries.size();
+  if ( numEntries > 4 )
+    throw cms::Exception("drawZllRecoilFitResult") 
+      << "Maximum number of plots supported = 4, requested = " << numEntries << "!!\n";
+
+  if ( showIdLine || showConstLine ) {
+    int numPoints = graphs_data.front()->GetN();
+    TGraph* graph_line = new TGraph(numPoints);
+    for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+      Double_t x, y;
+      graphs_data.front()->GetPoint(iPoint, x, y);
+      if      ( showIdLine    ) graph_line->SetPoint(iPoint, x,  -x);
+      else if ( showConstLine ) graph_line->SetPoint(iPoint, x, 1.0);
+      else assert(0);
+    }
+    graph_line->SetLineColor(8);
+    graph_line->SetLineWidth(1);
+    graph_line->Draw("L");
+  }
+
+  // CV: draw all fits first...
+  for ( size_t iEntry = 0; iEntry < numEntries; ++iEntry ) {
+    if ( showFits_mc ) {
+      TF1* fitFunction_mc = fitFunctions_mc[iEntry];
+      if ( showFits_data ) applyStyleOptions(fitFunction_mc, colors[iEntry], 1, 1, lineStyles_mc[iEntry], 2);
+      else applyStyleOptions(fitFunction_mc, colors[iEntry], 1, 1, lineStyles[iEntry], 2);
+      fitFunction_mc->Draw("L");
+    }
+
+    if ( showFits_data ) {
+      TF1* fitFunction_data = fitFunctions_data[iEntry];
+      if ( showFits_mc ) applyStyleOptions(fitFunction_data, colors[iEntry], 1, 1, lineStyles_data[iEntry], 2);
+      else applyStyleOptions(fitFunction_data, colors[iEntry], 1, 1, lineStyles[iEntry], 2);
+      fitFunction_data->Draw("P");
+    }
+  }
+
+  for ( size_t iEntry = 0; iEntry < numEntries; ++iEntry ) {
+    if ( showGraphs_mc ) {
+      TGraphAsymmErrors* graph_mc = graphs_mc[iEntry];
+      if ( showGraphs_data ) applyStyleOptions(graph_mc, colors[iEntry], markerStyles_mc[iEntry], 2, 1, 1);
+      else applyStyleOptions(graph_mc, colors[iEntry], markerStyles[iEntry], 1, 1, 1);
+      graph_mc->Draw("P");
+    }
+
+    if ( showGraphs_data ) {
+      TGraphAsymmErrors* graph_data = graphs_data[iEntry];
+      if ( showGraphs_mc ) applyStyleOptions(graph_data, colors[iEntry], markerStyles_data[iEntry], 2, 1, 1);
+      else applyStyleOptions(graph_data, colors[iEntry], markerStyles[iEntry], 1, 1, 1);
+      graph_data->Draw("P");
+    }
+  }
+  
+  double legendX1 = legendX0 + 0.28;
+  double legendY1 = legendY0 + 0.275;
+  TLegend legend(legendX0, legendY0, legendX1, legendY1, "", "brNDC"); 
+  legend.SetBorderSize(0);
+  legend.SetFillColor(0);
+  for ( size_t iEntry = 0; iEntry < numEntries; ++iEntry ) {
+    if      ( showGraphs_data ) legend.AddEntry(graphs_data[iEntry],       legendEntries[iEntry].data(), "p");
+    else if ( showGraphs_mc   ) legend.AddEntry(graphs_mc[iEntry],         legendEntries[iEntry].data(), "p");
+    else if ( showFits_data   ) legend.AddEntry(fitFunctions_data[iEntry], legendEntries[iEntry].data(), "p");
+    else if ( showGraphs_data ) legend.AddEntry(fitFunctions_mc[iEntry],   legendEntries[iEntry].data(), "p");
+  }
+  legend.Draw();
+
+  canvas->Update();
+
+  size_t idx = outputFileName.find_last_of('.');
+  std::string outputFileName_plot = std::string(outputFileName, 0, idx);
+  outputFileName_plot.append("_").append(outputFileLabel);
+  if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
+  canvas->Print(std::string(outputFileName_plot).append(".png").data());
+  canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
 }
 
 void drawData_vs_MCcomparison(
