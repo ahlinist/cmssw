@@ -76,7 +76,7 @@ from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsol
 selIsoChargedParticles = cms.EDFilter("ChargedRefCandidatePFIsolationSelector",
     src = cms.InputTag("selChargedParticles"),
     pfCandidateSource = patMuonPFIsolationSelector.pfCandidateSource,
-    chargedHadronIso = patMuonPFIsolationSelector.chargedHadronIso,
+    chargedParticleIso = patMuonPFIsolationSelector.chargedParticleIso,
     neutralHadronIso = patMuonPFIsolationSelector.neutralHadronIso,
     photonIso = patMuonPFIsolationSelector.photonIso,
     sumPtMax = patMuonPFIsolationSelector.sumPtMax,
