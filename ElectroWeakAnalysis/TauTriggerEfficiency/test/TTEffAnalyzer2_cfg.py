@@ -1,8 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = False
+isData = True
 runL1Emulator = False
+runOpenHLT = False
 hltType = "HLT"
 #hltType = "REDIGI38X"
 
@@ -16,7 +17,7 @@ process.prefer("magfield")
 process.hltGctDigis.hltMode = cms.bool(False) # Making L1CaloRegions
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(10)
+        input = cms.untracked.int32(-1)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -41,7 +42,8 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 if(isData):
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-        "file:TTEffSkim.root"
+	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
+#        "file:TTEffSkim.root"
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
@@ -57,7 +59,7 @@ else:
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V24::All'
+    process.GlobalTag.globaltag = 'GR_H_V29::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START44_V12::All'
@@ -65,6 +67,7 @@ else:
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
 print process.GlobalTag.globaltag
+
 
 #MET cleaning flag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
@@ -118,7 +121,7 @@ process.ak5PFJetsL1L2L3   = cms.EDProducer('PFJetCorrectionProducer',
      src         = cms.InputTag('ak5PFJets'),
     correctors  = cms.vstring('ak5PFL1L2L3')
 )
-process.commonSequence *= process.ak5PFJetsL1L2L3
+####process.commonSequence *= process.ak5PFJetsL1L2L3
 
 # Good vertex selection
 process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
@@ -183,7 +186,11 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "L1_SingleJet52_Central",
             "L1_Jet52_Central_ETM30",
             "L1_TripleJet28_Central",
+	    "L1_TripleJetC_52_28_28",
             "L1_ETM30",
+	    "L1_ETM36",
+	    "L1_ETM40",
+	    "L1_Mu12er_ETM20"
         ),
         HltResults              		= cms.InputTag("TriggerResults","",hltType),
         HltPaths = cms.vstring(
@@ -197,6 +204,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "HLT_IsoMu30_eta2p1_v3", "HLT_IsoMu30_eta2p1_v6", "HLT_IsoMu30_eta2p1_v7",
             "HLT_IsoMu34_eta2p1_v1",
 
+	    "HLT_IsoMu15_eta2p1_L1ETM20_v3",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v3",
 
             "HLT_IsoPFTau35_Trk20_MET45_v1", "HLT_IsoPFTau35_Trk20_MET45_v2", "HLT_IsoPFTau35_Trk20_MET45_v4", "HLT_IsoPFTau35_Trk20_MET45_v6",
             "HLT_IsoPFTau35_Trk20_v2", "HLT_IsoPFTau35_Trk20_v3", "HLT_IsoPFTau35_Trk20_v4", "HLT_IsoPFTau35_Trk20_v6",
@@ -206,6 +215,11 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "HLT_MediumIsoPFTau35_Trk20_v1", "HLT_MediumIsoPFTau35_Trk20_v5", "HLT_MediumIsoPFTau35_Trk20_v6",
             "HLT_MediumIsoPFTau35_Trk20_MET60_v1", "HLT_MediumIsoPFTau35_Trk20_MET60_v5", "HLT_MediumIsoPFTau35_Trk20_MET60_v6",
             "HLT_MediumIsoPFTau35_Trk20_MET70_v1", "HLT_MediumIsoPFTau35_Trk20_MET70_v5", "HLT_MediumIsoPFTau35_Trk20_MET70_v6",
+
+	    "HLT_LooseIsoPFTau35_Trk20_Prong1_v3",
+	    "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v3",
+	    "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v3",
+
         ),
         L1TauTriggerSource      		= cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone			= cms.double(0.5),
@@ -341,13 +355,19 @@ process.o1 = cms.OutputModule("PoolOutputModule",
 
 process.HLTPFTauSequence+= process.hltPFTausTightIso
 process.DoMiscHLT = cms.Path(process.hltPFMHTProducer)
-process.schedule = cms.Schedule(process.DoHLTJets,
+
+process.schedule = cms.Schedule(
+    process.runMETCleaning,
+    process.runTTEffAna
+)
+if runOpenHLT:
+    process.schedule = cms.Schedule(process.DoHLTJets,
 #				process.DoHltMuon,
 				process.DoHLTPhoton,
 				process.DoHLTElectron,
 				process.DoHLTTau,
 				process.DoHLTMinBiasPixelTracks,
-                                process.DoMiscHLT,
+                               process.DoMiscHLT,
 				process.runMETCleaning,
                                 process.L1simulation_step,
 				process.runTTEffAna,
