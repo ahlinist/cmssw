@@ -100,11 +100,11 @@ void RunLumiSectionEventNumberFilter::readRunLumiSectionEventNumberFile()
   //std::cout << "<RunLumiSectionEventNumberFilter::readRunLumiSectionEventNumberFile>:" << std::endl;
 
   std::string regexpParser_threeColumnLine_string = std::string("[[:digit:]]+");
-  regexpParser_threeColumnLine_string.append(separator_).append("[[:digit:]]+").append(separator_).append("[[:digit:]]+");
+  regexpParser_threeColumnLine_string.append(separator_).append("[[:digit:]]+").append(separator_).append("[[:digit:]]+\\s*");
   //std::cout << " regexpParser_threeColumnLine_string = " << regexpParser_threeColumnLine_string << std::endl;
   TPRegexp regexpParser_threeColumnLine(regexpParser_threeColumnLine_string.data());
   std::string regexpParser_threeColumnNumber_string = std::string("([[:digit:]]+)");
-  regexpParser_threeColumnNumber_string.append(separator_).append("([[:digit:]]+)").append(separator_).append("([[:digit:]]+)");
+  regexpParser_threeColumnNumber_string.append(separator_).append("([[:digit:]]+)").append(separator_).append("([[:digit:]]+)\\s*");
   //std::cout << " regexpParser_threeColumnNumber_string = " << regexpParser_threeColumnNumber_string << std::endl;
   TPRegexp regexpParser_threeColumnNumber(regexpParser_threeColumnNumber_string.data());
 
