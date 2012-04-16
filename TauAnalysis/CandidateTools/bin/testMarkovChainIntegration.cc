@@ -13,9 +13,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.1 $
  *
- * $Id: testMarkovChainIntegration.h,v 1.9 2012/04/03 10:17:08 veelken Exp $
+ * $Id: testMarkovChainIntegration.cc,v 1.1 2012/04/10 09:39:58 veelken Exp $
  *
  */
 
@@ -350,7 +350,9 @@ int main(int argc, char* argv[])
   PlotGaussian1d* plotGaus1d_Metropolis = new PlotGaussian1d("Gaus1d_Metropolis", integrandGaus1d);
   integratorGaus1d_Metropolis.registerCallBackFunction(*plotGaus1d_Metropolis);
   double integralGaus1d_Metropolis, integralErrGaus1d_Metropolis;
-  integratorGaus1d_Metropolis.integrate(xMinGaus1d, xMaxGaus1d, integralGaus1d_Metropolis, integralErrGaus1d_Metropolis);
+  int errorFlagGaus1d_Metropolis = 0;
+  integratorGaus1d_Metropolis.integrate(xMinGaus1d, xMaxGaus1d, 
+					integralGaus1d_Metropolis, integralErrGaus1d_Metropolis, errorFlagGaus1d_Metropolis);
   std::cout << "Metropolis(Gaus1d):" << std::endl;
   std::cout << " integral(-1..+1) = " << integralGaus1d_Metropolis << " +/- " << integralErrGaus1d_Metropolis
 	    << " (expected = " << integralGaus1d_expected << ")" << std::endl;
@@ -381,7 +383,9 @@ int main(int argc, char* argv[])
   PlotGaussian1d* plotGaus1d_Hybrid = new PlotGaussian1d("Gaus1d_Hybrid", integrandGaus1d);
   integratorGaus1d_Hybrid.registerCallBackFunction(*plotGaus1d_Hybrid);
   double integralGaus1d_Hybrid, integralErrGaus1d_Hybrid;
-  integratorGaus1d_Hybrid.integrate(xMinGaus1d, xMaxGaus1d, integralGaus1d_Hybrid, integralErrGaus1d_Hybrid);
+  int errorFlagGaus1d_Hybrid = 0;
+  integratorGaus1d_Hybrid.integrate(xMinGaus1d, xMaxGaus1d, 
+				    integralGaus1d_Hybrid, integralErrGaus1d_Hybrid, errorFlagGaus1d_Hybrid);
   std::cout << "Hybrid(Gaus1d):" << std::endl;
   std::cout << " integral(-1..+1) = " << integralGaus1d_Hybrid << " +/- " << integralErrGaus1d_Hybrid 
 	    << " (expected = " << integralGaus1d_expected << ")" << std::endl;
@@ -437,7 +441,9 @@ int main(int argc, char* argv[])
   PlotGaussian2d* plotGaus2d_Metropolis = new PlotGaussian2d("Gaus2d_Metropolis", integrandGaus2d);
   integratorGaus2d_Metropolis.registerCallBackFunction(*plotGaus2d_Metropolis);
   double integralGaus2d_Metropolis, integralErrGaus2d_Metropolis;
-  integratorGaus2d_Metropolis.integrate(xMinGaus2d, xMaxGaus2d, integralGaus2d_Metropolis, integralErrGaus2d_Metropolis);
+  int errorFlagGaus2d_Metropolis = 0;
+  integratorGaus2d_Metropolis.integrate(xMinGaus2d, xMaxGaus2d, 
+					integralGaus2d_Metropolis, integralErrGaus2d_Metropolis, errorFlagGaus2d_Metropolis);
   std::cout << "Metropolis(Gaus2d):" << std::endl;
   std::cout << " integral(-10..+10, -10..+10) = " << integralGaus2d_Metropolis << " +/- " << integralErrGaus2d_Metropolis
 	    << " (expected = " << integralGaus2d_expected << ")" << std::endl;
@@ -468,7 +474,9 @@ int main(int argc, char* argv[])
   PlotGaussian2d* plotGaus2d_Hybrid = new PlotGaussian2d("Gaus2d_Hybrid", integrandGaus2d);
   integratorGaus2d_Hybrid.registerCallBackFunction(*plotGaus2d_Hybrid);
   double integralGaus2d_Hybrid, integralErrGaus2d_Hybrid;
-  integratorGaus2d_Hybrid.integrate(xMinGaus2d, xMaxGaus2d, integralGaus2d_Hybrid, integralErrGaus2d_Hybrid);
+  int errorFlagGaus2d_Hybrid = 0;
+  integratorGaus2d_Hybrid.integrate(xMinGaus2d, xMaxGaus2d, 
+				    integralGaus2d_Hybrid, integralErrGaus2d_Hybrid, errorFlagGaus2d_Hybrid);
   std::cout << "Hybrid(Gaus2d):" << std::endl;
   std::cout << " integral(-10..+10, -10..+10) = " << integralGaus2d_Hybrid << " +/- " << integralErrGaus2d_Hybrid 
 	    << " (expected = " << integralGaus2d_expected << ")" << std::endl;

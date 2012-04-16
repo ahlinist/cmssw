@@ -10,7 +10,7 @@ nSVfitTrackService = cms.Service("NSVfitTrackService")
 nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodPhaseSpace"),
-    applySinThetaFactor = cms.bool(True),
+    applySinThetaFactor = cms.bool(False),
     verbosity = cms.int32(0)
 )
 
@@ -23,7 +23,7 @@ nSVfitElectronLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikeli
 nSVfitElectronLikelihoodMatrixElement = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodMatrixElement"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodMatrixElement"),
-    applySinThetaFactor = cms.bool(True),
+    applySinThetaFactor = cms.bool(False),
     verbosity = cms.int32(0)
 )
 
@@ -36,7 +36,7 @@ nSVfitTauToElecBuilder = cms.PSet(
 nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
-    applySinThetaFactor = cms.bool(True),
+    applySinThetaFactor = cms.bool(False),
     verbosity = cms.int32(0)
 )
 
@@ -49,7 +49,7 @@ nSVfitMuonLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihood
 nSVfitMuonLikelihoodMatrixElement = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodMatrixElement"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodMatrixElement"),
-    applySinThetaFactor = cms.bool(True),
+    applySinThetaFactor = cms.bool(False),
     verbosity = cms.int32(0)
 )
 
@@ -62,7 +62,7 @@ nSVfitTauToMuBuilder = cms.PSet(
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
-    applySinThetaFactor = cms.bool(True),
+    applySinThetaFactor = cms.bool(False),
     verbosity = cms.int32(0)
 )
 
@@ -77,7 +77,7 @@ nSVfitTauLikelihoodMatrixElement = cms.PSet(
     pluginType = cms.string("NSVfitTauToHadLikelihoodMatrixElement"),
     VMshapeFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/VMpdf.root"),
     recToGenTauDecayModeMapFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/recToGenTauDecayModeMap.root"),
-    applySinThetaFactor = cms.bool(True),
+    applySinThetaFactor = cms.bool(False),
     verbosity = cms.int32(0)
 )
 

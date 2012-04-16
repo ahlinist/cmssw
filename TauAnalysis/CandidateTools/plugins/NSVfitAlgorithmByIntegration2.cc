@@ -145,12 +145,18 @@ void NSVfitAlgorithmByIntegration2::beginEvent(const edm::Event& evt, const edm:
 
   for ( std::vector<TH1*>::iterator histogram = probHistFitParameter_.begin();
 	histogram != probHistFitParameter_.end(); ++histogram ) {
+    //std::cout << "clearing histogram = " << (*histogram)->GetName() << ":" 
+    //	        << " entries = " << (*histogram)->GetEntries() << std::endl;
     (*histogram)->Reset();
   }
   for ( std::map<std::string, TH1*>::iterator histogram = probHistResonanceMass_.begin();
 	histogram != probHistResonanceMass_.end(); ++histogram ) {
+    //std::cout << "clearing histogram = " << histogram->second->GetName() << ":" 
+    //	        << " entries = " << histogram->second->GetEntries() << std::endl;
     histogram->second->Reset();
   }
+  //std::cout << "clearing histogram = " << probHistEventMass_->GetName() << ":" 
+  //	      << " entries = " << probHistEventMass_->GetEntries() << std::endl;
   probHistEventMass_->Reset();
 
   currentRunNumber_ = evt.id().run();
@@ -168,8 +174,9 @@ TH1* NSVfitAlgorithmByIntegration2::bookMassHistogram(const std::string& histogr
   double x = xMin;  
   for ( int iBin = 0; iBin <= numBins; ++iBin ) {
     binning[iBin] = x;
+    //std::cout << "binning[" << iBin << "] = " << binning[iBin] << std::endl;
     x *= logBinWidth;
-  }
+  }  
   std::string histogramName_full = std::string(pluginName_).append("_").append(histogramName);
   TH1* histogram = new TH1D(histogramName_full.data(), histogramName_full.data(), numBins, binning.GetArray());
   return histogram;
@@ -180,7 +187,8 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
   //std::cout << "<NSVfitAlgorithmByIntegration2::fitImp>:" << std::endl;
 
   double integral, integralErr;
-  integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr);
+  int errorFlag = 0;
+  integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr, errorFlag);
 
 //--- set central values and uncertainties on reconstructed masses
   for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
@@ -190,19 +198,27 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     assert(resonance);
     std::map<std::string, TH1*>::const_iterator histogram = probHistResonanceMass_.find(resonanceName);
     assert(histogram != probHistResonanceMass_.end());
-    setMassResults(resonance, histogram->second);
+    if ( errorFlag == 0 ) setMassResults(resonance, histogram->second);
+    else resonance->isValidSolution_ = false;
   }
 
   //currentEventHypothesis_->print(std::cout);
 
-  fittedEventHypothesis_ = currentEventHypothesis_;
-  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    double valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084;
-    extractHistogramProperties(probHistFitParameter_[iDimension], probHistFitParameter_[iDimension],
-			       valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084);
-    fitParameterValues_[iDimension] = valueMaximum_interpol;
+  fittedEventHypothesis_ = currentEventHypothesis_;  
+  if ( errorFlag == 0 ) {
+    for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+      double valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084;
+      extractHistogramProperties(probHistFitParameter_[iDimension], probHistFitParameter_[iDimension],
+				 valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084);
+      fitParameterValues_[iDimension] = valueMaximum_interpol;
+    }
+    fittedEventHypothesis_nll_ = this->nll(fitParameterValues_, 0);
+  } else {
+    for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+      fitParameterValues_[iDimension] = 0.;
+    }
+    fittedEventHypothesis_nll_ = -1.;
   }
-  fittedEventHypothesis_nll_ = this->nll(fitParameterValues_, 0);
 }
 
 void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase* resonance, const TH1* histMassResult) const
@@ -223,8 +239,6 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     extractHistogramProperties(histMassResult, histMassResult_density,
 			       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
-    //std::cout << "--> median = " << massQuantile050 << ", maximum = " << massMaximum << std::endl;
-
     double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
     double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
     NSVfitAlgorithmBase::setMassResults(resonance, massMaximum_interpol, massErrUp, massErrDown);
@@ -233,6 +247,7 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     
     //std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
     //std::cout << "--> mass = " << resonance->mass_ << std::endl;
+    //std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
     //resonance->print(std::cout);
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration2::setMassResults")

@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: MarkovChainIntegrator.h,v 1.3 2012/04/08 12:47:58 veelken Exp $
+ * $Id: MarkovChainIntegrator.h,v 1.4 2012/04/09 16:48:47 veelken Exp $
  *
  */
 
@@ -55,7 +55,7 @@ class MarkovChainIntegrator
 //    N-dimensional space in which the integration is performed.
   void registerCallBackFunction(const ROOT::Math::Functor&);
 
-  void integrate(const std::vector<double>&, const std::vector<double>&, double&, double&);
+  void integrate(const std::vector<double>&, const std::vector<double>&, double&, double&, int&);
 
   void print(std::ostream&) const;
 
@@ -63,7 +63,7 @@ class MarkovChainIntegrator
 
   void initializeStartPosition_and_Momentum();
 
-  void makeStochasticMove(unsigned);
+  void makeStochasticMove(unsigned, bool&);
   void makeDynamicMoves(double);
   
   void sampleSphericallyRandom();
@@ -104,6 +104,10 @@ class MarkovChainIntegrator
   //  numIterSampling: number of "stochastic moves" used to compute integral
   unsigned numIterBurnin_;
   unsigned numIterSampling_;
+
+  // maximum number of attempts to find a valid starting-position for the Markov Chain
+  // (i.e. an initial point of non-zero probability)
+  unsigned maxCallsStartingPos_;
 
   // parameters defining "simulated annealing" stage at beginning of integration
   //  simAnnealingAlpha: number of "stochastic moves" performed at high temperature during "burnin" stage
@@ -154,6 +158,8 @@ class MarkovChainIntegrator
 
   long numMoves_accepted_;
   long numMoves_rejected_;
+
+  unsigned numChainsRun_;
 
   long numIntegrationCalls_;
   long numMovesTotal_accepted_;

@@ -2,8 +2,13 @@ import FWCore.ParameterSet.Config as cms
 
 import TauAnalysis.Configuration.tools.castor as castor
 
+import ROOT
+from ROOT import gROOT
+gROOT.SetBatch(True)
+
 import os
 import re
+import time
 
 def replaceConfigFileParam(configFileName_template, configFileName_output, replacements):
     configFile_template = open(configFileName_template, 'r')
@@ -29,10 +34,59 @@ def replaceConfigFileParam(configFileName_template, configFileName_output, repla
         configFile_output.write("%s" % line_output)
     configFile_output.close()
 
+def getNumEvents(fileName):
+    file = None
+    if fileName.find('/castor/') != -1:
+        file = ROOT.TFile.Open('rfio:%s' % fileName)
+    else:
+        file = ROOT.TFile.Open('file:%s' % fileName)
+    tree = file.Get("Events")
+    numEvents = tree.GetEntries()
+    file.Close()
+    return numEvents
+
+import threading
+import Queue
+
+def updateNumEventsMap(numEventsMap, fileNames):
+
+    class LocalWorker(threading.Thread):
+        def __init__(self, numEventsMap, work_queue):
+            super(LocalWorker, self).__init__()
+            self.numEventsMap = numEventsMap
+            self.work_queue = work_queue
+        def run(self):
+            while True:
+                try:
+                    fileName = self.work_queue.get()
+                    numEvents = getNumEvents(fileName)
+                    print "file %s contains %i events\n" % (fileName, numEvents)
+                    self.numEventsMap[os.path.basename(fileName)] = numEvents
+                except KeyboardInterrupt:
+                    sys.exit(2)
+                finally:
+                    self.work_queue.task_done()
+
+    work_queue = Queue.Queue()
+    workers = [ LocalWorker(numEventsMap, work_queue) for i in range(50) ]
+    # Start all our workers
+    map(LocalWorker.start, workers)
+    # add files to the queue
+    for fileName in fileNames:
+        work_queue.put(fileName)
+        # CV: wait for one second,
+        #     in order to avoid submitting too many castor requests in too short time
+        time.sleep(1)
+    # Add poison pills
+    for worker in workers:
+        work_queue.put(None)
+    work_queue.join()
+
 def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnalyze, metResolution, 
                                                  configFileName_template,
-                                                 inputFilePath, numInputFilesPerJob, maxEvents,
-                                                 configFilePath, logFilePath, outputFilePath):
+                                                 inputFilePath,
+                                                 numInputFilesPerJob, maxEventsPerJob, 
+                                                 configFilePath, logFilePath, outputFilePath, numEventsMap = None):
 
     """Build cfg.py file to run SVfit algorithm and fill histograms of SVfit reconstructed mass""" 
 
@@ -60,22 +114,49 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         print("Sample %s, channel = %s has no input files --> skipping !!" % (sampleToAnalyze, channelToAnalyze))
         return
 
+    # CV: restrict the number of input files to 50 in order to balance event statistics
+    #    (and computing time) for different mass-points
+    if len(inputFileNames_sample) > 50:
+        inputFileNames_sample = inputFileNames_sample[0:50]
+
+    numInputFiles = len(inputFileNames_sample)
+    numInputFileGroups = (numInputFiles / numInputFilesPerJob)
+    if (numInputFiles % numInputFilesPerJob) != 0:
+        numInputFileGroups = numInputFileGroups + 1
+
     inputFileNameGroups_sample = []
-    numJobs = (len(inputFileNames_sample) / numInputFilesPerJob)
-    if (len(inputFileNames_sample) % numInputFilesPerJob) != 0:
-        numJobs = numJobs +1
-    for jobId in range(numJobs):
-        inputFileIdx_first = jobId*numInputFilesPerJob
+    skipEvents_sample = []
+    for fileId in range(numInputFileGroups):
+        inputFileIdx_first = fileId*numInputFilesPerJob
         inputFileIdx_last = inputFileIdx_first + numInputFilesPerJob
-        if inputFileIdx_last >= len(inputFileNames_sample):
-            inputFileIdx_last = len(inputFileNames_sample) - 1
-        inputFileNameGroups_sample.append(inputFileNames_sample[inputFileIdx_first:inputFileIdx_last])
+        if inputFileIdx_last > len(inputFileNames_sample):
+            inputFileIdx_last = len(inputFileNames_sample)
+        #print "inputFileIdx: first = %i, last = %i" % (inputFileIdx_first, inputFileIdx_last)
+        numEvents = 0
+        for inputFileIdx in range(inputFileIdx_first, inputFileIdx_last):
+            inputFileName = inputFileNames_sample[fileId]
+            numEvents_i = None
+            if numEventsMap is not None and numEventsMap.has_key(os.path.basename(inputFileName)):
+                numEvents_i = numEventsMap[inputFileName]
+            else:
+                numEvents_i = getNumEvents(os.path.join(inputFilePath, inputFileNames_sample[fileId]))
+            numEvents = numEvents + numEvents_i
+        numJobsPerGroup = (numEvents / maxEventsPerJob)
+        if (numEvents % maxEventsPerJob) != 0:
+            numJobsPerGroup = numJobsPerGroup + 1
+        print "group of inputFiles = %s contains %i events --> splitting into %i jobs." % \
+          (inputFileNames_sample[inputFileIdx_first:inputFileIdx_last], numEvents, numJobsPerGroup)
+        for jobId in range(numJobsPerGroup):
+            inputFileNameGroups_sample.append(inputFileNames_sample[inputFileIdx_first:inputFileIdx_last])
+            skipEvents_sample.append(jobId*maxEventsPerJob)
 
     #print "inputFileNameGroups_sample = %s" % inputFileNameGroups_sample
 
     configFileNames = []
     outputFileNames = []
     logFileNames    = []
+
+    numJobs = len(inputFileNameGroups_sample)
 
     for jobId in range(numJobs):
         
@@ -108,13 +189,14 @@ def buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnaly
         outputFileNames.append(outputFileName)
  
         replacements = []
-        replacements.append([ 'sample',         "'%s'" % sampleToAnalyze       ])
-        replacements.append([ 'sample_type',    "'%s'" % sample_type           ])
-        replacements.append([ 'channel',        "'%s'" % channelToAnalyze      ])
-        replacements.append([ 'metResolution',  "%s"   % metResolution_string  ])
-        replacements.append([ 'maxEvents',      "%i"   % maxEvents             ])
-        replacements.append([ 'inputFileNames', "%s"   % inputFileNames_string ])
-        replacements.append([ 'outputFileName', "'%s'" % outputFileName        ])
+        replacements.append([ 'sample',         "'%s'" % sampleToAnalyze          ])
+        replacements.append([ 'sample_type',    "'%s'" % sample_type              ])
+        replacements.append([ 'channel',        "'%s'" % channelToAnalyze         ])
+        replacements.append([ 'metResolution',  "%s"   % metResolution_string     ])
+        replacements.append([ 'skipEvents',     "%i"   % skipEvents_sample[jobId] ])
+        replacements.append([ 'maxEvents',      "%i"   % maxEventsPerJob          ])
+        replacements.append([ 'inputFileNames', "%s"   % inputFileNames_string    ])
+        replacements.append([ 'outputFileName', "'%s'" % outputFileName           ])
                 
         configFileName = "svFitPerformanceAnalysisPlots_%s_%s_%s_%i_cfg.py" % \
           (sampleToAnalyze, channelToAnalyze, metResolution_label, jobId)

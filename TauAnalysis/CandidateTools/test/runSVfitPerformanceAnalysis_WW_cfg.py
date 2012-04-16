@@ -22,7 +22,7 @@ channel = 'ElecNu'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-maxEvents = 2500
+maxEvents = -1
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -310,17 +310,15 @@ else:
     srcRecMEt = 'patType1CorrectedPFMet'
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
-for idxSVfitOption in range(6):
-    if idxSVfitOption == 5:
-        continue
-    ##if idxSVfitOption != 4:
+for idxSVfitOption in range(4):
+    ##if idxSVfitOption != 0:
     ##    continue
     nSVfitProducer = None
     applySinThetaFactor = None
-    if idxSVfitOption == 0 or idxSVfitOption == 3:
+    if idxSVfitOption == 0 or idxSVfitOption == 2:
         nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)
         applySinThetaFactor = True
-    elif idxSVfitOption == 1 or idxSVfitOption == 4:
+    elif idxSVfitOption == 1 or idxSVfitOption == 3:
         nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration2)
         nSVfitProducer.algorithm.markovChainOptions.mode = cms.string("Metropolis")
         nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(1500)
@@ -328,7 +326,7 @@ for idxSVfitOption in range(6):
         nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(100)
         nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(1300)
         nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.995)
-        nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(10)
+        nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(100)
         ##nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(150)
         ##nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(100)
         ##nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10)
@@ -337,18 +335,6 @@ for idxSVfitOption in range(6):
         ##nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(1)
         nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(1)
         nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-2)
-        applySinThetaFactor = False
-    elif idxSVfitOption == 2 or idxSVfitOption == 5:
-        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration2)
-        nSVfitProducer.algorithm.markovChainOptions.mode = cms.string("Hybrid")
-        nSVfitProducer.algorithm.markovChainOptions.numIterBurnin = cms.uint32(150)
-        nSVfitProducer.algorithm.markovChainOptions.numIterSampling = cms.uint32(350)
-        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10)
-        nSVfitProducer.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(130)
-        nSVfitProducer.algorithm.markovChainOptions.alpha = cms.double(0.95)
-        nSVfitProducer.algorithm.markovChainOptions.numChains = cms.uint32(10)
-        nSVfitProducer.algorithm.markovChainOptions.L = cms.uint32(200)
-        nSVfitProducer.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-3)
         applySinThetaFactor = False
     else:
         raise ValueError("Invalid SVfit option = %i !!" % idxSVfitOption)
@@ -412,7 +398,7 @@ for idxSVfitOption in range(6):
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveSVfitPerformanceAnalysisPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('svFitPerformanceAnalysisPlots_WW_%s_2012Apr09.root' % sample)
+    outputFileName = cms.string('svFitPerformanceAnalysisPlots_WW_%s_2012Apr11.root' % sample)
 )
 
 process.p = cms.Path(

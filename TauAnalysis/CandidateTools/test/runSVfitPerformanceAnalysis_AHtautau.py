@@ -18,8 +18,9 @@ import TauAnalysis.Configuration.tools.castor as castor
 version = '2012Mar13'
 
 inputFilePath  = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/SVfitStudies/'
-harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr10/'
-outputFilePath = '/tmp/veelken/svFitStudies/' 
+harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr13/'
+outputFilePath = '/tmp/veelken/svFitStudies/'
+#outputFilePath = '/data1/veelken/tmp/svFitStudies/AHtautau/2012Apr13/'
 
 samplesToAnalyze = [
     'ggHiggs120',
@@ -38,10 +39,10 @@ samplesToAnalyze = [
 ]
 
 channelsToAnalyze = [
-    'muTau',
+    ##'muTau',
     ##'eleTau',
     ##'eleMu',
-    ##'diTau'
+    'diTau'
 ]
 
 metResolutions = [
@@ -60,7 +61,14 @@ runLXBatchHarvesting = False
 # Note: you need one run with runSVfitEventHypothesisAnalyzer = False && runLXBatchHarvesting = False
 #       to copy .root files to outputFilePath on the local disk and run the final harvesting at the very end
 
-maxEvents = 500 # max. number of events analyzed per job
+if runSVfitEventHypothesisAnalyzer:
+    print "submitting analysis jobs..."
+elif runLXBatchHarvesting:
+    print "submitting harvesting jobs..."
+else:
+    print "making final plots..."
+
+maxEventsPerJob = 100 # max. number of events analyzed per job
 
 def createFilePath_recursively(filePath):
     filePath_items = filePath.split('/')
@@ -93,6 +101,9 @@ createFilePath_recursively(outputFilePath)
 configFilePath = os.path.join(os.getcwd(), "lxbatch")
 print "configFilePath = %s" % configFilePath
 createFilePath_recursively(configFilePath)
+for channelToAnalyze in channelsToAnalyze:
+    configFilePath_channel = os.path.join(configFilePath, channelToAnalyze)
+    createFilePath_recursively(configFilePath_channel)
 
 logFilePath = os.path.join(os.getcwd(), "lxbatch_log")
 print "logFilePath = %s" % logFilePath
@@ -105,10 +116,11 @@ executable_bsub = 'bsub'
 executable_waitForLXBatchJobs = 'python %s/src/TauAnalysis/Configuration/python/tools/waitForLXBatchJobs.py' % os.environ['CMSSW_BASE']
 executable_rfcp = 'rfcp'
 executable_rfrm = 'rfrm'
+executable_stager = 'stager_get'
 executable_hadd = 'hadd -f'
 executable_shell = '/bin/csh'
 
-bsubQueue = "1nw"
+bsubQueue = "1nd"
 
 configFileName_SVfitEventHypothesisAnalyzer_template = "runSVfitPerformanceAnalysis_AHtautau_cfg.py"
 
@@ -132,6 +144,31 @@ def getMEtResolution_label(metResolution):
         retVal = retVal.replace(".", "_")
     return retVal
 
+# CV: fill mapping of fileName to number of events contained in file into temporary cache
+#     in order to reduce castor file I/O
+print "initializing mapping of fileNames to number of events contained in each file..."
+numEventsMap = {}
+fileNamesToMap = []
+for sampleToAnalyze in samplesToAnalyze:
+    for channelToAnalyze in channelsToAnalyze:
+        inputFilePath_channel = os.path.join(inputFilePath, version, channelToAnalyze)
+        inputFileNames = None
+        if inputFilePath_channel.find('/castor/') != -1:
+            inputFileNames = [ file_info['path'] for file_info in castor.nslsl(inputFilePath_channel) ]
+        else:
+            inputFileNames = os.listdir(inputFilePath_channel)
+        for inputFileName in inputFileNames:        
+            if inputFileName.find("".join(['_', sampleToAnalyze, '_'])) != -1 or \
+               inputFileName.find("".join(['/', sampleToAnalyze, '_'])) != -1:
+                fileNamesToMap.append(inputFileName)
+                # CV: request inputFiles located on castor to be prestaged
+                #     in order to speed-up computation of numbers of events contained in each file
+                #     by 'buildConfigFile_SVfitEventHypothesisAnalyzer' function later
+                if inputFilePath_channel.find('/castor/') != -1:
+                    commandLine = '%s -M %s -U myfiles' % (executable_stager, inputFileName)
+                    runCommand(commandLine)
+print " done."
+
 #--------------------------------------------------------------------------------
 #
 # build config files for running FWLiteTauFakeRateAnalyzer macro on lxbatch
@@ -147,13 +184,16 @@ for sampleToAnalyze in samplesToAnalyze:
         fileNames_SVfitEventHypothesisAnalyzer[sampleToAnalyze][channelToAnalyze]         = {}
         bsubJobNames_SVfitEventHypothesisAnalyzer[sampleToAnalyze][channelToAnalyze]      = {}
         bjobListFileNames_SVfitEventHypothesisAnalyzer[sampleToAnalyze][channelToAnalyze] = {}
+        configFilePath_channel = os.path.join(configFilePath, channelToAnalyze)
         for metResolution in metResolutions:
             metResolution_label = getMEtResolution_label(metResolution)
+            print "building config file for sample = %s, channel = %s, metResolution = %s" % \
+              (sampleToAnalyze, channelToAnalyze, metResolution_label)
             retVal_SVfitEventHypothesisAnalyzer = \
               buildConfigFile_SVfitEventHypothesisAnalyzer(sampleToAnalyze, channelToAnalyze, metResolution,
                                                            configFileName_SVfitEventHypothesisAnalyzer_template,
-                                                           os.path.join(inputFilePath, version, channelToAnalyze), 1, maxEvents,
-                                                           configFilePath, logFilePath, harvestingFilePath)        
+                                                           os.path.join(inputFilePath, version, channelToAnalyze), 1, maxEventsPerJob,
+                                                           configFilePath_channel, logFilePath, harvestingFilePath, numEventsMap)        
             if retVal_SVfitEventHypothesisAnalyzer is not None:
                 fileNames_SVfitEventHypothesisAnalyzer[sampleToAnalyze][channelToAnalyze][metResolution_label] = \
                   retVal_SVfitEventHypothesisAnalyzer
@@ -192,17 +232,18 @@ for sampleToAnalyze in samplesToAnalyze:
                     input_files_and_jobs,
                     log_file_maker,
                     "%s %s" % (executable_cmsRun,
-                               os.path.join(configFilePath, retVal_SVfitEventHypothesisAnalyzer['configFileNames'][i])))
+                               os.path.join(configFilePath_channel, retVal_SVfitEventHypothesisAnalyzer['configFileNames'][i])))
 
-                #print "configFilePath = %s" % configFilePath
+                #print "configFilePath_channel = %s" % configFilePath_channel
                 #print "retVal_SVfitEventHypothesisAnalyzer['logFileNames'][i] = %s" % \
                 #  retVal_SVfitEventHypothesisAnalyzer['logFileNames'][i]
             
                 bsubScriptFileName = \
-                  os.path.join(configFilePath, retVal_SVfitEventHypothesisAnalyzer['logFileNames'][i].replace(".log", ".sh"))
+                  os.path.join(configFilePath_channel, retVal_SVfitEventHypothesisAnalyzer['logFileNames'][i].replace(".log", ".sh"))
                 bsubScriptFile = open(bsubScriptFileName, "w")
                 bsubScriptFile.write(bsubScript)
                 bsubScriptFile.close()
+                time.sleep(0.100) # CV: wait for 100 milliseconds in order to avoid opening/closing too many files in too short time
 
                 fileNameEntry['bsubScriptFileNames'].append(bsubScriptFileName)
                 
@@ -210,7 +251,7 @@ for sampleToAnalyze in samplesToAnalyze:
                 bsubJobNames_SVfitEventHypothesisAnalyzer[sampleToAnalyze][channelToAnalyze][metResolution_label].append(bsubJobName)
 
                 bjobListFileName = \
-                  os.path.join(configFilePath, "batchJobs_SVfitEventHypothesisAnalyzer_%s_%s_pf%s.lst" %
+                  os.path.join(configFilePath_channel, "batchJobs_SVfitEventHypothesisAnalyzer_%s_%s_pf%s.lst" %
                     (sampleToAnalyze, channelToAnalyze, metResolution_label))
                 bjobListFile = open(bjobListFileName, "w")
                 for bsubJobName in bsubJobNames_SVfitEventHypothesisAnalyzer[sampleToAnalyze][channelToAnalyze][metResolution_label]:
@@ -234,6 +275,7 @@ for sampleToAnalyze in samplesToAnalyze:
     for channelToAnalyze in channelsToAnalyze:
         bsubFileNames_harvesting[sampleToAnalyze][channelToAnalyze] = {}
         bsubJobNames_harvesting[sampleToAnalyze][channelToAnalyze]  = {}
+        configFilePath_channel = os.path.join(configFilePath, channelToAnalyze)
         for metResolution in metResolutions:
             metResolution_label = getMEtResolution_label(metResolution)
     
@@ -270,10 +312,10 @@ for sampleToAnalyze in samplesToAnalyze:
                 harvester_command = executable_hadd,
                 abort_on_rfcp_error = False,
                 castor_output_directory = harvestingFilePath,
-                script_directory = configFilePath,
+                script_directory = configFilePath_channel,
                 merge_script_name = \
-                os.path.join(configFilePath, "_".join([ 'submit', sampleToAnalyze, channelToAnalyze,
-                                                        metResolution_label, 'merge' ]) + '.sh'),
+                os.path.join(configFilePath_channel, "_".join([ 'submit', sampleToAnalyze, channelToAnalyze,
+                                                                metResolution_label, 'merge' ]) + '.sh'),
                 local_copy_mapper = local_copy_mapper,
                 chunk_size = 2.e+9, # 2 GB
                 check_old_files = False,
@@ -289,15 +331,18 @@ for sampleToAnalyze in samplesToAnalyze:
             if len(retVal_make_harvest_scripts['final_harvest_files']) > 0:
                 bsubJobNames_harvesting_all.append(bsubJobName)
 
-bjobListFileName_harvesting = os.path.join(configFilePath, "batchJobs_harvesting_all.lst")
-bjobListFile_harvesting = open(bjobListFileName_harvesting, "w")
-for sampleToAnalyze in samplesToAnalyze:
-    for channelToAnalyze in channelsToAnalyze:
+bjobListFileNames_harvesting = {}
+for channelToAnalyze in channelsToAnalyze:
+    configFilePath_channel = os.path.join(configFilePath, channelToAnalyze)
+    bjobListFileNames_harvesting[channelToAnalyze] = \
+      os.path.join(configFilePath_channel, "batchJobs_harvesting_%s.lst" % channelToAnalyze)
+    bjobListFile_harvesting = open(bjobListFileNames_harvesting[channelToAnalyze], "w")
+    for sampleToAnalyze in samplesToAnalyze:
         for metResolution in metResolutions:
             metResolution_label = getMEtResolution_label(metResolution)
             for bsubJobName in bsubFileNames_harvesting[sampleToAnalyze][channelToAnalyze][metResolution_label]['bsub_job_names']:        
                 bjobListFile_harvesting.write("%s\n" % bsubJobName)
-bjobListFile_harvesting.close()
+    bjobListFile_harvesting.close()
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -305,9 +350,14 @@ bjobListFile_harvesting.close()
 # build shell script for running 'hadd' in order to collect histograms
 # for all samples and event selections into single .root file
 #
-final_haddInputFileNames = []
-for sampleToAnalyze in samplesToAnalyze:
-    for channelToAnalyze in channelsToAnalyze:
+final_haddInputFileNames  = {}
+final_haddShellFileNames  = {}
+final_haddOutputFileNames = {}
+final_haddJobNames        = {}
+final_haddLogFileNames    = {}
+for channelToAnalyze in channelsToAnalyze:
+    final_haddInputFileNames[channelToAnalyze] = []
+    for sampleToAnalyze in samplesToAnalyze:    
         for metResolution in metResolutions:
             metResolution_label = getMEtResolution_label(metResolution)
             for final_harvest_file in \
@@ -317,13 +367,16 @@ for sampleToAnalyze in samplesToAnalyze:
                 #       (cf. TauAnalysis/Configuration/python/tools/harvestingLXBatch.py)
                 #    (2) assume that .root files containing histograms for single sample and single channel
                 #        are copied to local disk via rfcp prior to running 'hadd'
-                final_haddInputFileNames.append(os.path.join(outputFilePath, os.path.basename(final_harvest_file[1])))
-final_haddShellFileName = os.path.join(configFilePath, 'harvestSVfitPerformanceHistograms_%s.csh' % version)
-final_haddOutputFileName = os.path.join(outputFilePath, 'svFitPerformanceAnalysisPlots_all_%s.root' % version)
-retVal_final_hadd = \
-  buildConfigFile_hadd(executable_hadd, final_haddShellFileName, final_haddInputFileNames, final_haddOutputFileName)
-final_haddJobName = 'final_hadd'
-final_haddLogFileName = retVal_final_hadd['logFileName']
+                final_haddInputFileNames[channelToAnalyze].append(os.path.join(outputFilePath, os.path.basename(final_harvest_file[1])))
+    final_haddShellFileNames[channelToAnalyze] = os.path.join(configFilePath, 'harvestSVfitPerformanceHistograms_%s.csh' % version)
+    final_haddOutputFileNames[channelToAnalyze] = os.path.join(outputFilePath, 'svFitPerformanceAnalysisPlots_all_%s.root' % version)
+    retVal_final_hadd = \
+      buildConfigFile_hadd(executable_hadd,
+                           final_haddShellFileNames[channelToAnalyze],
+                           final_haddInputFileNames[channelToAnalyze],
+                           final_haddOutputFileNames[channelToAnalyze])
+    final_haddJobNames[channelToAnalyze] = 'final_hadd'
+    final_haddLogFileNames[channelToAnalyze] = retVal_final_hadd['logFileName']
 #--------------------------------------------------------------------------------
 
 def make_MakeFile_vstring(list_of_strings):
@@ -336,6 +389,7 @@ def make_MakeFile_vstring(list_of_strings):
 
 # done building config files, now build Makefile...
 makeFileName = "Makefile_SVfitPerformanceAnalysis_AHtautau"
+makeFileName = makeFileName + "_" + "_".join(channelsToAnalyze)
 makeFile = open(makeFileName, "w")
 makeFile.write("\n")
 outputFileNames_make = []
@@ -396,21 +450,22 @@ if runLXBatchHarvesting:
                 makeFile.write("\t%s %s\n" %
                   (executable_shell,
                    bsubFileNames_harvesting[sampleToAnalyze][channelToAnalyze][metResolution_label]['harvest_script_name']))
-    makeFile.write("%s: %s\n" %
-      (final_haddJobName,
-       final_haddOutputFileName))
-    makeFile.write("\t%s %s\n" %
-      (executable_waitForLXBatchJobs,
-       bjobListFileName_harvesting))
+        makeFile.write("%s: %s\n" %
+          (final_haddJobNames[channelToAnalyze],
+           final_haddOutputFileNames[channelToAnalyze]))
+        makeFile.write("\t%s %s\n" %
+          (executable_waitForLXBatchJobs,
+           bjobListFileNames_harvesting[channelToAnalyze]))
 if not (runSVfitEventHypothesisAnalyzer or runLXBatchHarvesting):
-    for final_haddInputFileName in final_haddInputFileNames:
-        makeFile.write("\t%s %s %s\n" %
-          (executable_rfcp,
-           os.path.join(harvestingFilePath, os.path.basename(final_haddInputFileName)),
-           final_haddInputFileName))
-    makeFile.write("\t%s %s\n" %
-      (executable_shell,
-       final_haddShellFileName))
+    for channelToAnalyze in channelsToAnalyze:
+        for final_haddInputFileName in final_haddInputFileNames[channelToAnalyze]:
+            makeFile.write("\t%s %s %s\n" %
+             (executable_rfcp,
+               os.path.join(harvestingFilePath, os.path.basename(final_haddInputFileName)),
+               final_haddInputFileName))
+        makeFile.write("\t%s %s\n" %
+          (executable_shell,
+           final_haddShellFileNames[channelToAnalyze]))
 makeFile.write("\n")
 makeFile.write(".PHONY: clean\n")
 makeFile.write("clean:\n")
@@ -433,9 +488,10 @@ for sampleToAnalyze in samplesToAnalyze:
                     makeFile.write("\t- %s %s\n" %
                       (executable_rfrm,
                        os.path.join(harvestingFilePath, final_harvest_file[1])))
-makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(final_haddInputFileNames))            
-makeFile.write("\trm -f %s\n" % final_haddShellFileName)
-makeFile.write("\trm -f %s\n" % final_haddOutputFileName)
+for channelToAnalyze in channelsToAnalyze:                    
+    makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(final_haddInputFileNames[channelToAnalyze]))            
+    makeFile.write("\trm -f %s\n" % final_haddShellFileNames[channelToAnalyze])
+    makeFile.write("\trm -f %s\n" % final_haddOutputFileNames[channelToAnalyze])
 makeFile.write("\techo 'Finished deleting old files.'\n")
 makeFile.write("\n")
 makeFile.close()

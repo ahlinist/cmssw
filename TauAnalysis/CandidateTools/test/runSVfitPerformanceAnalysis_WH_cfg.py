@@ -7,7 +7,7 @@ import re
 process = cms.Process("runSVfitPerformanceAnalysisWH")
 
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
@@ -24,8 +24,9 @@ channel = 'WtoMuNuHiggsToDiTau'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-outputFileName = 'svFitPerformanceAnalysisPlots_WH_%s_2012Mar28.root' % sample
-maxEvents = 20
+outputFileName = 'svFitPerformanceAnalysisPlots_WH_%s_2012Apr15.root' % sample
+skipEvents = 0
+maxEvents = -1
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -36,6 +37,7 @@ maxEvents = 20
 #__sample_type = '#sample_type#'
 #__channel = '#channel#'
 #__metResolution = #metResolution#
+#__skipEvents = #skipEvents#
 #__maxEvents = #maxEvents#
 #__inputFileNames = #inputFileNames#
 #__outputFileName = '#outputFileName#'
@@ -45,11 +47,14 @@ maxEvents = 20
 if inputFileNames is None:
     inputFileNames = [
         ##'file:/data1/veelken/CMSSW_4_2_x/skims/WtoElecHtoMuTau/selEvents_simWH_fromEvan_AOD.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/WtoMuHtoDiTau/selEvents_simWH120_fromArmin_AOD.root'
+        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/WtoMuHtoDiTau/selEvents_simWH120_fromArmin_AOD.root'
+        'rfio:/castor/cern.ch/user/a/aburgmei/gridfiles/wh-svfit/MC_WH_HToTauTau_M-120_7TeV-pythia6_251.root'
     ]
+    sample_type = 'Higgs'
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(inputFileNames)
+    fileNames = cms.untracked.vstring(inputFileNames),
+    skipEvents = cms.untracked.uint32(skipEvents)
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -515,8 +520,8 @@ else:
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
 for idxSVfitOption in range(10):
-    ##if not (idxSVfitOption == 6):
-    ##    continue
+    if not (idxSVfitOption == 3):
+        continue
     nSVfitProducer = None
     resonanceName = None    
     if idxSVfitOption == 0:
@@ -606,6 +611,7 @@ for idxSVfitOption in range(10):
         resonanceConfig.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
     resonanceConfig.likelihoodFunctions = cms.VPSet(resonanceLikelihoods)
     if idxSVfitOption >= 2:
+        nSVfitProducer.config.event.resonances.W.builder.daughters.chargedLepton.src = cms.InputTag(srcRecChargedLeptonFromWdecay)
         nSVfitProducer.config.event.resonances.W.daughters.chargedLepton.src = cms.InputTag(srcRecChargedLeptonFromWdecay)
     nSVfitProducer.config.event.srcMEt = cms.InputTag(srcRecMEt)
     nSVfitProducer.config.event.likelihoodFunctions[0].srcMEtCovMatrix = cms.InputTag(srcRecMEtCovMatrix)
@@ -616,7 +622,8 @@ for idxSVfitOption in range(10):
 
     nSVfitAnalyzerType = None
     if (idxSVfitOption % 2) == 1:
-        nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzer"
+        #nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzer"
+        nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzerDEBUG"
     else:  
         nSVfitAnalyzerType = "NSVfitEventHypothesisAnalyzer"
     nSVfitAnalyzer = cms.EDAnalyzer(nSVfitAnalyzerType,

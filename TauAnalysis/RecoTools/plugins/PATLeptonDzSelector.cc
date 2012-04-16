@@ -8,6 +8,7 @@
 
 template <typename T>
 PATLeptonDzSelector<T>::PATLeptonDzSelector(const edm::ParameterSet& cfg) 
+  : moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
 
@@ -24,6 +25,9 @@ template <typename T>
 void PATLeptonDzSelector<T>::select(const edm::Handle<collection>& patLeptonCollection,
 				    edm::Event& evt, const edm::EventSetup& es) 
 {
+  //std::cout << "<PATLeptonDzSelector::select>:" << std::endl;
+  //std::cout << " moduleLabel = " << moduleLabel_ << std::endl; 
+
   selected_.clear();
   
   edm::Handle<reco::VertexCollection> primaryEventVertexCollection;
@@ -36,10 +40,15 @@ void PATLeptonDzSelector<T>::select(const edm::Handle<collection>& patLeptonColl
 
   for ( typename collection::const_iterator patLepton = patLeptonCollection->begin(); 
 	patLepton != patLeptonCollection->end(); ++patLepton ) {
+    //std::cout << "lepton: Pt = " << patLepton->pt() << ","
+    //	        << " eta = " << patLepton->eta() << ", phi = " << patLepton->phi() << std::endl;
     const reco::Track* track = trackExtractor_(*patLepton);
     if ( track ) {
       double dz = track->dz(thePrimaryEventVertex.position());
+      //std::cout << " has track, dZ = " << dz << std::endl;
       if ( TMath::Abs(dz) < dzMax_ ) selected_.push_back(&(*patLepton));
+    } else {
+      //std::cout << " has no track" << std::endl;
     }
   }
 }
