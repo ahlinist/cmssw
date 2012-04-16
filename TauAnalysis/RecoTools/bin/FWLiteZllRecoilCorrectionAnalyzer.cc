@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.12 2012/02/03 18:02:14 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.13 2012/02/13 17:33:03 veelken Exp $
  *
  */
 
@@ -53,6 +53,7 @@
 #include <TROOT.h>
 #include <TBenchmark.h>
 #include <TMath.h>
+#include <TFormula.h>
 
 #include <vector>
 #include <string>
@@ -60,6 +61,11 @@
 
 typedef std::vector<edm::InputTag> vInputTag;
 typedef std::vector<std::string> vstring;
+
+double square(double x)
+{
+  return x*x;
+}
 
 int main(int argc, char* argv[]) 
 {
@@ -94,6 +100,12 @@ int main(int argc, char* argv[])
   edm::InputTag srcJets = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcJets");
   edm::InputTag srcMEt = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMEt");
   edm::InputTag srcPFCandidates = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFCandidates");
+
+  std::string shiftedMEtCorrX_string = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("shiftedMEtCorrX");
+  TFormula* shiftedMEtCorrX = new TFormula("shiftedMEtCorrX", shiftedMEtCorrX_string.data());
+  std::string shiftedMEtCorrY_string = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("shiftedMEtCorrY");
+  TFormula* shiftedMEtCorrY = new TFormula("shiftedMEtCorrY", shiftedMEtCorrY_string.data());
+  bool applyMEtShiftCorr = cfgZllRecoilCorrectionAnalyzer.getParameter<bool>("applyMEtShiftCorr");
 
   edm::InputTag srcTrigger = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcTrigger");
   vstring hltPaths = cfgZllRecoilCorrectionAnalyzer.getParameter<vstring>("hltPaths");
@@ -132,7 +144,8 @@ int main(int argc, char* argv[])
 
   std::string directory = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("directory");
 
-  std::string selEventsFileName = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("selEventsFileName");
+  std::string selEventsFileName = ( cfgZllRecoilCorrectionAnalyzer.exists("selEventsFileName") ) ? 
+    cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("selEventsFileName") : "";
 
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
@@ -342,12 +355,22 @@ int main(int argc, char* argv[])
 
       edm::Handle<pat::METCollection> met;
       evt.getByLabel(srcMEt, met);
-  
       if ( met->size() != 1 ) 
 	throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
 	  << "Failed to find unique MET object !!\n";
   
-      const pat::MET& rawMEt = (*met->begin());
+      pat::MET rawMEt = (*met->begin());
+      if ( applyMEtShiftCorr ) {
+	double sumEt = rawMEt.sumEt();
+	double rawMEtPx_sysShiftCorrected = rawMEt.px() - shiftedMEtCorrX->Eval(sumEt, vtxMultiplicity);
+	double rawMEtPy_sysShiftCorrected = rawMEt.py() - shiftedMEtCorrY->Eval(sumEt, vtxMultiplicity);
+	double rawMEtPt_sysShiftCorrected = TMath::Sqrt(square(rawMEtPx_sysShiftCorrected) + square(rawMEtPy_sysShiftCorrected));
+	reco::Candidate::LorentzVector rawMEtP4_sysShiftCorrected(rawMEtPx_sysShiftCorrected, 
+								  rawMEtPy_sysShiftCorrected, 
+								  0., 
+								  rawMEtPt_sysShiftCorrected);
+	rawMEt.setP4(rawMEtP4_sysShiftCorrected);
+      }
 
       //edm::Handle<reco::PFCandidateCollection> pfCandidates;
       //evt.getByLabel(srcPFCandidates, pfCandidates);
@@ -374,12 +397,7 @@ int main(int argc, char* argv[])
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
-      //if ( bestZllCandidate->pt() > 150. ) {
-      //  std::cout << "run = " << evt.id().run() << "," 
-      //  	    << " ls = " << evt.luminosityBlock() << ", event = " << evt.id().event() << ":" << std::endl;
-      //	
-      //  if ( selEventsFile ) (*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
-      //}
+      if ( selEventsFile ) (*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
       
       pat::MET mcToDataCorrMEt(rawMEt);
       if ( isMC_signal && corrAlgorithm ) {
@@ -416,6 +434,8 @@ int main(int argc, char* argv[])
     delete inputFile;
   }
 
+  delete shiftedMEtCorrX;
+  delete shiftedMEtCorrY;
   delete addPUreweightFile;
   delete corrAlgorithm;
   delete ZllRecoilCorrParameter_data;

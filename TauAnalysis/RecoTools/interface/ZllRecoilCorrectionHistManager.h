@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.11 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.10 2012/02/03 18:02:14 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.11 2012/02/13 17:33:04 veelken Exp $
  *
  */
 
@@ -91,12 +91,22 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramJetPtAbsEtaGt23_;
   TH1* histogramJetResAbsEtaGt23_;
 
+  TH1* histogramNumBTagJetsCorrPtGt20_;
+  TH1* histogramNumBTagJetsCorrPtGt30_;
+  TH1* histogramNumBTagJetsCorrPtGt40_;
+  
   TH1* histogramMEtS_;
   TH1* histogramMEtL_;
   TH1* histogramMEtProjParlZ_;
+  TH1* histogramMEtProjParlZxl_;
   TH1* histogramMEtProjPerpZ_;
+  TH1* histogramMEtProjPerpZxl_;
   TH1* histogramMEtX_;
+  TH2* histogramMEtXvsSumEt_;
+  TH2* histogramMEtXvsNumVertices_;
   TH1* histogramMEtY_;
+  TH2* histogramMEtYvsSumEt_;
+  TH2* histogramMEtYvsNumVertices_;
 
   TH1* histogramUparl_;
   TH1* histogramUperp_;
@@ -136,6 +146,19 @@ class ZllRecoilCorrectionHistManager
       histogramQt_ = histManager->book1D(
         dir, TString("qT").Append(label).Data(),             "q_{T}",  
 	600, 0., 300.);
+
+      histogramMEtX_ = histManager->book1D(
+        dir, TString("metX").Append(label).Data(),           "E_{X}^{miss}", 
+	75, -75.0, +75.0);
+      histogramMEtXvsSumEt_ = histManager->book2D(
+        dir, TString("metXvsSumEt").Append(label).Data(),    "E_{X}^{miss} vs. #Sigma E_{T}",           
+	100, 0., 1000., 150, -75.0, +75.0);
+      histogramMEtY_ = histManager->book1D(
+        dir, TString("metY").Append(label).Data(),           "E_{Y}^{miss}", 
+	75, -75.0, +75.0);      
+      histogramMEtYvsSumEt_ = histManager->book2D(
+        dir, TString("metYvsSumEt").Append(label).Data(),    "E_{Y}^{miss} vs. #Sigma E_{T}",           
+	100, 0., 1000., 150, -75.0, +75.0);
     }
     ~histogramsUvsQtNumObjType() {}
     int numObjMin_;
@@ -146,6 +169,11 @@ class ZllRecoilCorrectionHistManager
     TH2* histogramUperpDivQtVsQt_;
     TH2* histogramUperpVsQt_;
     TH1* histogramQt_;
+
+    TH1* histogramMEtX_;
+    TH2* histogramMEtXvsSumEt_;
+    TH1* histogramMEtY_;
+    TH2* histogramMEtYvsSumEt_;
   };
 
   std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumVtxBinned_;
