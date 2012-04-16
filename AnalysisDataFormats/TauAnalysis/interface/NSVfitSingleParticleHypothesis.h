@@ -72,9 +72,11 @@ class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
     stream << " barcode = " << barcode_ << std::endl;
     stream << " particle(id:key) = " << particle_.id() << ":" << particle_.key() << std::endl;
     stream << " p4: Pt = " << p4_.pt() << ","
-	   << " eta = " << p4_.eta() << ", phi = " << p4_.phi() << std::endl;
+	   << " eta = " << p4_.eta() << ", phi = " << p4_.phi() 
+	   << " (Px = " << p4_.px() << ", Py = " << p4_.py() << ")" << std::endl;
     stream << " p4_fitted: Pt = " << p4_fitted().pt() << ","
-	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() << std::endl;
+	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() 
+	   << " (Px = " << p4_fitted().px() << ", Py = " << p4_fitted().py() << ")" << std::endl;
     stream << "(x = " << (p4_.energy()/p4_fitted().energy()) << ")" << std::endl;
   }
 
