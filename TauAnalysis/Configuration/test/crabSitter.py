@@ -27,7 +27,7 @@ print("<crabSitter>:")
 crabFilePath = '/tmp/veelken/crab'
 
 statusFileName = 'crabSitter.json'
-jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_1'
+jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
