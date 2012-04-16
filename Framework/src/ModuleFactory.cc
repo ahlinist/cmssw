@@ -31,6 +31,17 @@ namespace edm {
       {
          iProvider.add(iComponent);
       }
+
+      boost::shared_ptr<ModuleMakerTraits::base_type> const*
+      ModuleMakerTraits::getAlreadyMadeComponent(EventSetupsController const&,
+                                                 ParameterSet const&) {
+         return 0;
+      }
+
+      void ModuleMakerTraits::putComponent(EventSetupsController&,
+                                           ParameterSet const&,
+                                           boost::shared_ptr<base_type> const&) {
+      }
    }
 }
 COMPONENTFACTORY_GET(edm::eventsetup::ModuleMakerTraits);

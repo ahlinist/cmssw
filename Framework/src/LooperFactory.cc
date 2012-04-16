@@ -23,6 +23,16 @@ namespace edm {
    namespace eventsetup {
       std::string LooperMakerTraits::name() { return "CMS EDM Framework EDLooper"; }
       
+      boost::shared_ptr<LooperMakerTraits::base_type> const*
+      LooperMakerTraits::getAlreadyMadeComponent(EventSetupsController const&,
+                                                 ParameterSet const&) {
+         return 0;
+      }
+
+      void LooperMakerTraits::putComponent(EventSetupsController&,
+                                           ParameterSet const&,
+                                           boost::shared_ptr<base_type> const&) {
+      }
    }
 }
 

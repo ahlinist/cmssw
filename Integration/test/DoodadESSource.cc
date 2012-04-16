@@ -95,6 +95,7 @@ void
 DoodadESSource::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   desc.addOptional<std::string>("appendToDataLabel");
+  desc.addOptionalUntracked<std::string>("test2");
   desc.addUntracked<bool>("test", false)->
     setComment("This parameter exists only to test the parameter set validation for ESSources"); 
   descriptions.add("DoodadESSource", desc);
