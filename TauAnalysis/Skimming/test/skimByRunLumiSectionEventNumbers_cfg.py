@@ -4,7 +4,7 @@ import copy
 import os
 import re
 
-process = cms.Process("skimByRunLumiSectionEventNumbers")
+process = cms.Process("skimByRunLumiSectionEventNumbers2")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
@@ -24,8 +24,9 @@ process.source = cms.Source("PoolSource",
         ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/goldenZmumuEvents_simDYtoMuMu_AOD_496_0_t1h.root',
         ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/goldenZmumuEvents_simDYtoMuMu_AOD_497_0_GNy.root',
         ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/goldenZmumuEvents_simDYtoMuMu_AOD_510_0_m4S.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/tauIdEffSample_Ztautau_powheg_2011Oct30_RECO_70_1_ynt.root',
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/tauIdEffSample_Ztautau_powheg_2011Oct30_RECO_71_1_ugG.root'                        
+        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/tauIdEffSample_Ztautau_powheg_2011Oct30_RECO_70_1_ynt.root',
+        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/tauIdEffSample_Ztautau_powheg_2011Oct30_RECO_71_1_ugG.root'
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauFakeRate_WJets_RunB_fromArun/selEvents_Data_2011RunB_Wmunu_AOD.root'
     )
 )
 
@@ -55,14 +56,16 @@ process.source = cms.Source("PoolSource",
 ##
 ##setattr(process.source, "fileNames", cms.untracked.vstring(inputFileNames_matched))
 
-process.options = cms.untracked.PSet(
-    emptyRunLumiMode = cms.untracked.string('doNotHandleEmptyRunsAndLumis')
-)
+##process.options = cms.untracked.PSet(
+##    emptyRunLumiMode = cms.untracked.string('doNotHandleEmptyRunsAndLumis')
+##)
 
 process.selectEventsByRunLumiSectionEventNumber = cms.EDFilter("RunLumiSectionEventNumberFilter",
     runLumiSectionEventNumberFileName = cms.string(
         #'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/Test/test/selEvents_checkMEtSmearing_unclusteredEnDown.txt'
-        '/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/TauIdEfficiency/test/selEvents_Ztautau_tauIdPassed_but_loosePFIsoFailed.txt'                                                            
+        #'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/TauIdEfficiency/test/selEvents_Ztautau_tauIdPassed_but_loosePFIsoFailed.txt'
+        #'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/Skimming/test/TauFakeRate_WJet_TestSampleNVtX15_COR2_HPS0.root_debug.txt'
+        '/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/Skimming/test/debug-passed-nvtx20.txt'
     ),
     separator = cms.string(':')
 )
@@ -77,23 +80,24 @@ eventSelection = cms.untracked.PSet(
 
 process.load("Configuration.EventContent.EventContent_cff")
 process.origFEVTSIMEventContent = copy.deepcopy(process.FEVTSIMEventContent)
-process.origFEVTSIMEventContent.outputCommands.extend(    
-    cms.untracked.vstring(
-        'drop LumiDetails_lumiProducer_*_*',
-        'drop LumiSummary_lumiProducer_*_*',
-        'drop RunSummary_lumiProducer_*_*',
-        'drop *_MEtoEDMConverter_*_*',
-        'drop *_*_*_skim*',
-        'keep *_*_*_*' # CV: only for Testing !!
-    )
-)    
+##process.origFEVTSIMEventContent.outputCommands.extend(    
+##    cms.untracked.vstring(
+##        'drop LumiDetails_lumiProducer_*_*',
+##        'drop LumiSummary_lumiProducer_*_*',
+##        'drop RunSummary_lumiProducer_*_*',
+##        'drop *_MEtoEDMConverter_*_*',
+##        'drop *_*_*_skim*',
+##        'keep *_*_*_*' # CV: only for Testing !!
+##    )
+##)    
 
 process.skimOutputModule = cms.OutputModule("PoolOutputModule",
     eventSelection,
     process.origFEVTSIMEventContent,
     fileName = cms.untracked.string(
         #'/data1/veelken/CMSSW_4_2_x/skims/selEvents_checkMEtSmearing_unclusteredEnDown_AOD.root'
-        '/data1/veelken/CMSSW_4_2_x/skims/selEvents_Ztautau_tauIdPassed_but_loosePFIsoFailed_AOD.root'
+        #'/data1/veelken/CMSSW_4_2_x/skims/selEvents_Ztautau_tauIdPassed_but_loosePFIsoFailed_AOD.root'
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauFakeRate_WJets_RunB_fromArun/selEvents_Data_2011RunB_Wmunu_AOD_numVerticesEq20.root'
     )
 )
 
