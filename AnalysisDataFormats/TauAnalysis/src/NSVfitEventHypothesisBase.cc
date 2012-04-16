@@ -3,6 +3,7 @@
 NSVfitEventHypothesisBase::NSVfitEventHypothesisBase(const NSVfitEventHypothesisBase& bluePrint)
   : name_(bluePrint.name_),
     barcode_(bluePrint.barcode_),
+    nll_(bluePrint.nll_),
     met_(bluePrint.met_),
     eventVertexPosition_(bluePrint.eventVertexPosition_),
     eventVertexPositionErr_(bluePrint.eventVertexPositionErr_),
@@ -19,6 +20,7 @@ NSVfitEventHypothesisBase& NSVfitEventHypothesisBase::operator=(const NSVfitEven
 {
   name_ = bluePrint.name_;
   barcode_ = bluePrint.barcode_;
+  nll_ = bluePrint.nll_;
   met_ = bluePrint.met_;
   eventVertexPosition_ = bluePrint.eventVertexPosition_;
   eventVertexPositionErr_ = bluePrint.eventVertexPositionErr_;
