@@ -9,6 +9,7 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
@@ -246,7 +247,7 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 		leg2Particle != leg2Particles->end(); ++leg2Particle ) {
 	    if ( leg1Particle->pt() > 5. && leg2Particle->pt() > 5. && 
 		 reco::deltaR(leg1Particle->p4(), leg2Particle->p4()) > 0.7 ) {
-	      double phiBisectorLeg1Leg2 = TMath::ACos(TMath::Cos(leg1Particle->phi() - leg2Particle->phi()));
+	      double phiBisectorLeg1Leg2 = normalizedPhi(leg1Particle->phi() - leg2Particle->phi());
 	      fillMEtProjectionHistograms(hMEtPparlBisectorLeg1Leg2Diff_, hMEtPparlBisectorLeg1Leg2Pull_, 0, 0,
 					  metDiffPx, metDiffPy, phiBisectorLeg1Leg2, metRes1d, evtWeight);
 	    }
