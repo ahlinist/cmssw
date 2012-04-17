@@ -221,6 +221,9 @@ void NSVfitAlgorithmByIntegration::fitImp() const
       ((double*)integrand_->params)[iMassParameter] = massParameterValue;
       massParameterValues[iMassParameter] = massParameterValue;
     }
+    // CV: reset random number generator required by VEGAS (for what ?)
+    //     for each event, in order to make mass reconstruction not depend on "processing history"    
+    gsl_rng_set(rnd_, 12345); 
 
 //--- call VEGAS routine (part of GNU scientific library)
 //    to perform actual integration
