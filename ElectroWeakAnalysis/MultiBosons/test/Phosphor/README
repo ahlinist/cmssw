@@ -1,0 +1,54 @@
+PHOSPHOR Correction
+-------------------
+
+The PHOSPHOR correction has been developed and tested in the CMSSW
+package ElectroWeakAnalysis/MultiBosons but doesn't have any 
+dependencies on CMSSW.  
+
+There are several different ways of using it in your code 
+standalone depending on how is your analysis setup.
+You can compile it against a standalone executable with g++, you
+can use it in CINT interpreted ROOT macro (although
+it has to be first compiled with ACLiC) or you can use 
+it with PyROOT.
+
+For more details see 
+https://twiki.cern.ch/twiki/bin/view/CMS/VGamma2011PhosphorFit
+
+Note that the compared to the current version v0.5 changed
+the internal enum type PhosphorCorrectionFunctor::Mode 
+used in the constructor. See the file testPhosphorCorrection.cc
+for the list of supported modes and examples of usage.
+
+Jan Veverka, 17 April 2012.
+
+v0.5 Release Notes
+------------------
+- Added corrections and smearings also for the 2011A+2011B average.
+
+- Fixed a bug for pt < 10 GeV.  These photons are left uncorrected now.
+
+- Merged standalone test and test in ROOT in a single file.
+
+v0.4 Release Notes
+------------------
+- Added pt 10-12 and 20up categeories, so that the full
+  pt range from 10 GeV is covered.
+
+- Results are based on S6 Fall11 MC.
+
+- The functor class derives from TObject and is a ROOT class
+  for which the dictionary has to be generated.
+
+v0.3 Release Notes
+------------------
+Fixed a bug of MC smearing when no gen-level match is found.  This is now
+only corrected for the scale and no extra smearing is applied.
+
+v0.2 Release Notes
+------------------
+MC can be smeared such that resolution matches 2011A or 2011B data.
+
+v0.1 Release Notes
+------------------
+First implementation of the scale correction for both data and Monte Carlo.

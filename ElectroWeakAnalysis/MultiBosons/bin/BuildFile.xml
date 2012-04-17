@@ -8,21 +8,16 @@
 <use   name="root"/>
 <use   name="boost"/>
 <use   name="boost_python"/>
-<use   name="CommonTools/CandUtils"/>
 <use   name="CommonTools/Utils"/>
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/FWLite"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 <use   name="ElectroWeakAnalysis/MultiBosons"/>
 <environment>
-  <bin   file="plotMuons.cc">
-  </bin>
-  <bin   file="ZToMuMuGammaFsrSelectionSync.cc">
-  </bin>
-  <bin   file="plotPhotons.cc">
-  </bin>
-  <bin   file="plotElectrons.cc">
-  </bin>
-  <bin   file="vGammaFWLiteAnalysis.cc">
-  </bin>
+  <bin   file="plotMuons.cc"/>
+  <bin   file="plotPhotons.cc"/>
+  <bin   file="plotElectrons.cc"/>
+  <bin   file="vGammaFWLiteAnalysis.cc"/>
+  <bin   file="testPhosphorCorrection.cc" 
+         name="test-phosphor-correction.exe"/>
 </environment>
