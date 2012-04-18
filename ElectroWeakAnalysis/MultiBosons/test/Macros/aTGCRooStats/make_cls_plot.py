@@ -315,7 +315,7 @@ def make1DLimit(limits2d, par, parlatex, parmin, parmax, samples, boundScale, is
     limits1d['obs'][0].Draw("SAME C")
     
     #titles
-    limits1d['2s'][0].GetYaxis().SetTitle("95% CL limit on #sigma/#sigma_{SM}")
+    limits1d['2s'][0].GetYaxis().SetTitle("95% CL limit on #sigma/#sigma_{aTGC}")
     limits1d['2s'][0].GetYaxis().SetTitleFont(132)
     limits1d['2s'][0].GetXaxis().SetTitle(parlatex)
     limits1d['2s'][0].GetXaxis().SetTitleFont(132)
