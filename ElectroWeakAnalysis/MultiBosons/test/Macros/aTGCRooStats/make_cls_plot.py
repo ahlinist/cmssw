@@ -349,16 +349,16 @@ def make1DLimit(limits2d, par, parlatex, parmin, parmax, samples, boundScale, is
     textlim.AddText("%.2g < %s  < %.2g"%(lowerLimit,parlatex,upperLimit))
     textlim.Draw()
     
-    lowLimitLine = TLine(lowerLimit,limits1d['2s'][0].GetYaxis().GetXmin()*0.75,
-                         lowerLimit,1)
-    lowLimitLine.SetLineColor(14)
-    lowLimitLine.SetLineWidth(2)
-    lowLimitLine.Draw()
-    upLimitLine = TLine(upperLimit,limits1d['2s'][0].GetYaxis().GetXmin()*0.75,
-                        upperLimit,1)
-    upLimitLine.SetLineColor(14)
-    upLimitLine.SetLineWidth(2)
-    upLimitLine.Draw()
+    #lowLimitLine = TLine(lowerLimit,limits1d['2s'][0].GetYaxis().GetXmin()*0.75,
+    #                     lowerLimit,1)
+    #lowLimitLine.SetLineColor(14)
+    #lowLimitLine.SetLineWidth(2)
+    #lowLimitLine.Draw()
+    #upLimitLine = TLine(upperLimit,limits1d['2s'][0].GetYaxis().GetXmin()*0.75,
+    #                    upperLimit,1)
+    #upLimitLine.SetLineColor(14)
+    #upLimitLine.SetLineWidth(2)
+    #upLimitLine.Draw()
 
     oneLine = TLine(parmin*0.985,1,parmax*0.96,1)
     oneLine.SetLineStyle(9)
