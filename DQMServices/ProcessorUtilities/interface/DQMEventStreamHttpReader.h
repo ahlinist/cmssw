@@ -1,4 +1,4 @@
-// $Id: EventStreamHttpReader.h,v 1.29 2011/09/02 08:13:31 momsen Exp $
+// $Id: DQMEventStreamHttpReader.h,v 1.1 2012/04/13 14:37:08 lilopera Exp $
 /// @file: DQMEventStreamHttpReader.h
 #ifndef ProcessorUtilities_DQMEventStreamHttpReader_h
 #define ProcessorUtilities_DQMEventStreamHttpReader_h
@@ -26,9 +26,9 @@ namespace edm
     already be done if this was inherenting from the standard
     framework input source. Currently we inherit from InputSource.
 
-    $Author: mommsen $
-    $Revision: 1.29 $
-    $Date: 2011/09/02 08:13:31 $
+    $Author: lilopera $
+    $Revision: 1.1 $
+    $Date: 2012/04/13 14:37:08 $
   */
 
   class DQMEventStreamHttpReader : public edm::StreamerInputSource, private dqmevf::InputController
@@ -59,8 +59,6 @@ namespace edm
     bool registeredFirst_;
     unsigned long lastEID_;
     unsigned long useMinEID_;
-
-    unsigned int shutdown_;
 
     //members for the dqmevf::Processor synchronisation
     void initFUHelpers();
