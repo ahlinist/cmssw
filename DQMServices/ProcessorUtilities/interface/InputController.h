@@ -25,7 +25,7 @@ namespace dqmevf
     bool enableLocking;
     bool dropOldLS;
     bool isDQM;
-    unsigned int *runStopFlag;
+    volatile bool *runStopFlag;
 
     evfSourceVars() {
       evtLumi=0;

@@ -1,4 +1,4 @@
-// $Id: DQMEventStreamHttpReader.cc,v 1.52 2011/09/02 08:13:31 mommsen Exp $
+// $Id: DQMEventStreamHttpReader.cc,v 1.1 2012/04/13 14:37:12 lilopera Exp $
 /// @file: DQMEventStreamHttpReader.cc
 
 #include "DQMServices/Core/interface/MonitorElement.h"
@@ -31,14 +31,12 @@ namespace edm
   registered_(0),
   registeredFirst_(0),
   lastEID_(0),
-  useMinEID_(0),
-  shutdown_(0)
+  useMinEID_(0)
   {
     // Default in StreamerInputSource is 'false'
     inputFileTransitionsEachEvent_ =
       pset.getUntrackedParameter<bool>("inputFileTransitionsEachEvent", true);
 
-    eventServerProxy_.setShutdownPtr(&shutdown_);
     initFUHelpers();
     readHeader();
   }
@@ -53,7 +51,7 @@ namespace edm
 
     do
     {
-      while (!registered_ && !edm::shutdown_flag && !shutdown_) {
+      while (!registered_ && !edm::shutdown_flag) {
         try {
 	  eventServerProxy_.reconnect();
 	 readHeader();
@@ -62,7 +60,7 @@ namespace edm
       }
       eventServerProxy_.getOneEvent(data);
       //end of run
-      if (edm::shutdown_flag || shutdown_)
+      if (edm::shutdown_flag)
       {
 	unblockScalers();
 	setEndRun();
@@ -156,7 +154,7 @@ namespace edm
     pthread_mutex_init(&signal_lock_,0);
     pthread_cond_init(&cond_,0);
     evfVars_=vars;
-    evfVars_->runStopFlag=&shutdown_;
+    evfVars_->runStopFlag=&edm::shutdown_flag;
     dropOldLumisectionEvents_=vars->dropOldLS;
   }
 
