@@ -37,7 +37,6 @@ CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::CompositePtrCandi
 
   genParticleSrc_ = cfg.getParameter<edm::InputTag>("genParticleSource");
   genJetSrc_ = cfg.getParameter<edm::InputTag>("genJetSource");
-  genMEtSrc_ = cfg.getParameter<edm::InputTag>("genMEtSource");
   recoJetSrc_ = cfg.getParameter<edm::InputTag>("recoJetSource");
 
   diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
