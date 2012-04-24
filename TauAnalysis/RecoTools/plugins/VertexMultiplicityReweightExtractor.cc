@@ -59,6 +59,29 @@ namespace
     }
     return retVal;
   }
+  std::vector<float> gen_pileup_summer12mc()
+  {
+    const int gen_pu_max = 60;
+    const double npu_probs[gen_pu_max] = {
+      2.344E-05, 2.344E-05, 2.344E-05, 2.344E-05, 4.687E-04,
+      4.687E-04, 7.032E-04, 9.414E-04, 1.234E-03, 1.603E-03,
+      2.464E-03, 3.250E-03, 5.021E-03, 6.644E-03, 8.502E-03,
+      1.121E-02, 1.518E-02, 2.033E-02, 2.608E-02, 3.171E-02,
+      3.667E-02, 4.060E-02, 4.338E-02, 4.520E-02, 4.641E-02,
+      4.735E-02, 4.816E-02, 4.881E-02, 4.917E-02, 4.909E-02,
+      4.842E-02, 4.707E-02, 4.501E-02, 4.228E-02, 3.896E-02,
+      3.521E-02, 3.118E-02, 2.702E-02, 2.287E-02, 1.885E-02,
+      1.508E-02, 1.166E-02, 8.673E-03, 6.190E-03, 4.222E-03,
+      2.746E-03, 1.698E-03, 9.971E-04, 5.549E-04, 2.924E-04,
+      1.457E-04, 6.864E-05, 3.054E-05, 1.282E-05, 5.081E-06,
+      1.898E-06, 6.688E-07, 2.221E-07, 6.947E-08, 2.047E-08
+    };
+    std::vector<float> retVal(gen_pu_max);
+    for ( int i = 0; i < gen_pu_max; ++i ) {
+      retVal[i] = npu_probs[i];
+    }
+    return retVal;
+  }
 
   int getBin(TAxis* axis, double x)
   {
@@ -93,19 +116,29 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
   if ( type_ == kGenLevel || type_ == kGenLevel3d ) {
     // get MC production cycle
     std::string mcPeriod = cfg.getParameter<std::string>("mcPeriod");
-    if ( mcPeriod.compare("Spring11") && mcPeriod.compare("Summer11") && mcPeriod.compare("Fall11")) 
-      throw cms::Exception("VertexMultiplicityReweightExtractor")
-        << " Configuration parameter 'mcPeriod' must be 'Spring11', 'Summer11', or 'Fall11'.\n"; 
-    
+    std::vector<float> gen_pileup_mc;
+    if      ( mcPeriod.compare("Summer11") == 0 ) {
+      gen_pileup_mc = gen_pileup_summer11mc();
+      bxPrevious_ = -1;
+      bxNext_ = +1;
+    } else if ( mcPeriod.compare("Fall11")   == 0 ) {
+      gen_pileup_mc = gen_pileup_fall11mc();
+      bxPrevious_ = -1;
+      bxNext_ = +1;
+    } else if ( mcPeriod.compare("Summer12") == 0 ) {
+      gen_pileup_mc = gen_pileup_summer12mc();
+      bxPrevious_ = -1;
+      bxNext_ = +1;
+    } else throw cms::Exception("VertexMultiplicityReweightExtractor")
+	<< " Configuration parameter 'mcPeriod' must be 'Summer11', 'Fall11', or 'Summer12'.\n"; 
+    //std::cout << " gen_pileup_mc(" << mcPeriod << ") = " << format_vfloat(gen_pileup_mc) << std::endl;
+
     inputFile_ = new TFile(inputFileName.fullPath().data());
     puDist_data_ = dynamic_cast<TH1*>(inputFile_->Get(lutName.data()));
     if ( !puDist_data_ ) 
       throw cms::Exception("VertexMultiplicityReweightExtractor") 
 	<< " Failed to load LUT = " << lutName.data() << " from file = " << inputFileName.fullPath().data() << " !!\n";
     
-    std::vector<float> gen_pileup_mc = gen_pileup_summer11mc();
-    if( mcPeriod.compare("Fall11") )
-            gen_pileup_mc = gen_pileup_fall11mc();
     TH1* puDist_mc = new TH1D("MC_distr", "MC_distr", gen_pileup_mc.size(), 0., gen_pileup_mc.size());
     int numBins = puDist_mc->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
@@ -126,9 +159,10 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     } else if ( type_ == kGenLevel3d ) {
       std::string tmpStr("MC_distr");
       genLumiReweight3d_ = new edm::Lumi3DReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
-      // CV: use pp inelastic cross-section of 73.5mb measured by TOTEM
+      // CV: for 2011 data use pp inelastic cross-section of 73.5mb measured by TOTEM
       //     instead of CMS measurement of 68mb (default in Lumi3DReWeighting)
-      genLumiReweight3d_->weight3D_init(73.5/68.);
+      if ( mcPeriod.find("11") != std::string::npos ) genLumiReweight3d_->weight3D_init(73.5/68.);
+      else genLumiReweight3d_->weight3D_init(68./68.);
     }
   } else {
     inputFile_ = new TFile(inputFileName.fullPath().data());
@@ -156,32 +190,36 @@ double VertexMultiplicityReweightExtractor::operator()(const edm::Event& evt) co
     edm::Handle<PileupSummaryInfoCollection> genPileUpInfos;
     evt.getByLabel(src_, genPileUpInfos);
 
-    int numPileUp_inTime     = -1;
     int numPileUp_bxPrevious = -1;
+    int numPileUp_inTime     = -1;
     int numPileUp_bxNext     = -1;
     for ( PileupSummaryInfoCollection::const_iterator genPileUpInfo = genPileUpInfos->begin();
 	  genPileUpInfo != genPileUpInfos->end(); ++genPileUpInfo ) {
       // CV: in-time PU is stored in getBunchCrossing = 0, 
       //    cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupInformation
       int bx = genPileUpInfo->getBunchCrossing();
-      if      ( bx ==  0 ) numPileUp_inTime     = genPileUpInfo->getPU_NumInteractions();
-      else if ( bx == -1 ) numPileUp_bxPrevious = genPileUpInfo->getPU_NumInteractions();
-      else if ( bx == +1 ) numPileUp_bxNext     = genPileUpInfo->getPU_NumInteractions();
-    }
+      //std::cout << "bx = " << bx << std::endl;
+      if      ( bx == bxPrevious_ ) numPileUp_bxPrevious = genPileUpInfo->getPU_NumInteractions();
+      else if ( bx ==  0          ) numPileUp_inTime     = genPileUpInfo->getPU_NumInteractions();
+      else if ( bx == bxNext_     ) numPileUp_bxNext     = genPileUpInfo->getPU_NumInteractions();
+    }    
     if ( numPileUp_bxPrevious == -1 || numPileUp_inTime == -1 || numPileUp_bxNext == -1 ) 
       throw cms::Exception("VertexMultiplicityReweightExtractor") 
-	<< " Failed to find PileupSummaryInfo object for in-time Pile-up !!\n";
+	<< " Failed to decode in-time and/or out-of-time Pile-up information stored in PileupSummaryInfo object" 
+	<< " (numPileUp = {" << numPileUp_bxPrevious << ", " << numPileUp_inTime << ", " << numPileUp_bxNext << "}) !!\n";
     if      ( type_ == kGenLevel   ) weight = genLumiReweight_->weight(numPileUp_inTime);
     else if ( type_ == kGenLevel3d ) weight = genLumiReweight3d_->weight3D(numPileUp_bxPrevious, numPileUp_inTime, numPileUp_bxNext);
     else assert(0);
+    //std::cout << " numPileUp = {" << numPileUp_bxPrevious << ", " << numPileUp_inTime << ", " << numPileUp_bxNext << "}:" 
+    //	        << " weight = " << weight << std::endl;
   } else if ( type_ == kRecLevel ) {
     edm::Handle<reco::VertexCollection> vertices;
     evt.getByLabel(src_, vertices);
     int binIdx = getBin(recVtxMultiplicityReweight_->GetXaxis(), vertices->size());
     weight = recVtxMultiplicityReweight_->GetBinContent(binIdx);
+    //std::cout << " numVertices = " << vertices->size() << ":" 
+    //	        << " weight = " << weight << std::endl;
   }
-
-  //std::cout << " numPileUp = " << numPileUp << ": weight = " << weight << std::endl;
 
   return weight;
 }
