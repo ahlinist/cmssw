@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.11 2012/02/13 17:33:04 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.12 2012/04/16 07:26:51 veelken Exp $
  *
  */
 
@@ -23,6 +23,8 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
 
 #include <TH1.h>
 #include <TH2.h>
@@ -41,7 +43,7 @@ class ZllRecoilCorrectionHistManager
   /// book and fill histograms
   void bookHistograms(TFileDirectory&);
   void fillHistograms(const reco::CompositeCandidate&, const std::vector<pat::Muon>&, 
-		      const std::vector<pat::Jet>&, const pat::MET&, 
+		      const std::vector<pat::Jet>&, const pat::MET&, const PFMEtSignCovMatrix&,
 		      const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&, 
 		      const reco::Candidate::LorentzVector&,
 		      int, int, int, const reco::VertexCollection&, double, double);
@@ -107,6 +109,15 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramMEtY_;
   TH2* histogramMEtYvsSumEt_;
   TH2* histogramMEtYvsNumVertices_;
+
+  TH1* histogramMEtCovSqrtEigenVal1_;
+  TH1* histogramMEtCovSqrtEigenVal2_;
+  TH1* histogramMEtPull_;
+  TH1* histogramMEtSigmaParlZ_;
+  TH1* histogramMEtPullParlZ_;
+  TH1* histogramMEtSigmaPerpZ_;
+  TH1* histogramMEtPullPerpZ_;
+  TH1* histogramMEtPull2_;
 
   TH1* histogramUparl_;
   TH1* histogramUperp_;
