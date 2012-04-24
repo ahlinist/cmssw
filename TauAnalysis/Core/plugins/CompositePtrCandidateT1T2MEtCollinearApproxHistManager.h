@@ -40,7 +40,6 @@ class CompositePtrCandidateT1T2MEtCollinearApproxHistManager : public HistManage
 
   edm::InputTag genParticleSrc_;
   edm::InputTag genJetSrc_;
-  edm::InputTag genMEtSrc_;
   edm::InputTag recoJetSrc_;
 
   bool requireGenMatch_;
