@@ -731,6 +731,7 @@ for idxSVfitOption1 in range(16):                       # determines likelihood 
             metResolution_label = metResolution_label.replace(".", "_")
         nSVfitAnalyzer = cms.EDAnalyzer(nSVfitAnalyzerType,
             srcEventHypotheses = cms.InputTag(nSVfitProducerName),
+            srcGenTauPairs = cms.InputTag(genTauPairs),
             srcGenLeg1 = cms.InputTag(srcGenLeg1),
             srcGenLeg2 = cms.InputTag(srcGenLeg2),
             srcGenMEt = cms.InputTag('genMetFromGenParticles'),
