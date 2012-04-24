@@ -234,7 +234,7 @@ nSVfitConfig_template = cms.PSet(
                 daughters = cms.PSet(
                     leg1 = cms.PSet(
                         src = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
-                        likelihoodFunctions = cms.VPSet(nSVfitMuonLikelihoodPhaseSpace),
+                        likelihoodFunctions = cms.VPSet(nSVfitMuonLikelihoodMatrixElement),
                         builder = nSVfitTauToMuBuilder
                     ),
                     leg2 = cms.PSet(
