@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.13 2012/02/13 17:33:03 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.14 2012/04/16 07:26:50 veelken Exp $
  *
  */
 
@@ -46,6 +46,7 @@
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionHistManager.h"
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionAlgorithm.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
 
 #include <TFile.h>
 #include <TTree.h>
@@ -99,6 +100,7 @@ int main(int argc, char* argv[])
 
   edm::InputTag srcJets = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcJets");
   edm::InputTag srcMEt = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMEt");
+  edm::InputTag srcMEtSignCovMatrix = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMEtSignCovMatrix");
   edm::InputTag srcPFCandidates = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFCandidates");
 
   std::string shiftedMEtCorrX_string = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("shiftedMEtCorrX");
@@ -358,6 +360,9 @@ int main(int argc, char* argv[])
       if ( met->size() != 1 ) 
 	throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
 	  << "Failed to find unique MET object !!\n";
+
+      edm::Handle<PFMEtSignCovMatrix> metCov;
+      evt.getByLabel(srcMEtSignCovMatrix, metCov);
   
       pat::MET rawMEt = (*met->begin());
       if ( applyMEtShiftCorr ) {
@@ -385,15 +390,15 @@ int main(int argc, char* argv[])
       //}
       
       histogramsBeforeGenPUreweight->fillHistograms(
-	*bestZllCandidate, *muons, *jets, rawMEt, 
+	*bestZllCandidate, *muons, *jets, rawMEt, *metCov, 
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, 1.0);
       histogramsBeforeAddPUreweight->fillHistograms(
-        *bestZllCandidate, *muons, *jets, rawMEt, 
+        *bestZllCandidate, *muons, *jets, rawMEt, *metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight);
       histogramsBeforeZllRecoilCorr->fillHistograms(
-        *bestZllCandidate, *muons, *jets, rawMEt, 
+	*bestZllCandidate, *muons, *jets, rawMEt, *metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
@@ -408,7 +413,7 @@ int main(int argc, char* argv[])
 	mcToDataCorrMEt = corrAlgorithm->buildZllCorrectedMEt(rawMEt, rawMEt.genMET()->p4(), bestZllCandidate->p4());
       }
       histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
-        *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, 
+        *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, *metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
@@ -425,7 +430,7 @@ int main(int argc, char* argv[])
 	absCalibMEt.setP4(math::XYZTLorentzVector(absCalibMEtPx, absCalibMEtPy, 0., absCalibMEtPt));
       }
       histogramsAfterZllRecoilAbsCalib->fillHistograms(
-        *bestZllCandidate, *muons, *jets, absCalibMEt, 
+        *bestZllCandidate, *muons, *jets, absCalibMEt, *metCov, 
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
     }

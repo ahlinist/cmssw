@@ -4,8 +4,10 @@
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/neuralMtautauAuxFunctions.h"
 
 #include <TMath.h>
+#include <TVectorD.h>
 
 ZllRecoilCorrectionHistManager::ZllRecoilCorrectionHistManager(const edm::ParameterSet& cfg)
 {}
@@ -70,6 +72,23 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramMEtProjPerpZxl_     = book1D(dir, "metProjPerpZxl",     "E_{T}^{miss} Proj. perp. Z",             200,       -100.0,       +100.0);
   histogramMEtX_               = book1D(dir, "metX",               "E_{X}^{miss}",                            75,        -75.0,        +75.0);
   histogramMEtY_               = book1D(dir, "metY",               "E_{Y}^{miss}",                            75,        -75.0,        +75.0);
+
+  histogramMEtCovSqrtEigenVal1_ = book1D(dir, "metCovSqrtEigenval1",    
+					 "#sqrt{#lambda_{1}^{miss}}",                                        100,          0.,         100.);          
+  histogramMEtCovSqrtEigenVal2_ = book1D(dir, "metCovSqrtEigenval2",    
+					 "#sqrt{#lambda_{2}^{miss}}",                                        100,          0.,         100.);          
+  histogramMEtPull_             = book1D(dir, "metPull",            
+					 "E_{T}^{miss} / #sigmaE_{T}^{miss}",                                200,        -10.,         +10.);         
+  histogramMEtSigmaParlZ_       = book1D(dir, "metSigmaParlZ",
+					 "#sigmaE_{#parallel}^{miss}",                                       100,          0.,         100.);           
+  histogramMEtPullParlZ_        = book1D(dir, "metPullParlZ",       
+					"E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}",                 200,        -10.,         +10.);          
+  histogramMEtSigmaPerpZ_       = book1D(dir, "metSigmaPerpZ",
+					 "#sigmaE_{#perp}^{miss}",                                           100,          0.,         100.);  
+  histogramMEtPullPerpZ_        = book1D(dir, "metPullPerpZ",       
+					 "E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}",                       200,        -10.,         +10.);          
+  histogramMEtPull2_            = book1D(dir, "metPull2",            
+					 "E_{T}^{miss} / #sigmaE_{T}^{miss}",                                200,        -10.,         +10.);         
 
   histogramUparl_              = book1D(dir, "uParl",              "u_{#parallel}",                          140,       -275.0,        +75.0);
   histogramUperp_              = book1D(dir, "uPerp",              "u_{#perp}",                               50,        -50.0,        +50.0);
@@ -147,7 +166,7 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 
 void ZllRecoilCorrectionHistManager::fillHistograms(
        const reco::CompositeCandidate& ZllCand, const std::vector<pat::Muon>& muons, 
-       const std::vector<pat::Jet>& jets, const pat::MET& met,
+       const std::vector<pat::Jet>& jets, const pat::MET& met, const PFMEtSignCovMatrix& metCov,
        const reco::Candidate::LorentzVector& p4PFChargedHadrons, const reco::Candidate::LorentzVector& p4PFNeutralHadrons, 
        const reco::Candidate::LorentzVector& p4PFGammas, 
        int numPU_bxMinus1, int numPU_bx0, int numPU_bxPlus1, 
@@ -293,6 +312,18 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
     histogramMEtYvsNumVertices_->Fill(vtxMultiplicity, metPy, evtWeight);
 
+    TVectorD metCovEigenValues(2);
+    metCov.EigenVectors(metCovEigenValues);
+    histogramMEtCovSqrtEigenVal1_->Fill(TMath::Sqrt(TMath::Abs(metCovEigenValues(0))), evtWeight);
+    histogramMEtCovSqrtEigenVal2_->Fill(TMath::Sqrt(TMath::Abs(metCovEigenValues(1))), evtWeight);
+    if ( metCov.Determinant() != 0. ) {
+      TMatrixD metCovInverse = metCov;
+      metCovInverse.Invert();
+      double metPull =  metPx*(metCovInverse(0, 0)*metPx + metCovInverse(0, 1)*metPy)
+	              + metPy*(metCovInverse(1, 0)*metPx + metCovInverse(1, 1)*metPy); 
+      histogramMEtPull_->Fill(metPull, evtWeight);
+    }
+
     int errorFlag = 0;
     std::pair<double, double> uT = compMEtProjU(ZllCand.p4(), met.px(), met.py(), errorFlag);
     if ( !errorFlag ) {
@@ -323,7 +354,25 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	  (*it)->histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
 	}
       }
-      
+            
+      reco::Candidate::LorentzVector met_rotated = compP4inZetaFrame(met.p4(), ZllCand.phi());
+      double metParl = met_rotated.px();
+      double metPerp = met_rotated.py();
+      TMatrixD metCov_rotated = compCovMatrixInZetaFrame(metCov, ZllCand.phi());
+      double metSigmaParl = TMath::Sqrt(TMath::Abs(metCov_rotated(0, 0)));
+      double metSigmaPerp = TMath::Sqrt(TMath::Abs(metCov_rotated(1, 1)));
+      histogramMEtSigmaParlZ_->Fill(metSigmaParl, evtWeight);
+      if ( metSigmaParl > 0. ) histogramMEtPullParlZ_->Fill(metParl/metSigmaParl, evtWeight);
+      histogramMEtSigmaPerpZ_->Fill(metSigmaPerp, evtWeight);      
+      if ( metSigmaPerp > 0. ) histogramMEtPullPerpZ_->Fill(metPerp/metSigmaPerp, evtWeight);
+      if ( metCov_rotated.Determinant() != 0. ) {
+	TMatrixD metCovInverse_rotated = metCov_rotated;
+	metCovInverse_rotated.Invert();
+	double metPull_rotated =  metParl*(metCovInverse_rotated(0, 0)*metParl + metCovInverse_rotated(0, 1)*metPerp)
+  	                        + metPerp*(metCovInverse_rotated(1, 0)*metParl + metCovInverse_rotated(1, 1)*metPerp); 
+	histogramMEtPull2_->Fill(metPull_rotated, evtWeight);
+      }
+
       for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsBinned_.begin();
 	    it != histogramsUvsQtNumJetsBinned_.end(); ++it ) {
 	if ( ((*it)->numObjMin_ == -1 || numJetsCorrPtGt10 >= (*it)->numObjMin_) &&
