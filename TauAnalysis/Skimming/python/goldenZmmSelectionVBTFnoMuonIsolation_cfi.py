@@ -91,7 +91,7 @@ zmmHLTFilter.HLTPaths = [
     # double muon triggers (all of 2012 Run A)
     'HLT_Mu17_Mu8_v16',
     # double muon triggers (Summer'12 MC, produced with CMSSW_5_2_x)
-    'HLT_Mu17_Mu8_v13',
+    'HLT_Mu17_Mu8_v13'
 ]
 zmmHLTFilter.throw = cms.bool(False)
 
