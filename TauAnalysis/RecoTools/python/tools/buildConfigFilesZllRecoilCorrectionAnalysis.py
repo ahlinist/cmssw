@@ -269,7 +269,8 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
             ##shiftedMEtCorrY_string = "+1.571e-1 - 3.710e-3*x"
             shiftedMEtCorrX_string = "-1.94451e-02 - 4.38986e-03*y"
             shiftedMEtCorrY_string = "-4.31368e-01 - 1.90753e-01*y"
-    elif runPeriod == "2011RunB":
+    elif runPeriod == "2011RunB" or \
+         runPeriod == "2012RunA": # CV: use 2011 run B correction for 2012 run A data for the time-being...
         if processType == 'Data':
             ##shiftedMEtCorrX_string = "-3.265e-1 + 5.162e-3*x" # CV: x = sumEt, y = numVertices
             ##shiftedMEtCorrY_string = "-1.956e-2 - 6.299e-3*x"
@@ -348,13 +349,14 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMuons = cms.InputTag('patMuons'), # CV: pat::Muon collection contains 'goodMuons' only
     srcMEt = cms.InputTag('%s'),
+    srcMEtSignCovMatrix = cms.InputTag('pfMEtSignCovMatrix'),
     srcJets = cms.InputTag('%s'),
     srcPFCandidates = cms.InputTag('particleFlow'),
 
     shiftedMEtCorrX = cms.string('%s'),
     shiftedMEtCorrY = cms.string('%s'),
-    ##applyMEtShiftCorr = cms.bool(True),
-    applyMEtShiftCorr = cms.bool(False),
+    applyMEtShiftCorr = cms.bool(True),
+    ##applyMEtShiftCorr = cms.bool(False),
 
     srcTrigger = cms.InputTag('TriggerResults::HLT'),
     hltPaths = cms.vstring(%s),
@@ -429,10 +431,8 @@ def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleName
     mcScaleFactors_string += "    ),\n"
 
     runPeriod_string = ""
-    if runPeriod == "2011RunA":
+    if runPeriod == "2012RunA":
         runPeriod_string = "Run A"
-    elif runPeriod == "2011RunB":
-        runPeriod_string = "Run B"
 
     sysShiftsUp   = []
     sysShiftsDown = []
@@ -507,6 +507,30 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
         cms.PSet(
             meName = cms.string('metProjPerpZ'),
             xAxisTitle = cms.string('u_{#perp}  / GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('metSigmaParlZ'),
+            xAxisTitle = cms.string('#sigmaE_{#parallel}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPullParlZ'),
+            xAxisTitle = cms.string('E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metSigmaPerpZ'),
+            xAxisTitle = cms.string('#sigmaE_{#perp  }^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPullPerpZ'),
+            xAxisTitle = cms.string('E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPull'),
+            xAxisTitle = cms.string('E_{T}^{miss} / #sigmaE_{T}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPull2'),
+            xAxisTitle = cms.string('E_{T}^{miss} / #sigmaE_{T}^{miss}')
         ),
         cms.PSet(
             meName = cms.string('uParl'),

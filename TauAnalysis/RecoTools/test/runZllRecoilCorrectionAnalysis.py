@@ -6,7 +6,7 @@ from TauAnalysis.Skimming.recoSampleDefinitionsGoldenZmumu_7TeV_grid_cfi import 
 
 import os
 
-version = 'v5_0'
+version = 'v5_7'
 
 inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
@@ -15,7 +15,7 @@ outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 samplesToAnalyze = {
     'Data_2012RunA' : {
         'samples' : [
-            'Data_runs190450to190892'
+            'Data_runs190456to190688'
         ],
         'isMC' : False
     },
@@ -53,7 +53,7 @@ hltPaths = None
 srcWeights = None
 if runPeriod == '2012RunA':
     samplesToAnalyze['Data'] = samplesToAnalyze['Data_2012RunA']
-    intLumiData = 1522.7 # runs 190450-190892
+    intLumiData = 250.5 # runs 190389-191276
     hltPaths = {
         'Data' : [
             'HLT_Mu17_Mu8_v16'
@@ -64,7 +64,7 @@ if runPeriod == '2012RunA':
     }
     srcWeights = {
         'Data' : [],
-        'smMC' : []
+        'smMC' : [ 'vertexMultiplicityReweight3d2012RunA' ]
     }
 else:
     raise ValueError("Invalid runPeriod = %s !!" % runPeriod)
@@ -127,6 +127,24 @@ metOptions = {
     ##        },
     ##        'smMC' : {
     ##            'central'    : 'patType1p2CorrectedPFMetNoSmearing'
+    ##        }
+    ##    }
+    ##},
+    ##'pfMEtByPhilsMVA' : {
+    ##    'srcJets' : {
+    ##        'Data' : {
+    ##            'central'    : 'patJets'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patJets'
+    ##        }
+    ##    },
+    ##    'srcMEt' : {
+    ##        'Data' : {
+    ##            'central'    : 'patPFMetByPhilsMVA'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patPFMetByPhilsMVA'
     ##        }
     ##    }
     ##},
@@ -327,7 +345,7 @@ for metOptionName in metOptions.keys():
         for central_or_shift in srcMEt.keys():
             retVal_FWLiteZllRecoilCorrectionAnalyzer = \
               buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-                maxEvents, sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
+                maxEvents, sampleName, runPeriod, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
                 central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
                 None, intLumiData)
 
@@ -501,10 +519,10 @@ samplesToAnalyze = %s
 metOptions = %s
 
 buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-  %i, '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %i)
+  %i, '%s', '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %f)
 """ % (str(samplesToAnalyze),
        str(metOptions),
-       maxEvents, sampleName, metOptionName, inputFilePath, outputFilePath,
+       maxEvents, sampleName, runPeriod, metOptionName, inputFilePath, outputFilePath,
        central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['central']['outputFileName'],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal][central_or_shift]['outputFileName'],
