@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.1 $
  *
- * $Id: trainNeuralMtautau.cc,v 1.6 2011/09/30 12:26:40 veelken Exp $
+ * $Id: testNeuralMtautau.cc,v 1.1 2012/03/06 17:34:42 veelken Exp $
  *
  */
 
@@ -24,6 +24,7 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneLikelihood.h"
+#include "TauAnalysis/CandidateTools/interface/NeuralMtautauAlgorithm.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 #include "TMVA/Factory.h"
@@ -38,6 +39,7 @@
 #include <TH2.h>
 #include <TBenchmark.h>
 #include <TMath.h>
+#include <TMatrixD.h>
 
 #include <iostream>
 #include <string>
@@ -93,6 +95,8 @@ int main(int argc, char* argv[])
   std::string targetBranchName = cfgTestNeuralMtautau.getParameter<std::string>("targetBranchName");
   std::string NNconfigFileName = cfgTestNeuralMtautau.getParameter<std::string>("NNconfigFileName");
 
+  NeuralMtautauAlgorithm* neuralMtautauAlgorithm = new NeuralMtautauAlgorithm(NNconfigFileName.data());
+
   bool runSVfit = cfgTestNeuralMtautau.getParameter<bool>("runSVfit");
   std::cout << " runSVfit = " << runSVfit << std::endl;
 
@@ -101,8 +105,11 @@ int main(int argc, char* argv[])
 
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
-  TH1* histogramRecVsGenMass = 
-    fs.make<TH2D>("histogramRecVsGenMass", 
+  TH1* histogramRecVsGenMass1 = 
+    fs.make<TH2D>("histogramRecVsGenMass1", 
+  		  "rec. NeuralM_{#tau#tau} vs. M_{#tau#tau}^{gen}", 400, 0., 2000., 400, 0., 2000.);
+  TH1* histogramRecVsGenMass2 = 
+    fs.make<TH2D>("histogramRecVsGenMass2", 
   		  "rec. NeuralM_{#tau#tau} vs. M_{#tau#tau}^{gen}", 400, 0., 2000., 400, 0., 2000.);
 
   TMVA::Tools::Instance();
@@ -178,10 +185,21 @@ int main(int argc, char* argv[])
       }
      
       Float_t genMtautau = target;
-      Float_t recMtautau = NN->EvaluateRegression("trainNeuralMtautau")[0];
-      //std::cout << " Mtautau: gen = " << genMtautau << " --> rec = " << recMtautau << std::endl;
-      histogramRecVsGenMass->Fill(genMtautau, recMtautau);     
+      Float_t recMtautau1 = NN->EvaluateRegression("trainNeuralMtautau")[0];
+      std::cout << " Mtautau: gen = " << genMtautau << " --> rec (1) = " << recMtautau1 << std::endl;
+      histogramRecVsGenMass1->Fill(genMtautau, recMtautau1);     
 
+      reco::Candidate::LorentzVector recLeg1P4(recLeg1Px, recLeg1Py, recLeg1Pz, recLeg1En);
+      reco::Candidate::LorentzVector recLeg2P4(recLeg2Px, recLeg2Py, recLeg2Pz, recLeg2En);
+      TMatrixD recMEtCov(2, 2);
+      recMEtCov(0, 0) = recMEtVxx;
+      recMEtCov(0, 1) = recMEtVxy;
+      recMEtCov(1, 0) = recMEtVxy;
+      recMEtCov(1, 1) = recMEtVyy;
+      Float_t recMtautau2 = (*neuralMtautauAlgorithm)(recLeg1P4, recLeg2P4, recMEtPx, recMEtPy, recMEtCov);
+      std::cout << " Mtautau: gen = " << genMtautau << " --> rec (2) = " << recMtautau2 << std::endl;
+      histogramRecVsGenMass2->Fill(genMtautau, recMtautau2);  
+      
       if ( runSVfit ) {
 	std::vector<MeasuredTauLepton> tauDecayProduts;
 	reco::Candidate::LorentzVector recLeg1P4(recLeg1Px, recLeg1Py, recLeg1Pz, recLeg1En);
@@ -213,6 +231,8 @@ int main(int argc, char* argv[])
     delete inputFile;
   }
   
+  delete neuralMtautauAlgorithm;
+
   clock.Show("testNeuralMtautau");
 
   return 0;
