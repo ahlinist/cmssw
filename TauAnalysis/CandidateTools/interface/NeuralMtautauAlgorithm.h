@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: NeuralMtautauAlgorithm.h,v 1.1 2011/04/16 07:44:48 liis Exp $
+ * $Id: NeuralMtautauAlgorithm.h,v 1.1 2012/02/13 13:49:03 veelken Exp $
  *
  */
 
@@ -22,18 +22,23 @@
 
 #include <TMatrixD.h>
 
+#include <string>
+
 class NeuralMtautauAlgorithm
 {
  public:
 
   explicit NeuralMtautauAlgorithm(const edm::ParameterSet&);
+  explicit NeuralMtautauAlgorithm(const std::string&);
   ~NeuralMtautauAlgorithm();
 
   double operator()(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&, double, double, const TMatrixD&);
 
  private:
 
-  TMVA::Reader* NN_;
+  void initialize(const std::string&);
+
+  TMVA::Reader* mva_;
 
   // NOTE: these variables need to match the list of variables used for MVA training,
   //       defined in TauAnalysis/CandidateTools/test/trainNeuralMtautau_cfg.py
