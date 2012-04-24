@@ -13,8 +13,9 @@ def _setattr_ifexists(obj, attrName, attrValue):
 def switchToData(process):
 
 	# remove MC matching from standard PAT sequences
-	removeMCMatching(process, ["All"], outputInProcess = False)
-	process.patDefaultSequence.remove(process.patJetPartonMatch)
+	if hasattr(process, "patDefaultSequence"):
+		removeMCMatching(process, ["All"], outputModules = [])
+		process.patDefaultSequence.remove(process.patJetPartonMatch)
 
 	#------------------------------------------------------------------------
 	# CV: temporary work-around for W --> tau nu channel
