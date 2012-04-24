@@ -7,7 +7,7 @@ import re
 process = cms.Process("runSVfitPerformanceAnalysisWH")
 
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
@@ -24,7 +24,7 @@ channel = 'WtoMuNuHiggsToDiTau'
 metResolution = None # take reconstructed PFMET
 #metResolution = 5. # produce "toy" MET = generated MET plus 5 GeV Gaussian smearing in x/y direction
 inputFileNames = None
-outputFileName = 'svFitPerformanceAnalysisPlots_WH_%s_2012Apr15.root' % sample
+outputFileName = 'svFitPerformanceAnalysisPlots_WH_%s_2012Apr17.root' % sample
 skipEvents = 0
 maxEvents = -1
 #--------------------------------------------------------------------------------
@@ -520,8 +520,8 @@ else:
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
 for idxSVfitOption in range(10):
-    if not (idxSVfitOption == 3):
-        continue
+    ##if not (idxSVfitOption == 3):
+    ##    continue
     nSVfitProducer = None
     resonanceName = None    
     if idxSVfitOption == 0:
@@ -622,12 +622,12 @@ for idxSVfitOption in range(10):
 
     nSVfitAnalyzerType = None
     if (idxSVfitOption % 2) == 1:
-        #nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzer"
-        nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzerDEBUG"
+        nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzer"
     else:  
         nSVfitAnalyzerType = "NSVfitEventHypothesisAnalyzer"
     nSVfitAnalyzer = cms.EDAnalyzer(nSVfitAnalyzerType,
         srcEventHypotheses = cms.InputTag(nSVfitProducerName),
+        srcGenTauPairs = cms.InputTag(genTauPairs),                            
         srcGenLeg1 = cms.InputTag(srcGenLeg1),
         srcGenLeg2 = cms.InputTag(srcGenLeg2),
         srcGenMEt = cms.InputTag('genMetFromGenParticles'),

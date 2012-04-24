@@ -18,9 +18,9 @@ import TauAnalysis.Configuration.tools.castor as castor
 version = '2012Mar13'
 
 inputFilePath  = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/SVfitStudies/'
-harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr13/'
+harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr19/'
 outputFilePath = '/tmp/veelken/svFitStudies/'
-#outputFilePath = '/data1/veelken/tmp/svFitStudies/AHtautau/2012Apr13/'
+#outputFilePath = '/data1/veelken/tmp/svFitStudies/AHtautau/2012Apr19/'
 
 samplesToAnalyze = [
     'ggHiggs120',
@@ -39,10 +39,10 @@ samplesToAnalyze = [
 ]
 
 channelsToAnalyze = [
-    ##'muTau',
+    'muTau',
     ##'eleTau',
     ##'eleMu',
-    'diTau'
+    ##'diTau'
 ]
 
 metResolutions = [
@@ -54,18 +54,18 @@ metResolutions = [
     25.
 ]    
 
-runSVfitEventHypothesisAnalyzer = True
-#runSVfitEventHypothesisAnalyzer = False
-#runLXBatchHarvesting = True
-runLXBatchHarvesting = False
-# Note: you need one run with runSVfitEventHypothesisAnalyzer = False && runLXBatchHarvesting = False
-#       to copy .root files to outputFilePath on the local disk and run the final harvesting at the very end
+#runSVfitEventHypothesisAnalyzer = True
+runSVfitEventHypothesisAnalyzer = False
+runLXBatchHarvesting = True
+#runLXBatchHarvesting = False
+#runMakePlots = True
+runMakePlots = False
 
 if runSVfitEventHypothesisAnalyzer:
     print "submitting analysis jobs..."
 elif runLXBatchHarvesting:
     print "submitting harvesting jobs..."
-else:
+elif runMakePlots:
     print "making final plots..."
 
 maxEventsPerJob = 100 # max. number of events analyzed per job
@@ -97,6 +97,9 @@ except RuntimeError:
 outputFilePath = os.path.join(outputFilePath, version)
 print "outputFilePath = %s" % outputFilePath
 createFilePath_recursively(outputFilePath)
+for channelToAnalyze in channelsToAnalyze:
+    outputFilePath_channel = os.path.join(outputFilePath, channelToAnalyze)
+    createFilePath_recursively(outputFilePath_channel)
 
 configFilePath = os.path.join(os.getcwd(), "lxbatch")
 print "configFilePath = %s" % configFilePath
@@ -276,6 +279,7 @@ for sampleToAnalyze in samplesToAnalyze:
         bsubFileNames_harvesting[sampleToAnalyze][channelToAnalyze] = {}
         bsubJobNames_harvesting[sampleToAnalyze][channelToAnalyze]  = {}
         configFilePath_channel = os.path.join(configFilePath, channelToAnalyze)
+        outputFilePath_channel = os.path.join(outputFilePath, channelToAnalyze)
         for metResolution in metResolutions:
             metResolution_label = getMEtResolution_label(metResolution)
     
@@ -284,7 +288,7 @@ for sampleToAnalyze in samplesToAnalyze:
         
             def local_copy_mapper(sample):
                 return os.path.join(
-                    outputFilePath,
+                    outputFilePath_channel,
                     'svFitPerformanceAnalysisPlots_%s_%s_%s_%s_harvested.root' %
                       (channelToAnalyze, sampleToAnalyze, metResolution_label, version))
 
@@ -357,6 +361,7 @@ final_haddJobNames        = {}
 final_haddLogFileNames    = {}
 for channelToAnalyze in channelsToAnalyze:
     final_haddInputFileNames[channelToAnalyze] = []
+    outputFilePath_channel = os.path.join(outputFilePath, channelToAnalyze)
     for sampleToAnalyze in samplesToAnalyze:    
         for metResolution in metResolutions:
             metResolution_label = getMEtResolution_label(metResolution)
@@ -367,15 +372,18 @@ for channelToAnalyze in channelsToAnalyze:
                 #       (cf. TauAnalysis/Configuration/python/tools/harvestingLXBatch.py)
                 #    (2) assume that .root files containing histograms for single sample and single channel
                 #        are copied to local disk via rfcp prior to running 'hadd'
-                final_haddInputFileNames[channelToAnalyze].append(os.path.join(outputFilePath, os.path.basename(final_harvest_file[1])))
-    final_haddShellFileNames[channelToAnalyze] = os.path.join(configFilePath, 'harvestSVfitPerformanceHistograms_%s.csh' % version)
-    final_haddOutputFileNames[channelToAnalyze] = os.path.join(outputFilePath, 'svFitPerformanceAnalysisPlots_all_%s.root' % version)
+                final_haddInputFileNames[channelToAnalyze].append(
+                  os.path.join(outputFilePath_channel, os.path.basename(final_harvest_file[1])))
+    final_haddShellFileNames[channelToAnalyze] = \
+      os.path.join(configFilePath, 'harvestSVfitPerformanceHistograms_%s.csh' % version)
+    final_haddOutputFileNames[channelToAnalyze] = \
+      os.path.join(outputFilePath_channel, 'svFitPerformanceAnalysisPlots_all_%s.root' % version)
     retVal_final_hadd = \
       buildConfigFile_hadd(executable_hadd,
                            final_haddShellFileNames[channelToAnalyze],
                            final_haddInputFileNames[channelToAnalyze],
                            final_haddOutputFileNames[channelToAnalyze])
-    final_haddJobNames[channelToAnalyze] = 'final_hadd'
+    final_haddJobNames[channelToAnalyze] = 'final_hadd_%s' % channelToAnalyze
     final_haddLogFileNames[channelToAnalyze] = retVal_final_hadd['logFileName']
 #--------------------------------------------------------------------------------
 
@@ -450,14 +458,14 @@ if runLXBatchHarvesting:
                 makeFile.write("\t%s %s\n" %
                   (executable_shell,
                    bsubFileNames_harvesting[sampleToAnalyze][channelToAnalyze][metResolution_label]['harvest_script_name']))
+if runMakePlots:
+    for channelToAnalyze in channelsToAnalyze:
         makeFile.write("%s: %s\n" %
           (final_haddJobNames[channelToAnalyze],
            final_haddOutputFileNames[channelToAnalyze]))
         makeFile.write("\t%s %s\n" %
           (executable_waitForLXBatchJobs,
            bjobListFileNames_harvesting[channelToAnalyze]))
-if not (runSVfitEventHypothesisAnalyzer or runLXBatchHarvesting):
-    for channelToAnalyze in channelsToAnalyze:
         for final_haddInputFileName in final_haddInputFileNames[channelToAnalyze]:
             makeFile.write("\t%s %s %s\n" %
              (executable_rfcp,
