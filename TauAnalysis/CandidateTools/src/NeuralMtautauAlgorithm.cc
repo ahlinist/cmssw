@@ -2,6 +2,8 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include "FWCore/ParameterSet/interface/FileInPath.h"
+
 #include "TauAnalysis/CandidateTools/interface/neuralMtautauAuxFunctions.h"
 
 #include "TMVA/Factory.h"
@@ -11,32 +13,45 @@
 #include <TMath.h>
 
 NeuralMtautauAlgorithm::NeuralMtautauAlgorithm(const edm::ParameterSet& cfg)
-  : NN_(0)
+  : mva_(0)
 {
   edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileName");
   if ( !inputFileName.isLocal()) throw cms::Exception("NeuralMtautauAlgorithm") 
     << " Failed to find File = " << inputFileName << " !!\n";
   
+  initialize(inputFileName.fullPath());
+}
+
+NeuralMtautauAlgorithm::NeuralMtautauAlgorithm(const std::string& inputFileName)
+  : mva_(0)
+{
+  initialize(inputFileName);
+}
+
+void NeuralMtautauAlgorithm::initialize(const std::string& inputFileName)
+{
   TMVA::Tools::Instance();
   
-  TMVA::Reader* NN_ = new TMVA::Reader("!Color:!Silent");   
+  mva_ = new TMVA::Reader("!Color:!Silent");   
   
-  NN_->AddVariable("recLeg1Px", &recLeg1Px_);
-  NN_->AddVariable("recLeg1Py", &recLeg1Py_);
-  NN_->AddVariable("recLeg1Pz", &recLeg1Pz_);
-  NN_->AddVariable("recLeg2Px", &recLeg2Px_);
-  NN_->AddVariable("recLeg2Py", &recLeg2Py_);
-  NN_->AddVariable("recLeg2Pz", &recLeg2Pz_);
-  NN_->AddVariable("recMEtPx", &recMEtPx_);
-  NN_->AddVariable("recMEtPy", &recMEtPy_);
-  NN_->AddVariable("TMath::Min(recMEtSigmaX, 1.e+2)", &recMEtSigmaX_);
-  NN_->AddVariable("TMath::Min(recMEtSigmaY, 1.e+2)", &recMEtSigmaY_);
-  NN_->AddVariable("recMEtCorrXY", &recMEtCorrXY_);
+  mva_->AddVariable("recLeg1Px", &recLeg1Px_);
+  mva_->AddVariable("recLeg1Py", &recLeg1Py_);
+  mva_->AddVariable("recLeg1Pz", &recLeg1Pz_);
+  mva_->AddVariable("recLeg2Px", &recLeg2Px_);
+  mva_->AddVariable("recLeg2Py", &recLeg2Py_);
+  mva_->AddVariable("recLeg2Pz", &recLeg2Pz_);
+  mva_->AddVariable("recMEtPx", &recMEtPx_);
+  mva_->AddVariable("recMEtPy", &recMEtPy_);
+  mva_->AddVariable("TMath::Min(recMEtSigmaX, 1.e+2)", &recMEtSigmaX_);
+  mva_->AddVariable("TMath::Min(recMEtSigmaY, 1.e+2)", &recMEtSigmaY_);
+  mva_->AddVariable("recMEtCorrXY", &recMEtCorrXY_);
+
+  mva_->BookMVA("trainNeuralMtautau", inputFileName.data());
 }
 
 NeuralMtautauAlgorithm::~NeuralMtautauAlgorithm()
 {
-  delete NN_;
+  delete mva_;
 }
 
 double NeuralMtautauAlgorithm::operator()(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4, 
@@ -74,6 +89,6 @@ double NeuralMtautauAlgorithm::operator()(const reco::Candidate::LorentzVector& 
   recMEtCorrXY_ = corrXYinZetaFrame;
 
 //--- compute & return neural net output
-  return NN_->EvaluateRegression("trainNeuralMtautau")[0];
+  return mva_->EvaluateRegression("trainNeuralMtautau")[0];
 }
 
