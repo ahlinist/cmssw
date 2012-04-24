@@ -27,6 +27,7 @@ NSVfitEventHypothesisAnalyzerT<T>::NSVfitEventHypothesisAnalyzerT(const edm::Par
 {
   srcEventHypotheses_ = cfg.getParameter<edm::InputTag>("srcEventHypotheses");
 
+  srcGenTauPairs_ = cfg.getParameter<edm::InputTag>("srcGenTauPairs");
   srcGenLeg1_ = cfg.getParameter<edm::InputTag>("srcGenLeg1");
   srcGenLeg2_ = cfg.getParameter<edm::InputTag>("srcGenLeg2");
   srcGenMEt_ = cfg.getParameter<edm::InputTag>("srcGenMEt");
@@ -49,13 +50,8 @@ NSVfitEventHypothesisAnalyzerT<T>::NSVfitEventHypothesisAnalyzerT(const edm::Par
 template <typename T>
 NSVfitEventHypothesisAnalyzerT<T>::~NSVfitEventHypothesisAnalyzerT()
 {
-  for ( typename std::vector<plotEntryType1*>::iterator it = plotEntries1_.begin();
-	it != plotEntries1_.end(); ++it ) {
-    delete (*it);
-  }
-
-  for ( typename std::vector<plotEntryType2*>::iterator it = plotEntries2_.begin();
-	it != plotEntries2_.end(); ++it ) {
+  for ( typename std::vector<plotEntryType*>::iterator it = plotEntries_.begin();
+	it != plotEntries_.end(); ++it ) {
     delete (*it);
   }
 }
@@ -71,6 +67,14 @@ void NSVfitEventHypothesisAnalyzerT<T>::beginJob()
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
   dqmStore.setCurrentFolder(dqmDirectory_.data());
+
+  leg1Pt_     = dqmStore.book1D("leg1Pt",     "leg1Pt",     numBinsSVfitMass_/2, 0., 0.5*svFitMassMax_);
+  leg2Pt_     = dqmStore.book1D("leg2Pt",     "leg2Pt",     numBinsSVfitMass_/2, 0., 0.5*svFitMassMax_);
+  metPt_      = dqmStore.book1D("metPt",      "metPt",      numBinsSVfitMass_/2, 0., 0.5*svFitMassMax_);
+  svFitMass_  = dqmStore.book1D("svFitMass",  "svFitMass",  numBinsSVfitMass_,   0.,     svFitMassMax_);
+  visMass_    = dqmStore.book1D("visMass",    "visMass",    numBinsSVfitMass_,   0.,     svFitMassMax_);
+  genMass_    = dqmStore.book1D("genMass",    "genMass",    numBinsSVfitMass_,   0.,     svFitMassMax_);
+  genVisMass_ = dqmStore.book1D("genVisMass", "genVisMass", numBinsSVfitMass_,   0.,     svFitMassMax_);
 
   svFitIsValidSolution_ = dqmStore.book1D("svFitIsValidSolution", "svFitIsValidSolution",  2, -0.5, 1.5);
 
@@ -121,53 +125,32 @@ void NSVfitEventHypothesisAnalyzerT<T>::beginJob()
 		    "svFitMassVsMEtXL_threeProng0pi0", 
 		    TMath::Nint(0.5*svFitMassMax_), 0., 0.5*svFitMassMax_, TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_,  -1.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_,  -1.,  -1., +1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_,  -1.,  -1., -1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_,   0.,  30.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_,  30.,  60.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_,  60.,  90.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_,  90., 120.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_, 120., 140.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_, 140., 160.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_, 160., 170.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_, 170., 175.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  plotEntries1_.push_back(new plotEntryType1(
+  plotEntries_.push_back(new plotEntryType(
     dqmDirectory_, 175.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_)); 
-  for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
-	plotEntry != plotEntries1_.end(); ++plotEntry ) {
-    (*plotEntry)->bookHistograms(dqmStore);
-  }
-
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,  -1.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,  -1.,  -1., +1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,  -1.,  -1., -1, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,   0.,  15.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,  15.,  25.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,  25.,  35.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,  35.,  45.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  plotEntries2_.push_back(
-    new plotEntryType2(dqmDirectory_,  45.,  -1.,  0, numBinsSVfitMass_, svFitMassMax_, numBinsSVfitSigma_, svFitSigmaMax_));
-  for ( typename std::vector<plotEntryType2*>::iterator plotEntry = plotEntries2_.begin();
-	plotEntry != plotEntries2_.end(); ++plotEntry ) {
+  for ( typename std::vector<plotEntryType*>::iterator plotEntry = plotEntries_.begin();
+	plotEntry != plotEntries_.end(); ++plotEntry ) {
     (*plotEntry)->bookHistograms(dqmStore);
   }
 }
@@ -206,6 +189,8 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
   evt.getByLabel(srcEventHypotheses_, svFitEventHypotheses);
 
   typedef edm::View<reco::Candidate> CandidateView;
+  edm::Handle<CandidateView> genTauPairs;
+  evt.getByLabel(srcGenTauPairs_, genTauPairs);
   edm::Handle<CandidateView> genLeg1;
   evt.getByLabel(srcGenLeg1_, genLeg1);
   edm::Handle<CandidateView> genLeg2;
@@ -274,6 +259,19 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     if ( dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get()) != 0 )
       daughter2DecayMode = (dynamic_cast<const pat::Tau*>(svFitDaughter2->particle().get()))->decayMode();
 
+    leg1Pt_->Fill(svFitDaughter1P4.pt(), evtWeight);
+    leg2Pt_->Fill(svFitDaughter2P4.pt(), evtWeight);
+    metPt_->Fill(recMEtP4.pt(), evtWeight);
+    svFitMass_->Fill(svFitMass, evtWeight);
+    double visMass = (svFitDaughter1P4 + svFitDaughter2P4).mass();
+    visMass_->Fill(visMass, evtWeight);
+    for ( CandidateView::const_iterator genTauPair = genTauPairs->begin();
+	  genTauPair != genTauPairs->end(); ++genTauPair ) {
+      genMass_->Fill(genTauPair->mass(), evtWeight);
+    }
+    double genVisMass = (genLeg1P4 + genLeg2P4).mass();
+    genVisMass_->Fill(genVisMass, evtWeight);
+
     double dRcombination1 = square(deltaR(svFitDaughter1P4, genLeg1P4)) + square(deltaR(svFitDaughter2P4, genLeg2P4));
     double dRcombination2 = square(deltaR(svFitDaughter1P4, genLeg2P4)) + square(deltaR(svFitDaughter2P4, genLeg1P4));
     reco::Candidate::LorentzVector genLeg1P4_matched, genLeg2P4_matched;
@@ -328,8 +326,8 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
     reco::Candidate::LorentzVector rec_minus_genMEtP4 = recMEtP4 - genMEtP4;
     double metPull = rec_minus_genMEtP4.pt()/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, recMEtP4 - genMEtP4);
     
-    for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
-	  plotEntry != plotEntries1_.end(); ++plotEntry ) {
+    for ( typename std::vector<plotEntryType*>::iterator plotEntry = plotEntries_.begin();
+	  plotEntry != plotEntries_.end(); ++plotEntry ) {
       (*plotEntry)->fillHistograms(
         svFitIsValidSolution,			     
 	svFitDaughter1P4, daughter1DecayMode,
@@ -338,16 +336,6 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	svFitMass_mean, svFitMass_median, svFitMass_maximum, svFitMass_maxInterpol, 
 	svFitSigma, 
 	recMEtP4.pt(),
-	evtWeight);
-    }
-    
-    for ( typename std::vector<plotEntryType2*>::iterator plotEntry = plotEntries2_.begin();
-	  plotEntry != plotEntries2_.end(); ++plotEntry ) {
-      (*plotEntry)->fillHistograms(
-        svFitIsValidSolution,			     
-	genLeg1P4_matched, svFitDaughter1P4, genLeg2P4_matched, svFitDaughter2P4, svFitMass, svFitSigma, svFitSigmaUp, svFitSigmaDown, 
-	diTauPt, prodAngle_rf,
-	recMEtP4, genMEtP4, metCov, metPull, 
 	evtWeight);
     }
   }
@@ -364,13 +352,8 @@ void NSVfitEventHypothesisAnalyzerT<T>::endJob()
   //	      << " num. Events processed = " << numEvents_processed_ << "," 
   //	      << " weighted = " << numEventsWeighted_processed_ << std::endl;
 
-  for ( typename std::vector<plotEntryType1*>::iterator plotEntry = plotEntries1_.begin();
-	plotEntry != plotEntries1_.end(); ++plotEntry ) {
-    (*plotEntry)->finalizeHistograms();
-  }
-
-  for ( typename std::vector<plotEntryType2*>::iterator plotEntry = plotEntries2_.begin();
-	plotEntry != plotEntries2_.end(); ++plotEntry ) {
+  for ( typename std::vector<plotEntryType*>::iterator plotEntry = plotEntries_.begin();
+	plotEntry != plotEntries_.end(); ++plotEntry ) {
     (*plotEntry)->finalizeHistograms();
   }
 }
