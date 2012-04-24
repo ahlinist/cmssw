@@ -13,9 +13,9 @@
  *
  * \authors Christian Veelken
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: VertexMultiplicityReweightExtractor.h,v 1.3 2011/10/19 14:41:11 veelken Exp $
+ * $Id: VertexMultiplicityReweightExtractor.h,v 1.4 2011/11/17 14:28:06 veelken Exp $
  *
  */
 
@@ -50,6 +50,9 @@ class VertexMultiplicityReweightExtractor : public ObjValExtractorBase
   edm::Lumi3DReWeighting* genLumiReweight3d_;
 
   TH1* recVtxMultiplicityReweight_;
+
+  int bxPrevious_;
+  int bxNext_;
 
   enum { kUndefined, kGenLevel, kGenLevel3d, kRecLevel };
   int type_;
