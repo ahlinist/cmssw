@@ -40,9 +40,18 @@ def getNumEvents(fileName):
         file = ROOT.TFile.Open('rfio:%s' % fileName)
     else:
         file = ROOT.TFile.Open('file:%s' % fileName)
-    tree = file.Get("Events")
-    numEvents = tree.GetEntries()
-    file.Close()
+    numEvents = None
+    if file:
+        try:
+            # CV: add protection against case that file is corrupt/cannot be opened
+            tree = file.Get("Events")
+            numEvents = tree.GetEntries()        
+        except ReferenceError:
+            pass
+        file.Close()
+    if numEvents is None:
+        print "Failed to determine number of events contained in file = %s !!" % fileName
+        numEvents = 0
     return numEvents
 
 import threading
