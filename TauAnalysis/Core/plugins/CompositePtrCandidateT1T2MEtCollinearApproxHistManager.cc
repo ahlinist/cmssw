@@ -325,10 +325,7 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillMEtHisto
   edm::Handle<reco::GenJetCollection> genJets;
   if ( genJetSrc_.label() != "" ) evt.getByLabel(genJetSrc_, genJets);
 
-  edm::Handle<edm::View<reco::MET> > genMETs;
-  if ( genMEtSrc_.label() != "" ) evt.getByLabel(genMEtSrc_, genMETs);      
-
-  if ( genParticles.isValid() && genJets.isValid() && genMETs.isValid() ) {
+  if ( genParticles.isValid() && genJets.isValid() ) {
     const reco::GenParticle* genLeg1 = findGenParticle(diTauCandidate.leg1()->p4(), *genParticles, 0.5, -1);
     const reco::GenParticle* genLeg2 = findGenParticle(diTauCandidate.leg2()->p4(), *genParticles, 0.5, -1);
     
@@ -426,14 +423,6 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillMEtHisto
       
       fillHistogram(hMEtHighEtaJetsParallelZ_, hMEtHighEtaJetsPerpendicularZ_, p4GenHighEtaJets, p4Zgen, weight);
      	  
-      if ( genMETs->size() != 1 ) {
-	edm::LogWarning ("fillMEtHistograms") 
-	  << " Failed to unique MEt object in the Event !!";
-	return;
-      }
-      const reco::MET& genMET = (*genMETs->begin());
-	  
-      reco::Candidate::LorentzVector genMEt = genMET.p4();
       reco::Candidate::LorentzVector recoMEt = diTauCandidate.met()->p4();
       
       double pxUnaccountedMEt = recoMEt.px() - (p4GenTauNeutrinos.px() + p4GenNonTauNeutrinos.px() 
