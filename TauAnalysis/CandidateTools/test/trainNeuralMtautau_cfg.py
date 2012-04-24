@@ -94,15 +94,11 @@ process.trainNeuralMtautau = cms.PSet(
         "TMath::Min(recMEtSigmaX, 1.e+2)",
         "TMath::Min(recMEtSigmaY, 1.e+2)",
         "recMEtCorrXY",
-        "recDPhi12",
-        "recDAlpha12",
-        "recSVfitMtautau",
-        "recSigmaSVfit",
-        "recVisMass",
-        #"recPx1",
-        #"recPy1",
-        #"recPx2",
-        #"recPy2"
+        ##"recDPhi12",
+        ##"recDAlpha12",
+        ##"recSVfitMtautau",
+        ##"recSigmaSVfit",
+        ##"recVisMass"
     ),
     targetBranchName = cms.string(
         "genMtautau"
