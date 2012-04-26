@@ -153,3 +153,4 @@ nSVfitProducerByLikelihoodMaximizationWH.config.event.resonances.Higgs.daughters
   cms.bool(True)
 nSVfitProducerByLikelihoodMaximizationWH.config.event.resonances.Higgs.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
   cms.bool(True)
+nSVfitProducerByLikelihoodMaximizationWH.config.event.resonances.Higgs.likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM)

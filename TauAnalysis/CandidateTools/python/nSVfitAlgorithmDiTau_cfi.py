@@ -333,3 +333,4 @@ nSVfitProducerByLikelihoodMaximization.config.event.resonances.A.daughters.leg1.
   cms.bool(True)
 nSVfitProducerByLikelihoodMaximization.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = \
   cms.bool(True)
+nSVfitProducerByLikelihoodMaximization.config.event.resonances.A.likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM)
