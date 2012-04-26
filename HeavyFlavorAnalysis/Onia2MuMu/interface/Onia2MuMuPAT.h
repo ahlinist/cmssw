@@ -18,6 +18,7 @@
 #include <DataFormats/PatCandidates/interface/Muon.h>
 
 #include <CommonTools/UtilAlgos/interface/StringCutObjectSelector.h>
+#include "RecoVertex/VertexTools/interface/InvariantMassFromVertex.h"
 
 template<typename T>
 struct GreaterByVProb {
@@ -59,6 +60,8 @@ class Onia2MuMuPAT : public edm::EDProducer {
   bool addMCTruth_;
   GreaterByPt<pat::CompositeCandidate> pTComparator_;
   GreaterByVProb<pat::CompositeCandidate> vPComparator_;
+
+  InvariantMassFromVertex massCalculator;
 
 };
 

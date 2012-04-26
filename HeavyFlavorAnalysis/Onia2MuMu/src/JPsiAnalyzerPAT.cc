@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.53 2011/08/16 13:26:20 hwoehri Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.53.2.2 2012/03/23 12:55:22 eaguiloc Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -62,6 +62,16 @@
 
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
+//includes for MomentumScaleCalibration:
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "MuonAnalysis/MomentumScaleCalibration/interface/MomentumScaleCorrector.h"
+#include "MuonAnalysis/MomentumScaleCalibration/interface/ResolutionFunction.h"
+#include "MuonAnalysis/MomentumScaleCalibration/interface/BackgroundFunction.h"
+#include "CondFormats/RecoMuonObjects/interface/MuScleFitDBobject.h"
+#include "CondFormats/DataRecord/interface/MuScleFitDBobjectRcd.h"
+#include "MuonAnalysis/MomentumScaleCalibration/interface/MuScleFitUtils.h"
+
 using namespace std;
 using namespace edm;
 using namespace reco;
@@ -80,13 +90,11 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
-      void makeCuts(int sign) ;
-      pair< unsigned int, const pat::CompositeCandidate* > theBestQQ(int sign);
-      void fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event&);
+      void makeCuts() ;
+      int theBestQQ();
+      void fillTreeAndDS(const pat::CompositeCandidate* aCand, const edm::Event&);
       bool isMuonInAccept(const pat::Muon* aMuon);
-      bool selGlobalMuon(const pat::Muon* aMuon);
-      bool selTrackerMuon(const pat::Muon* aMuon);
-      bool selCaloMuon(const pat::Muon* aMuon);
+      bool selMuon(const pat::Muon* aMuon);
       bool selDimuon(const pat::CompositeCandidate* aCand);
       int getJpsiVarType(const double jpsivar, vector<double> vectbin);
       double CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode);
@@ -100,6 +108,11 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       void matchMuonToHlt(const pat::Muon*, const pat::Muon*);
       void muonStationDistance (const pat::CompositeCandidate* aCand);
 
+      //variable for scale corrections:
+      std::auto_ptr<MomentumScaleCorrector> corrector_;
+      std::auto_ptr<ResolutionFunction> resolutionFunction_;
+
+
       // ROOT tree 
       TTree* tree_;//data; //*recoData;
       TFile* fOut_;
@@ -107,24 +120,27 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // SMALL dataset and RooRealVars
       TFile* fOut2_;
       RooDataSet* data;
-      RooRealVar* Jpsi_Mass;      
+      RooRealVar* Jpsi_MuScleMass;      
+      RooRealVar* Jpsi_MuScleMassErr;
+      RooRealVar* Jpsi_MassErr;
       RooRealVar* Jpsi_Pt;
       RooRealVar* Jpsi_Rap; 
       RooRealVar* Jpsi_ct;
       RooRealVar* Jpsi_ctErr;
       RooRealVar* Jpsi_ctTrue;      			
-      RooCategory* Jpsi_Type;
       RooCategory* Jpsi_PtType;
       RooCategory* Jpsi_RapType;
       RooCategory* Jpsi_MatchType;
-      RooCategory* Jpsi_Sign;   
 
       //1.) J/psi variables RECO
       // double JpsiMass, JpsiPt, JpsiRap;
       // double JpsiPx, JpsiPy, JpsiPz;
       TLorentzVector* JpsiP;
       double Jpsict, JpsictErr, JpsiVprob;
-      int JpsiType,  JpsiCharge, MCType; //GG, GT and TT
+      int MCType; //GG, GT and TT
+//       int JpsiType,  JpsiCharge, MCType; //GG, GT and TT
+      double JpsiMuScleMassCorr, JpsiMuScleMassErr, JpsiMassErr;
+      double sigmaPtPos, sigmaPtNeg;
       double JpsiDistM1, JpsiDphiM1, JpsiDrM1;
       double JpsiDistM2, JpsiDphiM2, JpsiDrM2;
 
@@ -174,12 +190,10 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       std::map<std::string, int> mapTriggerNameToPrescaleFac_;
 
       Handle<pat::CompositeCandidateCollection > collAll;
-      Handle<pat::CompositeCandidateCollection > collCalo;
       // Handle<TriggerResults> trigger;
 
       // data members
       InputTag       _patJpsi;
-      InputTag       _patJpsiWithCalo;
       bool           _writeTree;
       string         _treefilename; 
       bool           _writeDataSet; 
@@ -194,10 +208,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _applyExpHitcuts;
       bool           _applyDiMuoncuts;
       bool           _useBS;
-      bool           _useCalo;
       bool           _removeSignal;
       bool           _removeMuons;
-      bool           _storeWs;
       bool           _writeOutCands;
       int            _MassCorr;
       // bool           _JSON;
@@ -209,8 +221,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 
       InputTag      _triggerresults;  
 
-      vector<unsigned int>                     _thePassedCats[3];
-      vector<const pat::CompositeCandidate*>   _thePassedCands[3];
+      vector<const pat::CompositeCandidate*>   _thePassedCands;
 
       // number of events
       unsigned int nEvents;
@@ -242,6 +253,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // Trigger Filter Studies
       edm::Handle< edm::TriggerResults> handleTriggerResults_;
       edm::InputTag tagTriggerResults_;
+      bool          requireTriggerMatching_;
       HLTConfigProvider hltConfig_;
       bool hltConfigInit_;
       std::vector<std::string> HLTBitNames_;
@@ -268,7 +280,6 @@ enum {CS, HX, PHX, sGJ, GJ1, GJ2};
 //
 JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _patJpsi(iConfig.getParameter<InputTag>("src")),
-  _patJpsiWithCalo(iConfig.getParameter<InputTag>("srcWithCaloMuons")),
   _writeTree(iConfig.getParameter<bool>("writeTree")),
   _treefilename(iConfig.getParameter<string>("treeFileName")),	
   _writeDataSet(iConfig.getParameter<bool>("writeDataSet")),
@@ -283,10 +294,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _applyExpHitcuts(iConfig.getUntrackedParameter<bool>("applyExpHitCuts",false)),
   _applyDiMuoncuts(iConfig.getUntrackedParameter<bool>("applyDiMuonCuts",false)),
   _useBS(iConfig.getParameter<bool>("useBeamSpot")),
-  _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),
   _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
   _removeMuons(iConfig.getUntrackedParameter<bool>("removeTrueMuons",false)),
-  _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
   _writeOutCands(iConfig.getUntrackedParameter<bool>("writeOutCandidates",false)),
   _MassCorr(iConfig.getParameter<int>("massCorrectionMode")),
   _oniaPDG(iConfig.getParameter<int>("oniaPDG")),
@@ -297,6 +306,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   prop1_(iConfig.getParameter<edm::ParameterSet>("propagatorStation1")),
   prop2_(iConfig.getParameter<edm::ParameterSet>("propagatorStation2")),
   tagTriggerResults_(iConfig.getParameter<InputTag>("triggerResultsLabel")),
+  requireTriggerMatching_(iConfig.getUntrackedParameter<bool>("requireTriggerMatching",true)),
   HLTBitNames_SingleMu(iConfig.getParameter< vector<string> >("HLTBitNames_SingleMu")),
   HLTLastFilterNames_SingleMu(iConfig.getParameter< vector<string> >("HLTLastFilterNames_SingleMu")),
   HLTBitNames_DoubleMu(iConfig.getParameter< vector<string> >("HLTBitNames_DoubleMu")),
@@ -374,6 +384,13 @@ JPsiAnalyzerPAT::~JPsiAnalyzerPAT()
 void
 JPsiAnalyzerPAT::beginJob()
 {
+
+  //read scale-correction parameters from the database:
+  // edm::ESHandle<MuScleFitDBobject> dbObject;
+  // iSetup.get<MuScleFitDBobjectRcd>().get(dbObject);
+  // corrector_.reset(new MomentumScaleCorrector( dbObject.product() ) );
+
+
     //std::cout << "[JPsiAnalyzerPAT] --- beginJob " << std::endl;
   if (_writeTree) {
     fOut_ = new TFile(_treefilename.c_str(), "RECREATE");
@@ -400,12 +417,16 @@ JPsiAnalyzerPAT::beginJob()
     tree_->Branch("countTksOfPV",        &countTksOfPV,        "countTksOfPV/I");
 
     // Jpsi Variables
-    tree_->Branch("JpsiType",   &JpsiType,  "JpsiType/I");
+//     tree_->Branch("JpsiType",   &JpsiType,  "JpsiType/I");
     tree_->Branch("JpsiP",  "TLorentzVector", &JpsiP);
-    // tree_->Branch("JpsiMass",   &JpsiMass,  "JpsiMass/D");
+    tree_->Branch("JpsiMuScleMassCorr",   &JpsiMuScleMassCorr,  "JpsiMuScleMassCorr/D");
+    tree_->Branch("JpsiMuScleMassErr",   &JpsiMuScleMassErr,  "JpsiMuScleMassErr/D");
+    tree_->Branch("JpsiMassErr",   &JpsiMassErr,  "JpsiMassErr/D");
+    tree_->Branch("sigmaPtPos",   &sigmaPtPos,  "sigmaPtPos/D");
+    tree_->Branch("sigmaPtNeg",   &sigmaPtNeg,  "sigmaPtNeg/D");
     // tree_->Branch("JpsiPt",     &JpsiPt,    "JpsiPt/D");
     // tree_->Branch("JpsiRap",    &JpsiRap,   "JpsiRap/D");
-    tree_->Branch("JpsiCharge", &JpsiCharge,"JpsiCharge/I");
+//     tree_->Branch("JpsiCharge", &JpsiCharge,"JpsiCharge/I");
     // tree_->Branch("JpsiPx",     &JpsiPx,    "JpsiPx/D");
     // tree_->Branch("JpsiPy",     &JpsiPy,    "JpsiPy/D");
     // tree_->Branch("JpsiPz",     &JpsiPz,    "JpsiPz/D");
@@ -485,38 +506,23 @@ JPsiAnalyzerPAT::beginJob()
        cout << "Rap bin " << i+1 << ": Min = " << _etabinranges[i] << " Max = " << _etabinranges[i+1] << endl;   
      }
      
-     Jpsi_Type = new RooCategory("Jpsi_Type","Category of Jpsi");
      Jpsi_MatchType = new RooCategory("Jpsi_MatchType","Category of matching");
-     
-     Jpsi_Type->defineType("GG",0);
-     Jpsi_Type->defineType("GT",1);
-     Jpsi_Type->defineType("TT",2);
-     if (_useCalo) {
-       Jpsi_Type->defineType("GC",3);  
-       Jpsi_Type->defineType("TC",4);  
-       Jpsi_Type->defineType("CC",5);  
-     }
      
      Jpsi_MatchType->defineType("unmatched",0);
      Jpsi_MatchType->defineType("matched",1);
      
-     Jpsi_Sign = new RooCategory("Jpsi_Sign","Sign of Jpsi dimuons");
-     
-     Jpsi_Sign->defineType("OS",0);
-     Jpsi_Sign->defineType("SSP",1);
-     Jpsi_Sign->defineType("SSM",2);
-
-     Jpsi_Mass = new RooRealVar("Jpsi_Mass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
+     Jpsi_MuScleMass = new RooRealVar("Jpsi_MuScleMass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
+     Jpsi_MuScleMassErr = new RooRealVar("Jpsi_MuScleMassErr","J/psi mass error",0,1.,"GeV/c^{2}");
+     Jpsi_MassErr = new RooRealVar("Jpsi_MassErr","J/psi vtx mass error",0,1.,"GeV/c^{2}");
      Jpsi_Pt = new RooRealVar("Jpsi_Pt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
      Jpsi_Rap = new RooRealVar("Jpsi_Rap","J/psi eta",-JpsiRapMax,JpsiRapMax);
      Jpsi_ct = new RooRealVar("Jpsi_ct","J/psi ctau",JpsiCtMin,JpsiCtMax,"mm");
      Jpsi_ctErr = new RooRealVar("Jpsi_ctErr","J/psi ctau error",-1.,1.,"mm");
      Jpsi_ctTrue = new RooRealVar("Jpsi_ctTrue","J/psi ctau true",-100.,JpsiCtMax,"mm"); 		
 
-     RooArgList varlist(*Jpsi_Mass,*Jpsi_ct,*Jpsi_Pt,*Jpsi_Rap,*Jpsi_Type,*Jpsi_MatchType);
+     RooArgList varlist(*Jpsi_MuScleMass,*Jpsi_MuScleMassErr, *Jpsi_MassErr,*Jpsi_ct,*Jpsi_Pt,*Jpsi_Rap,*Jpsi_MatchType);
      varlist.add(*Jpsi_ctTrue);   varlist.add(*Jpsi_PtType);
      varlist.add(*Jpsi_RapType);  varlist.add(*Jpsi_ctErr);
-     varlist.add(*Jpsi_Sign);
 
      data = new RooDataSet("data","A sample",varlist);
   }
@@ -524,50 +530,38 @@ JPsiAnalyzerPAT::beginJob()
 
 
 double JPsiAnalyzerPAT::CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode){  
-  double CMass=0;
-  const double mumass=0.105658;
-  double k1,k2;
-  double pt1=mu1.innerTrack()->pt();
-  double pt2=mu2.innerTrack()->pt();
-  double eta1=mu1.innerTrack()->eta();
-  double eta2=mu2.innerTrack()->eta();
-  if (mode==1){
-    k1=1.0009;//constant scale correction
-    k2=1.0009;
-  }
-  if (mode==2){
-    k1=1.0019-0.0004*pt1;
-    k2=1.0019-0.0004*pt2; // pt dependent correction
-  }
-  if (mode==3){
-      double a0=0.00038; //3.8 * pow(10,-4);
-      double a1=0.0;
-      double a2=0.0003; //3.0 * pow(10,-4);
-      double a3=0.0;
 
-      k1=1+a0+a1*fabs(eta1)+a2*eta1*eta1+a3*pt1;
-      k2=1+a0+a1*fabs(eta2)+a2*eta2*eta2+a3*pt2;// pt and eta dependent
-  }
+  //MuScle Fit corrections
+  //1) correct the momentum scale:
+  double corrPt1 = (*corrector_)(mu1);
+  double corrPt2 = (*corrector_)(mu2);
+//   cout << "original pT1 " << (mu1.innerTrack()->momentum()).Rho() << " corrected pT1 " << corrPt1 << endl;
+//   cout << "original pT2 " << (mu2.innerTrack()->momentum()).Rho() << " corrected pT2 " << corrPt2 << endl;
 
-  if (mode == 4){
-      double a0=1.002;
-      double a1=-0.002;
-      double a2=0.001;
-      double a3=-0.0001;
+  const double mumass = 0.105658;
+  TLorentzVector mu1Corr, mu2Corr; 
+  mu1Corr.SetPtEtaPhiM(corrPt1, mu1.innerTrack()->eta(), mu1.innerTrack()->phi(), mumass);
+  mu2Corr.SetPtEtaPhiM(corrPt2, mu2.innerTrack()->eta(), mu2.innerTrack()->phi(), mumass);
+  TLorentzVector onia = mu1Corr+mu2Corr;
+  JpsiMuScleMassCorr = onia.M();
 
-      k1=a0+a1*fabs(eta1)+a2*eta1*eta1+a3*pt1;
-      k2=a0+a1*fabs(eta2)+a2*eta2*eta2+a3*pt2;// pt and eta dependent
-  }
+  //2) calculate the error on the mass
+  double ptEtaPhiE_1[4] = {corrPt1, mu1.innerTrack()->eta(), mu1.innerTrack()->phi(), 0.};//E will be calculated automatically
+  double ptEtaPhiE_2[4] = {corrPt2, mu2.innerTrack()->eta(), mu2.innerTrack()->phi(), 0.};//E will be calculated automatically
 
-  math::XYZVector mom1=mu1.innerTrack()->momentum();
-  math::XYZVector mom2=mu2.innerTrack()->momentum();
-  mom1=k1*mom1; 
-  mom2=k2*mom2;
-  double E1=sqrt(mom1.mag2()+(mumass*mumass));
-  double E2=sqrt(mom2.mag2()+(mumass*mumass));
-  math::XYZVector momtot=mom1+mom2;
-  CMass=sqrt((E1+E2)*(E1+E2)-momtot.mag2());
-  return CMass;
+  JpsiMuScleMassErr = MuScleFitUtils::massResolution(MuScleFitUtils::fromPtEtaPhiToPxPyPz(ptEtaPhiE_1), 
+						     MuScleFitUtils::fromPtEtaPhiToPxPyPz(ptEtaPhiE_2), 
+						     *resolutionFunction_);
+
+  //3) save also the resolution on the single muon pT
+  double sigmaPT1 = resolutionFunction_->sigmaPt(mu1, 0);
+  double sigmaPT2 = resolutionFunction_->sigmaPt(mu2, 0);
+  if(mu1.charge() > 0){sigmaPtPos = sigmaPT1; sigmaPtNeg = sigmaPT2;}
+  else if(mu1.charge() < 0){sigmaPtPos = sigmaPT1; sigmaPtNeg = sigmaPT1;}
+
+  //cout << "mass " << JpsiMassCorr << " errMass " << JpsiMassErr << endl;
+  return JpsiMuScleMassCorr;
+
 }
 
 // ------------ method called to for each event  ------------
@@ -583,15 +577,12 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    // check HLT TriggerReuslts
    this->hltReport(iEvent, iSetup);
 
-<<<<<<< JPsiAnalyzerPAT.cc
    bool trigOK = false;
    for (unsigned int iTrig = 0 ; iTrig < HLTBitNames_.size() ; iTrig++) {
      if (mapTriggerNameToIntFired_[HLTBitNames_.at(iTrig)] == 3) trigOK = true;
    }
-   if (requireTriggerMatching_ && !trigOK && !_storeAllMCEvents) return;
+   if (requireTriggerMatching_ && !trigOK) return;
 
-=======
->>>>>>> 1.53
    // Event related infos
    eventNb= iEvent.id().event() ;
    runNb=iEvent.id().run() ;
@@ -613,50 +604,31 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    try {iEvent.getByLabel(_patJpsi,collAll);} 
    catch (...) {cout << "J/psi not present in event!" << endl;}
 
-   if (_useCalo) {
-     try {iEvent.getByLabel(_patJpsiWithCalo,collCalo);} 
-     catch (...) {cout << "J/psi to calomuons not present in event!" << endl;}
-   }
-
-   _thePassedCats[0].clear();      _thePassedCands[0].clear();
-   _thePassedCats[1].clear();      _thePassedCands[1].clear();
-   _thePassedCats[2].clear();      _thePassedCands[2].clear();
+   _thePassedCands.clear();
 
    // APPLY CUTS
-   int lastSign = 0;
-   this->makeCuts(0);
-   if (_storeWs) {
-     this->makeCuts(1);
-     this->makeCuts(2);
-     lastSign = 2;
-   }
+   this->makeCuts();
 
    bool storeEvent = false;
 
    // BEST J/PSI? 
-   if (_onlythebest) {  // yes, fill simply the best (possibly wrong-sign)
-
-//      for (int iSign = 0; iSign <= lastSign; iSign++) {
-     for (int iSign = lastSign; iSign >= 0; iSign--) {
-       pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ(iSign);
-       if (theBest.first < 10) {
-           fillTreeAndDS(theBest.first, theBest.second, iEvent);
-           passedMuonSelectionCuts_++;
-	   if(iSign == 0) storeEvent = true;
-       }
+   if (_onlythebest && _thePassedCands.size()>0) {  // yes, fill simply the best
+     int iBest = theBestQQ();
+     if (iBest > -1){
+       fillTreeAndDS(_thePassedCands.at(iBest), iEvent);
+       passedMuonSelectionCuts_++;
+       storeEvent=true;
      }
    } else {   // no, fill all candidates passing cuts (possibly wrong-sign)
-
-     for (int iSign = 0; iSign <= lastSign; iSign++) {
-       for( unsigned int count = 0; count < _thePassedCands[iSign].size(); count++) { 
-	 fillTreeAndDS(_thePassedCats[iSign].at(count), _thePassedCands[iSign].at(count),iEvent); 
-       }
+     for( unsigned int count = 0; count < _thePassedCands.size(); count++) { 
+       fillTreeAndDS(_thePassedCands.at(count),iEvent);
+       passedMuonSelectionCuts_++;
      }
    }
-
+   
    //! FILL GENERATOR COLLECTION and store the event
-  if ( _storeAllMCEvents || storeEvent ) {
-
+   if ( _storeAllMCEvents || storeEvent ) {
+     
      Handle<reco::GenParticleCollection> genParticles;
      iEvent.getByLabel( _genParticles, genParticles );
      if ( genParticles.isValid() )
@@ -685,6 +657,15 @@ JPsiAnalyzerPAT::beginRun(const edm::Run& iRun, const edm::EventSetup& iSetup){
 
     prop1_.init(iSetup);
     prop2_.init(iSetup);
+
+  //read scale-correction parameters from the database:
+  edm::ESHandle<MuScleFitDBobject> dbObject;
+  iSetup.get<MuScleFitDBobjectRcd>().get(dbObject);
+  corrector_.reset(new MomentumScaleCorrector( dbObject.product() ) );
+  //resolutionFunction_.reset(new ResolutionFunction( iConfig.getUntrackedParameter<std::string>("ResolutionsIdentifier") ) );
+  resolutionFunction_.reset(new ResolutionFunction( "Resol_JPsi_19pb" ) ); //H: which identifiers are available?
+  std::cout << "resolutionFunction_ = " << &*resolutionFunction_ << std::endl;
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -719,7 +700,7 @@ JPsiAnalyzerPAT::endJob() {
 
 //! Fill the TTree with all RECO variables
 void 
-JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event& iEvent){
+JPsiAnalyzerPAT::fillTreeAndDS(const pat::CompositeCandidate* aCand, const edm::Event& iEvent){
   
   const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon1"));
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
@@ -742,9 +723,15 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
 
   //
   float theMass = aCand->mass();
+  JpsiMassErr = aCand->userFloat("MassErr");
+  float theMassErr = 0.;
   if (_MassCorr!=0){
-    double CMass = CorrectMass(*muon1,*muon2,_MassCorr);
-    if (CMass!=0.0) theMass = CMass;
+    float CMass = CorrectMass(*muon1,*muon2,_MassCorr);
+    if (CMass!=0.0){
+      //      cout << "uncorrected mass " << theMass << " corrected mass " << CMass << endl; 
+      theMass = CMass;
+      theMassErr = JpsiMuScleMassErr;
+    }
   }
 
   float theRapidity = aCand->rapidity();
@@ -757,8 +744,6 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   float theCtauErr; 
   if (_useBS) {theCtauErr = 10.*aCand->userFloat("ppdlErrBS");}
   else {theCtauErr = 10.*aCand->userFloat("ppdlErrPV");}
-
-  float theCharge = aCand->charge();
 
   // MC matching
   reco::GenParticleRef genJpsi = aCand->genParticleRef();
@@ -778,14 +763,6 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
 		      genMu1->momentum().rho() > 2.5 && genMu2->momentum().rho() > 2.5);
   if (isMuMatched && _removeMuons) return;
 
-  // PAT trigger match, 2 muons to the last filter used in the HLT path (new way)
-  this->matchMuonToHlt(muonPos, muonNeg);
-
-  // some counter
-  passedTriggerMatch_++;
-    
-  // JpsiMass=theMass;
-
   //store the number of tracks attached to the primary vertex selected by the dimuon:
   if(aCand->hasUserFloat("vertexWeight"))
     vertexWeight = aCand->userFloat("vertexWeight");
@@ -799,7 +776,7 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   // write out JPsi RECO information
   // JpsiPt=aCand->pt();
   // JpsiRap=theRapidity;
-  JpsiCharge=theCharge;
+//   JpsiCharge=theCharge;
   // std::cout << "[JPsiAnalyzerPAT::fillTreeAndDS] ----- JpsiCharge: " << theCharge << std::endl;
   // JpsiPx=aCand->px();
   // JpsiPy=aCand->py();
@@ -808,7 +785,6 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   Jpsict=theCtau;
   JpsictErr=theCtauErr;
   Jpsict_Gen=10.*aCand->userFloat("ppdlTrue");
-  JpsiType=theCat;
   JpsiVprob=aCand->userFloat("vProb");
   this->muonStationDistance(aCand);
   
@@ -860,184 +836,89 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
 	isMuonInAccept(muon1) && isMuonInAccept(muon2) &&
 	trigOK) {
 
-      int ss=999;
-      if (muon1->charge() + muon2->charge() == 0) ss=0;
-      if (muon1->charge() + muon2->charge() == 2) ss=1;
-      if (muon1->charge() + muon2->charge() == -2) ss=2;
+//       int ss=999;
+//       if (muon1->charge() + muon2->charge() == 0) ss=0;
+//       if (muon1->charge() + muon2->charge() == 2) ss=1;
+//       if (muon1->charge() + muon2->charge() == -2) ss=2;
 
-      Jpsi_Sign->setIndex(ss,kTRUE);
-      
       Jpsi_Pt->setVal(aCand->pt()); 
       Jpsi_Rap->setVal(theRapidity); 
-      Jpsi_Mass->setVal(theMass);
+      Jpsi_MuScleMass->setVal(theMass);
+      Jpsi_MuScleMassErr->setVal(theMassErr);
+      Jpsi_MassErr->setVal(aCand->userFloat("MassErr"));
       Jpsi_ct->setVal(theCtau);
       Jpsi_ctErr->setVal(theCtauErr);
       // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
       // cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
-      Jpsi_Type->setIndex(theCat,kTRUE);
       Jpsi_MatchType->setIndex((int)isMatched,kTRUE);
       Jpsi_ctTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
     
       Jpsi_PtType->setIndex(getJpsiVarType(aCand->pt(),_ptbinranges),kTRUE);
       Jpsi_RapType->setIndex(getJpsiVarType(fabs(theRapidity),_etabinranges),kTRUE);
       // Fill RooDataSet
-      RooArgSet varlist_tmp(*Jpsi_Mass,*Jpsi_ct,*Jpsi_Pt,*Jpsi_Rap,*Jpsi_Type,*Jpsi_MatchType);   // temporarily remove tag-and-probe weights
+      RooArgSet varlist_tmp(*Jpsi_MuScleMass,*Jpsi_MuScleMassErr,*Jpsi_MassErr,*Jpsi_ct,*Jpsi_Pt,*Jpsi_Rap,*Jpsi_MatchType);   // temporarily remove tag-and-probe weights
       varlist_tmp.add(*Jpsi_ctTrue);   varlist_tmp.add(*Jpsi_PtType);
       varlist_tmp.add(*Jpsi_RapType);  varlist_tmp.add(*Jpsi_ctErr);
-      varlist_tmp.add(*Jpsi_Sign);
       data->add(varlist_tmp);
     }
   }
 }
         
-void JPsiAnalyzerPAT::makeCuts(int sign) {
+void JPsiAnalyzerPAT::makeCuts() {
 
   if (collAll.isValid()) {
 
     for(vector<pat::CompositeCandidate>::const_iterator it=collAll->begin();
 	it!=collAll->end();++it) {
       
-      const pat::CompositeCandidate* cand = &(*it);	
+      const pat::CompositeCandidate* cand = &(*it);
       // cout << "Now checking candidate of type " << theJpsiCat << " with pt = " << cand->pt() << endl;
       const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
       const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
  
-      bool thisSign = (sign == 0 && muon1->charge() + muon2->charge() == 0) || 
-	(sign == 1 && muon1->charge() + muon2->charge() == 2) || 
-	(sign == 2 && muon1->charge() + muon2->charge() == -2);
+      // PAT trigger match, 2 muons to the last filter used in the HLT path (new way)
+      this->matchMuonToHlt(muon1, muon2);
 
-      if (thisSign) {	  
-	  
-        // global + global?
-	if (muon1->isGlobalMuon() && muon2->isGlobalMuon() &&
-	    muon1->isTrackerMuon() && muon2->isTrackerMuon()   ) {
-	  if (!_applycuts || (selGlobalMuon(muon1) &&
-			      selGlobalMuon(muon2) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(0);  _thePassedCands[sign].push_back(cand);
-            continue;
-	  }
-	}
+      bool trigOK = false;
+      for (unsigned int iTrig = 0 ; iTrig < HLTBitNames_.size() ; iTrig++) {
+	if (mapTriggerNameToIntFired_[HLTBitNames_.at(iTrig)] == 1 ||
+	    mapTriggerNameToIntFired_[HLTBitNames_.at(iTrig)] == -1 ||
+	    mapTriggerNameToIntFired_[HLTBitNames_.at(iTrig)] == 2 ) trigOK = true;
+      }
+      
+      if (requireTriggerMatching_ && !trigOK) continue;
+      
+      // some counter
+      passedTriggerMatch_++;
+      
+      if (muon1->charge() + muon2->charge() == 0) {	  
 	
-        // global + tracker? (x2)    
-	if (muon1->isGlobalMuon() && muon2->isTrackerMuon() &&
-	    muon1->isTrackerMuon()    ) {
-	  if (!_applycuts || (selGlobalMuon(muon1) &&
-			      selTrackerMuon(muon2) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(1);  _thePassedCands[sign].push_back(cand);
-	    continue;
-	  }
-	}
-
-        if (muon2->isGlobalMuon() && muon1->isTrackerMuon() &&
-            muon2->isTrackerMuon() ) {
-	  if (!_applycuts || (selGlobalMuon(muon2) &&
-			      selTrackerMuon(muon1) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(1);  _thePassedCands[sign].push_back(cand);
-	    continue;
-	  }
-	}
-
-        // tracker + tracker?  
-        if (muon1->isTrackerMuon() && muon2->isTrackerMuon() ) {
-	  if (!_applycuts || (selTrackerMuon(muon1) &&
-			      selTrackerMuon(muon2) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(2);  _thePassedCands[sign].push_back(cand);
-	    continue;
-	  }
+	if (!_applycuts || (selMuon(muon1) &&
+			    selMuon(muon2) &&
+			    selDimuon(cand) )) {
+	  _thePassedCands.push_back(cand);
+	  continue;
 	}
       }
     }
   }
   
-  if (_useCalo && collCalo.isValid()) {
-
-    for(vector<pat::CompositeCandidate>::const_iterator it=collCalo->begin();
-	it!=collCalo->end();++it) {
-      
-      const pat::CompositeCandidate* cand = &(*it);
-      
-      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
-      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
-
-      bool thisSign = (sign == 0 && muon1->charge() + muon2->charge() == 0) || 
-	(sign == 1 && muon1->charge() + muon2->charge() == 2) || 
-	(sign == 2 && muon1->charge() + muon2->charge() == -2);
-
-      if (thisSign && !(muon1->isTrackerMuon() && muon2->isTrackerMuon()) ) {
-
-	// global + calo? (x2)
-	if (muon1->isGlobalMuon() && muon2->isCaloMuon() ) {
-	  if (!_applycuts || (selGlobalMuon(muon1) &&
-			      selCaloMuon(muon2) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(3);  _thePassedCands[sign].push_back(cand);
-            continue;
-	  }
-	}
-
-	if (muon2->isGlobalMuon() && muon1->isCaloMuon() ) {
-	  if (!_applycuts || (selGlobalMuon(muon2) &&
-			      selCaloMuon(muon1) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(3);  _thePassedCands[sign].push_back(cand);
-            continue;
-	  }
-	}
-	
-        // tracker + calo? (x2)    
-	if (muon1->isTrackerMuon() && muon2->isCaloMuon() ) {
-	  if (!_applycuts || (selTrackerMuon(muon1) &&
-			      selCaloMuon(muon2) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(4);  _thePassedCands[sign].push_back(cand);
-	    continue;
-	  }
-	}
-
-        if (muon2->isTrackerMuon() && muon1->isCaloMuon() ) {
-	  if (!_applycuts || (selTrackerMuon(muon2) &&
-			      selCaloMuon(muon1) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(4);  _thePassedCands[sign].push_back(cand);
-	    continue;
-	  }
-	}
-
-        // calo + calo? 
-        if (muon1->isCaloMuon() && muon2->isCaloMuon() ) {
-	  if (!_applycuts || (selCaloMuon(muon1) &&
-			      selCaloMuon(muon2) &&
-			      selDimuon(cand) )) {
-	    _thePassedCats[sign].push_back(5);  _thePassedCands[sign].push_back(cand);
-	    continue;
-	  }
-	}
-      }
-    }
-  }
-
   return;
 }
 
-pair< unsigned int, const pat::CompositeCandidate* > 
-JPsiAnalyzerPAT::theBestQQ(int sign) {
+int JPsiAnalyzerPAT::theBestQQ() {
 
-  unsigned int theBestCat = 99;
-  const pat::CompositeCandidate* theBestCand = new pat::CompositeCandidate();
+  int iBest = -1;
+  float maxVProb = -1;
 
-  for( unsigned int i = 0; i < _thePassedCands[sign].size(); i++) { 
-    if (_thePassedCats[sign].at(i) < theBestCat) {
-      theBestCat = _thePassedCats[sign].at(i);
-      theBestCand = _thePassedCands[sign].at(i);
+  for( unsigned int i = 0; i < _thePassedCands.size(); i++) { 
+    if (_thePassedCands.at(i)->userFloat("vProb") > maxVProb) {
+      maxVProb = _thePassedCands.at(i)->userFloat("vProb");
+      iBest = (int)i;
     }
   }
 
-  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(theBestCat, theBestCand );
-  return result;
+  return iBest;
 
 }
 
@@ -1055,7 +936,7 @@ JPsiAnalyzerPAT::isMuonInAccept(const pat::Muon* aMuon) {
 }
 
 bool
-JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
+JPsiAnalyzerPAT::selMuon(const pat::Muon* aMuon) {
 
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
@@ -1063,7 +944,11 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
   const reco::HitPattern& eo = iTrack->trackerExpectedHitsOuter();
 
   TrackRef gTrack = aMuon->globalTrack();
-  const reco::HitPattern& q = gTrack->hitPattern();
+//   bool globalOK = true;
+//   if (gTrack.isNonnull()) {
+//     const reco::HitPattern& q = gTrack->hitPattern();
+//     globalOK = gTrack->chi2()/gTrack->ndof() < 20.0 && q.numberOfValidMuonHits() > 0 ;
+//   }
 
   bool trackOK = false;
   // cooler way of cutting on tracks
@@ -1075,62 +960,10 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 
   return (// isMuonInAccept(aMuon) &&
 	  trackOK &&
-	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
-          q.numberOfValidMuonHits() > 0 &&
+// 	  globalOK &&
 	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMOneStationTight") &&
-          p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
-          fabs(iTrack->dz(RefVtx)) < 15.0 );
-}
-
-bool 
-JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
-  
-  TrackRef iTrack = aMuon->innerTrack();
-  const reco::HitPattern& p = iTrack->hitPattern();
-  const reco::HitPattern& ei = iTrack->trackerExpectedHitsInner();
-  const reco::HitPattern& eo = iTrack->trackerExpectedHitsOuter();
-
-  bool trackOK = false;
-  // cooler way of cutting on tracks
-  if (_applyExpHitcuts) {
-    float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
-    trackOK = (fHits >= 0.8 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
-  // old way of cutting on tracks  
-  } else trackOK = (iTrack->found() > 10);
-
-  return (// isMuonInAccept(aMuon) &&
-	  trackOK &&
- 	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
-	  aMuon->muonID("TrackerMuonArbitrated") &&
-	  aMuon->muonID("TMOneStationTight") &&
-          p.pixelLayersWithMeasurement() > 1 &&
-	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
-          fabs(iTrack->dz(RefVtx)) < 15.0 );
-}
-
-bool 
-JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
-  
-  TrackRef iTrack = aMuon->innerTrack();
-  const reco::HitPattern& p = iTrack->hitPattern();
-  const reco::HitPattern& ei = iTrack->trackerExpectedHitsInner();
-  const reco::HitPattern& eo = iTrack->trackerExpectedHitsOuter();
- 
-  bool trackOK = false;
-  // cooler way of cutting on tracks
-  if (_applyExpHitcuts) {
-    float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
-    trackOK = (fHits >= 0.8 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
-  // old way of cutting on tracks  
-  } else trackOK = (iTrack->found() > 10);
-
-  return (// isMuonInAccept(aMuon) &&
-	  aMuon->caloCompatibility() > 0.89 &&
-	  trackOK &&
-	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
           fabs(iTrack->dz(RefVtx)) < 15.0 );
@@ -1158,10 +991,14 @@ void
 JPsiAnalyzerPAT::resetDSVariables(){
 
     //reset J/psi RECO variables
-    // JpsiMass=-9999.;
+    JpsiMuScleMassCorr=-9999.;
+    JpsiMuScleMassErr=-9999.;
+    JpsiMassErr=-9999.;
+    sigmaPtPos=-9999.;
+    sigmaPtNeg=-9999.;
     // JpsiPt=-9999.;
     // JpsiRap=-9999.;
-    JpsiCharge=-9999;
+//     JpsiCharge=-9999;
     // JpsiPx=-9999.;
     // JpsiPy=-9999.;
     // JpsiPz=-9999.;
@@ -1176,7 +1013,7 @@ JPsiAnalyzerPAT::resetDSVariables(){
     JpsiDphiM2=-9999.;
     JpsiDrM2=-9999.;
 
-    JpsiType=-1;
+//     JpsiType=-1;
 
     //reset MUON RECO variables
     /* muPosPx=-9999.;
@@ -1384,7 +1221,6 @@ JPsiAnalyzerPAT::hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSet
 	
 	if ( mapTriggernameToHLTbit[triggerPathName] < 1000 ) {
 	  if (handleTriggerResults_->accept( mapTriggernameToHLTbit[triggerPathName] ) ){
-          //std::cout << "[FloJPsiAnalyzer::hltReport] --- TriggerName " << triggerPathName << " fired!" << std::endl;
 	    mapTriggerNameToIntFired_[triggerPathName] = 3;
 	  }
 
@@ -1500,7 +1336,6 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
 	theCheck = std::find(HLTBitNames_SingleMu.begin(),HLTBitNames_SingleMu.end(),triggerName);
 	if (theCheck != HLTBitNames_SingleMu.end() && (pass1 == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
     }
-	
 }
 
 void 

@@ -35,4 +35,8 @@
 <use   name="PhysicsTools/UtilAlgos"/>
 <use   name="PhysicsTools/Utilities"/>
 <use   name="MuonAnalysis/MuonAssociators"/>
+<use   name="CondFormats/DataRecord"/>
+<use   name="CondFormats/RecoMuonObjects"/>
+<use   name="MuonAnalysis/MomentumScaleCalibration"/>
+<use   name="TrackingTools/IPTools"/>
 <flags EDM_PLUGIN="1"/>
