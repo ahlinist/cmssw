@@ -15,6 +15,7 @@ void setBranchAddresses(TTree* chain, EcalTimeTreeContent& treeVars)
 {
   chain -> SetBranchAddress("runId",       &treeVars.runId);
   chain -> SetBranchAddress("lumiSection", &treeVars.lumiSection);
+  chain -> SetBranchAddress("unixTime",    &treeVars.unixTime);
   chain -> SetBranchAddress("orbit",       &treeVars.orbit);
   chain -> SetBranchAddress("bx",          &treeVars.bx);
 
@@ -469,6 +470,7 @@ void setBranches(TTree* chain, EcalTimeTreeContent& treeVars)
 {
   chain -> Branch("runId",         &treeVars.runId,                "runId/i");
   chain -> Branch("lumiSection",   &treeVars.lumiSection,    "lumiSection/i");
+  chain -> Branch("unixTime",      &treeVars.unixTime,          "unixTime/i");
   chain -> Branch("orbit",         &treeVars.orbit,                "orbit/i");
   chain -> Branch("bx",            &treeVars.bx,                      "bx/i");
   chain -> Branch("eventId",       &treeVars.eventId,            "eventId/i");
@@ -922,6 +924,7 @@ void initializeBranches(TTree* chain, EcalTimeTreeContent& treeVars)
 {
   treeVars.runId = 0;
   treeVars.lumiSection = 0;
+  treeVars.unixTime = 0;
   treeVars.orbit = 0;
   treeVars.bx = 0;
   treeVars.eventId = 0; 
