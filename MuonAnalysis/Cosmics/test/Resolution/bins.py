@@ -73,12 +73,12 @@ def make_bins(bin_by, bin_extra=None):
             Bin('pT150200',   abscissa=172., min_pt=150.,  max_pt=200.,   diff_scales=(100., 0.0025, 0.01,  0.002, 0.05, 0.1 ),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=( 6.,  6.,  6.,  6., 5.,  5. )),
             Bin('pT200350',   abscissa=256., min_pt=200.,  max_pt=350.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.25, 0.25, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
             Bin('pT350500',   abscissa=411., min_pt=350.,  max_pt=500.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
-            Bin('pT5002000',  abscissa=755., min_pt=500.,  max_pt=2000.,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pT500750',   abscissa=595., min_pt=500.,  max_pt=750.,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(0.75, 0.75, 0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
         ]
 
         bins += [
             Bin('pTall',      use_by_bin=False,                             diff_scales=(  3., 0.005,  0.003, 0.003, 0.05, 0.1 ),   res_scales=(0.1,  0.1,  0.005, 0.005, 2., 2.),   pull_scales=( 5.,  5.,  5.,  5., 3.5, 3.5)),
-            Bin('pTover2000', use_by_bin=False, min_pt=2000., max_pt=1e99,  diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(2.0,  2.0,  0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
+            Bin('pTabove750', use_by_bin=False, min_pt=750., max_pt=1e99,   diff_scales=(500., 0.0025, 0.005, 0.002, 0.05, 0.07),   res_scales=(2.0,  2.0,  0.005, 0.005, 2., 2.),   pull_scales=(10., 10., 10., 10., 5.,  5. )),
             ]
 
     elif bin_by in ['eta', 'phi', 'dxy', 'dz']:
