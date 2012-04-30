@@ -227,3 +227,5 @@ MCCosMC42Peak           = 'COSMC_42_PEAK::All', []
 MCCosMC42PeakFixed      = 'COSMC_42_PEAK::All', MCFixedDTTTrig
 MCCosMC42PeakFixedIdeal = 'COSMC_42_PEAK::All', MCFixedDTTTrig + MCIdealAli
 MCCosMC42PeakFixedStart44 = 'COSMC_42_PEAK::All', MCFixedDTTTrig + MCStart44
+
+MCCosMC42PeakB = 'COSMC_42_PEAB::All', []
