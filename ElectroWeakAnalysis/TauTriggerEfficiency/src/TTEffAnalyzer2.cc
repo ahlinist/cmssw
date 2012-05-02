@@ -538,6 +538,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for(size_t i=0; i<l25TauDiscriminators_.size(); ++i) {
     iEvent.getByLabel(l25TauDiscriminators_[i].src, l25TauDiscriminators_[i].handle);
   }
+
   for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i) {
     iEvent.getByLabel(l25TauSelectedTaus_[i].src, l25TauSelectedTaus_[i].handle);
   }
@@ -758,23 +759,27 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     l25TauProng_.push_back(prongs);
     for(size_t i=0; i<l25TauDiscriminators_.size(); ++i) {
       float value = -1;
-      if(foundL25) {
-        reco::PFTauRef ref(hl25taus, l25Index);
-        value = (*(l25TauDiscriminators_[i].handle))[ref];
+      if(l25TauDiscriminators_[i].handle.isValid()){
+        if(foundL25) {
+          reco::PFTauRef ref(hl25taus, l25Index);
+          value = (*(l25TauDiscriminators_[i].handle))[ref];
+        }
+        l25TauDiscriminators_[i].values.push_back(value);
       }
-      l25TauDiscriminators_[i].values.push_back(value);
     }
     for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i) {
       bool value = false;
-      if(foundL25) {
-        for(size_t j=0; j<l25TauSelectedTaus_[i].handle->size(); ++j) {
-          if(reco::deltaR(*foundL25, l25TauSelectedTaus_[i].handle->at(j)) < 0.1) {
-            value = true;
-            break;
-          }
-        }
+      if(l25TauSelectedTaus_[i].handle.isValid()){
+	   if(foundL25) {
+	     for(size_t j=0; j<l25TauSelectedTaus_[i].handle->size(); ++j) {
+	       if(reco::deltaR(*foundL25, l25TauSelectedTaus_[i].handle->at(j)) < 0.1) {
+		 value = true;
+		 break;
+	       }
+	     }
+	   }
+           l25TauSelectedTaus_[i].values.push_back(value);
       }
-      l25TauSelectedTaus_[i].values.push_back(value);
     }
   }
 
