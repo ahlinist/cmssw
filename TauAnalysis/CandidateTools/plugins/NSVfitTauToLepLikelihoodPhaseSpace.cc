@@ -49,16 +49,16 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     dynamic_cast<const NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>*>(hypothesis);
   assert(hypothesis_T != 0);
 
-  //if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
-
   double decayAngle = hypothesis_T->decay_angle_rf();
   double nuMass = hypothesis_T->p4invis_rf().mass();
   if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
   double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
+  if ( visMass < 1.e-4 ) visMass = 1.e-4;
   double visMass2 = square(visMass);
 
   //if ( this->verbosity_ ) {
+  //  std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
   //  std::cout << " tauLeptonMass2 = " << tauLeptonMass2 << std::endl;
   //  std::cout << " decayAngle = " << decayAngle << std::endl;
   //  std::cout << " nuMass = " << nuMass << std::endl;
@@ -75,7 +75,7 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
   double term3 = tauLeptonMass*visMass;
   double term4 = square(term3);
   double norm_factor = 1./(0.25*(term1*term2 - 4.*term4*TMath::Log(term3) + 4.*term4*TMath::Log(visMass2)));
-  //std::cout << "norm_factor = " << norm_factor << std::endl;
+  //if ( this->verbosity_ ) std::cout << "norm_factor = " << norm_factor << std::endl;
   double prob = 1.;
   if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
     double term5 = tauLeptonMass2 - square(nuMass + visMass);
