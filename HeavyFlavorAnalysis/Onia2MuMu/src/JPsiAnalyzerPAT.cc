@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.55 2012/04/26 13:19:20 eaguiloc Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.56 2012/04/26 14:00:00 eaguiloc Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -144,6 +144,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       double JpsiDistM1, JpsiDphiM1, JpsiDrM1;
       double JpsiDistM2, JpsiDphiM2, JpsiDrM2;
 
+
+      double dca;
       //2.) muon variables RECO
       // double muPosPx, muPosPy, muPosPz;
       TLorentzVector* muPosP;
@@ -450,6 +452,8 @@ JPsiAnalyzerPAT::beginJob()
     // tree_->Branch("muNegPy",    &muNegPy,   "muNegPy/D");
     // tree_->Branch("muNegPz",    &muNegPz,   "muNegPz/D");
 
+    tree_->Branch("DCA",&dca,"DCA/D");
+
     //add HLT Variables to TTree
     for(std::vector< std::string >:: iterator it = HLTBitNames_.begin(); it != HLTBitNames_.end(); ++it){
         std::string hlt_name= *it;
@@ -744,6 +748,8 @@ JPsiAnalyzerPAT::fillTreeAndDS(const pat::CompositeCandidate* aCand, const edm::
   float theCtauErr; 
   if (_useBS) {theCtauErr = 10.*aCand->userFloat("ppdlErrBS");}
   else {theCtauErr = 10.*aCand->userFloat("ppdlErrPV");}
+
+  dca = aCand->userFloat("DCA");
 
   // MC matching
   reco::GenParticleRef genJpsi = aCand->genParticleRef();
