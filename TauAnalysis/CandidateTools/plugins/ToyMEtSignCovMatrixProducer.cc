@@ -22,12 +22,14 @@ ToyMEtSignCovMatrixProducer::~ToyMEtSignCovMatrixProducer()
 
 void ToyMEtSignCovMatrixProducer::produce(edm::Event& evt, const edm::EventSetup& es) 
 {
+  //std::cout << "<ToyMEtSignCovMatrixProducer::produce>:" << std::endl;
   TMatrixD covMatrix(2,2);
   covMatrix(0,0) = resolutionX_*resolutionX_;
   covMatrix(0,1) = 0.;
   covMatrix(1,0) = 0.;
   covMatrix(1,1) = resolutionY_*resolutionY_;
   std::auto_ptr<PFMEtSignCovMatrix> covMatrix_ptr(new PFMEtSignCovMatrix(covMatrix));
+  //covMatrix_ptr->Print();
   evt.put(covMatrix_ptr);
 }
 
