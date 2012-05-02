@@ -71,10 +71,10 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
 
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
-  if ( this->verbosity_ ) {
-    std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
-    //std::cout << " hypothesis = " << hypothesis << std::endl;
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
+  //  std::cout << " hypothesis = " << hypothesis << std::endl;
+  //}
   
   if ( srcMEtCovMatrix_.label() == "" ) {
     std::list<const reco::Candidate*> daughterHypothesesList;
@@ -92,16 +92,16 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
     pfMEtCov_ = (*pfMEtSign_)(daughterHypothesesList);
   }
 
-  if ( this->verbosity_ ) {
-    std::cout << "pfMEt:" << std::endl;
-    std::cout << " Px = " << hypothesis->met()->px() << ", Py = " << hypothesis->met()->py() << std::endl;
-    if ( dynamic_cast<const pat::MET*>(hypothesis->met().get()) != 0 ) {
-      const reco::GenMET* genMET = (dynamic_cast<const pat::MET*>(hypothesis->met().get()))->genMET();
-      std::cout << "(genMEt: Px = " << genMET->px() << ", Py = " << genMET->py() << ")" << std::endl;
-    }
-    std::cout << "pfMEtCov:" << std::endl;
-    pfMEtCov_.Print();
-  }
+  //if ( this->verbosity_ ) {
+  //  std::cout << "pfMEt:" << std::endl;
+  //  std::cout << " Px = " << hypothesis->met()->px() << ", Py = " << hypothesis->met()->py() << std::endl;
+  //  if ( dynamic_cast<const pat::MET*>(hypothesis->met().get()) != 0 ) {
+  //    const reco::GenMET* genMET = (dynamic_cast<const pat::MET*>(hypothesis->met().get()))->genMET();
+  //    std::cout << "(genMEt: Px = " << genMET->px() << ", Py = " << genMET->py() << ")" << std::endl;
+  //  }
+  //  std::cout << "pfMEtCov:" << std::endl;
+  //  pfMEtCov_.Print();
+  //}
 
   pfMEtCovDet_ = pfMEtCov_.Determinant();
   pfMEtCovInverse_ = pfMEtCov_;
