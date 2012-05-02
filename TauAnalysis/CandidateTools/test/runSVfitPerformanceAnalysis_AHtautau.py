@@ -18,7 +18,7 @@ import TauAnalysis.Configuration.tools.castor as castor
 version = '2012Mar13'
 
 inputFilePath  = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/SVfitStudies/'
-harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012Apr19/'
+harvestingFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/SVfitStudies/AHtautau_2012May01/'
 outputFilePath = '/tmp/veelken/svFitStudies/'
 #outputFilePath = '/data1/veelken/tmp/svFitStudies/AHtautau/2012Apr19/'
 
@@ -39,9 +39,9 @@ samplesToAnalyze = [
 ]
 
 channelsToAnalyze = [
-    'muTau',
+    ##'muTau',
     ##'eleTau',
-    ##'eleMu',
+    'eleMu',
     ##'diTau'
 ]
 
@@ -417,6 +417,9 @@ if runLXBatchHarvesting:
             for metResolution in metResolutions:
                 metResolution_label = getMEtResolution_label(metResolution)
                 outputFileNames_make.append(bsubJobNames_harvesting[sampleToAnalyze][channelToAnalyze][metResolution_label])
+if runMakePlots:
+    for channelToAnalyze in channelsToAnalyze:
+        outputFileNames_make.append(final_haddJobNames[channelToAnalyze])
 makeFile.write("all: %s\n" %
   (make_MakeFile_vstring(outputFileNames_make)))
 makeFile.write("\techo 'Finished running SVfitPerformanceAnalysis.'\n")
@@ -460,12 +463,12 @@ if runLXBatchHarvesting:
                    bsubFileNames_harvesting[sampleToAnalyze][channelToAnalyze][metResolution_label]['harvest_script_name']))
 if runMakePlots:
     for channelToAnalyze in channelsToAnalyze:
-        makeFile.write("%s: %s\n" %
-          (final_haddJobNames[channelToAnalyze],
-           final_haddOutputFileNames[channelToAnalyze]))
-        makeFile.write("\t%s %s\n" %
-          (executable_waitForLXBatchJobs,
-           bjobListFileNames_harvesting[channelToAnalyze]))
+        makeFile.write("%s:\n" %
+          (final_haddJobNames[channelToAnalyze]))
+        if runLXBatchHarvesting:  
+            makeFile.write("\t%s %s\n" %
+              (executable_waitForLXBatchJobs,
+               bjobListFileNames_harvesting[channelToAnalyze]))
         for final_haddInputFileName in final_haddInputFileNames[channelToAnalyze]:
             makeFile.write("\t%s %s %s\n" %
              (executable_rfcp,
