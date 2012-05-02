@@ -138,18 +138,18 @@ void NSVfitParameter::initializeDefaultValues()
   defaultInitialValues_[nSVfit_namespace::kW_mass]                = 80.399; // GeV
 
   defaultLimits_.resize(nSVfit_namespace::kNumFitParameter);
-  defaultLimits_[nSVfit_namespace::kPV_shiftX]                    = pdouble(         -0.1,         +0.1); // cm
-  defaultLimits_[nSVfit_namespace::kPV_shiftY]                    = pdouble(         -0.1,         +0.1); // cm
-  defaultLimits_[nSVfit_namespace::kPV_shiftZ]                    = pdouble(         -2.,          +2.);  // cm
-  defaultLimits_[nSVfit_namespace::kTau_visEnFracX]               = pdouble(          0.,           1.);  // dimensionless
-  defaultLimits_[nSVfit_namespace::kTau_phi_lab]                  = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kTau_decayDistance_lab]        = pdouble(        -4.,            1.);  // sigmas
-  defaultLimits_[nSVfit_namespace::kTau_nuInvMass]                = pdouble(          0.,           0.);  // depends on decay: mTau - mVis
-  defaultLimits_[nSVfit_namespace::kLep_shiftEn]                  = pdouble(          0.,          10.);  // relative to measured lepton energy
-  defaultLimits_[nSVfit_namespace::kNu_energy_lab]                = pdouble(          0.,        1.e+3);  // GeV
-  defaultLimits_[nSVfit_namespace::kNu_phi_lab]                   = pdouble(          0.,  TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kW_theta_lab]                  = pdouble(          0.,  TMath::Pi());  // rad
-  defaultLimits_[nSVfit_namespace::kW_phi_lab]                    = pdouble(-TMath::Pi(), +TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kPV_shiftX]                    = pdouble(         -0.1,          +0.1); // cm
+  defaultLimits_[nSVfit_namespace::kPV_shiftY]                    = pdouble(         -0.1,          +0.1); // cm
+  defaultLimits_[nSVfit_namespace::kPV_shiftZ]                    = pdouble(         -2.,           +2.);  // cm
+  defaultLimits_[nSVfit_namespace::kTau_visEnFracX]               = pdouble(          0.,            1.);  // dimensionless
+  defaultLimits_[nSVfit_namespace::kTau_phi_lab]                  = pdouble(-TMath::Pi(),  +TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kTau_decayDistance_lab]        = pdouble(        -4.,             1.);  // sigmas
+  defaultLimits_[nSVfit_namespace::kTau_nuInvMass]                = pdouble(          0., tauLeptonMass);  // GeV
+  defaultLimits_[nSVfit_namespace::kLep_shiftEn]                  = pdouble(          0.,           10.);  // relative to measured lepton energy
+  defaultLimits_[nSVfit_namespace::kNu_energy_lab]                = pdouble(          0.,         1.e+3);  // GeV
+  defaultLimits_[nSVfit_namespace::kNu_phi_lab]                   = pdouble(          0.,   TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kW_theta_lab]                  = pdouble(          0.,   TMath::Pi());  // rad
+  defaultLimits_[nSVfit_namespace::kW_phi_lab]                    = pdouble(-TMath::Pi(),  +TMath::Pi());  // rad
   defaultLimits_[nSVfit_namespace::kW_mass]                       = pdouble(80.399 - 3.*2.085, 80.399 + 3.*2.085); // GeV
 
   defaultStepSizes_.resize(nSVfit_namespace::kNumFitParameter);
