@@ -51,7 +51,7 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
 
 //--- get parameters defining maximum number of attempts to find a valid starting-position for the Markov Chain
   maxCallsStartingPos_ = ( cfg.exists("maxCallsStartingPos") ) ?
-    cfg.getParameter<unsigned>("maxCallsStartingPos") : 10000000;
+    cfg.getParameter<unsigned>("maxCallsStartingPos") : 1000000;
 
 //--- get parameters defining "simulated annealing" stage at beginning of integration
   numIterSimAnnealingPhase1_ = cfg.getParameter<unsigned>("numIterSimAnnealingPhase1");
@@ -184,9 +184,10 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
       if ( prob_ > 0. ) {
 	isValidStartPos = true;
       } else {
-	if ( iTry > 0 && (iTry % 1000) == 0 ) {
+	if ( iTry > 0 && (iTry % 100000) == 0 ) {
+	  if ( iTry == 100000 ) std::cout << "<MarkovChainIntegrator::integrate (name = " << name_ << ")>:" << std::endl;
 	  std::cout << "try #" << iTry << ": did not find valid start-position yet." << std::endl;
-	  std::cout << "(q = " << format_vdouble(q_) << ", prob = " << prob_ << ")" << std::endl;
+	  //std::cout << "(q = " << format_vdouble(q_) << ", prob = " << prob_ << ")" << std::endl;
 	}
       }
       ++iTry;
