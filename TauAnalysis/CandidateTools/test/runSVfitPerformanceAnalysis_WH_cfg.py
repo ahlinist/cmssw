@@ -519,130 +519,156 @@ else:
     srcRecMEt = 'patType1CorrectedPFMet'
     srcRecMEtCovMatrix = 'pfMEtSignCovMatrix'
 
-for idxSVfitOption in range(10):
-    ##if not (idxSVfitOption == 3):
-    ##    continue
-    nSVfitProducer = None
-    resonanceName = None    
-    if idxSVfitOption == 0:
-        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)
-        resonanceName = "A"
-    elif idxSVfitOption == 1:
-        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration)
-        resonanceName = "A"
-    elif (idxSVfitOption % 2) == 0:
-        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximizationWH)
-        resonanceName = "Higgs"      
-    elif (idxSVfitOption % 2) == 1:
-        nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegrationWH)
-        resonanceName = "Higgs"      
-    else:
-        raise ValueError("Invalid SVfit option = %i !!" % idxSVfitOption)
-    resonanceConfig = getattr(nSVfitProducer.config.event.resonances, resonanceName)
-    if resonanceConfig is None:
-        raise ValueError("Failed to access Configuration Parameters for resonance = %s !!" % resonanceName)
-    applyVisPtCutCorrection = None
-    if idxSVfitOption >= 4 and idxSVfitOption <= 5:
-        applyVisPtCutCorrection = True
-    else:
-        applyVisPtCutCorrection = False
-    resonanceConfig.daughters.leg1.builder = nSVfitLeg1Builder
-    resonanceConfig.daughters.leg1.src = cms.InputTag(srcRecLeg1)    
-    resonanceConfig.daughters.leg2.builder = nSVfitLeg2Builder
-    resonanceConfig.daughters.leg2.src = cms.InputTag(srcRecLeg2)
-    if idxSVfitOption >= 8 and idxSVfitOption <= 9:
-        resonanceConfig.daughters.leg1.likelihoodFunctions = cms.VPSet(
-            nSVfitLeg1LikelihoodMatrixElement.clone(
-                applyVisPtCutCorrection = cms.bool(applyVisPtCutCorrection),
-                visPtCutThreshold = cms.double(nSVfitLeg1visPtCutThreshold)
+for idxSVfitOption1 in range(8):         # determines likelihood model 
+    for idxSVfitOption2 in [ 'a', 'b' ]: # determines fit vs. integration
+        #
+        # idxSVfitOption1
+        # ---------------
+        #   0 [a,c] : PSkine used for leg1 + leg2, with logM term, no W decay likelihoods
+        #   1 [a,c] : like 0, but with W phase-space decay + W Breit-Wigner likelihoods
+        #   2 [a,b] : PSkine used for leg1 + leg2, without logM term, no W decay likelihoods
+        #   3 [a,b] : like 2, but with W phase-space decay + W Breit-Wigner likelihoods
+        #   4 [a,b] : like 3, MET tail probability correction enabled
+        #   5 [a,b] : like 3, but using MEkine for leg1 (polarization disabled)
+        #   6 [a,b] : like 3, but using MEkine for leg1 + leg2, polarization enabled (Z + Higgs case)
+        #   7 [a,b] : like 6, MET tail probability correction enabled
+        #
+        # idxSVfitOption2
+        # ---------------
+        #   a : "fit" mode, sin(theta) term enabled
+        #   b : "integration" mode (VEGAS), sin(theta) term disabled, delta-function derivative enabled
+        #   c : "integration" mode (VEGAS), sin(theta) term enabled, delta-function derivative disabled ("classic SVfit")
+        #
+        if not ((idxSVfitOption1 in [ 0, 1 ] and idxSVfitOption2 in [ 'a', 'c' ]) or \
+                (idxSVfitOption1 in [ 2, 3, 4, 5, 6, 7 ] and idxSVfitOption2 in [ 'a', 'b' ])):
+            continue
+        nSVfitProducer = None
+        resonanceName = None    
+        if idxSVfitOption1 in [ 0, 2 ] and idxSVfitOption2 == 'a':
+            nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximization)
+            resonanceName = "A"
+        elif (idxSVfitOption1 == 0 and idxSVfitOption2 == 'c') or \
+             (idxSVfitOption1 == 2 and idxSVfitOption2 == 'b'):
+            nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegration)
+            resonanceName = "A"
+        elif idxSVfitOption1 in [ 1, 3, 4, 5, 6, 7 ] and idxSVfitOption2 == 'a':
+            nSVfitProducer = copy.deepcopy(process.nSVfitProducerByLikelihoodMaximizationWH)
+            resonanceName = "Higgs"      
+        elif idxSVfitOption1 in [ 1, 3, 4, 5, 6, 7 ] and idxSVfitOption2 == 'b':
+            nSVfitProducer = copy.deepcopy(process.nSVfitProducerByIntegrationWH)
+            resonanceName = "Higgs"      
+        else:
+            raise ValueError("Invalid SVfit option = %i%s !!" % (idxSVfitOption1, idxSVfitOption2))
+        resonanceConfig = getattr(nSVfitProducer.config.event.resonances, resonanceName)
+        if resonanceConfig is None:
+            raise ValueError("Failed to access Configuration Parameters for resonance = %s !!" % resonanceName)
+        resonanceConfig.daughters.leg1.builder = nSVfitLeg1Builder
+        resonanceConfig.daughters.leg1.src = cms.InputTag(srcRecLeg1)    
+        resonanceConfig.daughters.leg2.builder = nSVfitLeg2Builder
+        resonanceConfig.daughters.leg2.src = cms.InputTag(srcRecLeg2)
+        if idxSVfitOption1 >= 6 and idxSVfitOption1 <= 7:
+            resonanceConfig.daughters.leg1.likelihoodFunctions = cms.VPSet(
+                nSVfitLeg1LikelihoodMatrixElement.clone(
+                    applyVisPtCutCorrection = cms.bool(False),
+                    visPtCutThreshold = cms.double(nSVfitLeg1visPtCutThreshold)
+                )
             )
-        )
-        resonanceConfig.daughters.leg2.likelihoodFunctions = cms.VPSet(
-            nSVfitLeg2LikelihoodMatrixElement.clone(
-                applyVisPtCutCorrection = cms.bool(applyVisPtCutCorrection),
-                visPtCutThreshold = cms.double(nSVfitLeg2visPtCutThreshold)
+            resonanceConfig.daughters.leg2.likelihoodFunctions = cms.VPSet(
+                nSVfitLeg2LikelihoodMatrixElement.clone(
+                    applyVisPtCutCorrection = cms.bool(False),
+                    visPtCutThreshold = cms.double(nSVfitLeg2visPtCutThreshold)
+                )
             )
-        )
-    elif idxSVfitOption >= 6 and idxSVfitOption <= 7:
-        resonanceConfig.daughters.leg1.likelihoodFunctions = cms.VPSet(
-            nSVfitLeg1LikelihoodMatrixElement.clone(
-                applyVisPtCutCorrection = cms.bool(applyVisPtCutCorrection),
-                visPtCutThreshold = cms.double(nSVfitLeg1visPtCutThreshold)
+        elif idxSVfitOption1 == 5:
+            resonanceConfig.daughters.leg1.likelihoodFunctions = cms.VPSet(
+                nSVfitLeg1LikelihoodMatrixElement.clone(
+                    applyVisPtCutCorrection = cms.bool(False),
+                    visPtCutThreshold = cms.double(nSVfitLeg1visPtCutThreshold)
+                )
             )
-        )
-        resonanceConfig.daughters.leg2.likelihoodFunctions = cms.VPSet(
-            nSVfitLeg2LikelihoodPhaseSpace.clone(
-                applyVisPtCutCorrection = cms.bool(applyVisPtCutCorrection),
-                visPtCutThreshold = cms.double(nSVfitLeg2visPtCutThreshold)
+            resonanceConfig.daughters.leg2.likelihoodFunctions = cms.VPSet(
+                nSVfitLeg2LikelihoodPhaseSpace.clone(
+                    applyVisPtCutCorrection = cms.bool(False),
+                    visPtCutThreshold = cms.double(nSVfitLeg2visPtCutThreshold)
+                )
             )
-        )
-    else:
-        resonanceConfig.daughters.leg1.likelihoodFunctions = cms.VPSet(
-            nSVfitLeg1LikelihoodPhaseSpace.clone(
-                applyVisPtCutCorrection = cms.bool(applyVisPtCutCorrection),
-                visPtCutThreshold = cms.double(nSVfitLeg1visPtCutThreshold)
+        else:
+            resonanceConfig.daughters.leg1.likelihoodFunctions = cms.VPSet(
+                nSVfitLeg1LikelihoodPhaseSpace.clone(
+                    applyVisPtCutCorrection = cms.bool(False),
+                    visPtCutThreshold = cms.double(nSVfitLeg1visPtCutThreshold)
+                )
             )
-        )
-        resonanceConfig.daughters.leg2.likelihoodFunctions = cms.VPSet(
-            nSVfitLeg2LikelihoodPhaseSpace.clone(
-                applyVisPtCutCorrection = cms.bool(applyVisPtCutCorrection),
-                visPtCutThreshold = cms.double(nSVfitLeg2visPtCutThreshold)
+            resonanceConfig.daughters.leg2.likelihoodFunctions = cms.VPSet(
+                nSVfitLeg2LikelihoodPhaseSpace.clone(
+                    applyVisPtCutCorrection = cms.bool(False),
+                    visPtCutThreshold = cms.double(nSVfitLeg2visPtCutThreshold)
+                )
             )
-        )
-    resonanceLikelihoods = []
-    if (idxSVfitOption >= 6 and idxSVfitOption <= 7 and channel.find('HiggsToDiTau') != -1) or \
-       (idxSVfitOption >= 8 and idxSVfitOption <= 9):
-        resonanceConfig.builder.polStates = cms.vstring("LR", "RL", "LL", "RR")
-        nSVfitResonanceLikelihoodPolarization_interpol = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
-        nSVfitResonanceLikelihoodPolarization_interpol.LR.formula = cms.string("[0]")
-        nSVfitResonanceLikelihoodPolarization_interpol.RL.formula = cms.string("[0]")
-        nSVfitResonanceLikelihoodPolarization_interpol.LL.formula = cms.string("[0]")
-        nSVfitResonanceLikelihoodPolarization_interpol.RR.formula = cms.string("[0]")            
-        resonanceLikelihoods.append(nSVfitResonanceLikelihoodPolarization_interpol)
-    else:
-        resonanceConfig.builder.polStates = cms.vstring('undefined')
-    # CV: enable sin(theta) terms in tau -> lep and tau -> had likelihoods
-    #     in case SVfit is run in fit mode
-    if (idxSVfitOption % 2) == 0:
-        resonanceConfig.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)
-        resonanceConfig.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)
-    else:
-        resonanceConfig.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
-        resonanceConfig.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
-    resonanceConfig.likelihoodFunctions = cms.VPSet(resonanceLikelihoods)
-    if idxSVfitOption >= 2:
-        nSVfitProducer.config.event.resonances.W.builder.daughters.chargedLepton.src = cms.InputTag(srcRecChargedLeptonFromWdecay)
-        nSVfitProducer.config.event.resonances.W.daughters.chargedLepton.src = cms.InputTag(srcRecChargedLeptonFromWdecay)
-    nSVfitProducer.config.event.srcMEt = cms.InputTag(srcRecMEt)
-    nSVfitProducer.config.event.likelihoodFunctions[0].srcMEtCovMatrix = cms.InputTag(srcRecMEtCovMatrix)
-    nSVfitProducer.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexPosition')
-    nSVfitProducerName = "nSVfitProducer%i" % idxSVfitOption
-    setattr(process, nSVfitProducerName, nSVfitProducer)
-    process.svFitPerformanceAnalysisSequence += nSVfitProducer
+        resonanceLikelihoods = []
+        if (idxSVfitOption1 == 5 and channel.find('HiggsToDiTau') != -1) or \
+           (idxSVfitOption1 >= 6 and idxSVfitOption1 <= 7):
+            resonanceConfig.builder.polStates = cms.vstring("LR", "RL", "LL", "RR")
+            nSVfitResonanceLikelihoodPolarization_interpol = copy.deepcopy(process.nSVfitResonanceLikelihoodPolarization)
+            nSVfitResonanceLikelihoodPolarization_interpol.LR.formula = cms.string("[0]")
+            nSVfitResonanceLikelihoodPolarization_interpol.RL.formula = cms.string("[0]")
+            nSVfitResonanceLikelihoodPolarization_interpol.LL.formula = cms.string("[0]")
+            nSVfitResonanceLikelihoodPolarization_interpol.RR.formula = cms.string("[0]")            
+            resonanceLikelihoods.append(nSVfitResonanceLikelihoodPolarization_interpol)
+        else:
+            resonanceConfig.builder.polStates = cms.vstring('undefined')
+        # CV: enable/disable sin(theta) terms in tau -> lep and tau -> had likelihoods
+        if idxSVfitOption2 in [ 'a', 'c' ]:
+            resonanceConfig.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)
+            resonanceConfig.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(True)            
+        elif idxSVfitOption2 == 'b':
+            resonanceConfig.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+            resonanceConfig.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+        else:
+            raise ValueError("Invalid SVfit option = %i%s !!" % (idxSVfitOption1, idxSVfitOption2))
+        if idxSVfitOption2 == 'c':
+            nSVfitProducer.algorithm.parameters.mass_Higgs.deltaFuncDerrivative = cms.string("1.")
+        # enable/disable log(M) regularization term in resonance likelihood
+        if idxSVfitOption1 in [ 0, 1 ]:
+            resonanceLikelihoods.append(process.nSVfitResonanceLikelihoodLogM)
+        # enable/disable MET tail probability correction
+        # (plus option to increase overall power of MET likelihood in the events)
+        if idxSVfitOption1 in [ 4, 7 ]:
+            nSVfitProducer.config.event.likelihoodFunctions[0].tailProbCorr = process.tailProbCorr_MC_2011    
+        resonanceConfig.likelihoodFunctions = cms.VPSet(resonanceLikelihoods)
+        if idxSVfitOption1 in [ 1, 3, 4, 5, 6, 7 ]:
+            nSVfitProducer.config.event.resonances.W.builder.daughters.chargedLepton.src = cms.InputTag(srcRecChargedLeptonFromWdecay)
+            nSVfitProducer.config.event.resonances.W.daughters.chargedLepton.src = cms.InputTag(srcRecChargedLeptonFromWdecay)
+        nSVfitProducer.config.event.srcMEt = cms.InputTag(srcRecMEt)
+        nSVfitProducer.config.event.likelihoodFunctions[0].srcMEtCovMatrix = cms.InputTag(srcRecMEtCovMatrix)
+        nSVfitProducer.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexPosition')
+        nSVfitProducerName = "nSVfitProducer%i%s" % (idxSVfitOption1, idxSVfitOption2)
+        setattr(process, nSVfitProducerName, nSVfitProducer)
+        process.svFitPerformanceAnalysisSequence += nSVfitProducer
 
-    nSVfitAnalyzerType = None
-    if (idxSVfitOption % 2) == 1:
-        nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzer"
-    else:  
-        nSVfitAnalyzerType = "NSVfitEventHypothesisAnalyzer"
-    nSVfitAnalyzer = cms.EDAnalyzer(nSVfitAnalyzerType,
-        srcEventHypotheses = cms.InputTag(nSVfitProducerName),
-        srcGenTauPairs = cms.InputTag(genTauPairs),                            
-        srcGenLeg1 = cms.InputTag(srcGenLeg1),
-        srcGenLeg2 = cms.InputTag(srcGenLeg2),
-        srcGenMEt = cms.InputTag('genMetFromGenParticles'),
-        srcPFMEtCovMatrix = cms.InputTag('pfMEtSignCovMatrix'),
-        srcWeights = cms.VInputTag(),
-        idxResonance = cms.int32(0),
-        numBinsSVfitMass = cms.int32(400),
-        svFitMassMax = cms.double(400.),
-        numBinsSVfitSigma = cms.int32(100),
-        svFitSigmaMax = cms.double(100.),                                    
-        dqmDirectory = cms.string("%s/%s/nSVfitAnalyzerOption%i" % (sample, channel, idxSVfitOption))
-    )                                    
-    nSVfitAnalyzerName = "nSVfitAnalyzer%i" % idxSVfitOption
-    setattr(process, nSVfitAnalyzerName, nSVfitAnalyzer)
-    process.svFitPerformanceAnalysisSequence += nSVfitAnalyzer
+        nSVfitAnalyzerType = None
+        if idxSVfitOption2 in [ 'b', 'c' ]:
+            nSVfitAnalyzerType = "NSVfitEventHypothesisByIntegrationAnalyzer"
+        else:  
+            nSVfitAnalyzerType = "NSVfitEventHypothesisAnalyzer"
+        nSVfitAnalyzer = cms.EDAnalyzer(nSVfitAnalyzerType,
+            srcEventHypotheses = cms.InputTag(nSVfitProducerName),
+            srcGenTauPairs = cms.InputTag(genTauPairs),                            
+            srcGenLeg1 = cms.InputTag(srcGenLeg1),
+            srcGenLeg2 = cms.InputTag(srcGenLeg2),
+            srcGenMEt = cms.InputTag('genMetFromGenParticles'),
+            srcPFMEtCovMatrix = cms.InputTag('pfMEtSignCovMatrix'),
+            srcWeights = cms.VInputTag(),
+            idxResonance = cms.int32(0),
+            numBinsSVfitMass = cms.int32(400),
+            svFitMassMax = cms.double(400.),
+            numBinsSVfitSigma = cms.int32(100),
+            svFitSigmaMax = cms.double(100.),                                    
+            dqmDirectory = cms.string("%s/%s/nSVfitAnalyzerOption%i%s" % (sample, channel, idxSVfitOption1, idxSVfitOption2))
+        )                                    
+        nSVfitAnalyzerName = "nSVfitAnalyzer%i%s" % (idxSVfitOption1, idxSVfitOption2)
+        setattr(process, nSVfitAnalyzerName, nSVfitAnalyzer)
+        process.svFitPerformanceAnalysisSequence += nSVfitAnalyzer
 #--------------------------------------------------------------------------------
 
 process.DQMStore = cms.Service("DQMStore")
