@@ -126,7 +126,7 @@ process.vertexMultiplicityReweight3d2011RunB = process.vertexMultiplicityReweigh
     mcPeriod = cms.string("Summer11")
 )
 process.vertexMultiplicityReweight3d2012RunA = process.vertexMultiplicityReweight.clone(
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to191276.root"),
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to191859_Mu17_Mu8_v16.root"),
     type = cms.string("gen3d"),
     mcPeriod = cms.string("Summer12")
 )
@@ -247,12 +247,27 @@ for processAttrName in dir(process):
 
 #--------------------------------------------------------------------------------
 # produce PFMET significance cov. matrix
+
+# CV: compute PFMET significance cov. matrix for uncorrected jets
+#     in order to include pile-up jets
+#    (which to a significant fraction get killed by L1Fastjet corrections)
+process.ak5PFJetsNotOverlappingWithLeptons = cms.EDFilter("PFJetAntiOverlapSelector",
+    src = cms.InputTag('ak5PFJets'),
+    srcNotToBeFiltered = cms.VInputTag(
+        'patMuons'
+    ),
+    dRmin = cms.double(0.5),
+    invert = cms.bool(False),
+    filter = cms.bool(False)                                                          
+)
+process.patTupleProductionSequence += process.ak5PFJetsNotOverlappingWithLeptons
+
 from RecoMET.METProducers.METSigParams_cfi import *
 process.pfMEtSignCovMatrix = cms.EDProducer("PFMEtSignCovMatrixProducer",
     METSignificance_params,                     
     src = cms.VInputTag(
         'patMuons',
-        'patJetsNotOverlappingWithLeptonsForMEtUncertainty',
+        'ak5PFJetsNotOverlappingWithLeptons',
         'pfCandsNotInJet'
     ),
     addJERcorr = cms.PSet(
@@ -265,32 +280,24 @@ process.patTupleProductionSequence += process.pfMEtSignCovMatrix
 
 #--------------------------------------------------------------------------------
 # produce Phil's MVA MET
-##process.load('JetMETCorrections.Configuration.JetCorrectionProducers_cff')
-##process.patTupleProductionSequence += process.ak5PFJetsL1L2L3
-##
-##process.load('pharris.MVAMet.metProducerSequence_cff')
-##process.mvaMet.LeptonNames = cms.VInputTag('goodMuons')
-##process.mvaMet.verbosity = cms.int32(0)
-##process.patTupleProductionSequence += process.metSequence
-##
+
+process.load('RecoMET.METProducers.mvaPFMET_cff')
+if isMC:
+    process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3")
+else:
+    process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3Residual")
+process.pfMEtMVA.srcCorrJets = cms.InputTag('calibratedAK5PFJetsForPFMEtMVA')
+process.pfMEtMVA.srcLeptons = cms.VInputTag('goodMuons')
+process.pfMEtMVA.verbosity = cms.int32(0)
+process.patTupleProductionSequence += process.pfMEtMVAsequence
+
 # add Phil's MVA MET to PAT-tuple
-##process.patPFMetByPhilsMVA = process.patMETs.clone(
-##    metSource = cms.InputTag('mvaMet'),
-##    addMuonCorrections = cms.bool(False),
-##    genMETSource = cms.InputTag('genMetTrue')
-##)
-##process.patTupleProductionSequence += process.patPFMetByPhilsMVA
-##
-##process.load('RecoMET.METProducers.mvaPFMET_cff')
-##process.pfMEtMVA.verbosity = cms.int32(0)
-##process.patTupleProductionSequence += process.pfMEtMVAsequence
-##
-##process.patPFMetByPhilsMVA2 = process.patMETs.clone(
-##    metSource = cms.InputTag('pfMEtMVA'),
-##    addMuonCorrections = cms.bool(False),
-##    genMETSource = cms.InputTag('genMetTrue')
-##)
-##process.patTupleProductionSequence += process.patPFMetByPhilsMVA2
+process.patPFMetByPhilsMVA = process.patMETs.clone(
+    metSource = cms.InputTag('pfMEtMVA'),
+    addMuonCorrections = cms.bool(False),
+    genMETSource = cms.InputTag('genMetTrue')
+)
+process.patTupleProductionSequence += process.patPFMetByPhilsMVA
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
