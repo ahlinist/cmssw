@@ -202,6 +202,58 @@ class LimitResult;
 // -----> User interface
 
 
+LimitResult
+GetClsLimit( Double_t ilum, Double_t slum,
+	     Double_t eff, Double_t seff,
+	     Double_t bck, Double_t sbck,
+	     Int_t n );
+
+
+
+double
+GetBayesianLimit( Double_t ilum, Double_t slum,
+		  Double_t eff, Double_t seff,
+		  Double_t bck, Double_t sbck,
+		  Int_t n,
+		  std::string option = "" );
+
+
+
+LimitResult 
+GetExpectedLimit( Double_t ilum, Double_t slum,
+		  Double_t eff, Double_t seff,
+		  Double_t bck, Double_t sbck,
+		  Int_t nit = 200,
+		  std::string method = "bayesian" );
+
+
+double
+roostats_zscore( Double_t ilum, Double_t slum,
+		 Double_t eff, Double_t seff,
+		 Double_t bck, Double_t sbck,
+		 Int_t n,
+		 Bool_t gauss = false,
+		 Int_t nuisanceModel = 1,
+		 std::string method = "bayesian",
+		 std::string plotFileName = "plot_zscore.pdf",
+		 UInt_t seed = 12345 );
+
+
+
+void SetParameter(const char * name, const char * value);
+void SetParameter(const char * name, bool value);
+void SetParameter(const char * name, int value);
+void SetParameter(const char * name, double value);
+
+bool   GetParameter(const char * name, bool);
+int    GetParameter(const char * name, int);
+double GetParameter(const char * name, double);
+
+
+
+
+// legacy interfaces
+
 Double_t
 roostats_cl95( Double_t ilum, Double_t slum,
 	       Double_t eff, Double_t seff,
@@ -233,30 +285,6 @@ roostats_limit(Double_t ilum, Double_t slum,
 	       std::string plotFileName,
 	       UInt_t seed);
 
-double
-roostats_zscore( Double_t ilum, Double_t slum,
-		 Double_t eff, Double_t seff,
-		 Double_t bck, Double_t sbck,
-		 Int_t n,
-		 Bool_t gauss = false,
-		 Int_t nuisanceModel = 1,
-		 std::string method = "bayesian",
-		 std::string plotFileName = "plot_zscore.pdf",
-		 UInt_t seed = 12345 );
-
-
-
-void SetParameter(const char * name, const char * value);
-void SetParameter(const char * name, bool value);
-void SetParameter(const char * name, int value);
-void SetParameter(const char * name, double value);
-
-
-
-
-// below are experimental and legacy interfaces
-
-// legacy support: use roostats_clm() instead
 Double_t roostats_cla(Double_t ilum, Double_t slum,
 		      Double_t eff, Double_t seff,
 		      Double_t bck, Double_t sbck,
@@ -269,12 +297,12 @@ Double_t roostats_cla(Double_t ilum, Double_t slum,
 
 // ---> implementation below --------------------------------------------
 
-double confidenceLevel = 0.95;
-bool includeLumiSystIntoBkg = true;
-int verbosity = 3;
-int calculatorType = 0;    // 0-freq, 1-hybrid, 2-asymptotic
-int testStatisticType = 3; // 1-sided PL
-int numberOfClsScanPoints = 50;
+//double confidenceLevel = 0.95;
+//bool includeLumiSystIntoBkg = true;
+//int verbosity = 3;
+//int calculatorType = 0;    // 0-freq, 1-hybrid, 2-asymptotic
+//int testStatisticType = 3; // 1-sided PL
+//int numberOfClsScanPoints = 50;
 
 class LimitResult{
 
@@ -409,6 +437,10 @@ public:
   void SetParameter(const char * name, int value);
   void SetParameter(const char * name, double value);
 
+  bool   GetParameter(const char * name, bool);
+  int    GetParameter(const char * name, int);
+  double GetParameter(const char * name, double);
+
 
 private:
 
@@ -443,6 +475,22 @@ private:
 				 int n_bins);
   void makeMcmcPosteriorPlot( std::string filename );
   double printMcmcUpperLimit( std::string filename = "" );
+  
+  // CLs limit calculator
+  HypoTestInverterResult * 
+  RunHypoTestInverter(RooWorkspace * w = 0,
+		  const char * modelSBName = "ModelConfig",
+		  const char * modelBName = "",
+		  const char * dataName = "obsData",                 
+		  int mCalculatorType = 0,
+		  int testStatType = 0, 
+		  bool useCLs = true ,  
+		  int npoints = 6,   
+		  double poimin = 0,  
+		  double poimax = 5, 
+		  int ntoys=1000,
+		  bool useNumberCounting = false,
+		  const char * nuisPriorName = 0);
 
   Double_t RoundUpperBound(Double_t bound);
 
@@ -465,14 +513,21 @@ private:
   bool mbHaveLumiErr;
   bool mbHaveEffErr;
   bool mbHaveBkgErr;
-  bool mbGaussianStatistics;
+  //bool mbGaussianStatistics;
 
   // settable parameters
   bool mbOptimize;
+  bool mbCorrelatedLumiSyst;
+  bool mbMakePlot;
+  bool mbGaussianStatistics;
+  int mNClsSteps;
   int mNToys;
   int mCalculatorType;
   int mTestStatType;
+  int mVerbosity;
+  int mRandomSeed;
   double mNToysRatio;
+  double mConfidenceLevel;
 
   // for Bayesian MCMC calculation
   MCMCInterval * mcInt;
@@ -484,7 +539,6 @@ private:
   LikelihoodInterval * pPlrInt;
 
   // random numbers
-  //TRandom3 r;
   TRandom3 mRandom;
 
   // expected limits
@@ -504,46 +558,11 @@ CL95Calc * CL95Calc::mspInstance = 0;
 
 
 
-// CLs limit calculator
-HypoTestInverterResult * 
-StandardHypoTestInvDemo(RooWorkspace * w = 0,
-                        const char * modelSBName = "ModelConfig",
-                        const char * modelBName = "",
-                        const char * dataName = "obsData",                 
-                        int calculatorType = 0,
-                        int testStatType = 0, 
-                        bool useCLs = true ,  
-                        int npoints = 6,   
-                        double poimin = 0,  
-                        double poimax = 5, 
-                        int ntoys=1000,
-                        bool useNumberCounting = false,
-                        const char * nuisPriorName = 0);
-//std::vector<Double_t>
-//GetClsLimits(RooWorkspace * pWs,
-//	     const char * modelSBName = "SbModel",
-//	     const char * modelBName = "BModel",
-//	     const char * dataName = "observed_data",                  
-//	     int calculatorType = 0, // calculator type 
-//	     int testStatType = 3, // test stat type
-//	     bool useCls = true,
-//	     int npoints = 10,
-//	     double poimin = 1,  // use default is poimin >= poimax
-//	     double poimax = 0,
-//	     int ntoys=1000,
-//	     std::string suffix = "test");
-
-
-
 // default constructor
 CL95Calc::CL95Calc(){
   Init(0);
 }
 
-
-//CL95Calc::CL95Calc(UInt_t seed){
-//  Init(seed);
-//}
 
 
 void CL95Calc::Init(UInt_t seed){
@@ -573,11 +592,20 @@ void CL95Calc::Init(UInt_t seed){
   mbHaveEffErr = false;
   mbHaveBkgErr = false;
   mbGaussianStatistics = false;
-  mbOptimize = true;
+
+  // set settable parameter defaults
+  mbOptimize = false;
+  mbCorrelatedLumiSyst = false;
+  mbMakePlot = false;
+  mbGaussianStatistics = false;
+  mNClsSteps = 10;
   mNToys = 1000;
   mNToysRatio = 2.0;
   mCalculatorType = 0;
   mTestStatType = 3;
+  mVerbosity = 3;
+  mRandomSeed = 12345;
+  mConfidenceLevel = 0.95;
 
   return;
 }
@@ -600,6 +628,8 @@ void CL95Calc::SetSeed( UInt_t seed ){
   // Set random seed. If 0, set unique random.
   //
   std::string _legend = "[CL95Calc::SetSeed]: ";
+
+  mRandomSeed = seed;
 
   if (seed == 0){
     mRandom.SetSeed();
@@ -638,6 +668,9 @@ CL95Calc::SetParameter(const char * name, bool value){
    std::string s_name(name);
 
    if (s_name.find("Optimize") != std::string::npos) mbOptimize = value;
+   else if (s_name.find("CorrelatedLumiSyst") != std::string::npos) mbCorrelatedLumiSyst = value;
+   else if (s_name.find("MakePlot") != std::string::npos) mbMakePlot = value;
+   else if (s_name.find("GaussianStatistics") != std::string::npos) mbGaussianStatistics = value;
    else{
      Info("SetParameter","Unknown parameter %s, ignored", name);
    }
@@ -654,9 +687,11 @@ CL95Calc::SetParameter(const char * name, int value){
 
    std::string s_name(name);
 
-   if (s_name.find("NToys") != std::string::npos) mNToys = value;
+   if (s_name.find("NClsSteps") != std::string::npos) mNClsSteps = value;
+   else if (s_name.find("NToys") != std::string::npos) mNToys = value;
    else if (s_name.find("CalculatorType") != std::string::npos) mCalculatorType = value;
    else if (s_name.find("TestStatType") != std::string::npos) mTestStatType = value;
+   else if (s_name.find("Verbosity") != std::string::npos) mVerbosity = value;
    else if (s_name.find("RandomSeed") != std::string::npos) SetSeed(value);
    else{
      Info("SetParameter","Unknown parameter %s, ignored", name);
@@ -676,6 +711,7 @@ CL95Calc::SetParameter(const char * name, double value){
    std::string s_name(name);
 
    if (s_name.find("NToysRatio") != std::string::npos) mNToysRatio = value;
+   else if (s_name.find("ConfidenceLevel") != std::string::npos) mConfidenceLevel = value;
    else{
      Info("SetParameter","Unknown parameter %s, ignored", name);
    }
@@ -706,6 +742,66 @@ CL95Calc::SetParameter(const char * name, const char * value){
 
 
 
+bool
+CL95Calc::GetParameter(const char * name, bool){
+   //
+   // get boolean parameters
+   //
+
+   std::string s_name(name);
+
+   if (s_name.find("Optimize") != std::string::npos) return mbOptimize;
+   else if (s_name.find("CorrelatedLumiSyst") != std::string::npos) return mbCorrelatedLumiSyst;
+   else if (s_name.find("MakePlot") != std::string::npos) return mbMakePlot;
+   else if (s_name.find("GaussianStatistics") != std::string::npos) return mbGaussianStatistics;
+   else{
+     Info("GetParameter","Unknown parameter %s, ignored", name);
+     return -1.0;
+   }
+}
+
+
+
+int
+CL95Calc::GetParameter(const char * name, int){
+   //
+   // get integer parameters
+   //
+
+   std::string s_name(name);
+
+   if (s_name.find("NClsSteps") != std::string::npos) return mNClsSteps;
+   else if (s_name.find("NToys") != std::string::npos) return mNToys;
+   else if (s_name.find("CalculatorType") != std::string::npos) return mCalculatorType;
+   else if (s_name.find("TestStatType") != std::string::npos) return mTestStatType;
+   else if (s_name.find("RandomSeed") != std::string::npos) return mRandomSeed;
+   else if (s_name.find("Verbosity") != std::string::npos) return mVerbosity;
+   else{
+     Info("GetParameter","Unknown parameter %s, ignored", name);
+     return -1;
+   }
+}
+
+
+
+double
+CL95Calc::GetParameter(const char * name, double){
+   //
+   // get double precision parameters
+   //
+
+   std::string s_name(name);
+
+   if (s_name.find("NToysRatio") != std::string::npos) return mNToysRatio;
+   else if (s_name.find("ConfidenceLevel") != std::string::npos) return mConfidenceLevel;
+   else{
+     Info("GetParameter","Unknown parameter %s, ignored", name);
+     return -1.0;
+   }
+}
+
+
+
 int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
 			  Double_t eff, Double_t seff,
 			  Double_t bck, Double_t sbck,
@@ -726,7 +822,7 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
 
   if (eff <= 0.0){
     _status = -1;
-    if (verbosity >= mERROR){
+    if (mVerbosity >= mERROR){
       std::cout << _legend 
 		<< "ERROR: efficiency is zero!"
 		<< std::endl;
@@ -735,7 +831,7 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
   
   if (ilum <= 0.0){
     _status = -1;
-    if (verbosity >= mERROR){
+    if (mVerbosity >= mERROR){
       std::cout << _legend 
 		<< "ERROR: integrated luminosity is zero!"
 		<< std::endl;
@@ -744,7 +840,7 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
   
   if (slum > 0.0){
     mbHaveLumiErr = true;
-    if (verbosity >= mINFO){
+    if (mVerbosity >= mINFO){
       std::cout << _legend 
 		<< "nonzero uncertainty for integrated luminosity"
 		<< std::endl;
@@ -753,7 +849,7 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
   
   if (seff > 0.0){
     mbHaveEffErr = true;
-    if (verbosity >= mINFO){
+    if (mVerbosity >= mINFO){
       std::cout << _legend 
 		<< "nonzero uncertainty for acceptance*efficiency"
 		<< std::endl;
@@ -762,7 +858,7 @@ int CL95Calc::CheckInputs(Double_t ilum, Double_t slum,
   
   if (sbck > 0.0){
     mbHaveBkgErr = true;
-    if (verbosity >= mINFO){
+    if (mVerbosity >= mINFO){
       std::cout << _legend 
 		<< "nonzero uncertainty for estimated background"
 		<< std::endl;
@@ -916,7 +1012,7 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
   pWs->factory( "prod::nsig(lumi,xsec,efficiency)" );
 
   // background yield with systematics
-  if (mbHaveLumiErr && includeLumiSystIntoBkg){ // extra uncertainty from lumi
+  if (mbHaveLumiErr && mbCorrelatedLumiSyst){ // extra uncertainty from lumi
     CreateSystTerm("nbkg", bck, sbck, nuisanceModel, "lumi");
   }
   else{
@@ -1384,11 +1480,11 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		<< pWs->var("xsec")->getMax() << "]" << std::endl;
 
       //prepare Bayesian Calulator
-      delete bcalc;
+      //delete bcalc;
       bcalc = new BayesianCalculator(*data, SbModel);
       TString namestring = "mybc";
       bcalc->SetName(namestring);
-      bcalc->SetConfidenceLevel(confidenceLevel);
+      bcalc->SetConfidenceLevel(mConfidenceLevel);
       bcalc->SetLeftSideTailFraction(0.0);
       //bcalc->SetIntegrationType("ROOFIT");
       
@@ -1397,7 +1493,8 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       upper_limit = sInt->UpperLimit();
       delete sInt;
       sInt = 0;
-      
+
+      result->_observed_limit = upper_limit;
     }
     else if (method.find("mcmc") != std::string::npos){
       
@@ -1408,8 +1505,10 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		<< pWs->var("xsec")->getMax() << "]" << std::endl;
 
       //prepare Bayesian Markov Chain MC Calulator
-      mcInt = GetMcmcInterval(confidenceLevel, 1000000, 500, 0.0, 40);
+      mcInt = GetMcmcInterval(mConfidenceLevel, 1000000, 500, 0.0, 40);
       upper_limit = printMcmcUpperLimit();
+
+      result->_observed_limit = upper_limit;
     }
     else if (method.find("plr") != std::string::npos){
       
@@ -1418,7 +1517,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		<< pWs->var("xsec")->getMax() << "]" << std::endl;
 
       //prepare profile likelihood ratio Calulator
-      pPlrInt = GetPlrInterval(confidenceLevel);
+      pPlrInt = GetPlrInterval(mConfidenceLevel);
       upper_limit = pPlrInt->UpperLimit(*pWs->var("xsec"));
     }
     else if (method.find("cls") != std::string::npos){
@@ -1439,7 +1538,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       SbModel.LoadSnapshot();
 
       // estimate upper range boundary using quick PLR limit
-      GetPlrInterval(confidenceLevel);
+      GetPlrInterval(mConfidenceLevel);
       upper_limit = pPlrInt->UpperLimit( *pWs->var("xsec") );
       //Double_t upper_range = ((double)(int)(4.0 * upper_limit*100.0))/100.0; // round to ~1% precision
       Double_t upper_range = 2.0 * upper_limit;
@@ -1452,19 +1551,21 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       RooMsgService::instance().setGlobalKillBelow(RooFit::PROGRESS);
 
 
+      //calc.SetParameter("PlotHypoTestResult", plotHypoTestResult);
+      
       HypoTestInverterResult * _res = 
-	StandardHypoTestInvDemo( pWs,
-				 "SbModel",
-				 "BModel",
-				 "observed_data",
-				 calculatorType, // calculator type, 0-freq, 1-hybrid, 2-asymptotic CLs
-				 testStatisticType, // test statistic, 0-lep, 1-tevatron, 2-PL, 3-PL 1-sided
-				 true, // useCls
-				 numberOfClsScanPoints, // npoints in the scan
-				 0, // poimin: use default is poimin >= poimax
-				 upper_range,
-				 1000,// ntoys
-				 true );
+	RunHypoTestInverter( pWs,
+			 "SbModel",
+			 "BModel",
+			 "observed_data",
+			 mCalculatorType, // calculator type, 0-freq, 1-hybrid, 2-asymptotic CLs
+			 mTestStatType, // test statistic, 0-lep, 1-tevatron, 2-PL, 3-PL 1-sided
+			 true, // useCls
+			 mNClsSteps, // npoints in the scan
+			 0, // poimin: use default is poimin >= poimax
+			 upper_range,
+			 mNToys,// ntoys
+			 true );
 
 
       t.Stop();
@@ -1488,7 +1589,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
     else if (method.find("fc") != std::string::npos){
 
       int Nbins = 1;
-      float conf_int = confidenceLevel;
+      float conf_int = mConfidenceLevel;
       float ULprecision = 0.1;
       bool UseAdaptiveSampling = true;
       bool CreateConfidenceBelt = true;
@@ -1634,7 +1735,7 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
       Double_t _alpha_lumi = pow(_lumi_kappa,_beta_lumi);
       Double_t _nbkg_nom = pWs->var("nbkg_nom")->getVal();
       Double_t bmean;
-      if (includeLumiSystIntoBkg){
+      if (mbCorrelatedLumiSyst){
 	bmean = _nbkg_nom*_alpha_lumi*_alpha_nbkg;
       }
       else{
@@ -1751,6 +1852,11 @@ int CL95Calc::makePlot( std::string method,
     std::cout << "[roostats_cl95]: making Bayesian MCMC posterior plot" << endl;
 
     makeMcmcPosteriorPlot(plotFileName);
+  
+  }
+  else if (method.find("cls") != std::string::npos){
+
+    // cls plot is made in AnalyzeResult(), do nothing here
   
   }
   else{
@@ -1923,13 +2029,13 @@ CL95Calc::GetHypoTest( std::string hypoName, std::string plotName ){
     ropl(*pSbModel->GetPdf(), *pBModel->GetPdf(), pBModel->GetSnapshot());
   ropl.SetSubtractMLE(false);
   //ropl.SetPrintLevel(mPrintLevel);
-  //ropl.SetMinimizer(minimizerType.c_str());
+  //ropl.SetMinimizer(mMinimizerType.c_str());
   ropl.SetReuseNLL(mbOptimize);
   if (mbOptimize) ropl.SetStrategy(0);
   
   ProfileLikelihoodTestStat profll(*pSbModel->GetPdf());
   if (mTestStatType == 3) profll.SetOneSided(1);
-  //profll.SetMinimizer(minimizerType.c_str());
+  //profll.SetMinimizer(mMinimizerType.c_str());
   //profll.SetPrintLevel(mPrintLevel);
   profll.SetReuseNLL(mbOptimize);
   if (mbOptimize) profll.SetStrategy(0);
@@ -1942,7 +2048,7 @@ CL95Calc::GetHypoTest( std::string hypoName, std::string plotName ){
   profll.SetReuseNLL(1);
   profll.SetStrategy(0);
   //if (testStatType == 3) profll.SetOneSided(1);
-  //profll.SetMinimizer(minimizerType.c_str());
+  //profll.SetMinimizer(mMinimizerType.c_str());
   //profll.SetPrintLevel(mPrintLevel);
   */
   
@@ -1969,7 +2075,7 @@ CL95Calc::GetHypoTest( std::string hypoName, std::string plotName ){
       if (nuisPriorName) nuisPdf = pWs->pdf(nuisPriorName);
       // use prior defined first in pBModel (then in SbModel)
       if (!nuisPdf)  { 
-	Info("StandardHypoTestInvDemo","No nuisance pdf given for the HybridCalculator - try to deduce  pdf from the model");
+	Info("RunHypoTestInverter","No nuisance pdf given for the HybridCalculator - try to deduce  pdf from the model");
 	if (pBModel->GetPdf() && pBModel->GetObservables() ) 
 	  nuisPdf = RooStats::MakeNuisancePdf(*pBModel,"nuisancePdf_bmodel");
 	else 
@@ -1978,21 +2084,21 @@ CL95Calc::GetHypoTest( std::string hypoName, std::string plotName ){
       if (!nuisPdf ) {
 	if (pBModel->GetPriorPdf())  { 
 	  nuisPdf = pBModel->GetPriorPdf();
-	  Info("StandardHypoTestInvDemo","No nuisance pdf given - try to use %s that is defined as a prior pdf in the B model",nuisPdf->GetName());            
+	  Info("RunHypoTestInverter","No nuisance pdf given - try to use %s that is defined as a prior pdf in the B model",nuisPdf->GetName());            
 	}
 	else { 
-	  Error("StandardHypoTestInvDemo","Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified or can be derived");
+	  Error("RunHypoTestInverter","Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified or can be derived");
 	  return 0;
 	}
       }
       assert(nuisPdf);
-      Info("StandardHypoTestInvDemo","Using as nuisance Pdf ... " );
+      Info("RunHypoTestInverter","Using as nuisance Pdf ... " );
       nuisPdf->Print();
       
       const RooArgSet * nuisParams = (pBModel->GetNuisanceParameters() ) ? pBModel->GetNuisanceParameters() : pSbModel->GetNuisanceParameters();
       RooArgSet * np = nuisPdf->getObservables(*nuisParams);
       if (np->getSize() == 0) { 
-	Warning("StandardHypoTestInvDemo","Prior nuisance does not depend on nuisance parameters. They will be smeared in their full range");
+	Warning("RunHypoTestInverter","Prior nuisance does not depend on nuisance parameters. They will be smeared in their full range");
       }
       delete np;
       
@@ -2009,7 +2115,7 @@ CL95Calc::GetHypoTest( std::string hypoName, std::string plotName ){
     //((AsymptoticCalculator*) hc)->SetPrintLevel(mPrintLevel+1); 
   }
   else {
-    Error("StandardHypoTestInvDemo","Invalid - calculator type = %d supported values are only :\n\t\t\t 0 (Frequentist) , 1 (Hybrid) , 2 (Asymptotic) ",mCalculatorType);
+    Error("RunHypoTestInverter","Invalid - calculator type = %d supported values are only :\n\t\t\t 0 (Frequentist) , 1 (Hybrid) , 2 (Asymptotic) ",mCalculatorType);
     return 0;
   }
    /*
@@ -2023,7 +2129,7 @@ CL95Calc::GetHypoTest( std::string hypoName, std::string plotName ){
   if (mTestStatType == 2 || mTestStatType == 3) testStat = &profll;
   if (mTestStatType == 4) testStat = &maxll;
   if (testStat == 0) { 
-    Error("StandardHypoTestInvDemo","Invalid - test statistic type = %d supported values are only :\n\t\t\t 0 (SLR) , 1 (Tevatron) , 2 (PLR), 3 (PLR1), 4(MLE)",mTestStatType);
+    Error("RunHypoTestInverter","Invalid - test statistic type = %d supported values are only :\n\t\t\t 0 (SLR) , 1 (Tevatron) , 2 (PLR), 3 (PLR1), 4(MLE)",mTestStatType);
     return 0;
   }
   /*
@@ -2126,31 +2232,130 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
 
 
 
-//LimitResult
-//roostats_cls(  Double_t ilum, Double_t slum,
-//	       Double_t eff, Double_t seff,
-//	       Double_t bck, Double_t sbck,
-//	       Int_t n,
-//	       Bool_t gauss,
-//	       Int_t nuisanceModel,
-//	       std::string method,                   // reserved for asymptotic CLs
-//	       std::string type,
-//	       Double_t expected_quantile,
-//	       std::string plotFileName,
-//	       UInt_t seed,
-//	       LimitResult * pLimitResult ){
-//  //
-//  // Compute observed and expected CLs limit
-//  // 
-//  LimitResult limit;
-//
-//  std::string legend = "[roostats_cls()]: ";
-//
-//  std::cout << legend << "not implemented yet, use roostats_limit instead"
-//	    << std::endl;
-//
-//  return limit;
-//}
+LimitResult
+GetClsLimit( Double_t ilum, Double_t slum,
+	     Double_t eff, Double_t seff,
+	     Double_t bck, Double_t sbck,
+	     Int_t n ){
+  //
+  // Compute observed and expected CLs limit
+  //
+  
+  std::string legend = "[GetClsLimit()]: ";
+
+  LimitResult limit_result;
+
+  bool gaussian_statistics   = GetParameter("GaussianStatistics",bool());
+  int nuisance_model         = 1;
+  std::string method         = "cls";
+  std::string plot_file_name = "dummy.pdf";
+  int seed                   = GetParameter("RandomSeed",int());
+
+  roostats_cl95(ilum, slum,
+		eff, seff,
+		bck, sbck,
+		n,
+		gaussian_statistics,
+		nuisance_model,
+		method,
+		plot_file_name,
+		seed,
+		&limit_result);
+
+  if ( GetParameter( "Verbosity", int() )>1 ){
+    std::cout << legend << " expected limit (median) " << limit_result.GetExpectedLimit() << std::endl;
+    std::cout << legend << " expected limit (-1 sig) " << limit_result.GetOneSigmaLowRange() << std::endl;
+    std::cout << legend << " expected limit (+1 sig) " << limit_result.GetOneSigmaHighRange() << std::endl;
+    std::cout << legend << " expected limit (-2 sig) " << limit_result.GetTwoSigmaLowRange() << std::endl;
+    std::cout << legend << " expected limit (+2 sig) " << limit_result.GetTwoSigmaHighRange() << std::endl;
+  }
+  
+  return limit_result;
+}
+
+
+
+double
+GetBayesianLimit( Double_t ilum, Double_t slum,
+		  Double_t eff, Double_t seff,
+		  Double_t bck, Double_t sbck,
+		  Int_t n,
+		  std::string option ){
+  //
+  // Compute observed bayesian limit
+  //
+  // option: ""     - numerical integration (default)
+  //         "mcmc" - Metropolis-Hastings sampling
+  //
+  
+  std::string legend = "[GetBayesianLimit()]: ";
+
+  LimitResult limit_result;
+
+  bool gaussian_statistics   = GetParameter("GaussianStatistics",bool());
+  int nuisance_model         = 1;
+  std::string method         = "bayesian";
+  if (option.find("mcmc")!=std::string::npos) method = "mcmc";
+  std::string plot_file_name = "";
+  if ( GetParameter("MakePlot", bool()) ) plot_file_name = "bayesian_posterior.pdf";
+  int seed                   = GetParameter("RandomSeed",int());
+
+  roostats_cl95(ilum, slum,
+		eff, seff,
+		bck, sbck,
+		n,
+		gaussian_statistics,
+		nuisance_model,
+		method,
+		plot_file_name,
+		seed,
+		&limit_result);
+
+  if ( GetParameter( "Verbosity", int() )>1 ){
+    std::cout << legend << " limit = " << limit_result.GetObservedLimit() << std::endl;
+  }
+  
+  return limit_result.GetObservedLimit();
+}
+
+
+
+LimitResult
+GetExpectedLimit( Double_t ilum, Double_t slum,
+		  Double_t eff, Double_t seff,
+		  Double_t bck, Double_t sbck,
+		  Int_t nit,
+		  std::string method ){
+  //
+  // Compute expected limit quantiles for arbitrary method
+  //
+  
+  std::string legend = "[GetExpectedLimit()]: ";
+
+  LimitResult limit_result;
+
+  //bool gaussian_statistics   = GetParameter("GaussianStatistics",bool());
+  int nuisance_model         = 1;
+  int seed                   = GetParameter("RandomSeed",int());
+
+  limit_result = roostats_clm(ilum, slum,
+			      eff, seff,
+			      bck, sbck,
+			      nit,
+			      nuisance_model,
+			      method,
+			      seed);
+
+  if ( GetParameter( "Verbosity", int() )>1 ){
+    std::cout << legend << " expected limit (median) " << limit_result.GetExpectedLimit() << std::endl;
+    std::cout << legend << " expected limit (-1 sig) " << limit_result.GetOneSigmaLowRange() << std::endl;
+    std::cout << legend << " expected limit (+1 sig) " << limit_result.GetOneSigmaHighRange() << std::endl;
+    std::cout << legend << " expected limit (-2 sig) " << limit_result.GetTwoSigmaLowRange() << std::endl;
+    std::cout << legend << " expected limit (+2 sig) " << limit_result.GetTwoSigmaHighRange() << std::endl;
+  }
+  
+  return limit_result;
+}
 
 
 
@@ -2259,6 +2464,9 @@ LimitResult roostats_clm(Double_t ilum, Double_t slum,
   }
   else if (method.find("mcmc") != std::string::npos){
     std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
+  }
+  else if (method.find("plr") != std::string::npos){
+    std::cout << "[roostats_cl95]: using profile likelihood ratio calculation" << endl;
   }
   else if (method.find("cls") != std::string::npos){
     std::cout << "[roostats_cl95]: using CLs calculation" << endl;
@@ -2379,30 +2587,38 @@ void SetParameter(const char * name, double value){
 
 
 
+bool GetParameter(const char * name, bool){
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  
+  return theCalc->GetParameter(name, bool());
+}
+
+
+
+int GetParameter(const char * name, int){
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  
+  return theCalc->GetParameter(name, int());
+}
+
+
+
+double GetParameter(const char * name, double){
+  CL95Calc * theCalc = CL95Calc::GetInstance();
+  
+  return theCalc->GetParameter(name, double());
+}
+
+
+
 /////////////////////////////////////////////////////////////////////////
 //
 // CLs helper methods from roostats macro StandardHypoTestInvDemo.C
 // This is the core of the CLs calculation
 //
-
-bool plotHypoTestResult = true;          // plot test statistic result at each point
-bool writeResult = true;                 // write HypoTestInverterResult in a file 
-bool optimize = true;                    // optmize evaluation of test statistic 
-bool useVectorStore = true;              // convert data to use new roofit data store 
-bool generateBinned = false;             // generate binned data sets 
-bool noSystematics = false;              // force all systematics to be off (i.e. set all nuisance parameters as constat
-                                         // to their nominal values)
-double nToysRatio = 2;                   // ratio Ntoys S+b/ntoysB
-double maxPOI = -1;                      // max value used of POI (in case of auto scan) 
-bool useProof = false;                    // use Proof Light when using toys (for freq or hybrid)
-int nworkers = 4;                        // number of worker for Proof
-bool rebuild = false;                    // re-do extra toys for computing expected limits and rebuild test stat
-                                         // distributions (N.B this requires much more CPU (factor is equivalent to nToyToRebuild)
-int nToyToRebuild = 100;                 // number of toys used to rebuild 
-
-std::string massValue = "";              // extra string to tag output file of result 
-std::string  minimizerType = "";                  // minimizer type (default is what is in ROOT::Math::MinimizerOptions::DefaultMinimizerType()
-int   printLevel = 0;                    // print level for debugging PL test statistics and calculators  
+// All this will be factored out in a ROOT class in near future
+// and will disappear from here
+//
 
 
 
@@ -2443,6 +2659,8 @@ namespace RooStats {
 
    private:
 
+     // GENA: modified
+      bool mNoSystematics;
       bool mPlotHypoTestResult;
       bool mWriteResult;
       bool mOptimize;
@@ -2462,7 +2680,11 @@ namespace RooStats {
 
 } // end namespace RooStats
 
-RooStats::HypoTestInvTool::HypoTestInvTool() : mPlotHypoTestResult(true),
+
+
+// GENA: modified
+RooStats::HypoTestInvTool::HypoTestInvTool() : mNoSystematics(false),
+					       mPlotHypoTestResult(true),
                                                mWriteResult(false),
                                                mOptimize(true),
                                                mUseVectorStore(true),
@@ -2551,80 +2773,42 @@ RooStats::HypoTestInvTool::SetParameter(const char * name, const char * value){
 
 
 HypoTestInverterResult * 
-StandardHypoTestInvDemo(RooWorkspace * w,
-                        const char * modelSBName,
-                        const char * modelBName,
-                        const char * dataName,
-                        int calculatorType,
-                        int testStatType,
-                        bool useCLs,
-                        int npoints,
-                        double poimin,
-                        double poimax,
-                        int ntoys,
-                        bool useNumberCounting,
-                        const char * nuisPriorName){
-/*
-
-  Other Parameter to pass in tutorial
-  apart from standard for filename, ws, modelconfig and data
-
-  type = 0 Freq calculator 
-  type = 1 Hybrid calculator
-  type = 2 Asymptotic calculator  
-
-  testStatType = 0 LEP
-  = 1 Tevatron 
-  = 2 Profile Likelihood
-  = 3 Profile Likelihood one sided (i.e. = 0 if mu < mu_hat)
-
-  useCLs          scan for CLs (otherwise for CLs+b)    
-
-  npoints:        number of points to scan , for autoscan set npoints = -1 
-
-  poimin,poimax:  min/max value to scan in case of fixed scans 
-  (if min >= max, try to find automatically)                           
-
-  ntoys:         number of toys to use 
-
-  useNumberCounting:  set to true when using number counting events 
-
-  nuisPriorName:   name of prior for the nnuisance. This is often expressed as constraint term in the global model
-  It is needed only when using the HybridCalculator (type=1)
-  If not given by default the prior pdf from ModelConfig is used. 
-
-  extra options are available as global paramwters of the macro. They major ones are: 
-
-  plotHypoTestResult   plot result of tests at each point (TS distributions) (defauly is true)
-  useProof             use Proof   (default is true) 
-  writeResult          write result of scan (default is true)
-  rebuild              rebuild scan for expected limits (require extra toys) (default is false)
-  generateBinned       generate binned data sets for toys (default is false) - be careful not to activate with 
-  a too large (>=3) number of observables 
-  nToyRatio            ratio of S+B/B toys (default is 2)
-    
-
-*/
-
-  
+CL95Calc::RunHypoTestInverter(RooWorkspace * w,
+			      const char * modelSBName,
+			      const char * modelBName,
+			      const char * dataName,
+			      int calculatorType,
+			      int testStatType,
+			      bool useCLs,
+			      int npoints,
+			      double poimin,
+			      double poimax,
+			      int ntoys,
+			      bool useNumberCounting,
+			      const char * nuisPriorName){
+  //
+  // adopted from StandardHypoTestInvDemo()
+  //
   
    HypoTestInvTool calc;
 
    // set parameters
-   calc.SetParameter("PlotHypoTestResult", plotHypoTestResult);
-   calc.SetParameter("WriteResult", writeResult);
-   calc.SetParameter("Optimize", optimize);
-   calc.SetParameter("UseVectorStore", useVectorStore);
-   calc.SetParameter("GenerateBinned", generateBinned);
-   calc.SetParameter("NToysRatio", nToysRatio);
-   calc.SetParameter("MaxPOI", maxPOI);
-   calc.SetParameter("UseProof", useProof);
-   calc.SetParameter("Nworkers", nworkers);
-   calc.SetParameter("Rebuild", rebuild);
-   calc.SetParameter("NToyToRebuild", nToyToRebuild);
-   calc.SetParameter("MassValue", massValue.c_str());
-   calc.SetParameter("MinimizerType", minimizerType.c_str());
-   calc.SetParameter("PrintLevel", printLevel);
+   // GENA: modified
+   calc.SetParameter("NoSystematics", false);
+   calc.SetParameter("PlotHypoTestResult", GetParameter("MakePlot",bool()));
+   calc.SetParameter("WriteResult", false);
+   calc.SetParameter("Optimize", GetParameter("Optimize",bool()));
+   calc.SetParameter("UseVectorStore", true);
+   calc.SetParameter("GenerateBinned", false);
+   calc.SetParameter("NToysRatio", GetParameter("NToysRatio",double()));
+   calc.SetParameter("MaxPOI", -1.0);
+   calc.SetParameter("UseProof", false);
+   calc.SetParameter("Nworkers", 2);
+   calc.SetParameter("Rebuild", false);
+   calc.SetParameter("NToyToRebuild", 100);
+   calc.SetParameter("MassValue", "");
+   calc.SetParameter("MinimizerType", "");
+   calc.SetParameter("PrintLevel", 0);
 
 
    //RooWorkspace * w = dynamic_cast<RooWorkspace*>( file->Get(wsName) );
@@ -2655,20 +2839,20 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
                                           bool useCLs,  
                                           int npoints,
                                           const char * fileNameBase ){
-
-   // analyize result produced by the inverter, optionally save it in a file 
-   
-   double upperLimit = r->UpperLimit();
-   double ulError = r->UpperLimitEstimatedError();
   
-   std::cout << "The computed upper limit is: " << upperLimit << " +/- " << ulError << std::endl;
+  // analyize result produced by the inverter, optionally save it in a file 
+  
+  //double upperLimit = r->UpperLimit();
+  //double ulError = r->UpperLimitEstimatedError();
+  
+   //std::cout << "The computed upper limit is: " << upperLimit << " +/- " << ulError << std::endl;
   
    // compute expected limit
-   std::cout << " expected limit (median) " << r->GetExpectedUpperLimit(0) << std::endl;
-   std::cout << " expected limit (-1 sig) " << r->GetExpectedUpperLimit(-1) << std::endl;
-   std::cout << " expected limit (+1 sig) " << r->GetExpectedUpperLimit(1) << std::endl;
-   std::cout << " expected limit (-2 sig) " << r->GetExpectedUpperLimit(-2) << std::endl;
-   std::cout << " expected limit (+2 sig) " << r->GetExpectedUpperLimit(2) << std::endl;
+   //std::cout << " expected limit (median) " << r->GetExpectedUpperLimit(0) << std::endl;
+   //std::cout << " expected limit (-1 sig) " << r->GetExpectedUpperLimit(-1) << std::endl;
+   //std::cout << " expected limit (+1 sig) " << r->GetExpectedUpperLimit(1) << std::endl;
+   //std::cout << " expected limit (-2 sig) " << r->GetExpectedUpperLimit(-2) << std::endl;
+   //std::cout << " expected limit (+2 sig) " << r->GetExpectedUpperLimit(2) << std::endl;
   
   
    // write result in a file 
@@ -2708,27 +2892,33 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
   
    const char * resultName = r->GetName();
    TString plotTitle = TString::Format("%s CL Scan for workspace %s",typeName.c_str(),resultName);
-   //TCanvas * c33 = new TCanvas();
-   HypoTestInverterPlot *plot = new HypoTestInverterPlot("HTI_Result_Plot",plotTitle,r);
-   plot->Draw("CLb 2CL");  // plot all and Clb
-   //c33->SaveAs("cls.png");
-  
-   const int nEntries = r->ArraySize();
-  
-   // plot test statistics distributions for the two hypothesis 
+   // GENA:
    if (mPlotHypoTestResult) { 
-      TCanvas * c2 = new TCanvas();
-      if (nEntries > 1) { 
+     TCanvas * c33 = new TCanvas();
+     HypoTestInverterPlot *plot = new HypoTestInverterPlot("HTI_Result_Plot",plotTitle,r);
+     plot->Draw("CLb 2CL");  // plot all and Clb
+     c33->SaveAs("cls.pdf");
+     delete c33;
+     
+     
+     const int nEntries = r->ArraySize();
+     
+     // plot test statistics distributions for the two hypothesis 
+     
+     TCanvas * c2 = new TCanvas();
+     if (nEntries > 1) { 
          int ny = TMath::CeilNint( sqrt(nEntries) );
          int nx = TMath::CeilNint(double(nEntries)/ny);
          c2->Divide( nx,ny);
-      }
-      for (int i=0; i<nEntries; i++) {
-         if (nEntries > 1) c2->cd(i+1);
-         SamplingDistPlot * pl = plot->MakeTestStatPlot(i);
-         pl->SetLogYaxis(true);
-         pl->Draw();
-      }
+     }
+     for (int i=0; i<nEntries; i++) {
+       if (nEntries > 1) c2->cd(i+1);
+       SamplingDistPlot * pl = plot->MakeTestStatPlot(i);
+       pl->SetLogYaxis(true);
+       pl->Draw();
+     }
+     c2->SaveAs("cls_sampling.pdf");
+     delete c2;
    }
 }
 
@@ -2782,20 +2972,20 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
       return 0;
    }
    if (!sbModel->GetObservables()) {
-      Error("StandardHypoTestInvDemo","Model %s has no observables ",modelSBName);
+      Error("RunHypoTestInverter","Model %s has no observables ",modelSBName);
       return 0;
    }
    if (!sbModel->GetSnapshot() ) { 
-      Info("StandardHypoTestInvDemo","Model %s has no snapshot  - make one using model poi",modelSBName);
+      Info("RunHypoTestInverter","Model %s has no snapshot  - make one using model poi",modelSBName);
       sbModel->SetSnapshot( *sbModel->GetParametersOfInterest() );
    }
   
    // case of no systematics
    // remove nuisance parameters from model
-   if (noSystematics) { 
+   if (mNoSystematics) { 
       const RooArgSet * nuisPar = sbModel->GetNuisanceParameters();
       if (nuisPar && nuisPar->getSize() > 0) { 
-         std::cout << "StandardHypoTestInvDemo" << "  -  Switch off all systematics by setting them constant to their initial values" << std::endl;
+         std::cout << "RunHypoTestInverter" << "  -  Switch off all systematics by setting them constant to their initial values" << std::endl;
          RooStats::SetAllConstant(*nuisPar);
       }
       if (bModel) { 
@@ -2806,8 +2996,8 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
    }
   
    if (!bModel || bModel == sbModel) {
-      Info("StandardHypoTestInvDemo","The background model %s does not exist",modelBName);
-      Info("StandardHypoTestInvDemo","Copy it from ModelConfig %s and set POI to zero",modelSBName);
+      Info("RunHypoTestInverter","The background model %s does not exist",modelBName);
+      Info("RunHypoTestInverter","Copy it from ModelConfig %s and set POI to zero",modelSBName);
       bModel = (ModelConfig*) sbModel->Clone();
       bModel->SetName(TString(modelSBName)+TString("_with_poi_0"));      
       RooRealVar * var = dynamic_cast<RooRealVar*>(bModel->GetParametersOfInterest()->first());
@@ -2819,7 +3009,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
    }
    else { 
       if (!bModel->GetSnapshot() ) { 
-         Info("StandardHypoTestInvDemo","Model %s has no snapshot  - make one using model poi and 0 values ",modelBName);
+         Info("RunHypoTestInverter","Model %s has no snapshot  - make one using model poi and 0 values ",modelBName);
          RooRealVar * var = dynamic_cast<RooRealVar*>(bModel->GetParametersOfInterest()->first());
          if (var) { 
             double oldval = var->getVal();
@@ -2828,7 +3018,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
             var->setVal(oldval);
          }
          else { 
-            Error("StandardHypoTestInvDemo","Model %s has no valid poi",modelBName);
+            Error("RunHypoTestInverter","Model %s has no valid poi",modelBName);
             return 0;
          }         
       }
@@ -2839,7 +3029,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
 //   RooStats::ModelConfig * _mc = sbModel;
 //   RooAbsData * _d = w->data("asimovData");
 //   RooStats::ProfileLikelihoodCalculator plc(*_d, *_mc);
-//   plc.SetConfidenceLevel(confidenceLevel);
+//   plc.SetConfidenceLevel(mConfidenceLevel);
 //   RooStats::LikelihoodInterval * pPlrInt = plc.GetInterval();
 //   Double_t _poimax = pPlrInt->UpperLimit( *w->var("xsec") );
 //   std::cout << "POIMAX!!!!!!!!!!!!!*******************: "
@@ -2858,14 +3048,15 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
    const RooArgSet * poiSet = sbModel->GetParametersOfInterest();
    RooRealVar *poi = (RooRealVar*)poiSet->first();
   
-   std::cout << "StandardHypoTestInvDemo : POI initial value:   " << poi->GetName() << " = " << poi->getVal()   << std::endl;  
+   std::cout << "RunHypoTestInverter : POI initial value:   " << poi->GetName() << " = " << poi->getVal()   << std::endl;  
   
    // fit the data first (need to use constraint )
-   Info( "StandardHypoTestInvDemo"," Doing a first fit to the observed data ");
-   if (minimizerType.size()==0) minimizerType = ROOT::Math::MinimizerOptions::DefaultMinimizerType();
+   Info( "RunHypoTestInverter"," Doing a first fit to the observed data ");
+   // GENA: modified
+   if (mMinimizerType.size()==0) mMinimizerType = ROOT::Math::MinimizerOptions::DefaultMinimizerType();
    else 
-      ROOT::Math::MinimizerOptions::SetDefaultMinimizer(minimizerType.c_str());
-   Info("StandardHypoTestInvDemo","Using %s as minimizer for computing the test statistic",
+      ROOT::Math::MinimizerOptions::SetDefaultMinimizer(mMinimizerType.c_str());
+   Info("RunHypoTestInverter","Using %s as minimizer for computing the test statistic",
         ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str() );
    RooArgSet constrainParams;
    if (sbModel->GetNuisanceParameters() ) constrainParams.add(*sbModel->GetNuisanceParameters());
@@ -2874,19 +3065,19 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
    tw.Start(); 
    RooFitResult * fitres = sbModel->GetPdf()->fitTo(*data,InitialHesse(false),
 						    Hesse(false),
-						    Minimizer(minimizerType.c_str(),"Migrad"),
+						    Minimizer(mMinimizerType.c_str(),"Migrad"),
 						    Strategy(0), PrintLevel(mPrintLevel+1),
 						    Constrain(constrainParams), Save(true) );
    if (fitres->status() != 0) { 
-      Warning("StandardHypoTestInvDemo","Fit to the model failed - try with strategy 1 and perform first an Hesse computation");
-      fitres = sbModel->GetPdf()->fitTo(*data,InitialHesse(true), Hesse(false),Minimizer(minimizerType.c_str(),"Migrad"), Strategy(1), PrintLevel(mPrintLevel+1), Constrain(constrainParams), Save(true) );
+      Warning("RunHypoTestInverter","Fit to the model failed - try with strategy 1 and perform first an Hesse computation");
+      fitres = sbModel->GetPdf()->fitTo(*data,InitialHesse(true), Hesse(false),Minimizer(mMinimizerType.c_str(),"Migrad"), Strategy(1), PrintLevel(mPrintLevel+1), Constrain(constrainParams), Save(true) );
    }
    if (fitres->status() != 0) 
-      Warning("StandardHypoTestInvDemo"," Fit still failed - continue anyway.....");
+      Warning("RunHypoTestInverter"," Fit still failed - continue anyway.....");
   
   
    double poihat  = poi->getVal();
-   std::cout << "StandardHypoTestInvDemo - Best Fit value : " << poi->GetName() << " = "  
+   std::cout << "RunHypoTestInverter - Best Fit value : " << poi->GetName() << " = "  
              << poihat << " +/- " << poi->getError() << std::endl;
    std::cout << "Time for fitting : "; tw.Print(); 
   
@@ -2907,11 +3098,11 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
       ropl(*sbModel->GetPdf(), *bModel->GetPdf(), bModel->GetSnapshot());
    ropl.SetSubtractMLE(false);
    ropl.SetPrintLevel(mPrintLevel);
-   ropl.SetMinimizer(minimizerType.c_str());
+   ropl.SetMinimizer(mMinimizerType.c_str());
   
    ProfileLikelihoodTestStat profll(*sbModel->GetPdf());
    if (testStatType == 3) profll.SetOneSided(1);
-   profll.SetMinimizer(minimizerType.c_str());
+   profll.SetMinimizer(mMinimizerType.c_str());
    profll.SetPrintLevel(mPrintLevel);
 
    profll.SetReuseNLL(mOptimize);
@@ -2933,7 +3124,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
    else if (type == 1) hc = new HybridCalculator(*data, *bModel, *sbModel);
    else if (type == 2) hc = new AsymptoticCalculator(*data, *bModel, *sbModel);
    else {
-      Error("StandardHypoTestInvDemo","Invalid - calculator type = %d supported values are only :\n\t\t\t 0 (Frequentist) , 1 (Hybrid) , 2 (Asymptotic) ",type);
+      Error("RunHypoTestInverter","Invalid - calculator type = %d supported values are only :\n\t\t\t 0 (Frequentist) , 1 (Hybrid) , 2 (Asymptotic) ",type);
       return 0;
    }
   
@@ -2944,7 +3135,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
    if (testStatType == 2 || testStatType == 3) testStat = &profll;
    if (testStatType == 4) testStat = &maxll;
    if (testStat == 0) { 
-      Error("StandardHypoTestInvDemo","Invalid - test statistic type = %d supported values are only :\n\t\t\t 0 (SLR) , 1 (Tevatron) , 2 (PLR), 3 (PLR1), 4(MLE)",testStatType);
+      Error("RunHypoTestInverter","Invalid - test statistic type = %d supported values are only :\n\t\t\t 0 (SLR) , 1 (Tevatron) , 2 (PLR), 3 (PLR1), 4(MLE)",testStatType);
       return 0;
    }
   
@@ -2955,14 +3146,14 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
       toymcs->SetTestStatistic(testStat);
     
       if (data->isWeighted() && !mGenerateBinned) { 
-         Info("StandardHypoTestInvDemo","Data set is weighted, nentries = %d and sum of weights = %8.1f but toy generation is unbinned - it would be faster to set mGenerateBinned to true\n",data->numEntries(), data->sumEntries());
+         Info("RunHypoTestInverter","Data set is weighted, nentries = %d and sum of weights = %8.1f but toy generation is unbinned - it would be faster to set mGenerateBinned to true\n",data->numEntries(), data->sumEntries());
       }
       toymcs->SetGenerateBinned(mGenerateBinned);
     
       toymcs->SetUseMultiGen(mOptimize);
     
       if (mGenerateBinned &&  sbModel->GetObservables()->getSize() > 2) { 
-         Warning("StandardHypoTestInvDemo","generate binned is activated but the number of ovservable is %d. Too much memory could be needed for allocating all the bins",sbModel->GetObservables()->getSize() );
+         Warning("RunHypoTestInverter","generate binned is activated but the number of ovservable is %d. Too much memory could be needed for allocating all the bins",sbModel->GetObservables()->getSize() );
       }
     
    }
@@ -2985,7 +3176,7 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
          if (nuisPriorName) nuisPdf = w->pdf(nuisPriorName);
          // use prior defined first in bModel (then in SbModel)
          if (!nuisPdf)  { 
-            Info("StandardHypoTestInvDemo","No nuisance pdf given for the HybridCalculator - try to deduce  pdf from the model");
+            Info("RunHypoTestInverter","No nuisance pdf given for the HybridCalculator - try to deduce  pdf from the model");
             if (bModel->GetPdf() && bModel->GetObservables() ) 
                nuisPdf = RooStats::MakeNuisancePdf(*bModel,"nuisancePdf_bmodel");
             else 
@@ -2994,21 +3185,21 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
          if (!nuisPdf ) {
             if (bModel->GetPriorPdf())  { 
                nuisPdf = bModel->GetPriorPdf();
-               Info("StandardHypoTestInvDemo","No nuisance pdf given - try to use %s that is defined as a prior pdf in the B model",nuisPdf->GetName());            
+               Info("RunHypoTestInverter","No nuisance pdf given - try to use %s that is defined as a prior pdf in the B model",nuisPdf->GetName());            
             }
             else { 
-               Error("StandardHypoTestInvDemo","Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified or can be derived");
+               Error("RunHypoTestInverter","Cannnot run Hybrid calculator because no prior on the nuisance parameter is specified or can be derived");
                return 0;
             }
          }
          assert(nuisPdf);
-         Info("StandardHypoTestInvDemo","Using as nuisance Pdf ... " );
+         Info("RunHypoTestInverter","Using as nuisance Pdf ... " );
          nuisPdf->Print();
       
          const RooArgSet * nuisParams = (bModel->GetNuisanceParameters() ) ? bModel->GetNuisanceParameters() : sbModel->GetNuisanceParameters();
          RooArgSet * np = nuisPdf->getObservables(*nuisParams);
          if (np->getSize() == 0) { 
-            Warning("StandardHypoTestInvDemo","Prior nuisance does not depend on nuisance parameters. They will be smeared in their full range");
+            Warning("RunHypoTestInverter","Prior nuisance does not depend on nuisance parameters. They will be smeared in their full range");
          }
          delete np;
       
@@ -3032,7 +3223,8 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
   
   
    HypoTestInverter calc(*hc);
-   calc.SetConfidenceLevel(confidenceLevel);
+   // GENA: conf level
+   calc.SetConfidenceLevel(GetParameter("ConfidenceLevel",double()));
   
   
    calc.UseCLs(useCLs);
