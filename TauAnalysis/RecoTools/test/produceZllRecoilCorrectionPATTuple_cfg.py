@@ -182,7 +182,7 @@ switchJetCollection(
     process,
     cms.InputTag('ak5PFJets'),
     doJTA = True,
-    doBTagging = False,
+    doBTagging = True,
     jetCorrLabel = ( 'AK5PF', cms.vstring(jetCorrections) ),
     doType1MET = False,
     doJetID = True,

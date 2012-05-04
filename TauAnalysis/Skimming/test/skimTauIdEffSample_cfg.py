@@ -22,8 +22,7 @@ process.DQMStore = cms.Service("DQMStore")
 #--------------------------------------------------------------------------------
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data2/friis/CMSSW_4_2_X/skims/06-27-MatthewsZTTEvents/crab_0_110627_082505/ZTTCands_merged_v1.root'
-        #'file:/data1/veelken/tmp/tauIdEffSample_data_SingleMu_Run2011A_PromptReco_v4_2011Jul04v2_RECO_79_1_qIw.root'
+        'file:/data1/veelken/CMSSW_5_2_x/skims/simZplusJets_AOD_1_1_ZkM.root'
     )
 )
 
@@ -58,9 +57,9 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START42_V13::All')
+    process.GlobalTag.globaltag = cms.string('START52_V9::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_42_V20::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_52_V7::All')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -99,7 +98,7 @@ process.goodMuons = cms.EDFilter("MuonSelector",
 # (e.g. rerun reco::Tau identification algorithms with latest tags)
 from TauAnalysis.TauIdEfficiency.tools.configurePrePatProduction import configurePrePatProduction
 
-configurePrePatProduction(process, pfCandidateCollection = pfCandidateCollection, addGenInfo = isMC)
+configurePrePatProduction(process, pfCandidateCollection = pfCandidateCollection, isMC = isMC)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -218,7 +217,8 @@ process.selectedPatPFTausHPSforTauChargeMisId = cms.EDFilter("PATTauSelector",
         "tauID('decayModeFinding') > 0.5 & "
         "(tauID('byLooseIsolation') > 0.5 |"
         " tauID('byLooseIsolationDeltaBetaCorr') > 0.5 |"
-        " tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5) & "
+        " tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5 |"
+        " tauID('byLooseIsolationMVA') > 0.5) & "
         "tauID('againstElectronLoose') > 0.5 & "
         "tauID('againstMuonTight') > 0.5"
     ),
@@ -276,7 +276,7 @@ process.skimOutputModule = cms.OutputModule("PoolOutputModule",
             ##'skimPathTauChargeMisIdHPSpTaNC'                                        
         )
     ),
-    fileName = cms.untracked.string("tauIdEffSample_RECO.root")
+    fileName = cms.untracked.string("tauIdEffSample_AOD.root")
 )
 
 process.options = cms.untracked.PSet(

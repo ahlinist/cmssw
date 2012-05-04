@@ -10,10 +10,10 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v5_7'
+version = 'v5_10'
 
 samples = {
-    'Data_runs190456to190688' : {
+    'Data_runs190456to191859' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
@@ -37,7 +37,7 @@ lxbatch_queue = '1nw'
 #lxbatch_queue = '8nh'
 
 samplesToAnalyze = [
-    'Data_runs190456to190688',
+    'Data_runs190456to191859',
     'ZplusJets_madgraph',
     'TTplusJets_madgraph'
 ]

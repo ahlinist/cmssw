@@ -14,7 +14,8 @@ outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/%
 
 samplesToAnalyze = [
     ##'Data_runs190456to190688'
-    'Data_runs190456to191276'
+    ##'Data_runs190456to191276'
+    'Data_runs190456to191859' 
     ##'ZplusJets_madgraph',
     ##'TTplusJets_madgraph'
 ]

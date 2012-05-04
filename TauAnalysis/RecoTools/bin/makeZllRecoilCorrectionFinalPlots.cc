@@ -692,17 +692,17 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
 
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			   plotUvsQtNumObj->graphUparlResponseData_, plotUvsQtNumObj->graphUparlResponseMC_, 
-			   "Data", "Simulation", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			   "Data", "Simulation", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.20,
 			   outputFileName, "uParlResponseData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_);
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			   plotUvsQtNumObj->graphUparlResolutionData_, plotUvsQtNumObj->graphUparlResolutionMC_, 
-			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.25, 
+			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
 			   outputFileName, "uParlResolutionData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_);
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			   plotUvsQtNumObj->graphUperpResolutionData_, plotUvsQtNumObj->graphUperpResolutionMC_, 
-			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.25,
+			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
 			   outputFileName, "uPerpResolutionData_vs_MC",
 			   &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_);
 

@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from TauAnalysis.TauIdEfficiency.tools.buildConfigFilesTauIdEffAnalysis import make_inputFileNames_vstring
+from TauAnalysis.TauIdEfficiency.tools.buildConfigFilesTauIdEffAnalysis import make_inputFileNames_vstring, getStringRep_bool
 
 import os
 import re
@@ -38,7 +38,7 @@ def getPATtupleFileNames(sampleNames, inputFilePath):
 def buildConfigFile_produceZllRecoilNtuples(maxEvents,
                                             sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
                                             central_or_shift, srcMEt, srcJets, hltPaths, srcWeights):
-
+    
     """Build cfg.py file to run FWLiteZllRecoilCorrectionNtupleProducer macro on PAT-tuples,
        and produce 'plain' ROOT Ntuple needed for fitting Z-recoil correction parameters"""
 
@@ -203,7 +203,7 @@ process.fitZllRecoilCorrection = cms.PSet(
 def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
                                                       sampleName, runPeriod,
                                                       metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
-                                                      central_or_shift, srcMEt, srcJets, hltPaths, srcWeights, 
+                                                      central_or_shift, srcMEt, applyMEtShiftCorrection, srcJets, hltPaths, srcWeights, 
                                                       ZllRecoilCorrectionParameterFileNames, intLumiData):
 
     """Build cfg.py file to run FWLiteZllRecoilCorrectionAnalyzer macro on PAT-tuples,
@@ -257,7 +257,7 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
         recoZllRecoilCorrectionParameters_string += "    ),\n"
 
     shiftedMEtCorrX_string = None
-    shiftedMEtCorrY_string = None
+    shiftedMEtCorrY_string = None    
     if runPeriod == "2011RunA":
         if processType == 'Data':
             ##shiftedMEtCorrX_string = "-3.365e-1 + 4.801e-3*x" # CV: x = sumEt, y = numVertices
@@ -355,8 +355,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
     shiftedMEtCorrX = cms.string('%s'),
     shiftedMEtCorrY = cms.string('%s'),
-    applyMEtShiftCorr = cms.bool(True),
-    ##applyMEtShiftCorr = cms.bool(False),
+    applyMEtShiftCorr = cms.bool(%s),
 
     srcTrigger = cms.InputTag('TriggerResults::HLT'),
     hltPaths = cms.vstring(%s),
@@ -381,7 +380,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 )
 """ % (maxEvents, fwliteInput_fileNames, outputFileName_full, directory,
        processType, recoZllRecoilCorrectionParameters_string,
-       srcMEt, srcJets, shiftedMEtCorrX_string, shiftedMEtCorrY_string,
+       srcMEt, srcJets, shiftedMEtCorrX_string, shiftedMEtCorrY_string, getStringRep_bool(applyMEtShiftCorrection),
        hltPaths_string, srcWeights_string, srcGenPileUpInfo, addPUreweight_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
 
