@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.15 $
+ * \version $Revision: 1.16 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.15 2012/04/24 07:23:30 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.16 2012/05/04 13:27:57 veelken Exp $
  *
  */
 
@@ -56,6 +56,7 @@
 #include <TBenchmark.h>
 #include <TMath.h>
 #include <TFormula.h>
+#include <TMatrixD.h>
 
 #include <vector>
 #include <string>
@@ -371,8 +372,14 @@ int main(int argc, char* argv[])
 	throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
 	  << "Failed to find unique MET object !!\n";
 
-      edm::Handle<PFMEtSignCovMatrix> metCov;
-      evt.getByLabel(srcMEtSignCovMatrix, metCov);
+      TMatrixD metCov(2, 2);
+      if ( srcMEtSignCovMatrix.label() != "" ) {
+	edm::Handle<PFMEtSignCovMatrix> metSignCovMatrix;
+	evt.getByLabel(srcMEtSignCovMatrix, metSignCovMatrix);
+	metCov = (*metSignCovMatrix);
+      } else {
+	metCov = met->begin()->getSignificanceMatrix();
+      }
   
       pat::MET rawMEt = (*met->begin());
       if ( applyMEtShiftCorr ) {
@@ -400,15 +407,15 @@ int main(int argc, char* argv[])
       //}
       
       histogramsBeforeGenPUreweight->fillHistograms(
-	*bestZllCandidate, *muons, *jets, rawMEt, *metCov, 
+	*bestZllCandidate, *muons, *jets, rawMEt, metCov, 
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, 1.0);
       histogramsBeforeAddPUreweight->fillHistograms(
-        *bestZllCandidate, *muons, *jets, rawMEt, *metCov,
+        *bestZllCandidate, *muons, *jets, rawMEt, metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight);
       histogramsBeforeZllRecoilCorr->fillHistograms(
-	*bestZllCandidate, *muons, *jets, rawMEt, *metCov,
+	*bestZllCandidate, *muons, *jets, rawMEt, metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
@@ -423,7 +430,7 @@ int main(int argc, char* argv[])
 	mcToDataCorrMEt = corrAlgorithm->buildZllCorrectedMEt(rawMEt, rawMEt.genMET()->p4(), bestZllCandidate->p4());
       }
       histogramsAfterZllRecoilMCtoDataCorr->fillHistograms(
-        *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, *metCov,
+        *bestZllCandidate, *muons, *jets, mcToDataCorrMEt, metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 
@@ -440,7 +447,7 @@ int main(int argc, char* argv[])
 	absCalibMEt.setP4(math::XYZTLorentzVector(absCalibMEtPx, absCalibMEtPy, 0., absCalibMEtPt));
       }
       histogramsAfterZllRecoilAbsCalib->fillHistograms(
-        *bestZllCandidate, *muons, *jets, absCalibMEt, *metCov, 
+        *bestZllCandidate, *muons, *jets, absCalibMEt, metCov, 
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
 

@@ -11,7 +11,7 @@ version = 'v5_10'
 
 inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
-outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
+outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_1' % version
 
 samplesToAnalyze = {
     'Data_2012RunA' : {
@@ -95,6 +95,7 @@ metOptions = {
                 'central'    : 'patPFMetNoSmearing'
             }
         },
+        'srcMEtCov' : 'pfMEtSignCovMatrix',
         'applyMEtShiftCorrection' : True
     },
     'pfMEtTypeIcorrected' : {
@@ -114,6 +115,7 @@ metOptions = {
                 'central'    : 'patType1CorrectedPFMetNoSmearing'
             }
         },
+        'srcMEtCov' : 'pfMEtSignCovMatrix',
         'applyMEtShiftCorrection' : True
     },
     ##'pfMEtTypeIpIIcorrected' : {
@@ -133,6 +135,7 @@ metOptions = {
     ##            'central'    : 'patType1p2CorrectedPFMetNoSmearing'
     ##        }
     ##    },
+    ##    'srcMEtCov' : 'pfMEtSignCovMatrix',
     ##    'applyMEtShiftCorrection' : True
     ##},
     'pfMEtByPhilsMVA' : {
@@ -152,6 +155,7 @@ metOptions = {
                 'central'    : 'patPFMetByPhilsMVA'
             }
         },
+        'srcMEtCov' : '', # CV: take PFMET significance matrix from reco::MET->getSignificanceMatrix()
         'applyMEtShiftCorrection' : False
     },
     'pfMEtSmeared' : {
@@ -185,6 +189,7 @@ metOptions = {
                 'unclEnDown' : 'patPFMetUnclusteredEnDown'
             }
         },
+        'srcMEtCov' : 'pfMEtSignCovMatrix',
         'applyMEtShiftCorrection' : True
     },
     'pfMEtTypeIcorrectedSmeared' : {
@@ -218,6 +223,7 @@ metOptions = {
                 'unclEnDown' : 'patType1CorrectedPFMetUnclusteredEnDown'
             }
         },
+        'srcMEtCov' : 'pfMEtSignCovMatrix',
         'applyMEtShiftCorrection' : True
     ##},
     ##'pfMEtTypeIpIIcorrectedSmeared' : {
@@ -251,6 +257,7 @@ metOptions = {
     ##            'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
     ##        }
     ##    },
+    ##    'srcMEtCov' : 'pfMEtSignCovMatrix',
     ##    'applyMEtShiftCorrection' : True
     }
 }
@@ -357,7 +364,8 @@ for metOptionName in metOptions.keys():
             retVal_FWLiteZllRecoilCorrectionAnalyzer = \
               buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
                 maxEvents, sampleName, runPeriod, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
-                central_or_shift, srcMEt[central_or_shift], applyMEtShiftCorrection, srcJets[central_or_shift],
+                central_or_shift,
+                srcMEt[central_or_shift], applyMEtShiftCorrection, srcMEtCov[central_or_shift], srcJets[central_or_shift],
                 hltPaths[processType], srcWeights[processType],
                 None, intLumiData)
 
