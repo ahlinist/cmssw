@@ -30,37 +30,38 @@ prodSmearedElectrons = sysConfiguratorElectrons.createSequence(
 # shift/smear muon collection
 #--------------------------------------------------------------------------------
 
-poolDBESSourceMuScleFitShiftUp = poolDBESSourceMuScleFitCentralValue.clone(
-    connect = cms.string('sqlite_fip:TauAnalysis/RecoTools/data/Z_20_invNb_innerTrack_plusError.db'),
-    appendToDataLabel = cms.string("shiftUp"),
-    toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('MuScleFitDBobjectRcd'),
-            tag = cms.string('Z_20_invNb_innerTrack')
-        )
-    )
-)
-
-patMuonsMuScleFitCorrectedMomentumShiftUp = patMuonsMuScleFitCorrectedMomentum.clone(
-    DbObjectLabel = cms.untracked.string("shiftUp")
-)
-
-poolDBESSourceMuScleFitShiftDown = poolDBESSourceMuScleFitCentralValue.clone(
-    connect = cms.string('sqlite_fip:TauAnalysis/RecoTools/data/Z_20_invNb_innerTrack_minusError.db'),
-    appendToDataLabel = cms.string("shiftDown"),
-    toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('MuScleFitDBobjectRcd'),
-            tag = cms.string('Z_20_invNb_innerTrack')
-        )
-    )
-)
-
-patMuonsMuScleFitCorrectedMomentumShiftDown = patMuonsMuScleFitCorrectedMomentum.clone(
-    DbObjectLabel = cms.untracked.string("shiftDown")
-)
-
-prodSmearedMuons = cms.Sequence(patMuonsMuScleFitCorrectedMomentumShiftUp * patMuonsMuScleFitCorrectedMomentumShiftDown)
+# CV: MuScleFit muon momentum corrections do not work in CMSSW_5_2_x (May 4th 2012)
+##poolDBESSourceMuScleFitShiftUp = poolDBESSourceMuScleFitCentralValue.clone(
+##    connect = cms.string('sqlite_fip:TauAnalysis/RecoTools/data/Z_20_invNb_innerTrack_plusError.db'),
+##    appendToDataLabel = cms.string("shiftUp"),
+##    toGet = cms.VPSet(
+##        cms.PSet(
+##            record = cms.string('MuScleFitDBobjectRcd'),
+##            tag = cms.string('Z_20_invNb_innerTrack')
+##        )
+##    )
+##)
+##
+##patMuonsMuScleFitCorrectedMomentumShiftUp = patMuonsMuScleFitCorrectedMomentum.clone(
+##    DbObjectLabel = cms.untracked.string("shiftUp")
+##)
+##
+##poolDBESSourceMuScleFitShiftDown = poolDBESSourceMuScleFitCentralValue.clone(
+##    connect = cms.string('sqlite_fip:TauAnalysis/RecoTools/data/Z_20_invNb_innerTrack_minusError.db'),
+##    appendToDataLabel = cms.string("shiftDown"),
+##    toGet = cms.VPSet(
+##        cms.PSet(
+##            record = cms.string('MuScleFitDBobjectRcd'),
+##            tag = cms.string('Z_20_invNb_innerTrack')
+##        )
+##    )
+##)
+##
+##patMuonsMuScleFitCorrectedMomentumShiftDown = patMuonsMuScleFitCorrectedMomentum.clone(
+##    DbObjectLabel = cms.untracked.string("shiftDown")
+##)
+##
+##prodSmearedMuons = cms.Sequence(patMuonsMuScleFitCorrectedMomentumShiftUp * patMuonsMuScleFitCorrectedMomentumShiftDown)
 
 #--------------------------------------------------------------------------------
 # shift/smear tau-jet collection

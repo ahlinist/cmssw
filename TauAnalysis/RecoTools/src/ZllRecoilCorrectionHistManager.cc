@@ -166,7 +166,7 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 
 void ZllRecoilCorrectionHistManager::fillHistograms(
        const reco::CompositeCandidate& ZllCand, const std::vector<pat::Muon>& muons, 
-       const std::vector<pat::Jet>& jets, const pat::MET& met, const PFMEtSignCovMatrix& metCov,
+       const std::vector<pat::Jet>& jets, const pat::MET& met, const TMatrixD& metCov,
        const reco::Candidate::LorentzVector& p4PFChargedHadrons, const reco::Candidate::LorentzVector& p4PFNeutralHadrons, 
        const reco::Candidate::LorentzVector& p4PFGammas, 
        int numPU_bxMinus1, int numPU_bx0, int numPU_bxPlus1, 

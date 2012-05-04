@@ -11,9 +11,10 @@ electronSystematics = {
     "sysElectronEnDown"          : cms.InputTag('smearedElectronsEnScaleDown')
 }
 
-muonSystematics = {     
-    "sysMuonPtUp"                : cms.InputTag('patMuonsMuScleFitCorrectedMomentumShiftUp'),
-    "sysMuonPtDown"              : cms.InputTag('patMuonsMuScleFitCorrectedMomentumShiftDown')
+muonSystematics = {
+    # CV: MuScleFit muon momentum corrections do not work in CMSSW_5_2_x (May 4th 2012)
+    ##"sysMuonPtUp"                : cms.InputTag('patMuonsMuScleFitCorrectedMomentumShiftUp'),
+    ##"sysMuonPtDown"              : cms.InputTag('patMuonsMuScleFitCorrectedMomentumShiftDown')
 }
 
 tauSystematics = {   
@@ -22,8 +23,9 @@ tauSystematics = {
 }
 
 muTauPairSystematics = {
-    "sysMuonPtUp"                : cms.InputTag('allMuTauPairsSysMuonPtUp'),
-    "sysMuonPtDown"              : cms.InputTag('allMuTauPairsSysMuonPtDown'),
+    # CV: MuScleFit muon momentum corrections do not work in CMSSW_5_2_x (May 4th 2012)
+    ##"sysMuonPtUp"                : cms.InputTag('allMuTauPairsSysMuonPtUp'),
+    ##"sysMuonPtDown"              : cms.InputTag('allMuTauPairsSysMuonPtDown'),
     "sysTauJetEnUp"              : cms.InputTag('allMuTauPairsSysTauJetEnUp'),
     "sysTauJetEnDown"            : cms.InputTag('allMuTauPairsSysTauJetEnDown'),
     "sysJetEnUp"                 : cms.InputTag('allMuTauPairsSysJetEnUp'),
@@ -32,20 +34,21 @@ muTauPairSystematics = {
     "sysZllRecoilCorrectionDown" : cms.InputTag('allMuTauPairsZllRecoilCorrectedSysDown')
 }
 
-#muTauPairVBFEventSystematics = {
-#    "sysMuonPtUp"                : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtUp'),
-#    "sysMuonPtDown"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtDown'),
-#    "sysTauJetEnUp"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnUp'),
-#    "sysTauJetEnDown"            : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnDown'),
-#    "sysJetEnUp"                 : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnUp'),
-#    "sysJetEnDown"               : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnDown'),
-#    "sysZllRecoilCorrectionUp"   : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysUp'),
-#    "sysZllRecoilCorrectionDown" : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysDown')
-#}
+##muTauPairVBFEventSystematics = {
+##    "sysMuonPtUp"                : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtUp'),
+##    "sysMuonPtDown"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtDown'),
+##    "sysTauJetEnUp"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnUp'),
+##    "sysTauJetEnDown"            : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnDown'),
+##    "sysJetEnUp"                 : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnUp'),
+##    "sysJetEnDown"               : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnDown'),
+##    "sysZllRecoilCorrectionUp"   : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysUp'),
+##    "sysZllRecoilCorrectionDown" : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysDown')
+##}
 
 muTauPairSystematicsLooseMuonIsolation = {
-    "sysMuonPtUp"                : cms.InputTag('allMuTauPairsLooseMuonIsolationSysMuonPtUp'),
-    "sysMuonPtDown"              : cms.InputTag('allMuTauPairsLooseMuonIsolationSysMuonPtDown'),
+    # CV: MuScleFit muon momentum corrections do not work in CMSSW_5_2_x (May 4th 2012)
+    ##"sysMuonPtUp"                : cms.InputTag('allMuTauPairsLooseMuonIsolationSysMuonPtUp'),
+    ##"sysMuonPtDown"              : cms.InputTag('allMuTauPairsLooseMuonIsolationSysMuonPtDown'),
     "sysTauJetEnUp"              : cms.InputTag('allMuTauPairsLooseMuonIsolationSysTauJetEnUp'),
     "sysTauJetEnDown"            : cms.InputTag('allMuTauPairsLooseMuonIsolationSysTauJetEnDown'),
     "sysJetEnUp"                 : cms.InputTag('allMuTauPairsLooseMuonIsolationSysJetEnUp'),
@@ -55,8 +58,9 @@ muTauPairSystematicsLooseMuonIsolation = {
 }
 
 muTauPairVBFEventSystematicsLooseMuonIsolation = {
-    "sysMuonPtUp"                : cms.InputTag('allVBFEventHypothesesForAHtoMuTauLooseMuonIsolationSysMuonPtUp'),
-    "sysMuonPtDown"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauLooseMuonIsolationSysMuonPtDown'),
+    # CV: MuScleFit muon momentum corrections do not work in CMSSW_5_2_x (May 4th 2012)
+    ##"sysMuonPtUp"                : cms.InputTag('allVBFEventHypothesesForAHtoMuTauLooseMuonIsolationSysMuonPtUp'),
+    ##"sysMuonPtDown"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauLooseMuonIsolationSysMuonPtDown'),
     "sysTauJetEnUp"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauLooseMuonIsolationSysTauJetEnUp'),
     "sysTauJetEnDown"            : cms.InputTag('allVBFEventHypothesesForAHtoMuTauLooseMuonIsolationSysTauJetEnDown'),
     "sysJetEnUp"                 : cms.InputTag('allVBFEventHypothesesForAHtoMuTauLooseMuonIsolationSysJetEnUp'),
@@ -81,8 +85,8 @@ elecTauPairVBFEventSystematics = {
     "sysTauJetEnDown"            : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysTauJetEnDown'),
     "sysJetEnUp"                 : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysJetEnUp'),
     "sysJetEnDown"               : cms.InputTag('allVBFEventHypothesesForAHtoElecTauSysJetEnDown'),
-#    "sysZllRecoilCorrectionUp"   : cms.InputTag('allVBFEventHypothesesForAHtoElecTauZllRecoilCorrectedSysUp'),
-#    "sysZllRecoilCorrectionDown" : cms.InputTag('allVBFEventHypothesesForAHtoElecTauZllRecoilCorrectedSysDown')
+    ##"sysZllRecoilCorrectionUp"   : cms.InputTag('allVBFEventHypothesesForAHtoElecTauZllRecoilCorrectedSysUp'),
+    ##"sysZllRecoilCorrectionDown" : cms.InputTag('allVBFEventHypothesesForAHtoElecTauZllRecoilCorrectedSysDown')
 }
 
 elecTauPairSystematicsLooseElectronIsolation = {
@@ -100,23 +104,23 @@ tauNuPairSystematics = {
     "sysJetEnUp"           : cms.InputTag('allTauNuPairsSysJetEnUp'),
     "sysJetEnDown"         : cms.InputTag('allTauNuPairsSysJetEnDown')
 }
-
 htRatioSystematics = {
     "sysTauJetEnUp"       : cms.InputTag('htRatiosSysTauJetEnUp'),
     "sysTauJetEnDown"     : cms.InputTag('htRatiosSysTauJetEnDown'),
     "sysJetEnUp"          : cms.InputTag('htRatiosSysJetEnUp'),
     "sysJetEnDown"        : cms.InputTag('htRatiosSysJetEnDown')
-    }
+}
 metTopologySystematics = {
     "sysTauJetEnUp"      : cms.InputTag('metTopologiesSysTauJetEnUp'),
     "sysTauJetEnDown"    : cms.InputTag('metTopologiesSysTauJetEnDown'),
     "sysJetEnUp"         : cms.InputTag('metTopologiesSysJetEnUp'),
     "sysJetEnDown"       : cms.InputTag('metTopologiesSysJetEnDown')
-    }
+}
 
 metSystematicsForZtoMuTau = {
-    "sysMuonPtUp"                : cms.InputTag('patMETsSysMuonPtUp'),
-    "sysMuonPtDown"              : cms.InputTag('patMETsSysMuonPtDown'),
+    # CV: MuScleFit muon momentum corrections do not work in CMSSW_5_2_x (May 4th 2012)
+    ##"sysMuonPtUp"                : cms.InputTag('patMETsSysMuonPtUp'),
+    ##"sysMuonPtDown"              : cms.InputTag('patMETsSysMuonPtDown'),
     "sysTauJetEnUp"              : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"            : cms.InputTag('patMETsSysTauJetEnDown'),
     "sysJetEnUp"                 : cms.InputTag('patMETsSysJetEnUp'),
@@ -131,8 +135,9 @@ metSystematicsForZtoElecTau = {
 }
 
 metSystematicsForAHtoMuTau = {
-    "sysMuonPtUp"                : cms.InputTag('patMETsSysMuonPtUp'),
-    "sysMuonPtDown"              : cms.InputTag('patMETsSysMuonPtDown'),
+    # CV: MuScleFit muon momentum corrections do not work in CMSSW_5_2_x (May 4th 2012)
+    ##"sysMuonPtUp"                : cms.InputTag('patMETsSysMuonPtUp'),
+    ##"sysMuonPtDown"              : cms.InputTag('patMETsSysMuonPtDown'),
     "sysTauJetEnUp"              : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"            : cms.InputTag('patMETsSysTauJetEnDown'),
     "sysJetEnUp"                 : cms.InputTag('patMETsSysJetEnUp'),
@@ -153,7 +158,7 @@ metSystematicsForWtoTauNu = {
     "sysTauJetEnDown"      : cms.InputTag('smearedMETsysTauJetEnUp'),
     "sysJetEnUp"           : cms.InputTag('smearedMETsysJetEnUp'),
     "sysJetEnDown"         : cms.InputTag('smearedMETsysJetEnDown')
-    }
+}
 
 jetSystematics = {   
     "sysJetEnUp"                 : cms.InputTag('patJetsJECshiftUp'),
@@ -164,11 +169,11 @@ theorySystematics = {
     # CV: do not run theory systematics for now,
     #     as in particular the module for estimating PDF uncertainties
     #     significantly increases the overall run-time/memory consumption of the cmsRun job !!
-#    "sysPdfWeightsCTEQ66(45)"          : cms.InputTag('pdfWeights:cteq66'),
-#    "sysPdfWeightsMSTW2008nlo68cl(41)" : cms.InputTag('pdfWeights:MSTW2008nlo68cl'),
-#    "sysPdfWeightsNNPDF20(100)"        : cms.InputTag('pdfWeights:NNPDF20'),
-#    "sysIsrWeight"                     : cms.InputTag('isrWeight'),
-#    "sysFsrWeight"                     : cms.InputTag('fsrWeight')
+    ##"sysPdfWeightsCTEQ66(45)"          : cms.InputTag('pdfWeights:cteq66'),
+    ##"sysPdfWeightsMSTW2008nlo68cl(41)" : cms.InputTag('pdfWeights:MSTW2008nlo68cl'),
+    ##"sysPdfWeightsNNPDF20(100)"        : cms.InputTag('pdfWeights:NNPDF20'),
+    ##"sysIsrWeight"                     : cms.InputTag('isrWeight'),
+    ##"sysFsrWeight"                     : cms.InputTag('fsrWeight')
 }
 
 def getSysUncertaintyNames(sysUncertaintyMaps):

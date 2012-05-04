@@ -203,9 +203,11 @@ process.fitZllRecoilCorrection = cms.PSet(
 def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
                                                       sampleName, runPeriod,
                                                       metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
-                                                      central_or_shift, srcMEt, applyMEtShiftCorrection, srcJets, hltPaths, srcWeights, 
+                                                      central_or_shift,
+                                                      srcMEt, applyMEtShiftCorrection, srcMEtCov, srcJets,
+                                                      hltPaths, srcWeights,
                                                       ZllRecoilCorrectionParameterFileNames, intLumiData):
-
+    
     """Build cfg.py file to run FWLiteZllRecoilCorrectionAnalyzer macro on PAT-tuples,
        and fill control plots of MET in Data compared to Monte Carlo simulation with Z-recoil corrections applied"""
 
@@ -349,7 +351,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMuons = cms.InputTag('patMuons'), # CV: pat::Muon collection contains 'goodMuons' only
     srcMEt = cms.InputTag('%s'),
-    srcMEtSignCovMatrix = cms.InputTag('pfMEtSignCovMatrix'),
+    srcMEtSignCovMatrix = cms.InputTag('%s'),
     srcJets = cms.InputTag('%s'),
     srcPFCandidates = cms.InputTag('particleFlow'),
 
@@ -380,7 +382,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 )
 """ % (maxEvents, fwliteInput_fileNames, outputFileName_full, directory,
        processType, recoZllRecoilCorrectionParameters_string,
-       srcMEt, srcJets, shiftedMEtCorrX_string, shiftedMEtCorrY_string, getStringRep_bool(applyMEtShiftCorrection),
+       srcMEt, srcMEtCov, srcJets, shiftedMEtCorrX_string, shiftedMEtCorrY_string, getStringRep_bool(applyMEtShiftCorrection),
        hltPaths_string, srcWeights_string, srcGenPileUpInfo, addPUreweight_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
 
