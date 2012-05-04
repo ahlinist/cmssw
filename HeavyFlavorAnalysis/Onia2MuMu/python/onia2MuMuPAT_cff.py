@@ -38,9 +38,9 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         minCaloCompatibility = cms.double(0.6),
         mergeTracks = cms.bool(True),
         tracks = cms.InputTag("generalTracks"),
-        tracksCut = cms.string("(abs(eta) <= 1.3 && pt > 3.3) || (1.3 < abs(eta) <= 2.2 && p > 2.9) || (2.2 < abs(eta) <= 2.4  && pt > 0.8)"),
+        #tracksCut = cms.string("(abs(eta) <= 1.3 && pt > 3.3) || (1.3 < abs(eta) <= 2.2 && p > 2.9) || (2.2 < abs(eta) <= 2.4  && pt > 0.8)"),
+	tracksCut = cms.string("(abs(eta) <= 0.9 && pt > 2.5) || (0.9 < abs(eta) <=2.4 && pt > 1.5)"),
     )
-
 
     # Prune generated particles to muons and their parents
     process.genMuons = cms.EDProducer("GenParticlePruner",
