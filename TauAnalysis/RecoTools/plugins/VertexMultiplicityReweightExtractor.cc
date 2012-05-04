@@ -159,10 +159,13 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
     } else if ( type_ == kGenLevel3d ) {
       std::string tmpStr("MC_distr");
       genLumiReweight3d_ = new edm::Lumi3DReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
-      // CV: for 2011 data use pp inelastic cross-section of 73.5mb measured by TOTEM
-      //     instead of CMS measurement of 68mb (default in Lumi3DReWeighting)
+      // CV: For 2011 data use pp inelastic cross-section of 73.5mb measured by TOTEM
+      //     instead of CMS measurement of 68mb (default in Lumi3DReWeighting).
+      //     For 2012 data use pp inelastic cross-section measured by CMS
+      //     scaled by ratio 1.02 of min. bias cross-sections @ 8 TeV/7 TeV, computed by PYTHIA,
+      //     cf. https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1692/1/1.html
       if ( mcPeriod.find("11") != std::string::npos ) genLumiReweight3d_->weight3D_init(73.5/68.);
-      else genLumiReweight3d_->weight3D_init(68./68.);
+      else genLumiReweight3d_->weight3D_init(69.4/69.4);
     }
   } else {
     inputFile_ = new TFile(inputFileName.fullPath().data());

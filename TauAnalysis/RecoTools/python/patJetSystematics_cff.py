@@ -8,6 +8,7 @@ patJetsJECshiftUp = cms.EDProducer("ShiftedPATJetProducer",
     src = cms.InputTag('cleanPatJets'),
     jetCorrPayloadName = cms.string('AK5PF'),
     jetCorrUncertaintyTag = cms.string('Uncertainty'),
+    addResidualJES = cms.bool(False),                               
     shiftBy = cms.double(+1.)
 )
 

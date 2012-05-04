@@ -12,7 +12,7 @@
 #   - rfstat   : done
 #   - rfchmod  : todo
 #   - rfdir    : done
-#   - rfmkdir  : todo
+#   - rfmkdir  : done
 #   - rfrm     : todo
 #   - rftp     : todo
 #
@@ -26,6 +26,7 @@ import fnmatch
 import os
 import shlex
 import subprocess
+import sys
 import time
 
 # Memoize calls to nslsl
@@ -44,7 +45,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -454,3 +455,17 @@ def last_modified(path):
                                 "%a %b %d %H:%M:%S %Y")
     return time.mktime(castor_time)
 
+def rfmkdir(path, permissions = 777):
+    path_items = path.split('/')
+    current_path = "/"
+    for path_item in path_items:
+        current_path = os.path.join(current_path, path_item)
+        if len(current_path) <= 1:
+            continue
+        try:
+            nslsl(current_path)
+            break
+        except IOError:
+            sys.stdout.write("creating directory %s\n" % current_path)
+            #subprocess.call("rfmkdir %s" % current_path, shell = True)
+            #subprocess.call("rfchmod %s %i" % (current_path, permissions), shell = True)

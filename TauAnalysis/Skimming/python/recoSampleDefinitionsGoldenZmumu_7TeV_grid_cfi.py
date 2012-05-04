@@ -9,9 +9,10 @@ from TauAnalysis.Configuration.recoSampleDefaults_cfi import SAMPLE_DEFAULTS
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     #'Data_runs190456to190688'
-    'Data_runs190456to191276'
-    #'ZplusJets_madgraph',
-    #'TTplusJets_madgraph'
+    #'Data_runs190456to191276',
+    'Data_runs190456to191859' 
+    'ZplusJets_madgraph',
+    'TTplusJets_madgraph'
 ]
 
 _millibarns = 1.0e+9
@@ -38,7 +39,16 @@ RECO_SAMPLES = {
         'runselection'     : "190456-191276",
         'lumis_per_job'    : "25",
         'type'             : 'Data'
-    }, 
+    },
+    'Data_runs190456to191859' : {
+       'datasetpath'      : '/DoubleMu/Run2012A-PromptReco-v1/AOD',
+        'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 4854189, # 2012/04/27
+        'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-191859_8TeV_PromptReco_Collisions12_JSON.txt",
+        'runselection'     : "190456-191859",
+        'lumis_per_job'    : "25",
+        'type'             : 'Data'
+    },
     'ZplusJets_madgraph' : {
         'datasetpath'      : "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM",
         'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",

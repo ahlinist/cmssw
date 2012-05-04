@@ -2,11 +2,12 @@
 
 from TauAnalysis.TauIdEfficiency.tools.buildConfigFilesTauIdEffAnalysis import buildConfigFile_hadd
 from TauAnalysis.RecoTools.tools.buildConfigFilesZllRecoilCorrectionAnalysis import *
+from TauAnalysis.TauIdEfficiency.tools.buildConfigFilesTauIdEffAnalysis import getStringRep_bool
 from TauAnalysis.Skimming.recoSampleDefinitionsGoldenZmumu_7TeV_grid_cfi import RECO_SAMPLES
 
 import os
 
-version = 'v5_7'
+version = 'v5_10'
 
 inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
@@ -15,7 +16,7 @@ outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 samplesToAnalyze = {
     'Data_2012RunA' : {
         'samples' : [
-            'Data_runs190456to190688'
+            'Data_runs190456to191859'
         ],
         'isMC' : False
     },
@@ -59,7 +60,8 @@ if runPeriod == '2012RunA':
             'HLT_Mu17_Mu8_v16'
         ],
         'smMC' : [
-            'HLT_Mu17_Mu8_v13'
+            'HLT_Mu17_Mu8_v13', # ZplusJets_madgraph
+            'HLT_Mu17_Mu8_v16'  # TTplusJets_madgraph
         ]
     }
     srcWeights = {
@@ -92,7 +94,8 @@ metOptions = {
             'smMC' : {
                 'central'    : 'patPFMetNoSmearing'
             }
-        }
+        },
+        'applyMEtShiftCorrection' : True
     },
     'pfMEtTypeIcorrected' : {
         'srcJets' : {
@@ -110,7 +113,8 @@ metOptions = {
             'smMC' : {
                 'central'    : 'patType1CorrectedPFMetNoSmearing'
             }
-        }
+        },
+        'applyMEtShiftCorrection' : True
     },
     ##'pfMEtTypeIpIIcorrected' : {
     ##    'srcJets' : {
@@ -128,26 +132,28 @@ metOptions = {
     ##        'smMC' : {
     ##            'central'    : 'patType1p2CorrectedPFMetNoSmearing'
     ##        }
-    ##    }
-    ##},
-    ##'pfMEtByPhilsMVA' : {
-    ##    'srcJets' : {
-    ##        'Data' : {
-    ##            'central'    : 'patJets'
-    ##        },
-    ##        'smMC' : {
-    ##            'central'    : 'patJets'
-    ##        }
     ##    },
-    ##    'srcMEt' : {
-    ##        'Data' : {
-    ##            'central'    : 'patPFMetByPhilsMVA'
-    ##        },
-    ##        'smMC' : {
-    ##            'central'    : 'patPFMetByPhilsMVA'
-    ##        }
-    ##    }
+    ##    'applyMEtShiftCorrection' : True
     ##},
+    'pfMEtByPhilsMVA' : {
+        'srcJets' : {
+            'Data' : {
+                'central'    : 'patJets'
+            },
+            'smMC' : {
+                'central'    : 'patJets'
+            }
+        },
+        'srcMEt' : {
+            'Data' : {
+                'central'    : 'patPFMetByPhilsMVA'
+            },
+            'smMC' : {
+                'central'    : 'patPFMetByPhilsMVA'
+            }
+        },
+        'applyMEtShiftCorrection' : False
+    },
     'pfMEtSmeared' : {
         'srcJets' : {
             'Data' : {
@@ -178,7 +184,8 @@ metOptions = {
                 'unclEnUp'   : 'patPFMetUnclusteredEnUp',
                 'unclEnDown' : 'patPFMetUnclusteredEnDown'
             }
-        }
+        },
+        'applyMEtShiftCorrection' : True
     },
     'pfMEtTypeIcorrectedSmeared' : {
         'srcJets' : {
@@ -210,7 +217,8 @@ metOptions = {
                 'unclEnUp'   : 'patType1CorrectedPFMetUnclusteredEnUp',
                 'unclEnDown' : 'patType1CorrectedPFMetUnclusteredEnDown'
             }
-        }
+        },
+        'applyMEtShiftCorrection' : True
     ##},
     ##'pfMEtTypeIpIIcorrectedSmeared' : {
     ##    'srcJets' : {
@@ -242,7 +250,8 @@ metOptions = {
     ##            'unclEnUp'   : 'patType1p2CorrectedPFMetUnclusteredEnUp',
     ##            'unclEnDown' : 'patType1p2CorrectedPFMetUnclusteredEnDown'
     ##        }
-    ##    }
+    ##    },
+    ##    'applyMEtShiftCorrection' : True
     }
 }
 
@@ -281,13 +290,14 @@ for metOptionName in metOptions.keys():
             else:
                 processType = 'Data'
             srcJets = metOptions[metOptionName]['srcJets'][processType]
-            srcMEt = metOptions[metOptionName]['srcMEt'][processType]
+            srcMEt = metOptions[metOptionName]['srcMEt'][processType]            
             fileNames_produceZllRecoilNtuples[metOptionName][sampleName] = {}
             for central_or_shift in srcMEt.keys():
                 retVal_produceZllRecoilNtuples = \
                   buildConfigFile_produceZllRecoilNtuples(
                     maxEvents, sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
-                    central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType])
+                    central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], 
+                    hltPaths[processType], srcWeights[processType])
 
                 if retVal_produceZllRecoilNtuples is None:
                     continue
@@ -341,12 +351,14 @@ for metOptionName in metOptions.keys():
             processType = 'Data'
         srcJets = metOptions[metOptionName]['srcJets'][processType]
         srcMEt = metOptions[metOptionName]['srcMEt'][processType]
+        applyMEtShiftCorrection = metOptions[metOptionName]['applyMEtShiftCorrection']
         fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName] = {}
         for central_or_shift in srcMEt.keys():
             retVal_FWLiteZllRecoilCorrectionAnalyzer = \
               buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
                 maxEvents, sampleName, runPeriod, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
-                central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
+                central_or_shift, srcMEt[central_or_shift], applyMEtShiftCorrection, srcJets[central_or_shift],
+                hltPaths[processType], srcWeights[processType],
                 None, intLumiData)
 
             if retVal_FWLiteZllRecoilCorrectionAnalyzer is None:
@@ -499,7 +511,8 @@ for metOptionName in metOptions.keys():
                         else:
                             processType = 'Data'
                         srcJets = metOptions[metOptionName]['srcJets'][processType]
-                        srcMEt = metOptions[metOptionName]['srcMEt'][processType]            
+                        srcMEt = metOptions[metOptionName]['srcMEt'][processType]
+                        applyMEtShiftCorrection = metOptions[metOptionName]['applyMEtShiftCorrection']
                         makeFile.write("%s: %s %s %s\n" %
                          (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'],
                           fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['central']['outputFileName'],
@@ -519,11 +532,12 @@ samplesToAnalyze = %s
 metOptions = %s
 
 buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-  %i, '%s', '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %f)
+  %i, '%s', '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', %s, '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %f)
 """ % (str(samplesToAnalyze),
        str(metOptions),
        maxEvents, sampleName, runPeriod, metOptionName, inputFilePath, outputFilePath,
-       central_or_shift, srcMEt[central_or_shift], srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
+       central_or_shift, srcMEt[central_or_shift], getStringRep_bool(applyMEtShiftCorrection),
+       srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['central']['outputFileName'],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal][central_or_shift]['outputFileName'],
        intLumiData)      

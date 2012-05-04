@@ -300,15 +300,6 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
       }
     }
 
-    double diTauPt, prodAngle_rf;
-    if ( dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis) ) {
-      diTauPt = (dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis))->p4_fitted().pt();
-      prodAngle_rf = (dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis))->prod_angle_rf();
-    } else {
-      diTauPt = (svFitDaughter1P4 + svFitDaughter2P4 + svFitEventHypothesis->met()->p4()).pt();
-      prodAngle_rf = 0.;
-    }
-
     double svFitMass_mean        = 0.;
     double svFitMass_median      = 0.;
     double svFitMass_maximum     = 0.;
@@ -319,12 +310,6 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
       svFitMass_maximum     = (dynamic_cast<const NSVfitResonanceHypothesisByIntegration*>(svFitResonanceHypothesis))->mass_maximum();
       svFitMass_maxInterpol = (dynamic_cast<const NSVfitResonanceHypothesisByIntegration*>(svFitResonanceHypothesis))->mass_maxInterpol();
     }
-
-    TVectorD covEigenValues(2);
-    pfMEtSignCovMatrix->EigenVectors(covEigenValues);
-    double metCov = TMath::Power(square(covEigenValues(0)) + square(covEigenValues(1)), 0.25);
-    reco::Candidate::LorentzVector rec_minus_genMEtP4 = recMEtP4 - genMEtP4;
-    double metPull = rec_minus_genMEtP4.pt()/compProjCovUncertaintyXY(*pfMEtSignCovMatrix, recMEtP4 - genMEtP4);
     
     for ( typename std::vector<plotEntryType*>::iterator plotEntry = plotEntries_.begin();
 	  plotEntry != plotEntries_.end(); ++plotEntry ) {

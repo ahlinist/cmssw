@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.14 2012/04/16 07:26:50 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.15 2012/04/24 07:23:30 veelken Exp $
  *
  */
 
@@ -44,6 +44,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionHistManager.h"
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionAlgorithm.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
@@ -221,6 +222,7 @@ int main(int argc, char* argv[])
     new std::ofstream(selEventsFileName.data(), std::ios::out) : 0;
 
   int numEvents_processed = 0; 
+  int numEvents_selected  = 0; 
 
   edm::RunNumber_t lastLumiBlock_run = -1;
   edm::LuminosityBlockNumber_t lastLumiBlock_ls = -1;
@@ -292,7 +294,12 @@ int main(int argc, char* argv[])
 	}
       }
 
-      if ( !isTriggered ) continue;
+      if ( !isTriggered ) {
+	//std::cout << "isTriggered = " << isTriggered << std::endl;
+	//const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
+	//std::cout << "HLT paths = " << format_vstring(triggerNames.triggerNames()) << std::endl;
+	continue;
+      }
 
       int numPU_bxMinus1 = -1;
       int numPU_bx0      = -1;
@@ -347,7 +354,10 @@ int main(int argc, char* argv[])
 	}
       }
 	    
-      if ( !bestZllCandidate ) continue;
+      if ( !bestZllCandidate ) {
+	//std::cout << "bestZllCandidate = " << bestZllCandidate << std::endl;
+	continue;
+      }
 
       edm::Handle<pat::MuonCollection> muons;
       evt.getByLabel(srcMuons, muons);
@@ -433,6 +443,8 @@ int main(int argc, char* argv[])
         *bestZllCandidate, *muons, *jets, absCalibMEt, *metCov, 
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
+
+      ++numEvents_selected;
     }
 
 //--- close input file
@@ -452,6 +464,7 @@ int main(int argc, char* argv[])
 
   std::cout << "<FWLiteZllRecoilCorrectionAnalyzer>:" << std::endl;
   std::cout << " numEvents_processed: " << numEvents_processed << std::endl;
+  std::cout << " numEvents_selected: " << numEvents_selected << std::endl;
 
 //--- scale histograms taken from Monte Carlo simulation
 //    according to cross-section times luminosity
