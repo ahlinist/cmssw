@@ -139,7 +139,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             outputFilePath = outputFilePath.replace('/castor/cern.ch','')
 
         saveNtuple = 0
-        if sample_info['saveNtuple'] is True:
+        if 'saveNtuple' in sample_info.keys() and sample_info['saveNtuple'] is True:
             saveNtuple = 1
 
         # Build crab options
