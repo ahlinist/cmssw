@@ -51,6 +51,7 @@ namespace LooperClusterRemoverMethod {
       stereoRecHits_=iConfig.getParameter<edm::InputTag>("stereoRecHits");
       collectorConf_=iConfig.getParameter<edm::ParameterSet>("collector");
       makeTC_=iConfig.getParameter<bool>("makeTrackCandidates");
+      pxlClusterCharge_=iConfig.getParameter<double>("pxlClusterCharge");
       if (makeTC_){
 	const edm::ParameterSet & sC=iConfig.getParameter<edm::ParameterSet>("SeedCreatorPSet");
 	aCreator = SeedCreatorFactory::get()->create( sC.getParameter<std::string>("ComponentName"),
@@ -69,6 +70,8 @@ namespace LooperClusterRemoverMethod {
     edm::ParameterSet collectorConf_;
     bool makeTC_;
     bool maskWithNoTC_;
+    double pxlClusterCharge_;
+
     SeedCreator * aCreator;
     ~LooperMethod(){
       if (makeTC_) delete aCreator;

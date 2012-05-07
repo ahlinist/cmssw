@@ -497,6 +497,8 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 	  LogDebug("LooperMethod")<<" in the pixel case"<<std::endl;
 	  const SiPixelRecHit * pH=static_cast<const SiPixelRecHit *>(peak->elements_[iH]->hit_->hit());
 	  LogTrace("LooperMethod")<<"actively masking:" <<pH<<std::endl;
+	  if (pxlClusterCharge_>0 and pH->cluster()->charge() < pxlClusterCharge_ )
+	    continue;
 	  if (!prod_.collectedPixels[pH->cluster().key()])	  nMasked++;
 	  prod_.collectedPixels[pH->cluster().key()]=true;
 	}//pixel case
