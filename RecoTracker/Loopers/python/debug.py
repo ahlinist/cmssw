@@ -11,12 +11,12 @@ def debug(process):
     process.options.wantSummary = cms.untracked.bool(True)
 
     process.MessageLogger._categoryCanTalk('Collect')
-    #process.MessageLogger._categoryCanTalk('PeakFinder')
-    process.MessageLogger._categoryCanTalk('Equilibrate')
-    process.MessageLogger._categoryCanTalk('Truncate')
-    process.MessageLogger._categoryCanTalk('PhiInHelix')
+    process.MessageLogger._categoryCanTalk('PeakFinder')
+    #process.MessageLogger._categoryCanTalk('Equilibrate')
+    #process.MessageLogger._categoryCanTalk('Truncate')
+    #process.MessageLogger._categoryCanTalk('PhiInHelix')
     process.MessageLogger._categoryCanTalk('SlopeCheck')
-    process.MessageLogger._categoryCanTalk('CollectPeak')
+    #process.MessageLogger._categoryCanTalk('CollectPeak')
 
     process.MessageLogger._moduleCanTalk('loopersMask')
     process.TFileService = cms.Service("TFileService",

@@ -246,6 +246,7 @@ DataDumper::DataDumper(edm::ParameterSet & pset){
     Y_.Set(pset.getParameter<unsigned int>("nPhi"),0,TMath::TwoPi());
     offset_=X_.GetNbins()+2;
     minHitPerPeak_=pset.getParameter<unsigned int>("peakAbove");
+    baseLineCut_=pset.getParameter<int>("baseLineCut");
     setRBound(pset.getParameter<double>("RBound"));
     resize();
     
@@ -371,14 +372,27 @@ void DataDumper::collect( fastRecHit & hit){
 void DataDumper::makePeaks(){
   uint totalBins=0;
   float nTotalBins=0;
+  uint maxBins=0;
   for(std::vector<aCell>::iterator iCell=container_.begin();
       iCell!=container_.end();++iCell){
     if (iCell->count()==0) continue;
+    if (iCell->count() > maxBins)
+      maxBins = iCell->count();
     totalBins+=iCell->count();
     nTotalBins++;
   }
-  uint averageOccupancy_ = totalBins/nTotalBins;
-  LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy_<<". It's used as a baseline cut";
+  uint averageOccupancy = totalBins/nTotalBins;
+  uint baseLineCut = averageOccupancy;
+  if (baseLineCut > 0)
+    {
+      if (baseLineCut_<= int(maxBins))
+	baseLineCut = maxBins - baseLineCut_;
+      else
+	baseLineCut = 0;
+    }
+
+  LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the max is: "<<maxBins
+				    <<baseLineCut<<" is used as a baseline cut";
 
   //create an image of the container, to not sort in place. although we could in principle, since the container is not accessed anymore afterwards as is.
   std::vector<aCell*> sortedImage;
@@ -412,7 +426,7 @@ void DataDumper::makePeaks(){
     if (abort){
       setHelix(&*iCell,false);
       continue;}
-    if (iCell->count() < averageOccupancy_) {
+    if (iCell->count() < baseLineCut) {
       setHelix(&*iCell,false);
       continue;}
     if (iCell->count() < minHitPerPeak_) {
