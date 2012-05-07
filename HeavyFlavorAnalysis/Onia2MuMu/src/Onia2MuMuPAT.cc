@@ -268,7 +268,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if (mu1TS.isValid() && mu2TS.isValid()) {
 	    ClosestApproachInRPhi cApp;
 	    cApp.calculate(mu1TS.theState(), mu2TS.theState());
-	    if (!cApp.status() ) dca = cApp.distance();
+	    if (cApp.status() ) dca = cApp.distance();
 	  }
 	  myCand.addUserFloat("DCA", dca );
 	  ///end DCA
