@@ -15,7 +15,9 @@
 //        - compile and run this routine
 //
 //          [1] .L counting_limit.C+
-//          [2] limit()
+//          [2] limit("bayesian")
+//          [3] limit("mcmc")
+//          [4] limit("cls")
 //
 
 #include <iostream>
@@ -30,9 +32,9 @@ void limit( std::string method = "bayesian" ){
   //
 
   double ilum = 1.0;
-  double slum = 0.0;
+  double slum = 0.1;
   double  eff = 1.0;
-  double seff = 0.0;
+  double seff = 0.1;
   double  bkg = 1.0;
   double sbkg = 0.0;
 
@@ -41,7 +43,7 @@ void limit( std::string method = "bayesian" ){
   // optional: set some parameters
   SetParameter("Optimize", false);
   SetParameter("CorrelatedLumiSyst", false);
-  SetParameter("MakePlot", false);
+  SetParameter("MakePlot", true);
   SetParameter("GaussianStatistics", false);
 
   SetParameter("NClsSteps", 10);
@@ -65,6 +67,7 @@ void limit( std::string method = "bayesian" ){
 
 
     // expected limit
+    // will work with any method, example shown for Bayesian
     LimitResult bayes_expected = GetExpectedLimit(ilum, slum,
 						  eff, seff,
 						  bkg, sbkg,
