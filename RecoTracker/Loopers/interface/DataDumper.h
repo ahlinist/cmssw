@@ -132,6 +132,7 @@ public:
 
   std::vector<aCell> container_;
   uint minHitPerPeak_;
+  int baseLineCut_;
   std::vector<aCell*> peaks_;
 
   bool linkPoints_;

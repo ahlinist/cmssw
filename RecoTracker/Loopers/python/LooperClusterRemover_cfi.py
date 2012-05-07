@@ -30,6 +30,7 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                                 xAxis = cms.vdouble(34, 1/65., 1/1.5),
                                 invertX = cms.bool(True), 
                                 nPhi = cms.uint32(60),
+                                baseLineCut = cms.int32(10), # negative to roll to average occupancy
                                 peakAbove= cms.uint32(4),
                                 RBound=cms.double(30), #maximum radius of looper's helix
                                 linkPoints=cms.bool(True),
