@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v5_10'
+version = 'v5_12'
 
 samples = {
     'Data_runs190456to191859' : {
@@ -32,6 +32,8 @@ samples = {
         'isMC' : True
     }
 }
+
+runPeriod = '2012RunA'
 
 lxbatch_queue = '1nw'
 #lxbatch_queue = '8nh'
@@ -106,6 +108,7 @@ def customizeConfigFile(sampleName, jobId, version, inputFileNames, cfgFileName_
     cfg_modified = cfg_modified.replace("#isMC#", isMC_string)
     HLTprocessName = samples[sampleName]['HLTprocessName']
     cfg_modified = cfg_modified.replace("#HLTprocessName#", "'%s'" % HLTprocessName)
+    cfg_modified = cfg_modified.replace("#runPeriod#", runPeriod)
 
     cfg_modified += "\n"
     cfg_modified += "process.source.fileNames = cms.untracked.vstring(%s)\n" % \

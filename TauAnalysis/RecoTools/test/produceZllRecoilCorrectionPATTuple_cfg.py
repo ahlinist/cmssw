@@ -38,6 +38,7 @@ HLTprocessName = "HLT" # use for Summer'11 MC
 type1JetPtThreshold = 10.0 # current default value recommended by JetMET POG
 #jetCorrUncertaintyTag = "Total"
 jetCorrUncertaintyTag = "SubTotalDataMC"
+runPeriod = "2012RunA" # use for MET sys. shift correction vs. Nvtx
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ jetCorrUncertaintyTag = "SubTotalDataMC"
 #
 #__isMC = #isMC#
 #__HLTprocessName = #HLTprocessName#
+#__runPeriod = #runPeriod#
 #
 #--------------------------------------------------------------------------------
 
@@ -55,6 +57,12 @@ if isMC:
     process.GlobalTag.globaltag = cms.string('START52_V9::All')
 else:
     process.GlobalTag.globaltag = cms.string('GR_R_52_V7::All')
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# print debug information whenever plugins get loaded dynamically from libraries
+# (for debugging problems with plugin related dynamic library loading)
+#process.add_(cms.Service("PrintLoadingPlugins"))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -190,51 +198,19 @@ switchJetCollection(
     outputModules = []
 )
 
-process.patTupleProductionSequence = cms.Sequence()
+process.patTupleProductionSequence = cms.Sequence(process.patDefaultSequence)
 
 # configure pat::MET production
-process.load("PhysicsTools.PatUtils.patPFMETCorrections_cff")
-if isMC:
-    import PhysicsTools.PatAlgos.tools.helpers as configtools
-    process.type0PFMEtCorrection.remove(process.type0PFMEtCorrectionPFCandToVertexAssociation)
-    process.patTupleProductionSequence += process.type0PFMEtCorrectionPFCandToVertexAssociation
-    configtools.cloneProcessingSnippet(process, process.producePatPFMETCorrections, "NoSmearing")
-    process.selectedPatJetsForMETtype1p2CorrNoSmearing.src = cms.InputTag('patJetsNotOverlappingWithLeptonsForMEtUncertainty')
-    process.selectedPatJetsForMETtype2CorrNoSmearing.src = process.selectedPatJetsForMETtype1p2CorrNoSmearing.src
-
-process.patTupleProductionSequence += process.patDefaultSequence
-
-from PhysicsTools.PatUtils.tools.metUncertaintyTools import runMEtUncertainties
+from TauAnalysis.Configuration.tools.metTools import addCorrectedPFMet
+doApplyType0corr = True
+doApplySysShiftCorr = True
 doSmearJets = None
 if isMC:
     doSmearJets = True
 else:
     doSmearJets = False
-runMEtUncertainties(
-    process,
-    electronCollection = '',
-    photonCollection = '',
-    muonCollection = cms.InputTag('patMuons'),
-    tauCollection = '',
-    jetCollection = cms.InputTag('patJets'),
-    doSmearJets = doSmearJets,
-    addToPatDefaultSequence = False
-)
-
-if isMC:
-    process.patPFMet.addGenMET = cms.bool(True)
-    process.patPFMetNoSmearing.addGenMET = cms.bool(True)
-    process.patPFJetMETtype1p2Corr.jetCorrLabel = cms.string("L3Absolute")
-    process.patPFJetMETtype1p2CorrNoSmearing.jetCorrLabel = cms.string("L3Absolute")
-    
-    process.patTupleProductionSequence += process.metUncertaintySequence
-    process.patTupleProductionSequence += process.producePatPFMETCorrectionsNoSmearing
-else:
-    process.patPFMet.addGenMET = cms.bool(False)
-    process.patPFJetMETtype1p2Corr.jetCorrLabel = cms.string("L2L3Residual")
-    
-    process.patTupleProductionSequence += process.patJetsNotOverlappingWithLeptonsForMEtUncertainty
-    process.patTupleProductionSequence += process.producePatPFMETCorrections
+addCorrectedPFMet(process, isMC, doApplyType0corr, doApplySysShiftCorr, runPeriod, doSmearJets)
+process.patTupleProductionSequence += process.makeCorrectedPatMETs
 
 # set jet Pt threshold used for computing Type 1 MET corrections
 for processAttrName in dir(process):
