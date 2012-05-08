@@ -44,14 +44,17 @@ allElecTauPairs.nSVfit.psKine_MEt_logM_fit = cms.PSet()
 allElecTauPairs.nSVfit.psKine_MEt_logM_fit.config = copy.deepcopy(nSVfitConfig_template)
 allElecTauPairs.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg1 = cms.PSet(
     src = allElecTauPairs.srcLeg1,
-    likelihoodFunctions = cms.VPSet(nSVfitElectronLikelihoodPhaseSpace),
+    likelihoodFunctions = cms.VPSet(nSVfitElectronLikelihoodMatrixElement.clone(
+        applySinThetaFactor = cms.bool(True))),
     builder = nSVfitTauToElecBuilder
 )
 allElecTauPairs.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg2 = cms.PSet(
     src = allElecTauPairs.srcLeg2,
-    likelihoodFunctions = cms.VPSet(nSVfitTauLikelihoodPhaseSpace),
+    likelihoodFunctions = cms.VPSet(nSVfitTauLikelihoodPhaseSpace.clone(
+        applySinThetaFactor = cms.bool(True))),
     builder = nSVfitTauToHadBuilder
 )
+allElecTauPairs.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM)
 allElecTauPairs.nSVfit.psKine_MEt_logM_fit.algorithm = cms.PSet(
     pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
     pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
@@ -60,9 +63,22 @@ allElecTauPairs.nSVfit.psKine_MEt_logM_fit.algorithm = cms.PSet(
     verbosity = cms.int32(0)
 )
 
-allElecTauPairs.nSVfit.psKine_MEt_logM_int = cms.PSet()
-allElecTauPairs.nSVfit.psKine_MEt_logM_int.config = allElecTauPairs.nSVfit.psKine_MEt_logM_fit.config
-allElecTauPairs.nSVfit.psKine_MEt_logM_int.algorithm = cms.PSet(
+allElecTauPairs.nSVfit.psKine_MEt_int = cms.PSet()
+allElecTauPairs.nSVfit.psKine_MEt_int.config = copy.deepcopy(nSVfitConfig_template)
+allElecTauPairs.nSVfit.psKine_MEt_int.config.event.resonances.A.daughters.leg1 = cms.PSet(
+    src = allElecTauPairs.srcLeg1,
+    likelihoodFunctions = cms.VPSet(nSVfitElectronLikelihoodMatrixElement.clone(
+        applySinThetaFactor = cms.bool(False))),
+    builder = nSVfitTauToElecBuilder
+)
+allElecTauPairs.nSVfit.psKine_MEt_int.config.event.resonances.A.daughters.leg2 = cms.PSet(
+    src = allElecTauPairs.srcLeg2,
+    likelihoodFunctions = cms.VPSet(nSVfitTauLikelihoodPhaseSpace.clone(
+        applySinThetaFactor = cms.bool(False))),
+    builder = nSVfitTauToHadBuilder
+)
+allElecTauPairs.nSVfit.psKine_MEt_int.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
+allElecTauPairs.nSVfit.psKine_MEt_int.algorithm = cms.PSet(
     pluginName = cms.string("nSVfitAlgorithmByIntegration"),
     pluginType = cms.string("NSVfitAlgorithmByIntegration"),
     parameters   = nSVfitProducerByIntegration.algorithm.parameters,
