@@ -4,6 +4,7 @@
 <use   name="DataFormats/JetReco"/>
 <use   name="DataFormats/METReco"/>
 <use   name="DataFormats/TauReco"/>
+<use   name="DataFormats/VertexReco"/>
 <use   name="DataFormats/PatCandidates"/>
 <use   name="FWCore/MessageLogger"/>
 <use   name="rootrflx"/>
