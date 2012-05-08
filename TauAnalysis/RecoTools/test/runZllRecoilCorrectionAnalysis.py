@@ -7,7 +7,7 @@ from TauAnalysis.Skimming.recoSampleDefinitionsGoldenZmumu_7TeV_grid_cfi import 
 
 import os
 
-version = 'v5_10'
+version = 'v5_11'
 
 inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
@@ -358,6 +358,7 @@ for metOptionName in metOptions.keys():
             processType = 'Data'
         srcJets = metOptions[metOptionName]['srcJets'][processType]
         srcMEt = metOptions[metOptionName]['srcMEt'][processType]
+        srcMEtCov = metOptions[metOptionName]['srcMEtCov']
         applyMEtShiftCorrection = metOptions[metOptionName]['applyMEtShiftCorrection']
         fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName] = {}
         for central_or_shift in srcMEt.keys():
@@ -365,7 +366,7 @@ for metOptionName in metOptions.keys():
               buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
                 maxEvents, sampleName, runPeriod, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze,
                 central_or_shift,
-                srcMEt[central_or_shift], applyMEtShiftCorrection, srcMEtCov[central_or_shift], srcJets[central_or_shift],
+                srcMEt[central_or_shift], applyMEtShiftCorrection, srcMEtCov, srcJets[central_or_shift],
                 hltPaths[processType], srcWeights[processType],
                 None, intLumiData)
 
@@ -520,6 +521,7 @@ for metOptionName in metOptions.keys():
                             processType = 'Data'
                         srcJets = metOptions[metOptionName]['srcJets'][processType]
                         srcMEt = metOptions[metOptionName]['srcMEt'][processType]
+                        srcMEtCov = metOptions[metOptionName]['srcMEtCov']
                         applyMEtShiftCorrection = metOptions[metOptionName]['applyMEtShiftCorrection']
                         makeFile.write("%s: %s %s %s\n" %
                          (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName][central_or_shift]['outputFileName'],
@@ -540,15 +542,15 @@ samplesToAnalyze = %s
 metOptions = %s
 
 buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
-  %i, '%s', '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', %s, '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %f)
+  %i, '%s', '%s', '%s', '%s', '%s', samplesToAnalyze, '%s', '%s', %s, '%s', '%s', %s, %s, { 'data' : '%s', 'mc' : '%s' }, %f)
 """ % (str(samplesToAnalyze),
        str(metOptions),
        maxEvents, sampleName, runPeriod, metOptionName, inputFilePath, outputFilePath,
-       central_or_shift, srcMEt[central_or_shift], getStringRep_bool(applyMEtShiftCorrection),
+       central_or_shift, srcMEt[central_or_shift], getStringRep_bool(applyMEtShiftCorrection), srcMEtCov, 
        srcJets[central_or_shift], hltPaths[processType], srcWeights[processType],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['central']['outputFileName'],
        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC_signal][central_or_shift]['outputFileName'],
-       intLumiData)      
+       intLumiData)
                         tmpConfigFileName = "makeTMPconfigFile_%s_%s.py" % (sampleName, metOptionName)
                         tmpConfigFileName_full = os.path.join(outputFilePath, tmpConfigFileName)    
                         tmpConfigFile = open(tmpConfigFileName_full, "w")
