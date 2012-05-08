@@ -3,12 +3,13 @@ import copy
 
 import TauAnalysis.Configuration.plotterProcessDefinitions_cfi as plotter
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
+import TauAnalysis.Configuration.recoSampleDefaults_cfi as config
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     'ZplusJets_madgraph',
     'Ztautau_pythia',
-    #'WplusJets_madgraph',
+    'WplusJets_madgraph',
     'Wenu_pythia',
     'Wmunu_pythia',
     'Wtaunu_pythia',  
@@ -35,9 +36,8 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
 
-SAMPLE_DEFAULTS = {
-    'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    'conditions' : 'START42_V13::All',
+SAMPLE_DEFAULTS = copy.copy(config.SAMPLE_DEFAULTS)
+SAMPLE_DEFAULTS.update({
     'genPhaseSpaceCut' : '',
     'genFinalStateFilter': False,
     'factorize' : False,
@@ -60,7 +60,7 @@ SAMPLE_DEFAULTS = {
     'enableFakeRates' : False,
     'disableDuplicateCheck' : False,
     'inputFileType' : 'AOD'
-}
+})
 
 # Conversions to pico barns
 _millibarns = 1.0e+9
@@ -134,9 +134,11 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },    
     'ZplusJets_madgraph' : {
-        'datasetpath' : "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM",
+        #'datasetpath' : "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM",
+        'datasetpath' : "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1082838,
+        #'events_processed' : 1082838,
+        'events_processed' : 9271272,
         'skim_eff' : 1.0,
         'x_sec' : 3503.71*_picobarns, # Note: Madgraph samples are generated for M > 50 GeV
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
@@ -147,6 +149,25 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'applyRhoNeutralReweighting' : True,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'WplusJets_madgraph' : {
+        'datasetpath' : "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 18393090,
+        'number_of_jobs' : 2500,
+        'skim_eff' : 1.0,
+        'x_sec' : 36257.2*_picobarns, # NLO cross-section @ 8 TeV,
+                                      # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : False,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
@@ -315,11 +336,12 @@ MERGE_SAMPLES = {
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu
     },
-    'WplusJetsSum_pythia' : {
+    'WplusJetsSum' : {
         'samples' : [
-            'Wenu_pythia',
-            'Wmunu_pythia',
-            'Wtaunu_pythia'            
+            'WplusJets_madgraph'
+            #'Wenu_pythia',
+            #'Wmunu_pythia',
+            #'Wtaunu_pythia'            
         ],
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
@@ -347,8 +369,7 @@ MERGE_SAMPLES = {
         'samples' : [
             'ZmumuSum',
             'qcdSum',
-            #'WplusJetsSum_madgraph',
-            'WplusJetsSum_pythia',
+            'WplusJetsSum',
             'VVsum',
             'TTplusJets_madgraph'
         ],
