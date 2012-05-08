@@ -101,6 +101,7 @@ def submitToGrid(configFile = None, channel = None,
     # compose name of modified config file including the replacements
     cmsswConfigFile_orig = workingDirectory + configFile
     cmsswConfigFile_mod = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Grid_cfg.py")
+    cmsswConfigFile_mod = cmsswConfigFile_mod.replace("%s_%s" % (sample, sample), "%s" % sample)
 
     if replFunction is not None:
         replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
@@ -116,6 +117,7 @@ def submitToGrid(configFile = None, channel = None,
     # for submission of cmsRun job to the Grid
     crabConfigFile_orig = workingDirectory + "crab_template.cfg"
     crabConfigFile_mod = submissionDirectory + "crab" + "_" + configFile.replace("_cfg.py", "_" + sample + "_" + job + ".cfg")
+    crabConfigFile_mod = crabConfigFile_mod.replace("%s_%s" % (sample, sample), "%s" % sample)
 
     # delete previous version of crab config file if it exists
     if os.path.exists(crabConfigFile_mod):
@@ -135,6 +137,7 @@ def submitToGrid(configFile = None, channel = None,
         if paramNameValuePair[0] == "eventsPerJob":
             eventsPerJob = paramNameValuePair[1]
     crabDirectory = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "_" + job + "/")
+    crabDirectory = crabDirectory.replace("%s_%s" % (sample, sample), "%s" % sample)
     crabOutputFiles = ""
     for outputFile in outputFileNames:
         if crabOutputFiles != "":
