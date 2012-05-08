@@ -24,13 +24,16 @@ import time
 
 print("<crabSitter>:")
 
-crabFilePath = '/tmp/veelken/crab'
+#crabFilePath = '/tmp/veelken/crab'
+crabFilePath = '/afs/cern.ch/work/v/veelken/CMSSW_5_2_x/crab/TauAnalysis_Skimming'
 
 statusFileName = 'crabSitter.json'
-jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
+#jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
+jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<sample2>[a-zA-Z0-9]*)_2012May04'
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
+executable_rm = 'rm'
 executable_crab = 'crab'
 
 def runCommand(commandLine):
@@ -39,6 +42,8 @@ def runCommand(commandLine):
     retVal = subprocess.Popen(args, stdout = subprocess.PIPE)
     retVal.wait()
     return retVal.stdout.readlines()
+
+runCommand('%s %s' % (executable_rm, statusFileName))
 
 def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.csh', tmpOutputFileName = 'crabSitter_tmp.out'):
     # CV: crab is implemented in python and seems to cause problem when called directly from python;
