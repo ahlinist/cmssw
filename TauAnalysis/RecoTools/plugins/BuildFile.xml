@@ -38,5 +38,6 @@
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="TauAnalysis/BgEstimationTools"/>
   <use   name="TauAnalysis/RecoTools"/>
+  <use   name="HiggsAnalysis/HiggsToWW2Leptons"/>
   <use   name="root"/>
 </library>
