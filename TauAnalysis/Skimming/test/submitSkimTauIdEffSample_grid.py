@@ -11,7 +11,7 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2012May04'
+jobId = '2012May08'
 
 outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/TauIdEffMeas/'
 
@@ -19,10 +19,10 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #pfCandidateCollection = "pfNoPileUp"   # pile-up removal enabled
 
 samplesToAnalyze = [
-    'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to191859',
+    ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to191859',
     'ZplusJets_madgraph',
     'Ztautau_pythia',
-    #'WplusJets_madgraph',
+    'WplusJets_madgraph',
     'Wenu_pythia',
     'Wmunu_pythia',
     'Wtaunu_pythia',  
@@ -87,7 +87,7 @@ for sampleToAnalyze in samplesToAnalyze:
                          samples = recoSampleDefinitionsTauIdEfficiency_7TeV,
                          samplesToAnalyze = [ sampleToAnalyze ],
                          disableFactorization = True, disableSysUncertainties = True, disableZrecoilCorrections = True,
-                         outputFilePath = outputFilePath, outputFileMap = output_mapper)
+                         outputFilePath = outputFilePath, outputFileMap = output_mapper, savePlots = False)
 
     # move customized config file to "./crab" subdirectory
     #

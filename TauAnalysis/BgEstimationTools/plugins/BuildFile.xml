@@ -13,6 +13,7 @@
   <use   name="DataFormats/MuonReco"/>
   <use   name="DataFormats/PatCandidates"/>
   <use   name="DataFormats/TauReco"/>
+  <use   name="DataFormats/VertexReco"/>
   <use   name="AnalysisDataFormats/TauAnalysis"/>
   <use   name="TauAnalysis/BgEstimationTools"/>
   <use   name="TauAnalysis/CandidateTools"/>
