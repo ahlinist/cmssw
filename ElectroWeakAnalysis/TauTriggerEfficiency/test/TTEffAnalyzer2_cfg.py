@@ -4,8 +4,8 @@ import copy
 isData = True
 runL1Emulator = False
 runOpenHLT = False
-hltType = "HLT"
-#hltType = "REDIGI38X"
+#hltType = "HLT"
+hltType = "TEST"
 
 process = cms.Process("TTEff")
 
@@ -42,7 +42,8 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 if(isData):
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
+	"file:/tmp/slehti/hlt_100_1_yct.root"
+#	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
 #        "file:TTEffSkim.root"
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
@@ -164,6 +165,10 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             HLTMET = cms.InputTag("hltMet"),
             HLTMHT = cms.InputTag("hltPFMHTProducer"),
         ),
+
+	MuonSource        = cms.InputTag("selectedPatMuons"),
+	MuonTauPairSource = cms.InputTag("muTauPairs"),
+
         Jets = cms.InputTag("ak5PFJetsL1L2L3"),
         offlineVertexSrc = cms.InputTag("goodPrimaryVertices"),
 
@@ -205,7 +210,9 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "HLT_IsoMu34_eta2p1_v1",
 
 	    "HLT_IsoMu15_eta2p1_L1ETM20_v3",
-	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v3",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v2",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L2PixelIsoTrk2_L1ETM20_v2",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_L1ETM20_v2",
 
             "HLT_IsoPFTau35_Trk20_MET45_v1", "HLT_IsoPFTau35_Trk20_MET45_v2", "HLT_IsoPFTau35_Trk20_MET45_v4", "HLT_IsoPFTau35_Trk20_MET45_v6",
             "HLT_IsoPFTau35_Trk20_v2", "HLT_IsoPFTau35_Trk20_v3", "HLT_IsoPFTau35_Trk20_v4", "HLT_IsoPFTau35_Trk20_v6",
