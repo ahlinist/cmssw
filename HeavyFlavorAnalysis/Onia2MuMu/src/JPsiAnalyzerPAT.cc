@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.56 2012/04/26 14:00:00 eaguiloc Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.57 2012/05/02 19:35:34 eaguiloc Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -962,7 +962,7 @@ JPsiAnalyzerPAT::selMuon(const pat::Muon* aMuon) {
     float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
     trackOK = (fHits >= 0.8 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
   // old way of cutting on tracks  
-  } else trackOK = (iTrack->found() > 10);
+  } else trackOK = (aMuon->track()->hitPattern().trackerLayersWithMeasurement() > 5);
 
   return (// isMuonInAccept(aMuon) &&
 	  trackOK &&
@@ -972,7 +972,7 @@ JPsiAnalyzerPAT::selMuon(const pat::Muon* aMuon) {
 	  aMuon->muonID("TMOneStationTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
-          fabs(iTrack->dz(RefVtx)) < 15.0 );
+          fabs(iTrack->dz(RefVtx)) < 30.0 );
 }
 
 bool 
