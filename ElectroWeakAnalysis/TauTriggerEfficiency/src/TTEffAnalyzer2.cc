@@ -38,6 +38,8 @@
 
 #include "RecoTauTag/TauTagTools/interface/TauTagTools.h"
 
+#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/MuonAnalyzer.h"
+
 #include "TH1F.h"
 #include "TTree.h"
 #include "TFile.h"
@@ -202,6 +204,7 @@ private:
   std::vector<L25Discriminator> l25TauDiscriminators_;
   std::vector<OtherTau> l25TauSelectedTaus_;
 
+  MuonAnalyzer* muonAnalyzer;
   TTree *tree_;
   TFile *file_;
 
@@ -359,6 +362,9 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   h_counters_ = new TH1F("Counters","",counters_.size(),0,counters_.size());
   h_counters_->SetDirectory(file_);
 
+  muonAnalyzer = new MuonAnalyzer();
+  muonAnalyzer->Setup(iConfig,tree_);
+
   reset();
 }
 
@@ -474,7 +480,6 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for(size_t i=0; i<METs_.size(); ++i) {
     METs_[i].fill(iEvent);
   }
-
 
 
   // L1 event level stuff
@@ -781,6 +786,8 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
            l25TauSelectedTaus_[i].values.push_back(value);
       }
     }
+
+    muonAnalyzer->fill(iEvent,iSetup,tau);
   }
 
   tree_->Fill();
