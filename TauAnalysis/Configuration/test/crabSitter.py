@@ -29,7 +29,7 @@ crabFilePath = '/afs/cern.ch/work/v/veelken/CMSSW_5_2_x/crab/TauAnalysis_Skimmin
 
 statusFileName = 'crabSitter.json'
 #jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
-jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<sample2>[a-zA-Z0-9]*)_2012May04'
+jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012May08'
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
@@ -98,6 +98,9 @@ jobStatus_dict['lastUpdate_time'] = current_time
 
 time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed to stay
                       # in 'Submitted', 'Ready' or 'Scheduled' state before they get automatically resubmitted 
+##time_limit = 1 # force immediate resubmission of all crab jobs stuck in 'Scheduled' state
+##forceResubmitAllScheduledJobs = False
+forceResubmitAllScheduledJobs = True
 
 shellScriptCommands = []
 
@@ -210,6 +213,9 @@ for crabJob in crabJobs:
                                 if (current_time - lastJobStatusChange_time) > time_limit:
                                     print("Info: jobId = %i got stuck in state '%s' --> resubmitting it" % (jobId, jobStatus))
                                     jobIds_force_resubmit.append(jobId)
+                            if jobStatus == 'Scheduled' and forceResubmitAllScheduledJobs:
+                                print("Info: jobId = %i is in state 'Scheduled' --> resubmitting it" % jobId)
+                                jobIds_force_resubmit.append(jobId)
                         elif jobStatus in [ 'Done' ]:
                             outputFileInfos_matched = []
                             for outputFileInfo in outputFileInfos:
