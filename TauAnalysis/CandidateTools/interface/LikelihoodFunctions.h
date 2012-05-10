@@ -32,7 +32,7 @@ double nllMET(double dMETX, double dMETY, double covDet, const TMatrixD& covInv,
 
    The parameter tauLeptonMass2 is the mass of the tau lepton squared as defined in svFitAuxFunctions.h   
 */
-double nllTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass, bool verbose=false);
+double nllTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass,double x, bool verbose=false);
 
 /**
    \class   nllTauToHadPhaseSpace LikelihoodFunctions.h "TauAnalysis/CandidateTools/interface/LikelihoodFunctions.h"
@@ -43,6 +43,6 @@ double nllTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass,
 
     decayAngle : decay angle in the restframe of the tau lepton decay
 */
-double nllTauToHadPhaseSpace(double decayAngle, bool verbose=false);
+double nllTauToHadPhaseSpace(double decayAngle,double nunuMass, double visMass,double x, bool verbose=false);
 
 #endif

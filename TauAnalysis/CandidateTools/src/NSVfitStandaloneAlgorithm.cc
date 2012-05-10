@@ -1,5 +1,6 @@
 #include "Math/Factory.h"
 #include "Math/Functor.h"
+#include "Math/IntegratorMultiDim.h"
 
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
@@ -35,7 +36,7 @@ NSVfitStandaloneAlgorithm::setup()
       std::cout << std::endl;
     }
     // setup the first decay branch
-    minimizer_->SetLimitedVariable(idx*kMaxFitParams+kXFrac, std::string(TString::Format("leg%d::xFrac", idx+1)).c_str(), 0.5, 0.10, 0., 1.);
+    minimizer_->SetLimitedVariable(idx*kMaxFitParams+kXFrac, std::string(TString::Format("leg%d::xFrac", idx+1)).c_str(), 0.5, 0.1, 0., 1.);
     if( nll_->measuredTauLeptons()[idx].decayType() == kHadDecay ){ 
       minimizer_->SetFixedVariable(idx*kMaxFitParams+kMNuNu, std::string(TString::Format("leg%d::mNuNu", idx+1)).c_str(), 0.); 
     }
@@ -114,4 +115,73 @@ NSVfitStandaloneAlgorithm::fit(){
     std::cout << ">> p4: pt = " << nll_->measuredTauLeptons()[1].p4().pt() << " eta = " << nll_->measuredTauLeptons()[1].p4().eta() << " phi = " <<  nll_->measuredTauLeptons()[1].p4().phi() << std::endl;
     std::cout << ">> p4: pt = " << fittedTauLeptons()[1].pt() << " eta = " << fittedTauLeptons()[1].eta() << " phi = " << fittedTauLeptons()[1].phi() << std::endl;  
   }
+}
+
+void
+NSVfitStandaloneAlgorithm::integrate(){
+  using namespace NSVfitStandalone;
+  double pi = 3.14159265;
+  int khad = 0;
+
+  for(unsigned int idx=0; idx<nll_->measuredTauLeptons().size(); ++idx){
+    if( nll_->measuredTauLeptons()[idx].decayType() == kHadDecay)
+      khad++; 
+  }
+  int par = nll_->measuredTauLeptons().size()*NSVfitStandalone::kMaxFitParams-khad-1;
+
+  double xl4[4] ={0.0,0.0,-pi,-pi};
+  double xu4[4] ={1.0,SVfit_namespace::tauLeptonMass,pi,pi};
+  double xl5[5] ={0.0,0.0,-pi,0.0,-pi};;
+  double xu5[5] ={1.0,SVfit_namespace::tauLeptonMass,pi,SVfit_namespace::tauLeptonMass,pi};
+  double xl3[3] ={0.0,-pi,-pi};
+  double xu3[3] ={1.0,pi,pi};
+
+  // integrator instance
+  ROOT::Math::IntegratorMultiDim ig2(ROOT::Math::IntegrationMultiDim::kVEGAS);
+  ROOT::Math::Functor toIntegrate(&standaloneObjectiveFunctionAdapter_,&ObjectiveFunctionAdapter::Eval,par); 
+  standaloneObjectiveFunctionAdapter_.SetPar(par);
+  ig2.SetFunction(toIntegrate);
+  double mt=0;
+  double integral=0;
+  double integralnew = 0;
+  bool skiphighmasstail=false;
+  double pMax = 0;
+  int count = 0;
+  for(int i = 0; i< 100; i++)
+    {
+      if(skiphighmasstail) continue;
+      mt = 10.0*pow(1.025,i);
+      standaloneObjectiveFunctionAdapter_.SetM(mt);
+      if(par == 4)
+	{
+	  integralnew = ig2.Integral(xl4,xu4);
+	}
+      else if(par == 5)
+	{
+	  integralnew = ig2.Integral(xl5,xu5);
+	}
+      else if(par == 3)
+	{
+	  integralnew = ig2.Integral(xl3,xu3);
+	}
+      else
+	{
+	  std::cout << " >> ERROR : the numer of measured leptons must be 2" << std::endl;
+	  assert(0);
+	}
+     //  if(integralnew > pMax) pMax = integralnew;
+      
+//       if(pMax > 1.e-10 && (integralnew + 3.*TMath::Abs(ig2.Error())) < (pMax) ) 	count++;
+//       else count = 0;
+      //std::cout << integralnew << std::endl; 
+      if(integralnew > integral)
+	{
+	  mass_ = mt;
+	  integral = integralnew;
+	}
+     //  std::cout << count << std::endl;
+//       if(count >= 5)
+// 	skiphighmasstail = true;
+   }
+  std::cout << mass_ << std::endl;
 }

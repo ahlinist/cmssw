@@ -137,6 +137,7 @@ namespace NSVfitStandalone{
 
     /// add an additional logM(tau,tau) term to the nll to suppress tails on M(tau,tau) (default is true)
     void addLogM(bool value) { addLogM_=value; };
+    void adddelta(bool value) {delta_ = value; };
     /// modify the MET term in the nll by an additional power (default is 1.)
     void metPower(double value) { metPower_=value; };    
 
@@ -151,20 +152,23 @@ namespace NSVfitStandalone{
     /// fit function to be called from outside (has to be const to be usable by minuit). This function will call the actual 
     /// functions transform and nll internally 
     double nll(const double* x) const;    
+    double nllint(const double* x, const double mtt, const int par) const;	
 
   private:
     /// transformation from x to xPrime, x are the actual fit parameters, xPrime are the transformed parameters that go into 
     /// the nll (has to be const to be usable by minuit)
     const double* transform(double* xPrime, const double* x) const;
+    const double* transformint(double* xPrime, const double* x, const double mtt, const int par) const;
     /// combined likelihood function (has to be const to be usable by minuit). The additional boolean phiPenalty is added to 
     /// prevent singularities at the +/-pi boundaries of kPhi within the fit parameters (kFitParams) 
     double nll(const double* xPrime, double phiPenalty) const;
-
+    
   private:
     /// additional power to enhance MET term in the nll (default is 1.)
     double metPower_;
     /// add a logM penalty term in the nll
     bool addLogM_;
+    bool delta_;
     /// verbosity level
     bool verbose_;
     /// monitor the number of function calls
