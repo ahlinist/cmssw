@@ -79,12 +79,6 @@ namespace SVfit_namespace
 
     // Determine the corresponding opening angle in the LAB frame
     double gjAngleLabFrame = TMath::ASin(pVisRestFramePerp/pVisLabFrame);
-<<<<<<< svFitAuxFunctions.cc
-    //if(TMath::Cos(pVisRestFramePerp/pVisLabFrame) < 0)
-    //  gjAngleLabFrame = gjAngleLabFrame+3.14159265/2.0;
-    //std::cout << "--> gjAngleLabFrame = " << gjAngleLabFrame << std::endl;
-=======
->>>>>>> 1.20
 
     return gjAngleLabFrame;
   }
