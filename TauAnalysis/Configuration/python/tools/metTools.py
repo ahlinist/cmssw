@@ -84,6 +84,7 @@ def addCorrectedPFMet(process, isMC, doApplyType0corr, doApplySysShiftCorr, runP
         process.patPFJetMETtype1p2Corr.jetCorrLabel = cms.string("L2L3Residual")
     
         process.makeCorrectedPatMETs += process.patJetsNotOverlappingWithLeptonsForMEtUncertainty
+        process.makeCorrectedPatMETs += process.pfMEtSysShiftCorrSequence
         process.makeCorrectedPatMETs += process.producePatPFMETCorrections
 
     return process.makeCorrectedPatMETs
