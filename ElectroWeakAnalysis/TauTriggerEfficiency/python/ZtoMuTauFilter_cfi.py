@@ -22,7 +22,7 @@ muTauPairs = cms.EDProducer("DeltaRMinCandCombiner",
     deltaRMin = cms.double(0.7)
 )
 
-def addSelection(process):
+def addMuTauSelection(process):
     process.selectedPatTausHpsPFTau.cut = hpsTauSelection
     process.selectedPatMuons.cut = muonSelection
 
@@ -48,3 +48,14 @@ def addSelection(process):
         process.muTauPairsFilter
     )
     
+def addTauSelection(process):
+    process.selectedPatTausHpsPFTau.cut = hpsTauSelection
+    
+    process.selectedTauFilter = cms.EDFilter("CandViewCountFilter",
+        src = cms.InputTag("selectedPatTausHpsPFTau"),
+        minNumber = cms.uint32(1),
+    )
+     
+    return cms.Sequence(
+        process.selectedTauFilter
+    )

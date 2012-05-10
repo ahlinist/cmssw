@@ -3,6 +3,7 @@ import copy
 
 isData = True
 doRECO = True
+doMETleg = True
 
 process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
@@ -42,7 +43,7 @@ process.maxEvents = cms.untracked.PSet(
 if(isData):
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-          'file:/tmp/slehti/Run2012A_Tau_RAW_14FDA8A5-DF82-E111-B7F8-001D09F29597.root'
+          '/store/data/Run2012A/Tau/RAW/v1/000/193/621/FCD858AA-9298-E111-8D12-001D09F251FE.root'
     )
   )
 else:
@@ -93,7 +94,11 @@ process.patTausHpsPFTau.embedGenJetMatch = False
 
 
 import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
-process.PFTauSkimmed = zmutau.addSelection(process)
+if doMETleg:
+    process.PFTauSkimmed = zmutau.addTauSelection(process)
+else:
+    process.PFTauSkimmed = zmutau.addMuTauSelection(process)
+
 
 process.TTEffSkimCounterAllEvents   = cms.EDProducer("EventCountProducer")
 process.TTEffSkimCounterSavedEvents = cms.EDProducer("EventCountProducer")
@@ -103,7 +108,7 @@ process.TTEffSkimFilter = cms.Path(
         process.primaryVertexFilter * 
 	process.scrapping *
         process.patSequence *
-####	process.PFTauSkimmed *
+	process.PFTauSkimmed *
 	process.TTEffSkimCounterSavedEvents
 )
 
