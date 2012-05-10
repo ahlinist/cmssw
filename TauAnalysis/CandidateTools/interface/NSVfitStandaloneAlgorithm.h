@@ -33,6 +33,24 @@ namespace NSVfitStandalone{
       //++callCounter;
       return nll;
     }
+    double Eval(const double* x) const
+    {
+      double nll = NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->nllint(x,mtt,par);
+      
+      //std::cout << mtt << std::endl;
+      //std::cout << par << std::endl;
+      //static unsigned int callCounter = 0;
+      //if ( (callCounter % 1000) == 0 )
+      //  std::cout << ">> [operator(x)] (call = " << callCounter << "):"
+      //	    << " nll = " << nll << std::endl;
+      //++callCounter;
+      return nll;
+    }
+    void SetPar(int parr) {par = parr;};
+    void SetM(double m) {mtt = m;};
+  private:
+    int par;   //final state type
+    double mtt; //current mass hypothesis
   };
 }
 
@@ -100,6 +118,7 @@ class NSVfitStandaloneAlgorithm
 
   /// add an additional logM(tau,tau) term to the nll to suppress tails on M(tau,tau) (default is true)
   void addLogM(bool value) { nll_->addLogM(value); };
+  void adddelta(bool value) {nll_->adddelta(value);};
   /// modify the MET term in the nll by an additional power (default is 1.)
   void metPower(double value) { nll_->metPower(value); };
   /// maximum function calls after which to stop the minimization procedure (default is 5000)
@@ -107,6 +126,9 @@ class NSVfitStandaloneAlgorithm
 
   /// actual fit function to be called from outside
   void fit();
+
+  //integration 
+  void integrate();
 
   /// return status of minuit fit
   int fitStatus() { return fitStatus_; };
@@ -123,6 +145,8 @@ class NSVfitStandaloneAlgorithm
   /// return mass of the fitted di-tau system 
   double mass() const { return fittedDiTauSystem().mass(); };
   /// return uncertainty on the mass of the fitted di-tau system
+  double intmass();
+  double getMass() const {return mass_;};
   double massUncert() const { return massUncert_; };
   /// return 4-vectors of the fitted tau leptons
   std::vector<LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; };
@@ -155,7 +179,9 @@ class NSVfitStandaloneAlgorithm
   NSVfitStandalone::NSVfitStandaloneLikelihood* nll_;
   /// needed to make the fit function callable from within minuit
   NSVfitStandalone::ObjectiveFunctionAdapter standaloneObjectiveFunctionAdapter_;
+  
 
+  double mass_;
   /// uncertainty of the fitted di-tau mass
   double massUncert_;
   /// fit result for each of the decay branches 
