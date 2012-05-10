@@ -4,8 +4,8 @@ import copy
 isData = True
 runL1Emulator = False
 runOpenHLT = False
-#hltType = "HLT"
-hltType = "TEST"
+hltType = "HLT"
+#hltType = "TEST"
 
 process = cms.Process("TTEff")
 
@@ -42,8 +42,8 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 if(isData):
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-	"file:/tmp/slehti/hlt_100_1_yct.root"
-#	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
+#	"file:/tmp/slehti/hlt_100_1_yct.root"
+	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
 #        "file:TTEffSkim.root"
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
@@ -143,6 +143,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "againstElectronLoose",
             "againstElectronMedium",
             "againstElectronTight",
+	    "againstElectronMVA",
             "byVLooseIsolation",
             "byLooseIsolation",
             "byMediumIsolation",
