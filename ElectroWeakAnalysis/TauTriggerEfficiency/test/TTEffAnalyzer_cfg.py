@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = False
+isData = True
 runL1Emulator = False
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -42,23 +42,19 @@ if(isData):
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
         "file:TTEffSkim.root"
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
 	)
     )
 else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-#	"file:TTEffSkim.root"
-        "file:/tmp/slehti/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_160_1_OZG.root"
+	"file:TTEffSkim.root"
 	)
     )
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V24::All'
-#    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
+#    process.GlobalTag.globaltag = 'GR_H_V24::All'
+    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
 else:
     process.GlobalTag.globaltag = 'START44_V12::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
@@ -118,6 +114,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
             "againstElectronLoose",
             "againstElectronMedium",
             "againstElectronTight",
+            "againstElectronMVA",
             "byVLooseIsolation",
             "byLooseIsolation",
             "byMediumIsolation",
