@@ -27,7 +27,7 @@ data_channels = {
     'Z(#mu#mu)#gamma'     :{'2011A'  :[5.51,0.14,0.28,0.25],
                             '2011B'  :[5.40,0.13,0.28,0.25],
                             '2011A+B':[5.43,0.10,0.29,0.26]
-                            },
+                            }    
     }
 
 #the list of channels you want to combine
@@ -93,7 +93,18 @@ def blue(tocombine,group,groups):
     return list(result)
 
 def getSystIndices(reali,realj,channels,channelinfo):
-    return 0,0
+    si,sj = 0,0
+
+    if reali >= realj:
+        si = reali - 1
+        sj = realj 
+    else:
+        si = reali
+        sj = realj - 1
+
+    print reali, realj, ' : ' ,si, sj
+    
+    return si,sj
 
 #channel info is the dict you've defined above
 def makePlots(channels):    
@@ -274,7 +285,7 @@ def crossSectionRatioPlot(group,groups,keys_no_comb,
     y1serrs = array('d',[2 for i in range(len(sigmas_lcl))])
 
     gStats = TGraphErrors(len(sigmas_lcl),sigmas_lcl,yvals,tots_lcl,yerrs)
-    gTotes = TGraphErrors(len(sigmas_lcl),sigmas_lcl,yvals,tots_theory,yerrs)    
+    gTotes = TGraphErrors(len(sigmas_lcl),sigmas_lcl,yvals,tots_theory,yerrs)
     gLine  = TGraphErrors(len(sigmas_lcl),xones,yvals,x1serrs,y1serrs)
 
     lOne = TLine(1,0,1,2*(len(sigmas_lcl)+1))    
@@ -336,7 +347,7 @@ def crossSectionRatioPlot(group,groups,keys_no_comb,
         tex2.DrawLatex(4.25*xpad,yvals[i]-0.009*yscale,
                        "#font[132]{%.2f #pm "%sigmas_lcl[i]+
                        "%.2f_{exp} #pm "%tots_lcl[i]+
-                       "%.2f_{theo}}"%(mc_info['theory_err']/mc_info['sigma']))       
+                       "%.2f_{theo}}"%(mc_info['theory_err']/mc_info['sigma']))
 
     #flavor text
     tex1.DrawLatex(0.85*xpad,yvals[-1] + 0.95*ypad,
