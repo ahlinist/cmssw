@@ -3,6 +3,8 @@
 
 #include "DataFormats/Common/interface/OwnVector.h"
 
+#include "DataFormats/Candidate/interface/Candidate.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
 #include <string>
@@ -49,7 +51,13 @@ class NSVfitResonanceHypothesisBase
     stream << "<NSVfitResonanceHypothesisBase::print>:" << std::endl;
     stream << " name = " << name_ << std::endl;
     stream << " barcode = " << barcode_ << std::endl;
-    stream << " mass = " << mass_ << " + " << massErrUp_ << " - " << massErrDown_ << std::endl;
+    reco::Candidate::LorentzVector daughterP4Sum;
+    for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters_.begin();
+          daughter != daughters_.end(); ++daughter ) {
+      if ( daughter->particle().isNonnull() ) daughterP4Sum += daughter->particle()->p4();
+    }
+    stream << " mass = " << mass_ << " + " << massErrUp_ << " - " << massErrDown_ 
+	   << " (unfitted = " << daughterP4Sum.mass() << ")" << std::endl;
     stream << " isValidSolution = " << isValidSolution_ << std::endl;
     for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters_.begin();
           daughter != daughters_.end(); ++daughter ) {
