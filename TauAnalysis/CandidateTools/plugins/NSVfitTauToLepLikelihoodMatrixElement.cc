@@ -73,7 +73,7 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
     if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) {
       prob = (nuMass/(4.*tauLeptonMass4))*((tauLeptonMass2 + 2.*nuMass2)*(tauLeptonMass2 - nuMass2) 
 				         + polSign*(tauLeptonMass2*(2.*visEnFracX - 1.) + nuMass2)*(-tauLeptonMass2 + 2.*nuMass2));
-    }else{
+    } else {
       double nuMass_limit  = TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2);
       double nuMass2_limit = square(nuMass_limit);
       prob = (nuMass_limit/(4.*tauLeptonMass4))*((tauLeptonMass2 + 2.*nuMass2_limit)*(tauLeptonMass2 - nuMass2_limit) 
@@ -93,11 +93,11 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
     }
   } else {
     if ( nuMass < TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2) ) { // LB: physical solution
-      prob = (13./square(tauLeptonMass2))*(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
+      prob = (13./tauLeptonMass4)*(tauLeptonMass2 - nuMass2)*(tauLeptonMass2 + 2.*nuMass2)*nuMass;
     } else {                                                        // LB: unphysical solution
       double nuMass_limit  = TMath::Sqrt((1. - visEnFracX)*tauLeptonMass2);
       double nuMass2_limit = square(nuMass_limit);
-      prob = (13./square(tauLeptonMass2))*(tauLeptonMass2 - nuMass2_limit)*(tauLeptonMass2 + 2.*nuMass2_limit)*nuMass_limit;
+      prob = (13./tauLeptonMass4)*(tauLeptonMass2 - nuMass2_limit)*(tauLeptonMass2 + 2.*nuMass2_limit)*nuMass_limit;
       prob /= (1. + 1.e+6*square(nuMass - nuMass_limit));
     }
     if ( applyVisPtCutCorrection_ ) {
