@@ -1,14 +1,14 @@
 #ifndef TauAnalysis_CandidateTools_interface_NSVfitStandaloneTestAnalyzer_h
 #define TauAnalysis_CandidateTools_interface_NSVfitStandaloneTestAnalyzer_h
 
-#include <map>
-#include <string>
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "TH1.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+#include <TStopwatch.h>
+
+#include <string>
 
 class PFMEtSignInterface;
 
@@ -40,13 +40,16 @@ class NSVfitStandaloneTestAnalyzer : public edm::EDAnalyzer {
   /// default destructor
   virtual ~NSVfitStandaloneTestAnalyzer();
   /// everything that needs to be done before the event loop
-  void beginJob(){};
+  void beginJob() {}
   /// everything that needs to be done after the event loop
-  void endJob(){};
+  void endJob();
   /// everything that needs to be done during the event loop
   void analyze(const edm::Event& event, const edm::EventSetup& eventSetup);
 
  private:
+
+  std::string moduleLabel_;
+
   /// input tag for MET
   edm::InputTag met_;
   /// input tag for electrons
@@ -60,8 +63,9 @@ class NSVfitStandaloneTestAnalyzer : public edm::EDAnalyzer {
 
   /// MET significance interface
   PFMEtSignInterface* metSign_;
-  /// histograms
-  std::map<std::string, TH1*> hists_;
+
+  TStopwatch* timer_;
+  long numSVfitCalls_;
 };
 
 #endif
