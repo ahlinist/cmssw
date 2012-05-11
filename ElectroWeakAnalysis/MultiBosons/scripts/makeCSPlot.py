@@ -101,8 +101,6 @@ def getSystIndices(reali,realj,channels,channelinfo):
     else:
         si = reali
         sj = realj - 1
-
-    print reali, realj, ' : ' ,si, sj
     
     return si,sj
 
