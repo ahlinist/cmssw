@@ -3,10 +3,11 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneLikelihood.h"
 
+#include <TMath.h>
+
 using NSVfitStandalone::Vector;
 using NSVfitStandalone::LorentzVector;
 using NSVfitStandalone::MeasuredTauLepton;
-
 
 /**
    \class   ObjectFunctionAdapter NSVfitStandaloneAlgorithm.h "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
@@ -19,38 +20,32 @@ using NSVfitStandalone::MeasuredTauLepton;
    interface/NSVfitStandaloneLikelihood.h of this package. These are made known to minuit in the NSVfitStandaloneAlgorithm::setup 
    function.
 */
+
 namespace NSVfitStandalone{
   class ObjectiveFunctionAdapter
   {
   public:
-    double operator()(const double* x) const
+    double operator()(const double* x) const // function to be called in "fit" (MINUIT) mode
+                                             // NOTE: return value = -log(likelihood)
     {
-      double nll = NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->nll(x);
-      //static unsigned int callCounter = 0;
-      //if ( (callCounter % 1000) == 0 )
-      //  std::cout << ">> [operator(x)] (call = " << callCounter << "):"
-      //	    << " nll = " << nll << std::endl;
-      //++callCounter;
+      double prob = NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->prob(x);
+      double nll;
+      if ( prob > 0. ) nll = -TMath::Log(prob);
+      else nll = std::numeric_limits<float>::max();
       return nll;
     }
-    double Eval(const double* x) const
+    double Eval(const double* x) const // function to be called in "integration" (VEGAS) mode
+                                       // NOTE: return value = likelihood, **not** -log(likelihood)
     {
-      double nll = NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->nllint(x,mtt,par);
-      
-      //std::cout << mtt << std::endl;
-      //std::cout << par << std::endl;
-      //static unsigned int callCounter = 0;
-      //if ( (callCounter % 1000) == 0 )
-      //  std::cout << ">> [operator(x)] (call = " << callCounter << "):"
-      //	    << " nll = " << nll << std::endl;
-      //++callCounter;
-      return nll;
+      double prob = NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->probint(x, mtest, par);      
+      if ( TMath::IsNaN(prob) ) prob = 0.;
+      return prob;
     }
-    void SetPar(int parr) {par = parr;};
-    void SetM(double m) {mtt = m;};
+    void SetPar(int parr) { par = parr; }
+    void SetM(double m) { mtest = m; }
   private:
-    int par;   //final state type
-    double mtt; //current mass hypothesis
+    int par;      //final state type
+    double mtest; //current mass hypothesis
   };
 }
 
@@ -117,12 +112,11 @@ class NSVfitStandaloneAlgorithm
   ~NSVfitStandaloneAlgorithm();
 
   /// add an additional logM(tau,tau) term to the nll to suppress tails on M(tau,tau) (default is true)
-  void addLogM(bool value) { nll_->addLogM(value); };
-  void adddelta(bool value) {nll_->adddelta(value);};
+  void addLogM(bool value) { nll_->addLogM(value); }
   /// modify the MET term in the nll by an additional power (default is 1.)
-  void metPower(double value) { nll_->metPower(value); };
+  void metPower(double value) { nll_->metPower(value); }
   /// maximum function calls after which to stop the minimization procedure (default is 5000)
-  void maxObjFunctionCalls(double value) {maxObjFunctionCalls_=value; };
+  void maxObjFunctionCalls(double value) { maxObjFunctionCalls_ = value; }
 
   /// actual fit function to be called from outside
   void fit();
@@ -149,17 +143,17 @@ class NSVfitStandaloneAlgorithm
   double getMass() const {return mass_;};
   double massUncert() const { return massUncert_; };
   /// return 4-vectors of the fitted tau leptons
-  std::vector<LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; };
+  std::vector<LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; }
   /// return 4-vectors of measured tau leptons
   std::vector<LorentzVector> measuredTauLeptons() const; 
   /// return 4-vector of the fitted di-tau system
-  LorentzVector fittedDiTauSystem() const { return fittedTauLeptons_[0]+fittedTauLeptons_[1]; };
+  LorentzVector fittedDiTauSystem() const { return fittedTauLeptons_[0] + fittedTauLeptons_[1]; }
   /// return 4-vector of the measured di-tau system
-  LorentzVector measuredDiTauSystem() const { return measuredTauLeptons()[0]+measuredTauLeptons()[1]; }
+  LorentzVector measuredDiTauSystem() const { return measuredTauLeptons()[0] + measuredTauLeptons()[1]; }
   /// return spacial vector of the fitted MET
-  Vector fittedMET() const {return (fittedDiTauSystem().Vect()-measuredDiTauSystem().Vect()); };
+  Vector fittedMET() const { return (fittedDiTauSystem().Vect() - measuredDiTauSystem().Vect()); }
   // return spacial vector of the measured MET
-  Vector measuredMET() const {return nll_->measuredMET(); };
+  Vector measuredMET() const { return nll_->measuredMET(); }
 
  private:
   /// setup the starting values for the minimization (default values for the fit parameters are taken from src/SVFitParameters.cc in the same package)
@@ -180,7 +174,6 @@ class NSVfitStandaloneAlgorithm
   /// needed to make the fit function callable from within minuit
   NSVfitStandalone::ObjectiveFunctionAdapter standaloneObjectiveFunctionAdapter_;
   
-
   double mass_;
   /// uncertainty of the fitted di-tau mass
   double massUncert_;

@@ -4,11 +4,11 @@
 #include "TMatrixD.h"
 
 /**
-   \class   nllMET LikelihoodFunctions.h "TauAnalysis/CandidateTools/interface/LikelihoodFunctions.h"
+   \class   probMET LikelihoodFunctions.h "TauAnalysis/CandidateTools/interface/LikelihoodFunctions.h"
    
-   \brief   Negative log likelihood for MET
+   \brief   Likelihood for MET
 
-   Negative log likelihood for MET. Input parameters are:
+   Likelihood for MET. Input parameters are:
 
     pMETX  : difference between reconstructed MET and fitted MET in x
     pMETY  : difference between reconstructed MET and fitted MET in y
@@ -17,14 +17,14 @@
              determined from MET significance algorithm)
     power  : additional power to enhance the nll term
 */
-double nllMET(double dMETX, double dMETY, double covDet, const TMatrixD& covInv, double power=1., bool verbose=false);
+double probMET(double dMETX, double dMETY, double covDet, const TMatrixD& covInv, double power = 1., bool verbose = false);
 
 /**
-   \class   nllTauToLepPhaseSpace LikelihoodFunctions.h "TauAnalysis/CandidateTools/interface/LikelihoodFunctions.h"
+   \class   probTauToLepPhaseSpace LikelihoodFunctions.h "TauAnalysis/CandidateTools/interface/LikelihoodFunctions.h"
    
-   \brief   Negative log likelihood for a three body tau decay into lepton, neutrino, neutrino.
+   \brief   Likelihood for a three body tau decay into lepton, neutrino, neutrino.
 
-   Negative log likelihood for a three body tau decay into lepton, neutrino, neutrino. Input parameters are:
+   Likelihood for a three body tau decay into lepton, neutrino, neutrino. Input parameters are:
 
    \var decayAngle : decay angle in the restframe of the tau lepton decay
    \var visMass : measured visible mass
@@ -32,17 +32,17 @@ double nllMET(double dMETX, double dMETY, double covDet, const TMatrixD& covInv,
 
    The parameter tauLeptonMass2 is the mass of the tau lepton squared as defined in svFitAuxFunctions.h   
 */
-double nllTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass,double x, bool verbose=false);
+double probTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass, double x, bool applySinTheta, bool verbose = false);
 
 /**
-   \class   nllTauToHadPhaseSpace LikelihoodFunctions.h "TauAnalysis/CandidateTools/interface/LikelihoodFunctions.h"
+   \class   probTauToHadPhaseSpace LikelihoodFunctions.h "TauAnalysis/CandidateTools/interface/LikelihoodFunctions.h"
    
-   \brief   Negative log likelihood for a two body tau decay into two hadrons
+   \brief   Likelihood for a two body tau decay into two hadrons
 
-   Negative log likelihood for a two body tau decay into two hadrons. Input parameters is:
+   Likelihood for a two body tau decay into two hadrons. Input parameters is:
 
     decayAngle : decay angle in the restframe of the tau lepton decay
 */
-double nllTauToHadPhaseSpace(double decayAngle,double nunuMass, double visMass,double x, bool verbose=false);
+double probTauToHadPhaseSpace(double decayAngle, double nunuMass, double visMass, double x, bool applySinTheta, bool verbose = false);
 
 #endif
