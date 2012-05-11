@@ -47,10 +47,10 @@ namespace NSVfitStandalone{
   enum kNLLParams {
     kNuNuMass1,      /* < mass of the neutrino system for the first decay branch                           */
     kVisMass1,       /* < mass of the visible parts of the first tau decay branch                          */
-    kDecayAngle1,    /* < decay angle for the first decay branch (in restframe of the tau lelpton decay)   */  
+    kDecayAngle1,    /* < decay angle for the first decay branch (in restframe of the tau lepton decay)   */  
     kNuNuMass2,      /* < mass of the neutrino system for the second decay branch                          */
     kVisMass2,       /* < mass of the visible parts of the second tau decay branch                         */
-    kDecayAngle2,    /* < decay angle for the second decay branch (in restframe of the tau lelpton decay)  */  
+    kDecayAngle2,    /* < decay angle for the second decay branch (in restframe of the tau lepton decay)  */  
     kDMETx,          /* < difference between the sum of the fitted neutrino px and px of the MET           */ 
     kDMETy,          /* < difference between the sum of the fitted neutrino py and py of the MET           */
     kMTauTau,        /* < invariant mass of the fitted di-tau system (used for the logM penalty term)      */
@@ -136,8 +136,13 @@ namespace NSVfitStandalone{
     static const NSVfitStandaloneLikelihood* gNSVfitStandaloneLikelihood;
 
     /// add an additional logM(tau,tau) term to the nll to suppress tails on M(tau,tau) (default is true)
-    void addLogM(bool value) { addLogM_=value; };
-    void adddelta(bool value) {delta_ = value; };
+    void addLogM(bool value) { addLogM_ = value; }
+    /// add derrivative of delta-function 
+    /// WARNING: to be used when SVfit is run in "integration" mode only
+    void addDelta(bool value) { addDelta_ = value; }
+    /// add sin(theta) term to likelihood for tau lepton decays
+    /// WARNING: to be used when SVfit is run in "fit" mode only
+    void addSinTheta(bool value) { addSinTheta_ = value; }  
     /// modify the MET term in the nll by an additional power (default is 1.)
     void metPower(double value) { metPower_=value; };    
 
@@ -151,8 +156,8 @@ namespace NSVfitStandalone{
     void results(std::vector<LorentzVector>& fittedTauLeptons, const double* x) const;
     /// fit function to be called from outside (has to be const to be usable by minuit). This function will call the actual 
     /// functions transform and nll internally 
-    double nll(const double* x) const;    
-    double nllint(const double* x, const double mtt, const int par) const;	
+    double prob(const double* x) const;    
+    double probint(const double* x, const double mtt, const int par) const;	
 
   private:
     /// transformation from x to xPrime, x are the actual fit parameters, xPrime are the transformed parameters that go into 
@@ -161,14 +166,17 @@ namespace NSVfitStandalone{
     const double* transformint(double* xPrime, const double* x, const double mtt, const int par) const;
     /// combined likelihood function (has to be const to be usable by minuit). The additional boolean phiPenalty is added to 
     /// prevent singularities at the +/-pi boundaries of kPhi within the fit parameters (kFitParams) 
-    double nll(const double* xPrime, double phiPenalty) const;
+    double prob(const double* xPrime, double phiPenalty) const;
     
   private:
     /// additional power to enhance MET term in the nll (default is 1.)
     double metPower_;
     /// add a logM penalty term in the nll
     bool addLogM_;
-    bool delta_;
+    /// delta-function derrivative 
+    bool addDelta_;
+    /// sin(theta) term in the nll
+    bool addSinTheta_;
     /// verbosity level
     bool verbose_;
     /// monitor the number of function calls
