@@ -11,8 +11,9 @@ def switchToAOD(process, triggerHistManager = None, eventDumpPlugin = None):
     # switch collection of ECAL recHits used as input for IsoDeposit computation
     # from list of all ECAL recHits in the event to "reduced" collections
     # limited to cones of size dR = 0.6 around electron candidates
-    massSearchReplaceAnyInputTag(process.p, cms.InputTag("ecalRecHit", "EcalRecHitsEB"), cms.InputTag("reducedEcalRecHitsEB"))
-    massSearchReplaceAnyInputTag(process.p, cms.InputTag("ecalRecHit", "EcalRecHitsEE"), cms.InputTag("reducedEcalRecHitsEE")) 
+    if hasattr(process, "p"):
+        massSearchReplaceAnyInputTag(process.p, cms.InputTag("ecalRecHit", "EcalRecHitsEB"), cms.InputTag("reducedEcalRecHitsEB"))
+        massSearchReplaceAnyInputTag(process.p, cms.InputTag("ecalRecHit", "EcalRecHitsEE"), cms.InputTag("reducedEcalRecHitsEE")) 
 
     # disable PAT trigger matching
     # (not yet implemented for photons and jets)

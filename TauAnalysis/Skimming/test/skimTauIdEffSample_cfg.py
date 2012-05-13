@@ -188,26 +188,14 @@ for patPFTauSelectorForTauIdEff in patPFTauSelectorsForTauIdEff:
 process.selectedPatPFTausHPSforTauIdEff.src = cms.InputTag('patPFTausHPS')
 ##process.selectedPatPFTausHPSpTaNCforTauIdEff.src = cms.InputTag('patPFTausHPSpTaNC')
 
-process.countEventsProcessed = cms.EDAnalyzer("DQMEventCounter",
-    meName = cms.string('numEventsProcessed')                                         
-)
-
-process.countEventsPassed = cms.EDAnalyzer("DQMEventCounter",
-    meName = cms.string('numEventsPassed')                                         
-)
-
 process.skimPathTauIdEffHPS = cms.Path(
-    process.countEventsProcessed
-   + process.commonSkimSequence
+    process.commonSkimSequence
    + process.patPFTausHPS + process.selectedPatPFTausHPSforTauIdEff
-   + process.countEventsPassed
 )
 
 ##process.skimPathTauIdEffHPSpTaNC = cms.Path(
-##    process.countEventsProcessed
-##   + process.commonSkimSequence
+##    process.commonSkimSequence
 ##   + process.patPFTausHPSpTaNC + process.selectedPatPFTausHPSpTaNCforTauIdEff
-##   + process.countEventsPassed
 ##)
 
 process.selectedPatPFTausHPSforTauChargeMisId = cms.EDFilter("PATTauSelector",
@@ -226,10 +214,8 @@ process.selectedPatPFTausHPSforTauChargeMisId = cms.EDFilter("PATTauSelector",
 )
 
 process.skimPathTauChargeMisIdHPS = cms.Path(
-    process.countEventsProcessed
-   + process.commonSkimSequence
+    process.commonSkimSequence
    + process.patPFTausHPS + process.selectedPatPFTausHPSforTauChargeMisId
-   + process.countEventsPassed
 )
 
 ##process.selectedPatPFTausHPSpTaNCforTauChargeMisId = cms.EDFilter("PATTauSelector",
@@ -245,10 +231,8 @@ process.skimPathTauChargeMisIdHPS = cms.Path(
 ##)
 
 ##process.skimPathTauChargeMisIdHPSpTaNC = cms.Path(
-##    process.countEventsProcessed
-##   + process.commonSkimSequence
+##    process.commonSkimSequence
 ##   + process.patPFTausHPSpTaNC + process.selectedPatPFTausHPSpTaNCforTauChargeMisId
-##   + process.countEventsPassed
 ##)
 
 # add event counter for Mauro's "self baby-sitting" technology
@@ -283,13 +267,7 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.saveZtoMuTau_tauIdEffPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoMuTau_tauIdEff.root')
-)
-
-process.p = cms.Path(process.countEventsProcessed)
-
-process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEffPlots)
+process.o = cms.EndPath(process.skimOutputModule)
 
 #--------------------------------------------------------------------------------
 #
