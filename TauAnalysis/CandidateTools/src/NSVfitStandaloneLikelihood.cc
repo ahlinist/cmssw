@@ -287,7 +287,7 @@ NSVfitStandaloneLikelihood::prob(const double* x) const
 }
 
 double
-NSVfitStandaloneLikelihood::probint(const double* x, const double mtest,const int par) const 
+NSVfitStandaloneLikelihood::probint(const double* x, const double mtest, const int par) const 
 {
   double phiPenalty = 0.;
   double xPrime[ kMaxNLLParams + 2 ];
