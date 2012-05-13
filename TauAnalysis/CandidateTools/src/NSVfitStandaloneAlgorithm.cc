@@ -158,7 +158,7 @@ NSVfitStandaloneAlgorithm::integrate()
 
   // integrator instance
   //ROOT::Math::IntegratorMultiDim ig2(ROOT::Math::IntegrationMultiDim::kVEGAS, 1.e-12, 1.e-5);
-  ROOT::Math::GSLMCIntegrator ig2("vegas",1.e-12,1.e-5,2000);
+  ROOT::Math::GSLMCIntegrator ig2("vegas", 1.e-12, 1.e-5, 2000);
   ROOT::Math::Functor toIntegrate(&standaloneObjectiveFunctionAdapter_, &ObjectiveFunctionAdapter::Eval, par); 
   standaloneObjectiveFunctionAdapter_.SetPar(par);
   ig2.SetFunction(toIntegrate);
