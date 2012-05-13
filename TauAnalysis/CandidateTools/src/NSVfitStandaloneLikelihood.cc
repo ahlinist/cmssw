@@ -44,20 +44,6 @@ NSVfitStandaloneLikelihood::prob(const double* xPrime, double phiPenalty) const
   if ( verbose_ ) {
     std::cout << "<NSVfitStandaloneLikelihood:prob(const double*, double)> ..." << std::endl;
   }
-  // map decay-wise parameters for simplicity
-  std::vector<double> nunuMass; 
-  nunuMass.push_back(xPrime[kNuNuMass1]); 
-  nunuMass.push_back(xPrime[kNuNuMass2]);
-  std::vector<double> visMass; 
-  visMass.push_back(xPrime[kVisMass1]); 
-  visMass.push_back(xPrime[kVisMass2]); 
-  std::vector<double> decayAngle; 
-  decayAngle.push_back(xPrime[kDecayAngle1]); 
-  decayAngle.push_back(xPrime[kDecayAngle2]);
-  std::vector<double> xfrac; 
-  xfrac.push_back(xPrime[kMaxNLLParams]); 
-  xfrac.push_back(xPrime[kMaxNLLParams + 1]); 
-
   // start the combined likelihood construction from MET
   double prob = probMET(xPrime[kDMETx], xPrime[kDMETy], covDet_, invCovMET_, metPower_, verbose_);
   //std::cout << "prob(1) = " << prob << std::endl;
@@ -65,11 +51,11 @@ NSVfitStandaloneLikelihood::prob(const double* xPrime, double phiPenalty) const
   for ( unsigned int idx = 0; idx < measuredTauLeptons_.size(); ++idx ) {
     switch(measuredTauLeptons_[idx].decayType()) {
     case kHadDecay :
-      prob *= probTauToHadPhaseSpace(decayAngle[idx], nunuMass[idx], visMass[idx], xfrac[idx], addSinTheta_, verbose_); 
+      prob *= probTauToHadPhaseSpace(xPrime[idx==0 ? kDecayAngle1 : kDecayAngle2], xPrime[idx==0 ? kNuNuMass1 : kNuNuMass2], xPrime[idx==0 ? kVisMass1 : kVisMass2], xPrime[idx==0 ? kMaxNLLParams : (kMaxNLLParams+1)], addSinTheta_, verbose_);
       //std::cout << "prob(had) = " << prob << std::endl;
       break;
     case kLepDecay :
-      prob *= probTauToLepPhaseSpace(decayAngle[idx], nunuMass[idx], visMass[idx], xfrac[idx], addSinTheta_, verbose_); 
+      prob *= probTauToLepPhaseSpace(xPrime[idx==0 ? kDecayAngle1 : kDecayAngle2], xPrime[idx==0 ? kNuNuMass1 : kNuNuMass2], xPrime[idx==0 ? kVisMass1 : kVisMass2], xPrime[idx==0 ? kMaxNLLParams : (kMaxNLLParams+1)], addSinTheta_, verbose_);
       //std::cout << "prob(lep) = " << prob << std::endl;
       break;
     }
@@ -77,10 +63,10 @@ NSVfitStandaloneLikelihood::prob(const double* xPrime, double phiPenalty) const
   //std::cout << "prob(2) = " << prob << std::endl;
   // add additional logM term if configured such 
   if ( addLogM_ ) {
-    if ( xPrime[kMTauTau] > 0. ) prob *= (1./xPrime[kMTauTau]);
+    if ( xPrime[kMTauTau] > 0. ) prob *= (1.0/xPrime[kMTauTau]);
   }
   if ( addDelta_ ) {
-    prob *= (2.0*xfrac[0]/xPrime[kMTauTau]);
+    prob *= (2.0*xPrime[kMaxNLLParams]/xPrime[kMTauTau]);
     //std::cout << "prob(3) = " << prob << std::endl;
   }
   if ( verbose_ ) {
@@ -235,22 +221,7 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
     xPrime[ idx==0 ? kDecayAngle1  : kDecayAngle2        ] = restframeDecayAngle;
     xPrime[ idx==0 ? kMaxNLLParams : (kMaxNLLParams + 1) ] = labframeXFrac;
   }
-  // determine fittedMET
-  // subtract the visible part from it. The remainder is the pure neutrino part. Minus the 
-  // the remainder is the estimate of the fittedMET
-  //Vector fittedMom(fittedDiTauSystem.px(), fittedDiTauSystem.py(), fittedDiTauSystem.pz());
-  //Vector fittedMET = -(fittedMom - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p())); 
-  /*
-    I believe that the following line contains a sign bug in the official version of SVfit:
-    http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h?revision=1.11&view=markup
-    reco::Candidate::LorentzVector dp4MEt_fitted() const { return (p4MEt_ - dp4_); } // should be +
-
-    Reasoning:
-    from 
-    reco::Candidate::LorentzVector p4_fitted() const { return (p4_ + dp4_); }
-    dp4_ should be the neutrino momentum --> the neutrino MET would by -dp4_ --> the residual of the measured MET and the fitted MET shyould be 
-    p4MEt - fittedMEt = p4MEt + dp4_
-  */
+ 
   Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p()); 
   // fill event-wise nll parameters
   xPrime[ kDMETx   ] = measuredMET_.x() - fittedMET.x(); 

@@ -139,9 +139,11 @@ class NSVfitStandaloneAlgorithm
   /// return mass of the fitted di-tau system 
   double mass() const { return fittedDiTauSystem().mass(); };
   /// return uncertainty on the mass of the fitted di-tau system
-  double intmass();
-  double getMass() const {return mass_;};
   double massUncert() const { return massUncert_; };
+  
+  // mtt mass, svfit integration
+  double getMass() const {return mass_;};
+
   /// return 4-vectors of the fitted tau leptons
   std::vector<LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; }
   /// return 4-vectors of measured tau leptons

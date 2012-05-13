@@ -1,6 +1,6 @@
 #include "Math/Factory.h"
 #include "Math/Functor.h"
-#include "Math/IntegratorMultiDim.h"
+#include "Math/GSLMCIntegrator.h"
 
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
@@ -157,7 +157,8 @@ NSVfitStandaloneAlgorithm::integrate()
   double xu3[3] = { 1.0, pi, pi };
 
   // integrator instance
-  ROOT::Math::IntegratorMultiDim ig2(ROOT::Math::IntegrationMultiDim::kVEGAS, 1.e-12, 1.e-5);
+  //ROOT::Math::IntegratorMultiDim ig2(ROOT::Math::IntegrationMultiDim::kVEGAS, 1.e-12, 1.e-5);
+  ROOT::Math::GSLMCIntegrator ig2("vegas",1.e-12,1.e-5,2000);
   ROOT::Math::Functor toIntegrate(&standaloneObjectiveFunctionAdapter_, &ObjectiveFunctionAdapter::Eval, par); 
   standaloneObjectiveFunctionAdapter_.SetPar(par);
   ig2.SetFunction(toIntegrate);
@@ -195,5 +196,7 @@ NSVfitStandaloneAlgorithm::integrate()
     }
     mtest += TMath::Max(2.5, 0.025*mtest);
   }
-  //std::cout << "--> mass = " << mass_ << std::endl;
+  if ( verbosity_ > 0 ) {
+    std::cout << "--> mass = " << mass_ << std::endl;
+  }
 }
