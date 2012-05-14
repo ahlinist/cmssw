@@ -189,6 +189,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
             "HLT_IsoMu30_eta2p1_v3", "HLT_IsoMu30_eta2p1_v6", "HLT_IsoMu30_eta2p1_v7",
             "HLT_IsoMu34_eta2p1_v1",
 
+	    "HLT_IsoMu15_L1ETM20_v3", "HLT_Mu15_L1ETM20_v4",
 
             "HLT_IsoPFTau35_Trk20_MET45_v1", "HLT_IsoPFTau35_Trk20_MET45_v2", "HLT_IsoPFTau35_Trk20_MET45_v4", "HLT_IsoPFTau35_Trk20_MET45_v6",
             "HLT_IsoPFTau35_Trk20_v2", "HLT_IsoPFTau35_Trk20_v3", "HLT_IsoPFTau35_Trk20_v4", "HLT_IsoPFTau35_Trk20_v6",
@@ -288,6 +289,12 @@ process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 
 # The high purity selection (mainly for H+)
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
+process.TTEffAnalysisHLTPFTauHPSHighPurity = process.TTEffAnalysisHLTPFTauHPS.clone(
+    LoopingOver = "selectedPatTausHpsPFTauHighPurity",
+    MuonSource = "selectedPatMuonsHighPurity",
+    MuonTauPairSource = "muTauPairsHighPurity",
+    outputFileName = "tteffAnalysis-hltpftau-hpspftau-highpurity.root"
+)
 process.TTEffAnalysisHLTPFTauTightHPSHighPurity = process.TTEffAnalysisHLTPFTauTightHPS.clone(
     LoopingOver = "selectedPatTausHpsPFTauHighPurity",
     MuonSource = "selectedPatMuonsHighPurity",
@@ -297,6 +304,7 @@ process.TTEffAnalysisHLTPFTauTightHPSHighPurity = process.TTEffAnalysisHLTPFTauT
 process.runTTEffAnaHighPurity = cms.Path(
     process.commonSequence +
     process.highPuritySequence +
+    process.TTEffAnalysisHLTPFTauHPSHighPurity +
     process.TTEffAnalysisHLTPFTauTightHPSHighPurity
 )
 
@@ -372,7 +380,7 @@ process.schedule = cms.Schedule(process.DoHLTJets,
 				process.runMETCleaning,
                                 process.L1simulation_step,
 				process.runTTEffAna,
-#                                process.runTTEffAnaHighPurity
+                                process.runTTEffAnaHighPurity
 #				,process.outpath
 )
 
