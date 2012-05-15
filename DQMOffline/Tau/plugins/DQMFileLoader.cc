@@ -1,6 +1,6 @@
-#include "Validation/RecoTau/plugins/DQMFileLoader.h"
+#include "DQMOffline/Tau/plugins/DQMFileLoader.h"
 
-#include "Validation/RecoTau/plugins/dqmAuxFunctions.h"
+#include "DQMOffline/Tau/plugins/dqmAuxFunctions.h"
 
 // framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
