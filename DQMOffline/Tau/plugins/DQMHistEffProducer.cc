@@ -1,6 +1,6 @@
-#include "Validation/RecoTau/plugins/DQMHistEffProducer.h"
+#include "DQMOffline/Tau/plugins/DQMHistEffProducer.h"
 
-#include "Validation/RecoTau/plugins/dqmAuxFunctions.h"
+#include "DQMOffline/Tau/plugins/dqmAuxFunctions.h"
 
 // framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
