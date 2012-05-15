@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.67 2011/09/23 14:14:25 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.68 2012/01/23 07:31:09 slehti Exp $
 //
 //
 
@@ -183,7 +183,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    b_event = iEvent.id().event();
    b_run = iEvent.run();
    b_lumi = iEvent.luminosityBlock();
-
+/*
    nPU = 0;
    edm::Handle<std::vector<PileupSummaryInfo> > hpileup;
    iEvent.getByLabel(pileupSummaryInfoSrc_, hpileup);
@@ -194,6 +194,26 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      }
      nPU = npv/3.;
    }
+*/
+   // See https://twiki.cern.ch/twiki/bin/view/CMS/PileupMCReweightingUtilities
+   edm::Handle<std::vector<PileupSummaryInfo> >  hpu;
+   iEvent.getByLabel(pileupSummaryInfoSrc_, hpu);
+  
+   int n0 = -1;
+   int nm1 = -1;
+   int np1 = -1;
+   for(std::vector<PileupSummaryInfo>::const_iterator iPV = hpu->begin(); iPV != hpu->end(); ++iPV) {
+      if(iPV->getBunchCrossing() == -1)
+        nm1 = iPV->getTrueNumInteractions();
+      else if(iPV->getBunchCrossing() == 0)
+        n0 = iPV->getTrueNumInteractions();
+      else if(iPV->getBunchCrossing() == 1)
+        np1 = iPV->getTrueNumInteractions();
+   }
+   if(n0 < 0)
+      throw cms::Exception("Assert") << "VertexWeight: Didn't find the number of interactions for BX 0" << std::endl;;
+
+   nPU = n0;
 
    edm::Handle<edm::View<reco::Candidate> > genericTaus;
 
