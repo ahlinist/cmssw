@@ -131,8 +131,8 @@ void LooperClusterRemoverMethod::FractionOfTruth::run(edm::Event& iEvent, const 
 	}
       }
       if (rejected) {
-	prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true;
-	prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
+	prod_.collectedStrips[stIt->stereoClusterRef().key()]=true;
+	prod_.collectedStrips[stIt->monoClusterRef().key()]=true;
       }
     }
   }  
@@ -172,8 +172,8 @@ void LooperClusterRemoverMethod::EveryNMethod::run(edm::Event& iEvent, const edm
 	 stIt!=dStIt->end();++stIt){
       if (countMe++==everyNPixel_){
 	countMe=0;
-	prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true; 
-	prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
+	prod_.collectedStrips[stIt->stereoClusterRef().key()]=true; 
+	prod_.collectedStrips[stIt->monoClusterRef().key()]=true;
       }
     }
   }
@@ -291,11 +291,11 @@ void LooperClusterRemoverMethod::ReadFileIn::run(edm::Event& iEvent,  const edm:
 	if (mag<closest) closest=mag;
 	if (mag < epsilon_)                     
 	  {                  
-	    prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true; 
-	    prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
+	    prod_.collectedStrips[stIt->stereoClusterRef().key()]=true; 
+	    prod_.collectedStrips[stIt->monoClusterRef().key()]=true;
 	    if (associator){
 	      std::stringstream text;
-	      text<<" kill a strip at: "<<dStIt->id()<<"="<<stIt->stereoHit()->geographicalId().rawId()<<"+"<<stIt->monoHit()->geographicalId().rawId()<<" "<<tPoint<<" using "<<points[iR];
+	      text<<" kill a strip at: "<<dStIt->id()<<"="<<stIt->stereoId()<<"+"<<stIt->monoId()<<" "<<tPoint<<" using "<<points[iR];
 	      std::vector<PSimHit> simHits = associator->associateHit(*stIt);
 	      for (uint ips=0;ips!=simHits.size();++ips)	 
 		text<<"\n\t[M] pType: "<<simHits[ips].particleType()<<", pId: "<<simHits[ips].trackId() <<", process: "<<simHits[ips].processType()<<", event: "<<simHits[ips].eventId().rawId();
@@ -445,7 +445,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 
     LogDebug("LooperMethod")<<" A peak cell has: "<<peak->count()<<" elements"<<std::endl;
     edm::OwnVector<TrackingRecHit> recHits;
-    SeedingHitSet forSeedCreator;
+    //SeedingHitSet forSeedCreator;
 
     bool goodToMask=true;
 
@@ -457,11 +457,18 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
     if (makeTC_){
       goodToMask=false; //until we made a TC out of it
       recHits.reserve(peak->count());
+      TransientTrackingRecHit::ConstRecHitPointer one,two;
       for (uint iH=0;iH!=peak->count();++iH){
 	recHits.push_back( peak->elements_[iH]->hit_->hit()->clone());
 	//put only two hits to create the seed
-	if (forSeedCreator.size()<2) forSeedCreator.add(peak->elements_[iH]->hit_);
+	if (iH==0)
+	  one=peak->elements_[iH]->hit_;
+	if (iH==1)
+	  two=peak->elements_[iH]->hit_;
+	//if (forSeedCreator.size()<2) forSeedCreator.add(peak->elements_[iH]->hit_);
       }
+
+      SeedingHitSet forSeedCreator(one,two);
 
       //from the first and second hits, get an estimate of the  ~z origine for the seed creator
       GlobalTrackingRegion region (0.050, /* pt min */
@@ -472,7 +479,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       // make a state from the helix state on the surface of the first hit.
       const TrajectorySeed * newSeed = aCreator->trajectorySeed(seedCollection,
 								forSeedCreator,
-								region,iSetup);
+								region,iSetup,0);
       if (newSeed){
 	const PTrajectoryStateOnDet & state=newSeed->startingState();
 	prod_.tcOut->push_back(TrackCandidate(recHits,
@@ -524,10 +531,10 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 	    continue;
 	    }*/ //was verified that the static_cast <- dynamic_cast was always functionning
 	  LogTrace("LooperMethod")<<"actively masking:" <<mH<<std::endl;
-	  if (!prod_.collectedStrips[mH->stereoHit()->cluster().key()]) nMasked++;
-	  if (!prod_.collectedStrips[mH->monoHit()->cluster().key()]) nMasked++;
-	  prod_.collectedStrips[mH->stereoHit()->cluster().key()]=true;
-	  prod_.collectedStrips[mH->monoHit()->cluster().key()]=true;
+	  if (!prod_.collectedStrips[mH->stereoClusterRef().key()]) nMasked++;
+	  if (!prod_.collectedStrips[mH->monoClusterRef().key()]) nMasked++;
+	  prod_.collectedStrips[mH->stereoClusterRef().key()]=true;
+	  prod_.collectedStrips[mH->monoClusterRef().key()]=true;
 	}
       }//strip case
 
@@ -636,8 +643,8 @@ void LooperClusterRemoverMethod::PerJet:: run(edm::Event&iEvent, const edm::Even
       if (!inZone(h_jets,h)){
 	//mask it        
 	//	reject++;
-	prod_.collectedStrips[stIt->stereoHit()->cluster().key()]=true;
-	prod_.collectedStrips[stIt->monoHit()->cluster().key()]=true;
+	prod_.collectedStrips[stIt->stereoClusterRef().key()]=true;
+	prod_.collectedStrips[stIt->monoClusterRef().key()]=true;
       }
     }
   }
