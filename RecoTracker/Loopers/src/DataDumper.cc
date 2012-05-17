@@ -392,7 +392,7 @@ void DataDumper::makePeaks(){
     }
 
   LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the max is: "<<maxBins
-				    <<baseLineCut<<" is used as a baseline cut";
+				    <<".\n"<<baseLineCut<<" is used as a baseline cut";
 
   //create an image of the container, to not sort in place. although we could in principle, since the container is not accessed anymore afterwards as is.
   std::vector<aCell*> sortedImage;
