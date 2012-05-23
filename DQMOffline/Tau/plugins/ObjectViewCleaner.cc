@@ -159,13 +159,13 @@ void ObjectViewCleaner<T>::produce(edm::Event& iEvent,const edm::EventSetup& iSe
 template<typename T>
 void ObjectViewCleaner<T>::endJob()
 {
-  stringstream ss;
-  ss<<"nObjectsTot="<<nObjectsTot_<<" nObjectsClean="<<nObjectsClean_
-    <<" fObjectsClean="<<100.*(nObjectsClean_/(double)nObjectsTot_)<<"%\n";
-  cout<<"++++++++++++++++++++++++++++++++++++++++++++++++++"
-      <<"\n"<<moduleLabel_<<"(ObjectViewCleaner) SUMMARY:\n"<<ss.str()
-      <<"++++++++++++++++++++++++++++++++++++++++++++++++++"
-      <<endl;
+  //stringstream ss;
+  //ss<<"nObjectsTot="<<nObjectsTot_<<" nObjectsClean="<<nObjectsClean_
+  //  <<" fObjectsClean="<<100.*(nObjectsClean_/(double)nObjectsTot_)<<"%\n";
+  //cout<<"++++++++++++++++++++++++++++++++++++++++++++++++++"
+  //    <<"\n"<<moduleLabel_<<"(ObjectViewCleaner) SUMMARY:\n"<<ss.str()
+  //    <<"++++++++++++++++++++++++++++++++++++++++++++++++++"
+  //    <<endl;
 }
 
 
