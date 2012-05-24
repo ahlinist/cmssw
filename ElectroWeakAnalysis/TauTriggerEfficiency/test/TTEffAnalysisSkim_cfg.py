@@ -3,7 +3,7 @@ import copy
 
 isData = True
 doRECO = True
-doMETleg = True
+doMETleg = False
 
 process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
@@ -32,7 +32,7 @@ process.load('Configuration.StandardSequences.L1Reco_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_52_V7::All'
+    process.GlobalTag.globaltag = 'GR_R_52_V8::All'
 else:
     process.GlobalTag.globaltag = 'START44_V13::All'
 
