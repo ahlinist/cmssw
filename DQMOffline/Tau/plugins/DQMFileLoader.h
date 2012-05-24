@@ -1,12 +1,12 @@
-#ifndef ElectroWeakAnalysis_EWKTau_DQMFileLoader_h
-#define ElectroWeakAnalysis_EWKTau_DQMFileLoader_h
+#ifndef DQMOffline_Tau_TauDQMFileLoader_h
+#define DQMOffline_Tau_TauDQMFileLoader_h
 
-/** \class DQMFileLoader
+/** \class TauDQMFileLoader
  *  
  *  Class to load DQM monitoring elements from ROOT files into DQMStore
  *
- *  $Date: 2011/04/08 14:33:13 $
- *  $Revision: 1.2 $
+ *  $Date: 2012/05/10 17:36:33 $
+ *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -23,7 +23,7 @@
 #include <vector>
 #include <string>
 
-class DQMFileLoader : public edm::EDAnalyzer
+class TauDQMFileLoader : public edm::EDAnalyzer
 {
   typedef std::vector<std::string> vstring;
   typedef std::set<std::string> sstring;
@@ -39,8 +39,8 @@ class DQMFileLoader : public edm::EDAnalyzer
   };
 
  public:
-  explicit DQMFileLoader(const edm::ParameterSet&);
-  virtual ~DQMFileLoader();
+  explicit TauDQMFileLoader(const edm::ParameterSet&);
+  virtual ~TauDQMFileLoader();
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob(){}
   virtual void endRun(const edm::Run& r, const edm::EventSetup& c);  
