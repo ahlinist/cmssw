@@ -331,16 +331,13 @@ void TauTagValidation<T>::analyze(const edm::Event& iEvent, const edm::EventSetu
 
       double mass = 91.18; //nominal Z mass
       if(!(massInput_ == edm::InputTag(""))){
-	    cout << __LINE__ << "entering mass if" << endl;
+	//cout << __LINE__ << "entering mass if" << endl;
         Handle<std::vector<double> >  massHandle   ;
         iEvent.getByLabel(massInput_, massHandle)  ;
-
-	    cout << __LINE__ << "valuemap1: "<< endl;
-
-	    cout << __LINE__ << "valuemap2: "<< endl;
-                
+	//cout << __LINE__ << "valuemap1: "<< endl;
+	//cout << __LINE__ << "valuemap2: "<< endl;
         mass = (*massHandle)[ref];
-	    cout << __LINE__ << "Mass: " << mass << endl;
+	//cout << __LINE__ << "Mass: " << mass << endl;
       }
       
       ptTauVisibleMap.find(refCollection_)    -> second -> Fill(RefJet->pt(),mass)                    ;
