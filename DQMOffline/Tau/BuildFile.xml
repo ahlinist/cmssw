@@ -6,6 +6,7 @@
 <use   name="DQMServices/Core"/>
 <use   name="CommonTools/Utils"/>
 <use   name="CommonTools/TriggerUtils"/>
+<use   name="roofit"/>
 <export>
    <lib name="1"/>
 </export>
