@@ -29,7 +29,8 @@ crabFilePath = '/afs/cern.ch/work/v/veelken/CMSSW_5_2_x/crab/TauAnalysis_Skimmin
 
 statusFileName = 'crabSitter.json'
 #jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
-jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012May08'
+jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012May12'
+#jobName_regex = r'crabdir_skimGoldenZmumu_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012Apr12'
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
@@ -43,7 +44,8 @@ def runCommand(commandLine):
     retVal.wait()
     return retVal.stdout.readlines()
 
-runCommand('%s %s' % (executable_rm, statusFileName))
+# delete crabSitter.json file to reset all time-stamps
+#runCommand('%s %s' % (executable_rm, statusFileName))
 
 def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.csh', tmpOutputFileName = 'crabSitter_tmp.out'):
     # CV: crab is implemented in python and seems to cause problem when called directly from python;
@@ -99,8 +101,8 @@ jobStatus_dict['lastUpdate_time'] = current_time
 time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed to stay
                       # in 'Submitted', 'Ready' or 'Scheduled' state before they get automatically resubmitted 
 ##time_limit = 1 # force immediate resubmission of all crab jobs stuck in 'Scheduled' state
-##forceResubmitAllScheduledJobs = False
-forceResubmitAllScheduledJobs = True
+forceResubmitAllScheduledJobs = False
+##forceResubmitAllScheduledJobs = True
 
 shellScriptCommands = []
 
@@ -153,6 +155,10 @@ for crabJob in crabJobs:
         if not (outputFileName and outputFilePath_prefix and outputFilePath_suffix):
             raise ValueError("Failed to read 'output_file', 'user_remote_dir' and 'storage_path' from config file %s !!" \
                              % crabConfigFileName)
+        # CV: multiple output files not supported yet
+        print("outputFileName = %s" % outputFileName)
+        if outputFileName.find(',') != -1:
+            raise ValueError("Multiple putput files not yet supported !!")
         outputFileName_regex = outputFileName.replace('.', '_(?P<jobId>\d+)_(?P<try>\d+)_(?P<hash>[a-zA-Z0-9]+).')
         outputFileName_matcher = re.compile(outputFileName_regex)
 

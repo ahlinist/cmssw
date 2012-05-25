@@ -304,7 +304,7 @@ process.patTaus.tauSource = cms.InputTag('genMatchedTauJets')
 
 # disable matching pat::Electrons, pat::Muons and pat::Taus to generator level quantities
 import PhysicsTools.PatAlgos.tools.helpers as patutils
-removeMCMatching(process, ["All"], outputInProcess = False)
+removeMCMatching(process, ["All"], outputModules = [])
 process.patDefaultSequence.remove(process.patJetPartonMatch)
 
 # disable all pat::Electron embedding

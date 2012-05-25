@@ -7,36 +7,82 @@ from TauAnalysis.Skimming.recoSampleDefinitionsGoldenZmumu_7TeV_grid_cfi import 
 
 import os
 
-version = 'v5_11'
+version = 'v5_19'
 
 inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
-outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_1' % version
+outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_woMEtSysShiftCorr' % version
 
 samplesToAnalyze = {
     'Data_2012RunA' : {
         'samples' : [
-            'Data_runs190456to191859'
+            ##'Data_runs190456to193557'
+            'Data_runs190456to193621',
+            'Data_runs193752to194076'
         ],
         'isMC' : False
     },
-    'ZplusJets_madgraph' : {
+    'ZplusJets_madgraph2' : {
         'samples' : [
-            'ZplusJets_madgraph'
+            'ZplusJets_madgraph2'
         ],
-        'allEvents_DBS' : RECO_SAMPLES['ZplusJets_madgraph']['events_processed'],
-        'xSection' : RECO_SAMPLES['ZplusJets_madgraph']['x_sec'],
+        'allEvents_DBS' : RECO_SAMPLES['ZplusJets_madgraph2']['events_processed'],
+        'xSection' : RECO_SAMPLES['ZplusJets_madgraph2']['x_sec'],
         'isMC' : True,
         'Type' : 'Signal',
         'applyRhoNeutralReweighting' : True,
         'scaleFactor' : 1.
     },
-    'TTplusJets_madgraph' : {
+    'TTplusJets_madgraph2' : {
         'samples' : [
-            'TTplusJets_madgraph'
+            'TTplusJets_madgraph2'
         ],
-        'allEvents_DBS' : RECO_SAMPLES['TTplusJets_madgraph']['events_processed'],
-        'xSection' : RECO_SAMPLES['TTplusJets_madgraph']['x_sec'],
+        'allEvents_DBS' : RECO_SAMPLES['TTplusJets_madgraph2']['events_processed'],
+        'xSection' : RECO_SAMPLES['TTplusJets_madgraph2']['x_sec'],
+        'isMC' : True,
+        'Type' : 'Background',
+        'applyRhoNeutralReweighting' : False,
+        'scaleFactor' : 1.
+    },
+    ##'WW' : {
+    ##   'samples' : [
+    ##       'WW'
+    ##   ],
+    ##   'allEvents_DBS' : RECO_SAMPLES['WW']['events_processed'],
+    ##   'xSection' : RECO_SAMPLES['WW']['x_sec'],
+    ##   'isMC' : True,
+    ##   'Type' : 'Background',
+    ##   'applyRhoNeutralReweighting' : False,
+    ##   'scaleFactor' : 1.
+    ##},
+    'WZ' : {
+       'samples' : [
+           'WZ'
+       ],
+       'allEvents_DBS' : RECO_SAMPLES['WZ']['events_processed'],
+       'xSection' : RECO_SAMPLES['WZ']['x_sec'],
+       'isMC' : True,
+       'Type' : 'Background',
+       'applyRhoNeutralReweighting' : False,
+        'scaleFactor' : 1.
+    },
+    'ZZ' : {
+       'samples' : [
+           'ZZ'
+       ],
+       'allEvents_DBS' : RECO_SAMPLES['ZZ']['events_processed'],
+       'xSection' : RECO_SAMPLES['ZZ']['x_sec'],
+       'isMC' : True,
+       'Type' : 'Background',
+       'applyRhoNeutralReweighting' : False,
+        'scaleFactor' : 1.
+    },
+    'QCD' : {
+        'samples' : [
+            'QCD'
+        ],
+        'allEvents_DBS' : RECO_SAMPLES['PPmuXptGt20Mu15']['events_processed'],
+        'xSection' : RECO_SAMPLES['PPmuXptGt20Mu15']['x_sec'],
         'isMC' : True,
         'Type' : 'Background',
         'applyRhoNeutralReweighting' : False,
@@ -54,7 +100,7 @@ hltPaths = None
 srcWeights = None
 if runPeriod == '2012RunA':
     samplesToAnalyze['Data'] = samplesToAnalyze['Data_2012RunA']
-    intLumiData = 250.5 # runs 190389-191276
+    intLumiData = 906.8 # runs 190389-194076
     hltPaths = {
         'Data' : [
             'HLT_Mu17_Mu8_v16'
@@ -66,7 +112,7 @@ if runPeriod == '2012RunA':
     }
     srcWeights = {
         'Data' : [],
-        'smMC' : [ 'vertexMultiplicityReweight3d2012RunA' ]
+        'smMC' : [ 'vertexMultiplicityReweight3d2012RunAplusB' ]
     }
 else:
     raise ValueError("Invalid runPeriod = %s !!" % runPeriod)
@@ -78,46 +124,46 @@ for sampleName in samplesToAnalyze.keys():
 #print samplesToAnalyze
 
 metOptions = {
-    'pfMEt' : {
-        'srcJets' : {
-            'Data' : {
-                'central'    : 'patJets'
-            },
-            'smMC' : {
-                'central'    : 'patJets'
-            }
-        },
-        'srcMEt' : {
-            'Data' : {
-                'central'    : 'patPFMet'
-            },
-            'smMC' : {
-                'central'    : 'patPFMetNoSmearing'
-            }
-        },
-        'srcMEtCov' : 'pfMEtSignCovMatrix',
-        'applyMEtShiftCorrection' : True
-    },
-    'pfMEtTypeIcorrected' : {
-        'srcJets' : {
-            'Data' : {
-                'central'    : 'patJets'
-            },
-            'smMC' : {
-                'central'    : 'patJets'
-            }
-        },
-        'srcMEt' : {
-            'Data' : {
-                'central'    : 'patType1CorrectedPFMet'
-            },
-            'smMC' : {
-                'central'    : 'patType1CorrectedPFMetNoSmearing'
-            }
-        },
-        'srcMEtCov' : 'pfMEtSignCovMatrix',
-        'applyMEtShiftCorrection' : True
-    },
+    ##'pfMEt' : {
+    ##    'srcJets' : {
+    ##        'Data' : {
+    ##            'central'    : 'patJets'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patJets'
+    ##        }
+    ##    },
+    ##    'srcMEt' : {
+    ##        'Data' : {
+    ##            'central'    : 'patPFMet'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patPFMetNoSmearing'
+    ##        }
+    ##    },
+    ##    'srcMEtCov' : 'pfMEtSignCovMatrix',
+    ##    'applyMEtShiftCorrection' : False
+    ##},
+    ##'pfMEtTypeIcorrected' : {
+    ##    'srcJets' : {
+    ##        'Data' : {
+    ##            'central'    : 'patJets'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patJets'
+    ##        }
+    ##    },
+    ##    'srcMEt' : {
+    ##        'Data' : {
+    ##            'central'    : 'patType1CorrectedPFMet'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patType1CorrectedPFMetNoSmearing'
+    ##        }
+    ##    },
+    ##    'srcMEtCov' : 'pfMEtSignCovMatrix',
+    ##    'applyMEtShiftCorrection' : False
+    ##},
     ##'pfMEtTypeIpIIcorrected' : {
     ##    'srcJets' : {
     ##        'Data' : {
@@ -136,62 +182,64 @@ metOptions = {
     ##        }
     ##    },
     ##    'srcMEtCov' : 'pfMEtSignCovMatrix',
-    ##    'applyMEtShiftCorrection' : True
+    ##    'applyMEtShiftCorrection' : False
     ##},
-    'pfMEtByPhilsMVA' : {
-        'srcJets' : {
-            'Data' : {
-                'central'    : 'patJets'
-            },
-            'smMC' : {
-                'central'    : 'patJets'
-            }
-        },
-        'srcMEt' : {
-            'Data' : {
-                'central'    : 'patPFMetByPhilsMVA'
-            },
-            'smMC' : {
-                'central'    : 'patPFMetByPhilsMVA'
-            }
-        },
-        'srcMEtCov' : '', # CV: take PFMET significance matrix from reco::MET->getSignificanceMatrix()
-        'applyMEtShiftCorrection' : False
-    },
-    'pfMEtSmeared' : {
-        'srcJets' : {
-            'Data' : {
-                'central'    : 'patJets'
-            },
-            'smMC' : {
-                'central'    : 'smearedPatJets',
-                #'jetEnUp'    : 'shiftedPatJetsEnUpForRawMEt',
-                #'jetEnDown'  : 'shiftedPatJetsEnDownForRawMEt',
-                'jetEnUp'    : 'smearedPatJets',
-                'jetEnDown'  : 'smearedPatJets',
-                'jetResUp'   : 'smearedPatJetsResUp',
-                'jetResDown' : 'smearedPatJetsResDown',
-                'unclEnUp'   : 'smearedPatJets',
-                'unclEnDown' : 'smearedPatJets'
-            }
-        },
-        'srcMEt' : {
-            'Data' : {
-                'central'    : 'patPFMet'
-            },
-            'smMC' : {
-                'central'    : 'patPFMet',
-                'jetEnUp'    : 'patPFMetJetEnUp',
-                'jetEnDown'  : 'patPFMetJetEnDown',
-                'jetResUp'   : 'patPFMetJetResUp',
-                'jetResDown' : 'patPFMetJetResDown',
-                'unclEnUp'   : 'patPFMetUnclusteredEnUp',
-                'unclEnDown' : 'patPFMetUnclusteredEnDown'
-            }
-        },
-        'srcMEtCov' : 'pfMEtSignCovMatrix',
-        'applyMEtShiftCorrection' : True
-    },
+    ##'pfMEtMVA' : {
+    ##    'srcJets' : {
+    ##        'Data' : {
+    ##            'central'    : 'patJets'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patJets'
+    ##        }
+    ##    },
+    ##    'srcMEt' : {
+    ##        'Data' : {
+    ##            'central'    : 'patPFMetMVA'| HLT_IsoMu15_eta2p1_L1ETM20_v3 |        833 |  28.941(/pb) |  28.941(/pb) |
+| HLT_IsoMu15_eta2p1_L1ETM20_v4 |      12226 | 681.668(/pb) | 668.540(/pb) |
+| HLT_IsoMu15_eta2p1_L1ETM20_v5 |       3099 | 209.430(/pb) | 209.430(/pb) |
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patPFMetMVANoSmearing'
+    ##        }
+    ##    },
+    ##    'srcMEtCov' : '', # CV: take PFMET significance matrix from reco::MET->getSignificanceMatrix()
+    ##    'applyMEtShiftCorrection' : False
+    ##},
+    ##'pfMEtSmeared' : {
+    ##    'srcJets' : {
+    ##        'Data' : {
+    ##            'central'    : 'patJets'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'smearedPatJets',
+    ##            #'jetEnUp'    : 'shiftedPatJetsEnUpForRawMEt',
+    ##            #'jetEnDown'  : 'shiftedPatJetsEnDownForRawMEt',
+    ##            'jetEnUp'    : 'smearedPatJets',
+    ##            'jetEnDown'  : 'smearedPatJets',
+    ##            'jetResUp'   : 'smearedPatJetsResUp',
+    ##            'jetResDown' : 'smearedPatJetsResDown',
+    ##            'unclEnUp'   : 'smearedPatJets',
+    ##            'unclEnDown' : 'smearedPatJets'
+    ##        }
+    ##    },
+    ##    'srcMEt' : {
+    ##        'Data' : {
+    ##            'central'    : 'patPFMet'
+    ##        },
+    ##        'smMC' : {
+    ##            'central'    : 'patPFMet',
+    ##            'jetEnUp'    : 'patPFMetJetEnUp',
+    ##            'jetEnDown'  : 'patPFMetJetEnDown',
+    ##            'jetResUp'   : 'patPFMetJetResUp',
+    ##            'jetResDown' : 'patPFMetJetResDown',
+    ##            'unclEnUp'   : 'patPFMetUnclusteredEnUp',
+    ##            'unclEnDown' : 'patPFMetUnclusteredEnDown'
+    ##        }
+    ##    },
+    ##    'srcMEtCov' : 'pfMEtSignCovMatrix',
+    ##    'applyMEtShiftCorrection' : False
+    ##},
     'pfMEtTypeIcorrectedSmeared' : {
         'srcJets' : {
             'Data' : {
@@ -224,7 +272,7 @@ metOptions = {
             }
         },
         'srcMEtCov' : 'pfMEtSignCovMatrix',
-        'applyMEtShiftCorrection' : True
+        'applyMEtShiftCorrection' : False
     ##},
     ##'pfMEtTypeIpIIcorrectedSmeared' : {
     ##    'srcJets' : {
@@ -258,7 +306,41 @@ metOptions = {
     ##        }
     ##    },
     ##    'srcMEtCov' : 'pfMEtSignCovMatrix',
-    ##    'applyMEtShiftCorrection' : True
+    ##    'applyMEtShiftCorrection' : False
+    },
+    'pfMEtMVASmeared' : {
+        'srcJets' : {
+            'Data' : {
+                'central'    : 'patJets'
+            },
+            'smMC' : {
+                'central'    : 'smearedPatJets',
+                #'jetEnUp'    : 'shiftedPatJetsEnUpForCorrMEt',
+                #'jetEnDown'  : 'shiftedPatJetsEnDownForCorrMEt',
+                'jetEnUp'    : 'smearedPatJets',
+                'jetEnDown'  : 'smearedPatJets',
+                'jetResUp'   : 'smearedPatJetsResUp',
+                'jetResDown' : 'smearedPatJetsResDown',
+                'unclEnUp'   : 'smearedPatJets',
+                'unclEnDown' : 'smearedPatJets'
+            }
+        },
+        'srcMEt' : {
+            'Data' : {
+                'central'    : 'patPFMetMVA'
+            },
+            'smMC' : {
+                'central'    : 'patPFMetMVA',
+                'jetEnUp'    : 'patPFMetMVAJetEnUp',
+                'jetEnDown'  : 'patPFMetMVAJetEnDown',
+                'jetResUp'   : 'patPFMetMVAJetResUp',
+                'jetResDown' : 'patPFMetMVAJetResDown',
+                'unclEnUp'   : 'patPFMetMVAUnclusteredEnUp',
+                'unclEnDown' : 'patPFMetMVAUnclusteredEnDown'
+            }
+        },
+        'srcMEtCov' : '', # CV: take PFMET significance matrix from reco::MET->getSignificanceMatrix()
+        'applyMEtShiftCorrection' : False
     }
 }
 
@@ -267,7 +349,7 @@ execDir = "%s/bin/%s/" % (os.environ['CMSSW_BASE'], os.environ['SCRAM_ARCH'])
 executable_produceZllRecoilNtuples           = execDir + 'FWLiteZllRecoilCorrectionNtupleProducer'
 executable_fitZllRecoilNtuples               = execDir + 'fitZllRecoilCorrection'
 executable_FWLiteZllRecoilCorrectionAnalyzer = execDir + 'FWLiteZllRecoilCorrectionAnalyzer'
-executable_hadd                              = 'hadd -f'
+executable_hadd                              = 'hadd'
 executable_makeZllRecoilCorrectionFinalPlots = execDir + 'makeZllRecoilCorrectionFinalPlots'
 executable_shell                             = '/bin/csh'
 executable_python                            = 'python'
@@ -307,6 +389,8 @@ for metOptionName in metOptions.keys():
                     hltPaths[processType], srcWeights[processType])
 
                 if retVal_produceZllRecoilNtuples is None:
+                    print("No input files for MET type = %s, sample = %s, systematic = %s --> skipping !!" % \
+                      (metOptionName, sampleName, central_or_shift))
                     continue
 
                 fileNames_produceZllRecoilNtuples[metOptionName][sampleName][central_or_shift] = \

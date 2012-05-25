@@ -6,7 +6,7 @@ import TauAnalysis.TauIdEfficiency.tools.castor_mirror2 as castor_mirror
 import subprocess
 import shlex
 
-version = "v5_10"
+version = "v5_19"
 
 # Get all the skim files from the castor directory
 sourceFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/" % version
@@ -40,4 +40,5 @@ for source_file in source_files:
     print("copying %s --> %s" % (source_file, target_file))
     files_to_copy.append(source_file)
 
-castor_mirror.mirror_files(castor_mirror.needs_local_copy(files_to_copy, [ targetFilePath ]), [ targetFilePath ], 10)
+#castor_mirror.mirror_files(castor_mirror.needs_local_copy(files_to_copy, [ targetFilePath ]), [ targetFilePath ], max_jobs = 10, skipWaiting = False)
+castor_mirror.mirror_files(castor_mirror.needs_local_copy(files_to_copy, [ targetFilePath ]), [ targetFilePath ], max_jobs = 1, skipWaiting = True)
