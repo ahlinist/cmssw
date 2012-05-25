@@ -82,7 +82,7 @@ void CollectionFromZLegProducer::produce(edm::Event& iEvent,const edm::EventSetu
                                                              Zit != theZHandle->end()   ; 
                                                              ++Zit                      )
   {
-    std::cout << __LINE__ << " : sono qui" << std::endl ;
+    //std::cout << __LINE__ << " : sono qui" << std::endl ;
 	int c = 0;
 	//masses.push_back(Zit->mass());
 	masses->push_back(Zit->mass());
