@@ -6,7 +6,7 @@ import TauAnalysis.TauIdEfficiency.tools.castor_mirror2 as castor_mirror
 import subprocess
 import shlex
 
-version = "v5_19"
+version = "v5_20"
 
 # Get all the skim files from the castor directory
 sourceFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/" % version
