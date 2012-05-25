@@ -33,8 +33,12 @@ print "sample = %s" % sample
 
 tmpDir = '/data1/veelken/tmp/castor_hadd'
 
-inputFileName_regex = r'[a-zA-Z0-9_]*%s[a-zA-Z0-9_]*_(?P<jobId>[a-zA-Z0-9_]+).root' % sample
-inputFile_matcher = re.compile(inputFileName_regex)
+inputFileName1_regex = \
+  r'[a-zA-Z0-9_]*%s_(?P<gridJob>[0-9]+)_(?P<gridTry>[0-9]+)_(?P<hash>[a-zA-Z0-9]+).root' % sample
+inputFile1_matcher = re.compile(inputFileName1_regex)
+inputFileName2_regex = \
+  r'[a-zA-Z0-9_]*%s[a-zA-Z0-9_]*_(?P<jobId>[a-zA-Z0-9_]+).root' % sample
+inputFile2_matcher = re.compile(inputFileName2_regex)
 
 executable_rfcp = 'rfcp'
 executable_hadd = 'hadd -k'
@@ -64,7 +68,8 @@ else:
 
 inputFileNames_matched = []
 for inputFileName in inputFileNames:
-    if inputFile_matcher.match(os.path.basename(inputFileName)):
+    if inputFile1_matcher.match(os.path.basename(inputFileName)) or \
+       inputFile2_matcher.match(os.path.basename(inputFileName)):
         inputFileNames_matched.append(inputFileName)
 
 print "inputFileNames_matched = %s" % inputFileNames_matched
@@ -84,7 +89,16 @@ for inputFileName_matched in inputFileNames_matched:
     tmpFileNames.append(tmpFileName)
 
 outputFileName = os.path.basename(inputFileNames_matched[0])
-jobId = inputFile_matcher.match(outputFileName).group('jobId')
+jobId = None
+if inputFile1_matcher.match(outputFileName):
+    jobId = "%s_%s_%s" % \
+      (inputFile1_matcher.match(outputFileName).group('gridJob'),
+       inputFile1_matcher.match(outputFileName).group('gridTry'),
+       inputFile1_matcher.match(outputFileName).group('hash'))
+elif inputFile2_matcher.match(outputFileName):
+    jobId = inputFile2_matcher.match(outputFileName).group('jobId')
+else:
+    raise ValueError("Failed to compose output file name !!")
 outputFileName = outputFileName.replace("%s.root" % jobId, "all.root")
 outputFileName = os.path.join(tmpDir, outputFileName)
 print "outputFileName = %s" % outputFileName

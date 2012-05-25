@@ -13,11 +13,16 @@ jobId = '2012Apr12'
 outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/%s/' % jobId
 
 samplesToAnalyze = [
-    ##'Data_runs190456to190688'
-    ##'Data_runs190456to191276'
-    'Data_runs190456to191859' 
-    ##'ZplusJets_madgraph',
-    ##'TTplusJets_madgraph'
+    ##'Data_runs190456to193557',
+    ##'Data_runs190456to193621',
+    ##'Data_runs193752to194076',
+    ##'ZplusJets_madgraph2',
+    ##'TTplusJets_madgraph2',
+    ##'PPmuXptGt20Mu15',
+    'PPmuXptGt20Mu15v2'
+    ##'WW',
+    ##'WZ',
+    ##'ZZ'
 ]
 
 # Define what output file name a skimmed sample will have

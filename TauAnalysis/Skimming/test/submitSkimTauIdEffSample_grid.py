@@ -11,7 +11,7 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2012May08'
+jobId = '2012May12'
 
 outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/TauIdEffMeas/'
 
@@ -20,14 +20,26 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 
 samplesToAnalyze = [
     ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to191859',
-    'ZplusJets_madgraph',
-    'Ztautau_pythia',
-    'WplusJets_madgraph',
-    'Wenu_pythia',
-    'Wmunu_pythia',
-    'Wtaunu_pythia',  
-    'PPmuXptGt20Mu15',      
-    'TTplusJets_madgraph'
+    ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to193336',
+    ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to193557',
+    ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to193621',
+    ##'data_TauPlusX_Run2012B_PromptReco_v1_runs193752to194076',
+    ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to193621',
+    'data_TauPlusX_Run2012B_PromptReco_v1_runs193752to194076v2',
+    ##'Zmumu_pythia',
+    ##'DYmumuM10to20_pythia',
+    ##'PPmuXptGt20Mu15v2',
+    ##'ZplusJets_madgraph2',
+    ##'Ztautau_pythia',
+    ##'WplusJets_madgraph',
+    ##'Wenu_pythia',
+    ##'Wmunu_pythia',
+    ##'Wtaunu_pythia',  
+    ##'PPmuXptGt20Mu15',
+    ##'WW',
+    ##'WZ',
+    ##'ZZ',
+    ##'TTplusJets_madgraph2'
 ]
 
 outputFilePath = os.path.join(outputFilePath, jobId)

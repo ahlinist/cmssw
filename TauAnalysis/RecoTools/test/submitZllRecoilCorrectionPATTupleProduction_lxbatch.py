@@ -10,24 +10,60 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v5_12'
+version = 'v5_20'
 
 samples = {
-    'Data_runs190456to191859' : {
+    'Data_runs190456to193557' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
-    'ZplusJets_madgraph' : {
+    'Data_runs190456to193621' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'Data_runs193752to194076' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'ZplusJets_madgraph2' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
-    'TTplusJets_madgraph' : {
+    'TTplusJets_madgraph2' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
-        'numInputFilesPerJob' : 3,
+        'numInputFilesPerJob' : 1,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'PPmuXptGt20Mu15v2' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'WW' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'WZ' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'ZZ' : {
+        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     }
@@ -39,9 +75,15 @@ lxbatch_queue = '1nw'
 #lxbatch_queue = '8nh'
 
 samplesToAnalyze = [
-    'Data_runs190456to191859',
-    'ZplusJets_madgraph',
-    'TTplusJets_madgraph'
+    'Data_runs190456to193557',
+    'Data_runs190456to193621',
+    'Data_runs193752to194076',
+    'ZplusJets_madgraph2',
+    'TTplusJets_madgraph2',
+    'PPmuXptGt20Mu15v2',
+    'WW',
+    'WZ',
+    'ZZ'
 ]
 
 skipExistingPATtuples = True
@@ -108,7 +150,7 @@ def customizeConfigFile(sampleName, jobId, version, inputFileNames, cfgFileName_
     cfg_modified = cfg_modified.replace("#isMC#", isMC_string)
     HLTprocessName = samples[sampleName]['HLTprocessName']
     cfg_modified = cfg_modified.replace("#HLTprocessName#", "'%s'" % HLTprocessName)
-    cfg_modified = cfg_modified.replace("#runPeriod#", runPeriod)
+    cfg_modified = cfg_modified.replace("#runPeriod#", "'%s'" % runPeriod)
 
     cfg_modified += "\n"
     cfg_modified += "process.source.fileNames = cms.untracked.vstring(%s)\n" % \

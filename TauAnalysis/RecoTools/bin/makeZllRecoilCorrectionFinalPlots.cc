@@ -938,25 +938,25 @@ int main(int argc, const char* argv[])
   plotUvsQtNumObjType* plotUvsQtNumVerticesEq1 =
     new plotUvsQtNumObjType(inputFile, "NumVertices",  1,  1, "vertex", 
 			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  plotUvsQtNumObjType* plotUvsQtNumVerticesEq5 =
-    new plotUvsQtNumObjType(inputFile, "NumVertices",  5,  5, "vertex", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  plotUvsQtNumObjType* plotUvsQtNumVerticesEq8 =
-    new plotUvsQtNumObjType(inputFile, "NumVertices",  8,  8, "vertex", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
   plotUvsQtNumObjType* plotUvsQtNumVerticesEq11 =
     new plotUvsQtNumObjType(inputFile, "NumVertices", 11, 11, "vertex", 
 			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq21 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices", 21, 21, "vertex", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq31 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices", 31, 31, "vertex", 
+			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
   std::vector<plotUvsQtNumObjType*> plotUvsQtNumObjs;
   plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq1);
-  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq5);
-  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq8);
   plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq11);
+  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq21);
+  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq31);
   std::vector<std::string> legendEntries;
   legendEntries.push_back("1 Vertex (No PU)");
-  legendEntries.push_back("5 Vertices");
-  legendEntries.push_back("8 Vertices");
   legendEntries.push_back("11 Vertices");
+  legendEntries.push_back("21 Vertices");
+  legendEntries.push_back("31 Vertices");
   fitAndCompare(plotUvsQtNumObjs, legendEntries, true, false, true, false, getOutputFileName_plot(outputFileName, "puDependenceMC"));
   fitAndCompare(plotUvsQtNumObjs, legendEntries, true, false, true, false, getOutputFileName_plot(outputFileName, "puDependenceData"));
 

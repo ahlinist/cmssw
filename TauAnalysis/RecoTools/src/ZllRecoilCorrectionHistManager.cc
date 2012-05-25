@@ -121,13 +121,15 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramsUvsQtNumVtxBinned_.push_back(
     new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", -1,  2));
   histogramsUvsQtNumVtxBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices",  3,  5));
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices",  3,  7));
   histogramsUvsQtNumVtxBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices",  6,  8));
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices",  8, 12));
   histogramsUvsQtNumVtxBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices",  9, 11));
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", 13, 17));
   histogramsUvsQtNumVtxBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", 12, -1));
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", 18, 22));
+  histogramsUvsQtNumVtxBinned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", 23, -1));
 
   for ( int iNumVtx = 1; iNumVtx <= 35; ++iNumVtx ) {
     histogramsUvsQtNumVtxBinned_.push_back(

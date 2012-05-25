@@ -7,17 +7,14 @@ import TauAnalysis.Configuration.recoSampleDefaults_cfi as config
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'ZplusJets_madgraph',
+    'ZplusJets_madgraph2',
     'Ztautau_pythia',
     'WplusJets_madgraph',
-    'Wenu_pythia',
-    'Wmunu_pythia',
-    'Wtaunu_pythia',  
     'PPmuXptGt20Mu15',      
     'WW',
     'WZ',
     'ZZ',
-    'TTplusJets_madgraph'
+    'TTplusJets_madgraph2'
 ]
 
 # List of samples to include in the final level plots.  May include selections
@@ -133,11 +130,9 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },    
-    'ZplusJets_madgraph' : {
-        #'datasetpath' : "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM",
+    'ZplusJets_madgraph2' : {
         'datasetpath' : "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        #'events_processed' : 1082838,
         'events_processed' : 9271272,
         'skim_eff' : 1.0,
         'x_sec' : 3503.71*_picobarns, # Note: Madgraph samples are generated for M > 50 GeV
@@ -171,65 +166,27 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'Wenu_pythia' : {
-        'datasetpath' : "/WToENu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 4856640,
-        'number_of_jobs' : 2500,
-        'skim_eff' : 1.0,
-        'x_sec' : 12085.7*_picobarns, # NLO cross-section @ 8 TeV,
-                                      # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
-        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
-        'applyZrecoilCorrection' : True,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : False,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'Wmunu_pythia' : {
-        'datasetpath' : "/WToMuNu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 4637464,
-        'number_of_jobs' : 2500,
-        'skim_eff' : 1.0,
-        'x_sec' : 12085.7*_picobarns, # NLO cross-section @ 8 TeV,
-                                      # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
-        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
-        'applyZrecoilCorrection' : True,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : False,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'Wtaunu_pythia' : {
-        'datasetpath' : "/WToTauNu_TuneZ2star_8TeV_pythia6_tauola_cff/Summer12-PU_S7_START50_V15-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 4691129,
-        'number_of_jobs' : 2500,
-        'skim_eff' : 1.0,
-        'x_sec' : 12085.7*_picobarns, # NLO cross-section @ 8 TeV,
-                                      # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
-        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
-        'applyZrecoilCorrection' : True,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'applyRhoNeutralReweighting' : False,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },    
     'PPmuXptGt20Mu15' : {
         'datasetpath' : "/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 7529312,
+        'number_of_jobs' : 2500,
+        'skim_eff' : 1.0,
+        'x_sec' : 0.364*_millibarns*3.7e-4, # x-sec * gen filter efficiency,
+                                            # taken from http://cms.cern.ch/iCMS/prep/requestmanagement?campid=Summer12_DR52X
+        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_QCD,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
+        'enableFakeRates' : True,
+        'factorize' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'PPmuXptGt20Mu15v2' : {
+        'datasetpath' : "/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 7529312,
         'number_of_jobs' : 2500,
@@ -298,10 +255,10 @@ RECO_SAMPLES = {
         'applyRhoNeutralReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'TTplusJets_madgraph' : {
-        'datasetpath' : "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V5-v1/AODSIM",
+    'TTplusJets_madgraph2' : {
+        'datasetpath' : "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1203373,
+        'events_processed' : 6736135,
         'skim_eff' : 1.0,
         'x_sec' : 225.197*_picobarns, # NLO cross-section @ 8 TeV,
                                       # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
@@ -329,19 +286,24 @@ MERGE_SAMPLES = {
     },
     'ZmumuSum' : {
         'samples' : [
-            'Zmumu_pythia'
+            'Zmumu_pythia',
             'DYmumuM10to20_pythia'
         ],
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu
     },
+    'ZplusJetsSum' : {
+        'samples' : [
+            'ZplusJets_madgraph2'
+        ],
+        'legendEntry' : plotter.process_ZplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_ZplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_ZplusJets
+    },
     'WplusJetsSum' : {
         'samples' : [
             'WplusJets_madgraph'
-            #'Wenu_pythia',
-            #'Wmunu_pythia',
-            #'Wtaunu_pythia'            
         ],
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
@@ -354,6 +316,14 @@ MERGE_SAMPLES = {
         'legendEntry' : 'QCD',
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD
+    },
+    'TTplusJetsSum' : {
+        'samples' : [
+            'TTplusJets_madgraph2'
+        ],
+        'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_TTplusJets
     },
     'VVsum' : {
         'samples' : [
@@ -371,7 +341,7 @@ MERGE_SAMPLES = {
             'qcdSum',
             'WplusJetsSum',
             'VVsum',
-            'TTplusJets_madgraph'
+            'TTplusJetsSum'
         ],
         'legendEntry' : 'SM',
         'type' : 'smMC',

@@ -47,7 +47,7 @@ dummyEventSelection = cms.untracked.PSet(
 process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",
     AODSIMEventContent,                                  
     fileName = cms.untracked.string(
-        'simWmunu_AOD.root'
+        'simZplusJets_madgraph_AOD.root'
     ),
     maxSize = cms.untracked.int32(1000000000)                                                
 )

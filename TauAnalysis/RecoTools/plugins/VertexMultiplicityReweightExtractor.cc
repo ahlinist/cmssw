@@ -164,6 +164,7 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
       //     For 2012 data use pp inelastic cross-section measured by CMS
       //     scaled by ratio 1.02 of min. bias cross-sections @ 8 TeV/7 TeV, computed by PYTHIA,
       //     cf. https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1692/1/1.html
+      //
       if ( mcPeriod.find("11") != std::string::npos ) genLumiReweight3d_->weight3D_init(73.5/68.);
       else genLumiReweight3d_->weight3D_init(69.4/69.4);
     }

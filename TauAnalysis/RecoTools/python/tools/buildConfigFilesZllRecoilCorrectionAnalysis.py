@@ -271,8 +271,7 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
             ##shiftedMEtCorrY_string = "+1.571e-1 - 3.710e-3*x"
             shiftedMEtCorrX_string = "-1.94451e-02 - 4.38986e-03*y"
             shiftedMEtCorrY_string = "-4.31368e-01 - 1.90753e-01*y"
-    elif runPeriod == "2011RunB" or \
-         runPeriod == "2012RunA": # CV: use 2011 run B correction for 2012 run A data for the time-being...
+    elif runPeriod == "2011RunB":
         if processType == 'Data':
             ##shiftedMEtCorrX_string = "-3.265e-1 + 5.162e-3*x" # CV: x = sumEt, y = numVertices
             ##shiftedMEtCorrY_string = "-1.956e-2 - 6.299e-3*x"
@@ -283,6 +282,17 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
             ##shiftedMEtCorrY_string = "-1.517e-2 - 3.357e-3*x"
             shiftedMEtCorrX_string = "-9.89706e-02 + 6.64796e-03*y"
             shiftedMEtCorrY_string = "-5.32495e-01 - 1.82195e-01*y"
+    elif runPeriod == "2012RunA":
+        if processType == 'Data':
+            ##shiftedMEtCorrX_string = "-7.67892e-01 + 5.76983e-03*x" # CV: x = sumEt, y = numVertices
+            ##shiftedMEtCorrY_string = "+5.54005e-01 - 2.94046e-03*x"
+            shiftedMEtCorrX_string = "+3.54233e-01 + 2.65299e-01*y"
+            shiftedMEtCorrY_string = "+1.88923e-01 - 1.66425e-01*y"
+        else:
+            ##shiftedMEtCorrX_string = "+1.77344e-01 - 1.34333e-03*x"
+            ##shiftedMEtCorrY_string = "+8.08402e-01 - 2.84264e-03*x"
+            shiftedMEtCorrX_string = "-2.99576e-02 - 6.61932e-02*y"
+            shiftedMEtCorrY_string = "+3.70819e-01 - 1.48617e-01*y"
     else:
         raise ValueError("No sys. MET shifts defined for run-period = %s !!" % runPeriod)
 
