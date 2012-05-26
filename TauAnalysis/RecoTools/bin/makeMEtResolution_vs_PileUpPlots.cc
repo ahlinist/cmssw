@@ -812,19 +812,19 @@ int main(int argc, const char* argv[])
   double fit_uParl_xMax = 300.;
 
   makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
-				  "uParl", "RMS(u_{#parallel} ) / GeV", 
+				  "uParl", "RMS(u_{#parallel} ) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, false);
   makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
-				  "uParl", "RMS(u_{#parallel} ) / (<-u_{#parallel} >/{q_T}) #cdot GeV", 
+				  "uParl", "RMS(u_{#parallel} ) / (<-u_{#parallel} > / q_{T}) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, true);
   makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
-				  "uPerp", "RMS(u_{#perp}  ) / GeV", 
+				  "uPerp", "RMS(u_{#perp}  ) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, false);
   makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
-				  "uPerp", "RMS(u_{#perp}  ) / (<-u_{#parallel} >/{q_T}) #cdot GeV", 
+				  "uPerp", "RMS(u_{#perp}  ) / (<-u_{#parallel} > / q_{T}) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, true);
 
