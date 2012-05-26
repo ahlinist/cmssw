@@ -102,9 +102,6 @@ TGraphErrors* compMEtResolution_vs_PileUp(TFile* inputFile,
 
   for ( int iVertex = 1; iVertex <= numVertices; ++iVertex ) {
 
-    if ( std::string(inputFile->GetName()).find("MVA") != std::string::npos && iVertex > 20 ) continue; // CV: exclude "bad" points 
-                                                                                                        //     from resolution fit
-
     TH1* histogram_qT_sum = 0;
     TH2* histogram_uParl_vs_qT_sum = 0;
     TH2* histogram_projection_vs_qT_sum = 0;
@@ -155,9 +152,11 @@ TGraphErrors* compMEtResolution_vs_PileUp(TFile* inputFile,
 
     TF1* fit_response = fitGraph_uParl_mean("fit_response", graph_uParl_vs_qT_mean);
 
-    double resolution_div_response_mean = 0.;
-    double resolution_div_response_meanErr = 0.;
-    double normalization = 0.;
+    // CV: use temporary histogram to compute RMS of uParl distribution
+    //     around mean, given by uParl(qT) value of fitted response curve
+    TString histogramName_1d = TString(histogram_projection_vs_qT_sum->GetName()).Append("_1d");
+    TH1* histogram_1d = new TH1D(histogramName_1d.Data(), histogramName_1d.Data(), 75, -75., +75.);
+    if ( !histogram_1d->GetSumw2N() ) histogram_1d->Sumw2();
 
     int numBinsX = histogram_projection_vs_qT_sum->GetNbinsX();
     for ( int iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
@@ -175,10 +174,6 @@ TGraphErrors* compMEtResolution_vs_PileUp(TFile* inputFile,
       double responseErr = getFitError(fit_response, x)/x;
       if ( !(response > 0.) ) continue;
 
-      double rms = 0.;
-      double rmsErr = 0.;
-      double weight_sum = 0.;
-
       int numBinsY = histogram_projection_vs_qT_sum->GetNbinsY();
       for ( int iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
 	double y = histogram_projection_vs_qT_sum->GetYaxis()->GetBinCenter(iBinY);
@@ -187,44 +182,25 @@ TGraphErrors* compMEtResolution_vs_PileUp(TFile* inputFile,
 	if      ( projection == "uParl" ) y_expected = -response*x;
 	else if ( projection == "uPerp" ) y_expected = 0.;
 	else assert(0);
-
-	double diff_y = y - y_expected;
 	
-	double weight = histogram_projection_vs_qT_sum->GetBinContent(iBinX, iBinY);
-	double weightErr = histogram_projection_vs_qT_sum->GetBinError(iBinX, iBinY);
+	double diff_y = y - y_expected;
+	if ( divide_by_response ) diff_y /= response; 
+	
+	int bin_1d = histogram_1d->FindBin(diff_y);
+	
+	double binContent_1d = histogram_1d->GetBinContent(bin_1d);
+	double binError_1d = histogram_1d->GetBinError(bin_1d);
 
-	rms += (weight*square(diff_y));
-	rmsErr += (weightErr*square(diff_y));
-	weight_sum += weight;
+	double addBinContent = histogram_projection_vs_qT_sum->GetBinContent(iBinX, iBinY);
+	double addBinError = histogram_projection_vs_qT_sum->GetBinError(iBinX, iBinY);
+	
+	histogram_1d->SetBinContent(bin_1d, binContent_1d + addBinContent);
+	histogram_1d->SetBinError(bin_1d, TMath::Sqrt(binError_1d*binError_1d + addBinError*addBinError));
       }
-
-      if ( weight_sum > 0. ) {
-	rms /= weight_sum;
-	rmsErr /= weight_sum;
-      }
-
-      double resolution = TMath::Sqrt(rms);
-      double resolutionErr = TMath::Sqrt(rmsErr);
-
-      std::cout << "qT = " << qTmin << ".." << qTmax << " (weight_sum = " << weight_sum << "):" << std::endl;
-      std::cout << " response = " << response << " +/- " << responseErr << std::endl;
-      std::cout << " resolution = " << resolution << " +/- " << resolutionErr << std::endl;
-      
-      if ( divide_by_response ) resolution_div_response_mean += weight_sum*(resolution/response);
-      else resolution_div_response_mean += weight_sum*resolution;
-      double err2 = 0.;
-      if ( divide_by_response && response > 0. ) err2 += square(responseErr/response);
-      if ( resolution > 0. ) err2 += square(resolutionErr/resolution);
-      resolution_div_response_meanErr += weight_sum*TMath::Sqrt(err2);
-      normalization += weight_sum;
     }
-      
-    if ( normalization > 0. ) {
-      resolution_div_response_mean /= normalization;
-      resolution_div_response_meanErr /= normalization;
-    }
-    
-    std::cout << "resolution/response = " << resolution_div_response_mean << " +/- " << resolution_div_response_meanErr << std::endl;
+
+    double resolution = histogram_1d->GetRMS();
+    double resolutionErr = histogram_1d->GetRMSError();
 
     double x = -1.;
     if ( xAxis_mode == kGenNumPileUpInteractions ) {
@@ -241,8 +217,8 @@ TGraphErrors* compMEtResolution_vs_PileUp(TFile* inputFile,
     if ( x < 0. ) continue;
     //std::cout << "p0 = " << p0 << ", p1 = " << p1 << ", p2 = " << p2 << ":" 
     //	        << " numVtx = " << iVertex << " --> numPU = " << x << std::endl;
-    double y = resolution_div_response_mean;
-    double yErr = 2.*resolution_div_response_meanErr;
+    double y = resolution;
+    double yErr = resolutionErr;
     
     std::cout << "x = " << x << ": y = " << y << " +/- " << yErr << std::endl;
 
@@ -253,6 +229,7 @@ TGraphErrors* compMEtResolution_vs_PileUp(TFile* inputFile,
 
     delete graph_uParl_vs_qT_mean;
     delete fit_response;
+    delete histogram_1d;
   }
 
   TString graphName = Form("graph_%s_%s_%s", data_or_mcType.Data(), runPeriod.Data(), projection.Data());
