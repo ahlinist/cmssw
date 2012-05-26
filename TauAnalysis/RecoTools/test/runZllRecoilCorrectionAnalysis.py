@@ -7,11 +7,11 @@ from TauAnalysis.Skimming.recoSampleDefinitionsGoldenZmumu_7TeV_grid_cfi import 
 
 import os
 
-version = 'v5_19'
+version = 'v5_20'
 
 inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
-outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_woMEtSysShiftCorr' % version
+outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_wMEtSysShiftCorr' % version
 
 samplesToAnalyze = {
     'Data_2012RunA' : {
@@ -196,8 +196,6 @@ metOptions = {
     ##    'srcMEt' : {
     ##        'Data' : {
     ##            'central'    : 'patPFMetMVA'| HLT_IsoMu15_eta2p1_L1ETM20_v3 |        833 |  28.941(/pb) |  28.941(/pb) |
-| HLT_IsoMu15_eta2p1_L1ETM20_v4 |      12226 | 681.668(/pb) | 668.540(/pb) |
-| HLT_IsoMu15_eta2p1_L1ETM20_v5 |       3099 | 209.430(/pb) | 209.430(/pb) |
     ##        },
     ##        'smMC' : {
     ##            'central'    : 'patPFMetMVANoSmearing'
@@ -272,7 +270,7 @@ metOptions = {
             }
         },
         'srcMEtCov' : 'pfMEtSignCovMatrix',
-        'applyMEtShiftCorrection' : False
+        'applyMEtShiftCorrection' : True
     ##},
     ##'pfMEtTypeIpIIcorrectedSmeared' : {
     ##    'srcJets' : {
@@ -340,7 +338,7 @@ metOptions = {
             }
         },
         'srcMEtCov' : '', # CV: take PFMET significance matrix from reco::MET->getSignificanceMatrix()
-        'applyMEtShiftCorrection' : False
+        'applyMEtShiftCorrection' : True
     }
 }
 

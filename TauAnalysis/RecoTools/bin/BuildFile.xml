@@ -48,3 +48,12 @@
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="root"/>
 </bin>
+<bin   file="makeMEtResolution_vs_PileUpPlots.cc" name="makeMEtResolution_vs_PileUpPlots">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="root"/>
+</bin>
