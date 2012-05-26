@@ -26,8 +26,8 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-##isMC = True # use for MC
-isMC = False # use for Data
+isMC = True # use for MC
+##isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2012 Data
 HLTprocessName = "HLT" # use for Spring'12 MC
 #type1JetPtThreshold = 20.0 # increased jet Pt threshold to reduce sensitivity of Type 1 corrected MET to pile-up
@@ -327,7 +327,7 @@ if isMC:
     process.patTupleOutputModule.outputCommands.extend(
         cms.untracked.vstring(
             'keep *_addPileupInfo_*_*',
-            'keep *_vertexMultiplicityReweight3d2012RunA_*_*',
+            'keep *_vertexMultiplicityReweight*_*_*',
             'keep *_genParticles_*_*'
         )
     )
@@ -387,16 +387,16 @@ process.produceAndSavePUreweightHistograms += process.pfNeutralHadronAnalyzer
 process.produceAndSavePUreweightHistograms += process.pfPhotonAnalyzer
                            
 if isMC:
-    process.producePUreweightHistogramsKt6PFNeutralJets2012RunA = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
-        srcWeight = cms.InputTag('vertexMultiplicityReweight3d2012RunA')
+    process.producePUreweightHistogramsKt6PFNeutralJets2012RunAplusB = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
+        srcWeight = cms.InputTag('vertexMultiplicityReweight3d2012RunAplusB')
     )
-    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets2012RunA
+    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets2012RunAplusB
 
-    process.rhoNeutralAnalyzer2012RunA = process.rhoNeutralAnalyzer.clone(
+    process.rhoNeutralAnalyzer2012RunAplusB = process.rhoNeutralAnalyzer.clone(
         srcGenPileUp = cms.InputTag('addPileupInfo'),
-        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d2012RunA')
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d2012RunAplusB')
     )
-    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer2012RunA
+    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer2012RunAplusB
 
 process.savePUreweightHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('ZllRecoilCorrectionPUreweightHistograms.root')

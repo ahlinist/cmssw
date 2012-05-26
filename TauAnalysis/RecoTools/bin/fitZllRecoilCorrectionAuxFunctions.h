@@ -15,6 +15,7 @@
 
 #include <string>
 #include <vector>
+#include <assert.h>
 
 enum { kMean, kRMS };
 
@@ -177,6 +178,35 @@ TF1* fitGraph_uPerp_rms(const std::string& name, TGraph* graph, double xMin = 0.
   TGraph* dummyGraph = (TGraph*)graph->Clone(); // CV: fit 'dummyGraph', to avoid TF1 getting attached to 'graph' object
   dummyGraph->Fit(f, "E");
   return f;
+}
+
+double getFitError(TF1* fit, double x)
+{
+  double fitError2 = 0.;
+
+  double y0 = fit->Eval(x);
+  unsigned numParameter = fit->GetNpar();
+  for ( unsigned iParameter = 0; iParameter < numParameter; ++iParameter ) {
+    double fitParameter = fit->GetParameter(iParameter);
+    double fitParameterErr = fit->GetParError(iParameter);
+
+    fit->SetParameter(iParameter, fitParameter + fitParameterErr);
+    double yUp = fit->Eval(x);
+    
+    fit->SetParameter(iParameter, fitParameter - fitParameterErr);
+    double yDown = fit->Eval(x);
+    
+    double yMin = TMath::Min(yUp, yDown);
+    double yMax = TMath::Max(yUp, yDown);
+
+    if ( !(TMath::IsNaN(yMin) || TMath::IsNaN(yMax)) ) fitError2 += (0.5*(square(y0 - yMin) + square(yMax - y0)));
+    else if ( !TMath::IsNaN(yMin) ) fitError2 += square(y0 - yMin);
+    else if ( !TMath::IsNaN(yMax) ) fitError2 += square(yMax - y0);
+
+    fit->SetParameter(iParameter, fitParameter);
+  }
+  
+  return TMath::Sqrt(fitError2);
 }
 
 //
