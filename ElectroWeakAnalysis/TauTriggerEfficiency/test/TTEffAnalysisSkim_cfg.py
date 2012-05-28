@@ -2,8 +2,10 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 isData = True
+## doRECO = False will still reconstruct Taus, use False if running AOD(SIM)
 doRECO = True
 doMETleg = False
+
 
 process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
@@ -34,7 +36,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 if (isData):
     process.GlobalTag.globaltag = 'GR_R_52_V8::All'
 else:
-    process.GlobalTag.globaltag = 'START44_V13::All'
+    process.GlobalTag.globaltag = 'START52_V9::All'
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(100)
@@ -43,13 +45,15 @@ process.maxEvents = cms.untracked.PSet(
 if(isData):
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-          '/store/data/Run2012A/Tau/RAW/v1/000/193/621/FCD858AA-9298-E111-8D12-001D09F251FE.root'
+        '/store/data/Run2012A/Tau/RAW/v1/000/193/621/FCD858AA-9298-E111-8D12-001D09F251FE.root'
+#	'/store/data/Run2012A/TauPlusX/AOD/PromptReco-v1/000/193/621/FEA07F25-AC9A-E111-B00B-0025901D5D90.root'
     )
   )
 else:
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/tmp/slehti/Fall11_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-RAW_PU_S6_START42_V14B-v1_0000_86738BE8-EBF0-E011-8E03-003048C693E6.root'
+	'/store/mc/Summer12/DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola/AODSIM/PU_S8_START52_V9-v1/0000/F2275F6B-D490-E111-8912-001A92971BBE.root'
+#        'file:/tmp/slehti/Fall11_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-RAW_PU_S6_START42_V14B-v1_0000_86738BE8-EBF0-E011-8E03-003048C693E6.root'
 #          "file:/tmp/mkortela/FCA4CF79-A5A6-E011-AA99-E0CB4E55366A.root"
     )
   )
@@ -72,7 +76,7 @@ process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 
 # Produce PAT
 import ElectroWeakAnalysis.TauTriggerEfficiency.Pat as pat
-process.patSequence = pat.addPat(process, isData, False)
+process.patSequence = pat.addPat(process, isData, doRECO, False)
 
 # Remove printout
 process.makePatTaus.remove(process.tauGenJets)
@@ -108,7 +112,7 @@ process.TTEffSkimFilter = cms.Path(
         process.primaryVertexFilter * 
 	process.scrapping *
         process.patSequence *
-	process.PFTauSkimmed *
+#	process.PFTauSkimmed *
 	process.TTEffSkimCounterSavedEvents
 )
 

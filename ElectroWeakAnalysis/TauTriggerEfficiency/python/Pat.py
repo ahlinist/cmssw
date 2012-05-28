@@ -6,7 +6,7 @@ import PhysicsTools.PatAlgos.tools.jetTools as jetTools
 
 import ElectroWeakAnalysis.TauTriggerEfficiency.MuonPFIsolation as MuonPFIsolation
 
-def addPat(process, isData, doTTEffShrinkingConePFTau):
+def addPat(process, isData, doRECO, doTTEffShrinkingConePFTau):
     sequence = cms.Sequence()
 
     # If running together with RECO
@@ -28,8 +28,9 @@ def addPat(process, isData, doTTEffShrinkingConePFTau):
     #process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "muons", process.patMuons)
     #sequence += process.muonPFIsolationSequence
     
-    process.pfPileUpIso.PFCandidates = "particleFlowTmp" # I don't know why I have to do this
-    process.pfNoPileUpIso.bottomCollection = "particleFlowTmp"
+    if doRECO:
+        process.pfPileUpIso.PFCandidates = "particleFlowTmp" # I don't know why I have to do this
+        process.pfNoPileUpIso.bottomCollection = "particleFlowTmp"
 
     jetCorr = ["L1FastJet", "L2Relative", "L3Absolute"]
     if isData:
