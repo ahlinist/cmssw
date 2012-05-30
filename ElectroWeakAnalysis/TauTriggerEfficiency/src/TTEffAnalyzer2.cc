@@ -10,6 +10,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/Registry.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 
 #include "DataFormats/Common/interface/View.h"
@@ -34,6 +35,7 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMaps.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "RecoTauTag/TauTagTools/interface/TauTagTools.h"
@@ -69,7 +71,7 @@ private:
   edm::InputTag l1CenSrc_;
   edm::InputTag l1MetSrc_;
   edm::InputTag l1MhtSrc_;
-  edm::InputTag l1GtReadoutRecordSrc_;
+//  edm::InputTag l1GtReadoutRecordSrc_;
   edm::InputTag l1GtObjectMapRecordSrc_;
   double l1JetMatchingCone_;
   bool l1SelectNearest_;
@@ -221,7 +223,7 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   l1CenSrc_(iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource")),
   l1MetSrc_(iConfig.getParameter<edm::InputTag>("L1extraMETSource")),
   l1MhtSrc_(iConfig.getParameter<edm::InputTag>("L1extraMHTSource")),
-  l1GtReadoutRecordSrc_(iConfig.getParameter<edm::InputTag>("L1GtReadoutRecord")),
+//  l1GtReadoutRecordSrc_(iConfig.getParameter<edm::InputTag>("L1GtReadoutRecord")),
   l1GtObjectMapRecordSrc_(iConfig.getParameter<edm::InputTag>("L1GtObjectMapRecord")),
   l1JetMatchingCone_(iConfig.getParameter<double>("L1JetMatchingCone")),
   l2TauInfoAssocSrc_(iConfig.getParameter<edm::InputTag>("L2AssociationCollection")),
@@ -488,12 +490,13 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   L1MET_ = hl1met->front().et();
   iEvent.getByLabel(l1MhtSrc_, hl1met);
   L1MHT_ = hl1met->front().et();
-
+/*
   edm::Handle<L1GlobalTriggerReadoutRecord>      l1GTRR;
-  edm::Handle<L1GlobalTriggerObjectMapRecord>    l1GTOMRec;
-  iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GTRR);
-  iEvent.getByLabel(l1GtObjectMapRecordSrc_, l1GTOMRec);
+  iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GTRR);   
   const DecisionWord& gtDecisionWord = l1GTRR->decisionWord();
+
+  edm::Handle<L1GlobalTriggerObjectMapRecord>    l1GTOMRec;
+  iEvent.getByLabel(l1GtObjectMapRecordSrc_, l1GTOMRec);
   const std::vector<L1GlobalTriggerObjectMap>& objMapVec = l1GTOMRec->gtObjectMap();
   for(size_t i=0; i<l1Bits_.size(); ++i) {
     for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();  itMap != objMapVec.end(); ++itMap) {
@@ -503,24 +506,54 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
+*/
+  // In the new format the names are not in the event data,
+  // They are in the ParameterSet registry                 
+  edm::Handle<L1GlobalTriggerObjectMaps> gtObjectMaps;
+  iEvent.getByLabel(l1GtObjectMapRecordSrc_, gtObjectMaps);
+  edm::pset::Registry* psetRegistry = edm::pset::Registry::instance();
+  edm::ParameterSet const* pset = psetRegistry->getMapped(gtObjectMaps->namesParameterSetID());
+  if (pset == 0) {
+    cms::Exception ex("L1GlobalTrigger");
+    ex << "Could not find L1 trigger names ParameterSet in the registry";
+    ex.addContext("Calling TTEffAnalyzer2::analyze");
+    throw ex;
+  }
+  std::vector<std::string> algoNames = pset->getParameter<std::vector<std::string> >("@algorithmNames");
+  std::vector<int> algoBitNumbers;
+  gtObjectMaps->getAlgorithmBitNumbers(algoBitNumbers);
+  for(size_t i=0; i<l1Bits_.size(); ++i) {
+    for (std::vector<int>::const_iterator iBit = algoBitNumbers.begin(); iBit != algoBitNumbers.end(); ++iBit) {
+      if(algoNames.at(*iBit) == l1Bits_[i].name) {
+	l1Bits_[i].value = gtObjectMaps->algorithmResult(*iBit);
+	break;
+      }
+    }
+  }
 
   edm::Handle<l1extra::L1JetParticleCollection> hl1taus;
   edm::Handle<l1extra::L1JetParticleCollection> hl1cenjets;
   iEvent.getByLabel(l1TauSrc_, hl1taus);
   iEvent.getByLabel(l1CenSrc_, hl1cenjets);
+  edm::Handle<L1GctJetCandCollection> l1digis;
+  iEvent.getByLabel("cenJets",l1digis);
+
   l1extra::L1JetParticleCollection::const_iterator iJet;
   for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet) {
     l1JetIsTau_.push_back(true);
     l1JetPt_.push_back(iJet->pt());
     l1JetEt_.push_back(iJet->et());
+    if(l1digis.isValid())
     l1JetRank_.push_back(iJet->gctJetCand()->rank());
     l1JetEta_.push_back(iJet->eta());
     l1JetPhi_.push_back(iJet->phi());
   }
+
   for(iJet = hl1cenjets->begin(); iJet != hl1cenjets->end(); ++iJet) {
     l1JetIsTau_.push_back(false);
     l1JetPt_.push_back(iJet->pt());
     l1JetEt_.push_back(iJet->et());
+    if(l1digis.isValid())
     l1JetRank_.push_back(iJet->gctJetCand()->rank());
     l1JetEta_.push_back(iJet->eta());
     l1JetPhi_.push_back(iJet->phi());
