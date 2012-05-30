@@ -41,7 +41,9 @@
 <use   name="RecoJets/JetAssociationAlgorithms"/>
 <use   name="RecoEgamma/EgammaIsolationAlgos"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
-<use   name="HiggsAnalysis/HiggsToGammaGamma"/>
+<use   name="CMGTools/External"/>
+<use   name="HiggsAnalysis/HiggsTo2photons"/>
+
 <flags   EDM_PLUGIN="1"/>
 <export>
   <lib   name="1"/>

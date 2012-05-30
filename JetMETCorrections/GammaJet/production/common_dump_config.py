@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.7 2011/11/20 21:45:20 meridian Exp $
+# $Id: common_dump_config.py,v 1.8 2012/02/16 17:48:16 pandolf Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -16,6 +16,7 @@ process = cms.Process("myprocess")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 is41X=False
+doCleanMet=False
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("PhysicsTools.HepMCCandAlgos.genParticleCandidates_cfi")
@@ -35,6 +36,8 @@ process.source = cms.Source("PoolSource",
 )
 
 )
+
+from HiggsAnalysis.HiggsTo2photons.hggPhotonIDCuts_cfi import *
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
@@ -74,7 +77,8 @@ process.GlobalTag.globaltag = cms.string('START311_V2::All')
 process.load("RecoMET.Configuration.RecoGenMET_cff")
 process.load("RecoMET.Configuration.GenMETParticles_cff")
 process.load("JetMETCorrections.Configuration.DefaultJEC_cff")
-process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
+#process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")    # new for 52X
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")   # chiara: controlla la storia dell'ordine
 
 #process.ak5CaloL1Offset.useCondDB = False
 #process.ak5PFL1Offset.useCondDB = False
@@ -89,30 +93,28 @@ process.ak5PFJets.doAreaFastjet = True
 
 process.load("JetMETCorrections.GammaJet.NoPileUp_cff")
 
-process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
-process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
-process.metMuonJESCorAK5.corrector = "ak5CaloL2L3"
-process.metMuonJESCorAK5.inputUncorMetLabel = "corMetGlobalMuons"
-#process.metMuonJESCorAK5.hasMuonsCorr = True
-#process.metMuonJESCorAK5.useTypeII = True
-#process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff") 
+# new for 52X
+#process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
+#process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
+#process.metMuonJESCorAK5.corrector = "ak5CaloL2L3"
+#process.metMuonJESCorAK5.inputUncorMetLabel = "corMetGlobalMuons"
 
+# new for 52X 
 #* process.producePFMETCorrections)
-from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
-process.metJESCorPFAK5 = metJESCorAK5PFJet.clone()
-process.metJESCorPFAK5.inputUncorJetsLabel = "pfJets"
-process.metJESCorPFAK5.metType = "PFMET"
-process.metJESCorPFAK5.inputUncorMetLabel = "pfMet"
-process.metJESCorPFAK5.useTypeII = False
-process.metJESCorPFAK5.jetPTthreshold = cms.double(10.0)
-process.metJESCorPFAK5.corrector = cms.string('ak5PFL1FastL2L3')
-process.metCorSequence = cms.Sequence(process.metMuonJESCorAK5  * process.metJESCorPFAK5 )
+#from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
+#process.metJESCorPFAK5 = metJESCorAK5PFJet.clone()
+##process.metJESCorPFAK5.inputUncorJetsLabel = "pfJets"  
+#process.metJESCorPFAK5.corrector = cms.string('ak5PFL1FastL2L3')
+#process.metCorSequence = cms.Sequence( process.metJESCorPFAK5 )
 
 # configure B-tagging to be run on ak5PFJets
 process.myBtag = cms.Sequence(process.ak5JetTracksAssociatorAtVertex*process.btagging)
 process.ak5JetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
 process.softMuonTagInfos.jets =  cms.InputTag("ak5PFJets")
 process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
+
+# mva jetId
+from CMGTools.External.pujetidsequence_cff import puJetMva
 
 #from HiggsAnalysis.HiggsToGammaGamma.PhotonFixParams4_2_cfi import *
 ## dumper module
@@ -164,6 +166,8 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
     vertices = cms.untracked.InputTag("offlinePrimaryVerticesWithBS"),
                                     
+    hggPhotonIDConfiguration = cms.PSet(hggPhotonIDCuts),
+    puJetIDAlgos = puJetMva.algos,
                                     
     genjetptthr = cms.double(5.),
     calojetptthr = cms.double(3.),
@@ -180,7 +184,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 # compute rho with PF candidates
 process.load('RecoJets.Configuration.RecoPFJets_cff')
 #process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True,  doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
-process.kt6PFJets = process.kt6PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+#process.kt6PFJets = process.kt6PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 
 #process.load('RecoJets.JetProducers.kt6PFJets_cfi')
 #process.kt6PFJetsForIso = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True,  doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
@@ -195,8 +199,9 @@ process.kt6CaloJetsForIso.Rho_EtaMax = cms.double(2.5)
 
 # re-reconstructing the primary vertices with the Deterministic Annealing (DA) vertex finder
 # from B. Mangano studies
-from RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi import *
-import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi
+if (is41X):
+    from RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi import *
+    import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi
 
 
 # associated met producers (G. Cerminara P. Silva)
@@ -205,15 +210,16 @@ process.ClusteredPFMetProducerStd = ClusteredPFMetProducer.clone()
 
 # cleaned MET (M. Marionneau)
 process.load("CommonTools.ParticleFlow.PF2PAT_cff")
-process.load("MMarionneau.CleanMETProducer.cleanMETProducer_cfi")
 process.ak5PFJetsL1FastL2L3   = cms.EDProducer('PFJetCorrectionProducer',
                                                src         = cms.InputTag('pfJets'),
                                                correctors  = cms.vstring('ak5PFL1FastL2L3')
                                                )
-process.cleanMETProducer.pfMETInput = cms.InputTag("metJESCorPFAK5")
-process.cleanMETProducer.pfJETInput = cms.InputTag("ak5PFJetsL1FastL2L3")
-process.cleanMETProducer.vertexInput = cms.InputTag("offlinePrimaryVerticesWithBS")
-process.cleanMETProducer.vtxUserDef = cms.untracked.bool(False)
+if (doCleanMet):
+    process.load("MMarionneau.CleanMETProducer.cleanMETProducer_cfi")
+    process.cleanMETProducer.pfMETInput = cms.InputTag("metJESCorPFAK5")
+    process.cleanMETProducer.pfJETInput = cms.InputTag("ak5PFJetsL1FastL2L3")
+    process.cleanMETProducer.vertexInput = cms.InputTag("offlinePrimaryVerticesWithBS")
+    process.cleanMETProducer.vtxUserDef = cms.untracked.bool(False)
 
 
 if (is41X):
@@ -234,5 +240,9 @@ process.analysisSequence = cms.Sequence(  )
 if (is41X):
     process.analysisSequence *= process.offlinePrimaryVerticesDA
     process.myanalysis.vertices = cms.untracked.InputTag("offlinePrimaryVerticesDA")
-    
-process.analysisSequence *=  (process.highPurityTracks * process.kt6PFJets * process.ak5PFJets *process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.PF2PAT * process.ak5PFJetsL1FastL2L3 * process.metCorSequence * process.ClusteredPFMetProducerStd  * process.cleanMETProducer *  process.producePFNoPileUp * process.myanalysis)
+
+if (doCleanMet):    
+    process.analysisSequence *=  (process.highPurityTracks * process.ak5PFJets *process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.PF2PAT * process.ak5PFJetsL1FastL2L3 * process.metCorSequence * process.ClusteredPFMetProducerStd  * process.cleanMETProducer *  process.producePFNoPileUp * process.myanalysis)
+else:
+    process.analysisSequence *=  (process.highPurityTracks * process.ak5PFJets * process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.ClusteredPFMetProducerStd * process.pfJetMETcorr * process.pfchsMETcorr * process.pfType1CorrectedMet * process.myanalysis)
+

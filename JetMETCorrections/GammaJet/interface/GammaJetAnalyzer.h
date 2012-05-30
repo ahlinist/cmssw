@@ -24,6 +24,15 @@
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 
+// for jetID
+#include "CMGTools/External/interface/PileupJetIdAlgo.h"
+#include "CMGTools/External/interface/PileupJetIdentifier.h"
+
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/CaloTopology/interface/CaloTopology.h"
+#include "Geometry/CaloTopology/interface/CaloSubdetectorTopology.h"
+
 #include "TH1.h"
 #include "TH2D.h"
 #include "TFile.h"
@@ -42,6 +51,8 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 
+#include "HiggsAnalysis/HiggsTo2photons/interface/CiCPhotonID.h"
+
 //
 // class declaration
 //
@@ -59,6 +70,9 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
+      std::vector<float> getESHits(double X, double Y, double Z, std::map<DetId, EcalRecHit> rechits_map, const CaloGeometry& geometry, CaloSubdetectorTopology *topology_p, int row=0);
+      std::vector<float> getESShape(std::vector<float> ESHits0);
+      
       //  calculate phi1-phi2 keeping value between 0 and pi
       inline float delta_phi(float phi1, float phi2);
       // calculate eta1-eta2 keeping eta2 positive
@@ -96,6 +110,9 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 
       // ----------member data ---------------------------
       bool _debug;
+      
+      //To compute additional pid variables
+      CiCPhotonID* cicPhotonId;
 
 TH1F* h1_hbherh_detid;
 TH1F* h1_etaPhot;
@@ -118,7 +135,6 @@ TH2D* h2_n_vs_eta;
       edm::InputTag JetPFsrcite_;
       edm::InputTag JetPFsrckt4_;
       edm::InputTag JetPFsrcakt5_;
-      edm::InputTag JetPFNoPUsrcakt5_;
       edm::InputTag JetPFsrcakt7_;
       edm::InputTag JetPFsrcsis5_;
       edm::InputTag JetPFsrckt6_;
@@ -140,7 +156,6 @@ TH2D* h2_n_vs_eta;
       string JetCorrector_akt7_; 
       string JetCorrector_jptak5_; 
       string JetCorrector_pfakt5_; 
-      string JetCorrector_pfakt5_nopu_; 
       string JetCorrector_pfakt7_; 
       double genjetptthr_;
       double calojetptthr_;
@@ -278,7 +293,37 @@ TH2D* h2_n_vs_eta;
       Float_t pid_hlwTrackForCiC[40][100]; // Hollow cone track isolation
       Float_t pid_hlwTrack03ForCiC[40][100]; // Hollow cone track isolation
 
-     
+      //PFIsolations
+
+      Float_t pid_pfIsoCharged01ForCiC[40][100]; // Hollow cone track isolation
+      Float_t pid_pfIsoCharged02ForCiC[40][100]; // Hollow cone track isolation
+      Float_t pid_pfIsoCharged03ForCiC[40][100]; // Hollow cone track isolation
+      Float_t pid_pfIsoCharged04ForCiC[40][100]; // Hollow cone track isolation
+      Float_t pid_pfIsoCharged05ForCiC[40][100]; // Hollow cone track isolation
+      Float_t pid_pfIsoCharged06ForCiC[40][100]; // Hollow cone track isolation
+
+      Float_t pid_pfIsoPhotons01ForCiC[40]; 
+      Float_t pid_pfIsoPhotons02ForCiC[40]; 
+      Float_t pid_pfIsoPhotons03ForCiC[40]; 
+      Float_t pid_pfIsoPhotons04ForCiC[40]; 
+      Float_t pid_pfIsoPhotons05ForCiC[40]; 
+      Float_t pid_pfIsoPhotons06ForCiC[40]; 
+
+      Float_t pid_pfIsoNeutrals01ForCiC[40]; 
+      Float_t pid_pfIsoNeutrals02ForCiC[40]; 
+      Float_t pid_pfIsoNeutrals03ForCiC[40]; 
+      Float_t pid_pfIsoNeutrals04ForCiC[40]; 
+      Float_t pid_pfIsoNeutrals05ForCiC[40]; 
+      Float_t pid_pfIsoNeutrals06ForCiC[40]; 
+
+      //Other variables for MVA id
+      Float_t pid_scetawid[40]; // eta width
+      Float_t pid_scphiwid[40]; // eta width
+      Float_t pid_lambdaRatio[40]; // eta width
+      Float_t pid_esXwidth[40]; // eta width
+      Float_t pid_esYwidth[40]; // eta width
+
+      
       Float_t ptiso004Phot[40];
       Int_t ntrkiso004Phot[40];
       Float_t ptiso035Phot[40];
@@ -295,6 +340,7 @@ TH2D* h2_n_vs_eta;
       Float_t sPhiPhiPhot[40];
       Float_t E1Phot[40];
       Float_t E2OverE9Phot[40];
+      Float_t E4Phot[40];
       Float_t E9Phot[40];
       Float_t E25Phot[40];
       Int_t ieleassocPhot[40];
@@ -402,8 +448,6 @@ TH2D* h2_n_vs_eta;
       Float_t   rho;
       Float_t   rhoCalo;
       Float_t   rhoAllJets;
-      Float_t   rhoAllJets_nopu;
-      Float_t   rho_nopu;
 
       Int_t nJet_pfkt4;
       Float_t ptJet_pfkt4[100];
@@ -419,6 +463,30 @@ TH2D* h2_n_vs_eta;
       Float_t phiJet_pfakt5[100];
       Float_t ptDJet_pfakt5[100];
       Float_t rmsCandJet_pfakt5[100];
+
+      Float_t jetId_dRMean_pfakt5[100];
+      Float_t jetId_frac01_pfakt5[100];
+      Float_t jetId_frac02_pfakt5[100];
+      Float_t jetId_frac03_pfakt5[100];
+      Float_t jetId_frac04_pfakt5[100];
+      Float_t jetId_frac05_pfakt5[100];
+      Float_t jetId_nNeutrals_pfakt5[100];
+      Float_t jetId_beta_pfakt5[100];
+      Float_t jetId_betaStar_pfakt5[100];
+      Float_t jetId_dZ_pfakt5[100];
+      Float_t jetId_nCharged_pfakt5[100];
+      Float_t jetId_dR2Mean_pfakt5[100];
+      Float_t jetId_betaStarClassic_pfakt5[100];
+      Float_t jetIdSimple_mva_pfakt5[100];
+      Float_t jetIdFull_mva_pfakt5[100];
+      Float_t jetIdCutBased_mva_pfakt5[100];
+      Int_t jetIdSimple_wp_pfakt5[100];
+      Int_t jetIdFull_wp_pfakt5[100];
+      Int_t jetIdCutBased_wp_pfakt5[100];
+
+      std::vector<PileupJetIdAlgo* > jetId_algos;
+      std::vector<edm::ParameterSet > jetMVAAlgos;
+
       Float_t beta_pfakt5[100][100];
       Float_t betaStar_pfakt5[100][100];
       Float_t combinedSecondaryVertexBJetTags_pfakt5[100], 
@@ -455,54 +523,6 @@ TH2D* h2_n_vs_eta;
       Float_t eNeutralHadrons_pfakt5[100];
       Float_t eHFHadrons_pfakt5[100];
       Float_t eHFEM_pfakt5[100];
-
-
-
-
-      Int_t nJet_pfakt5_nopu;
-      Float_t ptJet_pfakt5_nopu[100];
-      Float_t ptCorrJet_pfakt5_nopu[100];
-      Float_t eJet_pfakt5_nopu[100];
-      Float_t etaJet_pfakt5_nopu[100];
-      Float_t phiJet_pfakt5_nopu[100];
-      Float_t ptDJet_pfakt5_nopu[100];
-      Float_t rmsCandJet_pfakt5_nopu[100];
-      Float_t beta_pfakt5_nopu[100][100];
-      Float_t betaStar_pfakt5_nopu[100][100];
-      Float_t combinedSecondaryVertexBJetTags_pfakt5_nopu[100], 
-              combinedSecondaryVertexMVABJetTags_pfakt5_nopu[100],
-              jetBProbabilityBJetTags_pfakt5_nopu[100],
-              jetProbabilityBJetTags_pfakt5_nopu[100],
-              simpleSecondaryVertexHighEffBJetTags_pfakt5_nopu[100],
-              simpleSecondaryVertexHighPurBJetTags_pfakt5_nopu[100],
-              softMuonBJetTags_pfakt5_nopu[100],
-              softMuonByIP3dBJetTags_pfakt5_nopu[100],
-              softMuonByPtBJetTags_pfakt5_nopu[100],
-              softElectronBJetTags_pfakt5_nopu[100],
-              softElectronByIP3dBJetTags_pfakt5_nopu[100],
-              softElectronByPtBJetTags_pfakt5_nopu[100],
-              trackCountingHighPurBJetTags_pfakt5_nopu[100],
-              trackCountingHighEffBJetTags_pfakt5_nopu[100];
-
-
-
-
-      // Extra variables for PFlow studies
-      Int_t nChargedHadrons_pfakt5_nopu[100];
-      Int_t nPhotons_pfakt5_nopu[100];
-      Int_t nElectrons_pfakt5_nopu[100];
-      Int_t nMuons_pfakt5_nopu[100];
-      Int_t nNeutralHadrons_pfakt5_nopu[100];
-      Int_t nHFHadrons_pfakt5_nopu[100];
-      Int_t nHFEM_pfakt5_nopu[100];
-
-      Float_t eChargedHadrons_pfakt5_nopu[100];
-      Float_t ePhotons_pfakt5_nopu[100];
-      Float_t eElectrons_pfakt5_nopu[100];
-      Float_t eMuons_pfakt5_nopu[100];
-      Float_t eNeutralHadrons_pfakt5_nopu[100];
-      Float_t eHFHadrons_pfakt5_nopu[100];
-      Float_t eHFEM_pfakt5_nopu[100];
 
       Int_t nJet_pfakt7;
       Float_t ptJet_pfakt7[100];
@@ -582,10 +602,11 @@ TH2D* h2_n_vs_eta;
       Float_t phiCorrMet;
       Float_t signifCorrMet;
 
-      Float_t smuCorrMet;
-      Float_t emuCorrMet;
-      Float_t phimuCorrMet;
-      Float_t signifmuCorrMet;
+      // new for 52X
+      // Float_t smuCorrMet;
+      // Float_t emuCorrMet;
+      // Float_t phimuCorrMet;
+      // Float_t signifmuCorrMet;
 
       Float_t sNoHFMet;
       Float_t eNoHFMet;
@@ -623,13 +644,13 @@ TH2D* h2_n_vs_eta;
       Float_t phicleanPfMet[100];
       Float_t signifcleanPfMet[100];
 
-      Float_t ecleanedSaclayPfMet[100];
-      Float_t phicleanedSaclayPfMet[100];
-      Float_t signifcleanedSaclayPfMet[100];
-
-      Float_t eminTypeICleanSaclayPfMet[100];
-      Float_t phiminTypeICleanSaclayPfMet[100];
-      Float_t signifminTypeICleanSaclayPfMet[100];
+      // new for 52X
+      // Float_t ecleanedSaclayPfMet[100];
+      // Float_t phicleanedSaclayPfMet[100];
+      // Float_t signifcleanedSaclayPfMet[100];
+      // Float_t eminTypeICleanSaclayPfMet[100];
+      // Float_t phiminTypeICleanSaclayPfMet[100];
+      // Float_t signifminTypeICleanSaclayPfMet[100];
 
       Float_t globalPfSums[12];
 
@@ -637,11 +658,6 @@ TH2D* h2_n_vs_eta;
       Float_t epfMet;
       Float_t phipfMet;
       Float_t signifpfMet;
-
-      Float_t spfMet_nopu;
-      Float_t epfMet_nopu;
-      Float_t phipfMet_nopu;
-      Float_t signifpfMet_nopu;
 
       Float_t spfMetType1;
       Float_t epfMetType1;
@@ -662,14 +678,12 @@ TH2D* h2_n_vs_eta;
       Int_t    hltCount;
 
       bool dumpAKT5Jets_;
-      bool dumpAKT5NoPUJets_;
       bool dumpAKT7Jets_;
 
       bool dumpJPTAKT5Jets_;
       bool dumpJPTAKT7Jets_;
 
       bool dumpPFAKT5Jets_;
-      bool dumpPFAKT5NoPUJets_;
       bool dumpPFAKT7Jets_;
 
       bool dumpKT4Jets_;
@@ -759,6 +773,7 @@ TH2D* h2_n_vs_eta;
       std::map<std::string, int> hltTriggers;
 
       int pu_n;
+      int pu_true_n;
       int pu_bunchcrossing;
       float pu_zpos[50];
       float pu_sumpt_lowpt[50];
