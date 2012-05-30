@@ -39,14 +39,15 @@ else:
     process.GlobalTag.globaltag = 'START52_V9::All'
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(100)
+        input = cms.untracked.int32(-1)
 )
 
 if(isData):
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/data/Run2012A/Tau/RAW/v1/000/193/621/FCD858AA-9298-E111-8D12-001D09F251FE.root'
+#        '/store/data/Run2012A/Tau/RAW/v1/000/193/621/FCD858AA-9298-E111-8D12-001D09F251FE.root'
 #	'/store/data/Run2012A/TauPlusX/AOD/PromptReco-v1/000/193/621/FEA07F25-AC9A-E111-B00B-0025901D5D90.root'
+	'/store/data/Run2012A/TauPlusX/RAW/v1/000/193/621/F45FEC3D-B098-E111-AEF7-001D09F2AD84.root'
     )
   )
 else:
@@ -112,7 +113,7 @@ process.TTEffSkimFilter = cms.Path(
         process.primaryVertexFilter * 
 	process.scrapping *
         process.patSequence *
-#	process.PFTauSkimmed *
+	process.PFTauSkimmed *
 	process.TTEffSkimCounterSavedEvents
 )
 
@@ -146,6 +147,7 @@ process.FEVTEventContent.outputCommands.extend([
         'keep recoPFMETs_*_*_*',
         'keep recoCaloMETs_*_*_*',
         'keep *_l1extraParticles_*_*',
+	'keep L1GlobalTriggerObjectMaps_*_*_*',
         'keep L1GlobalTriggerReadoutRecord_*_*_*',
         'keep recoBeamSpot_*_*_*',
         'keep edmMergeableCounter_*_*_*',
