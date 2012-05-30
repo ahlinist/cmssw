@@ -43,8 +43,8 @@ if(isData):
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
 #	"file:/tmp/slehti/hlt_100_1_yct.root"
-	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
-#        "file:TTEffSkim.root"
+#	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
+        "file:TTEffSkim.root"
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
@@ -53,6 +53,7 @@ if(isData):
 else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
+#	"file:/tmp/slehti/TauTriggerEff_DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola_Summer12_PU_S8_START52_V9_v1_AODSIM_TTEffSkim_v525_V00_10_04_v2_TTEffSkim_70_1_hQW.root"
 	"file:TTEffSkim.root"
 #        "file:/tmp/slehti/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_160_1_OZG.root"
 	)
@@ -63,7 +64,7 @@ if (isData):
     process.GlobalTag.globaltag = 'GR_H_V29::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
-    process.GlobalTag.globaltag = 'START44_V12::All'
+    process.GlobalTag.globaltag = 'START52_V9::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
@@ -179,8 +180,9 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
 	L1extraMETSource			= cms.InputTag("l1extraParticles", "MET"),
 	L1extraMHTSource			= cms.InputTag("l1extraParticles", "MHT"),
 
-        L1GtReadoutRecord       		= cms.InputTag("gtDigis",""),
-        L1GtObjectMapRecord     		= cms.InputTag("hltL1GtObjectMap","",hltType),
+#        L1GtReadoutRecord       		= cms.InputTag("gtDigis",""),
+#        L1GtObjectMapRecord     		= cms.InputTag("hltL1GtObjectMap","",hltType),
+	L1GtObjectMapRecord			= cms.InputTag("l1L1GtObjectMap"),
         L1Paths = cms.vstring(
             "L1_SingleMu7",
             "L1_SingleMu10",
