@@ -21,15 +21,15 @@
 
 #include <iostream>
 
-#define MAX_VERTICES 500
-#define MAX_TRACKS 5000
+#define MAX_VERTICES_GLBVTX 500
+#define MAX_TRACKS_GLBVTX 5000
 
 class GlobalVertexInfo : public VertexInfoAdapter
 {
  public:
   GlobalVertexInfo() {
-/*     vtx_xyz=new TClonesArray("TVector3", MAX_TRACKS); */
-/*     tk_p4 = new TClonesArray("TLorentzVector", MAX_TRACKS); */
+/*     vtx_xyz=new TClonesArray("TVector3", MAX_TRACKS_GLBVTX); */
+/*     tk_p4 = new TClonesArray("TLorentzVector", MAX_TRACKS_GLBVTX); */
   };
   
   virtual int nvtx() const    { return vtx_n; };
@@ -72,10 +72,10 @@ private:
   std::vector<std::vector<float> > vtx_tkweight;
   std::vector<TVector3> vtx_xyz;
   int vtx_n;
-  int vtx_ntks[MAX_VERTICES];
+  int vtx_ntks[MAX_VERTICES_GLBVTX];
   
   int tk_n;
-  int tk_quality[MAX_TRACKS];
-  int tk_pterr[MAX_TRACKS];
+  int tk_quality[MAX_TRACKS_GLBVTX];
+  int tk_pterr[MAX_TRACKS_GLBVTX];
   std::vector<TLorentzVector> tk_p4;	
 };

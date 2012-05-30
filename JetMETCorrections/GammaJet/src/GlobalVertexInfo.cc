@@ -10,8 +10,8 @@ void GlobalVertexInfo::fillInfo(const edm::Event& iEvent, const edm::EventSetup&
   edm::Handle<reco::TrackCollection> tkH;
   iEvent.getByLabel("generalTracks", tkH);
   for(unsigned int i=0; i<tkH->size(); i++) {
-    if (tk_n >= MAX_TRACKS) {
-      std::cout << "GLobeTracks: WARNING TOO MANY TRACK: " << tkH->size() << " (allowed " << MAX_TRACKS << ")" << std::endl;
+    if (tk_n >= MAX_TRACKS_GLBVTX) {
+      std::cout << "GLobeTracks: WARNING TOO MANY TRACK: " << tkH->size() << " (allowed " << MAX_TRACKS_GLBVTX << ")" << std::endl;
       break;
     }
     reco::TrackRef tk(tkH, i);
@@ -28,11 +28,14 @@ void GlobalVertexInfo::fillInfo(const edm::Event& iEvent, const edm::EventSetup&
   iEvent.getByLabel("offlinePrimaryVertices", vtxH);
   vtx_tkind.clear();
   vtx_tkweight.clear();
+
+  vtx_tkind.reserve(vtxH->size());
+  vtx_tkweight.reserve(vtxH->size());
   vtx_n = 0;
 
   for(unsigned int i=0; i<vtxH->size(); i++) {
-    if (vtx_n >= MAX_VERTICES) {
-      std::cout << "GlobeVertex: WARNING TOO MANY VERTEX: " << vtxH->size() << " (allowed " << MAX_VERTICES << ")" << std::endl;
+    if (vtx_n >= MAX_VERTICES_GLBVTX) {
+      std::cout << "GlobeVertex: WARNING TOO MANY VERTEX: " << vtxH->size() << " (allowed " << MAX_VERTICES_GLBVTX << ")" << std::endl;
       break;
     }
     //    std::cout << "vtx" << i << std::endl;
@@ -46,8 +49,10 @@ void GlobalVertexInfo::fillInfo(const edm::Event& iEvent, const edm::EventSetup&
     std::vector<reco::TrackBaseRef>::const_iterator tk;
       
     std::vector<unsigned short> temp;
+    temp.reserve(vtx->tracksSize());
     std::vector<float> temp_float;
-      
+    temp_float.reserve(vtx->tracksSize());
+
     for(tk=vtx->tracks_begin();tk!=vtx->tracks_end();++tk) {
       int index = 0;
       bool ismatched = false; 
@@ -68,7 +73,10 @@ void GlobalVertexInfo::fillInfo(const edm::Event& iEvent, const edm::EventSetup&
 // 	temp_float.push_back(-9999);
        }
     }
-      
+
+    assert (temp.size() == temp_float.size());
+    assert (temp.size() == vtx->tracksSize());
+
     vtx_tkind.push_back(temp);
     vtx_tkweight.push_back(temp_float);
     vtx_n++;
