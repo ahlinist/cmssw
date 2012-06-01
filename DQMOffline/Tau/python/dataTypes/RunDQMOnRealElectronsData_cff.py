@@ -59,7 +59,7 @@ from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 ElGoodTracks = cms.EDFilter(
     "TrackSelector",
     src = cms.InputTag("generalTracks"), 
-    cut = cms.string("pt > 5 && abs(eta) < 2.5"),
+    cut = cms.string("pt > 5 && abs(eta) < 1.5"),
     filter = cms.bool(False)
 	)
 
@@ -87,7 +87,7 @@ ElTrackCands  = cms.EDProducer(
 ZeeCandElectronTrack = cms.EDProducer(
     "CandViewShallowCloneCombiner",
     decay = cms.string("isolatedElectrons@+ ElTrackCands@-"), # it takes opposite sign collection, no matter if +- or -+
-    cut   = cms.string("80 < mass < 100")
+    cut   = cms.string("30 < mass < 150")
 	)
 
 BestZee = cms.EDProducer(
@@ -97,8 +97,8 @@ BestZee = cms.EDProducer(
 
 ElZLegs  = cms.EDProducer(
     "CollectionFromZLegProducer", 
-    ZCandidateCollection  = cms.InputTag("BestZee"),      
-	)
+    ZCandidateCollection  = cms.InputTag('ZeeCandElectronTrack'),#"BestZee"),      
+)
 
 procAttributes = dir(proc) #Takes a snapshot of what there in the process
 helpers.cloneProcessingSnippet( proc, proc.TauValNumeratorAndDenominator, 'RealElectronsData') #clones the sequence inside the process with RealElectronsData postfix
@@ -115,8 +115,12 @@ binning = cms.PSet(
     eta = cms.PSet( nbins = cms.int32(4), min = cms.double(-3.), max = cms.double(3.) ), #hinfo(60, -3.0, 3.0);
     phi = cms.PSet( nbins = cms.int32(4), min = cms.double(-180.), max = cms.double(180.) ), #hinfo(36, -180., 180.);
     pileup = cms.PSet( nbins = cms.int32(18), min = cms.double(0.), max = cms.double(72.) ),#hinfo(25, 0., 25.0);
+    mass = cms.PSet( nbins = cms.int32(40), min = cms.double(30.), max = cms.double(150.) ),#hinfo(25, 0., 25.0);
     )
 zttModifier = ApplyFunctionToSequence(lambda m: setBinning(m,binning))
+proc.TauValNumeratorAndDenominatorRealElectronsData.visit(zttModifier)
+
+zttModifier = ApplyFunctionToSequence(lambda m: SetMassInput(m, cms.InputTag("ElZLegs","mass")))
 proc.TauValNumeratorAndDenominatorRealElectronsData.visit(zttModifier)
 #-----------------------------------------
 
@@ -134,7 +138,7 @@ produceDenominatorRealElectronsData = cms.Sequence( ElPrimaryVertexFilter * ElBe
                                                     ( (selectedElectrons * ElectronsFromPV * idElectrons * trackElectrons * isolatedElectrons) +
                                                       (ElGoodTracks * ElIsoTracks * ElTrackFromPV * ElTrackCands) ) *
                                                     ZeeCandElectronTrack *
-                                                    BestZee *
+                                                    #BestZee *
                                                     ElZLegs 
                                                   )
 
