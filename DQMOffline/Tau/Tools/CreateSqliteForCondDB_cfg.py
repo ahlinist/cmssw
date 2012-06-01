@@ -8,6 +8,11 @@ Triggers = cms.VPSet(
         hltPaths = cms.vstring('HLT_IsoMu24_eta2p1_v*'),
         dataTypeToInclude = cms.vstring('RealData','RealMuonsData'),
         ),    
+    cms.PSet(
+        listName = cms.string( 'TauTriggerForMETDataset' ),
+        hltPaths = cms.vstring('HLT_IsoMu15_eta2p1_L1ETM20_v*'), # Mu+met trigger
+        dataTypeToInclude = cms.vstring('RealTausData'),
+        ),    
     ## cms.PSet(
     ##     listName = cms.string( 'TauTriggerForSingleMuDataset' ),
     ##     hltPaths = cms.vstring('HLT_IsoMu24_eta2p1_v*'),
@@ -43,6 +48,8 @@ for trigger in Triggers:
         usedQCDTriggers.extend(trigger.hltPaths.value())
     if 'RealMuonsData' in trigger.dataTypeToInclude.value():
         usedMuTriggers.extend(trigger.hltPaths.value())
+    if 'RealTausData' in trigger.dataTypeToInclude.value():
+        usedTauTriggers.extend(trigger.hltPaths.value())
     if 'RealElectronsData' in trigger.dataTypeToInclude.value():
         usedEleTriggers.extend(trigger.hltPaths.value())
 
@@ -57,6 +64,13 @@ Triggers.append(
     cms.PSet(
         listName = cms.string( 'TauTriggerForALLMuDataset' ),
         hltPaths = cms.vstring(list(set(usedMuTriggers))),
+        )
+    )
+
+Triggers.append(
+    cms.PSet(
+        listName = cms.string( 'TauTriggerForALLTauDataset' ),
+        hltPaths = cms.vstring(list(set(usedTauTriggers))),
         )
     )
 
