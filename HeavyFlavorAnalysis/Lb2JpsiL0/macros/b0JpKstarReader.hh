@@ -1,5 +1,5 @@
-#ifndef GUARD_LAMBDAREADER_H
-#define GUARD_LAMBDAREADER_H
+#ifndef GUARD_B0JPSIKSTARREADER_H
+#define GUARD_B0JPSIKSTARREADER_H
 
 #include <iostream>
 #include <vector>
@@ -32,12 +32,12 @@
 #include "lifetimeReader.hh"
 #include "DecayMap.hh"
 
-class lambdaReader : public lifetimeReader
+class b0JpKstarReader : public lifetimeReader
 {
 
 public:
-    lambdaReader(TChain *tree, TString evtClassName);
-    ~lambdaReader();
+    b0JpKstarReader(TChain *tree, TString evtClassName);
+    ~b0JpKstarReader();
 
     // virtual methods from treeReader01:
     void bookHist();

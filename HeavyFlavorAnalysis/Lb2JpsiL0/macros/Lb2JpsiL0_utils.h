@@ -1,6 +1,9 @@
 #ifndef LBJPSIL_UTILS_H_GUARD
 #define LBJPSIL_UTILS_H_GUARD
 
+#include <string>
+#include <sstream>
+
 /*! Converts simple types to strings
   \param i variable to be converted
   \return string

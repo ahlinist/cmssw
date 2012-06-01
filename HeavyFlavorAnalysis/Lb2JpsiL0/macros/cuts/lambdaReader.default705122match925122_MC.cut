@@ -1,19 +1,19 @@
 # Which cand to select as lb
 CUTCandidate      705122
-CUTCandidateFit   905122
+CUTCandidateFit   925122
 # Mu id
 CUTMuId1        4 # ask for Global muons
 CUTMuId2        4
 # Cuts on Jpsi
 CUTptmuMin      2.99
-CUTmjpWindow    0.11
-CUTptjpMin      6.4
+CUTmjpWindow    0.30
+CUTptjpMin      0.0
 # Cuts on Lambda0
-CUTmrsWindow    0.006
-CUTptrsMin      2.15
-CUTptha1GTptha2    1
-CUTptha1Min      1.75
-CUTptha2Min      0.25
+CUTmrsWindow    0.05
+CUTptrsMin      0.0
+CUTptha1GTptha2 0 # increases combinatorial background in signal MC
+CUTptha1Min     0.0
+CUTptha2Min     0.0
 # Isolation cuts
 CUTisoCloseTrkDoca 0.03
 CUTisoCloseTrkPt   0.5
