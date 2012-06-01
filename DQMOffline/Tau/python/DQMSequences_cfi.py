@@ -1,6 +1,7 @@
 from DQMOffline.Tau.dataTypes.RunDQMOnRealElectronsData_cff import *
 from DQMOffline.Tau.dataTypes.RunDQMOnRealData_cff import *
 from DQMOffline.Tau.dataTypes.RunDQMOnRealMuonsData_cff import *
+from DQMOffline.Tau.dataTypes.RunDQMOnRealTausData_cff import *
 
 dqmInfoTauV = cms.EDAnalyzer(
     "DQMEventInfo",
@@ -12,6 +13,7 @@ produceDenoms = cms.Sequence(
     produceDenominatorRealData+
     produceDenominatorRealElectronsData+
     produceDenominatorRealMuonsData
+    produceDenominatorRealTausData
     )
 
 seqModifier = ApplyFunctionToSequence( lambda module: setTrigger( module, cms.PSet( hltDBKey = cms.string('TauTriggerForALLQCDDataset'), hltPaths = cms.vstring('HLT_IsoMu24_eta2p1_v*') ) ) )
@@ -23,10 +25,14 @@ TauValNumeratorAndDenominatorRealElectronsData.visit(seqModifier)
 seqModifier = ApplyFunctionToSequence( lambda module: setTrigger( module, cms.PSet( hltDBKey = cms.string('TauTriggerForALLMuDataset'), hltPaths = cms.vstring('HLT_IsoMu24_eta2p1_v*') ) ) )
 TauValNumeratorAndDenominatorRealMuonsData.visit(seqModifier)
 
+seqModifier = ApplyFunctionToSequence( lambda module: setTrigger( module, cms.PSet( hltDBKey = cms.string('TauTriggerForALLTauDataset'), hltPaths = cms.vstring('HLT_IsoMu15_eta2p1_L1ETM20_v*') ) ) )
+TauValNumeratorAndDenominatorRealTausData.visit(seqModifier)
+
 pfTauRunDQMValidation = cms.Sequence(
     TauValNumeratorAndDenominatorRealData+
     TauValNumeratorAndDenominatorRealElectronsData+
     TauValNumeratorAndDenominatorRealMuonsData+
+    TauValNumeratorAndDenominatorRealTausData+
     dqmInfoTauV
     )
 
@@ -34,6 +40,7 @@ runTauEff = cms.Sequence(
     efficienciesRealData+
     efficienciesRealElectronsData+
     efficienciesRealMuonsData+
+    efficienciesRealTausData+
     normalizePlotsRealMuonsData
     )
 
