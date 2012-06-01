@@ -106,8 +106,8 @@ proc.TauValNumeratorAndDenominatorRealMuonsData.visit(zttModifier)
 #-----------------------------------------
 
 #Sets the correct naming to efficiency histograms
-proc.efficienciesRealElectronsData.streamTag = cms.InputTag("RealMuonsData")
-proc.efficienciesRealElectronsData._TypedParameterizable__type = 'TauDQMEffFromFitExpBWProducer'
+proc.efficienciesRealMuonsData.streamTag = cms.InputTag("RealMuonsData")
+proc.efficienciesRealMuonsData._TypedParameterizable__type = 'TauDQMEffFromFitExpBWProducer'
 
 #checks what's new in the process (the cloned sequences and modules in them)
 newProcAttributes = filter( lambda x: (x not in procAttributes) and (x.find('RealMuonsData') != -1), dir(proc) )
