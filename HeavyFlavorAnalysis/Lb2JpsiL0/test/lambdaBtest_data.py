@@ -84,6 +84,7 @@ process.tree = cms.EDAnalyzer(
 
 # ----------------------------------------------------------------------
 process.load("HeavyFlavorAnalysis.Bs2MuMu.HFMCTruth_cff")
+process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("HeavyFlavorAnalysis.Bs2MuMu.HFRecoStuff_cff")
 process.trkDump.verbose = cms.untracked.int32(0)
 process.load("HeavyFlavorAnalysis.Bs2MuMu.HFTruthCandidates_cff")

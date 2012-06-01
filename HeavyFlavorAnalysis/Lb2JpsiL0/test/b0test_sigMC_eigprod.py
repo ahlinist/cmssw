@@ -59,7 +59,7 @@ process.source = cms.Source(
     )
     )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
 
 
 # ----------------------------------------------------------------------
@@ -74,6 +74,7 @@ process.tree = cms.EDAnalyzer(
 
 # ----------------------------------------------------------------------
 process.load("HeavyFlavorAnalysis.Bs2MuMu.HFMCTruth_cff")
+process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("HeavyFlavorAnalysis.Bs2MuMu.HFRecoStuff_cff")
 process.load("HeavyFlavorAnalysis.Bs2MuMu.HFTruthCandidates_cff")
 #process.load("HeavyFlavorAnalysis.Bs2MuMu.HFBmm_cff")

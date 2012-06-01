@@ -32,7 +32,7 @@ process.source = cms.Source(
 #	'/store/user/meier_f1/B0ToJpsiKs_7TeV_Pythia_EvtGen_TestFrmeier/B0ToJpsiKs_7TeV_Pythia_EvtGen_TestFrmeier/24459ce5b62880ebb72fa2c41d755869/PYTHIA6_B0ToJpsiKs_7TeV_EvtGen_GEN_SIM_DIGI_1_1_FRq.root'
 #	'/store/user/meier_f1/B0ToJpsiKs_7TeV_Pythia_EvtGen_frmeier_g0007/B0ToJpsiKs_7TeV_Pythia_EvtGen_frmeier_g0010_GENSIMRECO/3d31ade7f81abde7fe01a8379331e53e/PYTHIA6_inclB0toJpsiMuMu_7TeV_cff_py_GEN_SIM_DIGI_L1_DIGI2RAW_HLT_root_RAW2DIGI_L1Reco_RECO_6_1_O7T.root'
 #	'/store/user/frmeier/lambda/datasets/PYTHIA6_B0ToJpsiKs_7TeV_EvtGen_Frank_cff_py_GEN_SIM_DIGI_L1_DIGI2RAW_HLT_root_RAW2DIGI_L1Reco_RECO_9_2_JTQ.root'
-	'/store/user/frmeier/lambda/l0157/bmm-lambda-B0ToPsiMuMu_100_1_DZR.root'
+	'/store/user/frmeier/datasets/PYTHIA6_exclLambdaBtoJpsiMuMu_7TeV_cff_py_GEN_SIM_DIGI_L1_DIGI2RAW_root_HLT_quarkoniumRAW2DIGI_L1Reco_RECO_103_1_adF.root'
     )
     )
 
@@ -40,18 +40,18 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 
 # ----------------------------------------------------------------------
-rootFileName = "bmm-lambda-B0ToPsiMuMu.root"
+rootFileName = "bmm-lambda-B0ToPsiMuMu_noReqCand.root"
 
 process.tree = cms.EDAnalyzer(
     "HFTree",
     verbose      = cms.untracked.int32(0),
-    requireCand  =  cms.untracked.bool(True),
+    requireCand  =  cms.untracked.bool(False),
     fileName     = cms.untracked.string(rootFileName)
     )
 
 # ----------------------------------------------------------------------
-process.load("HeavyFlavorAnalysis.Bs2MuMu.HFMCTruth_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
+process.load("HeavyFlavorAnalysis.Bs2MuMu.HFMCTruth_cff")
 process.load("HeavyFlavorAnalysis.Bs2MuMu.HFRecoStuff_cff")
 #process.load("HeavyFlavorAnalysis.Bs2MuMu.HFTruthCandidates_cff")
 #process.load("HeavyFlavorAnalysis.Bs2MuMu.HFBmm_cff")
