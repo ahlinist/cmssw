@@ -108,7 +108,8 @@ GenericTriggerSelectionParameters = cms.PSet(
    verbosityLevel = cms.uint32(0) #0: complete silence (default), needed for T0 processing;
 )
 
-proc.PFTausHighEfficiencyLeadingPionBothProngs = cms.EDAnalyzer("TauTagValidation",
+proc.PFTausHighEfficiencyLeadingPionBothProngs = cms.EDAnalyzer(
+   "TauTagDQM",
    StandardMatchingParameters,
    GenericTriggerSelection = GenericTriggerSelectionParameters,
    ExtensionName           = cms.string("LeadingPion"),
@@ -534,14 +535,12 @@ def SetValidationExtention(module, extension):
     module.ExtensionName = module.ExtensionName.value()+extension
 
 def setBinning(module,pset):
-    if module._TypedParameterizable__type == 'TauTagValidation':
-        module.histoSettings = pset
+   module.histoSettings = pset
 
 def setTrigger(module,pset):
-   if hasattr(module,'_TypedParameterizable__type') and module._TypedParameterizable__type == 'TauTagValidation':
-      setattr(module,'turnOnTrigger',cms.bool(True)) #Turns on trigger (in case is off)
-      for item in pset.parameters_().items():
-         setattr(module.GenericTriggerSelection,item[0],item[1])
+   setattr(module,'turnOnTrigger',cms.bool(True)) #Turns on trigger (in case is off)
+   for item in pset.parameters_().items():
+      setattr(module.GenericTriggerSelection,item[0],item[1])
 
 def SetMassInput(module, massInput):
     setattr(module,'massInput',massInput)
