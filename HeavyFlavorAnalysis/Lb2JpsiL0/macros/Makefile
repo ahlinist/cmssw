@@ -39,10 +39,10 @@ RELLIBPATH    = ../../../../AnalysisDataFormats/HeavyFlavorObjects/lib
 #########
 # FILES #
 #########
-READER_HEADERS = treeReader01.hh lambdaReader.hh b0Reader.hh lambdaEffReader.hh b0GenReader.hh lambdaGenReader.hh
-READER = treeReader01.o lambdaReader.o b0Reader.o lambdaEffReader.o b0GenReader.o lambdaGenReader.o
+READER_HEADERS = treeReader01.hh lifetimeReader.hh lambdaReader.hh b0JpKstarReader.hh b0Reader.hh lambdaEffReader.hh b0GenReader.hh lambdaGenReader.hh
+READER = treeReader01.o lifetimeReader.o lambdaReader.o b0JpKstarReader.o b0Reader.o lambdaEffReader.o b0GenReader.o lambdaGenReader.o
 
-SUPPORTCLASSES = Lb2JpsiL0_utils.o DecayMap.o 
+SUPPORTCLASSES = Lb2JpsiL0_utils.o DecayMap.o FindDaughters.o
 
 READERDICT = ${READER:.o=Dict.o}
 

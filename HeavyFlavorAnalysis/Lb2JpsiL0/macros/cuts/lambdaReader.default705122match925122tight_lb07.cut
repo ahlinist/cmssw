@@ -1,6 +1,6 @@
 # Which cand to select as lb
 CUTCandidate      705122
-CUTCandidateFit   905122
+CUTCandidateFit   925122
 # Mu id
 CUTMuId1        4 # ask for Global muons
 CUTMuId2        4

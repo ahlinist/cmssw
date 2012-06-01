@@ -5,18 +5,18 @@ CUTCandidateFit   905122
 CUTMuId1        4 # ask for Global muons
 CUTMuId2        4
 # Cuts on Jpsi
-CUTptmuMin      2.99
-CUTmjpWindow    0.11
-CUTptjpMin      6.4
+CUTptmuMin      0
+CUTmjpWindow    1
+CUTptjpMin      0
 # Cuts on Lambda0
-CUTmrsWindow    0.006
-CUTptrsMin      2.15
+CUTmrsWindow    1
+CUTptrsMin      0
 CUTptha1GTptha2    1
-CUTptha1Min      1.75
-CUTptha2Min      0.25
+CUTptha1Min      0
 # Isolation cuts
-CUTisoCloseTrkDoca 0.03
 CUTisoCloseTrkPt   0.5
+CUTisoCloseTrkDoca 0.03
+CUTptha2Min      0
 # steer decayMaps
 CUTReadDecayMaps   0 # 1:true, 0: false
 CUTPrintDecayMaps  0 # 1:true, 0: false

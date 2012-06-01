@@ -1,6 +1,6 @@
 # Which cand to select as lb
 CUTB0Candidate      700511
-CUTB0CandidateFit   900511
+CUTB0CandidateFit   920511
 # Mu id
 CUTMuId1        4 # ask for Global muons
 CUTMuId2        4
@@ -15,5 +15,5 @@ CUTptpiMin      0.5
 # steer decayMaps
 CUTReadDecayMaps   0 # 1:true, 0: false
 CUTPrintDecayMaps  0 # 1:true, 0: false
-CUTDecayMap1 decamapHadi_1_sorted.out
-CUTDecayMap2 decamapHadi_2_sorted.out
+CUTDecayMap1 decamap1sorted.out
+CUTDecayMap2 decamap2sorted.out
