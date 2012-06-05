@@ -8,7 +8,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 import TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_grid_cfi as ZtoElecTau
 
 _USE_BARI_XSEC = True
-TAN_BETA = 30
+TAN_BETA = 20
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoElecTau.SAMPLES_TO_ANALYZE)
@@ -30,6 +30,7 @@ SAMPLES_TO_ANALYZE.extend([
     'A700_skim', 'bbA700_skim',
     'A800_skim', 'bbA800_skim',
     'A900_skim', 'bbA900_skim',
+    'A1000_skim', 'bbA1000_skim',
     'h95_skim', 'VBFh95_skim',
     'h100_skim', 'VBFh100_skim',
     'h105_skim', 'VBFh105_skim',
@@ -55,14 +56,12 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    #'VVsum',
-    #'TTplusJets_madgraph_skim',
-    'TTplusJets_madgraph_skim_summer11',
+    'VVsum',
+    'TTplusJets_madgraph_skim',
     'WplusJets_madgraph_skim',
     'ZeeSum',
     #'EWsum',
     'ZtautauSum',
-    #'ZtautauEmbeddedSum',
     'data'
 ]
 
@@ -70,52 +69,6 @@ SAMPLES_TO_PLOT.append('h125Sum')
 SAMPLES_TO_PLOT.append('A140Sum')
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-
-# needed for plotting in high-statistics categories
-SAMPLES_TO_PRINT.append('ZtautauEmbeddedSum')
-
-# add Ztautau sample to SAMPLES_TO_PRINT 
-# so that we have access to those filter statistics
-# for embedded sample normalization
-SAMPLES_TO_PRINT.append('Ztautau_powheg_skim')
-
-# add alternate VV sample
-#SAMPLES_TO_PRINT.append('VVtoLLsum')
-
-includeAllSamples = False
-
-if includeAllSamples:
-    SAMPLES_TO_PRINT.append('A100Sum')
-    SAMPLES_TO_PRINT.append('A120Sum')
-    SAMPLES_TO_PRINT.append('A130Sum')
-    #SAMPLES_TO_PRINT.append('A140Sum')
-    SAMPLES_TO_PRINT.append('A160Sum')
-    SAMPLES_TO_PRINT.append('A180Sum')
-    SAMPLES_TO_PRINT.append('A200Sum')
-    SAMPLES_TO_PRINT.append('A250Sum')
-    SAMPLES_TO_PRINT.append('A300Sum')
-    SAMPLES_TO_PRINT.append('A350Sum')
-    SAMPLES_TO_PRINT.append('A400Sum')
-    SAMPLES_TO_PRINT.append('A450Sum')
-    SAMPLES_TO_PRINT.append('A500Sum')
-    SAMPLES_TO_PRINT.append('A600Sum')
-    SAMPLES_TO_PRINT.append('A700Sum')
-    SAMPLES_TO_PRINT.append('A800Sum')
-    SAMPLES_TO_PRINT.append('A900Sum')
-
-    SAMPLES_TO_PRINT.append('h95Sum')
-    SAMPLES_TO_PRINT.append('h100Sum')
-    SAMPLES_TO_PRINT.append('h105Sum')
-    SAMPLES_TO_PRINT.append('h110Sum')
-    SAMPLES_TO_PRINT.append('h115Sum')
-    SAMPLES_TO_PRINT.append('h120Sum')
-    #SAMPLES_TO_PRINT.append('h125Sum')
-    SAMPLES_TO_PRINT.append('h130Sum')
-    SAMPLES_TO_PRINT.append('h135Sum')
-    SAMPLES_TO_PRINT.append('h140Sum')
-    SAMPLES_TO_PRINT.append('h145Sum')
-
-    SAMPLES_TO_PRINT.append('QCDsum_MC')
 
 SAMPLE_DEFAULTS = ZtoElecTau.SAMPLE_DEFAULTS
 
@@ -163,7 +116,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-95_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 195888,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 1./195888,
         'x_sec' : 1598.*_femtobarns*0.084,
         'legendEntry' : 'VBF h(95) #rightarrow #tau^{+} #tau^{-}',
@@ -174,7 +127,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-95_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 197290,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 24786./197290,
         'x_sec' : 26480.*_femtobarns*0.084,
         'legendEntry' : 'h(95) #rightarrow #tau^{+} #tau^{-}',
@@ -185,7 +138,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 32203./220000,
         'x_sec' : 1, # take cross sections from root file
         'legendEntry' : 'ggA(100) #rightarrow #tau^{+} #tau^{-}',
@@ -196,7 +149,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 32519./220000,
         'x_sec' : 1, # take cross sections from root file
         'legendEntry' : 'bbA(100) #rightarrow #tau^{+} #tau^{-}',
@@ -207,7 +160,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-100_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199166,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 32067./199166,
         'x_sec' : 1530.*_femtobarns*0.0836,
         'legendEntry' : 'VBF h(100) #rightarrow #tau^{+} #tau^{-}',
@@ -218,7 +171,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-100_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199985,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 26192./199985,
         'x_sec' : 23970.*_femtobarns*0.0836,
         'legendEntry' : 'h(100) #rightarrow #tau^{+} #tau^{-}',
@@ -229,7 +182,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-105_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199784,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 32911./199784,
         'x_sec' : 1445.*_femtobarns*0.0825,
         'legendEntry' : 'VBF h(105) #rightarrow #tau^{+} #tau^{-}',
@@ -240,7 +193,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-105_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199982,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 27422./199982,
         'x_sec' : 21740.*_femtobarns*0.0825,
         'legendEntry' : 'h(105) #rightarrow #tau^{+} #tau^{-}',
@@ -251,7 +204,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-110_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 198435,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 33919./198435,
         'x_sec' : 1385.*_femtobarns*0.0803,
         'legendEntry' : 'VBF h(110) #rightarrow #tau^{+} #tau^{-}',
@@ -262,7 +215,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-110_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199988,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 28962./199988,
         'x_sec' : 19810.*_femtobarns*0.0803,
         'legendEntry' : 'h(110) #rightarrow #tau^{+} #tau^{-}',
@@ -273,7 +226,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-115_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 198051,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 34795./198051,
         'x_sec' : 1312.*_femtobarns*0.0765,
         'legendEntry' : 'VBF h(115) #rightarrow #tau^{+} #tau^{-}',
@@ -284,7 +237,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 196002,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 29310./196002,
         'x_sec' : 18120.*_femtobarns*0.0765,
         'legendEntry' : 'h(115) #rightarrow #tau^{+} #tau^{-}',
@@ -295,7 +248,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola-7f65814f89474459e41f353668c9096b/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 2196560,
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 200,
         'skim_eff' : 366414./2196560,
         'x_sec' : (
               36542.*_femtobarns*0.126386 # (gg -> h0)*(h0->tautau)
@@ -311,7 +264,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 2197624,
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 200,
         'skim_eff' : 378113./2197624,
         'x_sec' : (
              126929.*_femtobarns*0.126386 # (bb -> h0)*(h0->tautau)
@@ -326,7 +279,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 198632,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 36014./198632,
         'x_sec' : 1257.*_femtobarns*0.0711,
         'legendEntry' : 'VBF h(120) #rightarrow #tau^{+} #tau^{-}',
@@ -337,7 +290,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-120_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199981,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 31054./199981,
         'x_sec' : 16630.*_femtobarns*0.0711,
         'legendEntry' : 'h(120) #rightarrow #tau^{+} #tau^{-}',
@@ -348,7 +301,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 198612,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 80,
         'skim_eff' : 36194./198612,
         'x_sec' : 1193.*_femtobarns*0.0637,
         'legendEntry' : 'VBF h(125) #rightarrow #tau^{+} #tau^{-}',
@@ -359,7 +312,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-125_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199986,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 31691./199986,
         'x_sec' : 15310.*_femtobarns*0.0637,
         'legendEntry' : 'h(125) #rightarrow #tau^{+} #tau^{-}',
@@ -370,7 +323,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 39010./220000,
         'x_sec' : (
                6595.*_femtobarns*0.126317 # (gg -> h0)*(h0->tautau)
@@ -385,7 +338,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 40000./220000,
         'x_sec' : (
               37150.*_femtobarns*0.126317 # (bb -> h0)*(h0->tautau)
@@ -400,7 +353,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-130_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 197236,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 36899./197236,
         'x_sec' : 1144.*_femtobarns*0.0549,
         'legendEntry' : 'VBF h(130) #rightarrow #tau^{+} #tau^{-}',
@@ -411,7 +364,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-130_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199985,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' :32604./199985,
         'x_sec' : 14130.*_femtobarns*0.0549,
         'legendEntry' : 'h(130) #rightarrow #tau^{+} #tau^{-}',
@@ -422,7 +375,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-135_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 198682,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 38360./198682,
         'x_sec' : 1087.*_femtobarns*0.0452,
         'legendEntry' : 'VBF h(135) #rightarrow #tau^{+} #tau^{-}',
@@ -433,7 +386,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-135_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-7425ae7dad1d99a5db224df3689e983a/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 198571,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 33486./198571,
         'x_sec' : 13080.*_femtobarns*0.0452,
         'legendEntry' : 'h(135) #rightarrow #tau^{+} #tau^{-}',
@@ -444,7 +397,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 40,
+        'number_of_jobs' : 80,
         'skim_eff' : 41286./220000,
         'x_sec' : 1,
         'legendEntry' : 'ggA(140) #rightarrow #tau^{+} #tau^{-}',
@@ -455,7 +408,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 40,
+        'number_of_jobs' : 80,
         'skim_eff' : 41944./220000,
         'x_sec' : 1,
         'legendEntry' : 'bbA(140) #rightarrow #tau^{+} #tau^{-}',
@@ -466,7 +419,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-140_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 193846,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 37513./193846,
         'x_sec' : 1042.*_femtobarns*0.0354,
         'legendEntry' : 'VBF h(140) #rightarrow #tau^{+} #tau^{-}',
@@ -477,7 +430,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-140_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 191549,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 33374./191549,
         'x_sec' : 12140.*_femtobarns*0.0354,
         'legendEntry' : 'h(140) #rightarrow #tau^{+} #tau^{-}',
@@ -488,7 +441,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/VBF_HToTauTau_M-145_7TeV-powheg-pythia6-tauola/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 197095,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 38958./197095,
         'x_sec' : 992.*_femtobarns*0.0262,
         'legendEntry' : 'VBF h(145) #rightarrow #tau^{+} #tau^{-}',
@@ -499,7 +452,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/GluGluToHToTauTau_M-145_7TeV-powheg-pythia6/jkolb-skimElecTau_428_Fall11_v1-6aa5d932edddb97c8f87b85a020d9993/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199981,
-        'number_of_jobs' : 20,
+        'number_of_jobs' : 50,
         'skim_eff' : 35335./199981,
         'x_sec' : 11290.*_femtobarns*0.0262,
         'legendEntry' : 'h(145) #rightarrow #tau^{+} #tau^{-}',
@@ -510,7 +463,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 44422./220000,
         'x_sec' : 1,
         'legendEntry' : 'ggA(160) #rightarrow #tau^{+} #tau^{-}',
@@ -521,7 +474,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 44422./220000,
         'x_sec' : 1,
         'legendEntry' : 'bbA(160) #rightarrow #tau^{+} #tau^{-}',
@@ -532,7 +485,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 47729./220000,
         'x_sec' : 1,
         'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
@@ -543,7 +496,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 49022./220000,
         'x_sec' : 1,
         'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
@@ -554,7 +507,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 50427./220000,
         'x_sec' : 1,
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
@@ -565,7 +518,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 51416./220000,
         'x_sec' : 1,
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
@@ -576,7 +529,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 55502./220000,
         'x_sec' : 1,
         'legendEntry' : 'ggA(250) #rightarrow #tau^{+} #tau^{-}',
@@ -587,7 +540,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 56624./220000,
         'x_sec' : 1,
         'legendEntry' : 'bbA(250) #rightarrow #tau^{+} #tau^{-}',
@@ -598,7 +551,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 2198534,
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 200,
         'skim_eff' : 590153./2198534,
         'x_sec' : 1,
         'legendEntry' : 'ggA(300) #rightarrow #tau^{+} #tau^{-}',
@@ -609,7 +562,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 2194344,
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 200,
         'skim_eff' : 605452./2194344,
         'x_sec' : 1,
         'legendEntry' : 'bbA(300) #rightarrow #tau^{+} #tau^{-}',
@@ -620,7 +573,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 60423./220000,
         'x_sec' : 1,
         'legendEntry' : 'ggA(350) #rightarrow #tau^{+} #tau^{-}',
@@ -631,7 +584,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 63984./220000,
         'x_sec' : 1,
         'legendEntry' : 'bbA(350) #rightarrow #tau^{+} #tau^{-}',
@@ -642,7 +595,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-400_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-400_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 62508./220000,
         'x_sec' : 1,                 # CV: cross-section * branching-ratio taken directly from Bari .root file
         'legendEntry' : 'ggA(400) #rightarrow #tau^{+} #tau^{-}',
@@ -653,7 +606,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-400_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-400_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 66376./220000,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -667,7 +620,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-450_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-450_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 62414./220000,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
@@ -681,7 +634,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-450_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-450_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 69164./220000,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -695,7 +648,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-500_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-500_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 59886./220000,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
@@ -709,7 +662,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-500_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-500_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 70794./220000,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -723,7 +676,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-600_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-600_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 216625,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 31608./216625,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
@@ -737,7 +690,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-600_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-600_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 217345,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 72294./217345,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -751,7 +704,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-700_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-700_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 218678,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 26450./218678,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
@@ -765,7 +718,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-700_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-700_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 212314,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 73028./212314,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -779,7 +732,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-800_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-800_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 219229,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 22495./219229,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
@@ -793,7 +746,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-800_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-800_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 213214,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 74163./213214,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -807,7 +760,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-900_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-900_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 215275,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 19204./215275,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
@@ -821,7 +774,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-900_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-900_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 213214,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 74209./213214,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -835,7 +788,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-1000_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYGluGluToHToTauTau_M-1000_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 211904,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 16516./211904,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
@@ -849,7 +802,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-1000_7TeV-pythia6-tauola/jkolb-skimElecTau_428_Fall11_SUSYBBHToTauTau_M-1000_7TeV-pythia6-tauola-93adcd4a77296f6fbf0e8af6d73f09f9/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 213526,
-        'number_of_jobs' : 30,
+        'number_of_jobs' : 80,
         'skim_eff' : 74420./213526,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
@@ -1031,6 +984,12 @@ AHtoElecTauSpecific_MERGE_SAMPLES = {
         'legendEntry' : 'A(900) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A900_skim']['drawOption'],
+    },
+    'A1000Sum' : {
+        'samples' : [ 'A1000_skim', 'bbA1000_skim' ],
+        'legendEntry' : 'A(1000) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A1000_skim']['drawOption'],
     }
 }
 MERGE_SAMPLES.update(AHtoElecTauSpecific_MERGE_SAMPLES)
@@ -1108,20 +1067,8 @@ for sample in RECO_SAMPLES.keys():
     ALL_SAMPLES.update(MERGE_SAMPLES)
     ALL_SAMPLES.update(RECO_SAMPLES)
 
-SAMPLES_TO_PLOT_SM = []
-for sample in SAMPLES_TO_PLOT:
-    if not (sample.startswith('A') and 'Sum' in sample):
-        SAMPLES_TO_PLOT_SM.append(sample)
-
-SAMPLES_TO_PLOT_MSSM = []
-for sample in SAMPLES_TO_PLOT:
-    if not (sample.startswith('h') and 'Sum' in sample):
-        SAMPLES_TO_PLOT_MSSM.append(sample)
-
 recoSampleDefinitionsAHtoElecTau = {
     'SAMPLES_TO_ANALYZE' : SAMPLES_TO_ANALYZE,
-    'SAMPLES_TO_PLOT_MSSM' : SAMPLES_TO_PLOT_MSSM,
-    'SAMPLES_TO_PLOT_SM' : SAMPLES_TO_PLOT_SM,
     'SAMPLES_TO_PLOT' : SAMPLES_TO_PLOT,
     'SAMPLES_TO_PRINT' : SAMPLES_TO_PRINT,
     'SAMPLE_DEFAULTS' : SAMPLE_DEFAULTS,
