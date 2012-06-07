@@ -20,16 +20,16 @@ TauMETSelector = cms.EDFilter(
     filter = cms.bool(False)
     )
 
-selectedMuons = cms.EDFilter(
+selectedMuonsForTau = cms.EDFilter(
     "MuonSelector",
     src = cms.InputTag('muons'),
     cut = cms.string("pt > 20.0 && abs(eta) < 2.1 && isGlobalMuon = 1 && isTrackerMuon = 1"),
     filter = cms.bool(False)
 	)
 
-selectedMuonsIso = cms.EDFilter(
+selectedMuonsForTauIso = cms.EDFilter(
     "MuonSelector",
-    src = cms.InputTag('selectedMuons'),
+    src = cms.InputTag('selectedMuonsForTau'),
     cut = cms.string('(isolationR03().emEt + isolationR03().hadEt + isolationR03().sumPt)/pt < 0.10'),
     filter = cms.bool(False)
 	)    
@@ -49,7 +49,7 @@ cleanedTaus = cms.EDProducer("TauValPFTauViewCleaner",
 
 ZmtCandMuonTau = cms.EDProducer(
     "CandViewShallowCloneCombiner",
-    decay = cms.string("selectedMuonsIso@+ cleanedTaus@-"), # it takes opposite sign collection, no matter if +- or -+
+    decay = cms.string("selectedMuonsForTauIso@+ cleanedTaus@-"), # it takes opposite sign collection, no matter if +- or -+
     cut   = cms.string("5 < mass < 200")
 	)
 
@@ -74,6 +74,7 @@ binning = cms.PSet(
     eta    = cms.PSet( nbins = cms.int32(4) , min = cms.double(-3.)  , max = cms.double(3.)   ),
     phi    = cms.PSet( nbins = cms.int32(4) , min = cms.double(-180.), max = cms.double(180.) ),
     pileup = cms.PSet( nbins = cms.int32(18), min = cms.double(0.)   , max = cms.double(72.)  ),
+    mass   = cms.PSet( nbins = cms.int32(40), min = cms.double(0.)   , max = cms.double(120.)  ),
     )
 #zttLabeler = lambda module : SetMassInput(module, cms.InputTag('ZLegs','mass'))
 #zttModifier = ApplyFunctionToSequence(zttLabeler)
@@ -97,7 +98,7 @@ for newAttr in newProcAttributes:
 
 produceDenominatorRealTausData = cms.Sequence(
                             PrimaryVertexFilter * TauMETSelector *
-                            ( selectedMuons * selectedMuonsIso + selectedTaus * cleanedTaus ) *   
+                            ( selectedMuonsForTau * selectedMuonsForTauIso + selectedTaus * cleanedTaus ) *   
                             ZmtCandMuonTau *
                             TauZLegs
                             )
