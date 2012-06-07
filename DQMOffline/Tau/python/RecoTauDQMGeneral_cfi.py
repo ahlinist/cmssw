@@ -535,12 +535,15 @@ def SetValidationExtention(module, extension):
     module.ExtensionName = module.ExtensionName.value()+extension
 
 def setBinning(module,pset):
-   module.histoSettings = pset
+   if type(proc.RunHPSValidation) == cms.EDAnalyzer:
+      module.histoSettings = pset
 
 def setTrigger(module,pset):
-   setattr(module,'turnOnTrigger',cms.bool(True)) #Turns on trigger (in case is off)
-   for item in pset.parameters_().items():
-      setattr(module.GenericTriggerSelection,item[0],item[1])
+   if type(proc.RunHPSValidation) == cms.EDAnalyzer and hasattr(module,'GenericTriggerSelection'):
+      setattr(module,'turnOnTrigger',cms.bool(True)) #Turns on trigger (in case is off)
+      for item in pset.parameters_().items():
+         setattr(module.GenericTriggerSelection,item[0],item[1])
 
 def SetMassInput(module, massInput):
-    setattr(module,'massInput',massInput)
+   if type(proc.RunHPSValidation) == cms.EDAnalyzer:
+      setattr(module,'massInput',massInput)
