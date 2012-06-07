@@ -3,8 +3,8 @@ import copy
 
 isData = True
 ## doRECO = False will still reconstruct Taus, use False if running AOD(SIM)
-doRECO = True
-doMETleg = False
+doRECO = False
+doMETleg = True
 
 
 process = cms.Process("TTEffSKIM")
@@ -45,9 +45,10 @@ process.maxEvents = cms.untracked.PSet(
 if(isData):
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
+	'/store/data/Run2012B/Tau/AOD/PromptReco-v1/000/194/424/30DE4914-EEA3-E111-AB5A-BCAEC518FF44.root'
 #        '/store/data/Run2012A/Tau/RAW/v1/000/193/621/FCD858AA-9298-E111-8D12-001D09F251FE.root'
 #	'/store/data/Run2012A/TauPlusX/AOD/PromptReco-v1/000/193/621/FEA07F25-AC9A-E111-B00B-0025901D5D90.root'
-	'/store/data/Run2012A/TauPlusX/RAW/v1/000/193/621/F45FEC3D-B098-E111-AEF7-001D09F2AD84.root'
+#	'/store/data/Run2012A/TauPlusX/RAW/v1/000/193/621/F45FEC3D-B098-E111-AEF7-001D09F2AD84.root'
     )
   )
 else:
@@ -99,8 +100,10 @@ process.patTausHpsPFTau.embedGenJetMatch = False
 
 
 import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
+import ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff as triggerBitFilter
 if doMETleg:
-    process.PFTauSkimmed = zmutau.addTauSelection(process)
+#    process.PFTauSkimmed = zmutau.addTauSelection(process)
+    process.PFTauSkimmed = triggerBitFilter.HLT_LooseIsoPFTau35_Trk20_Prong1
 else:
     process.PFTauSkimmed = zmutau.addMuTauSelection(process)
 
