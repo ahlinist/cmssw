@@ -104,8 +104,10 @@ import ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff as triggerBitFilte
 if doMETleg:
 #    process.PFTauSkimmed = zmutau.addTauSelection(process)
     process.PFTauSkimmed = triggerBitFilter.HLT_LooseIsoPFTau35_Trk20_Prong1
+    print "\n MET-leg skim\n"
 else:
     process.PFTauSkimmed = zmutau.addMuTauSelection(process)
+    print "\n Tau-leg skim\n"
 
 
 process.TTEffSkimCounterAllEvents   = cms.EDProducer("EventCountProducer")
