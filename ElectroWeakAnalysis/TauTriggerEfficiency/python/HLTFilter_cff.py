@@ -23,6 +23,20 @@ MuonHLTs = hlt.triggerResultsFilter.clone(
     throw = False
 )
 
+HLT_LooseIsoPFTau35_Trk20_Prong1 = hlt.triggerResultsFilter.clone(
+    hltResults    = cms.InputTag('TriggerResults::HLT'),
+    triggerConditions =  (
+	'HLT_LooseIsoPFTau35_Trk20_Prong1_v1',
+	'HLT_LooseIsoPFTau35_Trk20_Prong1_v2',
+	'HLT_LooseIsoPFTau35_Trk20_Prong1_v3',
+	'HLT_LooseIsoPFTau35_Trk20_Prong1_v4',
+	'HLT_LooseIsoPFTau35_Trk20_Prong1_v5',
+        'HLT_LooseIsoPFTau35_Trk20_Prong1_v6'
+    ),
+    l1tResults = '',
+    throw = False
+)
+
 #HLTFilter code located in TTEff
 #IncludedHLTs = cms.EDFilter("HLTFilter",
 #	HLTResults   = cms.InputTag("TriggerResults::HLT"),
