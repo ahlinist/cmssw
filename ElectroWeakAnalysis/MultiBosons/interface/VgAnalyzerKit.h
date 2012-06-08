@@ -29,8 +29,9 @@
 
 using namespace edm;
 using namespace std;
+using namespace reco;
 
-const Int_t maxP = 500;
+const Int_t maxP = 600;
 
 class VgAnalyzerKit : public EDProducer {
 
@@ -58,13 +59,10 @@ protected:
   Float_t getGenCalIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, 
 		     const Float_t dRMax=0.4, Bool_t removeMu=true, Bool_t removeNu=false);
   Float_t getGenTrkIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
-  Float_t getESRatio(View<pat::Electron>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
-  std::vector<float> getESProfileFront(View<pat::Electron>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
-  std::vector<float> getESProfileRear(View<pat::Electron>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
-  Float_t getESRatio(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
-  std::vector<float> getESProfileFront(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
-  std::vector<float> getESProfileRear(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
   Float_t getTrkIso(edm::Handle<reco::TrackCollection> Tracks, math::XYZPoint vtx, Double_t phoEta, Double_t phoPhi, Double_t phoVz, Double_t outerCone, Double_t innerCone, Double_t etaSlice, Double_t dzCut, Double_t d0Cut, Double_t ptCut, Int_t option);
+
+  typedef std::vector< edm::Handle< edm::ValueMap<reco::IsoDeposit> > > IsoDepositMaps;
+  typedef std::vector< edm::Handle< edm::ValueMap<double> > > IsoDepositVals;
 
   Bool_t saveHistograms_;
   Bool_t doGenParticles_;
@@ -82,16 +80,18 @@ protected:
   InputTag pfMETlabel_;
   InputTag TypeIpfMETlabel_;
   InputTag TypeIpIIpfMETlabel_;
-  InputTag SmearedpfMETlabel_;
   InputTag SmearedTypeIpfMETlabel_;
   InputTag PFCandLabel_;
   InputTag puInfoLabel_;
   InputTag rhoLabel_;
   InputTag sigmaLabel_;
-  InputTag rhoNeutralLabel_;
   InputTag ebReducedRecHitCollection_;
   InputTag eeReducedRecHitCollection_;
   InputTag beamSpotCollection_;
+  std::vector<edm::InputTag> inputTagIsoDepElectrons_;
+  std::vector<edm::InputTag> inputTagIsoDepPhotons_;
+  std::vector<edm::InputTag> inputTagIsoValElectronsPFId_;
+  std::vector<edm::InputTag> inputTagIsoValPhotonsPFId_;
 
   Int_t verbosity_;
   Int_t leadingElePtCut_;
@@ -117,22 +117,18 @@ protected:
   Int_t    nBX_;
   Int_t    nPU_[maxP];
   Int_t    BXPU_[maxP];
-  Float_t  rho_;
+  Double_t rho_;
   Float_t  sigma_;
-  Float_t  rhoNeutral_;
   Int_t    nHLT_;
   Int_t    HLT_[maxP];
   Int_t    HLTprescale_[maxP];
   Int_t    HLTIndex_[250];
-  Int_t    nHFTowersP_;
-  Int_t    nHFTowersN_;
   Int_t    nVtx_;
   Float_t  vtx_[150][3];
   Int_t    vtxNTrk_[150];
   Float_t  vtxNDF_[150];
   Float_t  vtxD0_[150];
   Int_t    nGoodVtx_;
-  Int_t    IsVtxGood_;
   Int_t    nTrk_;
   Int_t    nGoodTrk_;
   Int_t    IsTracksGood_;
@@ -195,14 +191,6 @@ protected:
   Float_t  TypeIpfMETsumEt_;
   Float_t  TypeIpfMETmEtSig_;
   Float_t  TypeIpfMETSig_;
-  // TypeI + TypeII pfMET
-  Float_t  TypeIpIIpfMET_;
-  Float_t  TypeIpIIpfMETx_;
-  Float_t  TypeIpIIpfMETy_;
-  Float_t  TypeIpIIpfMETPhi_;
-  Float_t  TypeIpIIpfMETsumEt_;
-  Float_t  TypeIpIIpfMETmEtSig_;
-  Float_t  TypeIpIIpfMETSig_;
   // Smeared pfMET
   Float_t  SmearedpfMET_;
   Float_t  SmearedpfMETx_;
@@ -219,22 +207,11 @@ protected:
   Float_t  SmearedTypeIpfMETsumEt_;
   Float_t  SmearedTypeIpfMETmEtSig_;
   Float_t  SmearedTypeIpfMETSig_;
-  // pfCharged and pf Neutral Sum Pt
-  Int_t    npfCharged_;
-  Float_t  pfChargedSumPt_;
-  Int_t    npfChargedHadron_;
-  Float_t  pfChargedHadronSumPt_;
-  Int_t    npfLepton_;
-  Float_t  pfLeptonSumPt_;
-  Int_t    npfNeutral_;
-  Float_t  pfNeutralSumPt_;
-  Int_t    npfNeutralHadron_;
-  Float_t  pfNeutralHadronSumPt_;
-  Int_t    npfPhoton_;
-  Float_t  pfPhotonSumPt_;
   // Electron
   Int_t    nEle_;
-  Int_t    eleTrg_[maxP][31];
+  Bool_t   eleEcalDriven_[maxP];
+  Int_t    eleTrg_[maxP][14];
+  Bool_t   eleID2012_[maxP][7];
   Int_t    eleID_[maxP][30];
   Float_t  eleIDLH_[maxP];
   Int_t    eleClass_[maxP];
@@ -245,8 +222,6 @@ protected:
   Float_t  eleSCEtaWidth_[maxP];
   Float_t  eleSCPhiWidth_[maxP];
   Float_t  eleVtx_[maxP][3];
-  Float_t  eleCaloPos_[maxP][3];
-  Float_t  eleSCPos_[maxP][3];
   Float_t  elePt_[maxP];
   Float_t  elePz_[maxP];
   Float_t  eleEta_[maxP];
@@ -255,6 +230,7 @@ protected:
   Float_t  eleSCPhi_[maxP];
   Float_t  eleSCRawEn_[maxP];
   Float_t  eleHoverE_[maxP];
+  Float_t  eleHoverEbc_[maxP];
   Float_t  eleEoverP_[maxP];
   Float_t  elePin_[maxP];
   Float_t  elePout_[maxP];
@@ -270,8 +246,6 @@ protected:
   Float_t  eleE3x3_[maxP];
   Float_t  eleSeedTime_[maxP];
   Float_t  eleSeedEnergy_[maxP];
-  Int_t    eleRecoFlag_[maxP];
-  Int_t    eleSeverity_[maxP];
   Int_t    eleGenIndex_[maxP];
   Int_t    eleGenGMomPID_[maxP];
   Int_t    eleGenMomPID_[maxP];
@@ -291,23 +265,17 @@ protected:
   Int_t    eleTrkExpectHitsInner_[maxP];
   Float_t  eleConvDist_[maxP];
   Float_t  eleConvDcot_[maxP];
-  Float_t  eleConvRadius_[maxP];
-  Int_t    eleConvFlag_[maxP];
   Int_t    eleConvMissinghit_[maxP];
-  Float_t  eleConvPoint_[maxP][3];
-  Float_t  eleConversionveto_[maxP];
-  Float_t  eleESRatio_[maxP];
-  Float_t  eleESProfileFront_[maxP][123];
-  Float_t  eleESProfileRear_[maxP][123];
-  Float_t  elePV2D_[maxP];
-  Float_t  elePV3D_[maxP];
-  Float_t  eleBS2D_[maxP];
-  Float_t  eleBS3D_[maxP];
+  Bool_t   eleConversionveto_[maxP];
   Float_t  elePVD0_[maxP];
   Float_t  elePVDz_[maxP];
+  Bool_t   eleIsPFID_[maxP];
+  Double_t elePfChargedHadron_[maxP];
+  Double_t elePfNeutralHadron_[maxP];
+  Double_t elePfPhoton_[maxP];
   // Photon
   Int_t    nPho_;
-  Int_t    phoTrg_[maxP][14];
+  Int_t    phoTrg_[maxP][23];
   Bool_t   phoIsPhoton_[maxP];
   Bool_t   phoElectronveto_[maxP];
   Float_t  phoE_[maxP];
@@ -318,26 +286,17 @@ protected:
   Float_t  phoR9_[maxP];
   Float_t  phoTrkIsoSolidDR03_[maxP];
   Float_t  phoTrkIsoHollowDR03_[maxP];
-  Int_t    phoNTrkSolidDR03_[maxP];
-  Int_t    phoNTrkHollowDR03_[maxP];
   Float_t  phoEcalIsoDR03_[maxP];
   Float_t  phoHcalIsoDR03_[maxP];
-  Float_t  phoHcalIsoSolidDR03_[maxP];
   Float_t  phoTrkIsoSolidDR04_[maxP];
   Float_t  phoTrkIsoHollowDR04_[maxP];
-  Int_t    phoNTrkSolidDR04_[maxP];
-  Int_t    phoNTrkHollowDR04_[maxP];
   Float_t  phoEcalIsoDR04_[maxP];
   Float_t  phoHcalIsoDR04_[maxP];
-  Float_t  phoHcalIsoSolidDR04_[maxP];
   Float_t  phoEtVtx_[maxP][150];
   Float_t  phoEtaVtx_[maxP][150];
   Float_t  phoPhiVtx_[maxP][150];
-  Float_t  phoTrkIsoSolidDR03Vtx_[maxP][150];
-  Float_t  phoTrkIsoHollowDR03Vtx_[maxP][150];
-  Float_t  phoTrkIsoSolidDR04Vtx_[maxP][150];
-  Float_t  phoTrkIsoHollowDR04Vtx_[maxP][150];
   Float_t  phoHoverE_[maxP];
+  Float_t  phoHoverEbc_[maxP];
   Float_t  phoSigmaEtaEta_[maxP];
   Float_t  phoSigmaIEtaIEta_[maxP];
   Float_t  phoSigmaIEtaIPhi_[maxP];
@@ -347,70 +306,30 @@ protected:
   Float_t  phoE5x5_[maxP];
   Float_t  phoSeedTime_[maxP];
   Float_t  phoSeedEnergy_[maxP];
-  Int_t    phoRecoFlag_[maxP];
-  Int_t    phoSeverity_[maxP];
   Int_t    phoPos_[maxP];
   Int_t    phoGenIndex_[maxP];
   Int_t    phoGenGMomPID[maxP];
   Int_t    phoGenMomPID[maxP];
   Float_t  phoGenMomPt[maxP];
   Float_t  phoSCE_[maxP];
-  Float_t  phoESE_[maxP];
   Float_t  phoSCEt_[maxP];
   Float_t  phoSCEta_[maxP];
   Float_t  phoSCPhi_[maxP];
   Float_t  phoSCEtaWidth_[maxP];
   Float_t  phoSCPhiWidth_[maxP];
   Float_t  phoVtx_[maxP][3];
-  Float_t  phoVtxD0_[maxP];
   Int_t    phoOverlap_[maxP];
   Int_t    phohasPixelSeed_[maxP];
-  Int_t    phoIsConv_[maxP];
-  Float_t  phoESRatio_[maxP];
-  Float_t  phoESProfileFront_[maxP][123];
-  Float_t  phoESProfileRear_[maxP][123];
-  Int_t    phoNTracks_[maxP];
-  Float_t  phoConvPairInvariantMass_[maxP];
-  Float_t  phoConvPairCotThetaSeparation_[maxP];
-  Float_t  phoConvPairMomentumEta_[maxP];
-  Float_t  phoConvPairMomentumPhi_[maxP];
-  Float_t  phoConvPairMomentumX_[maxP];
-  Float_t  phoConvPairMomentumY_[maxP];
-  Float_t  phoConvPairMomentumZ_[maxP];
-  Float_t  phoConvDistOfMinimumApproach_[maxP];
-  Float_t  phoConvDPhiTracksAtVtx_[maxP];
-  Float_t  phoConvDPhiTracksAtEcal_[maxP];
-  Float_t  phoConvDEtaTracksAtEcal_[maxP];
-  Float_t  phoConvVtxValid_[maxP];
-  Float_t  phoConvVtxEta_[maxP];
-  Float_t  phoConvVtxPhi_[maxP];
-  Float_t  phoConvVtxR_[maxP];
-  Float_t  phoConvVtxX_[maxP];
-  Float_t  phoConvVtxY_[maxP];
-  Float_t  phoConvVtxZ_[maxP];
-  Float_t  phoConvVtxChi2_[maxP];
-  Float_t  phoConvVtxNdof_[maxP];
-  Float_t  phoConvChi2Prob_[maxP];
-  Float_t  phoConvEoverP_[maxP];
-  Int_t    phoNxtal_[maxP];
-  Float_t  phoXtalTime_[maxP][200];
-  Float_t  phoXtalEnergy_[maxP][200];
-  Int_t    phoXtalZ_[maxP][200];
-  Int_t    phoXtalX_[maxP][200];
-  Int_t    phoXtalY_[maxP][200];
-  Int_t    phoXtalEta_[maxP][200];
-  Int_t    phoXtalPhi_[maxP][200];
-  Float_t  pho5x5Time_[maxP][25];
-  Float_t  pho5x5Energy_[maxP][25];
-  Int_t    pho5x5Z_[maxP][25];
-  Int_t    pho5x5X_[maxP][25];
-  Int_t    pho5x5Y_[maxP][25];
-  Int_t    pho5x5Eta_[maxP][25];
-  Int_t    pho5x5Phi_[maxP][25];
+  Float_t  phoPfChargedHadron_[maxP];
+  Float_t  phoPfNeutralHadron_[maxP];
+  Float_t  phoPfPhoton_[maxP];
 
   // Muon
   Int_t    nMu_;
-  Int_t    muTrg_[maxP][16];
+  Bool_t   muIsPFMu_[maxP];
+  Bool_t   muIsGlobalMu_[maxP];
+  Bool_t   muIsTrackerMu_[maxP];
+  Int_t    muTrg_[maxP][4];
   Float_t  muEta_[maxP];
   Float_t  muPhi_[maxP];
   Int_t    muCharge_[maxP];
@@ -425,33 +344,25 @@ protected:
   Float_t  muIsoEcal_[maxP];
   Float_t  muIsoHcal_[maxP];
   Float_t  muChi2NDF_[maxP];
-  Float_t  muEmVeto_[maxP];
-  Float_t  muHadVeto_[maxP];
   Int_t    muType_[maxP];
   Bool_t   muID_[maxP][6];
-  Float_t  muD0_[maxP];
-  Float_t  muDz_[maxP];
   Float_t  muPVD0_[maxP];
   Float_t  muPVDz_[maxP];
-  Float_t  muValidFraction_[maxP];
   Float_t  muTrkdPt_[maxP];
-  Int_t    muNumberOfHits_[maxP];
-  Int_t    muNumberOfValidHits_[maxP];
-  Int_t    muNumberOfInactiveHits_[maxP];
   Int_t    muNumberOfValidTrkHits_[maxP];
   Int_t    muNumberOfValidPixelHits_[maxP];
   Int_t    muNumberOfValidMuonHits_[maxP];
-  Int_t    muStations_[maxP];
-  Int_t    muChambers_[maxP];
-  Float_t  muPV2D_[maxP];
-  Float_t  muPV3D_[maxP];
-  Float_t  muBS2D_[maxP];
-  Float_t  muBS3D_[maxP];
+  Int_t    muNumberOfTrackerLayers_[maxP];
+  Int_t    muNumberOfMatchedStations_[maxP];
   Float_t  muVtx_[maxP][3];
+  Float_t  muPfChargedHadron_[maxP];
+  Float_t  muPfNeutralHadron_[maxP];
+  Float_t  muPfPhoton_[maxP];
+  Float_t  muPfSumPUPt_[maxP];
 
   // Jet
   Int_t    nJet_;
-  Int_t    jetTrg_[maxP][23];
+  Int_t    jetTrg_[maxP][7];
   Int_t    jetAlgo_[maxP];
   Float_t  jetEn_[maxP];
   Float_t  jetPt_[maxP];
@@ -492,50 +403,6 @@ protected:
   Float_t  jetGenJetMass_[maxP];
   Int_t    jetGenPartonID_[maxP];
   Int_t    jetGenPartonMomID_[maxP];
-
-  // Zee candidate
-  Int_t    nZee_;
-  Float_t  ZeeMass_[maxP];
-  Float_t  ZeePt_[maxP];
-  Float_t  ZeeEta_[maxP];
-  Float_t  ZeePhi_[maxP];
-  Int_t    ZeeLeg1Index_[maxP];
-  Int_t    ZeeLeg2Index_[maxP];
-
-  // Zmumu candidate
-  Int_t    nZmumu_;
-  Float_t  ZmumuMass_[maxP];
-  Float_t  ZmumuPt_[maxP];
-  Float_t  ZmumuEta_[maxP];
-  Float_t  ZmumuPhi_[maxP];
-  Int_t    ZmumuLeg1Index_[maxP];
-  Int_t    ZmumuLeg2Index_[maxP];
-
-  // Wenu candidate
-  Int_t    nWenu_;
-  Float_t  WenuMassTCaloMET_[maxP];
-  Float_t  WenuEtCaloMET_[maxP];
-  Float_t  WenuACopCaloMET_[maxP];
-  Float_t  WenuMassTTcMET_[maxP];
-  Float_t  WenuEtTcMET_[maxP];
-  Float_t  WenuACopTcMET_[maxP];
-  Float_t  WenuMassTPfMET_[maxP];
-  Float_t  WenuEtPfMET_[maxP];
-  Float_t  WenuACopPfMET_[maxP];
-  Int_t    WenuEleIndex_[maxP];
-
-  // Wmunu candidate
-  Int_t    nWmunu_;
-  Float_t  WmunuMassTCaloMET_[maxP];
-  Float_t  WmunuEtCaloMET_[maxP];
-  Float_t  WmunuACopCaloMET_[maxP];
-  Float_t  WmunuMassTTcMET_[maxP];
-  Float_t  WmunuEtTcMET_[maxP];
-  Float_t  WmunuACopTcMET_[maxP];
-  Float_t  WmunuMassTPfMET_[maxP];
-  Float_t  WmunuEtPfMET_[maxP];
-  Float_t  WmunuACopPfMET_[maxP];
-  Int_t    WmunuMuIndex_[maxP];
 
   // Physics objects handles
   Handle<View<pat::Muon> >                  muonHandle_;
