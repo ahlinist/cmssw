@@ -352,20 +352,20 @@ bool VGammaPhotonSelector::Fsr2011Apr11Cuts( const pat::Photon& photon,
 
   // 4. super cluster seed severity level != EcalSeverityLevelAlgo::kWeird=4
   int sLevel = photon.userInt("photonUserData:seedSeverityLevel");
-  if (sLevel != EcalSeverityLevelAlgo::kWeird ||
-      cut("excludeWeirdSeverity", int() ) == 0 ||
-      ignoreCut("excludeWeirdSeverity")
-      )
-    passCut(ret, "excludeWeirdSeverity");
-  else return false;
+  //if (sLevel != EcalSeverityLevelAlgo::kWeird ||
+  //    cut("excludeWeirdSeverity", int() ) == 0 ||
+  //    ignoreCut("excludeWeirdSeverity")
+  //    )
+  //  passCut(ret, "excludeWeirdSeverity");
+  //else return false;
 
   // 5. super cluster seed severity level != EcalSeverityLevelAlgo::kBad=5
-  if (sLevel != EcalSeverityLevelAlgo::kBad ||
-      cut("excludeBadSeverity", int()) == 0 ||
-      ignoreCut("excludeBadSeverity") 
-      )
-    passCut(ret, "excludeBadSeverity");
-  else return false;
+  //if (sLevel != EcalSeverityLevelAlgo::kBad ||
+  //    cut("excludeBadSeverity", int()) == 0 ||
+  //    ignoreCut("excludeBadSeverity") 
+  //    )
+  //  passCut(ret, "excludeBadSeverity");
+  //else return false;
 
   // 6. maximum ecal isolation = const + slope * pt
   double maxEcalIso = barJurECALIsoConst_ + barJurECALIsoSlope_ * photon.pt();

@@ -13,7 +13,7 @@
 //
 // Original Author:  Jan Veverka
 //         Created:  Wed Mar 16 03:40:10 PDT 2011
-// $Id$
+// $Id: MmgFsrFilter.cc,v 1.1 2011/03/28 22:51:52 veverka Exp $
 //
 //
 
@@ -346,9 +346,9 @@ MmgFsrFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     ++photonsPassedPerEvent["5.3  seed reco flag"];
 
     int sLevel = photon.userInt("photonUserData:seedSeverityLevel");
-    if (sLevel == EcalSeverityLevelAlgo::kWeird ||
-        sLevel == EcalSeverityLevelAlgo::kBad
-        ) continue;
+    //if (sLevel == EcalSeverityLevelAlgo::kWeird ||
+    //    sLevel == EcalSeverityLevelAlgo::kBad
+    //    ) continue;
     ++photonsPassedPerEvent["5.4  seed severity level"];
 
     if (photon.pt() <= 10.) continue;
