@@ -101,7 +101,7 @@ binning = cms.PSet(
 zttModifier = ApplyFunctionToSequence(lambda m: setBinning(m,binning))
 proc.TauValNumeratorAndDenominatorRealMuonsData.visit(zttModifier)
 
-zttModifier = ApplyFunctionToSequence(lambda m: SetMassInput(m, cms.InputTag("MuZLegs","mass")))
+zttModifier = ApplyFunctionToSequence(lambda m: SetMassInput(m, cms.InputTag("MuZLegs","massInput")))
 proc.TauValNumeratorAndDenominatorRealMuonsData.visit(zttModifier)
 #-----------------------------------------
 

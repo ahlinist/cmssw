@@ -120,7 +120,7 @@ binning = cms.PSet(
 zttModifier = ApplyFunctionToSequence(lambda m: setBinning(m,binning))
 proc.TauValNumeratorAndDenominatorRealElectronsData.visit(zttModifier)
 
-zttModifier = ApplyFunctionToSequence(lambda m: SetMassInput(m, cms.InputTag("ElZLegs","mass")))
+zttModifier = ApplyFunctionToSequence(lambda m: SetMassInput(m, cms.InputTag("ElZLegs","massInput")))
 proc.TauValNumeratorAndDenominatorRealElectronsData.visit(zttModifier)
 #-----------------------------------------
 
