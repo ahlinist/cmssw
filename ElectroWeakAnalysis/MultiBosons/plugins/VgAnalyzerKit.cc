@@ -63,6 +63,12 @@
 // New veto
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
+// PF isolation from alternate code
+#include "EGamma/EGammaAnalysisTools/src/PFIsolationEstimator.cc"
+
+// Electron ID in 2012
+#include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
+
 using namespace std;
 using namespace pat;
 using namespace edm;
@@ -86,14 +92,11 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
   TypeIpfMETlabel_  = ps.getParameter<InputTag>("TypeIpfMETLabel");
-  TypeIpIIpfMETlabel_ = ps.getParameter<InputTag>("TypeIpIIpfMETLabel");
-  SmearedpfMETlabel_     = ps.getParameter<InputTag>("SmearedpfMETLabel");
   SmearedTypeIpfMETlabel_  = ps.getParameter<InputTag>("SmearedTypeIpfMETLabel");
   PFCandLabel_    = ps.getParameter<InputTag>("PFCandLabel");
   puInfoLabel_    = ps.getParameter<InputTag>("puInfoLabel");
   rhoLabel_       = ps.getParameter<InputTag>("rhoLabel");
   sigmaLabel_     = ps.getParameter<InputTag>("sigmaLabel");
-  rhoNeutralLabel_  = ps.getParameter<InputTag>("rhoNeutralLabel");
 
   leadingElePtCut_ = ps.getParameter<double>("LeadingElePtCut");
   leadingMuPtCut_  = ps.getParameter<double>("LeadingMuPtCut");
@@ -102,6 +105,10 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   ebReducedRecHitCollection_ = ps.getParameter<InputTag>("ebReducedRecHitCollection");
   eeReducedRecHitCollection_ = ps.getParameter<InputTag>("eeReducedRecHitCollection");
   beamSpotCollection_        = ps.getParameter<InputTag>("BeamSpotCollection");
+
+  // PF isolation
+  inputTagIsoDepElectrons_ = ps.getParameter< std::vector<edm::InputTag> >("IsoDepElectron");
+  inputTagIsoValElectronsPFId_  = ps.getParameter< std::vector<edm::InputTag> >("IsoValElectronPF");
 
   if (saveHistograms_) helper_.bookHistos(this);
 
@@ -120,23 +127,19 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[125]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[31]/I");
   tree_->Branch("HLTprescale", HLTprescale_, "HLTprescale[nHLT]/I");
-  tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
-  tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
   tree_->Branch("vtx", vtx_, "vtx[nVtx][3]/F");
   tree_->Branch("vtxNTrk", vtxNTrk_, "vtxNTrk[nVtx]/I");
   tree_->Branch("vtxNDF", vtxNDF_, "vtxNDF[nVtx]/F");
   tree_->Branch("vtxD0", vtxD0_, "vtxD0[nVtx]/F");
   tree_->Branch("nGoodVtx", &nGoodVtx_, "nGoodVtx/I");
-  tree_->Branch("IsVtxGood", &IsVtxGood_, "IsVtxGood/I");
   tree_->Branch("nTrk", &nTrk_, "nTrk/I");
   tree_->Branch("nGoodTrk", &nGoodTrk_, "nGoodTrk/I");
   tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
-  tree_->Branch("rho", &rho_, "rho/F");
+  tree_->Branch("rho", &rho_, "rho/D");
   tree_->Branch("sigma", &sigma_, "sigma/F");
-  tree_->Branch("rhoNeutral", &rhoNeutral_, "rhoNeutral/F");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
@@ -206,23 +209,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("TypeIpfMETsumEt", &TypeIpfMETsumEt_, "TypeIpfMETsumEt/F");
   tree_->Branch("TypeIpfMETmEtSig", &TypeIpfMETmEtSig_, "TypeIpfMETmEtSig/F");
   tree_->Branch("TypeIpfMETSig", &TypeIpfMETSig_, "TypeIpfMETSig/F");
-  // TypeI + TypeII pfMET 
-  tree_->Branch("TypeIpIIpfMET", &TypeIpIIpfMET_, "TypeIpIIpfMET/F");
-  tree_->Branch("TypeIpIIpfMETx", &TypeIpIIpfMETx_, "TypeIpIIpfMETx/F");
-  tree_->Branch("TypeIpIIpfMETy", &TypeIpIIpfMETy_, "TypeIpIIpfMETy/F");
-  tree_->Branch("TypeIpIIpfMETPhi", &TypeIpIIpfMETPhi_, "TypeIpIIpfMETPhi/F");
-  tree_->Branch("TypeIpIIpfMETsumEt", &TypeIpIIpfMETsumEt_, "TypeIpIIpfMETsumEt/F");
-  tree_->Branch("TypeIpIIpfMETmEtSig", &TypeIpIIpfMETmEtSig_, "TypeIpIIpfMETmEtSig/F");
-  tree_->Branch("TypeIpIIpfMETSig", &TypeIpIIpfMETSig_, "TypeIpIIpfMETSig/F");
   if (doGenParticles_) {
-    // Smeared pfMET
-    tree_->Branch("SmearedpfMET", &SmearedpfMET_, "SmearedpfMET/F");
-    tree_->Branch("SmearedpfMETx", &SmearedpfMETx_, "SmearedpfMETx/F");
-    tree_->Branch("SmearedpfMETy", &SmearedpfMETy_, "SmearedpfMETy/F");
-    tree_->Branch("SmearedpfMETPhi", &SmearedpfMETPhi_, "SmearedpfMETPhi/F");
-    tree_->Branch("SmearedpfMETsumEt", &SmearedpfMETsumEt_, "SmearedpfMETsumEt/F");
-    tree_->Branch("SmearedpfMETmEtSig", &SmearedpfMETmEtSig_, "SmearedpfMETmEtSig/F");
-    tree_->Branch("SmearedpfMETSig", &SmearedpfMETSig_, "SmearedpfMETSig/F");
     // Smeared TypeI pfMET
     tree_->Branch("SmearedTypeIpfMET", &SmearedTypeIpfMET_, "SmearedTypeIpfMET/F");
     tree_->Branch("SmearedTypeIpfMETx", &SmearedTypeIpfMETx_, "SmearedTypeIpfMETx/F");
@@ -232,22 +219,11 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("SmearedTypeIpfMETmEtSig", &SmearedTypeIpfMETmEtSig_, "SmearedTypeIpfMETmEtSig/F");
     tree_->Branch("SmearedTypeIpfMETSig", &SmearedTypeIpfMETSig_, "SmearedTypeIpfMETSig/F");
   }
-  // pfCharged and pfNeutral particles
-  tree_->Branch("npfCharged", &npfCharged_, "npfCharged/I");
-  tree_->Branch("pfChargedSumPt", &pfChargedSumPt_, "pfChargedSumPt/F");
-  tree_->Branch("npfChargedHadron", &npfChargedHadron_, "npfChargedHadron/I");
-  tree_->Branch("pfChargedHadronSumPt", &pfChargedHadronSumPt_, "pfChargedHadronSumPt/F");
-  tree_->Branch("npfLepton", &npfLepton_, "npfLepton/I");
-  tree_->Branch("pfLeptonSumPt", &pfLeptonSumPt_, "pfLeptonSumPt/F");
-  tree_->Branch("npfNeutral", &npfNeutral_, "npfNeutral/I");
-  tree_->Branch("pfNeutralSumPt", &pfNeutralSumPt_, "pfNeutralSumPt/F");
-  tree_->Branch("npfNeutralHadron", &npfNeutralHadron_, "npfNeutralHadron/I");
-  tree_->Branch("pfNeutralHadronSumPt", &pfNeutralHadronSumPt_, "pfNeutralHadronSumPt/F");
-  tree_->Branch("npfPhoton", &npfPhoton_, "npfPhoton/I");
-  tree_->Branch("pfPhotonSumPt", &pfPhotonSumPt_, "pfPhotonSumPt/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][31]/I");
+  tree_->Branch("eleEcalDriven", eleEcalDriven_, "eleEcalDriven[nEle]/O");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][14]/I");
+  tree_->Branch("eleID2012", eleID2012_, "eleID2012[nEle][7]/O");
   tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
   tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
@@ -265,9 +241,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleSCEtaWidth", eleSCEtaWidth_, "eleSCEtaWidth[nEle]/F");
   tree_->Branch("eleSCPhiWidth", eleSCPhiWidth_, "eleSCPhiWidth[nEle]/F");
   tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
-  tree_->Branch("eleCaloPos", eleCaloPos_ ,"eleCaloPos[nEle][3]/F");
-  tree_->Branch("eleSCPos", eleSCPos_, "eleSCPos[nEle][3]/F");
   tree_->Branch("eleHoverE", eleHoverE_, "eleHoverE[nEle]/F");
+  tree_->Branch("eleHoverEbc", eleHoverEbc_, "eleHoverEbc[nEle]/F");
   tree_->Branch("eleEoverP", eleEoverP_, "eleEoverP[nEle]/F");
   tree_->Branch("elePin", elePin_, "elePin[nEle]/F");
   tree_->Branch("elePout", elePout_, "elePout[nEle]/F");
@@ -282,11 +257,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
   tree_->Branch("eleSeedTime", eleSeedTime_, "eleSeedTime[nEle]/F");
   tree_->Branch("eleSeedEnergy", eleSeedEnergy_, "eleSeedEnergy[nEle]/F");
-  // If Flag == 2, it means that rechit is out of time
-  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EcalFirstBeam09Anomalous#Spike_identification_in_collisio
-  tree_->Branch("eleRecoFlag", eleRecoFlag_, "eleRecoFlag[nEle]/I");
-  // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
-  tree_->Branch("eleSeverity", eleSeverity_, "eleSeverity[nEle]/I");
   if (doGenParticles_) {
     tree_->Branch("eleGenIndex", eleGenIndex_, "eleGenIndex[nEle]/I");
     tree_->Branch("eleGenGMomPID", eleGenGMomPID_, "eleGenGMomPID[nEle]/I");
@@ -303,22 +273,17 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleIsoHcalSolidDR04", eleIsoHcalSolidDR04_, "eleIsoHcalSolidDR04[nEle]/F");
   tree_->Branch("eleConvDist", eleConvDist_, "eleConvDist[nEle]/F");
   tree_->Branch("eleConvDcot", eleConvDcot_, "eleConvDcot[nEle]/F");
-  tree_->Branch("eleConvRadius", eleConvRadius_, "eleConvRadius[nEle]/F");
-  tree_->Branch("eleConvFlag", eleConvFlag_, "eleConvFlag[nEle]/I");
   tree_->Branch("eleConvMissinghit", eleConvMissinghit_, "eleConvMissinghit[nEle]/I");
   tree_->Branch("eleConversionveto", eleConversionveto_, "eleConversionveto[nEle]/O");
-  tree_->Branch("eleESRatio", eleESRatio_, "eleESRatio[nEle]/F");
-  tree_->Branch("eleESProfileFront", eleESProfileFront_, "eleESProfileFront[nEle][123]/F");
-  tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
-  tree_->Branch("elePV2D", elePV2D_, "elePV2D[nEle]/F");
-  tree_->Branch("elePV3D", elePV3D_, "elePV3D[nEle]/F");
-  tree_->Branch("eleBS2D", eleBS2D_, "eleBS2D[nEle]/F");
-  tree_->Branch("eleBS3D", eleBS3D_, "eleBS3D[nEle]/F");
   tree_->Branch("elePVD0", elePVD0_, "elePVD0[nEle]/F");
   tree_->Branch("elePVDz", elePVDz_, "elePVDz[nEle]/F");
+  tree_->Branch("eleIsPFID", eleIsPFID_, "eleIsPFID[nEle]/O");
+  tree_->Branch("elePfChargedHadron", elePfChargedHadron_, "elePfChargedHadron[nEle]/D");
+  tree_->Branch("elePfNeutralHadron", elePfNeutralHadron_, "elePfNeutralHadron[nEle]/D");
+  tree_->Branch("elePfPhoton", elePfPhoton_, "elePfPhoton[nEle]/D");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][14]/I");
+  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][23]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoElectronveto", phoElectronveto_, "phoElectronveto[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
@@ -329,26 +294,17 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoR9", phoR9_, "phoR9[nPho]/F");
   tree_->Branch("phoTrkIsoSolidDR03", phoTrkIsoSolidDR03_, "phoTrkIsoSolidDR03[nPho]/F");
   tree_->Branch("phoTrkIsoHollowDR03", phoTrkIsoHollowDR03_, "phoTrkIsoHollowDR03[nPho]/F");
-  tree_->Branch("phoNTrkSolidDR03", phoNTrkSolidDR03_, "phoNTrkSolidDR03[nPho]/I");
-  tree_->Branch("phoNTrkHollowDR03", phoNTrkHollowDR03_, "phoNTrkHollowDR03[nPho]/I");
   tree_->Branch("phoEcalIsoDR03", phoEcalIsoDR03_, "phoEcalIsoDR03[nPho]/F");
   tree_->Branch("phoHcalIsoDR03", phoHcalIsoDR03_, "phoHcalIsoDR03[nPho]/F");
-  tree_->Branch("phoHcalIsoSolidDR03", phoHcalIsoSolidDR03_, "phoHcalIsoSolidDR03[nPho]/F");
   tree_->Branch("phoTrkIsoSolidDR04", phoTrkIsoSolidDR04_, "phoTrkIsoSolidDR04[nPho]/F");
   tree_->Branch("phoTrkIsoHollowDR04", phoTrkIsoHollowDR04_, "phoTrkIsoHollowDR04[nPho]/F");
-  tree_->Branch("phoNTrkSolidDR04", phoNTrkSolidDR04_, "phoNTrkSolidDR04[nPho]/I");
-  tree_->Branch("phoNTrkHollowDR04", phoNTrkHollowDR04_, "phoNTrkHollowDR04[nPho]/I");
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/F");
-  tree_->Branch("phoHcalIsoSolidDR04", phoHcalIsoSolidDR04_, "phoHcalIsoSolidDR04[nPho]/F");
   tree_->Branch("phoEtVtx", phoEtVtx_, "phoEtVtx[nPho][150]/F");
   tree_->Branch("phoEtaVtx", phoEtaVtx_, "phoEtaVtx[nPho][150]/F");
   tree_->Branch("phoPhiVtx", phoPhiVtx_, "phoPhiVtx[nPho][150]/F");
-  tree_->Branch("phoTrkIsoSolidDR03Vtx", phoTrkIsoSolidDR03Vtx_, "phoTrkIsoSolidDR03Vtx[nPho][150]/F");
-  tree_->Branch("phoTrkIsoHollowDR03Vtx", phoTrkIsoHollowDR03Vtx_, "phoTrkIsoHollowDR03Vtx[nPho][150]/F");
-  tree_->Branch("phoTrkIsoSolidDR04Vtx", phoTrkIsoSolidDR04Vtx_, "phoTrkIsoSolidDR04Vtx[nPho][150]/F");
-  tree_->Branch("phoTrkIsoHollowDR04Vtx", phoTrkIsoHollowDR04Vtx_, "phoTrkIsoHollowDR04Vtx[nPho][150]/F");
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
+  tree_->Branch("phoHoverEbc", phoHoverEbc_, "phoHoverEbc[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIPhi", phoSigmaIEtaIPhi_, "phoSigmaIEtaIPhi[nPho]/F");
@@ -357,10 +313,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoE5x5", phoE5x5_, "phoE5x5[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
   tree_->Branch("phoSeedEnergy", phoSeedEnergy_, "phoSeedEnergy[nPho]/F");
-  // If Flag == 2, it means that rechit is out of time
-  tree_->Branch("phoRecoFlag", phoRecoFlag_, "phoRecoFlag[nPho]/I");
-  // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
-  tree_->Branch("phoSeverity", phoSeverity_, "phoSeverity[nPho]/I");
   tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
   if (doGenParticles_) {
     tree_->Branch("phoGenIndex", phoGenIndex_, "phoGenIndex[nPho]/I");
@@ -369,62 +321,23 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("phoGenMomPt", phoGenMomPt, "phoGenMomPt[nPho]/F");
   }
   tree_->Branch("phoSCE", phoSCE_, "phoSCE[nPho]/F");
-  tree_->Branch("phoESE", phoESE_, "phoESE[nPho]/F");
   tree_->Branch("phoSCEt", phoSCEt_, "phoSCEt[nPho]/F");
   tree_->Branch("phoSCEta", phoSCEta_, "phoSCEta[nPho]/F");
   tree_->Branch("phoSCPhi", phoSCPhi_, "phoSCPhi[nPho]/F");
   tree_->Branch("phoSCEtaWidth", phoSCEtaWidth_, "phoSCEtaWidth[nPho]/F");
   tree_->Branch("phoSCPhiWidth", phoSCPhiWidth_, "phoSCPhiWidth[nPho]/F");
   tree_->Branch("phoVtx", phoVtx_, "phoVtx[nPho][3]/F");
-  tree_->Branch("phoVtxD0", phoVtxD0_, "phoVtxD0[nPho]/F");
   tree_->Branch("phoOverlap", phoOverlap_, "phoOverlap[nPho]/I");
   tree_->Branch("phohasPixelSeed", phohasPixelSeed_, "phohasPixelSeed[nPho]/I");
-  tree_->Branch("phoIsConv", phoIsConv_, "phoIsConv[nPho]/I");
-  tree_->Branch("phoESRatio", phoESRatio_, "phoESRatio[nPho]/F");
-  tree_->Branch("phoESProfileFront", phoESProfileFront_, "phoESProfileFront[nPho][123]/F");
-  tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][123]/F");
-  tree_->Branch("phoNTracks", phoNTracks_, "phoNTracks[nPho]/I");
-  tree_->Branch("phoConvPairInvariantMass", phoConvPairInvariantMass_, "phoConvPairInvariantMass[nPho]/F");
-  tree_->Branch("phoConvPairCotThetaSeparation", phoConvPairCotThetaSeparation_, "phoConvPairCotThetaSeparation[nPho]/F");
-  tree_->Branch("phoConvPairMomentumEta", phoConvPairMomentumEta_, "phoConvPairMomentumEta[nPho]/F");
-  tree_->Branch("phoConvPairMomentumPhi", phoConvPairMomentumPhi_, "phoConvPairMomentumPhi[nPho]/F");
-  tree_->Branch("phoConvPairMomentumX", phoConvPairMomentumX_, "phoConvPairMomentumX[nPho]/F");
-  tree_->Branch("phoConvPairMomentumY", phoConvPairMomentumY_, "phoConvPairMomentumY[nPho]/F");
-  tree_->Branch("phoConvPairMomentumZ", phoConvPairMomentumZ_, "phoConvPairMomentumZ[nPho]/F");
-  tree_->Branch("phoConvDistOfMinimumApproach", phoConvDistOfMinimumApproach_, "phoConvDistOfMinimumApproach[nPho]/F");
-  tree_->Branch("phoConvDPhiTracksAtVtx", phoConvDPhiTracksAtVtx_, "phoConvDPhiTracksAtVtx[nPho]/F");
-  tree_->Branch("phoConvDPhiTracksAtEcal", phoConvDPhiTracksAtEcal_, "phoConvDPhiTracksAtEcal[nPho]/F");
-  tree_->Branch("phoConvDEtaTracksAtEcal", phoConvDEtaTracksAtEcal_, "phoConvDEtaTracksAtEcal[nPho]/F");
-  tree_->Branch("phoConvVtxValid", phoConvVtxValid_, "phoConvVtxValid[nPho]/F");
-  tree_->Branch("phoConvVtxEta", phoConvVtxEta_, "phoConvVtxEta[nPho]/F");
-  tree_->Branch("phoConvVtxPhi", phoConvVtxPhi_, "phoConvVtxPhi[nPho]/F");
-  tree_->Branch("phoConvVtxR", phoConvVtxR_, "phoConvVtxR[nPho]/F");
-  tree_->Branch("phoConvVtxX", phoConvVtxX_, "phoConvVtxX[nPho]/F");
-  tree_->Branch("phoConvVtxY", phoConvVtxY_, "phoConvVtxY[nPho]/F");
-  tree_->Branch("phoConvVtxZ", phoConvVtxZ_, "phoConvVtxZ[nPho]/F");
-  tree_->Branch("phoConvVtxChi2", phoConvVtxChi2_, "phoConvVtxChi2[nPho]/F");
-  tree_->Branch("phoConvVtxNdof", phoConvVtxNdof_, "phoConvVtxNdof[nPho]/F");
-  tree_->Branch("phoConvChi2Prob", phoConvChi2Prob_, "phoConvChi2Prob[nPho]/F");
-  tree_->Branch("phoConvEoverP", phoConvEoverP_, "phoConvEoverP[nPho]/F");
-  tree_->Branch("phoNxtal", phoNxtal_, "phoNxtal[nPho]/I");
-  tree_->Branch("phoXtalTime", phoXtalTime_, "phoXtalTime_[nPho][200]/F");
-  tree_->Branch("phoXtalEnergy", phoXtalEnergy_, "phoXtalEnergy[nPho][200]/F");
-  tree_->Branch("phoXtalZ", phoXtalZ_, "phoXtalZ[nPho][200]/I");
-  tree_->Branch("phoXtalX", phoXtalX_, "phoXtalX[nPho][200]/I");
-  tree_->Branch("phoXtalY", phoXtalY_, "phoXtalY[nPho][200]/I");
-  tree_->Branch("phoXtalEta", phoXtalEta_, "phoXtalEta[nPho][200]/I");
-  tree_->Branch("phoXtalPhi", phoXtalPhi_, "phoXtalPhi[nPho][200]/I");
-  tree_->Branch("pho5x5Time", pho5x5Time_, "pho5x5Time_[nPho][25]/F");
-  tree_->Branch("pho5x5Energy", pho5x5Energy_, "pho5x5Energy[nPho][25]/F");
-  tree_->Branch("pho5x5Z", pho5x5Z_, "pho5x5Z[nPho][25]/I");
-  tree_->Branch("pho5x5X", pho5x5X_, "pho5x5X[nPho][25]/I");
-  tree_->Branch("pho5x5Y", pho5x5Y_, "pho5x5Y[nPho][25]/I");
-  tree_->Branch("pho5x5Eta", pho5x5Eta_, "pho5x5Eta[nPho][25]/I");
-  tree_->Branch("pho5x5Phi", pho5x5Phi_, "pho5x5Phi[nPho][25]/I");
-
+  tree_->Branch("phoPfChargedHadron", phoPfChargedHadron_, "phoPfChargedHadron[nPho]/F");
+  tree_->Branch("phoPfNeutralHadron", phoPfNeutralHadron_, "phoPfNeutralHadron[nPho]/F");
+  tree_->Branch("phoPfPhoton", phoPfPhoton_, "phoPfPhoton[nPho]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
-  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][16]/I");
+  tree_->Branch("muIsPFMu", muIsPFMu_, "muIsPFMu[nMu]/O");
+  tree_->Branch("muIsGlobalMu", muIsGlobalMu_, "muIsGlobalMu[nMu]/O");
+  tree_->Branch("muIsTrackerMu", muIsTrackerMu_, "muIsTrackerMu[nMu]/O");
+  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][4]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -441,34 +354,26 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muIsoEcal", muIsoEcal_, "muIsoEcal[nMu]/F");
   tree_->Branch("muIsoHcal", muIsoHcal_, "muIsoHcal[nMu]/F");
   tree_->Branch("muChi2NDF", muChi2NDF_, "muChi2NDF[nMu]/F");
-  tree_->Branch("muEmVeto", muEmVeto_, "muEmVeto[nMu]/F");
-  tree_->Branch("muHadVeto", muHadVeto_, "muHadVeto[nMu]/F");
   tree_->Branch("muType", muType_, "muType[nMu]/I");
   tree_->Branch("muID", muID_, "muID[nMu][6]/O");
   // [0]: AllArbitrated, [1]: GlobalMuonPromptTight, [2]: TMLSLoose, [3]: TMLSTight, [4]: TM2DCompatLoose, [5]: TM2DCompatTight
-  tree_->Branch("muD0", muD0_, "muD0[nMu]/F");
-  tree_->Branch("muDz", muDz_, "muDz[nMu]/F");
   tree_->Branch("muPVD0", muPVD0_, "muPVD0[nMu]/F");
   tree_->Branch("muPVDz", muPVDz_, "muPVDz[nMu]/F");
-  tree_->Branch("muValidFraction", muValidFraction_, "muValidFraction_[nMu]/F");
   tree_->Branch("muTrkdPt", muTrkdPt_, "muTrkdPt[nMu]/F");
-  tree_->Branch("muNumberOfHits", muNumberOfHits_, "muNumberOfHits[nMu]/I");
-  tree_->Branch("muNumberOfValidHits", muNumberOfValidHits_, "muNumberOfValidHits[nMu]/I");
-  tree_->Branch("muNumberOfInactiveHits", muNumberOfInactiveHits_, "muNumberOfInactiveHits[nMu]/I");
   tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
   tree_->Branch("muNumberOfValidPixelHits", muNumberOfValidPixelHits_, "muNumberOfValidPixelHits[nMu]/I");
   tree_->Branch("muNumberOfValidMuonHits", muNumberOfValidMuonHits_, "muNumberOfValidMuonHits[nMu]/I");
-  tree_->Branch("muStations", muStations_, "muStations[nMu]/I");
-  tree_->Branch("muChambers", muChambers_, "muChambers[nMu]/I");
-  tree_->Branch("muPV2D", muPV2D_, "muPV2D[nMu]/F");
-  tree_->Branch("muPV3D", muPV3D_, "muPV3D[nMu]/F");
-  tree_->Branch("muBS2D", muBS2D_, "muBS2D[nMu]/F");
-  tree_->Branch("muBS3D", muBS3D_, "muBS3D[nMu]/F");
+  tree_->Branch("muNumberOfTrackerLayers", muNumberOfTrackerLayers_, "muNumberOfTrackerLayers[nMu]/I");
+  tree_->Branch("muNumberOfMatchedStations", muNumberOfMatchedStations_, "muNumberOfMatchedStations[nMu]/I");
   tree_->Branch("muVtx", muVtx_, "muVtx[nMu][3]/F");
+  tree_->Branch("muPfChargedHadron", muPfChargedHadron_, "muPfChargedHadron[nMu]/F");
+  tree_->Branch("muPfNeutralHadron", muPfNeutralHadron_, "muPfNeutralHadron[nMu]/F");
+  tree_->Branch("muPfPhoton", muPfPhoton_, "muPfPhoton[nMu]/F");
+  tree_->Branch("muPfSumPUPt", muPfSumPUPt_, "muPfSumPUPt[nMu]/F");
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
-    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][23]/I");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][7]/I");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -504,46 +409,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
       tree_->Branch("jetGenPartonMomID", jetGenPartonMomID_, "jetGenPartonMomID[nJet]/I");
     }
   }
-  // Zee candiate
-  tree_->Branch("nZee", &nZee_, "nZee/I");
-  tree_->Branch("ZeeMass", ZeeMass_, "ZeeMass[nZee]/F");
-  tree_->Branch("ZeePt", ZeePt_, "ZeePt[nZee]/F");
-  tree_->Branch("ZeeEta", ZeeEta_, "ZeeEta[nZee]/F");
-  tree_->Branch("ZeePhi", ZeePhi_, "ZeePhi[nZee]/F");
-  tree_->Branch("ZeeLeg1Index", ZeeLeg1Index_, "ZeeLeg1Index[nZee]/I");
-  tree_->Branch("ZeeLeg2Index", ZeeLeg2Index_, "ZeeLeg2Index[nZee]/I");
-  // Zmumu candiate
-  tree_->Branch("nZmumu", &nZmumu_, "nZmumu/I");
-  tree_->Branch("ZmumuMass", ZmumuMass_, "ZmumuMass[nZmumu]/F");
-  tree_->Branch("ZmumuPt", ZmumuPt_, "ZmumuPt[nZmumu]/F");
-  tree_->Branch("ZmumuEta", ZmumuEta_, "ZmumuEta[nZmumu]/F");
-  tree_->Branch("ZmumuPhi", ZmumuPhi_, "ZmumuPhi[nZmumu]/F");
-  tree_->Branch("ZmumuLeg1Index", ZmumuLeg1Index_, "ZmumuLeg1Index[nZmumu]/I");
-  tree_->Branch("ZmumuLeg2Index", ZmumuLeg2Index_, "ZmumuLeg2Index[nZmumu]/I");
-  // Wenu candidate
-  tree_->Branch("nWenu", &nWenu_, "nWenu/I");
-  tree_->Branch("WenuMassTCaloMET", WenuMassTCaloMET_, "WenuMassTCaloMET[nWenu]/F");
-  tree_->Branch("WenuEtCaloMET", WenuEtCaloMET_, "WenuEtCaloMET[nWenu]/F");
-  tree_->Branch("WenuACopCaloMET", WenuACopCaloMET_, "WenuACopCaloMET[nWenu]/F");
-  tree_->Branch("WenuMassTTcMET", WenuMassTTcMET_, "WenuMassTTcMET[nWenu]/F");
-  tree_->Branch("WenuEtTcMET", WenuEtTcMET_, "WenuEtTcMET[nWenu]/F");
-  tree_->Branch("WenuACopTcMET", WenuACopTcMET_, "WenuACopTcMET[nWenu]/F");
-  tree_->Branch("WenuMassTPfMET", WenuMassTPfMET_, "WenuMassTPfMET[nWenu]/F");
-  tree_->Branch("WenuEtPfMET", WenuEtPfMET_, "WenuEtPfMET[nWenu]/F");
-  tree_->Branch("WenuACopPfMET", WenuACopPfMET_, "WenuACopPfMET[nWenu]/F");
-  tree_->Branch("WenuEleIndex", WenuEleIndex_, "WenuEleIndex[nWenu]/I");
-  // Wmunu candidate
-  tree_->Branch("nWmunu", &nWmunu_, "nWmunu/I");
-  tree_->Branch("WmunuMassTCaloMET", WmunuMassTCaloMET_, "WmunuMassTCaloMET[nWmunu]/F");
-  tree_->Branch("WmunuEtCaloMET", WmunuEtCaloMET_, "WmunuEtCaloMET[nWmunu]/F");
-  tree_->Branch("WmunuACopCaloMET", WmunuACopCaloMET_, "WmunuACopCaloMET[nWmunu]/F");
-  tree_->Branch("WmunuMassTTcMET", WmunuMassTTcMET_, "WmunuMassTTcMET[nWmunu]/F");
-  tree_->Branch("WmunuEtTcMET", WmunuEtTcMET_, "WmunuEtTcMET[nWmunu]/F");
-  tree_->Branch("WmunuACopTcMET", WmunuACopTcMET_, "WmunuACopTcMET[nWmunu]/F");
-  tree_->Branch("WmunuMassTPfMET", WmunuMassTPfMET_, "WmunuMassTPfMET[nWmunu]/F");
-  tree_->Branch("WmunuEtPfMET", WmunuEtPfMET_, "WmunuEtPfMET[nWmunu]/F");
-  tree_->Branch("WmunuACopPfMET", WmunuACopPfMET_, "WmunuACopPfMET[nWmunu]/F");
-  tree_->Branch("WmunuMuIndex", WmunuMuIndex_, "WmunuMuIndex[nWmunu]/I");
 
 }
 
@@ -585,6 +450,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
+  const reco::BeamSpot &beamSpot = *(beamSpotHandle.product());
 
   edm::Handle<reco::ConversionCollection> hConversions;
   e.getByLabel("allConversions", hConversions);
@@ -622,35 +488,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     ttbit0_  = (technicalTriggerWordBeforeMask.at(0))  ? 1 : 0;
   }
 
-  // Get CaloTower information
-  edm::Handle<CaloTowerCollection> pCaloTower;
-  if ( e.getByLabel(caloTowerlabel_, pCaloTower) ) {
-
-    const CaloTowerCollection* CaloTowers = pCaloTower.product();
-
-    nHFTowersP_ = 0;
-    nHFTowersN_ = 0;
-    for (CaloTowerCollection::const_iterator aCalo = CaloTowers->begin(); aCalo != CaloTowers->end(); aCalo++) {
-
-      if (aCalo->energy() > 3) {
-        for (size_t i = 0; i < aCalo->constituentsSize(); ++i) {
-          const DetId caloId = aCalo->constituent(i);
-
-          if (caloId.det() != DetId::Hcal) continue;
-
-          HcalSubdetector hcalsubdet = (HcalSubdetector(caloId.subdetId()));
-
-          if (hcalsubdet != HcalForward) continue;
-          if (aCalo->eta() < 3) nHFTowersP_++;
-          if (aCalo->eta() > -3) nHFTowersN_++;
-        }
-      }
-    }
-  } // pCalotower.isValid()
-
   // vertex
   nVtx_ = 0;
-  IsVtxGood_ = 0;
   nGoodVtx_ = 0;
   Handle<VertexCollection> recVtxs;
   if (e.getByLabel(vtxlabel_, recVtxs)) {
@@ -669,7 +508,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       }
     }
   }
-  if (nGoodVtx_ > 0) IsVtxGood_ = 1;
 
   // track quality
   TrackBase::TrackQuality trkQuality_;
@@ -752,10 +590,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   edm::Handle<double> sigmaHandle;
   e.getByLabel(sigmaLabel_, sigmaHandle);
   sigma_ = *(sigmaHandle.product());
-
-  edm::Handle<double> rhoNeutralHandle;
-  e.getByLabel(rhoNeutralLabel_, rhoNeutralHandle);
-  rhoNeutral_ = *(rhoNeutralHandle.product());
 
   // GenParticle
   // cout << "VgAnalyzerKit: produce: GenParticle... " << endl;
@@ -844,134 +678,40 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
   std::map<unsigned, std::string> HLTIndexPath;  
-  HLTIndexPath[0] = "HLT_Jet15U";
-  HLTIndexPath[1] = "HLT_Jet30U";
-  HLTIndexPath[2] = "HLT_Jet50U";
-  HLTIndexPath[3] = "HLT_Jet70U";
-  HLTIndexPath[4] = "HLT_Jet70U_v2";
-  HLTIndexPath[5] = "HLT_Jet100U";
-  HLTIndexPath[6] = "HLT_Jet100U_v2";
-  HLTIndexPath[7] = "HLT_Jet140U_v1";
-  HLTIndexPath[8] = "HLT_Mu9";
-  HLTIndexPath[9] = "HLT_Mu11";
-  HLTIndexPath[10] = "HLT_Mu13";
-  HLTIndexPath[11] = "HLT_Mu13_v";
-  HLTIndexPath[12] = "HLT_Mu15";
-  HLTIndexPath[13] = "HLT_Mu15_v";
-  HLTIndexPath[14] = "HLT_DoubleMu3";
-  HLTIndexPath[15] = "HLT_DoubleMu3_v2";
-  HLTIndexPath[16] = "HLT_DoubleMu5_v1";
-  HLTIndexPath[17] = "HLT_Ele15_LW_L1R";
-  HLTIndexPath[18] = "HLT_Ele20_LW_L1R";
-  HLTIndexPath[19] = "HLT_Ele15_SW_L1R";
-  HLTIndexPath[20] = "HLT_Ele20_SW_L1R";
-  HLTIndexPath[21] = "HLT_Ele15_SW_EleId_L1R";
-  HLTIndexPath[22] = "HLT_Ele20_SW_EleId_L1R";
-  HLTIndexPath[23] = "HLT_Ele15_SW_CaloEleId_L1R";
-  HLTIndexPath[24] = "HLT_Ele20_SW_CaloEleId_L1R";
-  HLTIndexPath[25] = "HLT_Ele17_SW_CaloEleId_L1R";
-  HLTIndexPath[26] = "HLT_Ele17_SW_TightEleId_L1R";
-  HLTIndexPath[27] = "HLT_Ele17_SW_TighterEleIdIsol_L1R";
-  HLTIndexPath[28] = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2";
-  HLTIndexPath[29] = "HLT_Ele22_SW_TighterEleId_L1R_v2";
-  HLTIndexPath[30] = "HLT_DoubleEle10_SW_L1R";
-  HLTIndexPath[31] = "HLT_DoubleEle17_SW_L1R_v1";
-  HLTIndexPath[32] = "HLT_Photon10_Cleaned_L1R";
-  HLTIndexPath[33] = "HLT_Photon15_Cleaned_L1R";
-  HLTIndexPath[34] = "HLT_Photon20_Cleaned_L1R";
-  HLTIndexPath[35] = "HLT_Photon30_Cleaned_L1R";
-  HLTIndexPath[36] = "HLT_Photon50_Cleaned_L1R_v1";
-  HLTIndexPath[37] = "HLT_Photon70_Cleaned_L1R_v1";
-  HLTIndexPath[38] = "HLT_Jet15U_v3";
-  HLTIndexPath[39] = "HLT_Jet30U_v3";
-  HLTIndexPath[40] = "HLT_Jet50U_v3";
-  HLTIndexPath[41] = "HLT_Jet70U_v3";
-  HLTIndexPath[42] = "HLT_Jet100U_v3";
-  HLTIndexPath[43] = "HLT_Jet140U_v3";
-  HLTIndexPath[44] = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1";
-  HLTIndexPath[45] = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2";
-  HLTIndexPath[46] = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3";
-  HLTIndexPath[47] = "HLT_DoubleEle15_SW_L1R_v1";
-  HLTIndexPath[48] = "HLT_DoublePhoton17_L1R";
-  HLTIndexPath[49] = "HLT_Photon10_L1R";
-  HLTIndexPath[50] = "HLT_IsoMu15_v";
-  HLTIndexPath[51] = "HLT_IsoMu17_v";
-  HLTIndexPath[52] = "HLT_IsoMu24_v";
-  HLTIndexPath[53] = "HLT_IsoMu30_v";
-  HLTIndexPath[54] = "HLT_Mu24_v";
-  HLTIndexPath[55] = "HLT_Mu30_v";
-  // HLT path for 2011A data
-  HLTIndexPath[56] = "HLT_Jet30_v";
-  HLTIndexPath[57] = "HLT_Jet60_v";
-  HLTIndexPath[58] = "HLT_Jet80_v";
-  HLTIndexPath[59] = "HLT_Jet110_v";
-  HLTIndexPath[60] = "HLT_Jet150_v";
-  HLTIndexPath[61] = "HLT_Jet190_v";
-  HLTIndexPath[62] = "HLT_Jet240_v";
-  HLTIndexPath[63] = "HLT_Jet300_v";
-  HLTIndexPath[64] = "HLT_Jet370_v";
-  HLTIndexPath[65] = "HLT_Mu30_v";
-  HLTIndexPath[66] = "HLT_IsoMu24_v";
-  HLTIndexPath[67] = "HLT_IsoMu30_v";
-  HLTIndexPath[68] = "HLT_IsoMu24_eta2p1_v";
-  HLTIndexPath[69] = "HLT_IsoMu30_eta2p1_v";
-  HLTIndexPath[70] = "HLT_IsoMu34_eta2p1_v";
-  HLTIndexPath[71] = "HLT_DoubleMu6_v";
-  HLTIndexPath[72] = "HLT_DoubleMu7_v";
-  HLTIndexPath[73] = "HLT_Mu13_Mu8_v";
-  HLTIndexPath[74] = "HLT_Mu17_Mu8_v";
-  HLTIndexPath[75] = "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v";
-  HLTIndexPath[76] = "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v";
-  HLTIndexPath[77] = "HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v";
-  HLTIndexPath[78] = "HLT_Ele27_WP80_PFMT50_v";
-  HLTIndexPath[79] = "HLT_Ele32_WP70_PFMT50_v";
-  HLTIndexPath[80] = "HLT_Ele8_CaloIdL_CaloIsoVL_v";
-  HLTIndexPath[81] = "HLT_Ele17_CaloIdL_CaloIsoVL_v";
-  HLTIndexPath[82] = "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v";
-  HLTIndexPath[83] = "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v";
-  HLTIndexPath[84] = "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30_v";
-  HLTIndexPath[85] = "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v";
-  HLTIndexPath[86] = "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v";
-  HLTIndexPath[87] = "HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v";
-  HLTIndexPath[88] = "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_Ele17_v";
-  HLTIndexPath[89] = "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_v";
-  HLTIndexPath[90] = "HLT_Photon20_CaloIdVL_IsoL_v";
-  HLTIndexPath[91] = "HLT_Photon20_R9Id_Photon18_R9Id_v";
-  HLTIndexPath[92] = "HLT_Photon26_Photon18_v";
-  HLTIndexPath[93] = "HLT_Photon26_IsoVL_Photon18_v";
-  HLTIndexPath[94] = "HLT_Photon26_IsoVL_Photon18_IsoVL_v";
-  HLTIndexPath[95] = "HLT_Photon26_CaloIdL_IsoVL_Photon18_v";
-  HLTIndexPath[96] = "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v";
-  HLTIndexPath[97] = "HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v";
-  HLTIndexPath[98] = "HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v";
-  HLTIndexPath[99] = "HLT_Photon26_R9Id_Photon18_R9Id_v";
-  HLTIndexPath[100]= "HLT_Photon26_R9Id_Photon18_CaloIdXL_IsoXL_v";
-  HLTIndexPath[101]= "HLT_Photon26_CaloIdXL_IsoXL_Photon18_v";
-  HLTIndexPath[102]= "HLT_Photon26_CaloIdXL_IsoXL_Photon18_R9Id_v";
-  HLTIndexPath[103]= "HLT_Photon26_CaloIdXL_IsoXL_Photon18_CaloIdXL_IsoXL_v";
-  HLTIndexPath[104]= "HLT_Photon30_CaloIdVL_v";
-  HLTIndexPath[105]= "HLT_Photon30_CaloIdVL_IsoL_v";
-  HLTIndexPath[106]= "HLT_Photon32_CaloIdL_Photon26_CaloIdL_v";
-  HLTIndexPath[107]= "HLT_Photon36_CaloIdL_Photon22_CaloIdL_v";
-  HLTIndexPath[108]= "HLT_Photon36_CaloIdL_IsoVL_Photon22_v";
-  HLTIndexPath[109]= "HLT_Photon36_Photon22_v";
-  HLTIndexPath[110]= "HLT_Photon36_IsoVL_Photon22_v";
-  HLTIndexPath[111]= "HLT_Photon36_CaloId_IsoVL_Photon22_R9Id_v";
-  HLTIndexPath[112]= "HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v";
-  HLTIndexPath[113]= "HLT_Photon36_R9Id_Photon22_R9Id_v";
-  HLTIndexPath[114]= "HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v";
-  HLTIndexPath[115]= "HLT_Photon36_CaloIdVL_Photon22_CaloIdVL_v";
-  HLTIndexPath[116]= "HLT_Photon40_CaloIdL_Photon28_CaloIdL_v";
-  HLTIndexPath[117]= "HLT_Photon44_CaloIdL_Photon34_CaloIdL_v";
-  HLTIndexPath[118]= "HLT_Photon48_CaloIdL_Photon38_CaloIdL_v";
-  HLTIndexPath[119]= "HLT_Photon50_CaloIdVL_v";
-  HLTIndexPath[120]= "HLT_Photon50_CaloIdVL_IsoL_v";
-  HLTIndexPath[121]= "HLT_Photon75_CaloIdVL_v";
-  HLTIndexPath[122]= "HLT_Photon75_CaloIdVL_IsoL_v";
-  HLTIndexPath[123]= "HLT_Photon90_CaloIdVL_v";
-  HLTIndexPath[124]= "HLT_Photon90_CaloIdVL_IsoL_v";
+  // HLT path for 2012 analysis
+  HLTIndexPath[0]  = "HLT_PFJet40_v";
+  HLTIndexPath[1]  = "HLT_PFJet80_v";
+  HLTIndexPath[2]  = "HLT_PFJet140_v";
+  HLTIndexPath[3]  = "HLT_PFJet200_v";
+  HLTIndexPath[4]  = "HLT_PFJet260_v";
+  HLTIndexPath[5]  = "HLT_PFJet320_v";
+  HLTIndexPath[6]  = "HLT_PFJet400_v";
+  HLTIndexPath[7]  = "HLT_IsoMu24_eta2p1_v";
+  HLTIndexPath[8]  = "HLT_IsoMu30_eta2p1_v";
+  HLTIndexPath[9]  = "HLT_IsoMu34_eta2p1_v";
+  HLTIndexPath[10] = "HLT_Mu17_Mu8_v";
+  HLTIndexPath[11] = "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v";
+  HLTIndexPath[12] = "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v";
+  HLTIndexPath[13] = "HLT_Ele20_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC4_Mass50_v";
+  HLTIndexPath[14] = "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_Mass50_v";
+  HLTIndexPath[15] = "HLT_Ele27_WP80_PFMET_MT50_v";
+  HLTIndexPath[16] = "HLT_Ele27_WP80_v";
+  HLTIndexPath[17] = "HLT_Photon20_CaloIdVL_IsoL_v";
+  HLTIndexPath[18] = "HLT_Photon26_Photon18_v";
+  HLTIndexPath[19] = "HLT_Photon30_CaloIdVL_v";
+  HLTIndexPath[20] = "HLT_Photon30_CaloIdVL_IsoL_v";
+  HLTIndexPath[21] = "HLT_Photon36_Photon22_v";
+  HLTIndexPath[22] = "HLT_Photon36_CaloId10_Iso50_Photon22_CaloId10_Iso50_v";
+  HLTIndexPath[23] = "HLT_Photon50_CaloIdVL_v";
+  HLTIndexPath[24] = "HLT_Photon50_CaloIdVL_IsoL_v";
+  HLTIndexPath[25] = "HLT_Photon75_CaloIdVL_v";
+  HLTIndexPath[26] = "HLT_Photon75_CaloIdVL_IsoL_v";
+  HLTIndexPath[27] = "HLT_Photon90_CaloIdVL_v";
+  HLTIndexPath[28] = "HLT_Photon90_CaloIdVL_IsoL_v";
+  HLTIndexPath[29] = "HLT_Photon135_v";
+  HLTIndexPath[30] = "HLT_Photon150_v";
 
-  for (int a=0; a<125; a++)
+  for (int a=0; a<31; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -1063,35 +803,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       TypeIpfMETSig_    = iTypeIPFMET->significance();
   }
 
-  // Type I + TypeII pfMET
-  Handle<View<pat::MET> > TypeIpIIpfMETHandle_;
-  e.getByLabel(TypeIpIIpfMETlabel_, TypeIpIIpfMETHandle_);
-  for (View<pat::MET>::const_iterator iTypeIpIIPFMET = TypeIpIIpfMETHandle_->begin(); iTypeIpIIPFMET != TypeIpIIpfMETHandle_->end(); ++iTypeIpIIPFMET) {
-
-      TypeIpIIpfMET_       = iTypeIpIIPFMET->pt();
-      TypeIpIIpfMETx_      = iTypeIpIIPFMET->px();
-      TypeIpIIpfMETy_      = iTypeIpIIPFMET->py();
-      TypeIpIIpfMETPhi_    = iTypeIpIIPFMET->phi();
-      TypeIpIIpfMETsumEt_  = iTypeIpIIPFMET->sumEt();
-      TypeIpIIpfMETmEtSig_ = iTypeIpIIPFMET->mEtSig();
-      TypeIpIIpfMETSig_    = iTypeIpIIPFMET->significance();
-  }
-
   if (doGenParticles_) {
-    // Smeared pfMET
-    Handle<View<pat::MET> > SmearedpfMETHandle_;  
-    e.getByLabel(SmearedpfMETlabel_, SmearedpfMETHandle_);
-    for (View<pat::MET>::const_iterator iSmearedPFMET = SmearedpfMETHandle_->begin(); iSmearedPFMET != SmearedpfMETHandle_->end(); ++iSmearedPFMET) {
-
-        SmearedpfMET_       = iSmearedPFMET->pt();
-        SmearedpfMETx_      = iSmearedPFMET->px();
-        SmearedpfMETy_      = iSmearedPFMET->py();
-        SmearedpfMETPhi_    = iSmearedPFMET->phi();
-        SmearedpfMETsumEt_  = iSmearedPFMET->sumEt();
-        SmearedpfMETmEtSig_ = iSmearedPFMET->mEtSig();
-        SmearedpfMETSig_    = iSmearedPFMET->significance();
-    }
-
     // Smeared TypeI pfMET
     Handle<View<pat::MET> > SmearedTypeIpfMETHandle_;
     e.getByLabel(SmearedTypeIpfMETlabel_, SmearedTypeIpfMETHandle_);
@@ -1106,93 +818,51 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         SmearedTypeIpfMETSig_    = iSmearedTypeIPFMET->significance();
     }
   }
-  // PF Candidates
-  npfCharged_ = 0;
-  pfChargedSumPt_ = 0;
-  npfChargedHadron_ = 0;
-  pfChargedHadronSumPt_ = 0;
-  npfLepton_ = 0;
-  pfLeptonSumPt_ = 0;
-  npfNeutral_ = 0;
-  pfNeutralSumPt_ = 0;
-  npfNeutralHadron_ = 0;
-  pfNeutralHadronSumPt_ = 0;
-  npfPhoton_ = 0;
-  pfPhotonSumPt_ = 0;
-
-  Handle<reco::PFCandidateCollection> pfCandidatesHandle;
-  e.getByLabel(PFCandLabel_, pfCandidatesHandle);
-  for (PFCandidateCollection::const_iterator iPF = pfCandidatesHandle->begin(); iPF != pfCandidatesHandle->end(); iPF++) {
-
-    const PFCandidate *particle = &(*iPF);
-
-    if (particle->pdgId() == 22) {
-       npfPhoton_ += 1;
-       pfPhotonSumPt_ += particle->pt();
-    }
-    if (particle->pdgId() == 111 || particle->pdgId() == 130 || particle->pdgId() == 310 || particle->pdgId() == 2112) {
-       npfNeutralHadron_ += 1;
-       pfNeutralHadronSumPt_ += particle->pt();
-    }
-    if (fabs(particle->pdgId()) == 211 || fabs(particle->pdgId()) == 321 || fabs(particle->pdgId()) == 999211 || fabs(particle->pdgId()) == 2212) {
-       npfChargedHadron_ += 1;
-       pfChargedHadronSumPt_ += particle->pt();
-    }
-    if (fabs(particle->pdgId()) == 11 || fabs(particle->pdgId()) == 13) {
-       npfLepton_ += 1;
-       pfLeptonSumPt_ += particle->pt();
-    }
-
-    if (particle->charge() == 0) {
-       npfNeutral_ += 1;
-       pfNeutralSumPt_ += particle->pt();
-    }
-    if (particle->charge() != 0) {
-       npfCharged_ += 1;
-       pfChargedSumPt_ += particle->pt();
-    }
-  }
 
   // Get the hcal hits
   edm::Handle<CaloTowerCollection> towerHandle;
   e.getByLabel("towerMaker", towerHandle);
   const CaloTowerCollection* towers = towerHandle.product();
-  EgammaTowerIsolation myHcalIsoDR03(0.3, 0., 0, -1, towers);
-  EgammaTowerIsolation myHcalIsoDR04(0.4, 0., 0, -1, towers);
+  EgammaTowerIsolation myHcalIsoDP1DR03(0.3, 0., 0, 1, towers);
+  EgammaTowerIsolation myHcalIsoDP2DR03(0.3, 0., 0, 2, towers);
+  EgammaTowerIsolation myHcalIsoDP1DR04(0.4, 0., 0, 1, towers);
+  EgammaTowerIsolation myHcalIsoDP2DR04(0.4, 0., 0, 2, towers);
+
+  // get the iso deposits. 3 (charged hadrons, photons, neutral hadrons)
+  unsigned nTypes=3;
+  IsoDepositMaps electronIsoDep(nTypes);
+  for (size_t j = 0; j<inputTagIsoDepElectrons_.size(); ++j) {
+    e.getByLabel(inputTagIsoDepElectrons_[j], electronIsoDep[j]);
+  }
+
+  IsoDepositVals electronIsoValPFId(nTypes);
+  const IsoDepositVals * electronIsoVals = &electronIsoValPFId;
+
+  for (size_t j = 0; j<inputTagIsoValElectronsPFId_.size(); ++j) {
+    e.getByLabel(inputTagIsoValElectronsPFId_[j], electronIsoValPFId[j]);
+  }
 
   // Electron
+  edm::Handle<reco::GsfElectronCollection> hElectrons;
+  e.getByLabel("gsfElectrons", hElectrons);
+  const reco::GsfElectronCollection*  gsfEle= hElectrons.product();
+  Int_t nGsfEle = 0;
+
   // cout << "VgAnalyzerKit: produce: Electron ..." << endl;
-  const TriggerObjectMatch *eleTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10L1R"));
-  const TriggerObjectMatch *eleTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton15CleanedL1R"));
-  const TriggerObjectMatch *eleTriggerMatch3(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15LWL1R"));
-  const TriggerObjectMatch *eleTriggerMatch4(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15SWL1R"));
-  const TriggerObjectMatch *eleTriggerMatch5(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15SWCaloEleIdL1R"));
-  const TriggerObjectMatch *eleTriggerMatch6(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWCaloEleIdL1R"));
-  const TriggerObjectMatch *eleTriggerMatch7(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTightEleIdL1R"));
-  const TriggerObjectMatch *eleTriggerMatch8(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R"));
-  const TriggerObjectMatch *eleTriggerMatch9(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2"));
-  const TriggerObjectMatch *eleTriggerMatch10(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3"));
-  const TriggerObjectMatch *eleTriggerMatch11(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoT"));
-  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT"));
-  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMT50"));
-  const TriggerObjectMatch *eleTriggerMatch14(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70PFMT50"));
-  const TriggerObjectMatch *eleTriggerMatch15(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdLCaloIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch16(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch17(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch18(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch19(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch20(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch21(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch22(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch23(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17"));
-  const TriggerObjectMatch *eleTriggerMatch24(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17"));
-  const TriggerObjectMatch *eleTriggerMatch25(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70"));
-  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
-  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC8Mass30"));
-  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT"));
-  const TriggerObjectMatch *eleTriggerMatch30(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC17"));
-  const TriggerObjectMatch *eleTriggerMatch31(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17"));
+  const TriggerObjectMatch *eleTriggerMatch1(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch2(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch3(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch4(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass50"));
+  const TriggerObjectMatch *eleTriggerMatch5(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle20CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC4Mass50"));
+  const TriggerObjectMatch *eleTriggerMatch6(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17Mass50"));
+  const TriggerObjectMatch *eleTriggerMatch7(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMETMT50"));
+  const TriggerObjectMatch *eleTriggerMatch8(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80"));
+  const TriggerObjectMatch *eleTriggerMatch9(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
+  const TriggerObjectMatch *eleTriggerMatch10(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle20CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
+  const TriggerObjectMatch *eleTriggerMatch11(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT"));
+  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8Mass50"));
+  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC4Mass50"));
+  const TriggerObjectMatch *eleTriggerMatch14(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC17Mass50"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -1201,6 +871,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
       if (iEle->pt() > leadingElePtCut_) nElePassCut++;
+      
+      eleEcalDriven_[nEle_] = iEle->ecalDriven();
 
       edm::RefToBase<pat::Electron> eleRef = electronHandle_->refAt(nEle_);
       reco::CandidateBaseRef eleBaseRef(eleRef);
@@ -1218,23 +890,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef12( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch12, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef13( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch13, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef14( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch14, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef15( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch15, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef16( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch16, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef17( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch17, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef18( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch18, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef19( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch19, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef20( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch20, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef21( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch21, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef22( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch22, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef23( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch23, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef24( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch24, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef25( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch25, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef26( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch26, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef27( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch27, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef28( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch28, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef29( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch29, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef30( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch30, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef31( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch31, e, *triggerEvent ) );
+
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -1245,27 +901,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][7]  = (eleTrigRef8.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][8]  = (eleTrigRef9.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][9]  = (eleTrigRef10.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][10]  = (eleTrigRef11.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][11]  = (eleTrigRef12.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][12]  = (eleTrigRef13.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][13]  = (eleTrigRef14.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][14]  = (eleTrigRef15.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][15]  = (eleTrigRef16.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][16]  = (eleTrigRef17.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][17]  = (eleTrigRef18.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][18]  = (eleTrigRef19.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][19]  = (eleTrigRef20.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][20]  = (eleTrigRef21.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][21]  = (eleTrigRef22.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][22]  = (eleTrigRef23.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][23]  = (eleTrigRef24.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][24]  = (eleTrigRef25.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][25]  = (eleTrigRef26.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][26]  = (eleTrigRef27.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][27]  = (eleTrigRef28.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][28]  = (eleTrigRef29.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][29]  = (eleTrigRef30.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][30]  = (eleTrigRef31.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][10] = (eleTrigRef11.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][11] = (eleTrigRef12.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][12] = (eleTrigRef13.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][13] = (eleTrigRef14.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection
       //	https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
@@ -1336,11 +975,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleEta_[nEle_]     = iEle->eta();
       elePhi_[nEle_]     = iEle->phi();
       eleHoverE_[nEle_]  = iEle->hadronicOverEm();
+      eleHoverEbc_[nEle_]= iEle->hcalOverEcalBc();
       eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
 
       elePin_[nEle_]   = iEle->trackMomentumAtVtx().R();
       elePout_[nEle_]  = iEle->trackMomentumOut().R();
-      //eleBrem_[nEle_] = (elePin_[nEle_] - elePout_[nEle_]) / elePin_[nEle_];
       eleBrem_[nEle_]  = iEle->fbrem();
       elenBrem_[nEle_] = iEle->numberOfBrems();
 
@@ -1359,14 +998,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
       eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
       eleVtx_[nEle_][2] = iEle->trackPositionAtVtx().z();
-
-      eleCaloPos_[nEle_][0] = iEle->trackPositionAtCalo().x();
-      eleCaloPos_[nEle_][1] = iEle->trackPositionAtCalo().y();
-      eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
-
-      eleSCPos_[nEle_][0] = iEle->superCluster()->x();
-      eleSCPos_[nEle_][1] = iEle->superCluster()->y();
-      eleSCPos_[nEle_][2] = iEle->superCluster()->z();
 
       // Gen Particle
       eleGenMomPID_[nEle_]  = -999;
@@ -1403,24 +1034,20 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
       eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
       eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
-      eleIsoHcalSolidDR03_[nEle_] = myHcalIsoDR03.getTowerEtSum(eleSC);
+      eleIsoHcalSolidDR03_[nEle_] = myHcalIsoDP1DR03.getTowerEtSum(eleSC) + myHcalIsoDP2DR03.getTowerEtSum(eleSC);
 
       eleIsoTrkDR04_[nEle_]  = iEle->dr04TkSumPt();
       eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
       eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
-      eleIsoHcalSolidDR04_[nEle_] = myHcalIsoDR04.getTowerEtSum(eleSC);
+      eleIsoHcalSolidDR04_[nEle_] = myHcalIsoDP1DR04.getTowerEtSum(eleSC) + myHcalIsoDP2DR04.getTowerEtSum(eleSC);
 
       eleSigmaEtaEta_[nEle_] = iEle->sigmaEtaEta();
       
       eleConvDist_[nEle_]    = iEle->convDist();
       eleConvDcot_[nEle_]    = iEle->convDcot();
-      eleConvRadius_[nEle_]  = iEle->convRadius();
-      eleConvFlag_[nEle_]    = iEle->convFlags();
       const reco::Track *eleTrk = (const reco::Track*)(iEle->gsfTrack().get());  
       const reco::HitPattern& p_inner = eleTrk->trackerExpectedHitsInner(); 
       eleConvMissinghit_[nEle_] = p_inner.numberOfHits();
-
-      eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*iEle, hConversions, beamSpotHandle->position());
 
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
@@ -1434,8 +1061,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       eleSeedTime_[nEle_] = -999.;
       eleSeedEnergy_[nEle_] = -999.;
-      eleRecoFlag_[nEle_] = -999.;
-      eleSeverity_[nEle_] = -999.;
 
       DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
 
@@ -1444,54 +1069,87 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( eleebrhit != EBReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleebrhit->time(); 
 	   eleSeedEnergy_[nEle_] = eleebrhit->energy(); 
-           eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
-           eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EBReducedRecHits) );
 	}
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleeerhit = EEReducedRecHits->find(eleSeedDetId);
         if ( eleeerhit != EEReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleeerhit->time(); 
 	   eleSeedEnergy_[nEle_] = eleeerhit->energy(); 
-           eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
-           eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EEReducedRecHits) );
 	}
       }
 
-      eleESRatio_[nEle_] = getESRatio(iEle, e, es);
-      for (int a=0; a<123; a++) {
-        eleESProfileFront_[nEle_][a] = getESProfileFront(iEle, e, es)[a];
-        eleESProfileRear_[nEle_][a] = getESProfileRear(iEle, e, es)[a];
-      }
- 
-      elePV2D_[nEle_] = iEle->dB(pat::Electron::PV2D);
-      elePV3D_[nEle_] = iEle->dB(pat::Electron::PV3D);
-      eleBS2D_[nEle_] = iEle->dB(pat::Electron::BS2D);
-      eleBS3D_[nEle_] = iEle->dB(pat::Electron::BS3D);
       elePVD0_[nEle_] = iEle->gsfTrack()->dxy((*recVtxs)[0].position());
       elePVDz_[nEle_] = iEle->gsfTrack()->dz((*recVtxs)[0].position());
+
+      eleIsPFID_[nEle_] = iEle->passingMvaPreselection();
+      // PF isolation
+      nGsfEle = -1;
+      for(reco::GsfElectronCollection::const_iterator aEle = gsfEle->begin(); aEle != gsfEle->end(); ++aEle) {
+
+        nGsfEle += 1;
+        if (aEle->pt() != iEle->pt()) continue;
+
+        reco::GsfElectronRef myElectronRef(hElectrons, nGsfEle);
+
+        elePfChargedHadron_[nEle_] = (*(*electronIsoVals)[0])[myElectronRef];
+        elePfNeutralHadron_[nEle_] = (*(*electronIsoVals)[1])[myElectronRef];
+        elePfPhoton_[nEle_]        = (*(*electronIsoVals)[2])[myElectronRef];
+	eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*myElectronRef, hConversions, beamSpot.position());
+
+	eleID2012_[nEle_][0] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
+	eleID2012_[nEle_][1] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
+	eleID2012_[nEle_][2] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
+	eleID2012_[nEle_][3] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
+        eleID2012_[nEle_][4] = EgammaCutBasedEleId::PassEoverPCuts(myElectronRef);
+        eleID2012_[nEle_][5] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, myElectronRef);
+        eleID2012_[nEle_][6] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERWP70, myElectronRef);
+      }
 
       nEle_++;
     }
 
+  // PF Candidates
+  Handle<reco::PFCandidateCollection> pfCandidatesHandle;
+  e.getByLabel(PFCandLabel_, pfCandidatesHandle);
+  const PFCandidateCollection thePfColl = *(pfCandidatesHandle.product());
+
   // Photon
+  edm::Handle<reco::PhotonCollection> hPhoton;
+  e.getByLabel("photons", hPhoton);
+  Int_t nRecoPho = 0;
+  const reco::PhotonCollection *recoPho = hPhoton.product();
+
+  PFIsolationEstimator isolator;
+  isolator.initializePhotonIsolation(kTRUE);
+  isolator.setConeSize(0.3);
+  VertexRef myVtxRef(recVtxs, 0);
 
   const Candidate *phomom = 0;
   int nPhoPassCut = 0;
   nPho_ = 0;
-  const TriggerObjectMatch *phoTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT"));
-  const TriggerObjectMatch *phoTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *phoTriggerMatch3(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *phoTriggerMatch4(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass30"));
-  const TriggerObjectMatch *phoTriggerMatch5(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8Mass30"));
-  const TriggerObjectMatch *phoTriggerMatch6(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *phoTriggerMatch7(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17"));
-  const TriggerObjectMatch *phoTriggerMatch8(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17"));
-  const TriggerObjectMatch *phoTriggerMatch9(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
-  const TriggerObjectMatch *phoTriggerMatch10(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle8Mass30"));
-  const TriggerObjectMatch *phoTriggerMatch11(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTSC8Mass30"));
-  const TriggerObjectMatch *phoTriggerMatch12(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT"));
-  const TriggerObjectMatch *phoTriggerMatch13(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTSC17"));
-  const TriggerObjectMatch *phoTriggerMatch14(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17"));
+  const TriggerObjectMatch *phoTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass50"));
+  const TriggerObjectMatch *phoTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle20CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC4Mass50"));
+  const TriggerObjectMatch *phoTriggerMatch3(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17Mass50"));
+  const TriggerObjectMatch *phoTriggerMatch4(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
+  const TriggerObjectMatch *phoTriggerMatch5(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle20CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
+  const TriggerObjectMatch *phoTriggerMatch6(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT"));
+  const TriggerObjectMatch *phoTriggerMatch7(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle8Mass50"));
+  const TriggerObjectMatch *phoTriggerMatch8(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTSC4Mass50"));
+  const TriggerObjectMatch *phoTriggerMatch9(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTSC17Mass50"));
+  const TriggerObjectMatch *phoTriggerMatch10(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton20CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch11(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26Photon18"));
+  const TriggerObjectMatch *phoTriggerMatch12(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton30CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch13(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton30CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch14(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36Photon22"));
+  const TriggerObjectMatch *phoTriggerMatch15(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36CaloId10Iso50Photon22CaloId10Iso50"));
+  const TriggerObjectMatch *phoTriggerMatch16(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton50CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch17(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton50CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch18(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch19(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch20(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton90CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch21(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton90CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch22(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton135"));
+  const TriggerObjectMatch *phoTriggerMatch23(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton150"));
 
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
@@ -1514,6 +1172,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef phoTrigRef12( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch12, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef13( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch13, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef14( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch14, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef15( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch15, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef16( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch16, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef17( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch17, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef18( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch18, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef19( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch19, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef20( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch20, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef21( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch21, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef22( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch22, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef23( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch23, e, *triggerEvent ) );
+
       phoTrg_[nPho_][0] = (phoTrigRef1.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][1] = (phoTrigRef2.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][2] = (phoTrigRef3.isAvailable()) ? 1 : -99;
@@ -1528,6 +1196,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoTrg_[nPho_][11] = (phoTrigRef12.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][12] = (phoTrigRef13.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][13] = (phoTrigRef14.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][14] = (phoTrigRef15.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][15] = (phoTrigRef16.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][16] = (phoTrigRef17.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][17] = (phoTrigRef18.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][18] = (phoTrigRef19.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][19] = (phoTrigRef20.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][20] = (phoTrigRef21.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][21] = (phoTrigRef22.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][22] = (phoTrigRef23.isAvailable()) ? 1 : -99;
 
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
@@ -1536,63 +1213,62 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoEta_[nPho_] = iPho->eta();
       phoPhi_[nPho_] = iPho->phi();
 
-      const reco::SuperCluster* phoSC = &(*(iPho->superCluster()));
-
       phoTrkIsoSolidDR03_[nPho_]  = iPho->trkSumPtSolidConeDR03();
       phoTrkIsoHollowDR03_[nPho_] = iPho->trkSumPtHollowConeDR03();
-      phoNTrkSolidDR03_[nPho_]    = iPho->nTrkSolidConeDR03();
-      phoNTrkHollowDR03_[nPho_]   = iPho->nTrkHollowConeDR03();
       phoEcalIsoDR03_[nPho_]      = iPho->ecalRecHitSumEtConeDR03();
       phoHcalIsoDR03_[nPho_]      = iPho->hcalTowerSumEtConeDR03();
-      phoHcalIsoSolidDR03_[nPho_] = myHcalIsoDR03.getTowerEtSum(phoSC);
 
       phoTrkIsoSolidDR04_[nPho_]  = iPho->trkSumPtSolidConeDR04();
       phoTrkIsoHollowDR04_[nPho_] = iPho->trkSumPtHollowConeDR04();
-      phoNTrkSolidDR04_[nPho_]    = iPho->nTrkSolidConeDR04();
-      phoNTrkHollowDR04_[nPho_]   = iPho->nTrkHollowConeDR04();
       phoEcalIsoDR04_[nPho_]      = iPho->ecalRecHitSumEtConeDR04();
       phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
-      phoHcalIsoSolidDR04_[nPho_] = myHcalIsoDR04.getTowerEtSum(phoSC);
+
+      // New PF isolation
+      nRecoPho = -1;
+      for (reco::PhotonCollection::const_iterator aPho = recoPho->begin(); aPho != recoPho->end(); ++aPho) {
+
+        nRecoPho += 1;
+	if (aPho->et() != iPho->et()) continue;
+
+        reco::PhotonRef myPhotonRef(hPhoton, nRecoPho);
+
+        phoElectronveto_[nPho_] = ConversionTools::hasMatchedPromptElectron(myPhotonRef->superCluster(), hElectrons, hConversions, beamSpot.position());
+
+        // PF isolation from Alternate code
+        isolator.fGetIsolation(&*aPho, &thePfColl, myVtxRef, recVtxs);
+        phoPfChargedHadron_[nPho_] = isolator.getIsolationCharged();
+        phoPfNeutralHadron_[nPho_] = isolator.getIsolationNeutral();
+        phoPfPhoton_[nPho_]        = isolator.getIsolationPhoton();
+      }
 
       for (int i=0; i<150; i++) {
         phoEtVtx_[nPho_][i]  = -999.;
         phoEtaVtx_[nPho_][i] = -999.;
         phoPhiVtx_[nPho_][i] = -999.;
-        phoTrkIsoSolidDR03Vtx_[nPho_][i]  = -999.;
-        phoTrkIsoHollowDR03Vtx_[nPho_][i] = -999.;
-        phoTrkIsoSolidDR04Vtx_[nPho_][i]  = -999.;
-        phoTrkIsoHollowDR04Vtx_[nPho_][i] = -999.;
       }
 
       for (size_t i=0; i<recVtxs->size(); ++i) {
         if (!((*recVtxs)[i].isFake())) {
 
-          math::XYZPoint VTX = math::XYZPoint((*recVtxs)[i].x(), (*recVtxs)[i].y(), (*recVtxs)[i].z());
-          math::XYZVector direction = math::XYZVector(iPho->caloPosition().x() - (*recVtxs)[i].x(), iPho->caloPosition().y() - (*recVtxs)[i].y(), iPho->caloPosition().z() - (*recVtxs)[i].z());
+	  math::XYZVector direction = math::XYZVector(iPho->superCluster()->x() - (*recVtxs)[i].x(), iPho->superCluster()->y() - (*recVtxs)[i].y(), iPho->superCluster()->z() - (*recVtxs)[i].z());
+          //math::XYZVector direction = math::XYZVector(iPho->caloPosition().x() - (*recVtxs)[i].x(), iPho->caloPosition().y() - (*recVtxs)[i].y(), iPho->caloPosition().z() - (*recVtxs)[i].z());
           math::XYZVector momentum = direction.unit() * iPho->energy();
 	  const reco::Particle::LorentzVector newPho(momentum.x(), momentum.y(), momentum.z(), iPho->energy());
 
 	  phoEtVtx_[nPho_][i]  = newPho.Pt();
 	  phoEtaVtx_[nPho_][i] = newPho.Eta();
 	  phoPhiVtx_[nPho_][i] = newPho.Phi();
-          phoTrkIsoSolidDR03Vtx_[nPho_][i]  = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.3, 0., 0.015, 0.2, 0.1, 0, 0);
-          phoTrkIsoHollowDR03Vtx_[nPho_][i] = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.3, 0.04, 0.015, 0.2, 0.1, 0, 0);
-          phoTrkIsoSolidDR04Vtx_[nPho_][i]  = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.4, 0., 0.015, 0.2, 0.1, 0, 0);
-          phoTrkIsoHollowDR04Vtx_[nPho_][i] = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.4, 0.04, 0.015, 0.2, 0.1, 0, 0);
         }
       }
 
       phoHoverE_[nPho_]        = iPho->hadronicOverEm();
+      phoHoverEbc_[nPho_]      = iPho->hadTowOverEm();
       phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
       phoR9_[nPho_]            = iPho->r9();
 
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
       
-      edm::Handle<reco::GsfElectronCollection> hElectrons;
-      e.getByLabel("gsfElectrons", hElectrons);
-      phoElectronveto_[nPho_] = ConversionTools::hasMatchedPromptElectron(iPho->superCluster(), hElectrons, hConversions, beamSpotHandle->position());
-
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
@@ -1603,8 +1279,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       phoSeedTime_[nPho_] = -999.;
       phoSeedEnergy_[nPho_] = -999.;
-      phoRecoFlag_[nPho_] = -999.;
-      phoSeverity_[nPho_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
       DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
 
@@ -1619,16 +1293,12 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( ebrhit != EBReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = ebrhit->time();
 	   phoSeedEnergy_[nPho_] = ebrhit->energy();
-           phoRecoFlag_[nPho_] = ebrhit->recoFlag();
-           phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EBReducedRecHits));
         }
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
         if ( eerhit != EEReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = eerhit->time(); 
 	   phoSeedEnergy_[nPho_] = eerhit->energy();
-           phoRecoFlag_[nPho_] = eerhit->recoFlag();
-           phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EEReducedRecHits) );
 	}
       }
       
@@ -1667,7 +1337,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       // Super Cluster
       phoSCE_[nPho_]   = (*iPho).superCluster()->energy();
-      phoESE_[nPho_]   = (*iPho).superCluster()->preshowerEnergy();
       phoSCEta_[nPho_] = (*iPho).superCluster()->eta();
       phoSCPhi_[nPho_] = (*iPho).superCluster()->phi();
       phoSCEt_[nPho_]  = (*iPho).superCluster()->energy()/cosh(phoSCEta_[nPho_]);
@@ -1677,152 +1346,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoVtx_[nPho_][0] = iPho->vertex().x();
       phoVtx_[nPho_][1] = iPho->vertex().y();
       phoVtx_[nPho_][2] = iPho->vertex().z();
-      phoVtxD0_[nPho_]  = iPho->vertex().rho();
-
-      phoIsConv_[nPho_] = iPho->hasConversionTracks();
-
-      phoNTracks_[nPho_] = -1;
-      if (iPho->conversions().size() > 0) {
-         phoNTracks_[nPho_] = iPho->conversions()[0]->nTracks();
-
-	 if (phoNTracks_[nPho_] == 2) {
-           phoConvPairInvariantMass_[nPho_] 	 = iPho->conversions()[0]->pairInvariantMass();
-	   phoConvPairCotThetaSeparation_[nPho_] = iPho->conversions()[0]->pairCotThetaSeparation(); 
-	   phoConvPairMomentumEta_[nPho_]        = iPho->conversions()[0]->pairMomentum().eta(); 
-	   phoConvPairMomentumPhi_[nPho_]        = iPho->conversions()[0]->pairMomentum().phi(); 
-	   phoConvPairMomentumX_[nPho_]          = iPho->conversions()[0]->pairMomentum().x(); 
-	   phoConvPairMomentumY_[nPho_]          = iPho->conversions()[0]->pairMomentum().y(); 
-	   phoConvPairMomentumZ_[nPho_]          = iPho->conversions()[0]->pairMomentum().z();        
-	   phoConvDistOfMinimumApproach_[nPho_]  = iPho->conversions()[0]->distOfMinimumApproach(); 
-	   phoConvDPhiTracksAtVtx_[nPho_]        = iPho->conversions()[0]->dPhiTracksAtVtx(); 
-	   phoConvDPhiTracksAtEcal_[nPho_]       = iPho->conversions()[0]->dPhiTracksAtEcal(); 
-	   phoConvDEtaTracksAtEcal_[nPho_]       = iPho->conversions()[0]->dEtaTracksAtEcal(); 
-
-	   phoConvVtxValid_[nPho_]      = iPho->conversions()[0]->conversionVertex().isValid(); 
-	   phoConvVtxEta_[nPho_]        = iPho->conversions()[0]->conversionVertex().position().eta(); 
-	   phoConvVtxPhi_[nPho_]        = iPho->conversions()[0]->conversionVertex().position().phi(); 
-	   phoConvVtxR_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().r(); 
-	   phoConvVtxX_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().x(); 
-	   phoConvVtxY_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().y(); 
-	   phoConvVtxZ_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().z(); 
-	   phoConvVtxChi2_[nPho_]       = iPho->conversions()[0]->conversionVertex().chi2(); 
-	   phoConvVtxNdof_[nPho_]       = iPho->conversions()[0]->conversionVertex().ndof(); 
-	   phoConvChi2Prob_[nPho_]      = ChiSquaredProbability(iPho->conversions()[0]->conversionVertex().chi2(),iPho->conversions()[0]->conversionVertex().ndof());
-	   phoConvEoverP_[nPho_]      = iPho->conversions()[0]->EoverP();
-	 }
-      }
-
-      phoESRatio_[nPho_] = getESRatio(iPho, e, es);
-      for (int a=0; a<123; a++) {
-        phoESProfileFront_[nPho_][a] = getESProfileFront(iPho, e, es)[a];
-        phoESProfileRear_[nPho_][a] = getESProfileRear(iPho, e, es)[a];
-      }
-
-      phoNxtal_[nPho_] = 0;
-      for (int a=0; a<200; a++) {
-	phoXtalTime_[nPho_][a]   = -999;
-	phoXtalEnergy_[nPho_][a] = -999;
-	phoXtalZ_[nPho_][a]      = -999;
-	phoXtalX_[nPho_][a]      = -999;
-	phoXtalY_[nPho_][a]      = -999;
-	phoXtalEta_[nPho_][a]    = -999;
-	phoXtalPhi_[nPho_][a]    = -999;
- 
-        if (a >= 25) continue;
-        pho5x5Time_[nPho_][a]   = -999;
-        pho5x5Energy_[nPho_][a] = -999;
-        pho5x5Z_[nPho_][a]      = -999;
-        pho5x5X_[nPho_][a]      = -999;
-        pho5x5Y_[nPho_][a]      = -999;
-        pho5x5Eta_[nPho_][a]    = -999;
-        pho5x5Phi_[nPho_][a]    = -999;
-      }
-
-      int phoN5x5 = 0;
-      std::vector<DetId> pho5x5DetId = lazyTool.matrixDetId( phoSeedDetId, -2, 2, -2, 2);
-      for ( std::vector<DetId>::const_iterator it_5x5 = pho5x5DetId.begin(); it_5x5 != pho5x5DetId.end(); ++it_5x5 ) {
-        if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
-          EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(*it_5x5);
-          EBDetId phoSCEBid = EBDetId(*it_5x5);
-
-	  if ( ebrhit != EBReducedRecHits->end() ) { 
-	    pho5x5Time_[nPho_][phoN5x5]   = ebrhit->time();
-	    pho5x5Energy_[nPho_][phoN5x5] = ebrhit->energy();
-	    pho5x5Z_[nPho_][phoN5x5]      = phoSCEBid.zside();
-	    pho5x5Eta_[nPho_][phoN5x5]    = phoSCEBid.ieta();
-	    pho5x5Phi_[nPho_][phoN5x5]    = phoSCEBid.iphi();
-
-	    phoN5x5 += 1;
-	  }
-        }
-	if ( iPho->isEE() && EEReducedRecHits.isValid() ) {
-          EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(*it_5x5);
-          EEDetId phoSCEEid = EEDetId(*it_5x5);
-
-          if ( eerhit != EEReducedRecHits->end() ) {
-            pho5x5Time_[nPho_][phoN5x5]   = eerhit->time();
-            pho5x5Energy_[nPho_][phoN5x5] = eerhit->energy();
-            pho5x5Z_[nPho_][phoN5x5]      = phoSCEEid.zside();
-            pho5x5X_[nPho_][phoN5x5]      = phoSCEEid.ix();
-            pho5x5Y_[nPho_][phoN5x5]      = phoSCEEid.iy();
-
-	    phoN5x5 += 1;
-          }
-        }
-      }
-
-      for (vector< pair<DetId, float> >::const_iterator phoRHIt = (*iPho).superCluster()->hitsAndFractions().begin(); phoRHIt != (*iPho).superCluster()->hitsAndFractions().end(); ++phoRHIt) {
-
-        if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
-          EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoRHIt->first);
-	  EBDetId phoSCEBid = EBDetId(phoRHIt->first);
-
-          if ( ebrhit != EBReducedRecHits->end() ) { 
-	    phoXtalTime_[nPho_][phoNxtal_[nPho_]]   = ebrhit->time();
-	    phoXtalEnergy_[nPho_][phoNxtal_[nPho_]] = ebrhit->energy();
-	    phoXtalZ_[nPho_][phoNxtal_[nPho_]]      = phoSCEBid.zside();
-	    phoXtalEta_[nPho_][phoNxtal_[nPho_]]    = phoSCEBid.ieta();
-	    phoXtalPhi_[nPho_][phoNxtal_[nPho_]]    = phoSCEBid.iphi();
-
-	    phoNxtal_[nPho_] += 1;
-          }
-	}
-	else if ( iPho->isEE() && EEReducedRecHits.isValid() ) {
-          EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoRHIt->first);
-	  EEDetId phoSCEEid = EEDetId(phoRHIt->first);
-
-          if ( eerhit != EEReducedRecHits->end() ) { 
-	    phoXtalTime_[nPho_][phoNxtal_[nPho_]]   = eerhit->time();
-	    phoXtalEnergy_[nPho_][phoNxtal_[nPho_]] = eerhit->energy();
-	    phoXtalZ_[nPho_][phoNxtal_[nPho_]]      = phoSCEEid.zside();
-	    phoXtalX_[nPho_][phoNxtal_[nPho_]]      = phoSCEEid.ix();
-	    phoXtalY_[nPho_][phoNxtal_[nPho_]]      = phoSCEEid.iy();
-
-	    phoNxtal_[nPho_] += 1;
-          } 
-	}
-      }
 
       nPho_++;
     }
 
   // muon trigger matching
-  const TriggerObjectMatch * muTriggerMatch1( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu9" ) );
-  const TriggerObjectMatch * muTriggerMatch2( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu11" ) );
-  const TriggerObjectMatch * muTriggerMatch3( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13" ) );
-  const TriggerObjectMatch * muTriggerMatch4( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13v1" ) );
-  const TriggerObjectMatch * muTriggerMatch5( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15" ) );
-  const TriggerObjectMatch * muTriggerMatch6( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15v1" ) );
-  const TriggerObjectMatch * muTriggerMatch7( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30" ) );
-  const TriggerObjectMatch * muTriggerMatch8( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24" ) );
-  const TriggerObjectMatch * muTriggerMatch9( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30" ) );
-  const TriggerObjectMatch * muTriggerMatch10( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24eta2p1" ) );
-  const TriggerObjectMatch * muTriggerMatch11( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30eta2p1" ) );
-  const TriggerObjectMatch * muTriggerMatch12( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu34eta2p1" ) );
-  const TriggerObjectMatch * muTriggerMatch13( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu6" ) );
-  const TriggerObjectMatch * muTriggerMatch14( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7" ) );
-  const TriggerObjectMatch * muTriggerMatch15( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8" ) );
-  const TriggerObjectMatch * muTriggerMatch16( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch1( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch2( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch3( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu34eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch4( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8" ) );
 
   // Muon
   int nMuPassCut = 0;
@@ -1834,41 +1366,21 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
       
+      muIsPFMu_[nMu_] = iMu->isPFMuon();
+      muIsGlobalMu_[nMu_] = iMu->isGlobalMuon();
+      muIsTrackerMu_[nMu_] = iMu->isTrackerMuon();
+      
       edm::RefToBase<pat::Muon> muRef = muonHandle_->refAt(nMu_);
       reco::CandidateBaseRef muBaseRef(muRef);
       const TriggerObjectRef muTrigRef1( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch1, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef2( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch2, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef3( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch3, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef4( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch4, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef5( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch5, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef6( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch6, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef7( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch7, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef8( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch8, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef9( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch9, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef10( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch10, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef11( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch11, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef12( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch12, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef13( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch13, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef14( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch14, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef15( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch15, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef16( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch16, e, *triggerEvent ) );
 
       muTrg_[nMu_][0] = (muTrigRef1.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][1] = (muTrigRef2.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][2] = (muTrigRef3.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][3] = (muTrigRef4.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][4] = (muTrigRef5.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][5] = (muTrigRef6.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][6] = (muTrigRef7.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][7] = (muTrigRef8.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][8] = (muTrigRef9.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][9] = (muTrigRef10.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][10] = (muTrigRef11.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][11] = (muTrigRef12.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][12] = (muTrigRef13.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][13] = (muTrigRef14.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][14] = (muTrigRef15.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][15] = (muTrigRef16.isAvailable()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
@@ -1885,38 +1397,30 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       const reco::TrackRef trkr = iMu->globalTrack();
       if (trkr.isNull()) {
-        muD0_[nMu_] = -99.;
-        muDz_[nMu_] = -99.;
-	muNumberOfHits_[nMu_] = -99;
-	muNumberOfValidHits_[nMu_] = -99;
-	muNumberOfInactiveHits_[nMu_] = -99;
-	muNumberOfValidTrkHits_[nMu_] = -99;
-	muNumberOfValidPixelHits_[nMu_] = -99;
 	muNumberOfValidMuonHits_[nMu_] = -99;
+	muNumberOfTrackerLayers_[nMu_] = -99;
 	muChi2NDF_[nMu_] = -99;
-        muPVD0_[nMu_] = - 99;
-        muPVDz_[nMu_] = - 99;
-        muValidFraction_[nMu_] = -99;
       } 
       else {
-        muD0_[nMu_] = trkr->dxy(beamSpotHandle->position());
-        muDz_[nMu_] = trkr->dz(beamSpotHandle->position());
-	muNumberOfHits_[nMu_] = trkr->hitPattern().numberOfHits();
-	muNumberOfValidHits_[nMu_] = trkr->hitPattern().numberOfValidHits();
-	muNumberOfInactiveHits_[nMu_] = trkr->hitPattern().numberOfInactiveHits();
-        muNumberOfValidTrkHits_[nMu_] = trkr->hitPattern().numberOfValidTrackerHits();
-        muNumberOfValidPixelHits_[nMu_] = trkr->hitPattern().numberOfValidPixelHits();
         muNumberOfValidMuonHits_[nMu_] = trkr->hitPattern().numberOfValidMuonHits();
+	muNumberOfTrackerLayers_[nMu_] = trkr->hitPattern().trackerLayersWithMeasurement();
   	muChi2NDF_[nMu_] = trkr->normalizedChi2();
-	muPVD0_[nMu_] = trkr->dxy((*recVtxs)[0].position());
-        muPVDz_[nMu_] = trkr->dz((*recVtxs)[0].position());
-        muValidFraction_[nMu_] = trkr->validFraction();
       }
 
-      muPV2D_[nMu_] = iMu->dB(pat::Muon::PV2D);
-      muPV3D_[nMu_] = iMu->dB(pat::Muon::PV3D);
-      muBS2D_[nMu_] = iMu->dB(pat::Muon::BS2D);
-      muBS3D_[nMu_] = iMu->dB(pat::Muon::BS3D);
+      const reco::TrackRef innertrkr = iMu->innerTrack();
+      if (innertrkr.isNull()) {
+        muPVD0_[nMu_] = - 99;
+        muPVDz_[nMu_] = - 99;
+	muNumberOfValidPixelHits_[nMu_] = -99;
+	muNumberOfValidTrkHits_[nMu_] = -99;
+      }
+      else {
+	muPVD0_[nMu_] = innertrkr->dxy((*recVtxs)[0].position());
+        muPVDz_[nMu_] = innertrkr->dz((*recVtxs)[0].position());
+        muNumberOfValidPixelHits_[nMu_] = innertrkr->hitPattern().numberOfValidPixelHits();
+        muNumberOfValidTrkHits_[nMu_] = innertrkr->hitPattern().numberOfValidTrackerHits();
+      }
+      muNumberOfMatchedStations_[nMu_] = iMu->numberOfMatchedStations();
 
       muVtx_[nMu_][0] = iMu->vertex().x();
       muVtx_[nMu_][1] = iMu->vertex().y();
@@ -1940,15 +1444,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       muIsoEcal_[nMu_] = iMu->ecalIso();
       muIsoHcal_[nMu_] = iMu->hcalIso();
 
-      muEmVeto_[nMu_]  = iMu->isolationR03().emVetoEt;
-      muHadVeto_[nMu_] = iMu->isolationR03().hadVetoEt;
-
-      int stations = 0;
-      unsigned stationMask(iMu->stationMask());
-      for(unsigned i=0; i < 8; ++i)
-	if(stationMask & 1 << i) ++stations;
-      muStations_[nMu_] = stations;
-      muChambers_[nMu_]  = iMu->numberOfMatches();
+      muPfChargedHadron_[nMu_] = iMu->pfIsolationR04().sumChargedHadronPt;
+      muPfNeutralHadron_[nMu_] = iMu->pfIsolationR04().sumNeutralHadronEt;
+      muPfPhoton_[nMu_]        = iMu->pfIsolationR04().sumPhotonEt;
+      muPfSumPUPt_[nMu_]       = iMu->pfIsolationR04().sumPUPt;
 
       muGenMomPID_[nMu_]  = -999;
       muGenMomPt_[nMu_]   = -999;
@@ -1984,270 +1483,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     }
   }
 
-  // Zee candidate
-  // cout << "VgAnalyzerKit: produce: Zee candidate..." << endl;
-  nZee_ = 0;
-  int leg1Index = 0;
-  int leg2Index = 0;
-  if (electronHandle_.isValid() && electronHandle_->size() > 1) {
-    for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end()-1; ++iEle) {
-
-      leg2Index = leg1Index + 1;
-      for (View<pat::Electron>::const_iterator jEle = iEle+1; jEle != electronHandle_->end(); ++jEle) {
-
-	//if (iEle->charge() * jEle->charge() < 0 ) {
-	  pat::CompositeCandidate Zee;
-	  Zee.addDaughter(*iEle, "ele1");
-	  Zee.addDaughter(*jEle, "ele2");
-
-	  AddFourMomenta addZee;
-	  addZee.set(Zee);
-	  ZeeMass_[nZee_]      = Zee.mass();
-	  ZeePt_[nZee_]        = Zee.pt();
-	  ZeeEta_[nZee_]       = Zee.eta();
-	  ZeePhi_[nZee_]       = Zee.phi();
-	  ZeeLeg1Index_[nZee_] = leg1Index;
-	  ZeeLeg2Index_[nZee_] = leg2Index;
-
-	  nZee_++;
-          leg2Index++;
-	//}
-      }
-
-      leg1Index++;
-    }
-  }
-
-  // Zmumu candidate
-  // cout << "VgAnalyzerKit: produce: Zmumu candidate..." << endl;
-
-  nZmumu_ = 0;
-  leg1Index = 0;
-  leg2Index = 0;
-  if (zmumuHandle_.isValid() ) {
-    // Store Zmumu candidates from the source.
-    leg1Index = leg2Index = -1; // index -1 indicates an error
-    // Loop over source Zmumu candidates
-    for(CandidateView::const_iterator Zmumu = zmumuHandle_->begin();
-        Zmumu != zmumuHandle_->end(); ++Zmumu) {
-      ZmumuMass_[nZmumu_] = Zmumu->mass();
-      ZmumuPt_  [nZmumu_] = Zmumu->pt();
-      ZmumuEta_ [nZmumu_] = Zmumu->eta();
-      ZmumuPhi_ [nZmumu_] = Zmumu->phi();
-      // Get the leg indexes using pointer arithmetics.
-      if (muonHandle_.isValid()) {
-        // Get the pointer to the first muon
-        const pat::Muon * muBegin = &*muonHandle_->begin();
-        // Jump through 3 loops to get pointers to the daughters.
-        const Candidate * dau1 = Zmumu->daughter(0);
-        const Candidate * dau2 = Zmumu->daughter(1);
-        if (dau1 == 0 || dau2 == 0)
-          throw Exception(errors::InvalidReference) <<
-            "One of the two daughters does not exist.\n";
-        // Jump through the 2nd loop - get the master of the shallow clones.
-        if (dau1->hasMasterClone() && dau2->hasMasterClone() ) {
-          dau1 = dau1->masterClone().get();
-          dau2 = dau2->masterClone().get();
-        } else {
-          throw Exception(errors::InvalidReference) <<
-            "One of the two daughters is not a shallow clone.\n";
-        }
-        // Jump throught the 3rd loop - cast up the pointers.
-        const pat::Muon * mu1 = dynamic_cast<const pat::Muon*>(dau1);
-        const pat::Muon * mu2 = dynamic_cast<const pat::Muon*>(dau2);
-        if (mu1 == 0 || mu2 == 0)
-          throw Exception(errors::InvalidReference) <<
-            "One of the two daughters is not a pat::Muon.\n";
-        // Use pointer arithmetics to get the indexes.
-        leg1Index = mu1 - muBegin;
-        leg2Index = mu2 - muBegin;
-        // Check if the indexes make sense.
-        if (leg1Index < 0  || (int) muonHandle_->size() <= leg1Index ||
-            leg2Index < 0  || (int) muonHandle_->size() <= leg2Index)
-          throw Exception(errors::InvalidReference)
-            << "One of the two daughters has illegal index.\n"
-            << "  daughter 1 index: " << leg1Index << endl
-            << "  daughter 2 index: " << leg2Index << endl
-            << "  muon source size: " << muonHandle_->size() << endl;
-      } // Get the leg indexes using pointer arithmetics.
-      ZmumuLeg1Index_[nZmumu_] = leg1Index;
-      ZmumuLeg2Index_[nZmumu_] = leg2Index;
-      ++nZmumu_;
-    } // Loop over source Zmumu candidates
-  } // Store Zmumu candidates from the source.
-  else if (muonHandle_.isValid() && muonHandle_->size() > 1) {
-    // Build Zmumu candidate on the fly based on the source muons
-    for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end()-1; ++iMu) {
-
-      if (!iMu->isGlobalMuon()) continue;
-      if (!iMu->isTrackerMuon()) continue;
-      if (iMu->globalTrack().isNull()) continue;
-      if (iMu->innerTrack().isNull()) continue;
-
-      for (View<pat::Muon>::const_iterator jMu = iMu+1; jMu != muonHandle_->end(); ++jMu) {
-
-	if (!jMu->isGlobalMuon()) continue;
-	if (!jMu->isTrackerMuon()) continue;
-	if (jMu->globalTrack().isNull()) continue;
-	if (jMu->innerTrack().isNull()) continue;
-
-	if (iMu->charge() * jMu->charge() < 0 ) {
-	  pat::CompositeCandidate Zmumu;
-	  Zmumu.addDaughter(*iMu, "mu1");
-	  Zmumu.addDaughter(*jMu, "mu2");
-
-	  AddFourMomenta addZmumu;
-	  addZmumu.set(Zmumu);
-	  ZmumuMass_[nZmumu_]      = Zmumu.mass();
-	  ZmumuPt_[nZmumu_]        = Zmumu.pt();
-	  ZmumuEta_[nZmumu_]       = Zmumu.eta();
-	  ZmumuPhi_[nZmumu_]       = Zmumu.phi();
-
-          leg1Index = iMu-(muonHandle_->begin());
-          leg2Index = jMu-(muonHandle_->begin());
-
-          ZmumuLeg1Index_[nZmumu_] = leg1Index;
-          ZmumuLeg2Index_[nZmumu_] = leg2Index;
-
-	  nZmumu_++;
-	}
-      }
-    }
-  } // Build Zmumu candidate on the fly based on the source muons
-
-  // Wenu candiate
-  // cout << "VgAnalyzerKit: produce: Wenu candiate..." << endl;
-  nWenu_ = 0;
-  leg1Index = 0;
-  if (electronHandle_.isValid() && electronHandle_->size() > 0 && METHandle_.isValid() && METHandle_->size() > 0) {
-
-    for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
-
-      for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
-
-        pat::CompositeCandidate Wenu;
-        Wenu.addDaughter(*iEle, "ele");
-        Wenu.addDaughter(*iMET, "met");
-
-        AddFourMomenta addWenu;
-        addWenu.set(Wenu);
-        WenuMassTCaloMET_[nWenu_] = massT(iEle->pt(), iMET->pt(), Wenu.px(), Wenu.py());
-        WenuEtCaloMET_[nWenu_]    = eT(iEle->pt(), iMET->pt());
-        WenuACopCaloMET_[nWenu_]  = acop(iEle->phi(), iMET->phi());
-      }
-
-      for (View<pat::MET>::const_iterator iTCMET = tcMETHandle_->begin(); iTCMET != tcMETHandle_->end(); ++iTCMET) {
-
-        pat::CompositeCandidate WenuTcMET;
-	WenuTcMET.addDaughter(*iEle, "ele");
-	WenuTcMET.addDaughter(*iTCMET, "met");
-
-	AddFourMomenta addWenuTcMET;
-	addWenuTcMET.set(WenuTcMET);
-	WenuMassTTcMET_[nWenu_] = massT(iEle->pt(), iTCMET->pt(), WenuTcMET.px(), WenuTcMET.py());
-	WenuEtTcMET_[nWenu_]    = eT(iEle->pt(), iTCMET->pt());
-	WenuACopTcMET_[nWenu_]  = acop(iEle->phi(), iTCMET->phi());
-      }
-
-      for (View<pat::MET>::const_iterator iPFMET = pfMETHandle_->begin(); iPFMET != pfMETHandle_->end(); ++iPFMET) {
- 
-        pat::CompositeCandidate WenuPfMET;
-	WenuPfMET.addDaughter(*iEle, "ele");
-	WenuPfMET.addDaughter(*iPFMET, "met");
-
-	AddFourMomenta addWenuPfMET;
-	addWenuPfMET.set(WenuPfMET);
-	WenuMassTPfMET_[nWenu_] = massT(iEle->pt(), iPFMET->pt(), WenuPfMET.px(), WenuPfMET.py());
-	WenuEtPfMET_[nWenu_]    = eT(iEle->pt(), iPFMET->pt());
-	WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), iPFMET->phi());
-      }
-
-      WenuEleIndex_[nWenu_]   = leg1Index;
-      leg1Index++;
-      nWenu_++;
-    }
-  }
-
-  // Wmunu candiate
-  // cout << "VgAnalyzerKit: produce: Wmunu candiate..." << endl;
-  nWmunu_ = 0;
-  leg1Index = 0;
-  if (muonHandle_.isValid() && muonHandle_->size() > 0 && METHandle_.isValid() && METHandle_->size() > 0) {
-
-    for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
-
-      if (!iMu->isGlobalMuon()) continue;
-
-      for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
-
-        pat::CompositeCandidate Wmunu;
-        Wmunu.addDaughter(*iMu, "mu");
-        Wmunu.addDaughter(*iMET, "met");
-
-        AddFourMomenta addWmunu;
-        addWmunu.set(Wmunu);
-        WmunuMassTCaloMET_[nWmunu_] = massT(iMu->pt(), iMET->pt(), Wmunu.px(), Wmunu.py());
-        WmunuEtCaloMET_[nWmunu_]    = eT(iMu->pt(), iMET->pt());
-        WmunuACopCaloMET_[nWmunu_]  = acop(iMu->phi(), iMET->phi());
-      }
-
-      for (View<pat::MET>::const_iterator iTCMET = tcMETHandle_->begin(); iTCMET != tcMETHandle_->end(); ++iTCMET) {
-
-        pat::CompositeCandidate WmunuTcMET;
-	WmunuTcMET.addDaughter(*iMu, "mu");
-	WmunuTcMET.addDaughter(*iTCMET, "met");
-
-	AddFourMomenta addWmunuTcMET;
-	addWmunuTcMET.set(WmunuTcMET);
-	WmunuMassTTcMET_[nWmunu_] = massT(iMu->pt(), iTCMET->pt(), WmunuTcMET.px(), WmunuTcMET.py());
-	WmunuEtTcMET_[nWmunu_]    = eT(iMu->pt(), iTCMET->pt());
-	WmunuACopTcMET_[nWmunu_]  = acop(iMu->phi(), iTCMET->phi());
-      }
-
-      for (View<pat::MET>::const_iterator iPFMET = pfMETHandle_->begin(); iPFMET != pfMETHandle_->end(); ++iPFMET) {
- 
-        pat::CompositeCandidate WmunuPfMET;
-	WmunuPfMET.addDaughter(*iMu, "mu");
-	WmunuPfMET.addDaughter(*iPFMET, "met");
-
-	AddFourMomenta addWmunuPfMET;
-	addWmunuPfMET.set(WmunuPfMET);
-	WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), iPFMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
-	WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), iPFMET->pt());
-	WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), iPFMET->phi());
-      }
-
-      leg1Index = iMu-(muonHandle_->begin());
-      WmunuMuIndex_[nWmunu_]    = leg1Index;
-      nWmunu_++;
-    }
-  }
-
   // Jet
   // cout << "VgAnalyzerKit: produce: Jet..." << endl;
-  const TriggerObjectMatch *jetTriggerMatch1(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet15U"));
-  const TriggerObjectMatch *jetTriggerMatch2(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30U"));
-  const TriggerObjectMatch *jetTriggerMatch3(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet50U"));
-  const TriggerObjectMatch *jetTriggerMatch4(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet70U"));
-  const TriggerObjectMatch *jetTriggerMatch5(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet70Uv2"));
-  const TriggerObjectMatch *jetTriggerMatch6(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet100U"));
-  const TriggerObjectMatch *jetTriggerMatch7(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet100Uv2"));
-  const TriggerObjectMatch *jetTriggerMatch8(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet140Uv1"));
-  const TriggerObjectMatch *jetTriggerMatch9(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet15Uv3"));
-  const TriggerObjectMatch *jetTriggerMatch10(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30Uv3"));
-  const TriggerObjectMatch *jetTriggerMatch11(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet50Uv3"));
-  const TriggerObjectMatch *jetTriggerMatch12(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet70Uv3"));
-  const TriggerObjectMatch *jetTriggerMatch13(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet100Uv3"));
-  const TriggerObjectMatch *jetTriggerMatch14(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet140Uv3"));
-  const TriggerObjectMatch *jetTriggerMatch15(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30"));
-  const TriggerObjectMatch *jetTriggerMatch16(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60"));
-  const TriggerObjectMatch *jetTriggerMatch17(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80"));
-  const TriggerObjectMatch *jetTriggerMatch18(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110"));
-  const TriggerObjectMatch *jetTriggerMatch19(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150"));
-  const TriggerObjectMatch *jetTriggerMatch20(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190"));
-  const TriggerObjectMatch *jetTriggerMatch21(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240"));
-  const TriggerObjectMatch *jetTriggerMatch22(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300"));
-  const TriggerObjectMatch *jetTriggerMatch23(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370"));
+  const TriggerObjectMatch *jetTriggerMatch1(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTPFJet40"));
+  const TriggerObjectMatch *jetTriggerMatch2(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTPFJet80"));
+  const TriggerObjectMatch *jetTriggerMatch3(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTPFJet140"));
+  const TriggerObjectMatch *jetTriggerMatch4(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTPFJet200"));
+  const TriggerObjectMatch *jetTriggerMatch5(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTPFJet260"));
+  const TriggerObjectMatch *jetTriggerMatch6(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTPFJet320"));
+  const TriggerObjectMatch *jetTriggerMatch7(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTPFJet400"));
 
   if (doStoreJets_) {
     nJet_ = 0;
@@ -2266,22 +1510,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  const TriggerObjectRef jetTrigRef5( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch5, e, *triggerEvent ) );
 	  const TriggerObjectRef jetTrigRef6( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch6, e, *triggerEvent ) );
 	  const TriggerObjectRef jetTrigRef7( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch7, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef8( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch8, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef9( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch9, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef10( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch10, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef11( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch11, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef12( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch12, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef13( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch13, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef14( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch14, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef15( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch15, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef16( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch16, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef17( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch17, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef18( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch18, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef19( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch19, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef20( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch20, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef21( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch21, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef22( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch22, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef23( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch23, e, *triggerEvent ) );
 
 	  jetTrg_[nJet_][0] = (jetTrigRef1.isAvailable()) ? 1 : -99;
 	  jetTrg_[nJet_][1] = (jetTrigRef2.isAvailable()) ? 1 : -99;
@@ -2290,22 +1518,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  jetTrg_[nJet_][4] = (jetTrigRef5.isAvailable()) ? 1 : -99;
 	  jetTrg_[nJet_][5] = (jetTrigRef6.isAvailable()) ? 1 : -99;
 	  jetTrg_[nJet_][6] = (jetTrigRef7.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][7] = (jetTrigRef8.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][8] = (jetTrigRef9.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][9] = (jetTrigRef10.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][10] = (jetTrigRef11.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][11] = (jetTrigRef12.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][12] = (jetTrigRef13.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][13] = (jetTrigRef14.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][14] = (jetTrigRef15.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][15] = (jetTrigRef16.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][16] = (jetTrigRef17.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][17] = (jetTrigRef18.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][18] = (jetTrigRef19.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][19] = (jetTrigRef20.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][20] = (jetTrigRef21.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][21] = (jetTrigRef22.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][22] = (jetTrigRef23.isAvailable()) ? 1 : -99;
 	}
 
 	jetEn_[nJet_]     = iJet->energy();
@@ -2344,7 +1556,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  if ( trackref.isNonnull()) {
  	    tracks_x_tot += (trackref)->px();
 	    tracks_y_tot += (trackref)->py();	  
-	    if (fabs((trackref)->vz() - vtx_[0][2]) < 0.1) {        	  
+	    if (fabs((trackref)->vz() - vtx_[0][2]) < 0.2) {
 	      tracks_x += (trackref)->px();
 	      tracks_y += (trackref)->py();		
 	    }
@@ -2549,483 +1761,6 @@ float VgAnalyzerKit::getGenTrkIso(edm::Handle<reco::GenParticleCollection> handl
   }// end of loop over gen particles
 
   return genTrkIsoSum;
-}
-
-float VgAnalyzerKit::getESRatio(View<pat::Photon>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
-{
-  //get Geometry
-  ESHandle<CaloGeometry> caloGeometry;
-  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
-  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
-  const CaloSubdetectorGeometry *& geometry_p = geometry;
-
-  Float_t esratio=1.;
-
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-  else return esratio;
-
-  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
-  reco::CaloCluster cluster = (*seed);
-  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
-
-  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
-  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
-  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
-  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
-
-  if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int gs_esfid = -99;
-    int gs_esrid = -99;
-    gs_esfid = esfid.six()*32 + esfid.strip();
-    gs_esrid = esrid.siy()*32 + esrid.strip();
-
-    float esfe3 = 0.; 
-    float esfe21 = 0.; 
-    float esre3 = 0.; 
-    float esre21 = 0.;
-
-    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
-
-    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
-      ESDetId esdetid = ESDetId(esrh_it->id());
-
-      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
-      // ES Front plane
-      if (esdetid.plane() == 1) {
-	if (esdetid.zside() == esfid.zside() && esdetid.siy() == esfid.siy()) {
-	  int gs_esid = esdetid.six()*32 + esdetid.strip();
-	  int ss = gs_esid - gs_esfid;
-	  if (abs(ss) <= 10) {
-	    esfe21 += esrh_it->energy();
-	  } 
-	  if (abs(ss) <= 1) {
-	    esfe3 += esrh_it->energy();
-	  } 
-	}
-      }
-      // ES Rear plane
-      if (esdetid.plane() == 2) {
-	if (esdetid.zside() == esrid.zside() && esdetid.six() == esrid.six()) {
-	  int gs_esid = esdetid.siy()*32+esdetid.strip();
-	  int ss = gs_esid-gs_esrid;
-	  if (abs(ss) <= 10) {
-	    esre21 += esrh_it->energy();
-	  } 
-	  if (abs(ss) <= 1) {
-	    esre3 += esrh_it->energy();
-	  } 
-	}
-      }
-    }
-  
-    // If denominator == 0, the ratio = 1;
-    if((esfe21+esre21) == 0.) {
-      esratio = 1.;
-    }
-    else{
-      esratio = (esfe3+esre3) / (esfe21+esre21);
-    }
-  }
- 
-  return esratio;
-}
-
-float VgAnalyzerKit::getESRatio(View<pat::Electron>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
-{
-  //get Geometry
-  ESHandle<CaloGeometry> caloGeometry;
-  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
-  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
-  const CaloSubdetectorGeometry *& geometry_p = geometry;
-
-  Float_t esratio=1.;
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-  else return esratio;
-
-  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
-  reco::CaloCluster cluster = (*seed);
-  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
-
-  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
-  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
-  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
-  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
-
-  if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int gs_esfid = -99;
-    int gs_esrid = -99;
-    gs_esfid = esfid.six()*32 + esfid.strip();
-    gs_esrid = esrid.siy()*32 + esrid.strip();
-
-    float esfe3 = 0.; 
-    float esfe21 = 0.; 
-    float esre3 = 0.; 
-    float esre21 = 0.;
-
-    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
-
-    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
-      ESDetId esdetid = ESDetId(esrh_it->id());
-
-      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
-      // ES Front plane
-      if (esdetid.plane() == 1) {
-	if (esdetid.zside() == esfid.zside() && esdetid.siy() == esfid.siy()) {
-	  int gs_esid = esdetid.six()*32 + esdetid.strip();
-	  int ss = gs_esid - gs_esfid;
-	  if (abs(ss) <= 10) {
-	    esfe21 += esrh_it->energy();
-	  } 
-	  if (abs(ss) <= 1) {
-	    esfe3 += esrh_it->energy();
-	  } 
-	}
-      }
-      // ES Rear plane
-      if (esdetid.plane() == 2) {
-	if (esdetid.zside() == esrid.zside() && esdetid.six() == esrid.six()) {
-	  int gs_esid = esdetid.siy()*32+esdetid.strip();
-	  int ss = gs_esid-gs_esrid;
-	  if (abs(ss) <= 10) {
-	    esre21 += esrh_it->energy();
-	  } 
-	  if (abs(ss) <= 1) {
-	    esre3 += esrh_it->energy();
-	  } 
-	}
-      }
-    }
-  
-    // If denominator == 0, the ratio = 1;
-    if((esfe21+esre21) == 0.) {
-      esratio = 1.;
-    }
-    else{
-      esratio = (esfe3+esre3) / (esfe21+esre21);
-    }
-  }
- 
-  return esratio;
-}
-
-std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
-{
-  //get Geometry
-  ESHandle<CaloGeometry> caloGeometry;
-  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
-  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
-  const CaloSubdetectorGeometry *& geometry_p = geometry;
-
-  // Store ES rechits energy ±1 sensor an ±20 strips
-  //  0 ~ 40: +1 sensor and ±20 strips
-  // 41 ~ 81: +0 sensor and ±20 strips
-  // 82 ~123: -1 sensor and ±20 strips
-  std::vector<float> esprofile;
-  for (int a = 0; a<123; a++) 
-    esprofile.push_back(0); 
-
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-  else return esprofile;
-
-  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
-  reco::CaloCluster cluster = (*seed);
-  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
-
-  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
-  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
-  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
-  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
-
-  if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[41];
-    for (int a=0; a<41; a++) 
-      strip[a] = a - 20;
-
-    int gs_esfid = -99;
-    int gs_esrid = -99;
-    gs_esfid = esfid.six()*32 + esfid.strip();
-    gs_esrid = esrid.siy()*32 + esrid.strip();
-
-    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
-
-    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
-      ESDetId esdetid = ESDetId(esrh_it->id());
-
-      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
-      // ES Front plane
-      if (esdetid.plane() == 1) {
-	// +1 sensor and ±20 strip
-	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
-	  int gs_esid = esdetid.six()*32 + esdetid.strip();
-	  int ss = gs_esid - gs_esfid;
-          for (int a=0; a<41; a++) 
-            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
-	}
-        // +0 sensor and ±20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
-          int gs_esid = esdetid.six()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esfid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
-        }
-        // -1 sensor and ±20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
-          int gs_esid = esdetid.six()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esfid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
-        }
-      }
-    }
-  }
-
-  return esprofile;
-}
-
-std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
-{
-  //get Geometry
-  ESHandle<CaloGeometry> caloGeometry;
-  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
-  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
-  const CaloSubdetectorGeometry *& geometry_p = geometry;
-
-  // Store ES rechits energy ±1 sensor an ±20 strips
-  //  0 ~ 40: +1 sensor and ±20 strips
-  // 41 ~ 81: +0 sensor and ±20 strips
-  // 82 ~123: -1 sensor and ±20 strips
-  std::vector<float> esprofile;
-  for (int a = 0; a<123; a++) 
-    esprofile.push_back(0); 
-
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-  else return esprofile;
-
-  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
-  reco::CaloCluster cluster = (*seed);
-  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
-
-  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
-  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
-  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
-  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
-
-  if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[41];
-    for (int a=0; a<41; a++) 
-      strip[a] = a - 20;
-
-    int gs_esfid = -99;
-    int gs_esrid = -99;
-    gs_esfid = esfid.six()*32 + esfid.strip();
-    gs_esrid = esrid.siy()*32 + esrid.strip();
-
-    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
-
-    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
-      ESDetId esdetid = ESDetId(esrh_it->id());
-
-      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
-      // ES Rear plane
-      if (esdetid.plane() == 2) {
-	// +1 sensor and ±20 strip
-	if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() + 1)) {
-	  int gs_esid = esdetid.siy()*32 + esdetid.strip();
-	  int ss = gs_esid - gs_esrid;
-          for (int a=0; a<41; a++) 
-            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
-	}
-        // +0 sensor and ±20 strip
-        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six())) {
-          int gs_esid = esdetid.siy()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esrid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
-        }
-        // -1 sensor and ±20 strip
-        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() - 1)) {
-          int gs_esid = esdetid.siy()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esrid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
-        }
-      }
-    }
-  }
-
-  return esprofile;
-}
-
-std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
-{
-  //get Geometry
-  ESHandle<CaloGeometry> caloGeometry;
-  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
-  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
-  const CaloSubdetectorGeometry *& geometry_p = geometry;
-
-  // Store ES rechits energy ±1 sensor an ±20 strips
-  //  0 ~ 40: +1 sensor and ±20 strips
-  // 41 ~ 81: +0 sensor and ±20 strips
-  // 82 ~123: -1 sensor and ±20 strips
-  std::vector<float> esprofile;
-  for (int a = 0; a<123; a++) 
-    esprofile.push_back(0); 
-
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-  else return esprofile;
-
-  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
-  reco::CaloCluster cluster = (*seed);
-  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
-
-  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
-  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
-  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
-  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
-
-  if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[41];
-    for (int a=0; a<41; a++) 
-      strip[a] = a - 20;
-
-    int gs_esfid = -99;
-    int gs_esrid = -99;
-    gs_esfid = esfid.six()*32 + esfid.strip();
-    gs_esrid = esrid.siy()*32 + esrid.strip();
-
-    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
-
-    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
-      ESDetId esdetid = ESDetId(esrh_it->id());
-
-      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
-      // ES Front plane
-      if (esdetid.plane() == 1) {
-	// +1 sensor and ±20 strip
-	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
-	  int gs_esid = esdetid.six()*32 + esdetid.strip();
-	  int ss = gs_esid - gs_esfid;
-          for (int a=0; a<41; a++) 
-            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
-	}
-        // +0 sensor and ±20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
-          int gs_esid = esdetid.six()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esfid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
-        }
-        // -1 sensor and ±20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
-          int gs_esid = esdetid.six()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esfid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
-        }
-      }
-    }
-  }
-
-  return esprofile;
-}
-
-std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
-{
-  //get Geometry
-  ESHandle<CaloGeometry> caloGeometry;
-  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
-  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
-  const CaloSubdetectorGeometry *& geometry_p = geometry;
-
-  // Store ES rechits energy ±1 sensor an ±20 strips
-  //  0 ~ 40: +1 sensor and ±20 strips
-  // 41 ~ 81: +0 sensor and ±20 strips
-  // 82 ~123: -1 sensor and ±20 strips
-  std::vector<float> esprofile;
-  for (int a = 0; a<123; a++) 
-    esprofile.push_back(0); 
-
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-  else return esprofile;
-
-  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
-  reco::CaloCluster cluster = (*seed);
-  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
-
-  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
-  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
-  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
-  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
-
-  if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[41];
-    for (int a=0; a<41; a++) 
-      strip[a] = a - 20;
-
-    int gs_esfid = -99;
-    int gs_esrid = -99;
-    gs_esfid = esfid.six()*32 + esfid.strip();
-    gs_esrid = esrid.siy()*32 + esrid.strip();
-
-    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
-
-    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
-      ESDetId esdetid = ESDetId(esrh_it->id());
-
-      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
-      // ES Rear plane
-      if (esdetid.plane() == 2) {
-	// +1 sensor and ±20 strip
-	if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() + 1)) {
-	  int gs_esid = esdetid.siy()*32 + esdetid.strip();
-	  int ss = gs_esid - gs_esrid;
-          for (int a=0; a<41; a++) 
-            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
-	}
-        // +0 sensor and ±20 strip
-        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six())) {
-          int gs_esid = esdetid.siy()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esrid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
-        }
-        // -1 sensor and ±20 strip
-        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() - 1)) {
-          int gs_esid = esdetid.siy()*32 + esdetid.strip();
-          int ss = gs_esid - gs_esrid;
-          for (int a=0; a<41; a++)
-            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
-        }
-      }
-    }
-  }
-
-  return esprofile;
 }
 
 float VgAnalyzerKit::getTrkIso(edm::Handle<reco::TrackCollection> Tracks, 
