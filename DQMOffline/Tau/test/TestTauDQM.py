@@ -64,6 +64,13 @@ options.register( 'gtag',
                   "Specify the global tag."
                  )
 
+options.register( 'disableTrigger',
+                  False,
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.bool,
+                  "Disables trigger settings, to run on MC."
+                 )
+
 # command options defined in Validation/RecoTau/python/ValidationOptions_cfi
 options.parseArguments()
 
@@ -75,7 +82,14 @@ process.maxEvents = cms.untracked.PSet(
 # DQM store, PDT sources etc
 process.load("Configuration.StandardSequences.Services_cff")
 
-fileName = 'TauDQM_'+options.sequence+'_'+options.step+'.root'
+fileName = 'TauDQM_'+options.sequence+'_'+options.step
+if options.disableTrigger:
+    fileName += '_TrigOFF'
+fileName += '.root'
+
+process.options   = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True),
+)
 
 if os.path.exists(fileName):# and not options.gridJob:
    print "Output file %s already exists!  OK to overwrite?" % fileName
@@ -117,7 +131,17 @@ else:
         process.dqmTau *= process.pfTauRunDQMValidation
     if options.step.find('harvesting') != -1:
         process.dqmTau *= process.runTauEff
-    
+
+if options.disableTrigger:
+    from DQMOffline.Tau.RecoTauDQMGeneral_cfi import ApplyFunctionToSequence
+    def disableTrigger(module):
+        if type(module) == cms.EDAnalyzer and hasattr(module,'GenericTriggerSelection'):
+            print 'disabling trigger for ',module.label_()
+            setattr(module,'turnOnTrigger',cms.bool(False)) #Turns off trigger (in case is on)
+    trigOff = ApplyFunctionToSequence(disableTrigger)
+    process.dqmTau.visit(trigOff)
+
+
 process.saveTauEff = cms.EDAnalyzer("TauDQMSimpleFileSaver",
   outputFileName = cms.string(fileName)
 )
