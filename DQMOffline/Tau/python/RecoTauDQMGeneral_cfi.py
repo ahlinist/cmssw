@@ -539,11 +539,13 @@ def setBinning(module,pset):
       module.histoSettings = pset
 
 def setTrigger(module,pset):
-   if type(proc.RunHPSValidation) == cms.EDAnalyzer and hasattr(module,'GenericTriggerSelection'):
+   if type(module) == cms.EDAnalyzer and hasattr(module,'GenericTriggerSelection'):
       setattr(module,'turnOnTrigger',cms.bool(True)) #Turns on trigger (in case is off)
       for item in pset.parameters_().items():
          setattr(module.GenericTriggerSelection,item[0],item[1])
 
-def SetMassInput(module, massInput):
-   if type(proc.RunHPSValidation) == cms.EDAnalyzer:
+def SetMassInput(module, massInput, verbose = False):
+   if type(module) == cms.EDAnalyzer:
       setattr(module,'massInput',massInput)
+      if verbose:
+         print 'setting mass input of %s to %s' % (module.label_(), massInput)
