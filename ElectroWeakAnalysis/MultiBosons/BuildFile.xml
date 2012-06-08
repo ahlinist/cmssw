@@ -18,6 +18,7 @@
 <use   name="PhysicsTools/SelectorUtils"/>
 <use   name="PhysicsTools/FWLite"/>
 <use   name="PhysicsTools/PatUtils"/>
+<use   name="EGamma/EGammaAnalysisTools"/>
 <use   name="rootrflx"/>
 <export>
   <lib   name="1"/>
