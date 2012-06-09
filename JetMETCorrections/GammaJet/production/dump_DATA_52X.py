@@ -1,5 +1,5 @@
 #
-# $Id: dump_DATA_42X.py,v 1.4 2011/11/20 21:45:20 meridian Exp $
+# $Id: dump_DATA_52X.py,v 1.1 2012/05/30 14:22:24 meridian Exp $
 #
 #  configuration to dump ntuples in data
 #   the only diff should be for jetmet corrections
@@ -46,13 +46,13 @@ process.jec = cms.ESSource("PoolDBESSource",
                            toGet = cms.VPSet(
     cms.PSet(
     record = cms.string('JetCorrectionsRecord'),
-    tag    = cms.string('JetCorrectorParametersCollection_Summer12_V2_DATA_AK5PF'),
+    tag    = cms.string('JetCorrectorParametersCollection_Summer12_V7_DATA_AK5PF'),
     label  = cms.untracked.string('AK5PF')
     ),
     ## here you add as many jet types as you need
     ## note that the tag name is specific for the particular sqlite file
     ),
-                           connect = cms.string('sqlite:Summer12_V2_DATA.db')
+                           connect = cms.string('sqlite:Summer12_V7_DATA.db')
                            )
 ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
