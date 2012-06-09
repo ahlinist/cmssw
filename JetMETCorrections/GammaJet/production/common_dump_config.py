@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.8 2012/02/16 17:48:16 pandolf Exp $
+# $Id: common_dump_config.py,v 1.9 2012/05/30 14:17:39 meridian Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -44,7 +44,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.options = cms.untracked.PSet(
-#    SkipEvent = cms.untracked.vstring('ProductNotFound')
+    SkipEvent = cms.untracked.vstring('ProductNotFound'),
     wantSummary = cms.untracked.bool(True)
 )
 

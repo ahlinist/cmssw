@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.63 2011/11/20 21:45:37 meridian Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.65 2012/05/30 14:19:13 meridian Exp $
 //
 //
 
@@ -604,14 +604,24 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   vtxPar.sigma2Tid=0.418;
   vtxPar.sigma2Tec=0.815;
 
-  vtxPar.vtxProbFormula="1.-0.49*(x+1)";
+  vtxPar.singlelegsigma2Pix=0.036;
+  vtxPar.singlelegsigma2Tib=0.456;
+  vtxPar.singlelegsigma2Tob=0.362;
+  vtxPar.singlelegsigma2PixFwd=0.130;
+  vtxPar.singlelegsigma2Tid=0.465;
+  vtxPar.singlelegsigma2Tec=1.018;
+
+  vtxPar.vtxProbFormula="1.-0.49*(x+1)*(y>0.)";
+
 
   bool mvaVertexSelection=1;
   bool addConversionToMva=1;
   std::string tmvaPerVtxWeights="TMVAClassification_BDTCat_conversions_tmva_407.weights.xml";
   tmvaPerVtxMethod="BDTCat";
-  std::string tmvaPerEvtWeights="TMVAClassification_evtBDTG_conversions_tmva_407.weights.xml";
-  tmvaPerEvtMethod="evtBDTG";
+  //  std::string tmvaPerEvtWeights="TMVAClassification_evtBDTG_conversions_tmva_407.weights.xml";
+  std::string tmvaPerEvtWeights="TMVAClassification_BDTvtxprob2012.weights.xml";
+  //tmvaPerEvtMethod="evtBDTG";
+  tmvaPerEvtMethod="BDTvtxprob2012";
 
   vtxAna=  new HggVertexAnalyzer(vtxPar);
   vtxAnaFromConv= new HggVertexFromConversions(vtxPar);
@@ -1030,12 +1040,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    edm::Handle<edm::TriggerResults> hltTriggerResultHandle;
    iEvent.getByLabel(triggerTag_, hltTriggerResultHandle);
 
-//    if (!hltTriggerResultHandle.isValid())
-//    {
-//      //     std::cout << "invalid handle for HLT TriggerResults" << std::endl;
-//    }
-//    else
-//    {
+    if (!hltTriggerResultHandle.isValid())
+    {
+      //     std::cout << "invalid handle for HLT TriggerResults" << std::endl;
+    }
+    else
+    {
 
      edm::TriggerNames HLTNames;
 //   HLTNames.init(*hltTriggerResultHandle);
@@ -1069,7 +1079,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      hltNamesLen = tempnames.length();
 
-//    } // HLT isValid
+    } // HLT isValid
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -2036,7 +2046,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	       std::vector<int> rankprodAll = vtxAna->rank(*tmvaPerVtxReader_,tmvaPerVtxMethod); 
 	       float vtxEvtMva = vtxAna->perEventMva( *tmvaPerEvtReader_, tmvaPerEvtMethod, rankprodAll );
-	       float vtxProbability= vtxAna->vertexProbability(vtxEvtMva); 
+	       float vtxProbability= vtxAna->vertexProbability(vtxEvtMva, nvertex); 
 //  	       std::vector<int> rankprodAll = vtxAna->rankprod(rankVariables);
 	       
 	       
@@ -2421,22 +2431,22 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    // isolation variables
    std::vector<reco::PFCandidate::ParticleType> temp;
    temp.push_back(reco::PFCandidate::gamma);
-   pid_pfIsoPhotons01ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.1, 0.045, 0.070, 0.015, 0.0, 0.08, 0.1, temp);
-   pid_pfIsoPhotons02ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.2, 0.045, 0.070, 0.015, 0.0, 0.08, 0.1, temp);
-   pid_pfIsoPhotons03ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.3, 0.045, 0.070, 0.015, 0.0, 0.08, 0.1, temp);
-   pid_pfIsoPhotons04ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.4, 0.045, 0.070, 0.015, 0.0, 0.08, 0.1, temp);
-   pid_pfIsoPhotons05ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.5, 0.045, 0.070, 0.015, 0.0, 0.08, 0.1, temp);
-   pid_pfIsoPhotons06ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.6, 0.045, 0.070, 0.015, 0.0, 0.08, 0.1, temp);
+   pid_pfIsoPhotons01ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.1, 0.0, 0.070, 0.015, 0.0, 0.0, 0.0, reco::PFCandidate::gamma);
+   pid_pfIsoPhotons02ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.2, 0.0, 0.070, 0.015, 0.0, 0.0, 0.0, reco::PFCandidate::gamma);
+   pid_pfIsoPhotons03ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.3, 0.0, 0.070, 0.015, 0.0, 0.0, 0.0, reco::PFCandidate::gamma);
+   pid_pfIsoPhotons04ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.4, 0.0, 0.070, 0.015, 0.0, 0.0, 0.0, reco::PFCandidate::gamma);
+   pid_pfIsoPhotons05ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.5, 0.0, 0.070, 0.015, 0.0, 0.0, 0.0, reco::PFCandidate::gamma);
+   pid_pfIsoPhotons06ForCiC[nPhot]  = cicPhotonId->pfEcalIso(localPho, 0.6, 0.0, 0.070, 0.015, 0.0, 0.0, 0.0, reco::PFCandidate::gamma);
    
    temp.clear();
    temp.push_back(reco::PFCandidate::h0);
    // Custom Egamma and noveto are the same
-   pid_pfIsoNeutrals01ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.1, 0.00, temp);
-   pid_pfIsoNeutrals02ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.2, 0.00, temp);
-   pid_pfIsoNeutrals03ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.3, 0.00, temp);
-   pid_pfIsoNeutrals04ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.4, 0.00, temp);
-   pid_pfIsoNeutrals05ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.5, 0.00, temp);
-   pid_pfIsoNeutrals06ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.6, 0.00, temp);
+   pid_pfIsoNeutrals01ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.1, 0.00, reco::PFCandidate::h0);
+   pid_pfIsoNeutrals02ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.2, 0.00, reco::PFCandidate::h0);
+   pid_pfIsoNeutrals03ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.3, 0.00, reco::PFCandidate::h0);
+   pid_pfIsoNeutrals04ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.4, 0.00, reco::PFCandidate::h0);
+   pid_pfIsoNeutrals05ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.5, 0.00, reco::PFCandidate::h0);
+   pid_pfIsoNeutrals06ForCiC[nPhot] = cicPhotonId->pfHcalIso(localPho, 0.6, 0.00, reco::PFCandidate::h0);
    
    temp.clear();
    temp.push_back(reco::PFCandidate::h);
@@ -2446,12 +2456,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    std::vector<float> pid_pfIsoCharged04;
    std::vector<float> pid_pfIsoCharged05;
    std::vector<float> pid_pfIsoCharged06;
-   pid_pfIsoCharged01=cicPhotonId->pfTkIsoWithVertex(localPho, 0.1, 0.02, 0.02, 1.0, 0.2, 0.1, temp); 
-   pid_pfIsoCharged02=cicPhotonId->pfTkIsoWithVertex(localPho, 0.2, 0.02, 0.02, 1.0, 0.2, 0.1, temp); 
-   pid_pfIsoCharged03=cicPhotonId->pfTkIsoWithVertex(localPho, 0.3, 0.02, 0.02, 1.0, 0.2, 0.1, temp); 
-   pid_pfIsoCharged04=cicPhotonId->pfTkIsoWithVertex(localPho, 0.4, 0.02, 0.02, 1.0, 0.2, 0.1, temp); 
-   pid_pfIsoCharged05=cicPhotonId->pfTkIsoWithVertex(localPho, 0.5, 0.02, 0.02, 1.0, 0.2, 0.1, temp); 
-   pid_pfIsoCharged06=cicPhotonId->pfTkIsoWithVertex(localPho, 0.6, 0.02, 0.02, 1.0, 0.2, 0.1, temp); 
+   pid_pfIsoCharged01=cicPhotonId->pfTkIsoWithVertex(localPho, 0.1, 0.02, 0.02, 0.0, 0.2, 0.1, reco::PFCandidate::h); 
+   pid_pfIsoCharged02=cicPhotonId->pfTkIsoWithVertex(localPho, 0.2, 0.02, 0.02, 0.0, 0.2, 0.1, reco::PFCandidate::h); 
+   pid_pfIsoCharged03=cicPhotonId->pfTkIsoWithVertex(localPho, 0.3, 0.02, 0.02, 0.0, 0.2, 0.1, reco::PFCandidate::h); 
+   pid_pfIsoCharged04=cicPhotonId->pfTkIsoWithVertex(localPho, 0.4, 0.02, 0.02, 0.0, 0.2, 0.1, reco::PFCandidate::h); 
+   pid_pfIsoCharged05=cicPhotonId->pfTkIsoWithVertex(localPho, 0.5, 0.02, 0.02, 0.0, 0.2, 0.1, reco::PFCandidate::h); 
+   pid_pfIsoCharged06=cicPhotonId->pfTkIsoWithVertex(localPho, 0.6, 0.02, 0.02, 0.0, 0.2, 0.1, reco::PFCandidate::h); 
 
    assert (
 	   (pid_pfIsoCharged01.size() == VertexHandle->size()) &&
@@ -2840,7 +2850,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	    PileupJetIdAlgo* ialgo = (jetId_algos[imva]);
 	    ialgo->set(jetIdentifer_vars);
 	    PileupJetIdentifier id = ialgo->computeMva();
-	    if (jetMVAAlgos.size() != 3) cout << "problem with jet mva" << endl;
+	    if (jetMVAAlgos.size() != 4) cout << "problem with jet mva" << jetMVAAlgos.size() << endl;
 	    // mva values
 	    if (imva==0) jetIdSimple_mva_pfakt5[nJet_pfakt5]   = id.mva() ;
 	    if (imva==1) jetIdFull_mva_pfakt5[nJet_pfakt5]     = id.mva() ;
