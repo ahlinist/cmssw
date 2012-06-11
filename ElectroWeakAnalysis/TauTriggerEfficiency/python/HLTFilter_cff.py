@@ -31,7 +31,8 @@ HLT_LooseIsoPFTau35_Trk20_Prong1 = hlt.triggerResultsFilter.clone(
 	'HLT_LooseIsoPFTau35_Trk20_Prong1_v3',
 	'HLT_LooseIsoPFTau35_Trk20_Prong1_v4',
 	'HLT_LooseIsoPFTau35_Trk20_Prong1_v5',
-        'HLT_LooseIsoPFTau35_Trk20_Prong1_v6'
+        'HLT_LooseIsoPFTau35_Trk20_Prong1_v6',
+	'HLT_LooseIsoPFTau35_Trk20_Prong1_v7'
     ),
     l1tResults = '',
     throw = False
