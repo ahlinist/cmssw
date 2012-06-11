@@ -26,8 +26,8 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-isMC = True # use for MC
-##isMC = False # use for Data
+##isMC = True # use for MC
+isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2012 Data
 HLTprocessName = "HLT" # use for Spring'12 MC
 #type1JetPtThreshold = 20.0 # increased jet Pt threshold to reduce sensitivity of Type 1 corrected MET to pile-up
@@ -50,10 +50,45 @@ runPeriod = "2012RunA" # use for MET sys. shift correction vs. Nvtx
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START52_V9::All')
+    process.GlobalTag.globaltag = cms.string('START52_V9B::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_52_V7::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_52_V7C::All')
 #--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+# configure Jet Energy Corrections
+#
+##process.load("CondCore.DBCommon.CondDBCommon_cfi")
+##process.jec = cms.ESSource("PoolDBESSource",
+##    DBParameters = cms.PSet(
+##        messageLevel = cms.untracked.int32(0)
+##    ),
+##    timetype = cms.string('runnumber'),
+##    toGet = cms.VPSet(
+##        cms.PSet(
+##            record = cms.string('JetCorrectionsRecord'),
+##            tag    = cms.string(''),
+##            label  = cms.untracked.string('AK5PF')
+##        ),
+##        cms.PSet(
+##            record = cms.string('JetCorrectionsRecord'),
+##            tag    = cms.string(''),
+##            label  = cms.untracked.string('AK5Calo')
+##        )
+##    ),
+##    connect = cms.string('')
+##)
+##process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
+##if isMC:
+##    process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Summer12_V3_MC.db')
+##    process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_MC_AK5PF')
+##    process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_MC_AK5Calo')
+##else:
+##    process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Summer12_V3_DATA.db')
+##    process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_DATA_AK5PF')
+##    process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_DATA_AK5Calo')
+#-------------------------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # print debug information whenever plugins get loaded dynamically from libraries
@@ -140,7 +175,7 @@ process.selectedPrimaryVerticesTrackPtSumGt5 = process.selectedPrimaryVerticesTr
 process.prePatProductionSequence += process.selectedPrimaryVerticesTrackPtSumGt5
 process.prePatProductionSequence += process.selectedPrimaryVerticesTrackPtSumGt10
 
-# produce in-time pile-up reweighting factors
+# produce pile-up reweighting factors
 if isMC:
     process.prePatProductionSequence += process.vertexMultiplicityReweight3d2012RunAplusB
     process.prePatProductionSequence += process.vertexMultiplicityReweight1d2012RunAplusB
@@ -226,37 +261,11 @@ process.ak5PFJetsNotOverlappingWithLeptons = cms.EDFilter("PFJetAntiOverlapSelec
 )
 process.patTupleProductionSequence += process.ak5PFJetsNotOverlappingWithLeptons
 
-process.ak5PFJetsNotOverlappingWithLeptonsL2L3Corr = cms.EDProducer("PFJetCorrectionProducer",
-    src = cms.InputTag('ak5PFJetsNotOverlappingWithLeptons'),
-    correctors = cms.vstring()
-)
-if isMC:
-    process.ak5PFJetsNotOverlappingWithLeptonsL2L3Corr.correctors = cms.vstring("ak5PFL2L3")
-else:
-    process.ak5PFJetsNotOverlappingWithLeptonsL2L3Corr.correctors = cms.vstring("ak5PFL2L3Residual")
-process.patTupleProductionSequence += process.ak5PFJetsNotOverlappingWithLeptonsL2L3Corr   
-process.ak5PFJetsNotOverlappingWithLeptonsL2L3CorrPtGt10 = cms.EDFilter("GenericPFJetSelector",
-    src = cms.InputTag('ak5PFJetsNotOverlappingWithLeptonsL2L3Corr'),
-    cut = cms.string('pt > 10.'),
-    filter = cms.bool(False) 
-)
-process.patTupleProductionSequence += process.ak5PFJetsNotOverlappingWithLeptonsL2L3CorrPtGt10
-process.ak5PFJetsNotOverlappingWithLeptonsPtLt10 = cms.EDFilter("PFJetAntiOverlapSelector",
-    src = cms.InputTag('ak5PFJetsNotOverlappingWithLeptons'),
-    srcNotToBeFiltered = cms.VInputTag('ak5PFJetsNotOverlappingWithLeptonsL2L3CorrPtGt10'),
-    dRmin = cms.double(0.3),
-    invert = cms.bool(False),
-    filter = cms.bool(False) 
-)
-process.patTupleProductionSequence += process.ak5PFJetsNotOverlappingWithLeptonsPtLt10
-
 from RecoMET.METProducers.METSigParams_cfi import *
 process.pfMEtSignCovMatrix = cms.EDProducer("PFMEtSignCovMatrixProducer",
     METSignificance_params,                     
     src = cms.VInputTag(
         'patMuons',
-        ##'ak5PFJetsNotOverlappingWithLeptonsL2L3CorrPtGt10',
-        ##'ak5PFJetsNotOverlappingWithLeptonsPtLt10',
         'ak5PFJetsNotOverlappingWithLeptons',                                        
         'pfCandsNotInJet'
     ),
@@ -313,7 +322,8 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_patType1CorrectedPFMet*_*_*',
             'keep *_patType1p2CorrectedPFMet*_*_*',
             'keep *_pfMEtSignCovMatrix*_*_*',                      
-            'keep *_patPFMetMVA*_*_*',                                        
+            'keep *_patPFMetMVA*_*_*',
+            'keep *_patPFMetMVA2*_*_*',                                            
             'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*',
