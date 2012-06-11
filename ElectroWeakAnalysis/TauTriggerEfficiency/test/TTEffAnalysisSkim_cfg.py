@@ -34,7 +34,7 @@ process.load('Configuration.StandardSequences.L1Reco_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_52_V8::All'
+    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
 else:
     process.GlobalTag.globaltag = 'START52_V9::All'
 
