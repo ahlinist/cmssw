@@ -289,13 +289,16 @@ void anaXS::loadFiles(const char *dir, int i) {
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader_3SBin.default.root");
-      afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_3Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_10ptbins_ClosureTest.root");
+      //afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_3Sbin.default.root");
+      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_10ptbins_ClosureTest.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups3s.xsReader_3S.24ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_noMSC.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
+      afile = fDirectory + string("/all_events_COMBINED.xsReader_Data.default_v1.root");
+      ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data.default_v1.root");
+      jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data.default_v1.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -1049,9 +1052,9 @@ void anaXS::makeAllDATA(int channel) {
     
     //table(fS1YieldPt, "anan");
     //plot_RapInt();
-    plot_PtInt();
+    //plot_PtInt();
     
-    //FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff(); 
     //GetPreSelEff();
     //GetTrackEff();
