@@ -1,0 +1,34 @@
+TYPE	 301313
+MODE        2  # 1 - MC , 2 - DATA
+MUTYPE1	   16  # 6 gltr , 16 tma
+MUTYPE2    16  # 6 gltr , 16 tma
+PTLO      3.0
+PTHI    300.0  # 20 for gltr, 50 for tma
+PTBARREL  4.0
+ETABARREL 1.2
+ETALO    -2.4
+ETAHI     2.4
+PTCAND  200.0  # before 30
+RAPCAND   2.4  # before 2.0
+CHI2      4.0
+RESTYPE   553
+BIN       100
+MASSLO    8.7
+MASSHI   11.2
+UPSTYPE     1
+DETA      0.2
+DPHI      0.1
+BARREL      1
+HLTPATH     0  HLT_Dimuon0_Barrel_Upsilon_v1 
+HLTLABEL    0  hltDimuon0BarrelUpsilonL3Filtered:HLT::  
+HLTPATH1     0  HLT_Dimuon5_Upsilon_Barrel_v1 
+HLTPATH2     0  HLT_Dimuon5_Upsilon_Barrel_v2
+HLTPATH3     0  HLT_Dimuon5_Upsilon_Barrel_v3
+HLTPATH4     0  HLT_Dimuon5_Upsilon_Barrel_v5
+HLTLABEL1    0  hltBarrelUpsilonL3Filtered:HLT::
+HLTPATH5     0  HLT_Dimuon7_Upsilon_Barrel_v1
+HLTPATH6     0  HLT_Dimuon7_Upsilon_Barrel_v4
+HLTLABEL2    0  hltBarrelDimuon7UpsilonL3Filtered:HLT::
+HLTPATH7     0  HLT_Dimuon9_Upsilon_Barrel_v1
+HLTPATH8     0  HLT_Dimuon9_Upsilon_Barrel_v4
+HLTLABEL3    0  hltDimuon9BarrelUpsilonL3Filtered:HLT:: 

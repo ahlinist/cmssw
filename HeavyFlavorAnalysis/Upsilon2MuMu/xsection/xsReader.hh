@@ -89,12 +89,10 @@ public:
   int UPSTYPE;
   double DPHI;  
   double DETA;
-  TString HLTPATH;
-  TString HLTLABEL;
-  TString HLTPATH1;
-  TString HLTPATH2;
-  TString HLTPATH3;
-  
+  int BARREL;
+  TString HLTPATH, HLTPATH1, HLTPATH2, HLTPATH3, HLTPATH4, HLTPATH5, HLTPATH6, HLTPATH7, HLTPATH8, HLTPATH9, HLTPATH10, HLTPATH11, HLTPATH12, HLTPATH13;
+  TString HLTLABEL, HLTLABEL1, HLTLABEL2, HLTLABEL3;
+    
   // -- Variables
   TAnaCand    *fpCand; 
   double      fCandPt, fCandMass, fCandY;
@@ -108,8 +106,8 @@ public:
   PidTable    *fPidTableTrigFit, *fPidTableMuidFit;
   
   double      fWeight;
-  static const int  fNpt = 10;
-  static const int  fNy = 6;
+  static const int  fNpt = 16;
+  static const int  fNy = 12;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
   double fMassLow, fMassHigh;

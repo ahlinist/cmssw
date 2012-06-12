@@ -49,9 +49,11 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
   
   //// Ups(3S) Binning
-  fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 4.; fPTbin[3] = 8.; fPTbin[4] = 10.; fPTbin[5] = 13.; fPTbin[6] = 16.;
-  fPTbin[7] = 20.; fPTbin[8] = 25.; fPTbin[9] = 30.; fPTbin[10] = 50.; 
-  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 6.; fPTbin[6] = 8.;
+  fPTbin[7] = 10.; fPTbin[8] = 12.; fPTbin[9] = 14.; fPTbin[10] = 17.; fPTbin[11] = 20.; fPTbin[12] = 24.;  
+  fPTbin[13] = 30.; fPTbin[14] = 50.;  fPTbin[15] = 100.;  fPTbin[16] = 200.;
+  fYbin[0] = 0.; fYbin[1] = 0.2; fYbin[2] = 0.4; fYbin[3] = 0.6; fYbin[4] = 0.8; fYbin[5] = 1.0; fYbin[6] = 1.2;
+  fYbin[7] = 1.4; fYbin[8] = 1.6; fYbin[9] = 1.8; fYbin[10] = 2.0; fYbin[11] = 2.2; fYbin[12] = 2.4;
     
   ///// PidTable Tracking Efficiency for DATA
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
@@ -123,9 +125,11 @@ void xsReader::startAnalysis() {
 
 void xsReader::eventProcessing() {
   
-  if ( MODE == 2  ) { 
-    if ( !fpJSON->good(fRun, fLS) ) goto end;
-  }
+  int path(-9);
+  
+  //if ( MODE == 2  ) { 
+  //  if ( !fpJSON->good(fRun, fLS) ) goto end;
+  //}
   
   
   ////// Trigger Check Study
@@ -134,6 +138,9 @@ void xsReader::eventProcessing() {
   //   trigEffCheck();
   //}
   
+  UpsGun_acceptance();
+  
+  /*
   if ( MODE == 1  ) {
     Detectability();
     GenStudy(); // MuIdCheck, TrigCheck
@@ -143,9 +150,73 @@ void xsReader::eventProcessing() {
   }
   
   MomentumCorrection();
-  if ( !MuIDCheck() ) goto end;
-  if ( isPathPreScaled(HLTPATH) ) goto end;
-  if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+  if ( !MuIDCheck() ) goto end;   
+  */
+  //if ( isPathPreScaled(HLTPATH) ) goto end;
+  //if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+  
+  //// fooling around
+  
+  /*
+  if ( BARREL == 0 ){
+    
+    if ( isPathFired(HLTPATH) )  path=0;
+    if ( isPathFired(HLTPATH1) ) path=1;
+    if ( isPathFired(HLTPATH2) ) path=2;
+    if ( isPathFired(HLTPATH3) ) path=3;
+    if ( isPathFired(HLTPATH4) ) path=4;
+    if ( isPathFired(HLTPATH5) ) path=5;
+    if ( isPathFired(HLTPATH6) ) path=6;  
+    if ( isPathFired(HLTPATH7) ) path=7;
+    if ( isPathFired(HLTPATH8) ) path=8;
+    if ( isPathFired(HLTPATH9) ) path=9;
+    if ( isPathFired(HLTPATH10) ) path=10;    
+        
+    
+    if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+    if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL) ) goto end;
+    if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
+    if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL2) ) goto end;
+    if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL2) ) goto end;
+    if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
+    if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
+    if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL2) ) goto end;
+    if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL2) ) goto end; 
+    if (path ==9) if ( !isPathFired_Match(HLTPATH9,HLTLABEL2) ) goto end;
+    if (path ==10) if ( !isPathFired_Match(HLTPATH10,HLTLABEL2) ) goto end; 
+    
+  }
+  
+  if ( BARREL == 1 ){
+  
+    if ( isPathFired(HLTPATH) )  path=0;
+    if ( isPathFired(HLTPATH1) ) path=1;
+    if ( isPathFired(HLTPATH2) ) path=2;
+    if ( isPathFired(HLTPATH3) ) path=3;
+    if ( isPathFired(HLTPATH4) ) path=4;
+    if ( isPathFired(HLTPATH5) ) path=5;
+    if ( isPathFired(HLTPATH6) ) path=6;  
+    if ( isPathFired(HLTPATH7) ) path=7;
+    if ( isPathFired(HLTPATH8) ) path=8;   
+  
+  
+    if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+    if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
+    if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
+    if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL1) ) goto end;
+    if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL1) ) goto end;
+    if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
+    if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
+    if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
+    if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
+    if (path <0) goto end;
+  
+  }
+  
+  */
+  ///// fooling around
+  
+  /*
   candidateSelection(2);
   
   if ( 0 != fpCand  ){
@@ -155,7 +226,7 @@ void xsReader::eventProcessing() {
   
   if ( (0 != fgCand) && (0 != fpCand) && (MODE == 1) ) MCstudy(); 
   fpHistFile->cd();
-  
+  */
   end:
   freePointers();  
   
@@ -1215,22 +1286,31 @@ void xsReader::getBinCenters(TGenCand *gCand, double &pt, double &rapidity ){
 }
 
 bool xsReader::isPathPreScaled( TString Path ){
-  bool PreScale = false;
+  bool PreScale = false; 
   for (int a = 0; a < NHLT ; ++a) {
+    
     if ( fpEvt->fHLTNames[a] ==  Path  && fpEvt->fHLTError[a] & 1  ) {
       PreScale = true;
       //cout << Path << " is prescaled!!!! "  << endl;
     }
+    
   }
+  
   return PreScale;
 }
 
 bool xsReader::isPathFired( TString Path ){
-  bool HLT_Path = false;
+  bool HLT_Path = false; TTrgObj *pTrig(0);
   for (int a = 0; a < NHLT ; ++a) {
     if ( fpEvt->fHLTNames[a] ==  Path  && fpEvt->fHLTResult[a] == 1  ) {
       HLT_Path = true;
       //cout << Path << " fired!!!! "  << endl;
+      
+      for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+	pTrig = fpEvt->getTrgObj(s);
+	//cout << pTrig->fLabel << endl;
+      }
+      
     }
   }
   
@@ -1332,7 +1412,6 @@ bool xsReader::isPathFired_Match( TString Path, TString Label ){
     //cout << " Match " << endl;
   }
     
-  
   return Match;
 }
 
@@ -1356,8 +1435,8 @@ bool xsReader::MuIDCheck(){
     if ( Cand.Rapidity() < 0 ) ((TH2D*)fpHistFile->Get(Form("MuIDCheck_before_%.1dS",UPSTYPE)))->Fill(-Cand.Rapidity(), pCand->fPlab.Perp());
     TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1); 
     TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
-    if ( (pl1->fMuID & MUTYPE1) != MUTYPE1 ) continue;
-    if ( (pl2->fMuID & MUTYPE2) != MUTYPE2 ) continue;
+    //if ( (pl1->fMuID & MUTYPE1) != MUTYPE1 ) continue;
+    //if ( (pl2->fMuID & MUTYPE2) != MUTYPE2 ) continue;
     Cands.push_back(pCand);
     //Cands_ID.push_back(pCand);
     if ( Cand.Rapidity() >= 0 ) ((TH2D*)fpHistFile->Get(Form("MuIDCheck_after_%.1dS",UPSTYPE)))->Fill(Cand.Rapidity(), pCand->fPlab.Perp());
@@ -1377,12 +1456,62 @@ void xsReader::candidateSelection(int mode){
   fGenMuon1Eta = fGenMuon1Pt = fGenMuon2Eta = fGenMuon2Pt = -1.;
   TAnaCand *pCand(0);
   vector<int> lCands, lCands_CT, lCands_CT_M1T, lCands_CT_M1T_M2T, lCands_CT_M1T_M2T_Pt1, lCands_CT_M1T_M2T_Pt1_Pt2, lCands_CT_M1T_M2T_Pt1_Pt2_CHI2; 
-
+  
+  /*
+  for(int iR = 0; iR<fpEvt->nRecTracks();iR++){
+    
+    TAnaTrack *pTrack1 = fpEvt->getRecTrack(iR);
+    ((TH1D*)fpHistFile->Get("AllTr_dxy"))->Fill(pTrack1->fdxy);
+    ((TH1D*)fpHistFile->Get("AllTr_dz"))->Fill(pTrack1->fdz);
+    ((TH1D*)fpHistFile->Get("AllTr_trackChi2"))->Fill(pTrack1->fChi2);
+    ((TH1D*)fpHistFile->Get("AllTr_TrackNDof"))->Fill(pTrack1->fDof);
+    
+  }
+  */
+  
   for (int iC = 0; iC < Cands_TM.size() ; ++iC) {
     pCand = Cands_TM[iC];
     lCands.push_back(iC);
     TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1); 
     TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
+    
+    /*
+    TAnaTrack *pTra1 = fpEvt->getRecTrack(pl1->fIndex);
+    TAnaTrack *pTra2 = fpEvt->getRecTrack(pl2->fIndex);  
+    
+    for(int i = 0; i<fpEvt->nMuons();i++){
+      
+      TAnaMuon *pMuon = fpEvt->getMuon(i); 
+      if ( pMuon->fIndex == pl1->fIndex  ) {
+	
+	
+      }
+      
+      
+      if ( pMuon->fIndex == pl2->fIndex  ) {
+	  
+	
+      }
+      
+      
+      
+    }
+    
+          
+    ((TH1D*)fpHistFile->Get("SigTr_dxy"))->Fill(pTra1->fdxy);
+    ((TH1D*)fpHistFile->Get("SigTr_dz"))->Fill(pTra1->fdz);
+    ((TH1D*)fpHistFile->Get("SigTr_trackChi2"))->Fill(pTra1->fChi2);
+    ((TH1D*)fpHistFile->Get("SigTr_TrackNDof"))->Fill(pTra1->fDof);
+    ((TH1D*)fpHistFile->Get("SigTr_dxy"))->Fill(pTra2->fdxy);
+    ((TH1D*)fpHistFile->Get("SigTr_dz"))->Fill(pTra2->fdz);
+    ((TH1D*)fpHistFile->Get("SigTr_trackChi2"))->Fill(pTra2->fChi2);
+    ((TH1D*)fpHistFile->Get("SigTr_TrackNDof"))->Fill(pTra2->fDof);
+    */
+    
+    
+    
+    /////
+    
     if (TYPE != pCand->fType) continue;
     lCands_CT.push_back(iC);
     if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
@@ -1402,7 +1531,7 @@ void xsReader::candidateSelection(int mode){
     lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.push_back(iC);
   }
   
-    
+  
   int nc(lCands.size()); int nc_CT(lCands_CT.size()); 
   int nc_CT_M1T_M2T_Pt1(lCands_CT_M1T_M2T_Pt1.size()); int nc_CT_M1T_M2T_Pt1_Pt2(lCands_CT_M1T_M2T_Pt1_Pt2.size());
   int nc_CT_M1T_M2T_Pt1_Pt2_CHI2(lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.size());
@@ -1468,7 +1597,9 @@ void xsReader::candidateSelection(int mode){
     TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
     fMuon1Pt = pl1->fPlab.Perp(); fMuon2Pt = pl2->fPlab.Perp(); 
     fMuon1Eta = pl1->fPlab.Eta(); fMuon2Eta = pl2->fPlab.Eta();
-    if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) ){
+    if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) && (pl1->fGenIndex < 100000) && (pl2->fGenIndex < 100000) ){
+      cout << "pl1->fGenIndex = "<< pl1->fGenIndex << endl;
+      cout << "pl2->fGenIndex = "<< pl2->fGenIndex << endl;
       TGenCand  *gl1 = fpEvt->getGenCand(pl1->fGenIndex);
       TGenCand  *gl2 = fpEvt->getGenCand(pl2->fGenIndex);
       if ( (gl1->fMom1 == gl2->fMom1) && gl2->fMom1 > -1  ) {
@@ -2430,9 +2561,17 @@ void xsReader::bookHist() {
   h = new TH1D("ForGenCand20_MuonEta", "ForGenCand20_MuonEta", 50, -2.5, 2.5);
   h = new TH1D("BarrGenCand30_MuonPt", "BarrGenCand30_MuonPt", 50, 0., 50.);
   h = new TH1D("BarrGenCand30_MuonEta", "BarrGenCand30_MuonEta", 50, -2.5, 2.5);
-
+      
   
-
+  h = new TH1D("AllTr_dxy", "AllTr_dxy", 80, -0.2, 0.2);
+  h = new TH1D("AllTr_dz", "AllTr_dz", 80, -20., 20.);
+  h = new TH1D("AllTr_trackChi2", "AllTr_trackChi2", 100, 0., 50.);
+  h = new TH1D("AllTr_TrackNDof", "AllTr_TrackNDof", 100, 0., 50.);
+  
+  h = new TH1D("SigTr_dxy", "SigTr_dxy", 80, -0.2, 0.2);
+  h = new TH1D("SigTr_dz", "SigTr_dz", 80, -20., 20.);
+  h = new TH1D("SigTr_trackChi2", "SigTr_trackChi2", 100, 0., 50.);
+  h = new TH1D("SigTr_TrackNDof", "SigTr_TrackNDof", 100, 0., 50.);  
   
   
   // Detectability() histograms
@@ -2612,9 +2751,14 @@ void xsReader::readCuts(TString filename, int dump) {
       if (dump) cout << "BIN:              " << BIN << endl;
     }
     
+    if (!strcmp(CutName, "BARREL")) {
+      BARREL = int(CutValue); ok = 1;
+      if (dump) cout << "BARREL:         " << BARREL << endl;
+    }
+    
     if (!strcmp(CutName, "HLTPATH")) {
       HLTPATH = SetName; ok = 1;
-      if (dump) cout << "HLTPATH:   " << HLTPATH  << endl;
+      if (dump) cout << "HLTPATH:    " << HLTPATH  << endl;
     } 
     
     if (!strcmp(CutName, "HLTLABEL")) {
@@ -2632,11 +2776,76 @@ void xsReader::readCuts(TString filename, int dump) {
       if (dump) cout << "HLTPATH2:   " << HLTPATH2  << endl;
     }
      
-     if (!strcmp(CutName, "HLTPATH3")) {
-       HLTPATH3 = SetName; ok = 1;
-       if (dump) cout << "HLTPATH3:   " << HLTPATH3  << endl;
+    if (!strcmp(CutName, "HLTPATH3")) {
+      HLTPATH3 = SetName; ok = 1;
+      if (dump) cout << "HLTPATH3:   " << HLTPATH3  << endl;
     }   
 
+    if (!strcmp(CutName, "HLTPATH4")) {
+      HLTPATH4 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH4:   " << HLTPATH4  << endl;
+    }      
+    
+    if (!strcmp(CutName, "HLTLABEL1")) {
+      HLTLABEL1 = SetName; ok = 1;
+      if (dump) cout << "HLTLABEL1:  " << HLTLABEL1  << endl;
+    }     
+     
+    if (!strcmp(CutName, "HLTPATH5")) {
+      HLTPATH5 = SetName; ok = 1;
+      if (dump) cout << "HLTPATH5:   " << HLTPATH5  << endl;
+    }   
+
+    if (!strcmp(CutName, "HLTPATH6")) {
+      HLTPATH6 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH6:   " << HLTPATH6  << endl;
+    }     
+    
+    if (!strcmp(CutName, "HLTLABEL2")) {
+      HLTLABEL2 = SetName; ok = 1;
+      if (dump) cout << "HLTLABEL2:  " << HLTLABEL2  << endl;
+    }     
+     
+    if (!strcmp(CutName, "HLTPATH7")) {
+      HLTPATH7 = SetName; ok = 1;
+      if (dump) cout << "HLTPATH7:   " << HLTPATH7  << endl;
+    }   
+
+    if (!strcmp(CutName, "HLTPATH8")) {
+      HLTPATH8 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH8:   " << HLTPATH8  << endl;
+    }     
+    
+    if (!strcmp(CutName, "HLTPATH9")) {
+      HLTPATH9 = SetName; ok = 1;
+      if (dump) cout << "HLTPATH9:   " << HLTPATH9  << endl;
+    }   
+
+    if (!strcmp(CutName, "HLTPATH10")) {
+      HLTPATH10 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH10:   " << HLTPATH10  << endl;
+    }       
+    
+    if (!strcmp(CutName, "HLTPATH11")) {
+      HLTPATH11 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH11:   " << HLTPATH11  << endl;
+    }  
+    
+    if (!strcmp(CutName, "HLTPATH12")) {
+      HLTPATH12 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH12:   " << HLTPATH12  << endl;
+    } 
+    
+    if (!strcmp(CutName, "HLTPATH13")) {
+      HLTPATH13 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH13:   " << HLTPATH13  << endl;
+    }  
+        
+    if (!strcmp(CutName, "HLTLABEL3")) {
+      HLTLABEL3 = SetName; ok = 1;
+      if (dump) cout << "HLTLABEL3:  " << HLTLABEL3  << endl;
+    }
+         
     if (!strcmp(CutName, "PTLO")) {
       PTLO = CutValue; ok = 1;
       if (dump) cout << "PTLO:           " << PTLO << " GeV" << endl;
