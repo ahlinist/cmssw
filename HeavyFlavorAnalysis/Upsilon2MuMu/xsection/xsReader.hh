@@ -63,7 +63,7 @@ public:
   void        readCuts(TString filename, int dump = 1);
   void        candidateSelection(int mode);
   bool        isMatchedToTrig(TAnaTrack *pTag, TString Label);
-  void        x_btest();
+  void        x_btest(int mode);
   void        TriggerComparisonStudy();
   void        trigEffCheck();
   void        freePointers();
@@ -104,6 +104,9 @@ public:
   PidTable    *fPidTableTrigPos, *fPidTableTrigNeg;
   PidTable    *fPidTableTrckEff;
   PidTable    *fPidTableTrigFit, *fPidTableMuidFit;
+  PidTable    *fPidTable2011SeagullPos, *fPidTable2011SeagullNeg; 
+  PidTable    *fPidTable2011CowboyPos, *fPidTable2011CowboyNeg;  
+  
   
   double      fWeight;
   static const int  fNpt = 16;
