@@ -95,7 +95,13 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   
   fPidTableTrigPos = new PidTable("PtMmbTrigBothv2-jpsi.8ptbin.DATA.dat");
   fPidTableMuIDPos = new PidTable("PtMmbMuidBothv2-jpsi.8ptbin.DATA.dat");
-    
+  
+  fPidTable2011SeagullPos = new PidTable("Pt2011Seagull_PosErr.DATA.dat");
+  fPidTable2011SeagullNeg = new PidTable("Pt2011Seagull_NegErr.DATA.dat");  
+  
+  fPidTable2011CowboyPos = new PidTable("Pt2011Cowboy_PosErr.DATA.dat");
+  fPidTable2011CowboyNeg = new PidTable("Pt2011Cowboy_NegErr.DATA.dat");  
+  
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
   
@@ -138,9 +144,6 @@ void xsReader::eventProcessing() {
   //   trigEffCheck();
   //}
   
-  UpsGun_acceptance();
-  
-  /*
   if ( MODE == 1  ) {
     Detectability();
     GenStudy(); // MuIdCheck, TrigCheck
@@ -151,13 +154,13 @@ void xsReader::eventProcessing() {
   
   MomentumCorrection();
   if ( !MuIDCheck() ) goto end;   
-  */
+  
   //if ( isPathPreScaled(HLTPATH) ) goto end;
   //if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
   
   //// fooling around
   
-  /*
+  
   if ( BARREL == 0 ){
     
     if ( isPathFired(HLTPATH) )  path=0;
@@ -213,20 +216,21 @@ void xsReader::eventProcessing() {
   
   }
   
-  */
+  
   ///// fooling around
   
-  /*
+  
   candidateSelection(2);
   
   if ( 0 != fpCand  ){
-    calculateWeights(1); 
+    calculateWeights(2); 
     fillCandHist(2); 
+    //x_btest(1);
   }
   
   if ( (0 != fgCand) && (0 != fpCand) && (MODE == 1) ) MCstudy(); 
   fpHistFile->cd();
-  */
+  
   end:
   freePointers();  
   
@@ -568,166 +572,197 @@ void xsReader::trigEffCheck(){
   
 }
 
-void xsReader::x_btest(){
-  TGenCand *gCand(0);
-  TGenCand *gDau1(0);
-  TGenCand *gDau2(0);
-  TLorentzVector genCand;
-  int u1(0); int xb0(0); int xb1(0); int xb2(0);
+void xsReader::x_btest(int mode){
   
-  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(2, Form("Upsilon1S"));
-  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(4, Form("xb_0")); 
-  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(6, Form("xb_1"));
-  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(8, Form("xb_2"));
-  
-  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
-    gCand = fpEvt->getGenCand(iG);
+  if ( mode == 0 ){
+    TGenCand *gCand(0);
+    TGenCand *gDau1(0);
+    TGenCand *gDau2(0);
+    TLorentzVector genCand;
+    int u1(0); int xb0(0); int xb1(0); int xb2(0);
     
-    if ( gCand->fID == 553 && gCand->fStatus == 2 ){
-      u1++;
-      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
-      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
-    }
+    ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(2, Form("Upsilon1S"));
+    ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(4, Form("xb_0")); 
+    ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(6, Form("xb_1"));
+    ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(8, Form("xb_2"));
     
-    if ( gCand->fID == 10551 && gCand->fStatus == 2 ){
-      xb0++;
-      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
-      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
-      gDau1 = fpEvt->getGenCand(gCand->fDau1);
-      gDau2 = fpEvt->getGenCand(gCand->fDau2);
-      if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
-	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
-      }
-      if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
-	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
+    for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
+      gCand = fpEvt->getGenCand(iG);
+      
+      if ( gCand->fID == 553 && gCand->fStatus == 2 ){
+	u1++;
+	genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+	((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
       }
     
-    }
-    
-    if ( gCand->fID == 20553 && gCand->fStatus == 2 ){
-      xb1++;
-      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
-      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
-      gDau1 = fpEvt->getGenCand(gCand->fDau1);
-      gDau2 = fpEvt->getGenCand(gCand->fDau2);
-      if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
-	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
-      }
-      if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
-	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
+      if ( gCand->fID == 10551 && gCand->fStatus == 2 ){
+	xb0++;
+	genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+	((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
+	gDau1 = fpEvt->getGenCand(gCand->fDau1);
+	gDau2 = fpEvt->getGenCand(gCand->fDau2);
+	if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
+	  ((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
+	}
+	if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
+	  ((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
+	}
+	
       }
       
-    }     
-    if ( gCand->fID == 555 && gCand->fStatus == 2 ){
-      xb2++;
-      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
-      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
-      gDau1 = fpEvt->getGenCand(gCand->fDau1);
-      gDau2 = fpEvt->getGenCand(gCand->fDau2);
-      if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
-	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
+      if ( gCand->fID == 20553 && gCand->fStatus == 2 ){
+	xb1++;
+	genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+	((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
+	gDau1 = fpEvt->getGenCand(gCand->fDau1);
+	gDau2 = fpEvt->getGenCand(gCand->fDau2);
+	if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
+	  ((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
+	}
+	if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
+	  ((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
       }
-      if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
-	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
-      }
-    }     
-  }
-  
+	
+      }     
+      if ( gCand->fID == 555 && gCand->fStatus == 2 ){
+	xb2++;
+	genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+	((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
+	gDau1 = fpEvt->getGenCand(gCand->fDau1);
+	gDau2 = fpEvt->getGenCand(gCand->fDau2);
+	if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
+	  ((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
+	}
+	if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
+	  ((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
+	}
+      }     
+    }
     
-  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(2, u1);
-  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(4, xb0); 
-  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(6, xb1);
-  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(8, xb2);
-  
-  TAnaCand *pCand(0);
-  TAnaTrack *pTrack(0);
-  TLorentzVector Cand, Gamma, photon, x_b, xbg_b;
-  int n(-1);
-  Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
-  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
-    pTrack = fpEvt->getRecTrack(iG);
-    if ( pTrack->fMCID == 22 && pTrack->fQ == 0  ){
-      ++n;
-      TGenCand  *gGamma = fpEvt->getGenCand(pTrack->fGenIndex);
-      TGenCand  *genCand = fpEvt->getGenCand(gGamma->fMom1);
-      if ( genCand->fID == 555 || genCand->fID == 20553 || genCand->fID == 10551 ) {
-	Gamma.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
-	TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
-	TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
-	if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) ){
-	  TGenCand  *gl1 = fpEvt->getGenCand(pl1->fGenIndex);
-	  TGenCand  *gl2 = fpEvt->getGenCand(pl2->fGenIndex);
-	  if ( gl1->fMom1 == gl2->fMom1 ) {
-	    TGenCand  *GenCand = fpEvt->getGenCand(gl1->fMom1);
-	    if ( GenCand->fID == RESTYPE ) {
-	      m_ge = pTrack->fPlab.Eta();
-	      m_gp = pTrack->fPlab.Phi();
-	      m_gP = pTrack->fPlab.Perp();
-	      m_gE = Gamma.E();
-	      m_ue = fpCand->fPlab.Eta();
-	      m_up = fpCand->fPlab.Phi();
-	      m_uP = fpCand->fPlab.Perp();
-	      m_um = Cand.M();
-	      double deltaR = Gamma.DeltaR(Cand);
-	      m_dR = deltaR;
-	      x_b = Cand + Gamma;
-	      m_xbm = x_b.M();
-	      m_xbid = genCand->fID;
-	      fTree->Fill();
-	      ((TH1D*)fpHistFile->Get("h2"))->Fill(x_b.M()-Cand.M());
-	      if ( genCand->fID == 555 ) ((TH1D*)fpHistFile->Get("h3"))->Fill(x_b.M()-Cand.M());
-	      if ( genCand->fID == 10551 ) ((TH1D*)fpHistFile->Get("h4"))->Fill(x_b.M()-Cand.M());
-	      if ( genCand->fID == 20553 ) ((TH1D*)fpHistFile->Get("h5"))->Fill(x_b.M()-Cand.M());
-	      
+    
+    ((TH1D*)fpHistFile->Get("h"))->AddBinContent(2, u1);
+    ((TH1D*)fpHistFile->Get("h"))->AddBinContent(4, xb0); 
+    ((TH1D*)fpHistFile->Get("h"))->AddBinContent(6, xb1);
+    ((TH1D*)fpHistFile->Get("h"))->AddBinContent(8, xb2);
+    
+    TAnaCand *pCand(0);
+    TAnaTrack *pTrack(0);
+    TLorentzVector Cand, Gamma, photon, x_b, xbg_b;
+    int n(-1);
+    Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
+    for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
+      pTrack = fpEvt->getRecTrack(iG);
+      if ( pTrack->fMCID == 22 && pTrack->fQ == 0  ){
+	++n;
+	TGenCand  *gGamma = fpEvt->getGenCand(pTrack->fGenIndex);
+	TGenCand  *genCand = fpEvt->getGenCand(gGamma->fMom1);
+	if ( genCand->fID == 555 || genCand->fID == 20553 || genCand->fID == 10551 ) {
+	  Gamma.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
+	  TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
+	  TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+	  if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) && (pl1->fGenIndex < 100000) && (pl2->fGenIndex < 100000) ){
+	    TGenCand  *gl1 = fpEvt->getGenCand(pl1->fGenIndex);
+	    TGenCand  *gl2 = fpEvt->getGenCand(pl2->fGenIndex);
+	    if ( gl1->fMom1 == gl2->fMom1 ) {
+	      TGenCand  *GenCand = fpEvt->getGenCand(gl1->fMom1);
+	      if ( GenCand->fID == RESTYPE ) {
+		m_ge = pTrack->fPlab.Eta();
+		m_gp = pTrack->fPlab.Phi();
+		m_gP = pTrack->fPlab.Perp();
+		m_gE = Gamma.E();
+		m_ue = fpCand->fPlab.Eta();
+		m_up = fpCand->fPlab.Phi();
+		m_uP = fpCand->fPlab.Perp();
+		m_um = Cand.M();
+		double deltaR = Gamma.DeltaR(Cand);
+		m_dR = deltaR;
+		x_b = Cand + Gamma;
+		m_xbm = x_b.M();
+		m_xbid = genCand->fID;
+		fTree->Fill();
+		((TH1D*)fpHistFile->Get("h2"))->Fill(x_b.M()-Cand.M());
+		if ( genCand->fID == 555 ) ((TH1D*)fpHistFile->Get("h3"))->Fill(x_b.M()-Cand.M());
+		if ( genCand->fID == 10551 ) ((TH1D*)fpHistFile->Get("h4"))->Fill(x_b.M()-Cand.M());
+		if ( genCand->fID == 20553 ) ((TH1D*)fpHistFile->Get("h5"))->Fill(x_b.M()-Cand.M());
+		
+	      }
 	    }
+	    
 	  }
-	  
+	}
+	
+	if ( !(genCand->fID == 555 || genCand->fID == 20553 || genCand->fID == 10551) ) {
+	  photon.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
+	  mbg_ge = pTrack->fPlab.Eta();
+	  mbg_gp = pTrack->fPlab.Phi();
+	  mbg_gP = pTrack->fPlab.Perp();
+	  mbg_gE = photon.E();
+	  mbg_ue = fpCand->fPlab.Eta();
+	  mbg_up = fpCand->fPlab.Phi();
+	  mbg_uP = fpCand->fPlab.Perp();
+	  mbg_um = Cand.M();
+	  double dltaR = photon.DeltaR(Cand);
+	  mbg_dR = dltaR;
+	  xbg_b = Cand + photon;
+	  mbg_xbm = xbg_b.M();
+	  fTree2->Fill();
 	}
       }
-      
-      if ( !(genCand->fID == 555 || genCand->fID == 20553 || genCand->fID == 10551) ) {
-	photon.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
-	mbg_ge = pTrack->fPlab.Eta();
-	mbg_gp = pTrack->fPlab.Phi();
-	mbg_gP = pTrack->fPlab.Perp();
-	mbg_gE = photon.E();
-	mbg_ue = fpCand->fPlab.Eta();
-	mbg_up = fpCand->fPlab.Phi();
-	mbg_uP = fpCand->fPlab.Perp();
-	mbg_um = Cand.M();
-	double dltaR = photon.DeltaR(Cand);
-	mbg_dR = dltaR;
-	xbg_b = Cand + photon;
-	mbg_xbm = xbg_b.M();
-	fTree2->Fill();
+    }
+    
+    
+    ((TH1D*)fpHistFile->Get("h6"))->Fill(fpCand->fMass);
+    ((TH1D*)fpHistFile->Get("n"))->Fill(n);
+    TAnaTrack *pTrack1(0);
+    TLorentzVector gamma, x_B;
+    for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
+      pTrack1 = fpEvt->getRecTrack(iG);
+      //if ( pTrack1->fMCID == 22 && pTrack1->fQ == 0  ){
+      if ( pTrack1->fQ == 0  ){  
+	gamma.SetPtEtaPhiM(pTrack1->fPlab.Perp(),pTrack1->fPlab.Eta(),pTrack1->fPlab.Phi(), 0.);
+	ge = pTrack->fPlab.Eta();
+	gp = pTrack->fPlab.Phi();
+	gP = pTrack->fPlab.Perp();
+	gE = gamma.E();
+	double deltar = gamma.DeltaR(Cand);
+	dR = deltar;
+	x_B = Cand + gamma;
+	xbm = x_B.M();
+	ue = fpCand->fPlab.Eta();
+	up = fpCand->fPlab.Phi();
+	uP = fpCand->fPlab.Perp();
+	um = Cand.M();
+	fTree1->Fill();
       }
     }
+    
   }
   
-  
-  ((TH1D*)fpHistFile->Get("h6"))->Fill(fpCand->fMass);
-  ((TH1D*)fpHistFile->Get("n"))->Fill(n);
-  TAnaTrack *pTrack1(0);
-  TLorentzVector gamma, x_B;
-  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
-    pTrack1 = fpEvt->getRecTrack(iG);
-    //if ( pTrack1->fMCID == 22 && pTrack1->fQ == 0  ){
-    if ( pTrack1->fQ == 0  ){  
-      gamma.SetPtEtaPhiM(pTrack1->fPlab.Perp(),pTrack1->fPlab.Eta(),pTrack1->fPlab.Phi(), 0.);
-      ge = pTrack->fPlab.Eta();
-      gp = pTrack->fPlab.Phi();
-      gP = pTrack->fPlab.Perp();
-      gE = gamma.E();
-      double deltar = gamma.DeltaR(Cand);
-      dR = deltar;
-      x_B = Cand + gamma;
-      xbm = x_B.M();
-      ue = fpCand->fPlab.Eta();
-      up = fpCand->fPlab.Phi();
-      uP = fpCand->fPlab.Perp();
-      um = Cand.M();
-      fTree1->Fill();
+  if ( mode == 1 ){
+    TAnaTrack *pTrack1(0);
+    TLorentzVector Cand, gamma, x_B;
+    Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
+    for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
+      pTrack1 = fpEvt->getRecTrack(iG);
+      if ( pTrack1->fQ == 0  ){  
+	cout << pTrack1->fQ  << endl;
+	gamma.SetPtEtaPhiM(pTrack1->fPlab.Perp(),pTrack1->fPlab.Eta(),pTrack1->fPlab.Phi(), 0.);
+	ge = pTrack1->fPlab.Eta();
+	gp = pTrack1->fPlab.Phi();
+	gP = pTrack1->fPlab.Perp();
+	gE = gamma.E();
+	double deltar = gamma.DeltaR(Cand);
+	dR = deltar;
+	x_B = Cand + gamma;
+	xbm = x_B.M();
+	ue = fpCand->fPlab.Eta();
+	up = fpCand->fPlab.Phi();
+	uP = fpCand->fPlab.Perp();
+	um = Cand.M();
+	fTree1->Fill();
+      }
     }
+    
   }
   
 }
@@ -2282,6 +2317,45 @@ void xsReader::calculateWeights(int mode){
     }     
     
     
+  }
+  
+  
+  if ( mode == 2 ){
+    TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
+    TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+    
+    effID1 = fPidTable2011SeagullPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+    effID2 = fPidTable2011SeagullPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+        
+    //cout << pl1->fPlab.Eta() << " " << pl1->fPlab.Perp() << " " << effID1  << endl;
+    //cout << pl2->fPlab.Eta() << " " << pl2->fPlab.Perp() << " " << effID2  << endl;
+    
+    MuIdWeight = effID1*effID2;
+    
+    ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,OverAll", UPSTYPE)))->Fill(MuIdWeight,1./MuIdWeight);
+    
+    for ( int iy = 0; iy < fNy; ++iy ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	
+	if ( fCandY >= 0 ){
+	  if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	    if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
+	      ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
+	    }
+	  }
+	}
+	
+	if ( fCandY < 0 ){
+	  fCandY*=-1;
+	  if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	    if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
+	      ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
+	    }
+	  }
+	}	
+	
+      }
+    }  
   }
   
   
