@@ -14,8 +14,8 @@
  *      New render plugin for report summary map
  *
  *
- * $Date: 2011/03/11 11:05:44 $
- * $Revision: 1.11 $
+ * $Date: 2011/09/09 11:53:43 $
+ * $Revision: 1.12 $
  *
  */
 
@@ -124,11 +124,7 @@ private:
             obj->SetStats(kFALSE);
             dqm::QualityTestStatusRenderPlugin::reportSummaryMapPalette(obj);
 
-            obj->GetXaxis()->SetBinLabel(1, "L1 systems");
-            obj->GetXaxis()->SetBinLabel(2, "L1 objects");
             obj->GetXaxis()->SetLabelSize(0.1);
-
-            obj->SetTitle("L1 Emulator vs Data (L1TEMU) Report Summary Map");
 
             obj->GetXaxis()->CenterLabels();
             obj->GetYaxis()->CenterLabels();

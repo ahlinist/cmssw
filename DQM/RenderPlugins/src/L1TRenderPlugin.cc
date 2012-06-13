@@ -1,13 +1,23 @@
-/*
-  \file L1TRenderPlugin.cc
-  \\
-  \\ Code shamelessly borrowed from J. Temple's HcalRenderPlugin.cc code,
-  \\ which was shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc
-  \\ code, G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
-  \\ subdetector plugins
-  \\ preDraw and postDraw methods now check whether histogram was a TH1
-  \\ or TH2, and call a private method appropriate for the histogram type
-*/
+/**
+ * \class L1TRenderPlugin
+ *
+ *
+ * Description: render plugin for L1 Trigger DQM histograms.
+ *
+ * Implementation:
+ *    <TODO: enter implementation details>
+ *
+ * \author: Lorenzo Agostino
+ *      Initial version - based on code from HcalRenderPlugin
+ *
+ * \author: Vasile Mihai Ghete   - HEPHY Vienna
+ *      New render plugin for report summary map
+ *
+ *
+ * $Date:$
+ * $Revision:$
+ *
+ */
 
 #include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
@@ -26,6 +36,8 @@
 #include "TPRegexp.h"
 #include <cassert>
 
+#include "QualityTestStatusRenderPlugin.h"
+
 #define REMATCH(pat, str) (TPRegexp(pat).MatchB(str))
 
 class L1TRenderPlugin : public DQMRenderPlugin
@@ -42,18 +54,7 @@ class L1TRenderPlugin : public DQMRenderPlugin
 public:
   virtual void initialise (int, char **)
     {
-      // same as RenderPlugin default for now (no special action taken)
 
-      //summaryText = new TH2C( "summaryText", "summaryText", 5, 1, 6, 4, 1, 5);
-      //  float l1t_rgb[6][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00},
-      //                     {1.00, 0.96, 0.00}, {0.50, 0.00, 0.00},
-      //                     {0.00, 0.40, 0.00}, {0.94, 0.78, 0.00}};
-      //   for( int i=0; i<6; i++ ) {
-      //     TColor* color = gROOT->GetColor( 301+i );
-      //     if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
-      //     color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
-      //   }
-      //   for(int i=0; i<6; i++) cpal[i] = i + 301;
       dummybox = new  TH2F("dummyL1T","",22,-0.5,21.5,18,-0.5,17.5);
 
       for(int i=0; i<22; i++)
@@ -405,45 +406,32 @@ private:
 
       }
 
-
-      // Code used in SiStripRenderPlugin -- do we want similar defaults?
-
-      /*
-        gStyle->SetOptStat(0111);
-        if ( obj->GetMaximum(1.e5) > 0. ) {
-          gPad->SetLogy(1);
-        } else {
-          gPad->SetLogy(0);
-        }
-      */
     }
 
   void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
-      TH2F* obj = dynamic_cast<TH2F*>( o.object );
-      assert( obj );
+      TH2F* obj = dynamic_cast<TH2F*> (o.object);
 
-      //put in preDrawTH2F
-      if( o.name.find( "reportSummaryMap" )  != std::string::npos)
-      {
-        obj->SetStats( kFALSE );
-//         dqm::utils::reportSummaryMapPalette(obj);
-	obj->SetMaximum(1.0+1e-15);
-	obj->SetMinimum(-2-1e-15);
-	gStyle->SetPalette(60, l1t_pcol);
+      // checks that object indeed exists
+      assert(obj);
 
-	obj->GetXaxis()->SetBinLabel(1,"Data");
-	obj->GetXaxis()->SetBinLabel(2,"Emulator");
-	obj->GetXaxis()->SetLabelSize(0.1);
+      // specific rendering of L1T reportSummaryMap, using
+      // dqm::QualityTestStatusRenderPlugin::reportSummaryMapPalette(obj)
 
-        obj->SetOption("col");
-        obj->SetTitle("L1T Report Summary Map");
+      if (o.name.find("reportSummaryMap") != std::string::npos) {
 
-        obj->GetXaxis()->CenterLabels();
-        obj->GetYaxis()->CenterLabels();
+          obj->SetStats(kFALSE);
+          dqm::QualityTestStatusRenderPlugin::reportSummaryMapPalette(obj);
 
-        return;
+          obj->GetXaxis()->SetLabelSize(0.1);
+
+          obj->GetXaxis()->CenterLabels();
+          obj->GetYaxis()->CenterLabels();
+
+          return;
       }
+
+      // pre-draw rendering of other L1T TH2F histograms
 
       gStyle->SetCanvasBorderMode( 0 );
       gStyle->SetPadBorderMode( 0 );
@@ -621,25 +609,6 @@ private:
 
 	}
 
-	//  } else if  ( o.name.find("Summary" ) != std::string::npos ) {
-        //  gPad->SetGrid(1,1);
-        //       obj->GetXaxis()->SetLabelSize(0.07);
-        //       obj->GetYaxis()->SetLabelSize(0.07);
-        //  obj->GetXaxis()->LabelsOption("h");
-	    
-        //  obj->SetMaximum(5.0);
-	    
-        //  int colorError1[5];
-        //  colorError1[0] = 416;// kGreen
-        //  colorError1[1] = 400;// kYellow
-        //  colorError1[2] = 800;// kOrange
-        //  colorError1[3] = 625;
-        //  colorError1[4] = 632;// kRed
-        //  gStyle->SetPalette(5, colorError1);
-	    
-        //  gStyle->SetPalette(6, cpal);
-	//  }
-
 	return;
 
       }
@@ -717,322 +686,151 @@ private:
 
     }
 
-  void postDrawTH1F( TCanvas *, const VisDQMObject & )
-    {
+  void postDrawTH1F(TCanvas*, const VisDQMObject &) {
 
+        // use DQM default rendering
 
-
-      /*
-        // Add error/warning text to 1-D histograms.  Do we want this at this time?
-        TText tt;
-        tt.SetTextSize(0.12);
-
-        if (o.flags == 0)
-          return;
-        else
-        {
-          if (o.flags & DQMNet::DQM_PROP_REPORT_ERROR)
-          {
-            tt.SetTextColor(2); // error color = RED
-            tt.DrawTextNDC(0.5, 0.5, "Error");
-          } // DQM_PROP_REPORT_ERROR
-          else if (o.flags & DQMNet::DQM_PROP_REPORT_WARN)
-          {
-            tt.SetTextColor(5);
-            tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-          } // DQM_PROP_REPORT_WARN
-          else if (o.flags & DQMNet::DQM_PROP_REPORT_OTHER)
-          {
-            tt.SetTextColor(1); // other color = BLACK
-            tt.DrawTextNDC(0.5, 0.5, "Other ");
-          } // DQM_PROP_REPORT_OTHER
-          else
-          {
-            tt.SetTextColor(3);
-            tt.DrawTextNDC(0.5, 0.5, "Ok ");
-          } //else
-        } // else (  o.flags != 0  )
-      */
     }
 
-  void postDrawTH2F( TCanvas *, const VisDQMObject &o )
-    {
+  void postDrawTH2F(TCanvas*, const VisDQMObject& dqmObj) {
 
+        TH2F* obj = dynamic_cast<TH2F*> (dqmObj.object);
 
-      TH2F* obj = dynamic_cast<TH2F*>( o.object );
-      assert( obj );
+        // checks that object indeed exists
+        assert(obj);
 
+        if (dqmObj.name.find("reportSummaryMap") != std::string::npos) {
 
-      TBox* b_box = new TBox();
-      TLine* l_line = new TLine();
-      TText* t_text = new TText();
+            TLine* l_line = new TLine();
+            TText* t_text = new TText();
 
+            t_text->DrawText(2.25, 14.3, "Mu");
+            t_text->DrawText(2.25, 13.3, "NoIsoEG");
+            t_text->DrawText(2.25, 12.3, "IsoEG");
+            t_text->DrawText(2.25, 11.3, "CenJet");
+            t_text->DrawText(2.25, 10.3, "ForJet");
+            t_text->DrawText(2.25, 9.3, "TauJet");
+            t_text->DrawText(2.25, 8.3, "ETT");
+            t_text->DrawText(2.25, 7.3, "ETM");
+            t_text->DrawText(2.25, 6.3, "HTT");
+            t_text->DrawText(2.25, 5.3, "HTM");
+            t_text->DrawText(2.25, 4.3, "HfBitCounts");
+            t_text->DrawText(2.25, 3.3, "HfRingEtSums");
+            t_text->DrawText(2.25, 2.3, "GtExternal");
+            t_text->DrawText(2.25, 1.3, "TechTrig");
 
-      if( o.name.find( "reportSummaryMap" )  != std::string::npos)
-      {
-	t_text->DrawText(1.5,11.3,"GT");
-	t_text->DrawText(1.5,10.3,"Muons");
-	t_text->DrawText(1.5,9.3, "Jets");
-	t_text->DrawText(1.5,8.3, "TauJets");
-	t_text->DrawText(1.5,7.3, "IsoEM");
-	t_text->DrawText(1.5,6.3, "NonIsoEM");
-	t_text->DrawText(1.5,5.3, "MET");
+            t_text->DrawText(1.25, 11.3, "GT");
+            t_text->DrawText(1.25, 10.3, "GMT");
+            t_text->DrawText(1.25, 9.3, "RPC");
+            t_text->DrawText(1.25, 8.3, "CSC TF");
+            t_text->DrawText(1.25, 7.3, "CSC TPG");
+            t_text->DrawText(1.25, 6.3, "DT TF");
+            t_text->DrawText(1.25, 5.3, "DT TPG");
+            t_text->DrawText(1.25, 4.3, "GCT");
+            t_text->DrawText(1.25, 3.3, "RCT");
+            t_text->DrawText(1.25, 2.3, "HCAL TPG");
+            t_text->DrawText(1.25, 1.3, "ECAL TPG");
 
-	t_text->DrawText(2.5,11.3,"GLT");
-	t_text->DrawText(2.5,10.3,"GMT");
-	t_text->DrawText(2.5,9.3, "RPC");
-	t_text->DrawText(2.5,8.3, "CSCTPG");
-	t_text->DrawText(2.5,7.3, "CSCTF");
-	t_text->DrawText(2.5,6.3, "DTTPG");
-	t_text->DrawText(2.5,5.3, "DTTF");
-	t_text->DrawText(2.5,4.3, "HCAL");
-	t_text->DrawText(2.5,3.3, "ECAL");
-	t_text->DrawText(2.5,2.3, "GCT");
-	t_text->DrawText(2.5,1.3, "RCT");
+            l_line->SetLineWidth(2);
 
-	int NbinsX = obj->GetNbinsX();
-	int NbinsY = obj->GetNbinsY();
+            // vertical line
 
-	std::vector<std::vector<double> > TrigResult( NbinsY, std::vector<double>(NbinsX) );
+            l_line->DrawLine(2, 1, 2, 15);
 
-	for( int i=0; i<NbinsX; i++ ){
-	  for( int j=0; j<NbinsY; j++ ) TrigResult[j][i] = obj->GetBinContent(i+1,j+1);
-	}
+            // horizontal lines
 
-	char* trig_result = new char[20];
+            l_line->DrawLine(1, 1, 3, 1);
+            l_line->DrawLine(1, 2, 3, 2);
+            l_line->DrawLine(1, 3, 3, 3);
+            l_line->DrawLine(1, 4, 3, 4);
+            l_line->DrawLine(1, 5, 3, 5);
+            l_line->DrawLine(1, 6, 3, 6);
+            l_line->DrawLine(1, 7, 3, 7);
+            l_line->DrawLine(1, 8, 3, 8);
+            l_line->DrawLine(1, 9, 3, 9);
+            l_line->DrawLine(1, 10, 3, 10);
+            l_line->DrawLine(1, 11, 3, 11);
+            l_line->DrawLine(1, 12, 3, 12);
+            l_line->DrawLine(2, 13, 3, 13);
+            l_line->DrawLine(2, 14, 3, 14);
 
-	for( int j=0; j<NbinsY; j++ ){
-	  if( TrigResult[j][0]>-0.5 ){
-	    sprintf(trig_result,"%4.2f",TrigResult[j][0]);
-	    t_text->DrawText(1.2,j+1.3,trig_result);
-	  }
-	  if( TrigResult[j][1]>-0.5 ){
-	    sprintf(trig_result,"%4.2f",TrigResult[j][1]);
-	    t_text->DrawText(2.2,j+1.3,trig_result);
-	  }
-	}
-	delete [] trig_result;
+            return;
+        }
 
-	b_box->SetFillColor(17);
-	b_box->DrawBox(1,1,2,5);
+        // post-draw rendering of other L1T TH2F histograms
 
-	l_line->SetLineWidth(2);
-	l_line->DrawLine(2,1,2,12);
+        TBox* b_box = new TBox();
+        TLine* l_line = new TLine();
 
-	l_line->DrawLine(2,4,3,4);
-	l_line->DrawLine(2,3,3,3);
-	l_line->DrawLine(2,2,3,2);
-	l_line->DrawLine(2,1,3,1);
+        if (dqmObj.name.find("CSCTF_Chamber_Occupancies") != std::string::npos) {
 
-	l_line->DrawLine(1,5,3,5);
-	l_line->DrawLine(1,6,3,6);
-	l_line->DrawLine(1,7,3,7);
-	l_line->DrawLine(1,8,3,8);
-	l_line->DrawLine(1,9,3,9);
-	l_line->DrawLine(1,10,3,10);
-	l_line->DrawLine(1,11,3,11);
+            b_box->SetFillColor(1);
+            b_box->SetFillStyle(3013);
 
+            l_line->SetLineWidth(1);
 
+            int Num = 6;
+            for (int i = 0; i < Num; i++) {
+                double x1s = double(0.25 + i * 0.1 * 9);
+                double x1e = double(0.85 + i * 0.1 * 9);
 
-	TLegend* leg = new TLegend(0.16, 0.11, 0.44, 0.38);
-	leg->AddEntry(b_box_g,"Good",   "f");
-// 	leg->AddEntry(b_box_y,"Warning","f");
-	leg->AddEntry(b_box_r,"Error",  "f");
-	leg->AddEntry(b_box_b,"Waiting","f");
-	leg->AddEntry(b_box_w,"Masked", "f");
-	leg->Draw();
+                double y1s = 3.5;
+                double y1e = 4.5;
+                double y2s = -5.5;
+                double y2e = -4.5;
 
-	return;
-      }
+                // Draw boxes
+                b_box->DrawBox(x1s, y1s, x1e, y1e);
+                b_box->DrawBox(x1s, y2s, x1e, y2e);
 
+                // Draw horizontal boundary lines
+                l_line->DrawLine(x1s, y1s, x1e, y1s);
+                l_line->DrawLine(x1s, y2e, x1e, y2e);
 
+                // Draw vertical boundary lines
+                l_line->DrawLine(x1s, y1s, x1s, y1e);
+                l_line->DrawLine(x1s, y2s, x1s, y2e);
 
-      if( o.name.find( "CSCTF_Chamber_Occupancies" )  != std::string::npos)
-      {
+                l_line->DrawLine(x1e, y1s, x1e, y1e);
+                l_line->DrawLine(x1e, y2s, x1e, y2e);
+            }
 
-	b_box->SetFillColor(1);
-	b_box->SetFillStyle(3013);
+            return;
+        }
 
-	l_line->SetLineWidth(1);
+        if ((dqmObj.name.find("Rct") != std::string::npos ||
+                dqmObj.name.find("Jet") != std::string::npos ||
+                dqmObj.name.find("IsoEm") != std::string::npos) &&
+                dqmObj.name.find("EtaPhi") != std::string::npos) {
 
-	int Num=6;
-	for( int i=0; i<Num; i++){
-	  double x1s = double(0.25+i*0.1*9);
-	  double x1e = double(0.85+i*0.1*9);
+            dummybox->Draw("box,same");
 
-	  double y1s = 3.5;
-	  double y1e = 4.5;
-	  double y2s = -5.5;
-	  double y2e = -4.5;
+            if (dqmObj.name.find("IsoEm") != std::string::npos
+                    || dqmObj.name.find("CenJet") != std::string::npos
+                    || dqmObj.name.find("TauJet") != std::string::npos) {
+                l_line->SetLineWidth(1);
+                l_line->DrawLine(3.5, -0.5, 3.5, 17.5);
+                l_line->DrawLine(17.5, -0.5, 17.5, 17.5);
 
-	  // Draw boxes
-	  b_box->DrawBox(x1s,y1s,x1e,y1e);
-	  b_box->DrawBox(x1s,y2s,x1e,y2e);
+                b_box->SetFillColor(1);
+                b_box->SetFillStyle(3013);
 
-	  // Draw horizontal boundary lines
-	  l_line->DrawLine(x1s, y1s, x1e, y1s);
-	  l_line->DrawLine(x1s, y2e, x1e, y2e);
+                b_box->DrawBox(-0.5, -0.5, 3.5, 17.5);
+                b_box->DrawBox(17.5, -0.5, 21.5, 17.5);
+            }
 
-	  // Draw vertical boundary lines
-	  l_line->DrawLine(x1s, y1s, x1s, y1e);
-	  l_line->DrawLine(x1s, y2s, x1s, y2e);
+            if (dqmObj.name.find("ForJet") != std::string::npos) {
+                l_line->SetLineWidth(1);
+                l_line->DrawLine(3.5, -0.5, 3.5, 17.5);
+                l_line->DrawLine(17.5, -0.5, 17.5, 17.5);
 
-	  l_line->DrawLine(x1e, y1s, x1e, y1e);
-	  l_line->DrawLine(x1e, y2s, x1e, y2e);
-	}
+                b_box->SetFillColor(1);
+                b_box->SetFillStyle(3013);
+                b_box->DrawBox(3.5, -0.5, 17.5, 17.5);
+            }
 
-	return;
-      }
-
-
-      if(
-        ( o.name.find( "Rct" ) != std::string::npos ||
-	  o.name.find( "Jet" ) != std::string::npos ||
-	  o.name.find( "IsoEm" ) != std::string::npos ) &&
-        o.name.find( "EtaPhi" ) != std::string::npos 
-        )
-      {
-
-	dummybox->Draw("box,same");
-
-	if( 
-	   o.name.find( "IsoEm" ) != std::string::npos ||
-	   o.name.find( "CenJet" ) != std::string::npos ||
-	   o.name.find( "TauJet" ) != std::string::npos
-	   )
-	{
-	  l_line->SetLineWidth(1);
-	  l_line->DrawLine(3.5,-0.5,3.5,17.5);
-	  l_line->DrawLine(17.5,-0.5,17.5,17.5);
-
-	  b_box->SetFillColor(1);
-	  b_box->SetFillStyle(3013);
-
-	  b_box->DrawBox(-0.5,-0.5,3.5,17.5);
-	  b_box->DrawBox(17.5,-0.5,21.5,17.5);
-	}
-
-	if (o.name.find( "ForJet" ) != std::string::npos)
-	{
-	  l_line->SetLineWidth(1);
-	  l_line->DrawLine(3.5,-0.5,3.5,17.5);
-	  l_line->DrawLine(17.5,-0.5,17.5,17.5);
-
-	  b_box->SetFillColor(1);
-	  b_box->SetFillStyle(3013);
-          b_box->DrawBox(3.5,-0.5,17.5,17.5);
-	}
-        
-	return;
-      }
-
-
-
-      // nothing to put here just yet
-      // in the future, we can add text output based on error status,
-      // or set bin range based on filled histograms, etc.
-      // Maybe add a big "OK" sign to histograms with no entries (i.e., no errors)?
-
-      //int nSubsystems = 20;
-
-      //TPaveText *pt[nSubsystems];
-
-      //for(int i =0; i<nSubsystems; i++) {
-      // relative to pad dimensions
-      //TText *text = pt->AddText("ECAL");
-      //     switch(i) {
-      //     case 0 :
-      //       pt[i]= new TPaveText(0.14, 0.20, 0.14, 0.20, "NDC");
-      //       pt[i]->AddText("ECAL");
-      //       break;
-      //     case 1 :
-      //       pt[i]= new TPaveText(0.30, 0.20, 0.30,0.20, "NDC");
-      //       pt[i]->AddText("HCAL");
-      //       break;
-      //     case 2 :
-      //       pt[i]= new TPaveText(0.47, 0.20, 0.47,0.20, "NDC");
-      //       pt[i]->AddText("RCT");
-      //       break;
-      //     case 3 :
-      //       pt[i]= new TPaveText(0.63, 0.20, 0.63,0.20, "NDC");
-      //       pt[i]->AddText("GCT");
-      //       break;
-      //     case 4 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       break;
-      //     case 5 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTF");
-      //       break;
-      //     case 6 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("CSCTPG");
-      //       break;
-      //     case 7 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("CSCTF");
-      //       break;
-      //     case 8 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_RPC");     break;
-      //     case 9 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_GMT");     break;
-      //     case 10 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_GT");      break;
-      //     case 11 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_RPCTG");   break;
-      //     case 12 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_EMUL");    break;
-      //     case 13 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_Timing");  break;
-      //     case 14 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_Test1");   break;
-      //     case 15 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_Test2");   break;
-      //     case 16 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_Test3");   break;
-      //     case 17 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_Test4");break;
-      //     case 18 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_Test5");   break;
-      //     case 19 :
-      //       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
-      //       pt[i]->AddText("DTTPG");
-      //       sprintf(histo,"L1T_Test6");   break;
-      //     }
-      //   TPaveText *pt[8];
-
-      //   pt[i]->SetFillColor(0); // text is black on white
-      //   pt[i]->SetTextSize(0.04);
-      //   pt[i]->SetTextAlign(12);
-      //   pt[i]->SetFillStyle(4000);
-
-      //   pt[i]->Draw("same");
-      //to draw your text object
-      //  }
-
+            return;
+        }
 
     }
 };
