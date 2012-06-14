@@ -125,10 +125,13 @@ TH1F* DQMEfficiencyFromFitProducer<FittingAlgo>::project(TH2* h2,int binx, strin
   double hmin = h2->GetYaxis()->GetBinLowEdge(1);
   double hmax = h2->GetYaxis()->GetBinLowEdge(nBinsY) + h2->GetYaxis()->GetBinWidth(nBinsX);
   TH1F* ret = new TH1F(name.c_str(),h2->GetTitle(),nBinsY,hmin,hmax);
+  int entries = 0;
   for(int bin=1; bin<nBinsY; ++bin){
     ret->SetBinContent(bin,h2->GetBinContent(binx,bin) );
+    entries += h2->GetBinContent(binx,bin);
     ret->SetBinError(bin,TMath::Sqrt(h2->GetBinContent(binx,bin)) );
   }
+  ret->SetEntries(entries);
   return ret;
 }
 
@@ -149,13 +152,16 @@ void DQMEfficiencyFromFitProducer<FittingAlgo>::fitSlices(const pair<MonitorElem
   const int nBinsX = refRisto->GetNbinsX();
   const int nTargets = plotSet.second.size();
   Measurement1D outputs[nBinsX][nTargets];
+  cout <<moduleLabel_ << "  Computing Efficiencies..." << endl;
+  cout << "reference: " << plotSet.first->getFullname() << endl;
+  for(int mePos = 0; mePos < nTargets; ++mePos)
+    cout << "     test: " << plotSet.second[mePos]->getFullname() << endl;
 
   for(int i=1; i<=nBinsX; i++){
     bool refFitIsGood = true;
     double refVal = 1;
     double refErr = 0;
     if(scaleFactor_ == -1){
-      //cout << "Fitting: " << plotSet.first->getFullname() << " bin: " << i << endl;
       string refFullName = plotSet.first->getFullname();
       string hname = refFullName.substr(refFullName.rfind("/") + 1);
       TH1F *refprj = project(refRisto,i, Form("ref_prjx_%i",i));
@@ -213,7 +219,8 @@ void DQMEfficiencyFromFitProducer<FittingAlgo>::fitSlices(const pair<MonitorElem
        << "   other    " << other    << endl
        << "   ProdAndStream " <<ProdAndStream << endl
        << "   var " << var << endl
-       << "   meMapName "<< meMapName << endl;*/
+       << "   meMapName "<< meMapName << endl
+       << "   nTargets " << nTargets << endl;*/
 
   dqmStore_.setCurrentFolder(generalDir.c_str());
   MonitorElement *h2d = (fill2D_) ? dqmStore_.book2D( meMapName.c_str(), meMapName.c_str(),nBinsX,hmin,hmax,nTargets,0,nTargets) : NULL;
@@ -221,14 +228,14 @@ void DQMEfficiencyFromFitProducer<FittingAlgo>::fitSlices(const pair<MonitorElem
     string mepath = plotSet.second[mePos]->getFullname();
     string folder = mepath.substr(0,mepath.rfind("/"));
     string meName = mepath.substr(mepath.rfind("/"));
-    string discName = (meName.rfind("By") != string::npos) ? meName.substr(meName.rfind("By") + 2,meName.rfind("_vs_")-meName.rfind("By")) : "PFJetMatching";
+    string discName = (meName.rfind("By") != string::npos) ? meName.substr(meName.rfind("By") + 2,meName.rfind("_vs_")-meName.rfind("By")-2) : "PFJetMatching";
     string me1dName = (discName+"Eff"+var);
 
     /*cout <<  "   mepath " << mepath << endl;
-    cout <<  "   folder " << folder << endl;
-    cout <<  "   meName " << meName << endl;
-    cout <<  "   discName " << discName << endl;
-    cout <<  "   me1dName " << me1dName << endl;*/
+      cout <<  "   folder " << folder << endl;
+      cout <<  "   meName " << meName << endl;
+      cout <<  "   discName " << discName << endl;
+      cout <<  "   me1dName " << me1dName << endl;*/
 
     dqmStore_.setCurrentFolder(folder );
 
@@ -277,16 +284,16 @@ void DQMEfficiencyFromFitProducer<FittingAlgo>::endRun(const edm::Run& r, const 
   delete refregex;
 
   //find all the plots connected to the same reference
-  // for(map<MonitorElement *, vector<MonitorElement *> >::iterator entry = effMap.begin(); entry != effMap.end(); ++entry){
-  //   string refName = (scaleFactor_ == -1) ? entry->first->getFullname() : "";
-  //   const string strregex = refName.substr(0,refName.find(refIdentifier_) ) + "*/*" + refName.substr(refName.find(refIdentifier_)+refIdentifier_.size() ); 
-  //   lat::Regexp* targetregex = buildRegex(strregex);
-  //   for(vector<MonitorElement *>::const_iterator element = allOurMEs.begin(); element != allOurMEs.end(); ++element){
-  //     string pathname = (*element)->getFullname();
-  //     if(refregex->match(pathname)) effMap[entry->first].push_back((*element)); //to give initial (empty) value
-  //   }
-  //   delete targetregex;
-  // }
+  for(map<MonitorElement *, vector<MonitorElement *> >::iterator entry = effMap.begin(); entry != effMap.end(); ++entry){
+    string refName = (scaleFactor_ == -1) ? entry->first->getFullname() : "";
+    const string strregex = refName.substr(0,refName.find(refIdentifier_) ) + "*/*" + refName.substr(refName.find(refIdentifier_)+refIdentifier_.size() ); 
+    lat::Regexp* targetregex = buildRegex(strregex);
+    for(vector<MonitorElement *>::const_iterator element = allOurMEs.begin(); element != allOurMEs.end(); ++element){
+      string pathname = (*element)->getFullname();
+      if(refregex->match(pathname)) effMap[entry->first].push_back((*element)); //to give initial (empty) value
+    }
+    delete targetregex;
+  }
 
   for(map<MonitorElement *, vector<MonitorElement *> >::iterator entry = effMap.begin(); entry != effMap.end(); ++entry)
     fitSlices(*entry);
