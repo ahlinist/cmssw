@@ -15,7 +15,7 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  fpJSON = new JSON("../../Bs2MuMu/macros2/cuts/Cert_160404-180252_7TeV_PromptReco_May10ReReco_Collisions11_JSON_MuonPhys.txt"); // Run2011
+  fpJSON = new JSON("json_160404_179431"); // Run2011
   //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
   //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
   //fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
@@ -133,10 +133,9 @@ void xsReader::eventProcessing() {
   
   int path(-9);
   
-  //if ( MODE == 2  ) { 
-  //  if ( !fpJSON->good(fRun, fLS) ) goto end;
-  //}
-  
+  if ( MODE == 2  ) { 
+    if ( !fpJSON->good(fRun, fLS) ) goto end;
+  }
   
   ////// Trigger Check Study
   // candidateSelection(2);
