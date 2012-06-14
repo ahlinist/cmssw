@@ -266,20 +266,20 @@ TauTagValidation<T>::~TauTagValidation()
 template<typename T>
 void TauTagValidation<T>::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 {
-//cout << moduleLabel_<<"::analyze" << endl;
+  //cout << moduleLabel_<<"::analyze" << endl;
   if (genericTriggerEventFlag_) {
     if (!genericTriggerEventFlag_->on()) 
     {
-      std::cout<<"TauTagValidation<T>::analyze: No working genericTriggerEventFlag. Did you specify a valid globaltag?"<<std::endl ; //move to LogDebug?
+      //std::cout<<"TauTagValidation<T>::analyze: No working genericTriggerEventFlag. Did you specify a valid globaltag?"<<std::endl ; //move to LogDebug?
     }
     if ( genericTriggerEventFlag_->on() && !genericTriggerEventFlag_->accept(iEvent, iSetup) ) 
     {
-//    std::cout<<"genericTriggerEventFlag rejected this event in "<<moduleLabel_<<std::endl;
+      //std::cout<<"genericTriggerEventFlag rejected this event in "<<moduleLabel_<<std::endl;
       return;
     } 
     else 
     {
-//    std::cout<<"--> genericTriggerEventFlag accepted this event in "<<moduleLabel_<<std::endl;//REMOVE ME
+      //std::cout<<"--> genericTriggerEventFlag accepted this event in "<<moduleLabel_<<std::endl;//REMOVE ME
     }
   }
   
@@ -300,6 +300,7 @@ void TauTagValidation<T>::analyze(const edm::Event& iEvent, const edm::EventSetu
   Handle<genCandidateCollection> ReferenceCollection;
   bool isGen = iEvent.getByLabel(refCollectionInputTag_, ReferenceCollection);    // get the product from the event // refCollectionInputTag_ = kinematicSelectedTauValDenominator form ValidateOn*_cff.py
   
+  //cout << "ref lenght: " << ReferenceCollection->size() << endl;
   Handle<VertexCollection> pvHandle;
   iEvent.getByLabel(PrimaryVertexCollection_,pvHandle);
   
@@ -396,6 +397,8 @@ void TauTagValidation<T>::analyze(const edm::Event& iEvent, const edm::EventSetu
         iEvent.getByLabel(currentDiscriminatorLabel, currentDiscriminator);
         
         if ((*currentDiscriminator)[thePFTau] >= it->getParameter<double>("selectionCut")){
+	  //if(mass > 0. && mass < 120.)
+	  //  cout<< "yielding result" << endl;
           ptTauVisibleMap.find( currentDiscriminatorLabel )    -> second -> Fill(RefJet->pt(),mass)                    ;
           etaTauVisibleMap.find( currentDiscriminatorLabel )   -> second -> Fill(RefJet->eta(),mass)                   ;
           phiTauVisibleMap.find( currentDiscriminatorLabel )   -> second -> Fill(RefJet->phi()*180.0/TMath::Pi(),mass) ;
