@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.h,v 1.6 2011/08/18 16:03:20 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.h,v 1.8 2012/03/02 16:02:14 franzoni Exp $
 //
 //
 
@@ -196,6 +196,8 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 TH1F* cryTimingHistsEEM_[100][100]; // [0][0] = ix 1, iy 1
                 TH1F* superModuleTimingHistsEEM_[9];
                 TH1F* superModuleTimingHistsEEP_[9];
+                TH1F* etaSlicesTimingHistsEEM_[5];
+                TH1F* etaSlicesTimingHistsEEP_[5];
 };
 #endif
 
