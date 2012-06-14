@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.15 2011/08/18 16:03:20 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.18 2012/03/02 16:02:14 franzoni Exp $
 //
 //
 
@@ -334,6 +334,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     EcalCrystalTimingCalibration* cryCalib;
     int ieta = 0;
     int iphi = 0;
+    float eta = 0.0;
     int x = 0;
     int y = 0;
     int iEB = 0;
@@ -363,6 +364,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       zside = det.zside();
       iEE = Numbers::iEE(Numbers::iSM(det));
       cryCalib = eeCryCalibs[hashedIndex-EBDetId::kSizeForDenseIndexing];
+      eta = Numbers::eta(det);
+//      std::cout << "eta: " << eta << " ix: " << x << " iy: " << y  << std::endl;
     }
 
     //XXX: Filter events at default 0.5*meanE threshold
@@ -400,12 +403,52 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
           float weight = 1/((timeItr->sigmaTime)*(timeItr->sigmaTime));
           cryTimingHistsEEM_[x-1][y-1]->Fill(timeItr->time,weight);
           superModuleTimingHistsEEM_[-1*iEE - 1]->Fill(timeItr->time,weight);
+          if(fabs(eta) > 1.5 && fabs(eta) <= 1.8)
+          {
+            etaSlicesTimingHistsEEM_[0]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 1.8 && fabs(eta) <= 2.1)
+          {
+            etaSlicesTimingHistsEEM_[1]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 2.1 && fabs(eta) <= 2.4)
+          {
+           etaSlicesTimingHistsEEM_[2]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 2.4 && fabs(eta) <= 2.7)
+          {
+            etaSlicesTimingHistsEEM_[3]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 2.7 && fabs(eta) <= 3.0)
+          {
+            etaSlicesTimingHistsEEM_[4]->Fill(timeItr->time,weight);
+          }
         }
         else
         {
           float weight = 1/((timeItr->sigmaTime)*(timeItr->sigmaTime));
           cryTimingHistsEEP_[x-1][y-1]->Fill(timeItr->time,weight);
           superModuleTimingHistsEEP_[iEE - 1]->Fill(timeItr->time,weight);
+          if(fabs(eta) > 1.5 && fabs(eta) <= 1.8)
+          {
+            etaSlicesTimingHistsEEP_[0]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 1.8 && fabs(eta) <= 2.1)
+          {
+            etaSlicesTimingHistsEEP_[1]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 2.1 && fabs(eta) <= 2.4)
+          {
+           etaSlicesTimingHistsEEP_[2]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 2.4 && fabs(eta) <= 2.7)
+          {
+            etaSlicesTimingHistsEEP_[3]->Fill(timeItr->time,weight);
+          }
+          if(fabs(eta) > 2.7 && fabs(eta) <= 3.0)
+          {
+            etaSlicesTimingHistsEEP_[4]->Fill(timeItr->time,weight);
+          }
         }
       }
     }
@@ -1024,6 +1067,20 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
       cryTimingHistsEEP_[x][y]->Sumw2();
     }
   }
+
+  TFileDirectory etaSlicesDir = fileService_->mkdir("etaSlicesTimingHists");
+  etaSlicesTimingHistsEEM_[0] = etaSlicesDir.make<TH1F>("EEM_cryTiming_eta_1.5-1.8","EEM_cryTiming_eta_1.5-1.8",200,-10,10);
+  etaSlicesTimingHistsEEM_[1] = etaSlicesDir.make<TH1F>("EEM_cryTiming_eta_1.8-2.1","EEM_cryTiming_eta_1.8-2.1",200,-10,10);
+  etaSlicesTimingHistsEEM_[2] = etaSlicesDir.make<TH1F>("EEM_cryTiming_eta_2.1-2.4","EEM_cryTiming_eta_2.1-2.4",200,-10,10);
+  etaSlicesTimingHistsEEM_[3] = etaSlicesDir.make<TH1F>("EEM_cryTiming_eta_2.4-2.7","EEM_cryTiming_eta_2.4-2.7",200,-10,10);
+  etaSlicesTimingHistsEEM_[4] = etaSlicesDir.make<TH1F>("EEM_cryTiming_eta_2.7-3.0","EEM_cryTiming_eta_2.7-3.0",200,-10,10);
+
+  etaSlicesTimingHistsEEP_[0] = etaSlicesDir.make<TH1F>("EEP_cryTiming_eta_1.5-1.8","EEP_cryTiming_eta_1.5-1.8",200,-10,10);
+  etaSlicesTimingHistsEEP_[1] = etaSlicesDir.make<TH1F>("EEP_cryTiming_eta_1.8-2.1","EEP_cryTiming_eta_1.8-2.1",200,-10,10);
+  etaSlicesTimingHistsEEP_[2] = etaSlicesDir.make<TH1F>("EEP_cryTiming_eta_2.1-2.4","EEP_cryTiming_eta_2.1-2.4",200,-10,10);
+  etaSlicesTimingHistsEEP_[3] = etaSlicesDir.make<TH1F>("EEP_cryTiming_eta_2.4-2.7","EEP_cryTiming_eta_2.4-2.7",200,-10,10);
+  etaSlicesTimingHistsEEP_[4] = etaSlicesDir.make<TH1F>("EEP_cryTiming_eta_2.7-3.0","EEP_cryTiming_eta_2.7-3.0",200,-10,10);
+
 }
 
 // ****************************************************************
