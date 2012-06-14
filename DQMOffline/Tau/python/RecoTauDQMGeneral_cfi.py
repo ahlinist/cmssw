@@ -165,7 +165,7 @@ EFFICIENCY
 proc.efficiencies = cms.EDAnalyzer(
    'TauDQMEffFromNoFitProducer',
    fit = cms.bool(True),
-   fill1D = cms.bool(True),
+   fill1D = cms.bool(False),
    fill2D = cms.bool(True),
    refIdentifier = cms.string('ReferenceCollection/nRef_Taus'),
    maxChi2Prob = cms.double(0.999),
