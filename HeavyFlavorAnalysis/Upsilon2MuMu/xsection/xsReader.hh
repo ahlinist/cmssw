@@ -76,8 +76,10 @@ public:
   double CHI2;
   int RESTYPE;
   double PTHI;
+  double PTMI;
   double PTLO;
   double ETAHI;
+  double ETAMI;
   double ETALO;
   double ETABARREL;
   double PTBARREL;
@@ -109,8 +111,8 @@ public:
   
   
   double      fWeight;
-  static const int  fNpt = 16;
-  static const int  fNy = 12;
+  static const int  fNpt = 23;
+  static const int  fNy = 8;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
   double fMassLow, fMassHigh;
