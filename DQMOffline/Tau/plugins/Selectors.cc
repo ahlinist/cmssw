@@ -32,6 +32,9 @@
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 
+#include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/METReco/interface/PFMETFwd.h"
+
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 
@@ -48,6 +51,7 @@ typedef SingleObjectSelector< reco::GenParticleCollection   , StringCutObjectSel
 typedef SingleObjectSelector< reco::GenParticleRefVector    , StringCutObjectSelector<reco::GenParticleRef> >   TauValGenPRefSelector ;
 typedef SingleObjectSelector< reco::PFJetCollection         , StringCutObjectSelector<reco::PFJet>          >   TauValPFJetSelector   ;
 typedef SingleObjectSelector< edm::View<reco::GsfElectron>  , StringCutObjectSelector<reco::GsfElectron>, reco::GsfElectronCollection > TauValElectronSelector;
+typedef SingleObjectSelector< reco::PFMETCollection         , StringCutObjectSelector<reco::PFMET>          >   TauValMETSelector     ;
 
 DEFINE_FWK_MODULE( TauValPFJetSelector    );
 DEFINE_FWK_MODULE( TauValJetSelector      );
@@ -56,6 +60,7 @@ DEFINE_FWK_MODULE( TauValTauSelector      );
 DEFINE_FWK_MODULE( TauValElectronSelector );
 DEFINE_FWK_MODULE( TauValGenPSelector     );
 DEFINE_FWK_MODULE( TauValGenPRefSelector  );
+DEFINE_FWK_MODULE( TauValMETSelector      );
 
 class ElectronIdFilter : public edm::EDFilter {
 public:
