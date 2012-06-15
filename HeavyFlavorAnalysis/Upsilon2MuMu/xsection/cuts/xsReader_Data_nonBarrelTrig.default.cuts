@@ -1,15 +1,17 @@
 TYPE	 301313
 MODE        2  # 1 - MC , 2 - DATA
-MUTYPE1	   16  # 6 gltr , 16 tma
-MUTYPE2    16  # 6 gltr , 16 tma
-PTLO      3.0
-PTHI    300.0  # 20 for gltr, 50 for tma
-PTBARREL  4.0
+MUTYPE1	    4  # tma
+MUTYPE2    12  # lst 
+PTLO      2.0
+PTMI      2.5
+PTHI    100.0  # 20 for gltr, 50 for tma
+PTBARREL  3.5
 ETABARREL 1.2
 ETALO    -2.4
+ETAMI     1.4
 ETAHI     2.4
-PTCAND  200.0  # before 30
-RAPCAND   2.4  # before 2.0
+PTCAND  100.0  
+RAPCAND   2.4  
 CHI2      4.0
 RESTYPE   553
 BIN       100
