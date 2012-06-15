@@ -13,10 +13,9 @@ PrimaryVertexFilter = cms.EDFilter(
     )
 
 TauMETSelector = cms.EDFilter(
-    "METSelector",
+    "TauValMETSelector",
     src    = cms.InputTag("pfMet"),
-    minEt  = cms.double(25),
-    maxEt  = cms.double(70),
+    cut = cms.string('pt > 25 && pt < 70'),
     filter = cms.bool(False)
     )
 
