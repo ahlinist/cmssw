@@ -96,6 +96,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   PFCandLabel_    = ps.getParameter<InputTag>("PFCandLabel");
   puInfoLabel_    = ps.getParameter<InputTag>("puInfoLabel");
   rhoLabel_       = ps.getParameter<InputTag>("rhoLabel");
+  rho2011Label_   = ps.getParameter<InputTag>("rho2011Label");
+  rho2012Label_   = ps.getParameter<InputTag>("rho2012Label");
   sigmaLabel_     = ps.getParameter<InputTag>("sigmaLabel");
 
   leadingElePtCut_ = ps.getParameter<double>("LeadingElePtCut");
@@ -139,6 +141,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("nGoodTrk", &nGoodTrk_, "nGoodTrk/I");
   tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
   tree_->Branch("rho", &rho_, "rho/D");
+  tree_->Branch("rho2011", &rho2011_, "rho2011/D");
+  tree_->Branch("rho2012", &rho2012_, "rho2012/D");
   tree_->Branch("sigma", &sigma_, "sigma/F");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
@@ -590,6 +594,16 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   edm::Handle<double> sigmaHandle;
   e.getByLabel(sigmaLabel_, sigmaHandle);
   sigma_ = *(sigmaHandle.product());
+
+  // Rho for electron isolation
+  edm::Handle<double> rho2011Handle;
+  e.getByLabel(rho2011Label_, rho2011Handle);
+  rho2011_ = *(rho2011Handle.product());
+
+  // Rho for 2012 sample
+  edm::Handle<double> rho2012Handle;
+  e.getByLabel(rho2012Label_, rho2012Handle);
+  rho2012_ = *(rho2012Handle.product());
 
   // GenParticle
   // cout << "VgAnalyzerKit: produce: GenParticle... " << endl;
@@ -1096,10 +1110,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         elePfPhoton_[nEle_]        = (*(*electronIsoVals)[2])[myElectronRef];
 	eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*myElectronRef, hConversions, beamSpot.position());
 
-	eleID2012_[nEle_][0] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
-	eleID2012_[nEle_][1] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
-	eleID2012_[nEle_][2] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
-	eleID2012_[nEle_][3] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho_);
+	eleID2012_[nEle_][0] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
+	eleID2012_[nEle_][1] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
+	eleID2012_[nEle_][2] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
+	eleID2012_[nEle_][3] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
         eleID2012_[nEle_][4] = EgammaCutBasedEleId::PassEoverPCuts(myElectronRef);
         eleID2012_[nEle_][5] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, myElectronRef);
         eleID2012_[nEle_][6] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERWP70, myElectronRef);

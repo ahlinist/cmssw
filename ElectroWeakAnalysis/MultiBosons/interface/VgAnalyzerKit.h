@@ -84,6 +84,8 @@ protected:
   InputTag PFCandLabel_;
   InputTag puInfoLabel_;
   InputTag rhoLabel_;
+  InputTag rho2011Label_;
+  InputTag rho2012Label_;
   InputTag sigmaLabel_;
   InputTag ebReducedRecHitCollection_;
   InputTag eeReducedRecHitCollection_;
@@ -118,6 +120,8 @@ protected:
   Int_t    nPU_[maxP];
   Int_t    BXPU_[maxP];
   Double_t rho_;
+  Double_t rho2011_;
+  Double_t rho2012_;
   Float_t  sigma_;
   Int_t    nHLT_;
   Int_t    HLT_[maxP];
