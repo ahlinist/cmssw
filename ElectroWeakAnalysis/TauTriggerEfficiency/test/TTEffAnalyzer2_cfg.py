@@ -61,7 +61,7 @@ else:
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V29::All'
+    process.GlobalTag.globaltag = 'GR_R_V53::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START52_V9::All'
@@ -212,10 +212,23 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "HLT_IsoMu30_eta2p1_v3", "HLT_IsoMu30_eta2p1_v6", "HLT_IsoMu30_eta2p1_v7",
             "HLT_IsoMu34_eta2p1_v1",
 
-	    "HLT_IsoMu15_eta2p1_L1ETM20_v3",
+	    "HLT_IsoMu15_eta2p1_L1ETM20_v1",
+            "HLT_IsoMu15_eta2p1_L1ETM20_v2",
+            "HLT_IsoMu15_eta2p1_L1ETM20_v3",
+            "HLT_IsoMu15_eta2p1_L1ETM20_v4",
+            "HLT_IsoMu15_eta2p1_L1ETM20_v5",
+            "HLT_IsoMu15_eta2p1_L1ETM20_v6",
+
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v1",
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v2",
+            "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v3",
+            "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v4",
+            "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v5",
+            "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v6",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v7",
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L2PixelIsoTrk2_L1ETM20_v2",
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_L1ETM20_v2",
+
 
             "HLT_IsoPFTau35_Trk20_MET45_v1", "HLT_IsoPFTau35_Trk20_MET45_v2", "HLT_IsoPFTau35_Trk20_MET45_v4", "HLT_IsoPFTau35_Trk20_MET45_v6",
             "HLT_IsoPFTau35_Trk20_v2", "HLT_IsoPFTau35_Trk20_v3", "HLT_IsoPFTau35_Trk20_v4", "HLT_IsoPFTau35_Trk20_v6",
@@ -226,9 +239,29 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "HLT_MediumIsoPFTau35_Trk20_MET60_v1", "HLT_MediumIsoPFTau35_Trk20_MET60_v5", "HLT_MediumIsoPFTau35_Trk20_MET60_v6",
             "HLT_MediumIsoPFTau35_Trk20_MET70_v1", "HLT_MediumIsoPFTau35_Trk20_MET70_v5", "HLT_MediumIsoPFTau35_Trk20_MET70_v6",
 
-	    "HLT_LooseIsoPFTau35_Trk20_Prong1_v3",
-	    "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v3",
-	    "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v3",
+	    "HLT_LooseIsoPFTau35_Trk20_Prong1_v1",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_v2",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_v3",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_v4",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_v5",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_v6",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_v7",
+
+	    "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v1",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v2",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v3",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v4",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v5",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v6",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v7",
+
+	    "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v1",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v2",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v3",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v4",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v5",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v6",
+            "HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v7",
 
         ),
         L1TauTriggerSource      		= cms.InputTag("tteffL1GTSeed"),
