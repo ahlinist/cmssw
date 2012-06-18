@@ -23,6 +23,17 @@ MuonHLTs = hlt.triggerResultsFilter.clone(
     throw = False
 )
 
+HLT_MediumIsoPFTau35_Trk20 = hlt.triggerResultsFilter.clone(
+    hltResults    = cms.InputTag('TriggerResults::HLT'),
+    triggerConditions =  (
+	'HLT_MediumIsoPFTau35_Trk20_v1',
+	'HLT_MediumIsoPFTau35_Trk20_v5',
+	'HLT_MediumIsoPFTau35_Trk20_v6'
+    ),
+    l1tResults = '',
+    throw = False
+)
+
 HLT_LooseIsoPFTau35_Trk20_Prong1 = hlt.triggerResultsFilter.clone(
     hltResults    = cms.InputTag('TriggerResults::HLT'),
     triggerConditions =  (
