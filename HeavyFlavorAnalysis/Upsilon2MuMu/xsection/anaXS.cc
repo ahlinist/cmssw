@@ -296,9 +296,9 @@ void anaXS::loadFiles(const char *dir, int i) {
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_noMSC.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
-      afile = fDirectory + string("/all_events_COMBINED.xsReader_Data.default_v1.root");
-      ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data.default_v1.root");
-      jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data.default_v1.root");
+      afile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
+      ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
+      jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -5868,7 +5868,7 @@ void anaXS::FITUpsilon(int mode){
   if ( mode == 1 ){
     
     int PRINT(1); 
-    double PRINTX(0.01);
+    double PRINTX(0.75);
         
     TH1D *h; 
     
@@ -6075,9 +6075,9 @@ void anaXS::FITUpsilon(int mode){
 	YieldTot3SE += (yieldE_3S*yieldE_3S);
 	fitted = 0;
       }
-      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("Ups(1S) Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
-      if (PRINT) tl->DrawLatex(PRINTX, 0.33, Form("Ups(2S) Yield = %4.1f +/- %4.1f", yield_2S,yieldE_2S));
-      if (PRINT) tl->DrawLatex(PRINTX, 0.26, Form("Ups(3S) Yield = %4.1f +/- %4.1f", yield_3S,yieldE_3S));
+      if (PRINT) tl->DrawLatex(PRINTX, 0.45, Form("N_{#Upsilon(1S)} = %3.1f +/- %3.1f", yield_1S,yieldE_1S)); 
+      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("N_{#Upsilon(2S)} = %3.1f +/- %3.1f", yield_2S,yieldE_2S));
+      if (PRINT) tl->DrawLatex(PRINTX, 0.35, Form("N_{#Upsilon(3S)} = %3.1f +/- %3.1f", yield_3S,yieldE_3S));
       cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
       cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
       cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
@@ -7900,7 +7900,12 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
       if (n > 0) {
 	cout << "ptmin = "<< ptmin << "ptmax = " << ptmax << endl;
 	cout << "etamin = "<< etamin << "etamax = " << etamax << endl;
-	GetBinCenters(h->GetName(), eta, pt); 
+	GetBinCenters(h->GetName(), eta, pt);
+	if ( pt > 50 ) {
+	  cout << "pt = " << pt << endl;
+	  pt-=35;
+	  cout << "pt = " << pt << endl;
+	}
 	bin = falpha->FindBin(eta, pt);
 	Bin = bin;
 	cout << "bin = " << bin << endl;
