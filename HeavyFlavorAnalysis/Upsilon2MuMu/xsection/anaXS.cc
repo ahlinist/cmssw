@@ -296,7 +296,7 @@ void anaXS::loadFiles(const char *dir, int i) {
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_noMSC.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
-      afile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
+      afile = fDirectory + string("/Acc_All_0_100.xsReader_1S.default.root");
       ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
       jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
      
@@ -1054,14 +1054,15 @@ void anaXS::makeAllDATA(int channel) {
     //plot_RapInt();
     //plot_PtInt();
     
+        
     FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff(); 
     //GetPreSelEff();
     //GetTrackEff();
-    //GetMuIDEff(2);
+    GetMuIDEff(2);
     //GetTrigEff(2);
-    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    CorrectedYields(3);   // 1- FOR MC, 2 FOR 2010 DATA , 3 - FOR 2011 DATA
+    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -1519,27 +1520,14 @@ void anaXS::plotAcceptance(){
 void anaXS::CorrectedYields(int mode){
   
   makeCanvas(2);
-  c2->Divide(2,2);
-  //c2->cd(1);
-  //fS1Yield->Draw("colz");
-  //c2->cd(2);
-  //fAnaEff->Draw("colz");
-  //c2->cd(3);
-  //fAllGenRes->Draw("colz");
-  //c2->cd(4);
-  //fRecoGenRes->Draw("colz");
-  
+  c2->Divide(2,1);
+    
   plotAcceptance();
   c2->cd(1);
   fAcceptance->Draw("colz");
   c2->cd(2);
-  fAnaEff->Draw("colz");
-  c2->cd(3);
   fMuIDEff->Draw("colz");  
-  c2->cd(4);
-  fTrigEff->Draw("colz");   
   
-
   if ( mode == 1  ){
     double binErr(0);
     double bin(0.); double bin_ratio(-1); double yield(0);
@@ -1763,6 +1751,106 @@ void anaXS::CorrectedYields(int mode){
     
   }
   
+  
+  if ( mode == 3 ){
+    double binErr(0);
+    double bin(0.); double bin_ratio(-1);
+    double lumi(4815000); // 2011 Barrel Trigger Recorded
+    
+    TFile *f = new TFile("Upsilon_2D.root", "RECREATE");
+    
+    for ( int iy = 1; iy <= fS1Yield->GetNbinsX(); ++iy ){
+      for ( int ipt = 1; ipt <= fS1Yield->GetNbinsY(); ++ipt ){
+	
+	bin = fS1Yield->GetBinContent(iy,ipt) / ( fMuIDEff->GetBinContent(iy,ipt) * fAcceptance->GetBinContent(iy,ipt) );
+	fS1YieldCorrected->SetBinContent(iy,ipt,bin);
+	fS1YieldCorrected->SetBinError(iy,ipt,(bin/fS1Yield->GetBinContent(iy,ipt))*fS1Yield->GetBinError(iy,ipt) );
+	cout << "fMuIDEff->GetBinContent(iy,ipt) = "<< fMuIDEff->GetBinContent(iy,ipt) << endl;
+	cout << "fAcceptance->GetBinContent(iy,ipt) = "<< fAcceptance->GetBinContent(iy,ipt) << endl;
+	cout << "fS1Yield->GetBinContent(iy,ipt) = "<< fS1Yield->GetBinContent(iy,ipt) <<endl;
+	cout << "fS1YieldCoreected->GetBinContent(iy,ipt) = "<< fS1YieldCorrected->GetBinContent(iy,ipt) <<endl;
+	cout << "fS1YieldCoreected->GetBinError(iy,ipt) = "<< fS1YieldCorrected->GetBinError(iy,ipt) <<endl;
+	
+	double yieldTerm = (fS1Yield->GetBinError(iy,ipt)/fS1Yield->GetBinContent(iy,ipt))*(fS1Yield->GetBinError(iy,ipt)/fS1Yield->GetBinContent(iy,ipt));
+	double muidTerm = (fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt))*(fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt));
+	double accTerm = (fAcceptance->GetBinError(iy,ipt)/fAcceptance->GetBinContent(iy,ipt))*(fAcceptance->GetBinError(iy,ipt)/fAcceptance->GetBinContent(iy,ipt));
+	binErr = bin * TMath::Sqrt( yieldTerm + muidTerm + accTerm );
+	cout << "binErr = " << binErr << endl;
+	fS1YieldCorrected->SetBinError(iy,ipt,binErr);
+	fXS->SetBinContent(iy,ipt,bin/lumi);
+	fXS->SetBinError(iy,ipt,binErr/lumi);
+	
+      }
+    }
+    
+    fMuIDEff->Write(); fXS->Write();
+    fS1Yield->Write(); fS1YieldCorrected->Write(); fAcceptance->Write(); 
+    
+    
+    for ( int iy = 1; iy <= fS2Yield->GetNbinsX(); ++iy ){
+      for ( int ipt = 1; ipt <= fS2Yield->GetNbinsY(); ++ipt ){
+	
+	bin = fS2Yield->GetBinContent(iy,ipt) / ( fMuIDEff->GetBinContent(iy,ipt) * fAcceptance_2S->GetBinContent(iy,ipt) );
+	fS2YieldCorrected->SetBinContent(iy,ipt,bin);
+	fS2YieldCorrected->SetBinError(iy,ipt,(bin/fS2Yield->GetBinContent(iy,ipt))*fS2Yield->GetBinError(iy,ipt) );
+	cout << "fMuIDEff->GetBinContent(iy,ipt) = "<< fMuIDEff->GetBinContent(iy,ipt) << endl;
+	cout << "fAcceptance_2S->GetBinContent(iy,ipt) = "<< fAcceptance_2S->GetBinContent(iy,ipt) << endl;
+	cout << "fS2Yield->GetBinContent(iy,ipt) = "<< fS2Yield->GetBinContent(iy,ipt) <<endl;
+	cout << "fS2YieldCoreected->GetBinContent(iy,ipt) = "<< fS2YieldCorrected->GetBinContent(iy,ipt) <<endl;
+	cout << "fS2YieldCoreected->GetBinError(iy,ipt) = "<< fS2YieldCorrected->GetBinError(iy,ipt) <<endl;
+	
+	double yieldTerm = (fS2Yield->GetBinError(iy,ipt)/fS2Yield->GetBinContent(iy,ipt))*(fS2Yield->GetBinError(iy,ipt)/fS2Yield->GetBinContent(iy,ipt));
+	double muidTerm = (fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt))*(fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt));
+	double accTerm = (fAcceptance_2S->GetBinError(iy,ipt)/fAcceptance_2S->GetBinContent(iy,ipt))*(fAcceptance_2S->GetBinError(iy,ipt)/fAcceptance_2S->GetBinContent(iy,ipt));
+	binErr = bin * TMath::Sqrt( yieldTerm + muidTerm + accTerm  );
+	cout << "binErr = " << binErr << endl;
+	fS2YieldCorrected->SetBinError(iy,ipt,binErr);
+	fXS_2S->SetBinContent(iy,ipt,bin/lumi);	
+	fXS_2S->SetBinError(iy,ipt,binErr/lumi);
+      }
+    }
+    
+    fS2Yield->Write(); fS2YieldCorrected->Write(); 
+    fAcceptance_2S->Write(); fXS_2S->Write();
+    
+    for ( int iy = 1; iy <= fS3Yield->GetNbinsX(); ++iy ){
+      for ( int ipt = 1; ipt <= fS3Yield->GetNbinsY(); ++ipt ){
+	
+	bin = fS3Yield->GetBinContent(iy,ipt) / ( fMuIDEff->GetBinContent(iy,ipt) * fAcceptance_3S->GetBinContent(iy,ipt) );
+	fS3YieldCorrected->SetBinContent(iy,ipt,bin);
+	fS3YieldCorrected->SetBinError(iy,ipt,(bin/fS3Yield->GetBinContent(iy,ipt))*fS3Yield->GetBinError(iy,ipt) );
+	cout << "fMuIDEff->GetBinContent(iy,ipt) = "<< fMuIDEff->GetBinContent(iy,ipt) << endl;
+	cout << "fAcceptance_3S->GetBinContent(iy,ipt) = "<< fAcceptance_3S->GetBinContent(iy,ipt) << endl;
+	cout << "fS3Yield->GetBinContent(iy,ipt) = "<< fS3Yield->GetBinContent(iy,ipt) <<endl;
+	cout << "fS3YieldCoreected->GetBinContent(iy,ipt) = "<< fS3YieldCorrected->GetBinContent(iy,ipt) <<endl;
+	cout << "fS3YieldCoreected->GetBinError(iy,ipt) = "<< fS3YieldCorrected->GetBinError(iy,ipt) <<endl;
+	
+	double yieldTerm = (fS3Yield->GetBinError(iy,ipt)/fS3Yield->GetBinContent(iy,ipt))*(fS3Yield->GetBinError(iy,ipt)/fS3Yield->GetBinContent(iy,ipt));
+	double muidTerm = (fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt))*(fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt));
+	double accTerm = (fAcceptance_3S->GetBinError(iy,ipt)/fAcceptance_3S->GetBinContent(iy,ipt))*(fAcceptance_3S->GetBinError(iy,ipt)/fAcceptance_3S->GetBinContent(iy,ipt));
+	binErr = bin * TMath::Sqrt( yieldTerm +  muidTerm + accTerm );
+	cout << "binErr = " << binErr << endl;
+	fS3YieldCorrected->SetBinError(iy,ipt,binErr);
+	fXS_3S->SetBinContent(iy,ipt,bin/lumi);	
+	fXS_3S->SetBinError(iy,ipt,binErr/lumi);
+      }
+    }
+   
+    fS3Yield->Write(); fS3YieldCorrected->Write(); 
+    fXS_3S->Write(); fAcceptance_3S->Write();
+    
+    makeCanvas(1);
+    c1->Divide(3,1);
+    c1->cd(1);
+    fS1YieldCorrected->Draw("colz");
+    c1->cd(2);
+    fS2YieldCorrected->Draw("colz");
+    c1->cd(3);
+    fS3YieldCorrected->Draw("colz");
+    
+  }
+
+    
 }
 // ----------------------------------------------------------------------
 void anaXS::fillPidTables() {
@@ -2320,7 +2408,8 @@ void anaXS::PlotProjections(int mode) {
     //double lumi(31339);  // For HLTDoubleMu0_Qv1 in Run2010B
     //double lumi(3155);  // For HLTDoubleMu0 in Run2010A
     //double lumi(5399);  // For HLTDoubleMu0 in Run2010B
-    double lumi(36738); // All Run2010B 
+    //double lumi(36738); // All Run2010B 
+    double lumi(4815000); // 2011 Barrel Trigger Recorded
     double xsection(0);
     double bin_contentYieldErr(0); double xsectionErr(0);
     hICHEP = new TH1D("hICHEP", "hICHEP", 
@@ -2508,7 +2597,7 @@ void anaXS::PlotProjections(int mode) {
     hICHEP->SetMarkerColor(4);
     hICHEP->SetLineColor(4);
     fS1YieldPt->Draw("p");
-    hICHEP->Draw("psame");
+    //hICHEP->Draw("psame");
     legg = new TLegend(0.4,0.6,0.8,0.8);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("XSection Comparison For Ups(1S)");
@@ -4511,7 +4600,7 @@ void anaXS::GetMuIDEff(int mode){
       corrE = fPtMuidCorr->errD(pt, eta, 0.);
       cout << corrE  << endl;
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       //yieldE=yield*TMath::Sqrt( ((yieldE/yield)*(yieldE/yield)) + ((corrE/corr)*(corrE/corr)) );
       cout << " MuIDEff Ups " << yield << " +/- " << yieldE << endl;
       fMuIDEff->SetBinContent(nbin, yield); 
