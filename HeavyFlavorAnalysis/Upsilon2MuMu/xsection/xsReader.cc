@@ -152,6 +152,12 @@ void xsReader::eventProcessing() {
     preSelEff();
   }
   
+  if ( MODE == 3  ) {
+    UpsGun_acceptance();
+    goto end;
+  }
+  
+  
   MomentumCorrection();
   if ( !MuIDCheck() ) goto end;   
   
@@ -2434,21 +2440,21 @@ void xsReader::bookHist() {
   ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS", UPSTYPE)))->Sumw2();  
   
   h = new TH1D(Form("UG_UpsRapidity_%.1dS", UPSTYPE), Form("UG_UpsRapidity_%.1dS", UPSTYPE), 60, -3., 3.);
-  h = new TH1D(Form("UG_UpsMass_%.1dS", UPSTYPE), Form("UG_UpsMass_%.1dS", UPSTYPE), 50, 9., 10.);
-  h = new TH1D(Form("UG_UpsPt_%.1dS", UPSTYPE), Form("UG_UpsPt_%.1dS", UPSTYPE), 100, 0., 50.);
-  h = new TH1D(Form("UG_MuonPt_%.1dS", UPSTYPE), Form("UG_MuonPt_%.1dS", UPSTYPE), 100, 0., 100.);
+  h = new TH1D(Form("UG_UpsMass_%.1dS", UPSTYPE), Form("UG_UpsMass_%.1dS", UPSTYPE), 100, 9., 11.);
+  h = new TH1D(Form("UG_UpsPt_%.1dS", UPSTYPE), Form("UG_UpsPt_%.1dS", UPSTYPE), PTCAND, 0., PTCAND);
+  h = new TH1D(Form("UG_MuonPt_%.1dS", UPSTYPE), Form("UG_MuonPt_%.1dS", UPSTYPE), PTHI, 0., PTHI);
   h = new TH1D(Form("UG_MuonEta_%.1dS", UPSTYPE), Form("UG_MuonEta_%.1dS", UPSTYPE), 80, -4., 4.);
   
   // Acceptance Control Histograms
-  k = new TH2D(Form("UpsVsLMu_pt_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
-  k = new TH2D(Form("UpsVsLMu_pt_LoRap_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_LoRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
-  k = new TH2D(Form("UpsVsLMu_pt_HiRap_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_HiRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
-  k = new TH2D(Form("UpsVsSMu_pt_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
-  k = new TH2D(Form("UpsVsSMu_pt_LoRap_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_LoRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
-  k = new TH2D(Form("UpsVsSMu_pt_HiRap_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_HiRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.); 
-  k = new TH2D(Form("LMuVsSMu_pt_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
-  k = new TH2D(Form("LMuVsSMu_pt_LoRap_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_LoRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
-  k = new TH2D(Form("LMuVsSMu_pt_HiRap_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_HiRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);  
+  k = new TH2D(Form("UpsVsLMu_pt_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_%1.dS", UPSTYPE), PTCAND, 0., PTCAND, PTHI, 0., PTHI);
+  k = new TH2D(Form("UpsVsLMu_pt_LoRap_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_LoRap_%1.dS", UPSTYPE), PTCAND, 0., PTCAND, PTHI, 0., PTHI);
+  k = new TH2D(Form("UpsVsLMu_pt_HiRap_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_HiRap_%1.dS", UPSTYPE), PTCAND, 0., PTCAND, PTHI, 0., PTHI);
+  k = new TH2D(Form("UpsVsSMu_pt_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_%1.dS", UPSTYPE), PTCAND, 0., PTCAND, PTHI, 0., PTHI);
+  k = new TH2D(Form("UpsVsSMu_pt_LoRap_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_LoRap_%1.dS", UPSTYPE), PTCAND, 0., PTCAND, PTHI, 0., PTHI);
+  k = new TH2D(Form("UpsVsSMu_pt_HiRap_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_HiRap_%1.dS", UPSTYPE), PTCAND, 0., PTCAND, PTHI, 0., PTHI); 
+  k = new TH2D(Form("LMuVsSMu_pt_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_%1.dS", UPSTYPE), PTHI, 0., PTHI, PTHI, 0., PTHI);
+  k = new TH2D(Form("LMuVsSMu_pt_LoRap_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_LoRap_%1.dS", UPSTYPE), PTHI, 0., PTHI, PTHI, 0., PTHI);
+  k = new TH2D(Form("LMuVsSMu_pt_HiRap_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_HiRap_%1.dS", UPSTYPE), PTHI, 0., PTHI, PTHI, 0., PTHI);  
   
   // PreSel Eff
   k = new TH2D(Form("PreSel_afterVtx_%.1dS",UPSTYPE), Form("PreSel_afterVtx_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
