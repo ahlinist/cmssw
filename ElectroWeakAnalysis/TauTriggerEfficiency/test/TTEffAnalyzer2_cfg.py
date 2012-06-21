@@ -44,10 +44,11 @@ if(isData):
         fileNames = cms.untracked.vstring(
 #	"file:/tmp/slehti/hlt_100_1_yct.root"
 #	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
-        "file:TTEffSkim.root"
+        "file:TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1.root"
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
+#	"/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1/TauPlusX/TauTriggerEff_TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1/be6ecd52f198917de1be5ff208a419ce/TTEffSkim_939_1_ceG.root"
 	)
     )
 else:
@@ -61,7 +62,7 @@ else:
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_V53::All'
+    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START52_V9::All'
@@ -323,18 +324,18 @@ process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
 
 # The high purity selection (mainly for H+)
-# process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
-# process.TTEffAnalysisHLTPFTauTightHPSHighPurity = process.TTEffAnalysisHLTPFTauTightHPS.clone(
-#     LoopingOver = "selectedPatTausHpsPFTauHighPurity",
-#     MuonSource = "selectedPatMuonsHighPurity",
-#     MuonTauPairSource = "muTauPairsHighPurity",
-#     outputFileName = "tteffAnalysis-hltpftautight-hpspftau-highpurity.root"
-# )
-# process.runTTEffAnaHighPurity = cms.Path(
-#     process.commonSequence +
-#     process.highPuritySequence +
-#     process.TTEffAnalysisHLTPFTauTightHPSHighPurity
-# )
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
+process.TTEffAnalysisHLTPFTauHPSHighPurity = process.TTEffAnalysisHLTPFTauHPS.clone(
+    LoopingOver = "selectedPatTausHpsPFTauHighPurity",
+    MuonSource = "selectedPatMuonsHighPurity",
+    MuonTauPairSource = "muTauPairsHighPurity",
+    outputFileName = "tteffAnalysis-hltpftau-hpspftau-highpurity.root"
+)
+process.runTTEffAnaHighPurity = cms.Path(
+    process.commonSequence +
+    process.highPuritySequence +
+    process.TTEffAnalysisHLTPFTauHPSHighPurity
+)
 
 # L1 emulator
 process.L1simulation_step = cms.Path()
@@ -401,7 +402,8 @@ process.DoMiscHLT = cms.Path(process.hltPFMHTProducer)
 
 process.schedule = cms.Schedule(
     process.runMETCleaning,
-    process.runTTEffAna
+    process.runTTEffAna,
+    process.runTTEffAnaHighPurity
 )
 if runOpenHLT:
     process.schedule = cms.Schedule(process.DoHLTJets,
