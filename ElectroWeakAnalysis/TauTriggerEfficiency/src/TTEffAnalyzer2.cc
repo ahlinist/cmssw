@@ -35,7 +35,7 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMaps.h"
+////#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMaps.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "RecoTauTag/TauTagTools/interface/TauTagTools.h"
@@ -71,7 +71,7 @@ private:
   edm::InputTag l1CenSrc_;
   edm::InputTag l1MetSrc_;
   edm::InputTag l1MhtSrc_;
-//  edm::InputTag l1GtReadoutRecordSrc_;
+  edm::InputTag l1GtReadoutRecordSrc_;
   edm::InputTag l1GtObjectMapRecordSrc_;
   double l1JetMatchingCone_;
   bool l1SelectNearest_;
@@ -496,7 +496,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   if(!triggerBitsOnly) {
 
-/*
+
   edm::Handle<L1GlobalTriggerReadoutRecord>      l1GTRR;
   iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GTRR);   
   const DecisionWord& gtDecisionWord = l1GTRR->decisionWord();
@@ -512,7 +512,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
-*/
+/*
   // In the new format the names are not in the event data,
   // They are in the ParameterSet registry                 
   edm::Handle<L1GlobalTriggerObjectMaps> gtObjectMaps;
@@ -536,7 +536,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
-
+*/
   }
 
   edm::Handle<l1extra::L1JetParticleCollection> hl1taus;
