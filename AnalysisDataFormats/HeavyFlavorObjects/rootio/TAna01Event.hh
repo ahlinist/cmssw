@@ -93,7 +93,7 @@ public:
 
   // ----------------------------------------------------------------------
   // -- Basic event and detector information
-  int               fRunNumber, fEventNumber;
+  Long64_t			fRunNumber, fEventNumber;
   int               fEventBits;
   int               fDetectorStatus; 
   int               fEventTag;
