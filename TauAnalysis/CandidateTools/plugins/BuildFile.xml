@@ -20,7 +20,6 @@
   <use   name="TrackingTools/Records"/>
   <use   name="AnalysisDataFormats/TauAnalysis"/>
   <use   name="TauAnalysis/CandidateTools"/>
-  <use   name="TauAnalysis/FittingTools"/>
   <use   name="roofit"/>
   <use   name="root"/>
   <use   name="lhapdf"/>

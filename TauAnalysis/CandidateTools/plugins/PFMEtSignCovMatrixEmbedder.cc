@@ -44,7 +44,7 @@ template<class T>
 void PFMEtSignCovMatrixEmbedder<T>::produce(edm::Event& evt, const edm::EventSetup& es) {
   std::auto_ptr<Collection> output(new Collection);
 
-  edm::Handle<edm::View<T> > met;
+  edm::Handle<Collection> met;
   evt.getByLabel(src_, met);
 
   edm::Handle<PFMEtSignCovMatrix> cov;
@@ -65,8 +65,8 @@ void PFMEtSignCovMatrixEmbedder<T>::produce(edm::Event& evt, const edm::EventSet
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "DataFormats/METReco/interface/MET.h"
-typedef PFMEtSignCovMatrixEmbedder<reco::MET> RecoPFMEtSignCovMatrixEmbedder;
+#include "DataFormats/METReco/interface/PFMET.h"
+typedef PFMEtSignCovMatrixEmbedder<reco::PFMET> RecoPFMEtSignCovMatrixEmbedder;
 DEFINE_FWK_MODULE(RecoPFMEtSignCovMatrixEmbedder);
 
 #include "DataFormats/PatCandidates/interface/MET.h"
