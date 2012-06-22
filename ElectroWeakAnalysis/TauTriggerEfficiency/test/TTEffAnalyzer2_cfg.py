@@ -419,6 +419,11 @@ process.schedule = cms.Schedule(
     process.runTTEffAna,
     process.runTTEffAnaHighPurity
 )
+if metLeg:
+    process.schedule = cms.Schedule(
+        process.runMETCleaning,
+        process.runTTEffAna
+    )
 if runOpenHLT:
     process.schedule = cms.Schedule(process.DoHLTJets,
 #				process.DoHltMuon,
