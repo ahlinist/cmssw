@@ -486,25 +486,22 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     METs_[i].fill(iEvent);
   }
 
+
   // L1 event level stuff
   edm::Handle<l1extra::L1EtMissParticleCollection> hl1met;
   iEvent.getByLabel(l1MetSrc_, hl1met);
   L1MET_ = hl1met->front().et();
   iEvent.getByLabel(l1MhtSrc_, hl1met);
   L1MHT_ = hl1met->front().et();
+
+  if(!triggerBitsOnly) {
+
 /*
   edm::Handle<L1GlobalTriggerReadoutRecord>      l1GTRR;
   iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GTRR);   
   const DecisionWord& gtDecisionWord = l1GTRR->decisionWord();
 
   edm::Handle<L1GlobalTriggerObjectMapRecord>    l1GTOMRec;
-<<<<<<< TTEffAnalyzer2.cc
-
-  if(!triggerBitsOnly) {
-
-  iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GTRR);
-=======
->>>>>>> 1.9
   iEvent.getByLabel(l1GtObjectMapRecordSrc_, l1GTOMRec);
   const std::vector<L1GlobalTriggerObjectMap>& objMapVec = l1GTOMRec->gtObjectMap();
   for(size_t i=0; i<l1Bits_.size(); ++i) {
@@ -515,9 +512,6 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
-<<<<<<< TTEffAnalyzer2.cc
-  }
-=======
 */
   // In the new format the names are not in the event data,
   // They are in the ParameterSet registry                 
@@ -542,12 +536,14 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
->>>>>>> 1.9
+
+  }
 
   edm::Handle<l1extra::L1JetParticleCollection> hl1taus;
   edm::Handle<l1extra::L1JetParticleCollection> hl1cenjets;
 
   if(!triggerBitsOnly) {
+
   iEvent.getByLabel(l1TauSrc_, hl1taus);
   iEvent.getByLabel(l1CenSrc_, hl1cenjets);
   edm::Handle<L1GctJetCandCollection> l1digis;
@@ -574,6 +570,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     l1JetPhi_.push_back(iJet->phi());
   }
   }
+
   // L2 stuff
   edm::Handle<reco::L2TauInfoAssociation> hl2TauAssoc; // association from L2 calo jets to tau info
   iEvent.getByLabel(l2TauInfoAssocSrc_, hl2TauAssoc);
@@ -595,7 +592,6 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i) {
     iEvent.getByLabel(l25TauSelectedTaus_[i].src, l25TauSelectedTaus_[i].handle);
   }
-
 
   // Jets
   edm::PtrVector<reco::PFJet> selectedPFJets;
@@ -664,7 +660,6 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       PFTauLeadChargedHadrCandPt_.push_back(tau.leadPFChargedHadrCand()->pt());
       PFTauProng_.push_back(tau.signalPFChargedHadrCands().size());
     }
-
     for(size_t iDiscr=0; iDiscr<PFTauDiscriminators_.size(); ++iDiscr) {
       PFTauDiscriminators_[iDiscr].values.push_back(tau.tauID(PFTauDiscriminators_[iDiscr].name));
     }
@@ -843,8 +838,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
            l25TauSelectedTaus_[i].values.push_back(value);
       }
     }
-
-  } // triggerBitsOnly
+    }
     muonAnalyzer->fill(iEvent,iSetup,tau);
   }
 
