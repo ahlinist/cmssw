@@ -206,6 +206,8 @@ private:
   std::vector<L25Discriminator> l25TauDiscriminators_;
   std::vector<OtherTau> l25TauSelectedTaus_;
 
+  bool triggerBitsOnly;
+
   MuonAnalyzer* muonAnalyzer;
   TTree *tree_;
   TFile *file_;
@@ -232,7 +234,8 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   l25TauSrc_(iConfig.getParameter<edm::InputTag>("L25TauSource")),
   l25TauMatchingCone_(iConfig.getParameter<double>("L25MatchingCone")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
-  counters_(iConfig.getParameter<std::vector<edm::InputTag> >("Counters"))
+  counters_(iConfig.getParameter<std::vector<edm::InputTag> >("Counters")),
+  triggerBitsOnly(iConfig.getParameter<bool>("triggerBitsOnly"))
 {
   std::string l1MatchMode = iConfig.getParameter<std::string>("L1JetMatchingMode");
   if(l1MatchMode == "nearestDR")
@@ -483,7 +486,6 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     METs_[i].fill(iEvent);
   }
 
-
   // L1 event level stuff
   edm::Handle<l1extra::L1EtMissParticleCollection> hl1met;
   iEvent.getByLabel(l1MetSrc_, hl1met);
@@ -496,6 +498,13 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   const DecisionWord& gtDecisionWord = l1GTRR->decisionWord();
 
   edm::Handle<L1GlobalTriggerObjectMapRecord>    l1GTOMRec;
+<<<<<<< TTEffAnalyzer2.cc
+
+  if(!triggerBitsOnly) {
+
+  iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GTRR);
+=======
+>>>>>>> 1.9
   iEvent.getByLabel(l1GtObjectMapRecordSrc_, l1GTOMRec);
   const std::vector<L1GlobalTriggerObjectMap>& objMapVec = l1GTOMRec->gtObjectMap();
   for(size_t i=0; i<l1Bits_.size(); ++i) {
@@ -506,6 +515,9 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
+<<<<<<< TTEffAnalyzer2.cc
+  }
+=======
 */
   // In the new format the names are not in the event data,
   // They are in the ParameterSet registry                 
@@ -530,9 +542,12 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
+>>>>>>> 1.9
 
   edm::Handle<l1extra::L1JetParticleCollection> hl1taus;
   edm::Handle<l1extra::L1JetParticleCollection> hl1cenjets;
+
+  if(!triggerBitsOnly) {
   iEvent.getByLabel(l1TauSrc_, hl1taus);
   iEvent.getByLabel(l1CenSrc_, hl1cenjets);
   edm::Handle<L1GctJetCandCollection> l1digis;
@@ -558,7 +573,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     l1JetEta_.push_back(iJet->eta());
     l1JetPhi_.push_back(iJet->phi());
   }
-
+  }
   // L2 stuff
   edm::Handle<reco::L2TauInfoAssociation> hl2TauAssoc; // association from L2 calo jets to tau info
   iEvent.getByLabel(l2TauInfoAssocSrc_, hl2TauAssoc);
@@ -596,12 +611,14 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       PFJetPt_.push_back(jet->pt());
       selectedPFJets.push_back(jet);
 
+      if(!triggerBitsOnly) {
       // Matching to L1 jets
       int l1JetIndex = 0;
       int foundL1 = -1;
       float jetMinDR = 99999999.;
       double jetMaxEt = 0;
       unsigned jetsInMatchingCone = 0;
+      l1extra::L1JetParticleCollection::const_iterator iJet;
       for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet, ++l1JetIndex) {
         double DR = deltaR(*iJet, *jet);
         if(DR < l1JetMatchingCone_) {
@@ -629,6 +646,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       PFJet_matchedL1_.push_back(foundL1);
       PFJet_l1JetsInMatchingCone_.push_back(jetsInMatchingCone);
       PFJet_l1JetMatchDR_.push_back(jetMinDR);
+      }
     }
   }
   }
@@ -642,8 +660,11 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     PFTauEt_.push_back(tau.et());
     PFTauEta_.push_back(tau.eta());
     PFTauPhi_.push_back(tau.phi());
-    PFTauLeadChargedHadrCandPt_.push_back(tau.leadPFChargedHadrCand()->pt());
-    PFTauProng_.push_back(tau.signalPFChargedHadrCands().size());
+    if(tau.leadPFChargedHadrCand().isNonnull()){
+      PFTauLeadChargedHadrCandPt_.push_back(tau.leadPFChargedHadrCand()->pt());
+      PFTauProng_.push_back(tau.signalPFChargedHadrCands().size());
+    }
+
     for(size_t iDiscr=0; iDiscr<PFTauDiscriminators_.size(); ++iDiscr) {
       PFTauDiscriminators_[iDiscr].values.push_back(tau.tauID(PFTauDiscriminators_[iDiscr].name));
     }
@@ -655,12 +676,15 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
     PFTauJetMinDR_.push_back(jetMinDR);
 
+    if(!triggerBitsOnly) {
+
     // Matching to L1
     int l1JetIndex = 0;
     int foundL1 = -1;
     jetMinDR = 99999999.;
     double jetMaxEt = 0;
     unsigned jetsInMatchingCone = 0;
+    l1extra::L1JetParticleCollection::const_iterator iJet;
     for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet, ++l1JetIndex) {
       double DR = deltaR(*iJet, tau);
       if(DR < l1JetMatchingCone_) {
@@ -820,6 +844,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
 
+  } // triggerBitsOnly
     muonAnalyzer->fill(iEvent,iSetup,tau);
   }
 

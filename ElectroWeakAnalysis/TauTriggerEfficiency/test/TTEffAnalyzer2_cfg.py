@@ -4,6 +4,7 @@ import copy
 isData = True
 runL1Emulator = False
 runOpenHLT = False
+metLeg = True
 hltType = "HLT"
 #hltType = "TEST"
 
@@ -44,7 +45,9 @@ if(isData):
         fileNames = cms.untracked.vstring(
 #	"file:/tmp/slehti/hlt_100_1_yct.root"
 #	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
-        "file:TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1.root"
+        "file:TTEffSkim.root"
+#	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
+#        "file:TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1.root"
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
@@ -62,7 +65,9 @@ else:
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
+#    process.GlobalTag.globaltag = 'GR_H_V29::All'
+    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
+#    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START52_V9::All'
@@ -287,7 +292,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         L3IsoQualityCuts                        = process.hltPFTauLooseIsolationDiscriminator.qualityCuts.isolationQualityCuts.clone(),
 
         PileupSummaryInfoSource                 = cms.InputTag("addPileupInfo"),
-        outputFileName          		= cms.string("tteffAnalysis-hltpftau-hpspftau.root")
+        outputFileName          		= cms.string("tteffAnalysis-hltpftau-hpspftau.root"),
+	triggerBitsOnly				= cms.bool(False)
 )
 
 #process.TTEffAnalysisHLTPFtauHPS.clone(
@@ -317,11 +323,19 @@ process.TTEffAnalysisHLTPFTauMediumHPSL2Global = process.TTEffAnalysisHLTPFTauHP
     outputFileName = "tteffAnalysis-hltpftaumediuml2global-hpspftau.root"
 )
 
+process.TTEffAnalysisMETLeg = process.TTEffAnalysisHLTPFTauHPS.clone(
+    outputFileName  = "tteffAnalysis-metleg.root",
+    triggerBitsOnly = cms.bool(True)
+)
+
 process.runTTEffAna = cms.Path(process.commonSequence)
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
-#process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
+if not metLeg:
+    process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
+    #process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
+    process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
+    process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
+else:
+    process.runTTEffAna += process.TTEffAnalysisMETLeg
 
 # The high purity selection (mainly for H+)
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
