@@ -172,6 +172,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             PFMET = cms.InputTag("pfMet"),
             HLTMET = cms.InputTag("hltMet"),
             HLTMHT = cms.InputTag("hltPFMHTProducer"),
+            CaloMET = cms.InputTag("met")
         ),
 
 	MuonSource        = cms.InputTag("selectedPatMuons"),
