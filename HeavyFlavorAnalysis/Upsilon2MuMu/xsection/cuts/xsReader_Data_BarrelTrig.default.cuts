@@ -1,5 +1,5 @@
 TYPE	 301313
-MODE        2  # 1 - MC , 2 - DATA
+MODE        4  # 1 - MC , 2 - DATA , 4 - Upsilon Isolation
 MUTYPE1	    4  # tma
 MUTYPE2    12  # lst 
 PTLO      2.0
