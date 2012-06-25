@@ -232,6 +232,11 @@ void xsReader::eventProcessing() {
     calculateWeights(2); 
     fillCandHist(2); 
     //x_btest(1);
+    
+    if ( MODE == 4  ) {
+      Ups_isolation();
+    }
+    
   }
   
   if ( (0 != fgCand) && (0 != fpCand) && (MODE == 1) ) MCstudy(); 
@@ -305,6 +310,29 @@ bool xsReader::CowboyVeto_gen(TGenCand *gCand){
   return veto;
 }
 
+void xsReader::Ups_isolation(){
+  double dR(-99); double dEta(-99); double dPhi(-99);
+  TAnaTrack *pTrack(0);
+  
+  TLorentzVector Cand; TLorentzVector Track; 
+  Cand.SetPtEtaPhiM(fpCand->fPlab.Pt(), fpCand->fPlab.Eta(), fpCand->fPlab.Phi(), fCandMass);
+  
+  for (int iR = 0; iR < fpEvt->nRecTracks(); ++iR) {
+    pTrack = fpEvt->getRecTrack(iR);
+    Track.SetPtEtaPhiM(pTrack->fPlab.Pt(), pTrack->fPlab.Eta(), pTrack->fPlab.Phi(), MMUON);
+    dR = Cand.DeltaR(Track);
+    dEta = pTrack->fPlab.Eta() - fpCand->fPlab.Eta();
+    dPhi = pTrack->fPlab.Phi() - fpCand->fPlab.Phi();
+    //cout << "dR = " << dR << "dEta = " << dEta <<"dPhi = " << dPhi << endl;
+    
+    ((TH1D*)fpHistFile->Get("Ups_iso_deltaR"))->Fill(dR);
+    ((TH1D*)fpHistFile->Get("Ups_iso_#eta"))->Fill(dEta);
+    ((TH1D*)fpHistFile->Get("Ups_iso_#phi"))->Fill(dPhi);
+    ((TH2D*)fpHistFile->Get("Ups_iso_#eta_#phi"))->Fill(dEta, dPhi);
+    
+  }
+  
+}
 
 bool xsReader::MomentumCorrection(){
   TAnaCand *pCand(0);
@@ -2542,6 +2570,12 @@ void xsReader::bookHist() {
   ((TH1D*)fpHistFile->Get(Form("AnaEff_%.1dS,OverAll", UPSTYPE)))->GetXaxis()->SetBinLabel(2, Form("TruthCand"));;
   ((TH1D*)fpHistFile->Get(Form("AnaEff_%.1dS,OverAll", UPSTYPE)))->GetXaxis()->SetBinLabel(8, Form("TruthCand_AfterCuts"));;
   ((TH1D*)fpHistFile->Get(Form("AnaEff_%.1dS,OverAll", UPSTYPE)))->Sumw2();
+  
+  // Upsilon Isolation Histograms
+  k = new TH2D("Ups_iso_#eta_#phi", "Ups_iso_#eta_#phi", 100, -5., 5., 100, -5., 5.);
+  h = new TH1D("Ups_iso_#eta", "Ups_iso_#eta", 100, -5, 5.);
+  h = new TH1D("Ups_iso_#phi", "Ups_iso_#phi", 100, -5, 5.);
+  h = new TH1D("Ups_iso_deltaR", "Ups_iso_deltaR", 100, 0., 5.);
   
   
   // fillCandHist() histograms

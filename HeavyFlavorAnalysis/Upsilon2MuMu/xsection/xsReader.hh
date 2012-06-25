@@ -64,6 +64,7 @@ public:
   void        candidateSelection(int mode);
   bool        isMatchedToTrig(TAnaTrack *pTag, TString Label);
   void        x_btest(int mode);
+  void        Ups_isolation();
   void        TriggerComparisonStudy();
   void        trigEffCheck();
   void        freePointers();
