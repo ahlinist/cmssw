@@ -944,7 +944,7 @@ AHtoElecTauSpecific_MERGE_SAMPLES = {
         'drawOption' : RECO_SAMPLES['A350_skim']['drawOption'],
     },
     'A400Sum' : {
-        'samples' : [ 'A400_skim', 'bbA450_skim' ],
+        'samples' : [ 'A400_skim', 'bbA400_skim' ],
         'legendEntry' : 'A(400) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A400_skim']['drawOption'],
