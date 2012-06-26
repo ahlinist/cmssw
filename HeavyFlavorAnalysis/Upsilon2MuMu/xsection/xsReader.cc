@@ -1062,16 +1062,16 @@ void xsReader::UpsGun_acceptance(int mode){
     double pt1(-1.), pt2(-1.);
     double eta1(-99.), eta2(-99);
     int index1(-99), index2(-99);
-    double w1(-99), w2(-99), w3(-99), w4(-99), w5(-99);
+    double w1(-99);
     TLorentzVector genCand; TAnaMuon *pMuon;
     TGenCand *g2Cand; TGenCand *g2Cand_; TGenCand *gUps; TGenCand *gMu1; TGenCand *gMu2;
     int m(0);
     int mp;  
     TLorentzVector genMuPlus;
     Float_t cosTheta; Float_t sinTheta; Float_t sin2Theta; Float_t cosPhi; Float_t cos2Phi;
-    TLorentzVector h1; h1.SetPxPyPzE(1,0,0,0);
+    TLorentzVector h1; h1.SetPxPyPzE(0,1,0,0);
+    //TLorentzVector h2; h2.SetPxPyPzE(0,1,0,0); TLorentzVector h3; h3.SetPxPyPzE(0,0,1,0);
     
-
     //fpEvt->dumpGenBlock();
     //cout << " fpEvt->nGenCands() = " << fpEvt->nGenCands() << endl;
     for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
@@ -1096,20 +1096,20 @@ void xsReader::UpsGun_acceptance(int mode){
 	  genMuPlus.SetPtEtaPhiM(gMu2->fP.Perp(), gMu2->fP.Eta(), gMu2->fP.Phi(), 0.106);
 	  genMuPlus *= boost;
 	  cosTheta = genMuPlus.Vect().Dot(genCand.Vect())/(genMuPlus.Vect().Mag()*genCand.Vect().Mag());
-	  sinTheta = 1 - (cosTheta*cosTheta);
+	  sinTheta = genMuPlus.Vect().Cross(genCand.Vect()).Mag()/(genMuPlus.Vect().Mag()*genCand.Vect().Mag());
 	  sin2Theta = 2*sinTheta*cosTheta;
 	  
-	  cosPhi = genMuPlus.Vect().Dot(h1.Vect())/genMuPlus.Vect().Mag();
+	  h1 *= boost; //h2 *= boost; h3 *= boost;
+	  cosPhi = genMuPlus.Vect().Dot(h1.Vect().Unit())/genMuPlus.Vect().Mag();
 	  cos2Phi = 2*cosPhi*cosPhi - 1;
 	  
+	  ((TH1D*)fpHistFile->Get("Ups_#phi"))->Fill(gUps->fP.Phi());
+	  ((TH1D*)fpHistFile->Get("Ups_cos#phi"))->Fill(cosPhi);
 	  
-	  cout << "cosTheta = " << cosTheta << " sinTheta = " << sinTheta << " sin2Theta = " <<  sin2Theta << endl;
-	  cout << "cosPhi = " << cosPhi << " cos2Phi = " <<  cos2Phi << endl;
+	  //cout << "cosTheta = " << cosTheta << " sinTheta = " << sinTheta << " sin2Theta = " <<  sin2Theta << endl;
+	  //cout << "cosPhi = " << cosPhi << " cos2Phi = " <<  cos2Phi << endl;
 	  
 	  w1 = 1;
-	  w2 = 1 + cosTheta*cosTheta;
-	  w3 = 1 - cosTheta*cosTheta;
-	  
 	  
 	}
       }
@@ -2644,6 +2644,10 @@ void xsReader::bookHist() {
   h = new TH1D("Ups_iso_#phi", "Ups_iso_#phi", 100, -5, 5.);
   h = new TH1D("Ups_iso_deltaR", "Ups_iso_deltaR", 100, 0., 5.);
   
+  // Polarization Histo
+  h = new TH1D("Ups_#phi", "Ups_#phi", 100, -4, 4.);
+  h = new TH1D("Ups_cos#phi", "Ups_cos#phi", 22, -1.1, 1.1);
+  h->SetMinimum(0);
   
   // fillCandHist() histograms
   k = new TH2D("UpsilonYield", "UpsilonYield", fNy, fYbin, fNpt, fPTbin); 
