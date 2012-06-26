@@ -1068,7 +1068,7 @@ void xsReader::UpsGun_acceptance(int mode){
     int m(0);
     int mp;  
     TLorentzVector genMuPlus;
-    Float_t cosTheta; Float_t sinTheta; Float_t sin2Theta; Float_t cosPhi; Float_t sinPhi; Float_t sin2Phi;
+    Float_t cosTheta; Float_t sinTheta; Float_t sin2Theta; Float_t cosPhi; Float_t cos2Phi;
     TLorentzVector h1; h1.SetPxPyPzE(1,0,0,0);
     
 
@@ -1100,12 +1100,11 @@ void xsReader::UpsGun_acceptance(int mode){
 	  sin2Theta = 2*sinTheta*cosTheta;
 	  
 	  cosPhi = genMuPlus.Vect().Dot(h1.Vect())/genMuPlus.Vect().Mag();
-	  sinPhi = 1 - (cosPhi*cosPhi);
-	  sin2Phi = 2*sinPhi*cosPhi;
+	  cos2Phi = 2*cosPhi*cosPhi - 1;
 	  
 	  
-	  cout << "cosTheta = " << cosTheta << " sinTheta = " << sinTheta << "sin2Theta = " <<  sin2Theta << endl;
-	  cout << "cosPhi = " << cosPhi << " sinPhi = " << sinPhi << "sin2Phi = " <<  sin2Phi << endl;
+	  cout << "cosTheta = " << cosTheta << " sinTheta = " << sinTheta << " sin2Theta = " <<  sin2Theta << endl;
+	  cout << "cosPhi = " << cosPhi << " cos2Phi = " <<  cos2Phi << endl;
 	  
 	  w1 = 1;
 	  w2 = 1 + cosTheta*cosTheta;
