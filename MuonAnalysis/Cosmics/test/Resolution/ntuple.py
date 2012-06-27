@@ -207,6 +207,9 @@ if not options.batch_name:
         options.batch_name += 'SegsInFit'
     if options.edm_output:
         options.batch_name += 'EDMOut'
+    if options.tunep_tune != (30.,0.):
+        s = '%.1f%.1f' % tuple(options.tunep_tune)
+        options.batch_name += 'TuneP' + s.replace('.','p')
 
 # Figure out the submitter options.
 options.submit = options.submit_mc or options.submit_data
