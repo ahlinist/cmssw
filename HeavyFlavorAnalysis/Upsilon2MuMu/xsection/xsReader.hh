@@ -43,7 +43,7 @@ public:
   void        fillCandHist(int mode);
   void        MCstudy();
   void        acceptance();
-  void        UpsGun_acceptance();
+  void        UpsGun_acceptance(int mode);
   void        PathStudy();
   void        GenStudy();
   void        Detectability();
@@ -109,6 +109,12 @@ public:
   PidTable    *fPidTableTrigFit, *fPidTableMuidFit;
   PidTable    *fPidTable2011SeagullPos, *fPidTable2011SeagullNeg; 
   PidTable    *fPidTable2011CowboyPos, *fPidTable2011CowboyNeg;  
+  PidTable    *fPidTable1SLambdaThetaPos, *fPidTable1SLambdaThetaNeg, *fPidTable1SLambdaThetaPhiPos;
+  PidTable    *fPidTable1SLambdaThetaPhiNeg, *fPidTable1SLambdaPhiNeg, *fPidTable1SLambdaPhiPos; 
+  PidTable    *fPidTable2SLambdaThetaPos, *fPidTable2SLambdaThetaNeg, *fPidTable2SLambdaThetaPhiPos;
+  PidTable    *fPidTable2SLambdaThetaPhiNeg, *fPidTable2SLambdaPhiNeg, *fPidTable2SLambdaPhiPos; 
+  PidTable    *fPidTable3SLambdaThetaPos, *fPidTable3SLambdaThetaNeg, *fPidTable3SLambdaThetaPhiPos;
+  PidTable    *fPidTable3SLambdaThetaPhiNeg, *fPidTable3SLambdaPhiNeg, *fPidTable3SLambdaPhiPos;   
   
   
   double      fWeight;
