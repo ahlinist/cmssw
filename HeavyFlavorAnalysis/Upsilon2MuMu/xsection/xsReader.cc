@@ -103,6 +103,28 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fPidTable2011CowboyPos = new PidTable("Pt2011Cowboy_PosErr.DATA.dat");
   fPidTable2011CowboyNeg = new PidTable("Pt2011Cowboy_NegErr.DATA.dat");  
   
+  fPidTable1SLambdaThetaPos = new PidTable("PidTables/Polarization/Ups1S/Pol_1S_LambdaTheta_PosErr.dat");
+  fPidTable1SLambdaThetaNeg = new PidTable("PidTables/Polarization/Ups1S/Pol_1S_LambdaTheta_NegErr.dat");
+  fPidTable1SLambdaPhiPos = new PidTable("PidTables/Polarization/Ups1S/Pol_1S_LambdaPhi_PosErr.dat");
+  fPidTable1SLambdaPhiNeg = new PidTable("PidTables/Polarization/Ups1S/Pol_1S_LambdaPhi_NegErr.dat");  
+  fPidTable1SLambdaThetaPhiPos = new PidTable("PidTables/Polarization/Ups1S/Pol_1S_LambdaThetaPhi_PosErr.dat");
+  fPidTable1SLambdaThetaPhiNeg = new PidTable("PidTables/Polarization/Ups1S/Pol_1S_LambdaThetaPhi_NegErr.dat");
+  
+  fPidTable2SLambdaThetaPos = new PidTable("PidTables/Polarization/Ups2S/Pol_2S_LambdaTheta_PosErr.dat");
+  fPidTable2SLambdaThetaNeg = new PidTable("PidTables/Polarization/Ups2S/Pol_2S_LambdaTheta_NegErr.dat");
+  fPidTable2SLambdaPhiPos = new PidTable("PidTables/Polarization/Ups2S/Pol_2S_LambdaPhi_PosErr.dat");
+  fPidTable2SLambdaPhiNeg = new PidTable("PidTables/Polarization/Ups2S/Pol_2S_LambdaPhi_NegErr.dat");  
+  fPidTable2SLambdaThetaPhiPos = new PidTable("PidTables/Polarization/Ups2S/Pol_2S_LambdaThetaPhi_PosErr.dat");
+  fPidTable2SLambdaThetaPhiNeg = new PidTable("PidTables/Polarization/Ups2S/Pol_2S_LambdaThetaPhi_NegErr.dat");  
+  
+  fPidTable3SLambdaThetaPos = new PidTable("PidTables/Polarization/Ups3S/Pol_3S_LambdaTheta_PosErr.dat");
+  fPidTable3SLambdaThetaNeg = new PidTable("PidTables/Polarization/Ups3S/Pol_3S_LambdaTheta_NegErr.dat");
+  fPidTable3SLambdaPhiPos = new PidTable("PidTables/Polarization/Ups3S/Pol_3S_LambdaPhi_PosErr.dat");
+  fPidTable3SLambdaPhiNeg = new PidTable("PidTables/Polarization/Ups3S/Pol_3S_LambdaPhi_NegErr.dat");  
+  fPidTable3SLambdaThetaPhiPos = new PidTable("PidTables/Polarization/Ups3S/Pol_3S_LambdaThetaPhi_PosErr.dat");
+  fPidTable3SLambdaThetaPhiNeg = new PidTable("PidTables/Polarization/Ups3S/Pol_3S_LambdaThetaPhi_NegErr.dat");
+  
+    
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
   
@@ -1071,6 +1093,8 @@ void xsReader::UpsGun_acceptance(int mode){
     Float_t cosTheta; Float_t sinTheta; Float_t sin2Theta; Float_t cosPhi; Float_t cos2Phi;
     TLorentzVector h1; h1.SetPxPyPzE(0,1,0,0);
     //TLorentzVector h2; h2.SetPxPyPzE(0,1,0,0); TLorentzVector h3; h3.SetPxPyPzE(0,0,1,0);
+    double lambdaTheta(-99); double lambdaPhi(-99); double lambdaThetaPhi(-99); 
+    
     
     //fpEvt->dumpGenBlock();
     //cout << " fpEvt->nGenCands() = " << fpEvt->nGenCands() << endl;
@@ -1105,11 +1129,34 @@ void xsReader::UpsGun_acceptance(int mode){
 	  
 	  ((TH1D*)fpHistFile->Get("Ups_#phi"))->Fill(gUps->fP.Phi());
 	  ((TH1D*)fpHistFile->Get("Ups_cos#phi"))->Fill(cosPhi);
+	  ((TH1D*)fpHistFile->Get("Ups_cos#theta"))->Fill(cosTheta);
 	  
+	  
+	  if ( UPSTYPE == 1  ){
+	    lambdaTheta = fPidTable1SLambdaThetaPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaPhi = fPidTable1SLambdaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaThetaPhi = fPidTable1SLambdaThetaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	  }
+	  
+	  if ( UPSTYPE == 2  ){
+	    lambdaTheta = fPidTable2SLambdaThetaPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaPhi = fPidTable2SLambdaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaThetaPhi = fPidTable2SLambdaThetaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	  }
+	  
+	  if ( UPSTYPE == 3  ){
+	    lambdaTheta = fPidTable3SLambdaThetaPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaPhi = fPidTable3SLambdaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaThetaPhi = fPidTable3SLambdaThetaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	  }
+	  
+	  //cout <<"lambdaTheta = " << lambdaTheta << "lambdaThetaPhi = " << lambdaThetaPhi << "lambdaPhi = " << lambdaPhi << endl;
 	  //cout << "cosTheta = " << cosTheta << " sinTheta = " << sinTheta << " sin2Theta = " <<  sin2Theta << endl;
 	  //cout << "cosPhi = " << cosPhi << " cos2Phi = " <<  cos2Phi << endl;
 	  
-	  w1 = 1;
+	  w1 = (3/(4*TMath::Pi()*(3+lambdaTheta)))*(1+(lambdaTheta*cosTheta*cosTheta)+(lambdaPhi*sinTheta*sinTheta*cos2Phi)+(lambdaThetaPhi*sin2Theta*cosPhi));
+	  //cout <<" w1 = "  << w1 << endl;
+	  ((TH1D*)fpHistFile->Get("PolarizationWeight"))->Fill(w1);
 	  
 	}
       }
@@ -2647,6 +2694,8 @@ void xsReader::bookHist() {
   // Polarization Histo
   h = new TH1D("Ups_#phi", "Ups_#phi", 100, -4, 4.);
   h = new TH1D("Ups_cos#phi", "Ups_cos#phi", 22, -1.1, 1.1);
+  h = new TH1D("Ups_cos#theta", "Ups_cos#theta", 22, -1.1, 1.1);
+  h = new TH1D("PolarizationWeight", "PolarizationWeight", 22, -1.1, 1.1);
   h->SetMinimum(0);
   
   // fillCandHist() histograms
