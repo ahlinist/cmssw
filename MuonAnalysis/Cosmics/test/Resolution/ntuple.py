@@ -120,8 +120,8 @@ datasets_data = [
     ]
 
 datasets_mc = [
-    ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-SuperPointing-COSMC_42_PEAB-v2/GEN-SIM-RAW-RECO),
-    ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-SuperPointing-COSMC_42_PEAB-v2/GEN-SIM-RAW-RECO),
+    ('P10Peak',  1, '/TKCosmics_p10_PEAK/Summer11-SuperPointing-COSMC_42_PEAB-v2/GEN-SIM-RAW-RECO'),
+    ('P100Peak', 2, '/TKCosmics_p100_PEAK/Summer11-SuperPointing-COSMC_42_PEAB-v2/GEN-SIM-RAW-RECO'),
     ('P500Peak', 3, '/TKCosmics_p500_PEAK/Summer11-SuperPointing-COSMC_42_PEAB-v2/GEN-SIM-RAW-RECO'),
     ]
 
