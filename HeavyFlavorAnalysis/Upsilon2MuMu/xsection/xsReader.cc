@@ -221,6 +221,7 @@ void xsReader::eventProcessing() {
   if ( BARREL == 1 ){
   
     if ( isPathFired(HLTPATH) )  path=0;
+    /* 
     if ( isPathFired(HLTPATH1) ) path=1;
     if ( isPathFired(HLTPATH2) ) path=2;
     if ( isPathFired(HLTPATH3) ) path=3;
@@ -229,9 +230,10 @@ void xsReader::eventProcessing() {
     if ( isPathFired(HLTPATH6) ) path=6;  
     if ( isPathFired(HLTPATH7) ) path=7;
     if ( isPathFired(HLTPATH8) ) path=8;   
-  
+    */
   
     if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+    /*
     if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
     if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
     if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL1) ) goto end;
@@ -240,6 +242,7 @@ void xsReader::eventProcessing() {
     if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
     if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
     if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
+    */
     if (path <0) goto end;
   
   }
@@ -1487,7 +1490,7 @@ bool xsReader::isPathFired( TString Path ){
   for (int a = 0; a < NHLT ; ++a) {
     if ( fpEvt->fHLTNames[a] ==  Path  && fpEvt->fHLTResult[a] == 1  ) {
       HLT_Path = true;
-      //cout << Path << " fired!!!! "  << endl;
+      cout << Path << " fired!!!! "  << endl;
       
       for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
 	pTrig = fpEvt->getTrgObj(s);
@@ -1679,6 +1682,10 @@ void xsReader::candidateSelection(int mode){
     if ( (pl2->fPlab.Eta() > ETAHI) || (pl2->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1_Pt2.push_back(iC);
     //if ( pCand->fVtx.fChi2 > CHI2 ) continue;
+    
+    /// Vertex Cuts
+    if(pCand->fVtx.fProb<0.01) continue;
+    if(pCand->fVtx.fD3d/pCand->fVtx.fD3dE > 3) continue;
     
     //////////
     
