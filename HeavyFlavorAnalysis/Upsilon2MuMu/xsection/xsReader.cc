@@ -175,7 +175,7 @@ void xsReader::eventProcessing() {
   }
   
   if ( MODE == 3  ) {
-    UpsGun_acceptance(2);
+    UpsGun_acceptance(1);
     goto end;
   }
   
@@ -219,30 +219,31 @@ void xsReader::eventProcessing() {
   }
   
   if ( BARREL == 1 ){
-  
+    
+    /*
     if ( isPathFired(HLTPATH) )  path=0;
-    /* 
     if ( isPathFired(HLTPATH1) ) path=1;
     if ( isPathFired(HLTPATH2) ) path=2;
     if ( isPathFired(HLTPATH3) ) path=3;
     if ( isPathFired(HLTPATH4) ) path=4;
     if ( isPathFired(HLTPATH5) ) path=5;
     if ( isPathFired(HLTPATH6) ) path=6;  
+    */
     if ( isPathFired(HLTPATH7) ) path=7;
     if ( isPathFired(HLTPATH8) ) path=8;   
-    */
+    
   
-    if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
     /*
+    if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
     if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
     if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
     if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL1) ) goto end;
     if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL1) ) goto end;
     if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
     if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
+    */
     if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
     if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
-    */
     if (path <0) goto end;
   
   }
@@ -977,7 +978,7 @@ void xsReader::UpsGun_acceptance(int mode){
 	  w5 = 1 - cosThetaStarCS*cosThetaStarCS;
 	  
 	  //cout << " cosThetaStarCS = " << cosThetaStarCS <<  " cosThetaStarHel = "  << cosThetaStarHel << endl;
-	  //cout << " w1 = " << w1 << " w2 = "  << w2 << " w3 = " << w3 << " w4 = " << w4 << " w5 = " << w5 << endl;
+	  cout << " w1 = " << w1 << " w2 = "  << w2 << " w3 = " << w3 << " w4 = " << w4 << " w5 = " << w5 << endl;
 	  
 	}
       }
@@ -1158,7 +1159,8 @@ void xsReader::UpsGun_acceptance(int mode){
 	  //cout << "cosPhi = " << cosPhi << " cos2Phi = " <<  cos2Phi << endl;
 	  
 	  w1 = (3/(4*TMath::Pi()*(3+lambdaTheta)))*(1+(lambdaTheta*cosTheta*cosTheta)+(lambdaPhi*sinTheta*sinTheta*cos2Phi)+(lambdaThetaPhi*sin2Theta*cosPhi));
-	  //cout <<" w1 = "  << w1 << endl;
+	  if ( gUps->fP.Perp() < 10  ) continue;
+	  if ( (genCand.Rapidity() < -1.2) || (genCand.Rapidity() > 1.2) ) continue;
 	  ((TH1D*)fpHistFile->Get("PolarizationWeight"))->Fill(w1);
 	  
 	}
@@ -1490,7 +1492,7 @@ bool xsReader::isPathFired( TString Path ){
   for (int a = 0; a < NHLT ; ++a) {
     if ( fpEvt->fHLTNames[a] ==  Path  && fpEvt->fHLTResult[a] == 1  ) {
       HLT_Path = true;
-      cout << Path << " fired!!!! "  << endl;
+      //cout << Path << " fired!!!! "  << endl;
       
       for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
 	pTrig = fpEvt->getTrgObj(s);
