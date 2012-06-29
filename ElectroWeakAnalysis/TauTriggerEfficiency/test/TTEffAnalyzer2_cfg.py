@@ -208,7 +208,9 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
 	    "L1_ETM40",
 	    "L1_Mu12er_ETM20"
         ),
-        HltResults              		= cms.InputTag("TriggerResults","",hltType),
+        HltResults      = cms.InputTag("TriggerResults","",hltType),
+	TriggerEvent    = cms.InputTag("hltTriggerSummaryAOD","",hltType),
+        HltObjectFilter = cms.InputTag("hltPFTau35TrackPt20LooseIsoProng2","",hltType),
         HltPaths = cms.vstring(
             "HLT_IsoMu17_v5", "HLT_IsoMu17_v6", "HLT_IsoMu17_v8", "HLT_IsoMu17_v9", "HLT_IsoMu17_v10", "HLT_IsoMu17_v11", "HLT_IsoMu17_v13", "HLT_IsoMu17_v14",
             "HLT_IsoMu17_eta2p1_v1",
