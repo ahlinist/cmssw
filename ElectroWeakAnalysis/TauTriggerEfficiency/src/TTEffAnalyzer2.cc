@@ -12,6 +12,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/Registry.h"
 #include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
 
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
@@ -63,6 +65,8 @@ private:
 
   // Input stuff
   edm::InputTag hltResultsSrc_;
+  edm::InputTag hltEventSrc_;
+  edm::InputTag hltFilterSrc_;
   edm::InputTag pfTauSrc_;
   edm::InputTag pileupSummaryInfoSrc_;
   edm::InputTag pfJetSrc_;
@@ -185,6 +189,8 @@ private:
   std::vector<unsigned> PFJet_l1JetsInMatchingCone_;
   std::vector<float> PFJet_l1JetMatchDR_;
 
+  std::vector<int> PFTau_matchedHLTObject_;
+
 
   // L2 per-tau
   std::vector<bool> l2HasMatchedL2Jet_;
@@ -218,6 +224,8 @@ private:
 
 TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   hltResultsSrc_(iConfig.getParameter<edm::InputTag>("HltResults")),
+  hltEventSrc_(iConfig.getParameter<edm::InputTag>("TriggerEvent")),
+  hltFilterSrc_(iConfig.getParameter<edm::InputTag>("HltObjectFilter")),
   pfTauSrc_(iConfig.getParameter<edm::InputTag>("LoopingOver")),
   pileupSummaryInfoSrc_(iConfig.getParameter<edm::InputTag>("PileupSummaryInfoSource")),
   pfJetSrc_(iConfig.getParameter<edm::InputTag>("Jets")),
@@ -342,6 +350,8 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   tree_->Branch("PFJet_l1JetsInMatchingCone_", &PFJet_l1JetsInMatchingCone_);
   tree_->Branch("PFJet_l1JetMatchDR", &PFJet_l1JetMatchDR_);
 
+  tree_->Branch("PFTau_matchedHLTObject", &PFTau_matchedHLTObject_);
+
   tree_->Branch("hasMatchedL2Jet", &l2HasMatchedL2Jet_);
   tree_->Branch("L2JetPt", &l2JetPt_);
   tree_->Branch("L2JetEt", &l2JetEt_);
@@ -419,6 +429,7 @@ void TTEffAnalyzer2::reset() {
   PFTau_matchedL1_.clear();
   PFTau_l1JetsInMatchingCone_.clear();
   PFTau_l1JetMatchDR_.clear();
+  PFTau_matchedHLTObject_.clear();
 
   PFJet_matchedL1_.clear();
   PFJet_l1JetsInMatchingCone_.clear();
@@ -481,6 +492,31 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     hltBits_[i].value = hltresults->accept(itrig);
   }
 
+  // HLT objects.,.
+  std::vector<trigger::TriggerObject> hltObjects;
+  edm::Handle<trigger::TriggerEvent> triggerObjs;
+  if(iEvent.getByLabel(hltEventSrc_,triggerObjs)){
+	const trigger::TriggerObjectCollection objs(triggerObjs->getObjects());
+	/* uncomment to get a list of available trigger objects
+        for(size_t i = 0; i < objs.size(); ++i){
+                std::cout << "    trigger objs pt,eta,phi: " << i << " "
+                          << objs[i].pt() << " " << objs[i].eta() << " " << objs[i].phi() << std::endl;
+        }
+	*/
+	size_t index = triggerObjs->filterIndex(hltFilterSrc_);
+	//std::cout << "Filter index " << hltFilterSrc_.label() << " " << index << std::endl;
+	if(index < triggerObjs->sizeFilters()){
+            const trigger::Keys& KEYS(triggerObjs->filterKeys(index));
+            //std::cout << "KEYS size " << KEYS.size() << std::endl;
+            for(size_t i = 0;i<KEYS.size();++i){
+                //std::cout << "KEYS " << KEYS[i] << " " << objs.size() << std::endl;
+                const trigger::TriggerObject& TO(objs[KEYS[i]]);
+                //std::cout << "TriggerObject pt,eta,phi: " << TO.pt() << " "
+                //          << TO.eta() << " " << TO.phi() << std::endl;
+		hltObjects.push_back(TO);
+            }
+	}
+  }
 
   // MET stuff
   for(size_t i=0; i<METs_.size(); ++i) {
@@ -671,6 +707,16 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       jetMinDR = std::min(deltaR(*(selectedPFJets[i]), tau), jetMinDR);
     }
     PFTauJetMinDR_.push_back(jetMinDR);
+
+    // Matching to HLT objects
+    int foundMatch = 0;
+    for(size_t i = 0; i < hltObjects.size(); ++i){
+        double DR = deltaR(hltObjects[i], tau);
+	if(DR < jetMinDR) foundMatch = 1;
+
+    }
+    PFTau_matchedHLTObject_.push_back(foundMatch);
+
 
     if(!triggerBitsOnly) {
 
