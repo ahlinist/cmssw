@@ -18,6 +18,7 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/Common/interface/PtrVector.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
@@ -594,11 +595,11 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   }
 
   // Jets
-  edm::PtrVector<reco::PFJet> selectedPFJets;
-  edm::Handle<edm::View<reco::PFJet> > hjets;
+  edm::PtrVector<pat::Jet> selectedPFJets;
+  edm::Handle<edm::View<pat::Jet> > hjets;
   if(iEvent.getByLabel(pfJetSrc_, hjets)){
   for(size_t i=0; i<hjets->size(); ++i) {
-    edm::Ptr<reco::PFJet> jet = hjets->ptrAt(i);
+    edm::Ptr<pat::Jet> jet = hjets->ptrAt(i);
     if(jet->pt() > 30 && // kinematics
        std::abs(jet->eta()) < 2.4 && 
        jet->numberOfDaughters() > 1 && jet->chargedEmEnergyFraction() < 0.99 &&

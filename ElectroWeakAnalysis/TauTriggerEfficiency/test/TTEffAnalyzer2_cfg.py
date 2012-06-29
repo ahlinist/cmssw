@@ -66,8 +66,8 @@ else:
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
 #    process.GlobalTag.globaltag = 'GR_H_V29::All'
-    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
-#    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
+#    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
+    process.GlobalTag.globaltag = 'GR_R_52_V9D::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START52_V9::All'
@@ -178,7 +178,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
 	MuonSource        = cms.InputTag("selectedPatMuons"),
 	MuonTauPairSource = cms.InputTag("muTauPairs"),
 
-        Jets = cms.InputTag("ak5PFJetsL1L2L3"),
+#        Jets = cms.InputTag("ak5PFJetsL1L2L3"),
+	Jets = cms.InputTag("selectedPatJets"),
         offlineVertexSrc = cms.InputTag("goodPrimaryVertices"),
 
 	L1extraTauJetSource			= cms.InputTag("l1extraParticles", "Tau"),
