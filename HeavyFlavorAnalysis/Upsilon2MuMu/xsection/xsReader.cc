@@ -175,7 +175,7 @@ void xsReader::eventProcessing() {
   }
   
   if ( MODE == 3  ) {
-    UpsGun_acceptance(1);
+    UpsGun_acceptance(2);
     goto end;
   }
   
@@ -1158,19 +1158,101 @@ void xsReader::UpsGun_acceptance(int mode){
 	  //cout << "cosTheta = " << cosTheta << " sinTheta = " << sinTheta << " sin2Theta = " <<  sin2Theta << endl;
 	  //cout << "cosPhi = " << cosPhi << " cos2Phi = " <<  cos2Phi << endl;
 	  
-	  w1 = (3/(4*TMath::Pi()*(3+lambdaTheta)))*(1+(lambdaTheta*cosTheta*cosTheta)+(lambdaPhi*sinTheta*sinTheta*cos2Phi)+(lambdaThetaPhi*sin2Theta*cosPhi));
-	  if ( gUps->fP.Perp() < 10  ) continue;
-	  if ( (genCand.Rapidity() < -1.2) || (genCand.Rapidity() > 1.2) ) continue;
+	  w1 = (3/(3+lambdaTheta))*(1+(lambdaTheta*cosTheta*cosTheta)+(lambdaPhi*sinTheta*sinTheta*cos2Phi)+(lambdaThetaPhi*sin2Theta*cosPhi));
+	  
+	  if ( gUps->fP.Perp() < 10  ) w1 = 1;
+	  if ( (genCand.Rapidity() < -1.2) || (genCand.Rapidity() > 1.2) ) w1 = 1;
+	  
 	  ((TH1D*)fpHistFile->Get("PolarizationWeight"))->Fill(w1);
 	  
 	}
       }
     }
     
-    
-    
+    if ( ups ){
+      genCand.SetPtEtaPhiE(gUps->fP.Perp(),gUps->fP.Eta(),gUps->fP.Phi(),gUps->fP.Energy());
+      
+      ((TH1D*)fpHistFile->Get(Form("UG_UpsMass_%.1dS",UPSTYPE)))->Fill(genCand.M());
+      ((TH1D*)fpHistFile->Get(Form("UG_UpsPt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp());
+      ((TH1D*)fpHistFile->Get(Form("UG_UpsRapidity_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity());
+      
+      if ( (gUps->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
+	if ( genCand.Rapidity() >= 0 ) {
+	  ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w1);
+	}
+	if ( genCand.Rapidity() < 0 ) {
+	  ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w1);
+	}
+      }
+      
+      if ( mu1 && mu2 ){
+	pt1 = gMu1->fP.Perp();
+	eta1 = gMu1->fP.Eta();
+	pt2 = gMu2->fP.Perp();
+	eta2 = gMu2->fP.Eta();
+	((TH1D*)fpHistFile->Get(Form("UG_MuonPt_%.1dS",UPSTYPE)))->Fill(pt1);
+	((TH1D*)fpHistFile->Get(Form("UG_MuonPt_%.1dS",UPSTYPE)))->Fill(pt2);
+	((TH1D*)fpHistFile->Get(Form("UG_MuonEta_%.1dS",UPSTYPE)))->Fill(eta1);
+	((TH1D*)fpHistFile->Get(Form("UG_MuonEta_%.1dS",UPSTYPE)))->Fill(eta2);
+	
+	if ( pt1 > pt2 ){
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	  ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	  if ( TMath::Abs(genCand.Rapidity()) <= 1.2  ){
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	    ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	  }
+	  if ( TMath::Abs(genCand.Rapidity()) > 1.2  ){
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	    ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	  }
+	}
+	
+	if ( pt1 < pt2 ){
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	  ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	  if ( TMath::Abs(genCand.Rapidity()) <= 1.2  ){
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	    ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	  }
+	  if ( TMath::Abs(genCand.Rapidity()) > 1.2  ){
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	    ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	  }
+	}      
+	
+	
+	if ((pt1 >= PTLO) && (pt2 >= PTLO) && (eta1 >= ETALO) && (eta2 >= ETALO) && (eta1 <= ETAHI) && (eta2 <= ETAHI) && (pt1 <= PTHI) && (pt2 <= PTHI) ){
+	  fill = true;
+	  if ( ((TMath::Abs(eta1) <= ETABARREL) && (pt1 < PTBARREL)) || ((TMath::Abs(eta2) <= ETABARREL) && (pt2 < PTBARREL)) ){
+	    fill = false;
+	  }
+	  if ( ((TMath::Abs(eta1) >= ETABARREL) && ((TMath::Abs(eta1) <= ETAMI) && (pt1 < PTMI))) || ((TMath::Abs(eta2) >= ETABARREL) && (TMath::Abs(eta2) <= ETAMI) && (pt2 < PTMI)) ){
+	    fill = false;
+	  }
+	}
+      }
+      
+      if ( fill ){
+	if ( (gUps->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
+	  if ( genCand.Rapidity() >= 0 ) {
+	    ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w1);
+	  }
+	  if ( genCand.Rapidity() < 0 ) {
+	    ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w1);
+	  }
+	}
+      }
+    }
   }
 }
+
 
 void xsReader::acceptance(){
   
@@ -2704,7 +2786,7 @@ void xsReader::bookHist() {
   h = new TH1D("Ups_#phi", "Ups_#phi", 100, -4, 4.);
   h = new TH1D("Ups_cos#phi", "Ups_cos#phi", 22, -1.1, 1.1);
   h = new TH1D("Ups_cos#theta", "Ups_cos#theta", 22, -1.1, 1.1);
-  h = new TH1D("PolarizationWeight", "PolarizationWeight", 22, -1.1, 1.1);
+  h = new TH1D("PolarizationWeight", "PolarizationWeight", 20, 0.6, 1.4);
   h->SetMinimum(0);
   
   // fillCandHist() histograms

@@ -296,7 +296,7 @@ void anaXS::loadFiles(const char *dir, int i) {
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_noMSC.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
-      afile = fDirectory + string("/Acc_All_0_100.xsReader_1S.default.root");
+      afile = fDirectory + string("/Acc_All_0_100_1.xsReader.default.root");
       ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
       jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
      
@@ -1054,15 +1054,16 @@ void anaXS::makeAllDATA(int channel) {
     //plot_RapInt();
     //plot_PtInt();
     
-        
-    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    plotAcceptance();
+            
+    ///FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff(); 
     //GetPreSelEff();
     //GetTrackEff();
-    GetMuIDEff(2);
+    ///GetMuIDEff(2);
     //GetTrigEff(2);
-    CorrectedYields(3);   // 1- FOR MC, 2 FOR 2010 DATA , 3 - FOR 2011 DATA
-    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    ///CorrectedYields(3);   // 1- FOR MC, 2 FOR 2010 DATA , 3 - FOR 2011 DATA
+    ///PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -2422,7 +2423,7 @@ void anaXS::PlotProjections(int mode) {
     
     //plotAcceptance();
     for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
-      for (int i = 1; i <= fAcceptance->GetNbinsX(); ++i) {
+      for (int i = 1; i <= fAcceptance->GetNbinsX() - 1; ++i) {
 	bin_contentAll += fAllGenRes->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes->GetCellContent(i,j);
 	bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
@@ -2443,7 +2444,7 @@ void anaXS::PlotProjections(int mode) {
     }
     
     for (int j = 1; j <= fAcceptance_2S->GetNbinsY(); ++j){
-      for (int i = 1; i <= fAcceptance_2S->GetNbinsX(); ++i) {
+      for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 1; ++i) {
 	bin_contentAll += fAllGenRes_2S->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes_2S->GetCellContent(i,j);
 	bin_contentYield += fS2YieldCorrected->GetCellContent(i,j);
@@ -2464,7 +2465,7 @@ void anaXS::PlotProjections(int mode) {
     }
     
     for (int j = 1; j <= fAcceptance_3S->GetNbinsY(); ++j){
-      for (int i = 1; i <= fAcceptance_3S->GetNbinsX(); ++i) {
+      for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 1; ++i) {
 	bin_contentAll += fAllGenRes_3S->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes_3S->GetCellContent(i,j);
 	bin_contentYield += fS3YieldCorrected->GetCellContent(i,j);
@@ -2686,7 +2687,7 @@ void anaXS::PlotProjections(int mode) {
     //table(fS3YieldPt, 3);
     
     bin_contentAll=0; bin_contentYield=0;
-    for (int i = 1; i <= fAcceptance->GetNbinsX(); ++i) {
+    for (int i = 1; i <= fAcceptance->GetNbinsX() - 1; ++i) {
       for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
@@ -2705,7 +2706,7 @@ void anaXS::PlotProjections(int mode) {
             
     }
     
-    for (int i = 1; i <= fAcceptance_2S->GetNbinsX(); ++i) {
+    for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 1; ++i) {
       for (int j = 1; j <= fAcceptance_2S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS2YieldCorrected->GetCellContent(i,j);
@@ -2725,7 +2726,7 @@ void anaXS::PlotProjections(int mode) {
      
     }
     
-    for (int i = 1; i <= fAcceptance_3S->GetNbinsX(); ++i) {
+    for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 1; ++i) {
       for (int j = 1; j <= fAcceptance_3S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS3YieldCorrected->GetCellContent(i,j);
@@ -2760,7 +2761,7 @@ void anaXS::PlotProjections(int mode) {
     //c1->cd(1);
     fS1YieldEta->SetTitle("Yield Comparison");
     fS1YieldEta->GetXaxis()->SetTitle("Rapidity");
-    fS1YieldEta->SetMinimum(0.2);
+    fS1YieldEta->SetMinimum(0.0);
     fS1YieldEta->SetMaximum(2.2);
     fS1YieldEta->SetMarkerStyle(21);
     fS1YieldEta->SetMarkerColor(3);
