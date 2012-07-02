@@ -296,7 +296,7 @@ void anaXS::loadFiles(const char *dir, int i) {
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.default_noMSC.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
-      afile = fDirectory + string("/Acc_All_0_100_1.xsReader.default.root");
+      afile = fDirectory + string("/Acc_All_0_100.xsReader.default.root");
       ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
       jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
      
