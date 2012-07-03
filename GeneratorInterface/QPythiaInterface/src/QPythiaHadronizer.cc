@@ -2,7 +2,7 @@
  *
  * Generates PYQUEN HepMC events
  *
- * $Id: QPythiaHadronizer.cc,v 1.13 2011/03/02 10:35:17 yilmaz Exp $
+ * $Id: QPythiaHadronizer.cc,v 1.1 2012/07/03 19:54:12 yilmaz Exp $
 */
 
 #include <iostream>
@@ -55,10 +55,18 @@ maxEventsToPrint_(pset.getUntrackedParameter<int>("maxEventsToPrint",1)),
 pythiaHepMCVerbosity_(pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
 pythiaPylistVerbosity_(pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
 pythia6Service_(new Pythia6Service(pset)),
-filterType_(pset.getUntrackedParameter<string>("filterType","None"))
+   filterType_(pset.getUntrackedParameter<string>("filterType","None")),
+   geometryMode_(pset.getParameter<int>("geometryMode")),
+   pathLength_(pset.getParameter<double>("pathLength")),
+   qhat_(pset.getParameter<double>("qhat"))
 {
   // Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
+
+  if(geometryMode_ < 1 || geometryMode_ > 4){
+    // crash
+  }
+
   LogDebug("PYLISTverbosity") << "Pythia PYLIST verbosity level = " << pythiaPylistVerbosity_ << endl;
   // HepMC event verbosity Level
   pythiaHepMCVerbosity_ = pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false);
@@ -222,8 +230,11 @@ bool QPythiaHadronizer::pyquen_init(const ParameterSet &pset)
 {
 
   // Physics parameters
-  QOPTIONS.xlfix = 6; // fm
-  QOPTIONS.qhatfix = 50;
+  //  QOPTIONS.xlfix = 6; // fm
+  //  QOPTIONS.qhatfix = 50;
+
+  QOPTIONS.xlfix = pathLength_;
+  QOPTIONS.qhatfix = qhat_;
 
   // Technical stuff
   FileInPath qpData("GeneratorInterface/QPythiaInterface/data/grid-qp.dat");
