@@ -297,8 +297,8 @@ void anaXS::loadFiles(const char *dir, int i) {
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
       afile = fDirectory + string("/Acc_All_0_100.xsReader.default.root");
-      ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
-      jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v1.root");
+      ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v3p2_t1.root");
+      jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v3p2_t1.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -1054,16 +1054,16 @@ void anaXS::makeAllDATA(int channel) {
     //plot_RapInt();
     //plot_PtInt();
     
-    plotAcceptance();
+    ///////plotAcceptance();
             
-    ///FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff(); 
     //GetPreSelEff();
     //GetTrackEff();
-    ///GetMuIDEff(2);
+    GetMuIDEff(2);
     //GetTrigEff(2);
-    ///CorrectedYields(3);   // 1- FOR MC, 2 FOR 2010 DATA , 3 - FOR 2011 DATA
-    ///PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    CorrectedYields(3);   // 1- FOR MC, 2 FOR 2010 DATA , 3 - FOR 2011 DATA
+    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -1627,8 +1627,8 @@ void anaXS::CorrectedYields(int mode){
   if ( mode == 2 ){
     double binErr(0);
     double bin(0.); double bin_ratio(-1);
-    double lumi(36738);
-    
+    double lumi(36738); // 2010 RunB
+        
     TFile *f = new TFile("Upsilon_2D.root", "RECREATE");
     
     for ( int iy = 1; iy <= fS1Yield->GetNbinsX(); ++iy ){
@@ -1756,7 +1756,13 @@ void anaXS::CorrectedYields(int mode){
   if ( mode == 3 ){
     double binErr(0);
     double bin(0.); double bin_ratio(-1);
-    double lumi(4815000); // 2011 Barrel Trigger Recorded
+    //double lumi(4815000); // 2011 Barrel Trigger Recorded
+    //double lumi(165600); // 2011 Dimuon0_Barrel_Upsilon_v1 Run#163269 - 163869  
+    //double lumi(915000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3
+    double lumi(693000); // 2011 Dimuon5_Upsilon_Barrel_v5
+    //double lumi(1608000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3,5 Run#165088 - 172868
+    //double lumi(2902300); // 2011 Dimuon7_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
+    //double lumi(2902300); // 2011 Dimuon9_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
     
     TFile *f = new TFile("Upsilon_2D.root", "RECREATE");
     
@@ -2410,7 +2416,14 @@ void anaXS::PlotProjections(int mode) {
     //double lumi(3155);  // For HLTDoubleMu0 in Run2010A
     //double lumi(5399);  // For HLTDoubleMu0 in Run2010B
     //double lumi(36738); // All Run2010B 
-    double lumi(4815000); // 2011 Barrel Trigger Recorded
+    //double lumi(4815000); // 2011 Barrel Trigger Recorded
+    //double lumi(165600); // 2011 Dimuon0_Barrel_Upsilon_v1 Run#163269 - 163869  
+    //double lumi(1608000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3,5 Run#165088 - 172868
+    //double lumi(915000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3
+    double lumi(693000); // 2011 Dimuon5_Upsilon_Barrel_v5
+    //double lumi(2902300); // 2011 Dimuon7_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
+    //double lumi(2902300); // 2011 Dimuon9_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
+
     double xsection(0);
     double bin_contentYieldErr(0); double xsectionErr(0);
     hICHEP = new TH1D("hICHEP", "hICHEP", 
@@ -2422,8 +2435,8 @@ void anaXS::PlotProjections(int mode) {
 		      );    
     
     //plotAcceptance();
-    for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
-      for (int i = 1; i <= fAcceptance->GetNbinsX() - 1; ++i) {
+    for (int j = 6; j <= fAcceptance->GetNbinsY(); ++j){
+      for (int i = 1; i <= fAcceptance->GetNbinsX() - 2; ++i) {
 	bin_contentAll += fAllGenRes->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes->GetCellContent(i,j);
 	bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
@@ -2443,8 +2456,8 @@ void anaXS::PlotProjections(int mode) {
       bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
     }
     
-    for (int j = 1; j <= fAcceptance_2S->GetNbinsY(); ++j){
-      for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 1; ++i) {
+    for (int j = 6; j <= fAcceptance_2S->GetNbinsY(); ++j){
+      for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 2; ++i) {
 	bin_contentAll += fAllGenRes_2S->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes_2S->GetCellContent(i,j);
 	bin_contentYield += fS2YieldCorrected->GetCellContent(i,j);
@@ -2464,8 +2477,8 @@ void anaXS::PlotProjections(int mode) {
       bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
     }
     
-    for (int j = 1; j <= fAcceptance_3S->GetNbinsY(); ++j){
-      for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 1; ++i) {
+    for (int j = 6; j <= fAcceptance_3S->GetNbinsY(); ++j){
+      for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 2; ++i) {
 	bin_contentAll += fAllGenRes_3S->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes_3S->GetCellContent(i,j);
 	bin_contentYield += fS3YieldCorrected->GetCellContent(i,j);
@@ -2606,6 +2619,7 @@ void anaXS::PlotProjections(int mode) {
     legge = legg->AddEntry(hICHEP,  "UpsTeam Results for 33pb^{-1}","p"); legge->SetTextColor(kBlack);
     legg->Draw();
     
+    fAcceptanceProjPt->Write();
     fS1YieldPt->Write();
     
     //makeCanvas(1);
@@ -2643,6 +2657,7 @@ void anaXS::PlotProjections(int mode) {
     legge = legg->AddEntry(hICHEP,  "UpsTeam Results (38.9 pb^{-1})","p"); legge->SetTextColor(kBlack);
     //legg->Draw();
     
+    fAcceptanceProjPt_2S->Write();
     fS2YieldPt->Write();
     
     //makeCanvas(1);
@@ -2664,7 +2679,7 @@ void anaXS::PlotProjections(int mode) {
     fS3YieldPt->SetTitle("Differential XSection");
     fS3YieldPt->GetXaxis()->SetTitle("P_{T}");
     //fS3YieldPt->SetMinimum(0.);
-    //fS3YieldPt->SetMaximum(0.15);
+    //fS3YieldPt->SetMaximum(0.35);
     fS3YieldPt->SetMarkerStyle(21);
     fS3YieldPt->SetMarkerColor(3);
     fS3YieldPt->SetLineColor(3);
@@ -2679,7 +2694,8 @@ void anaXS::PlotProjections(int mode) {
     legge = legg->AddEntry(fS3YieldPt,  "My Run2010B Results ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(hICHEP,  "UpsTeam Results (38.9 pb^{-1})","p"); legge->SetTextColor(kBlack);
     //legg->Draw();
-
+    
+    fAcceptanceProjPt_3S->Write();
     fS3YieldPt->Write();
     
     //table(fS1YieldPt, 1);
@@ -2687,8 +2703,8 @@ void anaXS::PlotProjections(int mode) {
     //table(fS3YieldPt, 3);
     
     bin_contentAll=0; bin_contentYield=0;
-    for (int i = 1; i <= fAcceptance->GetNbinsX() - 1; ++i) {
-      for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
+    for (int i = 1; i <= fAcceptance->GetNbinsX() - 2; ++i) {
+      for (int j = 6; j <= fAcceptance->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
 	bin_contentYieldErr += fS1YieldCorrected->GetCellError(i,j)*fS1YieldCorrected->GetCellError(i,j);
@@ -2706,8 +2722,8 @@ void anaXS::PlotProjections(int mode) {
             
     }
     
-    for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 1; ++i) {
-      for (int j = 1; j <= fAcceptance_2S->GetNbinsY(); ++j){
+    for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 2; ++i) {
+      for (int j = 6; j <= fAcceptance_2S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS2YieldCorrected->GetCellContent(i,j);
 	bin_contentYieldErr += fS2YieldCorrected->GetCellError(i,j)*fS2YieldCorrected->GetCellError(i,j);
@@ -2726,8 +2742,8 @@ void anaXS::PlotProjections(int mode) {
      
     }
     
-    for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 1; ++i) {
-      for (int j = 1; j <= fAcceptance_3S->GetNbinsY(); ++j){
+    for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 2; ++i) {
+      for (int j = 6; j <= fAcceptance_3S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS3YieldCorrected->GetCellContent(i,j);
 	bin_contentYieldErr += fS3YieldCorrected->GetCellError(i,j)*fS3YieldCorrected->GetCellError(i,j);
@@ -2762,7 +2778,7 @@ void anaXS::PlotProjections(int mode) {
     fS1YieldEta->SetTitle("Yield Comparison");
     fS1YieldEta->GetXaxis()->SetTitle("Rapidity");
     fS1YieldEta->SetMinimum(0.0);
-    fS1YieldEta->SetMaximum(2.2);
+    fS1YieldEta->SetMaximum(4.2);
     fS1YieldEta->SetMarkerStyle(21);
     fS1YieldEta->SetMarkerColor(3);
     fS1YieldEta->SetLineColor(3);
@@ -2785,7 +2801,7 @@ void anaXS::PlotProjections(int mode) {
     fS2YieldEta->SetTitle("Yield Comparison");
     fS2YieldEta->GetXaxis()->SetTitle("Rapidity");
     fS2YieldEta->SetMinimum(0.0);
-    fS2YieldEta->SetMaximum(1.0);
+    fS2YieldEta->SetMaximum(2.0);
     fS2YieldEta->SetMarkerStyle(21);
     fS2YieldEta->SetMarkerColor(3);
     fS2YieldEta->SetLineColor(3);
@@ -2808,7 +2824,7 @@ void anaXS::PlotProjections(int mode) {
     fS3YieldEta->SetTitle("Yield Comparison");
     fS3YieldEta->GetXaxis()->SetTitle("Rapidity");
     fS3YieldEta->SetMinimum(0.0);
-    fS3YieldEta->SetMaximum(0.4);
+    fS3YieldEta->SetMaximum(1.0);
     fS3YieldEta->SetMarkerStyle(21);
     fS3YieldEta->SetMarkerColor(3);
     fS3YieldEta->SetLineColor(3);
