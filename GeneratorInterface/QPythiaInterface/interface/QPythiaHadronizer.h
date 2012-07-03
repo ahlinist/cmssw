@@ -4,7 +4,7 @@
 /** \class QPythiaHadronizer
  *
  * Generates PYTHIA+PYQUEN ==> HepMC events
- * $Id: QPythiaHadronizer.h,v 1.12 2011/03/02 10:35:17 yilmaz Exp $
+ * $Id: QPythiaHadronizer.h,v 1.1 2012/07/03 19:54:11 yilmaz Exp $
  *
  * Camelia Mironov                                  
  *   for the Generator Interface. March 2007
@@ -78,6 +78,10 @@ namespace gen
     unsigned int     maxEventsToPrint_;       //! Events to print if verbosity  
     bool             pythiaHepMCVerbosity_;   //! HepMC verbosity flag
     unsigned int     pythiaPylistVerbosity_;  //! Pythia PYLIST Verbosity flag 
+
+    double           pathLength_;
+    double           qhat_;
+    int              geometryMode_;
 
     //    CLHEP::HepRandomEngine* fRandomEngine;
     edm::InputTag   src_;
