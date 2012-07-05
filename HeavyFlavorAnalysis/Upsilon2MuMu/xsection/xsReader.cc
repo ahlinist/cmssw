@@ -15,7 +15,8 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  fpJSON = new JSON("json_160404_179431"); // Run2011
+  //fpJSON = new JSON("json_160404_179431"); // Run2011
+  fpJSON = new JSON("json_160404_180252"); // Run2011 Complete
   //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
   //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
   //fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
@@ -220,7 +221,7 @@ void xsReader::eventProcessing() {
   
   if ( BARREL == 1 ){
     
-    /*
+    
     if ( isPathFired(HLTPATH) )  path=0;
     if ( isPathFired(HLTPATH1) ) path=1;
     if ( isPathFired(HLTPATH2) ) path=2;
@@ -228,12 +229,11 @@ void xsReader::eventProcessing() {
     if ( isPathFired(HLTPATH4) ) path=4;
     if ( isPathFired(HLTPATH5) ) path=5;
     if ( isPathFired(HLTPATH6) ) path=6;  
-    */
     if ( isPathFired(HLTPATH7) ) path=7;
     if ( isPathFired(HLTPATH8) ) path=8;   
     
   
-    /*
+    
     if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
     if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
     if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
@@ -241,9 +241,9 @@ void xsReader::eventProcessing() {
     if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL1) ) goto end;
     if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
     if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
-    */
     if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
     if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
+    
     if (path <0) goto end;
   
   }
