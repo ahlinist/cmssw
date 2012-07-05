@@ -107,8 +107,8 @@ void Acceptance(){
 void UG_Acceptance(){
   
   gStyle->SetOptStat(00000000000);
-  //TFile *f = new TFile("Acc_1S_0_50.xsReader_3Sbin.default.root ");
-  TFile *f = new TFile("Acc_All_0_100.xsReader.default.root");
+  TFile *f = new TFile("Acc_All_0_100.xsReader.default_pol.root");
+  //TFile *f = new TFile("Acc_All_0_100.xsReader.default.root");
   TH2D *UG_AllGenRes_1S;
   UG_AllGenRes_1S = (TH2D*)gFile->Get("UG_AllGenRes_1S");
   TH2D *UG_RecoGenRes_1S;
@@ -121,8 +121,6 @@ void UG_Acceptance(){
 			  UG_RecoGenRes_1S->GetNbinsY(), UG_RecoGenRes_1S->GetYaxis()->GetXbins()->GetArray()
 			  );
   
-  //TFile *f1 = new TFile("Acc_2S_0_50.xsReader_3Sbin.default.root ");
-  //TFile *f1 = new TFile("Acc_2S_0_100.xsReader.default.root");
   TH2D *UG_AllGenRes_2S;
   UG_AllGenRes_2S = (TH2D*)gFile->Get("UG_AllGenRes_2S");
   TH2D *UG_RecoGenRes_2S;
@@ -135,8 +133,6 @@ void UG_Acceptance(){
 			  UG_RecoGenRes_2S->GetNbinsY(), UG_RecoGenRes_2S->GetYaxis()->GetXbins()->GetArray()
 			  );
   
-  //TFile *f2 = new TFile("Acc_3S_0_50.xsReader_3Sbin.default.root ");
-  //TFile *f2 = new TFile("Acc_3S_0_100.xsReader.default.root");
   TH2D *UG_AllGenRes_3S;
   UG_AllGenRes_3S = (TH2D*)gFile->Get("UG_AllGenRes_3S");
   TH2D *UG_RecoGenRes_3S;
@@ -310,6 +306,7 @@ void UG_Acceptance(){
 void UG_Acceptance_Rap(){
   
   gStyle->SetOptStat(00000000000);
+  //TFile *f = new TFile("Acc_All_0_100.xsReader.default_pol.root");
   TFile *f = new TFile("Acc_All_0_100.xsReader.default.root");
   TH2D *UG_AllGenRes_1S;
   UG_AllGenRes_1S = (TH2D*)gFile->Get("UG_AllGenRes_1S");
