@@ -297,8 +297,8 @@ void anaXS::loadFiles(const char *dir, int i) {
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010All_finalversion.root");
       afile = fDirectory + string("/Acc_All_0_100.xsReader.default.root");
-      ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v7_t1.root");
-      jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v7_t1.root");
+      ufile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v3p1_t1.root");
+      jfile = fDirectory + string("/all_events_COMBINED.xsReader_Data_BarrelTrig.default_v3p1_t1.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -1756,15 +1756,25 @@ void anaXS::CorrectedYields(int mode){
   if ( mode == 3 ){
     double binErr(0);
     double bin(0.); double bin_ratio(-1);
+    ///// These values are from Bphysics Trigger menu
     //double lumi(4815000); // 2011 Barrel Trigger Recorded
     //double lumi(165600); // 2011 Dimuon0_Barrel_Upsilon_v1 Run#163269 - 163869  
     //double lumi(915000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3
     //double lumi(693000); // 2011 Dimuon5_Upsilon_Barrel_v5
     //double lumi(1608000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3,5 Run#165088 - 172868
     //double lumi(2082900);  // 2011 Dimuon*_Upsilon_Barrel_v1, *=7,9
-    double lumi(819500);  // 2011 Dimuon*_Upsilon_Barrel_v4, *=7,9
+    //double lumi(819500);  // 2011 Dimuon*_Upsilon_Barrel_v4, *=7,9
     //double lumi(2902300); // 2011 Dimuon7_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
     //double lumi(2902300); // 2011 Dimuon9_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
+    ///// These values are from pixelLumicalc 
+    //double lumi(174800); // 2011 Dimuon0_Barrel_Upsilon_v1 Run#163269 - 163869  
+    double lumi(984000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3
+    //double lumi(884400); // 2011 Dimuon5_Upsilon_Barrel_v5
+    //double lumi(1868400); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3,5 Run#165088 - 172868
+    //double lumi(2243000);  // 2011 Dimuon*_Upsilon_Barrel_v1, *=7,9
+    //double lumi(488000);  // 2011 Dimuon*_Upsilon_Barrel_v4, *=7,9
+    //double lumi(2731000); // 2011 Dimuon7_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
+    //double lumi(2731000); // 2011 Dimuon9_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
     
     TFile *f = new TFile("Upsilon_2D.root", "RECREATE");
     
@@ -2418,16 +2428,28 @@ void anaXS::PlotProjections(int mode) {
     //double lumi(3155);  // For HLTDoubleMu0 in Run2010A
     //double lumi(5399);  // For HLTDoubleMu0 in Run2010B
     //double lumi(36738); // All Run2010B 
+    ///// These values are from Bphysics Trigger menu
     //double lumi(4815000); // 2011 Barrel Trigger Recorded
     //double lumi(165600); // 2011 Dimuon0_Barrel_Upsilon_v1 Run#163269 - 163869  
     //double lumi(1608000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3,5 Run#165088 - 172868
     //double lumi(915000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3
     //double lumi(693000); // 2011 Dimuon5_Upsilon_Barrel_v5
     //double lumi(2082900);  // 2011 Dimuon*_Upsilon_Barrel_v1, *=7,9
-    double lumi(819500);  // 2011 Dimuon*_Upsilon_Barrel_v4, *=7,9
+    //double lumi(819500);  // 2011 Dimuon*_Upsilon_Barrel_v4, *=7,9
     //double lumi(2902300); // 2011 Dimuon7_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
     //double lumi(2902300); // 2011 Dimuon9_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
-
+    ///// These values are from pixelLumicalc 
+    //double lumi(174800); // 2011 Dimuon0_Barrel_Upsilon_v1 Run#163269 - 163869  
+    double lumi(984000); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3
+    //double lumi(884400); // 2011 Dimuon5_Upsilon_Barrel_v5
+    //double lumi(1868400); // 2011 Dimuon5_Upsilon_Barrel_v*, *=1,2,3,5 Run#165088 - 172868
+    //double lumi(2243000);  // 2011 Dimuon*_Upsilon_Barrel_v1, *=7,9
+    //double lumi(488000);  // 2011 Dimuon*_Upsilon_Barrel_v4, *=7,9
+    //double lumi(2731000); // 2011 Dimuon7_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
+    //double lumi(2731000); // 2011 Dimuon9_Upsilon_Barrel_v*, *=1,4 Run#173236 - 180252
+    
+    
+    
     double xsection(0);
     double bin_contentYieldErr(0); double xsectionErr(0);
     hICHEP = new TH1D("hICHEP", "hICHEP", 
@@ -2439,7 +2461,7 @@ void anaXS::PlotProjections(int mode) {
 		      );    
     
     //plotAcceptance();
-    for (int j = 8; j <= fAcceptance->GetNbinsY(); ++j){
+    for (int j = 6; j <= fAcceptance->GetNbinsY(); ++j){
       for (int i = 1; i <= fAcceptance->GetNbinsX() - 2; ++i) {
 	bin_contentAll += fAllGenRes->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes->GetCellContent(i,j);
@@ -2460,7 +2482,7 @@ void anaXS::PlotProjections(int mode) {
       bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
     }
     
-    for (int j = 8; j <= fAcceptance_2S->GetNbinsY(); ++j){
+    for (int j = 6; j <= fAcceptance_2S->GetNbinsY(); ++j){
       for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 2; ++i) {
 	bin_contentAll += fAllGenRes_2S->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes_2S->GetCellContent(i,j);
@@ -2481,7 +2503,7 @@ void anaXS::PlotProjections(int mode) {
       bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
     }
     
-    for (int j = 8; j <= fAcceptance_3S->GetNbinsY(); ++j){
+    for (int j = 6; j <= fAcceptance_3S->GetNbinsY(); ++j){
       for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 2; ++i) {
 	bin_contentAll += fAllGenRes_3S->GetCellContent(i,j);
 	bin_contentReco += fRecoGenRes_3S->GetCellContent(i,j);
@@ -2708,7 +2730,7 @@ void anaXS::PlotProjections(int mode) {
     
     bin_contentAll=0; bin_contentYield=0;
     for (int i = 1; i <= fAcceptance->GetNbinsX() - 2; ++i) {
-      for (int j = 8; j <= fAcceptance->GetNbinsY(); ++j){
+      for (int j = 6; j <= fAcceptance->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
 	bin_contentYieldErr += fS1YieldCorrected->GetCellError(i,j)*fS1YieldCorrected->GetCellError(i,j);
@@ -2727,7 +2749,7 @@ void anaXS::PlotProjections(int mode) {
     }
     
     for (int i = 1; i <= fAcceptance_2S->GetNbinsX() - 2; ++i) {
-      for (int j = 8; j <= fAcceptance_2S->GetNbinsY(); ++j){
+      for (int j = 6; j <= fAcceptance_2S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS2YieldCorrected->GetCellContent(i,j);
 	bin_contentYieldErr += fS2YieldCorrected->GetCellError(i,j)*fS2YieldCorrected->GetCellError(i,j);
@@ -2747,7 +2769,7 @@ void anaXS::PlotProjections(int mode) {
     }
     
     for (int i = 1; i <= fAcceptance_3S->GetNbinsX() - 2; ++i) {
-      for (int j = 8; j <= fAcceptance_3S->GetNbinsY(); ++j){
+      for (int j = 6; j <= fAcceptance_3S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS3YieldCorrected->GetCellContent(i,j);
 	bin_contentYieldErr += fS3YieldCorrected->GetCellError(i,j)*fS3YieldCorrected->GetCellError(i,j);
@@ -5978,7 +6000,7 @@ void anaXS::FITUpsilon(int mode){
   if ( mode == 1 ){
     
     int PRINT(1); 
-    double PRINTX(0.75);
+    double PRINTX(0.65);
         
     TH1D *h; 
     
