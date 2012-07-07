@@ -222,27 +222,31 @@ void xsReader::eventProcessing() {
   if ( BARREL == 1 ){
     
     
-    if ( isPathFired(HLTPATH) )  path=0;
-    if ( isPathFired(HLTPATH1) ) path=1;
-    if ( isPathFired(HLTPATH2) ) path=2;
-    if ( isPathFired(HLTPATH3) ) path=3;
-    if ( isPathFired(HLTPATH4) ) path=4;
-    if ( isPathFired(HLTPATH5) ) path=5;
-    if ( isPathFired(HLTPATH6) ) path=6;  
-    if ( isPathFired(HLTPATH7) ) path=7;
-    if ( isPathFired(HLTPATH8) ) path=8;   
-    
+    //if ( isPathFired(HLTPATH) )  path=0;
+    //if ( isPathFired(HLTPATH1) ) path=1;
+    //if ( isPathFired(HLTPATH2) ) path=2;
+    //if ( isPathFired(HLTPATH3) ) path=3;
+    //if ( isPathFired(HLTPATH4) ) path=4;
+    //if ( isPathFired(HLTPATH5) ) path=5;
+    //if ( isPathFired(HLTPATH6) ) path=6;  
+    //if ( isPathFired(HLTPATH7) ) path=7;
+    //if ( isPathFired(HLTPATH8) ) path=8;   
+    if ( isPathFired(HLTPATH9) ) path=9;
+    if ( isPathFired(HLTPATH10) ) path=10;
   
     
-    if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
-    if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
-    if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
-    if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL1) ) goto end;
-    if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL1) ) goto end;
-    if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
-    if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
-    if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
-    if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
+    //if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+    //if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
+    //if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
+    //if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL1) ) goto end;
+    //if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL1) ) goto end;
+    //if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
+    //if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
+    //if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
+    //if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
+    if (path == 9)  if ( !isPathFired_Match(HLTPATH9,HLTLABEL2) ) goto end;
+    if (path == 10) if ( !isPathFired_Match(HLTPATH10,HLTLABEL3) ) goto end;
+    
     
     if (path <0) goto end;
   
@@ -1140,6 +1144,15 @@ void xsReader::UpsGun_acceptance(int mode){
 	    lambdaTheta = fPidTable1SLambdaThetaPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
 	    lambdaPhi = fPidTable1SLambdaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
 	    lambdaThetaPhi = fPidTable1SLambdaThetaPhiPos->effD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    
+	    //lambdaTheta += fPidTable1SLambdaThetaPos->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    //lambdaPhi += fPidTable1SLambdaPhiPos->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    //lambdaThetaPhi += fPidTable1SLambdaThetaPhiPos->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    
+	    lambdaTheta -= fPidTable1SLambdaThetaNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaPhi -= fPidTable1SLambdaPhiNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    lambdaThetaPhi -= fPidTable1SLambdaThetaPhiNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);	    
+	    
 	  }
 	  
 	  if ( UPSTYPE == 2  ){
@@ -1695,7 +1708,7 @@ bool xsReader::MuIDCheck(){
     pCand = fpEvt->getCand(iC);
     //for (int iC = 0; iC < Cands.size() ; ++iC) {
     //pCand = Cands[iC];
-    ///////////////////if ( CowboyVeto(pCand) ) continue;
+    if ( CowboyVeto(pCand) ) continue;
     Cand.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
     if ( Cand.Rapidity() < -RAPCAND ) continue;
     if ( Cand.Rapidity() > RAPCAND ) continue;
