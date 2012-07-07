@@ -34,3 +34,5 @@ HLTLABEL2    0  hltBarrelDimuon7UpsilonL3Filtered:HLT::
 HLTPATH7     0  HLT_Dimuon9_Upsilon_Barrel_v1
 HLTPATH8     0  HLT_Dimuon9_Upsilon_Barrel_v4
 HLTLABEL3    0  hltDimuon9BarrelUpsilonL3Filtered:HLT:: 
+HLTPATH9     0  HLT_Dimuon7_Upsilon_Barrel_v5
+HLTPATH10    0  HLT_Dimuon9_Upsilon_Barrel_v5
