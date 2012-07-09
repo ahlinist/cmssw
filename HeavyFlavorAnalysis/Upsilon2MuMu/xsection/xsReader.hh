@@ -94,6 +94,7 @@ public:
   double DETA;
   int BARREL;
   TString HLTPATH, HLTPATH1, HLTPATH2, HLTPATH3, HLTPATH4, HLTPATH5, HLTPATH6, HLTPATH7, HLTPATH8, HLTPATH9, HLTPATH10, HLTPATH11, HLTPATH12, HLTPATH13;
+  TString HLTPATH14, HLTPATH15;
   TString HLTLABEL, HLTLABEL1, HLTLABEL2, HLTLABEL3;
     
   // -- Variables
@@ -118,8 +119,8 @@ public:
   
   
   double      fWeight;
-  static const int  fNpt = 23;
-  static const int  fNy = 8;
+  static const int  fNpt = 24;
+  static const int  fNy = 6;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
   double fMassLow, fMassHigh;
