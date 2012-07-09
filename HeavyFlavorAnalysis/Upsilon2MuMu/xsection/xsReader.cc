@@ -53,9 +53,9 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.; 
   fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 11.; fPTbin[12] = 12.; fPTbin[13] = 13.; 
   fPTbin[14] = 14.; fPTbin[15] = 15.; fPTbin[16] = 16.; fPTbin[17] = 18.; fPTbin[18] = 20.; fPTbin[19] = 22.; fPTbin[20] = 25.; 
-  fPTbin[21] = 30.; fPTbin[22] = 50.; fPTbin[23] = 100.; 
+  fPTbin[21] = 30.; fPTbin[22] = 50.; fPTbin[23] = 70.; fPTbin[24] = 100.; 
   fYbin[0] = 0.; fYbin[1] = 0.2; fYbin[2] = 0.4; fYbin[3] = 0.6; fYbin[4] = 0.8; fYbin[5] = 1.0; fYbin[6] = 1.2;
-  fYbin[7] = 1.4; fYbin[8] = 1.6; 
+  //fYbin[7] = 1.4; fYbin[8] = 1.6; 
     
   ///// PidTable Tracking Efficiency for DATA
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
@@ -222,28 +222,28 @@ void xsReader::eventProcessing() {
   if ( BARREL == 1 ){
     
     
-    //if ( isPathFired(HLTPATH) )  path=0;
-    //if ( isPathFired(HLTPATH1) ) path=1;
-    //if ( isPathFired(HLTPATH2) ) path=2;
-    //if ( isPathFired(HLTPATH3) ) path=3;
-    //if ( isPathFired(HLTPATH4) ) path=4;
-    //if ( isPathFired(HLTPATH5) ) path=5;
-    //if ( isPathFired(HLTPATH6) ) path=6;  
-    //if ( isPathFired(HLTPATH7) ) path=7;
-    //if ( isPathFired(HLTPATH8) ) path=8;   
+    if ( isPathFired(HLTPATH) )  path=0;
+    if ( isPathFired(HLTPATH1) ) path=1;
+    if ( isPathFired(HLTPATH2) ) path=2;
+    if ( isPathFired(HLTPATH3) ) path=3;
+    if ( isPathFired(HLTPATH4) ) path=4;
+    if ( isPathFired(HLTPATH5) ) path=5;
+    if ( isPathFired(HLTPATH6) ) path=6;  
+    if ( isPathFired(HLTPATH7) ) path=7;
+    if ( isPathFired(HLTPATH8) ) path=8;   
     if ( isPathFired(HLTPATH9) ) path=9;
     if ( isPathFired(HLTPATH10) ) path=10;
   
     
-    //if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
-    //if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
-    //if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
-    //if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL1) ) goto end;
-    //if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL1) ) goto end;
-    //if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
-    //if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
-    //if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
-    //if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
+    if (path ==0) if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+    if (path ==1) if ( !isPathFired_Match(HLTPATH1,HLTLABEL1) ) goto end;
+    if (path ==2) if ( !isPathFired_Match(HLTPATH2,HLTLABEL1) ) goto end;
+    if (path ==3) if ( !isPathFired_Match(HLTPATH3,HLTLABEL1) ) goto end;
+    if (path ==4) if ( !isPathFired_Match(HLTPATH4,HLTLABEL1) ) goto end;
+    if (path ==5) if ( !isPathFired_Match(HLTPATH5,HLTLABEL2) ) goto end;
+    if (path ==6) if ( !isPathFired_Match(HLTPATH6,HLTLABEL2) ) goto end;
+    if (path ==7) if ( !isPathFired_Match(HLTPATH7,HLTLABEL3) ) goto end;
+    if (path ==8) if ( !isPathFired_Match(HLTPATH8,HLTLABEL3) ) goto end; 
     if (path == 9)  if ( !isPathFired_Match(HLTPATH9,HLTLABEL2) ) goto end;
     if (path == 10) if ( !isPathFired_Match(HLTPATH10,HLTLABEL3) ) goto end;
     
