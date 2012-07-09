@@ -3,6 +3,7 @@ import ROOT
 from ROOT import TGraphErrors, TCanvas, TLatex,TLine
 from math import sqrt,hypot
 import numpy as np
+import os
 from array import array
 
 # this script makes plots of the measured cross section and cross section
@@ -13,7 +14,7 @@ mc_info = {'sigma'     :5.45, #in pb
            'theory_err':0.22  #in pb
            }
 
-flavor_text = "E^{#gamma}_{T} > 15 GeV, #DeltaR > 0.7,//M_{ll} > 50 GeV"
+flavor_text = "E^{#gamma}_{T} > 15 GeV, #DeltaR > 0.7,\\M_{ll} > 50 GeV"
 luminosity = "#intL dt = %.1f fb^{-1}"%(5.0)
 
 #arrays are (all values in pb):
@@ -234,7 +235,7 @@ def crossSectionValuePlot(group,groups,keys_no_comb,
     tex1.DrawLatex(0.85*xpad,yvals[-1] + 0.95*ypad,
                    "#font[132]{%s}"%luminosity)
     i = 0
-    for flav in flavor_text.split('//'):
+    for flav in flavor_text.split('\\'):
         tex1.DrawLatex(2.5*xpad,
                        yvals[-1] + (1.20-0.50*i)*ypad,
                        "#font[132]{%s}"%flav)
@@ -351,7 +352,7 @@ def crossSectionRatioPlot(group,groups,keys_no_comb,
     tex1.DrawLatex(0.85*xpad,yvals[-1] + 0.95*ypad,
                    "#font[132]{%s}"%luminosity)
     i = 0
-    for flav in flavor_text.split('//'):
+    for flav in flavor_text.split('\\'):
         tex1.DrawLatex(3.7*xpad,
                        yvals[-1] + (1.40-0.50*i)*ypad,
                        "#font[132]{%s}"%flav)
@@ -367,7 +368,7 @@ def crossSectionRatioPlot(group,groups,keys_no_comb,
     tex1.SetTextColor(6)
     tex1.DrawLatex(3.7*xpad,
                    yvals[0] - 1.5*ypad,
-                   "#font[132]{lumi. uncertainty. %.1f}"%lumi_err
+                   "#font[132]{lumi. uncertainty %.1f}"%lumi_err
                    + "%")                      
     
     saneName = group.translate(None,delChars)
@@ -408,7 +409,8 @@ def reshuffle(toshuffle):
                   toshuffle[channel][run_period]
     return shuffled
 
-ROOT.gROOT.LoadMacro("CMSStyle.C")
+script_path = "src/ElectroWeakAnalysis/MultiBosons/scripts/CMSStyle.C"
+ROOT.gROOT.LoadMacro("%s/%s"%(os.environ["CMSSW_BASE"],script_path))
 ROOT.CMSStyle()
 
 #combine and then make combined plot if needed
