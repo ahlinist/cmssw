@@ -31,10 +31,10 @@ void zscore( void ){
   double slum = 0.0;
   double  eff = 1.0;
   double seff = 0.0;
-  double  bkg = 1.0;
-  double sbkg = 0.0;
+  double  bkg = 1.44;
+  double sbkg = 0.74;
 
-  int    data = 2;
+  int    data = 6;
 
   // optional: set some parameters
   SetParameter("RandomSeed", 0);
