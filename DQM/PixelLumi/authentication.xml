@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<connectionlist>
+<connection name="oracle://cms_orcoff_prod/CMS_GT">
+  <parameter name="user" value="cms_trg_r" />
+  <parameter name="password" value="X3lmdvu4" />
+</connection>
+<connection name="oracle://cms_orcoff_prod/cms_gt">
+  <parameter name="user" value="cms_trg_r" />
+  <parameter name="password" value="X3lmdvu4" />
+</connection>
+<connection name="oracle://cms_orcon_prod/cms_runtime_logger">
+  <parameter name="user" value="cms_runinfo_r" />
+  <parameter name="password" value="mickey2mouse" />
+</connection>
+<connection name="oracle://cms_orcoff_prep/cms_lumi_dev_offline">
+   <parameter name="user" value="cms_lumi_dev_offline"/>
+   <parameter name="password" value="faryTela979"/>
+</connection>
+</connectionlist>
