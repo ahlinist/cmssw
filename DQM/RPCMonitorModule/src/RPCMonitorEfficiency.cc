@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.60 2012/03/06 15:49:21 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.61 2012/03/14 08:39:04 carrillo Exp $
 //
 //
 
@@ -164,6 +164,7 @@ public:
   TH1F * EffBarrel_black; //Average
   TH1F * DoubleGapBarrel_black; //Double GapEff
   TH1F * CentralEffBarrel_black; //Central Zone  
+  TH1F * CentralEffBarrel_black_masked; //Central Zone  
 
   TH1F * EffBarrel; //Average
   TH1F * DoubleGapBarrel; //Double GapEff
@@ -198,6 +199,7 @@ public:
   TH1F * EffEndCap_black; //Average
   TH1F * DoubleGapEndCap_black; //Double Gap
   TH1F * CentralEffEndCap_black; //Central Zone
+  TH1F * CentralEffEndCap_black_masked; //Central Zone
 
   TH1F * EffEndCap; //Average
   TH1F * DoubleGapEndCap; //Double Gap
@@ -598,10 +600,16 @@ private:
   std::string file;
   std::string fileout;
   std::ofstream RollYEff;
+  std::ofstream RollYEff_good;
+  std::ofstream RollYEff_black;
+  std::ofstream RollYEff_masked;
   std::ofstream efftxt;
   std::ofstream alignment;
   std::ofstream rollZeroEff;
   std::ofstream rollZeroPrediction;
+  std::ofstream rollZeroPrediction_fiducialcut;
+  std::ofstream rollZeroPrediction_fiducialcut_or_black;
+  std::ofstream rollZeroPrediction_fiducialcut_or_black_or_masked;
   std::ofstream database;
   std::string BlackListFile;
   bool prodimages;
@@ -700,8 +708,15 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   alignment.open("Alignment.dat");
   database.open("database.dat");
   RollYEff.open("rollYeff.txt");
+  RollYEff_good.open("rollYeff_good.txt");
+  RollYEff_black.open("rollYeff_black.txt");
+  RollYEff_masked.open("rollYeff_masked.txt");
   rollZeroEff.open("rollZeroEff.txt");
   rollZeroPrediction.open("rollZeroPrediction.txt");
+  rollZeroPrediction_fiducialcut.open("rollZeroPrediction_fiducialcut.txt");
+  rollZeroPrediction_fiducialcut_or_black.open("rollZeroPrediction_fiducialcut_or_black.txt");
+  rollZeroPrediction_fiducialcut_or_black_or_masked.open("rollZeroPrediction_fiducialcut_or_black_or_masked.txt");
+
 
  //Cesare
   RollBeff.open("RollBarrelEffStat.txt");
@@ -894,14 +909,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   										  		   
   signal_bxendcap= new TH2F ("signal_BXEndCap","Signal BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
   signal_bxbarrel= new TH2F ("signal_BXBarrel","Signal BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
-										  		   
+
+  CentralEffBarrel = new TH1F ("CentralEffBarrel","Efficiency Barrel, fiducial region ",51,-1,101);
+  CentralEffBarrel_black = new TH1F ("CentralEffBarrel_black","Efficiency Barrel, fiducial region w/o rolls in black list",51,-1,101);
+  CentralEffBarrel_black_masked = new TH1F ("CentralEffBarrel_black_masked","Efficiency Barrel fiducial region w/o rolls in black list w/o rolls masked > 10% strips",51,-1,101);
+						  		   
   EffBarrel_black = new TH1F ("EffBarrel_black","Efficiency Distribution For All The Barrel",51,-1,101);
   DoubleGapBarrel_black = new TH1F ("DoubleGapBarrel_black","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
-  CentralEffBarrel_black = new TH1F ("CentralEffBarrel_black","Efficiency in central part For All The Barrel",51,-1,101);
-  										  		   
+
   EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);	   
   DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
-  CentralEffBarrel = new TH1F ("CentralEffBarrel","Efficiency in central part For All The Barrel",51,-1,101);
   BXEffBarrel = new TH1F ("BXEffBarrel","Efficiency Distribution For All The Barrel with good BX",51,-1,101);
   badBXEffBarrel = new TH1F ("badBXEffBarrel","Efficiency Distribution For All The Barrel with bad BX",51,-1,101);
 
@@ -929,13 +946,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   DoubleGapDistroW1far= new TH1F ("DoubleGapDistroW1far","DoubleGapEfficiency Distribution For Far Side Wheel 1",20,0.5,100.5);
   DoubleGapDistroW2far= new TH1F ("DoubleGapDistroW2far","DoubleGapEfficiency Distribution For Far Side Wheel 2",20,0.5,100.5);
 
+  CentralEffEndCap = new TH1F ("CentralEffEndCap","Efficiency EndCaps, fiducial region",51,-1,101);
+  CentralEffEndCap_black = new TH1F ("CentralEffEndCap_black","Efficiency EndCaps, fiducial region w/o rolls in black list",51,-1,101);
+  CentralEffEndCap_black_masked = new TH1F ("CentralEffEndCap_black_masked","Efficiency EndCaps fiducial region w/o rolls in black list w/o rolls masked > 10% strips",51,-1,101);
+
   EffEndCap_black= new TH1F ("EffDistroEndCap_black ","Efficiency Distribution For All The EndCaps",51,-1,101);
   DoubleGapEndCap_black = new TH1F ("DoubleGapEndCap_black","Double Gap Efficiency Distribution For All The EndCaps",51,-1,101);
-  CentralEffEndCap_black = new TH1F ("CentralEffEndCap_black","Efficiency in central part For All The EndCaps",51,-1,101);
 
   EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",51,-1,101);
   DoubleGapEndCap = new TH1F ("DoubleGapEndCap","Double Gap Efficiency Distribution For All The EndCaps",51,-1,101);
-  CentralEffEndCap = new TH1F ("CentralEffEndCap","Efficiency in central part For All The EndCaps",51,-1,101);
   BXEffEndCap = new TH1F ("BXEffEndCap","Efficiency Distribution For All The EndCap with good BX",51,-1,101);
   badBXEffEndCap = new TH1F ("badBXEffEndCap","Efficiency Distribution For All The EndCap with bad BX",51,-1,101);
 
@@ -1873,6 +1892,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  float pinoeff = 0.;
 	  float pinoerr = 0.;
+
+	  float pinoobserved =0;
+	  float pinoexpected =0;
+
+	  float maskedratio=-1;
 	  
 	  int NumberStripsPointed = 0;
 	  
@@ -1931,9 +1955,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin;
 	    if(debug) std::cout<<" firstybin "<<firstybin<<" lastybin "<<lastybin;
 	      
-	    float pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
-	    float pinoexpected = histoDT_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
-
+	    pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+	    pinoexpected = histoDT_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+	  
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100;
 	      pinoerr = 100.*sqrt((pinoobserved/pinoexpected)*(1.-(pinoobserved/pinoexpected))/pinoexpected);
@@ -1991,7 +2015,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  bool maskeffect[100];
 	  for(int i=0;i<100;i++) maskeffect[i]=false;
-	    
+	  
 	  if(histoRPC && histoDT && BXDistribution && histoRealRPC && Signal_BXDistribution){
 	    for(int i=1;i<=nstrips;++i){
 	      if(histoRealRPC->GetBinContent(i)==0 || histoDT->GetBinContent(i)==0){
@@ -2145,16 +2169,26 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      if(debug) std::cout<<"This Roll Doesn't have any strip Pointed"<<std::endl;
 	    }
 
-	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
+	    maskedratio = (float(NumberMasked)/float(nstrips))*100.;
+	    
+	    if(debug)std::cout<<name<<" pinoexpected="<<pinoexpected<<" !IsBadRoll(rpcId.rawId(),blacklist)"<<!IsBadRoll(rpcId.rawId(),blacklist)<<" maskedratio="<<maskedratio<<std::endl;
+
+	    if(pinoexpected!=0) CentralEffBarrel->Fill(pinoeff); //distribution with fiducial region
+	    else rollZeroPrediction_fiducialcut<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    if(pinoexpected!=0 && !IsBadRoll(rpcId.rawId(),blacklist)) CentralEffBarrel_black->Fill(pinoeff); 
+	    else rollZeroPrediction_fiducialcut_or_black<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    if(pinoexpected!=0 && !IsBadRoll(rpcId.rawId(),blacklist) && maskedratio < 10){ CentralEffBarrel_black_masked->Fill(pinoeff); RollYEff_good<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;}
+	    else rollZeroPrediction_fiducialcut_or_black_or_masked<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+
+	    if(IsBadRoll(rpcId.rawId(),blacklist)) RollYEff_black<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    if(maskedratio >= 10) RollYEff_masked<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" "<<maskedratio<<std::endl;
 	    
 	    if(NumberStripsPointed!=0){
-	      if(!IsBadRoll(rpcId.rawId(),blacklist)){
+	      if(!IsBadRoll(rpcId.rawId(),blacklist) || maskedratio < 10){
 		DoubleGapBarrel->Fill(doublegapeff);
-		CentralEffBarrel->Fill(pinoeff); //distribution with fiducial region
 		EffBarrel->Fill(averageeff);
 	      }else{
 		DoubleGapBarrel_black->Fill(doublegapeff);
-		CentralEffBarrel_black->Fill(pinoeff);
 		EffBarrel_black->Fill(averageeff);
 	      }
 
@@ -2426,7 +2460,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  delete histoCLS;
 	  
 	  std::string camera = name.c_str();
-	  float maskedratio = (float(NumberMasked)/float(nstrips))*100.;
+
+
+	  
+
+
+
+
+
+
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float(nstrips))*100.;
 
 	  alignment<<name<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
@@ -2949,6 +2991,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float pinoobserved =0;
 	  float pinoexpected =0;
 
+	  float maskedratio=-1;
+
 	  int NumberStripsPointed = 0;
 	  
 	  if(debug) std::cout<<"Checking 2D Histograms for "<<name<<std::endl;
@@ -3277,19 +3321,29 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	     
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
 	    
-	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
+	    maskedratio = (float(NumberMasked)/float(nstrips))*100.;
 	    
-	     if(NumberStripsPointed!=0){
-	       if(!IsBadRoll(rpcId.rawId(),blacklist)){
-		 DoubleGapEndCap->Fill(doublegapeff);
-		 CentralEffEndCap->Fill(pinoeff);
-		 EffEndCap->Fill(averageeff);
-	       }else{
-		 DoubleGapEndCap_black->Fill(doublegapeff);
-		 CentralEffEndCap_black->Fill(pinoeff);
-		 EffEndCap_black->Fill(averageeff);
-	       }
-	     }
+	    if(debug) std::cout<<name<<" pinoexpected="<<pinoexpected<<" !IsBadRoll(rpcId.rawId(),blacklist)"<<!IsBadRoll(rpcId.rawId(),blacklist)<<" maskedratio="<<maskedratio<<std::endl;
+	    
+	    if(pinoexpected!=0) CentralEffEndCap->Fill(pinoeff); //distribution with fiducial region
+	    else rollZeroPrediction_fiducialcut<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    if(pinoexpected!=0 && !IsBadRoll(rpcId.rawId(),blacklist)) CentralEffEndCap_black->Fill(pinoeff); 
+	    else rollZeroPrediction_fiducialcut_or_black<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    if(pinoexpected!=0 && !IsBadRoll(rpcId.rawId(),blacklist) && maskedratio < 10){ CentralEffEndCap_black_masked->Fill(pinoeff); RollYEff_good<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;}
+	    else rollZeroPrediction_fiducialcut_or_black_or_masked<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+
+	    if(IsBadRoll(rpcId.rawId(),blacklist)) RollYEff_black<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    if(maskedratio >= 10) RollYEff_masked<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" "<<maskedratio<<std::endl;
+
+	    if(NumberStripsPointed!=0){
+	      if(!IsBadRoll(rpcId.rawId(),blacklist) || maskedratio < 10){
+		DoubleGapEndCap->Fill(doublegapeff);
+		EffEndCap->Fill(averageeff);
+	      }else{
+		DoubleGapEndCap_black->Fill(doublegapeff);
+		EffEndCap_black->Fill(averageeff);
+	      }
+	    }
 	    if(fabs(BXDistribution->GetMean())<0.5 && BXDistribution->GetRMS()<1.&& BXDistribution->GetMean()!=0){
 	      BXEffEndCap->Fill(pinoeff);
 	      if(rpcId.region()==1) BXEffPositiveEndCap->Fill(pinoeff);
@@ -3523,6 +3577,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  p=histoCSC->Integral();
 	  o=histoRPC->Integral();
 
+	  if(p==0) rollZeroPrediction<<name<<std::endl;
+          if(o==0&&p>10) rollZeroEff<<name<<std::endl;
+
 	  if(debug) std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
 
 	  if(debug) std::cout<<"Disk="<<Disk<<std::endl;
@@ -3563,7 +3620,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  delete histoCLS;
 	  
 	  std::string camera = name.c_str();
-	  float maskedratio = (float(NumberMasked)/float(nstrips))*100.;
+	  
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float(nstrips))*100.;
 	  
 	  alignment<<name<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
@@ -6765,9 +6822,24 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    Ca1->Clear();
    DoubleGapBarrel_black->SetFillColor(4); DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw();  DoubleGapBarrel_black->Draw("same"); Ca1->SaveAs("Distro/DoubleGapBarrel.png");
    
-   Ca1->Clear();
-   CentralEffBarrel_black->SetFillColor(4); CentralEffBarrel->GetXaxis()->SetTitle("%"); CentralEffBarrel->Draw(); CentralEffBarrel_black->Draw("same"); Ca1->SaveAs("Distro/CentralEffBarrel.png");
+   CentralEffBarrel->GetXaxis()->SetTitle("%"); 
+   CentralEffBarrel_black->GetXaxis()->SetTitle("%"); 
+   CentralEffBarrel_black_masked->GetXaxis()->SetTitle("%"); 
+      
+   CentralEffBarrel_black->SetFillColor(kRed); 
+   CentralEffBarrel_black_masked->SetFillColor(kBlack); 
+   
+   Ca1->Clear(); CentralEffBarrel->Draw(); Ca1->SaveAs("Distro/CentralEffBarrel.png");
+   Ca1->Clear(); CentralEffBarrel_black->Draw(); Ca1->SaveAs("Distro/CentralEffBarrel_black.png");
+   Ca1->Clear(); CentralEffBarrel_black_masked->Draw(); Ca1->SaveAs("Distro/CentralEffBarrel_black_masked.png");
 
+   Ca1->Clear();
+   
+   CentralEffBarrel->Draw(); 
+   CentralEffBarrel_black->Draw("same"); 
+   CentralEffBarrel_black_masked->Draw("same");
+   Ca1->SaveAs("Distro/CentralEffBarrel_all.png");
+   
    Ca1->Clear();
    BXEffBarrel->GetXaxis()->SetTitle("%"); BXEffBarrel->Draw(); Ca1->SaveAs("Distro/BXEffDistroBarrel.png");
    badBXEffBarrel->GetXaxis()->SetTitle("%"); badBXEffBarrel->Draw(); Ca1->SaveAs("Distro/badBXEffDistroBarrel.png");
@@ -6822,10 +6894,24 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    Ca1->Clear();
    DoubleGapEndCap_black->SetFillColor(4); DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); DoubleGapEndCap_black->Draw("same"); Ca1->SaveAs("Distro/DoubleGapEndCap.png");DoubleGapEndCap->Write();DoubleGapEndCap_black->Write();
    
-   Ca1->Clear();
-   CentralEffEndCap_black->SetFillColor(4); CentralEffEndCap->GetXaxis()->SetTitle("%"); CentralEffEndCap->Draw(); CentralEffEndCap_black->Draw("same"); Ca1->SaveAs("Distro/CentralEffEndCap.png");
+   CentralEffEndCap->GetXaxis()->SetTitle("%"); 
+   CentralEffEndCap_black->GetXaxis()->SetTitle("%"); 
+   CentralEffEndCap_black_masked->GetXaxis()->SetTitle("%"); 
+      
+   CentralEffEndCap_black->SetFillColor(kRed); 
+   CentralEffEndCap_black_masked->SetFillColor(kBlack); 
    
+   Ca1->Clear(); CentralEffEndCap->Draw(); Ca1->SaveAs("Distro/CentralEffEndCap.png");
+   Ca1->Clear(); CentralEffEndCap_black->Draw(); Ca1->SaveAs("Distro/CentralEffEndCap_black.png");
+   Ca1->Clear(); CentralEffEndCap_black_masked->Draw(); Ca1->SaveAs("Distro/CentralEffEndCap_black_masked.png");
 
+   Ca1->Clear();
+   
+   CentralEffEndCap->Draw(); 
+   CentralEffEndCap_black->Draw("same"); 
+   CentralEffEndCap_black_masked->Draw("same");
+   Ca1->SaveAs("Distro/CentralEffEndCap_all.png");
+   
    Ca1->Clear();
    BXEffEndCap->GetXaxis()->SetTitle("%"); BXEffEndCap->Draw(); Ca1->SaveAs("Distro/BXEffDistroEndCap.png");BXEffEndCap->Write();
    badBXEffEndCap->GetXaxis()->SetTitle("%"); badBXEffEndCap->Draw(); Ca1->SaveAs("Distro/badBXEffDistroEndCap.png");badBXEffEndCap->Write();
@@ -6869,12 +6955,30 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 
  if(barrel){
+   Ca11->SetLogy();
+   Ca11->Clear(); CentralEffBarrel->Draw(); Ca11->SaveAs("Distro/CentralEffBarrel_log.png");
+   Ca11->Clear(); CentralEffBarrel_black->Draw(); Ca11->SaveAs("Distro/CentralEffBarrel_black_log.png");
+   Ca11->Clear(); CentralEffBarrel_black_masked->Draw(); Ca11->SaveAs("Distro/CentralEffBarrel_black_masked_log.png");
+
    Ca11->Clear();
-   CentralEffBarrel_black->SetFillColor(4); CentralEffBarrel->GetXaxis()->SetTitle("%"); CentralEffBarrel->Draw(); CentralEffBarrel_black->Draw("same"); Ca11->SetLogy(); Ca11->SaveAs("Distro/CentralEffBarrelLog.png");
+   
+   CentralEffBarrel->Draw(); 
+   CentralEffBarrel_black->Draw("same"); 
+   CentralEffBarrel_black_masked->Draw("same");
+   Ca11->SaveAs("Distro/CentralEffBarrel_all_log.png");
  }
  if(endcap){
+   Ca11->SetLogy();
+   Ca11->Clear(); CentralEffEndCap->Draw(); Ca11->SaveAs("Distro/CentralEffEndCap_log.png");
+   Ca11->Clear(); CentralEffEndCap_black->Draw(); Ca11->SaveAs("Distro/CentralEffEndCap_black_log.png");
+   Ca11->Clear(); CentralEffEndCap_black_masked->Draw(); Ca11->SaveAs("Distro/CentralEffEndCap_black_masked_log.png");
+
    Ca11->Clear();
-   CentralEffEndCap_black->SetFillColor(4); CentralEffEndCap->GetXaxis()->SetTitle("%"); CentralEffEndCap->Draw(); CentralEffEndCap_black->Draw("same");  Ca11->SetLogy();Ca11->SaveAs("Distro/CentralEffEndCapLog.png");
+   
+   CentralEffEndCap->Draw(); 
+   CentralEffEndCap_black->Draw("same"); 
+   CentralEffEndCap_black_masked->Draw("same");
+   Ca11->SaveAs("Distro/CentralEffEndCap_all_log.png");
  }
 
  Ca11->Close();
@@ -6933,11 +7037,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  EffBarrel_black->Write();
  DoubleGapBarrel_black->Write();
+
+ CentralEffBarrel->Write();
  CentralEffBarrel_black->Write();
+ CentralEffBarrel_black_masked->Write();
 
  EffBarrel->Write();
  DoubleGapBarrel->Write();
- CentralEffBarrel->Write();
  BXEffBarrel->Write();
  badBXEffBarrel->Write();
 
@@ -6955,9 +7061,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  CentralEffEndCap->Write();
  CentralEffEndCap_black->Write();
+ CentralEffEndCap_black_masked->Write();
  
  EffEndCap->Write();
- CentralEffEndCap->Write();
  DoubleGapEndCap->Write();
  badBXEffEndCap ->Write();
 
@@ -7202,10 +7308,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  EffChamEndcap.close();
  //
 
+ RollYEff.close();
+ RollYEff_good.close();
+ RollYEff_black.close();
+ RollYEff_masked.close();
  efftxt.close();
  alignment.close();
+ rollZeroEff.close();					   
+ rollZeroPrediction.close();				  
+ rollZeroPrediction_fiducialcut.close();			  
+ rollZeroPrediction_fiducialcut_or_black.close();	  
+ rollZeroPrediction_fiducialcut_or_black_or_masked.close();
  database.close();
- RollYEff.close();
 
  delete Ca0;
  delete Ca1;
