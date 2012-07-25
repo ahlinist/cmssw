@@ -27,6 +27,7 @@ public:
 
   float v0_,v1_;
   bool single_;
+  bool masked_;
 };
 
 bool sameDetId(fastRecHit * h1, fastRecHit * h2);
@@ -63,7 +64,7 @@ public:
   std::vector< fastRecHit *> elements_;
   std::vector< bool > upLeg_;
   int i_,j_;
-  float phi_,overR_,R_,x_,y_;
+  float phi_,overR_,R_,x_,y_; //values from the histoset binning centers
 
   class fastHitInCercle{
   public:
@@ -85,6 +86,12 @@ public:
   bool isHelix_;
   bool zUp_;
   bool phiUp_;
+
+  float aveR_,aveX_,aveY_;
+  // physical values after fitting
+  bool calculateKinematic(double Bz);
+  float px_,py_,pz_,pt_;
+  int charge_;
 };
 
 
