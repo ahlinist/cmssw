@@ -22,7 +22,9 @@ fastRecHit::fastRecHit(TransientTrackingRecHit::RecHitPointer h,
   hit_(h)
   ,id_(h->geographicalId())
   ,single_(single)
+  ,masked_(false)
 {
+  //the origine is ~the BS, and therefore the BS ordinate is (0,0,0)
     position_=GlobalPoint((h->globalPosition()-origin).basicVector());
     v0_=2./position_.perp();
     v1_=position_.phi();
@@ -202,6 +204,20 @@ void aCell::truncateForZ(float & maxZ){
     LogDebug("PeakFinder|Truncate")<<"after truncation\n"<<printElements();
   }
 
+
+
+bool aCell::calculateKinematic( double Bz ){
+  //option 1: calculate from the cell position in the histoset
+  pt_=0.3 * Bz * aveR_;
+  
+  //option 2: calculate from the first two points of the helix (plus third for charge sign)
+
+  //option 3: get a z0 in input
+
+  return false;
+}
+
+
 std::string aCell::printElements(uint itab){
     std::string tab="";
     for (uint iC=0;iC!=itab;++iC)      tab+="\t";
@@ -370,28 +386,32 @@ void DataDumper::collect( fastRecHit & hit){
   }
 
 void DataDumper::makePeaks(){
-  uint totalBins=0;
   float nTotalBins=0;
-  uint maxBins=0;
+  const uint totalBins=5;    
+  uint averageOccupancy=0;
+  std::vector<uint> maxBins(totalBins,0);
   for(std::vector<aCell>::iterator iCell=container_.begin();
       iCell!=container_.end();++iCell){
-    if (iCell->count()==0) continue;
-    if (iCell->count() > maxBins)
-      maxBins = iCell->count();
-    totalBins+=iCell->count();
+    uint n=iCell->count();
+    if (n==0) continue;
+    if ( n > maxBins[0]) maxBins[0]=n;
+    for (uint ib=1;ib<totalBins;++ib)
+      if (n > maxBins[ib] && n < maxBins[ib-1])	
+	maxBins[ib]=n;
+    averageOccupancy+=n;
     nTotalBins++;
   }
-  uint averageOccupancy = totalBins/nTotalBins;
+  averageOccupancy/=nTotalBins;
   uint baseLineCut = averageOccupancy;
-  if (baseLineCut > 0)
+  if (baseLineCut_ > 0)
     {
-      if (baseLineCut_<= int(maxBins))
-	baseLineCut = maxBins - baseLineCut_;
+      if (uint(baseLineCut_)<= *maxBins.end())
+	baseLineCut = *maxBins.end() - baseLineCut_;
       else
 	baseLineCut = 0;
     }
 
-  LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the max is: "<<maxBins
+  LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the "<<totalBins<<"th max is: "<<*maxBins.end()
 				    <<".\n"<<baseLineCut<<" is used as a baseline cut";
 
   //create an image of the container, to not sort in place. although we could in principle, since the container is not accessed anymore afterwards as is.
@@ -478,6 +498,8 @@ bool DataDumper::isHelix(aCell * c){
     LogDebug("PeakFinder|CollectPeak")<<"check on helix hypothesis for a cell at"<<c->print();
 
     c->orderInZ();
+
+    //create values with respect to the center of the cell (not using more refined value, because CPU intensive to compute anything else
     c->suite();
 
     if ( symetryTopologySelection_!=0 && !c->equilibrate(symetryTopologySelection_)){
@@ -601,6 +623,105 @@ bool DataDumper::isHelix(aCell * c){
       return setHelix(c,false);
     }
  
+    // take out the double hits : too close in x,y and z
+    for (uint iC1=1;iC1<c->count();++iC1){
+      for (uint iC2=iC1+1;iC2<c->count();++iC2){
+	GlobalVector dist( c->elements_[iC1]->hit_->globalPosition() - c->elements_[iC1]->hit_->globalPosition() );
+	if (fabs( dist.x() ) < 0.1 )
+	  c->inCercle_[iC1].use=false;
+	else if (fabs( dist.y() ) < 0.1 )	  
+	  c->inCercle_[iC1].use=false;
+	else if (fabs( dist.z() ) < 0.1 )	 
+	  c->inCercle_[iC1].use=false;
+      }
+    }
+    c->resize();
+    LogTrace("PeakFinder|DoubleHits")<<"removed double hits\n"<<c->printElements();
+    if ( c->count() < minHitPerPeak_ ){
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left.";
+      return setHelix(c,false);     
+    }
+
+    // now compute better helix center from mediatrice intersections
+    struct Line {
+      //line coordinates
+      float u,v,w;
+      //intersection with next
+      float x,y,r;
+      //R ration with previous
+      float rr;
+    };
+    std::vector<Line> mediatrices;
+    mediatrices.resize(c->count());
+    GlobalPoint zero(0,0,0);
+    float minRatio=1000000.,rForMinRatio=-1;
+    for (uint iC=0;iC<mediatrices.size();++iC){ 
+      GlobalPoint p0=zero;
+      if (iC!=0)	
+	p0=c->elements_[iC-1]->hit_->globalPosition();
+      const GlobalPoint & p1=c->elements_[iC]->hit_->globalPosition();
+      //mid-point
+      //      xx=(p1.x()-p0.x())/2.;
+      //      yy=(p1.y()-p0.y())/2.;
+      GlobalVector d(p1-p0);
+      //mediatrice coordinates
+      Line & l1=mediatrices[iC];
+      l1.u=d.x();
+      l1.v=d.y();
+      l1.w=-( (d.x()*((p1.x()-p0.x())/2.))+(d.y()*((p1.y()-p0.y())/2.)) );
+
+      //intersection with previous
+      //protect for NAN !!!!
+      if (iC!=0){
+	Line & l0=mediatrices[iC-1];
+	l1.y=( ( l1.u * l0.w ) - ( l1.w * l0.u  ) )  / ( ( l1.v * l0.u ) - ( l1.u * l0.v ) ) ;
+	l1.x=( -l0.w -( l0.v * l1.y ) ) / l0.u; 
+	//radius obtained: from center to one of the two points
+	l1.r = sqrt( (l1.x-p0.x())*(l1.x-p0.x()) + (l1.y-p0.y())*(l1.y-p0.y()));
+	
+	l1.rr = abs( 1. - (l0.r / l1.r));
+	if (l1.rr < minRatio){ 
+	  minRatio=l1.rr;
+	  rForMinRatio=l1.r;
+	}
+      }
+      else{
+	//set the value to the cell value
+	l1.x=c->x_;
+	l1.y=c->y_;
+	l1.rr = 1.;
+      }
+    }
+    
+    //flag out the outliers in terms of circle radius ratio
+    uint nAve=0;
+    for (uint iC=0;iC<mediatrices.size();++iC){
+      Line & l1=mediatrices[iC];
+      if (l1.r / rForMinRatio > 2.0)
+	c->inCercle_[iC].use=false;
+      else{
+	c->aveR_+=l1.r;
+	c->aveX_+=l1.x;
+	c->aveY_+=l1.y;
+	nAve++;
+      }
+    }
+    if (nAve!=0){
+      c->aveR_/=nAve;
+      c->aveX_/=nAve;
+      c->aveY_/=nAve;
+    }
+
+    //remove anything not used
+    c->resize();
+    LogTrace("PeakFinder|RadiusCheck")<<"removed hits with incompatible radius with respect to intersection derived centers \n"<<c->printElements();
+    
+    //are there enough hits left in the set
+    if ( c->count() < minHitPerPeak_ ){
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left.";
+      return setHelix(c,false);
+    }
+
     LogDebug("PeakFinder|CollectPeak")<<" this is an helix."<<c->printElements();
     LogTrace("PeakFinder|CollectPeak")<<cellImage(c,"peak_");   
     return setHelix(c,true);      
