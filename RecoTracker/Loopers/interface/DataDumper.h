@@ -91,6 +91,7 @@ public:
   // physical values after fitting
   bool calculateKinematic(double Bz);
   float px_,py_,pz_,pt_;
+  float refx_,refy_,refz_;
   int charge_;
 };
 
