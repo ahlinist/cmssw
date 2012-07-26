@@ -208,11 +208,55 @@ void aCell::truncateForZ(float & maxZ){
 
 bool aCell::calculateKinematic( double Bz ){
   //option 1: calculate from the cell position in the histoset
-  pt_=0.3 * Bz * aveR_;
+  pt_=0.3 * Bz * R_;
   
   //option 2: calculate from the first two points of the helix (plus third for charge sign)
+  pt_=0.3 * Bz * aveR_;
+  
+  uint secondpoint=1;
+  const GlobalPoint & p0= elements_[0]->hit_->globalPosition();
+  GlobalPoint p1= elements_[1]->hit_->globalPosition();
+  //option 3: get a z0 in input : just change p0 and p1
 
-  //option 3: get a z0 in input
+  //find tow different radiuses
+  while ( (p1.perp()-p0.perp())==0 and secondpoint<elements_.size()){
+    p1= elements_[++secondpoint]->hit_->globalPosition();
+  }
+  if (secondpoint==elements_.size()){
+    //something bad happened
+    throw;
+  }
+    
+  //BS = (0,0,0) in the current frame
+  GlobalPoint atBeam(0,0, (p1.perp()*p0.z() - p0.perp()*p1.z()) / (p1.perp()-p0.perp()) );
+
+  float tx,ty,t,tdir;
+  tx=aveY_-atBeam.y();
+  ty=atBeam.x()-aveX_;
+
+  t=sqrt( ( tx * tx ) + ( ty * ty ) ) ;
+  tx/=t;
+  ty/=t;
+  
+
+  GlobalVector dist(p0-atBeam);
+  tdir=(tx*dist.x()) + (ty*dist.y());
+  if (tdir<0){
+    tx*=-1;
+    ty*=-1;
+  }
+   
+  px_=tx*pt_;
+  py_=ty*pt_;
+  pz_=pt_*dist.z() / dist.perp();
+
+  //FIXME
+  //get the charge from the three point we have now
+  charge_=-1;
+
+  refx_=atBeam.x();
+  refy_=atBeam.y();
+  refz_=atBeam.z();
 
   return false;
 }
@@ -262,6 +306,11 @@ DataDumper::DataDumper(edm::ParameterSet & pset){
     Y_.Set(pset.getParameter<unsigned int>("nPhi"),0,TMath::TwoPi());
     offset_=X_.GetNbins()+2;
     minHitPerPeak_=pset.getParameter<unsigned int>("peakAbove");
+    if (minHitPerPeak_ < 3)
+      {
+	//	this is not possible
+	throw;
+      }
     baseLineCut_=pset.getParameter<int>("baseLineCut");
     setRBound(pset.getParameter<double>("RBound"));
     resize();
