@@ -35,7 +35,9 @@ LooperClusterRemover::LooperClusterRemover(const edm::ParameterSet& iConfig)
 
    // side produces the track candidate collection to be used for track fitting.
    produces<TrackCandidateCollection>();
-
+   produces<reco::TrackCollection>();
+   produces<reco::TrackExtraCollection>();
+   produces<TrackingRecHitCollection>();
 }
 
 
@@ -58,7 +60,6 @@ void LooperClusterRemover::reset(edm::Event& iEvent){
   edm::Handle<edmNew::DetSetVector<SiPixelCluster> > pixelClusters;
   iEvent.getByLabel(pixelClusters_, pixelClusters);
   
-  prod_.tcOut.reset(new TrackCandidateCollection());
   prod_.collectedPixels.resize(pixelClusters->dataSize()); fill(prod_.collectedPixels.begin(), prod_.collectedPixels.end(), false);
   prod_.collectedStrips.resize(stripClusters->dataSize()); fill(prod_.collectedStrips.begin(), prod_.collectedStrips.end(), false);
 }
@@ -76,7 +77,14 @@ void LooperClusterRemover::put(edm::Event& iEvent){
 
   iEvent.put(removedPixelClusterMask);
   iEvent.put(removedStripClusterMask);
-  iEvent.put( prod_.tcOut );
+  if (prod_.tcOut.get())
+    iEvent.put( prod_.tcOut );
+  if (prod_.tOut.get())
+    {
+      iEvent.put(prod_.tOut);
+      iEvent.put(prod_.teOut);
+      iEvent.put(prod_.trhOut);
+    }
 }
 // ------------ method called to produce the data  ------------
 void
