@@ -19,7 +19,8 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                              ##   for method with skipping every N
                              everyNPixel = cms.uint32(5),
                              ##   for the method with looper analysis in 2D histogramming
-                             makeTrackCandidates = cms.bool(True),
+                             makeTrackCandidates = cms.bool(False),
+                             makeTrack = cms.bool(True),
                              maskWithNoTC = cms.bool(False),
                              SeedCreatorPSet = cms.PSet(
                                ComponentName = cms.string('SeedFromConsecutiveHitsCreator'),
@@ -30,8 +31,8 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                                 maximumTime = cms.double(-1), #time out value
                                 xAxis = cms.vdouble(34, 1/65., 1/1.5),
                                 invertX = cms.bool(True), 
-                                nPhi = cms.uint32(60),
-                                baseLineCut = cms.int32(10), # negative to roll to average occupancy
+                                nPhi = cms.uint32(180),
+                                baseLineCut = cms.int32(60), # negative to roll to average occupancy
                                 peakAbove= cms.uint32(4),
                                 RBound=cms.double(30), #maximum radius of looper's helix
                                 linkPoints=cms.bool(True),
