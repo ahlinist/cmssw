@@ -97,10 +97,13 @@ LooperClusterRemover::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   unsigned int nP=0,nS=0;
   for (unsigned int i=0;i!=prod_.collectedPixels.size();++i)    if (prod_.collectedPixels[i]) ++nP;
   for (unsigned int i=0;i!=prod_.collectedStrips.size();++i)    if (prod_.collectedStrips[i]) ++nS;
-
+  
   edm::LogError("LooperClusterRemover")<<" rejecting "<<nP<<" pixels out of: "<<prod_.collectedPixels.size()<<"\n"
-				       <<" rejecting "<<nS<<" stripd out of: "<<prod_.collectedStrips.size()<<"\n"
-				       <<" making "<<prod_.tcOut->size()<<" track candidates";
+				       <<" rejecting "<<nS<<" stripd out of: "<<prod_.collectedStrips.size();
+  if (prod_.tcOut.get())
+    edm::LogError("LooperClusterRemover")<<" making "<<prod_.tcOut->size()<<" track candidates";
+  if (prod_.tOut.get())
+    edm::LogError("LooperClusterRemover")<<" making "<<prod_.tOut->size()<<" track";
   put(iEvent);
 }
 

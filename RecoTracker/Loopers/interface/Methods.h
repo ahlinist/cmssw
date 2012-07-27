@@ -51,6 +51,7 @@ namespace LooperClusterRemoverMethod {
       stereoRecHits_=iConfig.getParameter<edm::InputTag>("stereoRecHits");
       collectorConf_=iConfig.getParameter<edm::ParameterSet>("collector");
       makeTC_=iConfig.getParameter<bool>("makeTrackCandidates");
+      makeT_=iConfig.getParameter<bool>("makeTrack");
       pxlClusterCharge_=iConfig.getParameter<double>("pxlClusterCharge");
       if (makeTC_){
 	const edm::ParameterSet & sC=iConfig.getParameter<edm::ParameterSet>("SeedCreatorPSet");
@@ -69,6 +70,7 @@ namespace LooperClusterRemoverMethod {
     edm::InputTag pixelRecHits_,stripRecHits_,rphiRecHits_,stereoRecHits_;
     edm::ParameterSet collectorConf_;
     bool makeTC_;
+    bool makeT_;
     bool maskWithNoTC_;
     double pxlClusterCharge_;
 

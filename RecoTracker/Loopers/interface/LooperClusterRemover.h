@@ -17,7 +17,7 @@
 //
 // Original Author:  Jean-Roch Vlimant,40 3-A28,+41227671209,
 //         Created:  Wed Aug  3 12:12:46 CEST 2011
-// $Id: LooperClusterRemover.h,v 1.2 2011/12/14 17:29:43 vlimant Exp $
+// $Id: LooperClusterRemover.h,v 1.3 2012/02/07 15:19:48 vlimant Exp $
 //
 //
 
@@ -43,6 +43,8 @@
 
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
 #include "DataFormats/Common/interface/ContainerMask.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 
 //
 // class declaration
@@ -67,6 +69,9 @@ class LooperClusterRemover : public edm::EDProducer {
 	std::vector<bool> collectedPixels;
 	std::vector<bool> collectedStrips;
 	std::auto_ptr<TrackCandidateCollection> tcOut;
+	std::auto_ptr<reco::TrackCollection> tOut;
+	std::auto_ptr<reco::TrackExtraCollection> teOut;
+	std::auto_ptr<TrackingRecHitCollection> trhOut;
       };
 
    private:
