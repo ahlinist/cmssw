@@ -113,12 +113,13 @@ public:
 
   void collect( fastRecHit & hit);
 
+  bool peakMade_;
   std::vector<aCell*>::iterator peak_begin() {
-    if (peaks_.empty()) makePeaks();
+    if (!peakMade_) makePeaks();
     return peaks_.begin();
   }
   std::vector<aCell*>::iterator peak_end()   {
-    if (peaks_.empty()) makePeaks();
+    if (!peakMade_) makePeaks();
     return peaks_.end();
   }
 
