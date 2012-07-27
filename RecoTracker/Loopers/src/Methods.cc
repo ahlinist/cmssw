@@ -363,6 +363,10 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 		 beamSpot->position().y(),
 		 beamSpot->position().z());		 
 
+  edm::ESHandle<MagneticField> magFieldHandle;
+  iSetup.get<IdealMagneticFieldRecord>().get(magFieldHandle);
+  double Bz = magFieldHandle->inTesla( bs ).z() ;
+
   
   //get the products
   iEvent.getByLabel(pixelRecHits_,pixelHits);
@@ -432,8 +436,26 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 
   TrajectorySeedCollection  seedCollection;
   if (makeTC_){
+    prod_.tcOut.reset(new TrackCandidateCollection());
     prod_.tcOut->reserve(collector.peaks_.size());
     seedCollection.reserve(collector.peaks_.size());
+  }
+  
+  //need references before putting the objects (standard track collection filling)
+  TrackingRecHitRefProd rHits = iEvent.getRefBeforePut<TrackingRecHitCollection>();
+  reco::TrackExtraRefProd rTrackExtras = iEvent.getRefBeforePut<reco::TrackExtraCollection>();
+  if (makeT_){
+    //make new
+    prod_.teOut.reset(new reco::TrackExtraCollection());
+    prod_.tOut.reset(new reco::TrackCollection());
+    prod_.trhOut.reset(new TrackingRecHitCollection());
+    //reserve them
+    prod_.teOut->reserve(collector.peaks_.size());
+    prod_.tOut->reserve(collector.peaks_.size());
+    prod_.trhOut->reserve(collector.peaks_.size() * 40);   
+    //get refProd
+
+
   }
 
   unsigned int nMasked=0;
@@ -454,6 +476,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       positionsInHelix<<peak->elements_[iH]->hit_->globalPosition()<<std::endl;
     }
 
+    /// option to make a TrackCandidate for subsequent fitting
     if (makeTC_){
       goodToMask=false; //until we made a TC out of it
       recHits.reserve(peak->count());
@@ -490,8 +513,46 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       else{
 	edm::LogWarning("NoSeed")<<"no seed could be made from the hit set, so no TC added";
       }
-    }//insert track candidate
-    
+    } //// end of option to make a TrackCandidate
+
+
+    /// option to make a reco::Track directly
+    if (makeT_){
+      //make kinematics
+      if (!peak->calculateKinematic(Bz))
+	{
+	  continue;
+	}
+      // make the track
+      math::XYZPoint  pos(peak->refx_,
+			  peak->refy_,
+			  peak->refz_ );
+      math::XYZVector mom(peak->px_,
+			  peak->py_,
+			  peak->pz_ );
+      CurvilinearTrajectoryError error; 
+      
+      prod_.tOut->push_back(reco::Track(0, /*chi2*/
+					int(peak->elements_.size()), /* # of degree of freedom */
+					pos,
+					mom,
+					peak->charge_,
+					error, /* dummy */
+					reco::TrackBase::iter10 /* dummy */
+					));
+      reco::TrackExtraRef teref= reco::TrackExtraRef ( rTrackExtras, prod_.teOut->size());
+      prod_.teOut->push_back(reco::TrackExtra());
+      prod_.tOut->back().setExtra( teref );
+
+      for (uint iH=0;iH!=peak->count();++iH){
+	TrackingRecHit * hit = peak->elements_[iH]->hit_->hit()->clone();
+	prod_.tOut->back().setHitPattern(*hit,iH);
+	prod_.teOut->back().add( TrackingRecHitRef( rHits, prod_.trhOut->size()) );
+	prod_.trhOut->push_back( hit );
+      }
+      goodToMask=true;
+    } //end of making a reco::Track object
+
     // copy the hits in the given order (already in increasing z |z| lowest first)
     if (goodToMask || maskWithNoTC_){
     std::stringstream text;
@@ -514,22 +575,12 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 	//so far so good
 	if (peak->elements_[iH]->single_){
 	  const SiStripRecHit2D * rH=static_cast<const SiStripRecHit2D  *>(peak->elements_[iH]->hit_->hit());
-	  /*if (!rH){
-	    edm::LogError("LooperMethod")<<" not casting back to a 1d rechit. probably projected on the way"<<std::endl;
-	    assert(0==1);
-	    continue;
-	    }*/ //was verified that the static_cast <- dynamic_cast was always functionning
 	  LogTrace("LooperMethod")<<"actively masking:" <<rH<<std::endl;
 	  if (!prod_.collectedStrips[rH->cluster().key()]) nMasked++;
 	  prod_.collectedStrips[rH->cluster().key()]=true;
 	}
 	else{
-	  const SiStripMatchedRecHit2D * mH=dynamic_cast<const SiStripMatchedRecHit2D *>(peak->elements_[iH]->hit_->hit());
-	  /*	  if (!mH){
-	    edm::LogError("LooperMethod")<<" not casting back to a 2d rechit. probably projected on the way"<<std::endl;
-	    assert(0==1);
-	    continue;
-	    }*/ //was verified that the static_cast <- dynamic_cast was always functionning
+	  const SiStripMatchedRecHit2D * mH=static_cast<const SiStripMatchedRecHit2D *>(peak->elements_[iH]->hit_->hit());
 	  LogTrace("LooperMethod")<<"actively masking:" <<mH<<std::endl;
 	  if (!prod_.collectedStrips[mH->stereoClusterRef().key()]) nMasked++;
 	  if (!prod_.collectedStrips[mH->monoClusterRef().key()]) nMasked++;
