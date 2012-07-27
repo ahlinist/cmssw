@@ -16,7 +16,7 @@ public:
   float & v1(){    return v1_;  }
   std::string print(){
     std::stringstream ss;
-    ss<<"["<<v0_<<" ~ 2*R="<<2./v0_<<" , fi="<<v1_<<" , z="<< position_.z()<<", x="<<position_.x()<<", y="<<position_.y()<<"] detId: "<<id_<<" ptr "<<this<<"\n";
+    ss<<"["<<v0_<<" ~ 2*R="<<2./v0_<<" , fi="<<v1_<<" , z="<< position_.z()<<", x="<<position_.x()<<", y="<<position_.y()<<"] detId: "<<id_<<" ptr "<<this<<" used "<<used_ ; // <<"\n";
     return ss.str();
   }
 
@@ -27,7 +27,7 @@ public:
 
   float v0_,v1_;
   bool single_;
-  bool masked_;
+  bool used_;
 };
 
 bool sameDetId(fastRecHit * h1, fastRecHit * h2);
@@ -93,6 +93,8 @@ public:
   float px_,py_,pz_,pt_;
   float refx_,refy_,refz_;
   int charge_;
+
+  void allHitsUsed();
 };
 
 
@@ -124,7 +126,9 @@ public:
 
   void makePeaks();
 
-  bool setHelix(aCell * c,bool v);
+  std::map <std::string,uint> countfail_;
+
+  bool setHelix(aCell * c,bool v, const std::string txt="");
   bool isHelix(aCell * c);
 
   uint cellImage(aCell * cell,std::string mark="");
