@@ -16,8 +16,8 @@ public:
   float & v1(){    return v1_;  }
   std::string print(){
     std::stringstream ss;
-    ss<<"["<<v0_<<" ~ 2*R="<<2./v0_<<" , fi="<<v1_<<" , z="<< position_.z()<<", x="<<position_.x()<<", y="<<position_.y()<<"] detId: "<<id_<<" ptr "<<this<<" used "<<used_<<"\n";
-    return ss.str();
+    ss<<"["<<v0_<<" ~ 2*R="<<2./v0_<<" , fi="<<v1_<<" , z="<< position_.z()<<", x="<<position_.x()<<", y="<<position_.y()<<"] detId: "<<id_<<" single: "<< single_ <<" ptr "<<this<<" used "<<used_<<"\n";
+    return ss.str(); 
   }
 
   // private:
@@ -86,6 +86,19 @@ public:
   bool isHelix_;
   bool zUp_;
   bool phiUp_;
+
+  std::vector<float> slopes_;
+
+  struct Line {
+    //line coordinates
+    float u,v,w;
+    //intersection with next
+    float x,y,r;
+    //R ration with previous
+    float rr;
+  };
+  
+  std::vector<Line> mediatrices_;
 
   float aveR_,aveX_,aveY_;
   // physical values after fitting

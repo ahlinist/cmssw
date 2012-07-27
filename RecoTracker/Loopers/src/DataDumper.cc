@@ -648,17 +648,10 @@ bool DataDumper::isHelix(aCell * c){
     }
     
     LogDebug("PeakFinder|PhiInHelix")<<" done for phi turn initialisation\n"<<c->printElements();
-    //    LogTrace("PeakFinder")<<cellImage(c);
+    LogTrace("PeakFinder")<<cellImage(c,"_test");
     
-    int firstPointRemoved=0;
-    //    int cannotRemoveMoreThan=c->count()-minHitPerPeak_;
-    int cannotRemoveMoreThan=c->count()-minHitPerPeak_;
-    int point0=0;
-    int point1=0;
-    uint point2=0;
-    float dSlope,slope0to1,slope1to2;
     //compute the slope between two points once only, and not in a while loop
-    std::vector<double> slopes;
+    std::vector<float> & slopes = c->slopes_;
     slopes.resize(c->count()-1);
     LogDebug("PeakFinder|SlopeCheck")<<"Calculating slopes two by two:";
     for (uint iC=0;iC<slopes.size();++iC){
@@ -666,6 +659,12 @@ bool DataDumper::isHelix(aCell * c){
 		       c->inCercle_[iC+1].phiTurn - c->inCercle_[iC].phiTurn);
       LogTrace("PeakFinder|SlopeCheck")<<"Between: "<<iC<<" and "<<iC+1<<" the slope is: "<<slopes[iC];
     }
+    int firstPointRemoved=0;
+    int cannotRemoveMoreThan=c->count()-minHitPerPeak_;
+    int point0=0;
+    int point1=0;
+    uint point2=0;
+    float dSlope,slope0to1,slope1to2;
     
     if (!(firstPointRemoved <= cannotRemoveMoreThan ))
       LogDebug("PeakFinder|SlopeCheck")<<"Slopes are not tested";
@@ -735,15 +734,8 @@ bool DataDumper::isHelix(aCell * c){
     }
 
     // now compute better helix center from mediatrice intersections
-    struct Line {
-      //line coordinates
-      float u,v,w;
-      //intersection with next
-      float x,y,r;
-      //R ration with previous
-      float rr;
-    };
-    std::vector<Line> mediatrices;
+
+    std::vector<aCell::Line> & mediatrices = c->mediatrices_;
     mediatrices.resize(c->count());
     GlobalPoint zero(0,0,0);
     float minRatio=1000000.,rForMinRatio=-1;
@@ -757,7 +749,7 @@ bool DataDumper::isHelix(aCell * c){
       //      yy=(p1.y()-p0.y())/2.;
       GlobalVector d(p1-p0);
       //mediatrice coordinates
-      Line & l1=mediatrices[iC];
+      aCell::Line & l1=mediatrices[iC];
       l1.u=d.x();
       l1.v=d.y();
       l1.w=-( (d.x()*((p1.x()-p0.x())/2.))+(d.y()*((p1.y()-p0.y())/2.)) );
@@ -765,7 +757,7 @@ bool DataDumper::isHelix(aCell * c){
       //intersection with previous
       //protect for NAN !!!!
       if (iC!=0){
-	Line & l0=mediatrices[iC-1];
+	aCell::Line & l0=mediatrices[iC-1];
 	l1.y=( ( l1.u * l0.w ) - ( l1.w * l0.u  ) )  / ( ( l1.v * l0.u ) - ( l1.u * l0.v ) ) ;
 	l1.x=( -l0.w -( l0.v * l1.y ) ) / l0.u; 
 	//radius obtained: from center to one of the two points
@@ -788,7 +780,7 @@ bool DataDumper::isHelix(aCell * c){
     //flag out the outliers in terms of circle radius ratio
     uint nAve=0;
     for (uint iC=0;iC<mediatrices.size();++iC){
-      Line & l1=mediatrices[iC];
+      aCell::Line & l1=mediatrices[iC];
       if (l1.r / rForMinRatio > 2.0)
 	c->inCercle_[iC].use=false;
       else{
@@ -823,10 +815,11 @@ bool DataDumper::isHelix(aCell * c){
   }
 
 uint DataDumper::cellImage(aCell * cell,std::string mark){
-  static std::set<std::string> used;
-  if (used.find(mark)!=used.end())
-    edm::LogError("DataDumperCellImage")<<"duplicating image "<<mark;
-  used.insert(mark);
+  /*  static std::set<std::string> used;
+      if (used.find(mark)!=used.end())
+      edm::LogError("DataDumperCellImage")<<"duplicating image "<<mark;
+      used.insert(mark);
+  */
 
     edm::Service<TFileService> fs;
     
