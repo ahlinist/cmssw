@@ -22,7 +22,7 @@ fastRecHit::fastRecHit(TransientTrackingRecHit::RecHitPointer h,
   hit_(h)
   ,id_(h->geographicalId())
   ,single_(single)
-  ,masked_(false)
+  ,used_(false)
 {
   //the origine is ~the BS, and therefore the BS ordinate is (0,0,0)
     position_=GlobalPoint((h->globalPosition()-origin).basicVector());
@@ -124,7 +124,8 @@ void aCell::resuite(){
 void aCell::resize(){
     uint iIn=0;
     for (uint iC=0;iC!=count();++iC){
-      if (inCercle_[iC].use){
+      //take out the one currently being not used and the one used in general
+      if (inCercle_[iC].use && !elements_[iC]->used_){
 	upLeg_[iIn]=upLeg_[iC];
 	elements_[iIn]=elements_[iC];
 	inCercle_[iIn]=inCercle_[iC];
@@ -262,6 +263,12 @@ bool aCell::calculateKinematic( double Bz ){
 }
 
 
+void aCell::allHitsUsed(){
+  for (uint iC=0;iC!=count();++iC){ 
+    elements_[iC]->used_=true;
+  }
+}
+
 std::string aCell::printElements(uint itab){
     std::string tab="";
     for (uint iC=0;iC!=itab;++iC)      tab+="\t";
@@ -273,7 +280,12 @@ std::string aCell::printElements(uint itab){
     }}
     else{
       for (uint iC=0;iC!=count();++iC){
-	ss<<tab<<iC<<") phiCercle="<<inCercle_[iC].phi<<" phiCercl++="<<inCercle_[iC].phiTurn<<" dPhi(hit,centre)="<<inCercle_[iC].dPhi<<" leg: "<<upLeg_[iC]<<" "<<elements_[iC]->print();
+	ss<<tab<<iC<<")"
+	  <<" phiCercle="<<inCercle_[iC].phi
+	  <<" phiCercl++="<<inCercle_[iC].phiTurn
+	  <<" dPhi(hit,centre)="<<inCercle_[iC].dPhi
+	  <<" leg: "<<upLeg_[iC]<<" "
+	  <<elements_[iC]->print();
       }
     }
     return ss.str();
@@ -436,31 +448,31 @@ void DataDumper::collect( fastRecHit & hit){
 
 void DataDumper::makePeaks(){
   float nTotalBins=0;
-  const uint totalBins=5;    
+  const uint numberOfMax=5;    
   uint averageOccupancy=0;
-  std::vector<uint> maxBins(totalBins,0);
+  std::vector<uint> maxBins(numberOfMax,0);
   for(std::vector<aCell>::iterator iCell=container_.begin();
       iCell!=container_.end();++iCell){
     uint n=iCell->count();
     if (n==0) continue;
     if ( n > maxBins[0]) maxBins[0]=n;
-    for (uint ib=1;ib<totalBins;++ib)
+    for (uint ib=1;ib<numberOfMax;++ib)
       if (n > maxBins[ib] && n < maxBins[ib-1])	
 	maxBins[ib]=n;
     averageOccupancy+=n;
-    nTotalBins++;
+    ++nTotalBins;
   }
   averageOccupancy/=nTotalBins;
   uint baseLineCut = averageOccupancy;
   if (baseLineCut_ > 0)
     {
-      if (uint(baseLineCut_)<= *maxBins.end())
-	baseLineCut = *maxBins.end() - baseLineCut_;
+      if (uint(baseLineCut_)<= maxBins.back())
+	baseLineCut = maxBins.back() - baseLineCut_;
       else
 	baseLineCut = 0;
     }
 
-  LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the "<<totalBins<<"th max is: "<<*maxBins.end()
+  LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the "<<numberOfMax<<"th max is: "<<maxBins.back()
 				    <<".\n"<<baseLineCut<<" is used as a baseline cut";
 
   //create an image of the container, to not sort in place. although we could in principle, since the container is not accessed anymore afterwards as is.
@@ -478,12 +490,12 @@ void DataDumper::makePeaks(){
   uint above=0;
   std::map<uint,uint> counts;
   double timeSpent=0;
-  double maximumTime=-1;
   TStopwatch myWatch;
+  myWatch.Reset();
   bool abort=false;
   for(std::vector<aCell*>::iterator iiCell=sortedImage.begin();
       iiCell!=sortedImage.end();++iiCell){
-    if (maximumTime>0 && !abort && timeSpent>maximumTime_){
+    if (maximumTime_>0 && !abort && timeSpent>maximumTime_){
       edm::LogError("AbortedLooperReco")<<"it is taking too much time to compute. Let's stop";
       abort=true;
     }
@@ -493,23 +505,26 @@ void DataDumper::makePeaks(){
     //      iCell->unique();
     aCell * iCell=*iiCell;
     if (abort){
-      setHelix(&*iCell,false);
+      setHelix(&*iCell,false,"Time Abort");
       continue;}
     if (iCell->count() < baseLineCut) {
-      setHelix(&*iCell,false);
+      setHelix(&*iCell,false,"Under Baseline");
       continue;}
     if (iCell->count() < minHitPerPeak_) {
-      setHelix(&*iCell,false);
+      setHelix(&*iCell,false,"Not enough hits");
       continue;}
+
     //triggers the computation
-    myWatch.Start();
-    if (!isHelix(&*iCell)) continue;
-    if (iCell->count() >= minHitPerPeak_){
-      above++;
-      counts[iCell->count()]++;
-      myWatch.Stop();
-      timeSpent+=myWatch.CpuTime();
-    }
+    myWatch.Start(false);
+    if (isHelix(&*iCell)) 
+      { 
+	above++;
+	counts[iCell->count()]++;
+      }
+    //stop the clock
+    myWatch.Stop();
+    LogDebug("PeakFinder|CollectPeak")<<"Timer: Real time "<< myWatch.RealTime()<<", CP time"<<myWatch.CpuTime();
+    timeSpent+=myWatch.CpuTime();
   }
   myWatch.Stop();
   
@@ -518,52 +533,78 @@ void DataDumper::makePeaks(){
   peaks_.reserve(above);
   for(std::vector<aCell*>::iterator iiCell=sortedImage.begin();
       iiCell!=sortedImage.end();++iiCell){
-
+    
     aCell * iCell=*iiCell;
-
-    if (iCell->count() >= minHitPerPeak_ && iCell->isHelix()){
+    
+    if (iCell->isHelix()){
       LogDebug("PeakFinder|CollectPeak")<<"As a peak cell: "<< iCell->printElements();
       peaks_.push_back(&*iCell);
     }
   }
-  //it's a non order list of peaks
 
+  //it's a non order list of peaks. but has been processed from largest to smallest
 
+  std::stringstream failedss;
+  for (std::map <std::string,uint>::iterator failed=countfail_.begin();
+       failed!=countfail_.end();++failed){
+    failedss<<"["<<failed->first<<"] = "<<failed->second<<"\n";
+  }
+  LogDebug("PeakFinder|CollectPeak")<<" List of failures count:\n"<<failedss.str();
   //make plots for debugging
   LogDebug("PeakFinder|CollectPeak")<<image("endOfmakePeaks");
 }
 
 
-bool DataDumper::setHelix(aCell * c,bool v){
+bool DataDumper::setHelix(aCell * c,bool v,
+			  std::string txt){
     c->helixCache_=true;
     c->isHelix_=v;
-    if (!c->isHelix_) LogDebug("PeakFinder|CollectPeak")<<"set is not helix-like";
+    if (!c->isHelix_) 
+      {
+	std::map <std::string,uint>::iterator where=countfail_.find(txt);
+	if (where!=countfail_.end())
+	  ++where->second;
+	else
+	  countfail_[txt]=1;
+
+	LogDebug("PeakFinder|CollectPeak")<<"set is not helix-like :["<<txt<<"]\n"<<c->print();
+	
+      }
     return v;
   }
 
 bool DataDumper::isHelix(aCell * c){
     if (c->helixCache_) return c->isHelix_;
 
-    LogDebug("PeakFinder|CollectPeak")<<"check on helix hypothesis for a cell at"<<c->print();
-
-    c->orderInZ();
-
     //create values with respect to the center of the cell (not using more refined value, because CPU intensive to compute anything else
     c->suite();
 
+    LogDebug("PeakFinder|CollectPeak")<<"removing already used fast rechits\n"<<c->print();
+    c->resize();
+
+    if (c->count() < minHitPerPeak_ ){
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removal of already used hits";
+      return setHelix(c,false,"previous hits removal");
+    }
+
+    LogDebug("PeakFinder|CollectPeak")<<"check on helix hypothesis for a cell at\n"<<c->print();
+
+    c->orderInZ();
+
+
     if ( symetryTopologySelection_!=0 && !c->equilibrate(symetryTopologySelection_)){
       LogDebug("PeakFinder|CollectPeak")<<" not equilibrated set of hits";
-      return setHelix(c,false);
+      return setHelix(c,false,"not equilibrated set");
     }
       
     //mask part of the set according to max |z| : resize the set
     c->truncateForZ(maxZForTruncation_);
     
     //check on the number of hits left
-    if (c->count() < minHitPerPeak_ || c->count() < 2)
+    if (c->count() < minHitPerPeak_)
       {
 	LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after truncation for Z";
-	return setHelix(c,false);
+	return setHelix(c,false,"truncation in Z");
       }
     
     //initialization of phiUp
@@ -586,7 +627,7 @@ bool DataDumper::isHelix(aCell * c){
     for (uint iC=1;iC<c->count();++iC){
       phiThisPoint=c->inCercle_[iC].phi;
       while(  (phiThisPoint - phiPreviousPoint)*signMe > 0){
-	phiThisPoint=phiThisPoint - signMe*TMath::TwoPi();
+	phiThisPoint-=signMe*TMath::TwoPi();
 	/*
 	     float dPhi = reco::deltaPhi(phiThisPoint,phiPreviousPoint);
 	     if (fabs(dPhi) > phiSlopeEpsilon_) phiThisPoint=phiThisPoint - signMe*TMath::TwoPi();
@@ -595,13 +636,13 @@ bool DataDumper::isHelix(aCell * c){
       }
       c->inCercle_[iC].phiTurn = phiThisPoint;
       if (reco::deltaPhi(phiThisPoint,phiPreviousPoint) > phiSpreadCut_)
-	phiSpread++;
+	++phiSpread;
       phiPreviousPoint=phiThisPoint;
     }
 
     if (phiSpread < 2.){
-      LogDebug("PeakFinder|PhiInHelix")<<" There is not enough spread in phi in this looper\n"<<c->printElements();
-      return setHelix(c,false);
+      LogDebug("PeakFinder|PhiInHelix")<<" There is not enough spread (" << phiSpread <<")in phi in this looper\n"<<c->printElements();
+      return setHelix(c,false,"Phi spread");
     }
     
     LogDebug("PeakFinder|PhiInHelix")<<" done for phi turn initialisation\n"<<c->printElements();
@@ -668,8 +709,8 @@ bool DataDumper::isHelix(aCell * c){
 
     //are there enough hits left in the set
     if ( c->count() < minHitPerPeak_ ){
-      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left.";
-      return setHelix(c,false);
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after slope check.\n"<<c->print();
+      return setHelix(c,false,"Slope check");
     }
  
     // take out the double hits : too close in x,y and z
@@ -687,8 +728,8 @@ bool DataDumper::isHelix(aCell * c){
     c->resize();
     LogTrace("PeakFinder|DoubleHits")<<"removed double hits\n"<<c->printElements();
     if ( c->count() < minHitPerPeak_ ){
-      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left.";
-      return setHelix(c,false);     
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removing double hits.\n"<<c->print();
+      return setHelix(c,false,"Double Hits");     
     }
 
     // now compute better helix center from mediatrice intersections
@@ -767,12 +808,15 @@ bool DataDumper::isHelix(aCell * c){
     
     //are there enough hits left in the set
     if ( c->count() < minHitPerPeak_ ){
-      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left.";
-      return setHelix(c,false);
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after checking on radius spread.\n"<<c->print();
+      return setHelix(c,false,"Radius Check");
     }
 
     LogDebug("PeakFinder|CollectPeak")<<" this is an helix."<<c->printElements();
     LogTrace("PeakFinder|CollectPeak")<<cellImage(c,"peak_");   
+
+    //setting all surviving hits to have been used/masked already, to not re-use them anywhere else.
+    c->allHitsUsed();
     return setHelix(c,true);      
   }
 
