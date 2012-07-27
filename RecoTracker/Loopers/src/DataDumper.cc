@@ -300,6 +300,7 @@ std::string aCell::print(uint itab){
   }
 
 DataDumper::DataDumper(edm::ParameterSet & pset){
+    peakMade_=false;
     std::vector<double> in=pset.getParameter<std::vector<double> >("xAxis");
     uint nBins=in[0];
     if (pset.getParameter<bool>("invertX")){
@@ -535,7 +536,6 @@ void DataDumper::makePeaks(){
       iiCell!=sortedImage.end();++iiCell){
     
     aCell * iCell=*iiCell;
-    
     if (iCell->isHelix()){
       LogDebug("PeakFinder|CollectPeak")<<"As a peak cell: "<< iCell->printElements();
       peaks_.push_back(&*iCell);
@@ -550,6 +550,8 @@ void DataDumper::makePeaks(){
     failedss<<"["<<failed->first<<"] = "<<failed->second<<"\n";
   }
   LogDebug("PeakFinder|CollectPeak")<<" List of failures count:\n"<<failedss.str();
+
+  peakMade_=true;
   //make plots for debugging
   LogDebug("PeakFinder|CollectPeak")<<image("endOfmakePeaks");
 }
