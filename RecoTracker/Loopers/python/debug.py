@@ -12,10 +12,10 @@ def debug(process):
 
     ##### debugging from DataDumper.cc
     #### category unique for collecting hits in histoset : Collect
-    #process.MessageLogger._categoryCanTalk('Collect')
+    process.MessageLogger._categoryCanTalk('Collect')
     #### category with alternative for finding the helix loopers
     ### main category : PeakFinder
-    #process.MessageLogger._categoryCanTalk('PeakFinder')
+    process.MessageLogger._categoryCanTalk('PeakFinder')
     ### sub-categories
     ## for when a histoset is rejected or accepted
     #process.MessageLogger._categoryCanTalk('CollectPeak')
@@ -23,9 +23,10 @@ def debug(process):
     #process.MessageLogger._categoryCanTalk('Truncate')
     #process.MessageLogger._categoryCanTalk('Equilibrate')
     #process.MessageLogger._categoryCanTalk('PhiInHelix')
-    process.MessageLogger._categoryCanTalk('SlopeCheck')
-    process.MessageLogger._categoryCanTalk('DoubleHits')
-    process.MessageLogger._categoryCanTalk('RadiusCheck')
+    #process.MessageLogger._categoryCanTalk('SlopeCheck')
+    #process.MessageLogger._categoryCanTalk('DoubleHits')
+    #process.MessageLogger._categoryCanTalk('RadiusCheck')
+    #process.MessageLogger._categoryCanTalk('Kinematics')
 
     ##### category for handling the looper set from Method.cc
     process.MessageLogger._categoryCanTalk('LooperMethod')
