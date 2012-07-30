@@ -93,6 +93,8 @@ public:
   struct Line {
     //line coordinates
     float u,v,w;
+    // mid point to next
+    float mx,my;
     //intersection with next
     float x,y,r;
     //R ration with previous
@@ -141,9 +143,28 @@ public:
 
   void makePeaks();
 
+  uint countfail(const std::string & txt){
+    std::map <std::string,uint>::iterator where=countfail_.find(txt);
+    if (where!=countfail_.end()){
+      ++where->second;
+      return where->second;
+    }
+    else{
+      countfail_[txt]=1;
+      return 1;
+    }
+  }
   std::map <std::string,uint> countfail_;
-
-  bool setHelix(aCell * c,bool v, const std::string txt="");
+  std::string printFail(){
+    std::stringstream failedss;
+    for (std::map <std::string,uint>::iterator failed=countfail_.begin();
+	 failed!=countfail_.end();++failed){
+      failedss<<"["<<failed->first<<"] = "<<failed->second<<"\n";
+    }
+    return failedss.str();
+  }
+  
+  bool setHelix(aCell * c,bool v, const std::string & txt=std::string(""));
   bool isHelix(aCell * c);
 
   uint cellImage(aCell * cell,std::string mark="");
