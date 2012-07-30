@@ -258,8 +258,11 @@ bool aCell::calculateKinematic( double Bz ){
   refx_=atBeam.x();
   refy_=atBeam.y();
   refz_=atBeam.z();
+  
+  
+  LogDebug("PeakFinder|Kinematics")<<printKinematics();
 
-  return false;
+  return true;
 }
 
 
@@ -298,6 +301,22 @@ std::string aCell::print(uint itab){
       <<" centered @ "<<overR_<<" ~ "<<1./overR_ <<" : "<<phi_<<"\n";
     return ss.str();
   }
+
+std::string aCell::printKinematics(){
+  std::stringstream ss;
+  
+  ss<<"momentum: ("
+    <<px_<<", "
+    <<py_<<", "
+    <<pz_<<"). "
+    <<"pT "<<pt_
+    <<" reference point: ("
+    <<refx_<<", "
+    <<refy_<<", "
+    <<refz_<<")\n";
+  return ss.str();
+}
+
 
 DataDumper::DataDumper(edm::ParameterSet & pset){
     peakMade_=false;
@@ -717,7 +736,7 @@ bool DataDumper::isHelix(aCell * c){
     // take out the double hits : too close in x,y and z
     for (uint iC1=1;iC1<c->count();++iC1){
       for (uint iC2=iC1+1;iC2<c->count();++iC2){
-	GlobalVector dist( c->elements_[iC1]->hit_->globalPosition() - c->elements_[iC1]->hit_->globalPosition() );
+	GlobalVector dist( c->elements_[iC1]->hit_->globalPosition() - c->elements_[iC2]->hit_->globalPosition() );
 	if (fabs( dist.x() ) < 0.1 )
 	  c->inCercle_[iC1].use=false;
 	else if (fabs( dist.y() ) < 0.1 )	  
