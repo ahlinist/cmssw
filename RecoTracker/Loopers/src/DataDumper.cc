@@ -129,12 +129,16 @@ void aCell::resize(){
 	upLeg_[iIn]=upLeg_[iC];
 	elements_[iIn]=elements_[iC];
 	inCercle_[iIn]=inCercle_[iC];
+	//if (mediatrices_.size()!=0)
+	//  mediatrices_[iIn]=mediatrices_[iC];
 	++iIn;
       }
     }
     upLeg_.resize(iIn);
     elements_.resize(iIn);
     inCercle_.resize(iIn);
+    //if (mediatrices_.size()!=0)
+    //  mediatrices_.resize(iIn);
   }
 
 bool aCell::equilibrate(uint eachSide){
@@ -209,10 +213,10 @@ void aCell::truncateForZ(float & maxZ){
 
 bool aCell::calculateKinematic( double Bz ){
   //option 1: calculate from the cell position in the histoset
-  pt_=0.3 * Bz * R_;
+  pt_=0.3 * Bz * (R_/100.); //cm->m
   
   //option 2: calculate from the first two points of the helix (plus third for charge sign)
-  pt_=0.3 * Bz * aveR_;
+  pt_=0.3 * Bz * (aveR_/100.); //cm->m
   
   uint secondpoint=1;
   const GlobalPoint & p0= elements_[0]->hit_->globalPosition();
@@ -277,20 +281,31 @@ std::string aCell::printElements(uint itab){
     for (uint iC=0;iC!=itab;++iC)      tab+="\t";
     std::stringstream ss;
     ss<<print(itab);
-    if (inCercle_.size()==0){
+
+
     for (uint iC=0;iC!=count();++iC){
-      ss<<tab<<iC<<") leg: "<<upLeg_[iC]<<" "<<elements_[iC]->print();
-    }}
-    else{
-      for (uint iC=0;iC!=count();++iC){
-	ss<<tab<<iC<<")"
-	  <<" phiCercle="<<inCercle_[iC].phi
-	  <<" phiCercl++="<<inCercle_[iC].phiTurn
-	  <<" dPhi(hit,centre)="<<inCercle_[iC].dPhi
-	  <<" leg: "<<upLeg_[iC]<<" "
-	  <<elements_[iC]->print();
-      }
+      ss<<tab<<iC<<")";
+      if (inCercle_.size()!=0)
+	{
+	  ss
+	    <<" phiCercle="<<inCercle_[iC].phi
+	    <<" phiCercl++="<<inCercle_[iC].phiTurn
+	    <<" dPhi(hit,centre)="<<inCercle_[iC].dPhi;
+	}
+      ss<<" leg: "<<upLeg_[iC];
+      if (mediatrices_.size()!=0)
+	{
+	  ss<<"\n"<<tab<<"\t"
+	    <<" x."<<mediatrices_[iC].u<<"+"
+	    <<" y."<<mediatrices_[iC].v<<"+ "
+	    <<mediatrices_[iC].w<<"=0"
+	    <<" inter. ("<<mediatrices_[iC].x<<", "<<mediatrices_[iC].y<<")"
+	    <<" rad. "<<mediatrices_[iC].r;
+	}
+      ss<<"\n"<<tab<<"\t"
+	<<elements_[iC]->print();
     }
+
     return ss.str();
   }
 std::string aCell::print(uint itab){
@@ -313,7 +328,7 @@ std::string aCell::printKinematics(){
     <<" reference point: ("
     <<refx_<<", "
     <<refy_<<", "
-    <<refz_<<")\n";
+    <<refz_<<")";
   return ss.str();
 }
 
@@ -516,7 +531,7 @@ void DataDumper::makePeaks(){
   for(std::vector<aCell*>::iterator iiCell=sortedImage.begin();
       iiCell!=sortedImage.end();++iiCell){
     if (maximumTime_>0 && !abort && timeSpent>maximumTime_){
-      edm::LogError("AbortedLooperReco")<<"it is taking too much time to compute. Let's stop";
+      edm::LogError("AbortedLooperReco")<<"it is taking too much time to compute: "<< timeSpent<<" > "<<maximumTime_<<". Let's stop !";
       abort=true;
     }
 
@@ -563,12 +578,7 @@ void DataDumper::makePeaks(){
 
   //it's a non order list of peaks. but has been processed from largest to smallest
 
-  std::stringstream failedss;
-  for (std::map <std::string,uint>::iterator failed=countfail_.begin();
-       failed!=countfail_.end();++failed){
-    failedss<<"["<<failed->first<<"] = "<<failed->second<<"\n";
-  }
-  LogDebug("PeakFinder|CollectPeak")<<" List of failures count:\n"<<failedss.str();
+  LogDebug("PeakFinder|CollectPeak")<<" List of failures count:\n"<<printFail();
 
   peakMade_=true;
   //make plots for debugging
@@ -577,20 +587,11 @@ void DataDumper::makePeaks(){
 
 
 bool DataDumper::setHelix(aCell * c,bool v,
-			  std::string txt){
+			  const std::string & txt){
     c->helixCache_=true;
     c->isHelix_=v;
     if (!c->isHelix_) 
-      {
-	std::map <std::string,uint>::iterator where=countfail_.find(txt);
-	if (where!=countfail_.end())
-	  ++where->second;
-	else
-	  countfail_[txt]=1;
-
-	LogDebug("PeakFinder|CollectPeak")<<"set is not helix-like :["<<txt<<"]\n"<<c->print();
-	
-      }
+      LogDebug("PeakFinder|CollectPeak")<<"set is not helix-like :["<<txt<<"] = "<<countfail(txt)<<"\n"<<c->print();
     return v;
   }
 
@@ -746,7 +747,7 @@ bool DataDumper::isHelix(aCell * c){
       }
     }
     c->resize();
-    LogTrace("PeakFinder|DoubleHits")<<"removed double hits\n"<<c->printElements();
+    LogDebug("PeakFinder|DoubleHits")<<"removed double hits\n"<<c->printElements();
     if ( c->count() < minHitPerPeak_ ){
       LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removing double hits.\n"<<c->print();
       return setHelix(c,false,"Double Hits");     
@@ -757,21 +758,25 @@ bool DataDumper::isHelix(aCell * c){
     std::vector<aCell::Line> & mediatrices = c->mediatrices_;
     mediatrices.resize(c->count());
     GlobalPoint zero(0,0,0);
+    GlobalPoint p0=zero;
     float minRatio=1000000.,rForMinRatio=-1;
     for (uint iC=0;iC<mediatrices.size();++iC){ 
-      GlobalPoint p0=zero;
-      if (iC!=0)	
+      if (iC!=0)
 	p0=c->elements_[iC-1]->hit_->globalPosition();
       const GlobalPoint & p1=c->elements_[iC]->hit_->globalPosition();
-      //mid-point
-      //      xx=(p1.x()-p0.x())/2.;
-      //      yy=(p1.y()-p0.y())/2.;
-      GlobalVector d(p1-p0);
+
       //mediatrice coordinates
       aCell::Line & l1=mediatrices[iC];
+      
+      //mid-point
+      l1.mx=(p1.x()+p0.x())/2.;
+      l1.my=(p1.y()+p0.y())/2.;
+
+      GlobalVector d(p1-p0);
+      //mediatrice equation u.x+v.y+w=0
       l1.u=d.x();
       l1.v=d.y();
-      l1.w=-( (d.x()*((p1.x()-p0.x())/2.))+(d.y()*((p1.y()-p0.y())/2.)) );
+      l1.w=-( (l1.u*l1.mx) + (l1.v*l1.my) );
 
       //intersection with previous
       //protect for NAN !!!!
@@ -817,7 +822,7 @@ bool DataDumper::isHelix(aCell * c){
 
     //remove anything not used
     c->resize();
-    LogTrace("PeakFinder|RadiusCheck")<<"removed hits with incompatible radius with respect to intersection derived centers \n"<<c->printElements();
+    LogDebug("PeakFinder|RadiusCheck")<<"removed hits with incompatible radius with respect to intersection derived centers \n"<<c->printElements();
     
     //are there enough hits left in the set
     if ( c->count() < minHitPerPeak_ ){
@@ -834,12 +839,6 @@ bool DataDumper::isHelix(aCell * c){
   }
 
 uint DataDumper::cellImage(aCell * cell,std::string mark){
-  /*  static std::set<std::string> used;
-      if (used.find(mark)!=used.end())
-      edm::LogError("DataDumperCellImage")<<"duplicating image "<<mark;
-      used.insert(mark);
-  */
-
     edm::Service<TFileService> fs;
     
     TGraph * gr = fs->make<TGraph>(cell->count());
