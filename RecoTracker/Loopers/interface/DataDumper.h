@@ -59,6 +59,7 @@ public:
   bool isHelix() const { return isHelix_;}
   std::string printElements(uint itab=0);
   std::string print(uint itab=0);
+  std::string printKinematics();
 
   // private:
   std::vector< fastRecHit *> elements_;
