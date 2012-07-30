@@ -476,11 +476,14 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       positionsInHelix<<peak->elements_[iH]->hit_->globalPosition()<<std::endl;
     }
 
+    std::stringstream simtext;
+
     /// option to make a TrackCandidate for subsequent fitting
     if (makeTC_){
       goodToMask=false; //until we made a TC out of it
       recHits.reserve(peak->count());
       TransientTrackingRecHit::ConstRecHitPointer one,two;
+    
       for (uint iH=0;iH!=peak->count();++iH){
 	recHits.push_back( peak->elements_[iH]->hit_->hit()->clone());
 	//put only two hits to create the seed
@@ -524,9 +527,9 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 	  continue;
 	}
       // make the track
-      math::XYZPoint  pos(peak->refx_,
-			  peak->refy_,
-			  peak->refz_ );
+      math::XYZPoint  pos(peak->refx_+bs.x(),
+			  peak->refy_+bs.y(),
+			  peak->refz_+bs.z() );
       math::XYZVector mom(peak->px_,
 			  peak->py_,
 			  peak->pz_ );
@@ -555,8 +558,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 
     // copy the hits in the given order (already in increasing z |z| lowest first)
     if (goodToMask || maskWithNoTC_){
-    std::stringstream text;
-    text<<peak->printElements()<<"\n";
+    simtext<<peak->printElements()<<"\n";
     for (uint iH=0;iH!=peak->count();++iH){
       //do the masking
       uint subdetId = DetId(peak->elements_[iH]->id_).subdetId();
@@ -593,26 +595,31 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       //cheat, just for display
       if (associator){
 	std::vector<PSimHit> simHits = associator->associateHit(*peak->elements_[iH]->hit_->hit());
-	text<<" Kill a hit (by using it in the track candidate) at: "<<peak->elements_[iH]->hit_->geographicalId().rawId();
+	simtext<<" Kill a hit (by using it in the track candidate) at: "<<peak->elements_[iH]->hit_->geographicalId().rawId();
 	for (uint ips=0;ips!=simHits.size();++ips)
-	  text<<"\n\t[P] pType: "<<simHits[ips].particleType()
+	  simtext<<"\n\t[P] pType: "<<simHits[ips].particleType()
 	      <<", pId: "<<simHits[ips].trackId() 
 	      <<", process: "<<simHits[ips].processType()
 	      <<", event: "<<simHits[ips].eventId().rawId();
-	text<<"\n";
+	simtext<<"\n";
       }
-      LogDebug("LooperMethod")<<text.str();
     }
+    LogDebug("LooperMethod")<<simtext.str();
     }//good to mask
 
   }//loop on peaks
   
   if (associator)    delete associator;
 
+  LogDebug("LooperMethod")<<collector.nPeaks() <<" loopers identified, leading to "<<nMasked<<" hits to be masked";
   if (makeTC_)
-    edm::LogError("LooperMethod")<<collector.nPeaks() <<" loopers identified, leading to "<<prod_.tcOut->size()<<" track candidates, containing " <<nMasked<<" hits to be masked, with duplicates, which does not matter"<<std::endl;
-  else
-    edm::LogError("LooperMethod")<<collector.nPeaks() <<" loopers identified, leading to "<<nMasked<<" hits to be masked, with duplicates, which does not matter"<<std::endl;
+    LogDebug("LooperMethod")<<"leading to "
+			    <<prod_.tcOut->size()<<" track candidates";
+  if (makeT_)
+    LogDebug("LooperMethod")<<"leading to "
+			    <<prod_.tOut->size()<<" tracks, "
+			    <<prod_.teOut->size()<<" extras, "
+			    <<prod_.trhOut->size()<<" hits attached";
 
   positionsInHelix.close();
 }
