@@ -371,6 +371,9 @@ DataDumper::DataDumper(edm::ParameterSet & pset){
     phiSlopeEpsilon_ = pset.getParameter<double>("phiSlopeEpsilon");
     phiSpreadCut_ = pset.getParameter<double>("phiSpread");
     maximumTime_ = pset.getParameter<double>("maximumTime");
+
+    //    timeMe.Start();
+
   }
 
 void DataDumper::resize(){
@@ -577,12 +580,12 @@ void DataDumper::makePeaks(){
   }
 
   //it's a non order list of peaks. but has been processed from largest to smallest
-
-  LogDebug("PeakFinder|CollectPeak")<<" List of failures count:\n"<<printFail();
+  
+  LogDebug("PeakFinder|CollectPeak|Summary")<<" List of failures count:\n"<<printFail();
 
   peakMade_=true;
   //make plots for debugging
-  LogDebug("PeakFinder|CollectPeak")<<image("endOfmakePeaks");
+  LogDebug("PeakFinder|CollectPeak|Plots")<<"Display in TH2D. "<<image("endOfmakePeaks");
 }
 
 
@@ -628,7 +631,7 @@ bool DataDumper::isHelix(aCell * c){
 	LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after truncation for Z";
 	return setHelix(c,false,"truncation in Z");
       }
-    
+   
     //initialization of phiUp
     if ((c->inCercle_.end()-2)->phi > (c->inCercle_.end()-1)->phi)	   
       c->phiUp_=true;
@@ -637,7 +640,26 @@ bool DataDumper::isHelix(aCell * c){
 
     LogDebug("PeakFinder|CollectPeak")<<" this is :"<<(c->phiUp_? "phi up":"phi down");
 	
-     // --- search for valid segment
+    // take out the double hits : too close in x,y and z
+    for (uint iC1=1;iC1<c->count();++iC1){
+      for (uint iC2=iC1+1;iC2<c->count();++iC2){
+	GlobalVector dist( c->elements_[iC1]->hit_->globalPosition() - c->elements_[iC2]->hit_->globalPosition() );
+	if (fabs( dist.x() ) < 0.1 )
+	  c->inCercle_[iC1].use=false;
+	else if (fabs( dist.y() ) < 0.1 )	  
+	  c->inCercle_[iC1].use=false;
+	else if (fabs( dist.z() ) < 0.1 )	 
+	  c->inCercle_[iC1].use=false;
+      }
+    }
+    c->resize();
+    LogDebug("PeakFinder|DoubleHits")<<"removed double hits\n"<<c->printElements();
+    if ( c->count() < minHitPerPeak_ ){
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removing double hits.\n"<<c->print();
+      return setHelix(c,false,"Double Hits");     
+    }
+    // --- search for valid segment
+
      //reset the phi in turn
     c->resuite();
 
@@ -668,7 +690,7 @@ bool DataDumper::isHelix(aCell * c){
     }
     
     LogDebug("PeakFinder|PhiInHelix")<<" done for phi turn initialisation\n"<<c->printElements();
-    LogTrace("PeakFinder")<<cellImage(c,"_test");
+    LogTrace("PeakFinder|Plots")<<"Plot cell in TGraph: "<< cellImage(c,"_test");
     
     //compute the slope between two points once only, and not in a while loop
     std::vector<float> & slopes = c->slopes_;
@@ -733,7 +755,8 @@ bool DataDumper::isHelix(aCell * c){
       LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after slope check.\n"<<c->print();
       return setHelix(c,false,"Slope check");
     }
- 
+
+    /* 
     // take out the double hits : too close in x,y and z
     for (uint iC1=1;iC1<c->count();++iC1){
       for (uint iC2=iC1+1;iC2<c->count();++iC2){
@@ -752,7 +775,7 @@ bool DataDumper::isHelix(aCell * c){
       LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removing double hits.\n"<<c->print();
       return setHelix(c,false,"Double Hits");     
     }
-
+    */
     // now compute better helix center from mediatrice intersections
 
     std::vector<aCell::Line> & mediatrices = c->mediatrices_;
@@ -831,7 +854,7 @@ bool DataDumper::isHelix(aCell * c){
     }
 
     LogDebug("PeakFinder|CollectPeak")<<" this is an helix."<<c->printElements();
-    LogTrace("PeakFinder|CollectPeak")<<cellImage(c,"peak_");   
+    LogTrace("PeakFinder|CollectPeak|Plots")<<"Plot peak in TGraph"<<cellImage(c,"peak_");   
 
     //setting all surviving hits to have been used/masked already, to not re-use them anywhere else.
     c->allHitsUsed();
