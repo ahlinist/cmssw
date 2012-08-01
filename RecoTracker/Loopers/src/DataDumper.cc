@@ -509,6 +509,8 @@ void DataDumper::makePeaks(){
       else
 	baseLineCut = 0;
     }
+  else if (baseLineCut_ ==0)
+    baseLineCut = 0;
 
   LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the "<<numberOfMax<<"th max is: "<<maxBins.back()
 				    <<".\n"<<baseLineCut<<" is used as a baseline cut";
