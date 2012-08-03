@@ -489,10 +489,13 @@ void DataDumper::makePeaks(){
   const uint numberOfMax=5;    
   uint averageOccupancy=0;
   std::vector<uint> maxBins(numberOfMax,0);
+  std::vector<uint>counts_at(40,0);
   for(std::vector<aCell>::iterator iCell=container_.begin();
       iCell!=container_.end();++iCell){
     uint n=iCell->count();
     if (n==0) continue;
+    if (n<counts_at.size())
+      counts_at[n]++;
     if ( n > maxBins[0]) maxBins[0]=n;
     for (uint ib=1;ib<numberOfMax;++ib)
       if (n > maxBins[ib] && n < maxBins[ib-1])	
@@ -501,7 +504,9 @@ void DataDumper::makePeaks(){
     ++nTotalBins;
   }
   averageOccupancy/=nTotalBins;
-  uint baseLineCut = averageOccupancy;
+  float extrap=0;
+  uint baseLineCut = 0;
+
   if (baseLineCut_ > 0)
     {
       if (uint(baseLineCut_)<= maxBins.back())
@@ -511,8 +516,29 @@ void DataDumper::makePeaks(){
     }
   else if (baseLineCut_ ==0)
     baseLineCut = 0;
-
+  else if (baseLineCut_ > (-counts_at.size()) )
+    {
+      //one can do the extrapolation of the same counts_at to get a baseline
+      uint b0=3;
+      float Nc=0;
+      for (uint b1=b0+1;b1<counts_at.size();++b1){
+	if (counts_at[b0]==counts_at[b1])
+	  continue;
+	float thales=counts_at[b0] / float(counts_at[b0]-counts_at[b1]);
+	sqc=sqrt( counts_at[b1] );
+	Nc+=sqc;
+	extrap+= ( b0+ thales * (b1-b0) ) * sqc  ;
+      }
+      extrap/=Nc;
+      baseLineCut = extrap;
+    }
+  else{
+    baseLineCut = averageOccupancy;
+  }
+  
   LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the "<<numberOfMax<<"th max is: "<<maxBins.back()
+    /*<<" the linear extrapolation from n="<<b0<<" and n="<<b1<<" is :"<<extrap*/
+				    <<" the average linear extrapolation is :"<<extrap
 				    <<".\n"<<baseLineCut<<" is used as a baseline cut";
 
   //create an image of the container, to not sort in place. although we could in principle, since the container is not accessed anymore afterwards as is.
