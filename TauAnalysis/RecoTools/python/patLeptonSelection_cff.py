@@ -73,7 +73,7 @@ selectPatElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.conf
 #
 
 selectedPatElectronsForElecTauPreId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.15 & hcalOverEcal < 0.12 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.009 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.10 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03)')
-selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronIdSelector")
+selectedPatElectronsForElecTauId.srcVertex = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
 #selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.10 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))')
 selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.444 | abs(superCluster.eta) > 1.566')
 selectedPatElectronsForElecTauEta.cut = cms.string('abs(eta) < 2.1')

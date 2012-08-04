@@ -13,13 +13,16 @@ from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPF
 selectedPatElectronsForElecTauPreId = copy.deepcopy(selectedPatElectronsTightId)
 
 # require electron candidate to pass MVA-based ID
-#selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronIdSelector")
+selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronIdSelector",
+    srcVertex = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum"),
+    filter = cms.bool(False)
+)                                                
 
 # tmp for testing
-selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronSelector",
-    cut = cms.string(''),
-    filter = cms.bool(False)
-)
+##selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronSelector",
+##    cut = cms.string(''),
+##    filter = cms.bool(False)
+##)
 
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
@@ -34,27 +37,15 @@ selectedPatElectronsForElecTauPt = copy.deepcopy(selectedPatElectronsPt15)
 # require electron candidate to be isolated
 # with respect to particle-flow candidates
 selectedPatElectronsForElecTauIso = cms.EDFilter("PATElectronPFIsolationSelector",
-	patElectronPFIsolationSelector,
-	filter = cms.bool(False)
+    patElectronPFIsolationSelector,
+    filter = cms.bool(False)
 )
 
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
 selectedPatElectronsForElecTauTrkIP = copy.deepcopy(selectedPatElectronsTrkIP)
 
-
-#
-# make collections with loose electron isolation
-#
-selectedPatElectronsForElecTauIsoLooseIsolation = selectedPatElectronsForElecTauIso.clone(
-	sumPtMax = cms.double(0.30)
-)
-
-selectedPatElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIP)
-
-
 # require electrons not to originate from photon conversions
-#
 selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("NPATElectronConversionFinder",
     maxMissingInnerHits = cms.int32(0),
     minMissingInnerHits = cms.int32(0),
@@ -63,6 +54,15 @@ selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("NPATElectronConvers
     maxHitsBeforeVertex = cms.int32(0),
     invertConversionVeto = cms.bool(False)
 )
+
+#
+# make collections with loose electron isolation
+#
+selectedPatElectronsForElecTauIsoLooseIsolation = selectedPatElectronsForElecTauIso.clone(
+    sumPtMax = cms.double(0.30)
+)
+
+selectedPatElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIP)
 
 # loosen conversion rejection as part of loose isolation
 selectedPatElectronsForElecTauConversionVetoLooseIsolation = selectedPatElectronsForElecTauConversionVeto.clone(

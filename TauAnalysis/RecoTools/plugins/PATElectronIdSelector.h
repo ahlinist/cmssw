@@ -11,9 +11,10 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-#include "HiggsAnalysis/HiggsToWW2Leptons/interface/ElectronIDMVA.h"
+
 #include "DataFormats/PatCandidates/interface/Electron.h"
 
+#include "EGamma/EGammaAnalysisTools/interface/EGammaMvaEleEstimator.h"
 
 #include <vector>
 
@@ -36,9 +37,12 @@ class PATElectronIdSelectorImp
 
   protected:
     std::vector<const T*> selected_;
-    
-    ElectronIDMVA* fMVA_;
 
+    edm::InputTag srcVertex_;
+    
+    EGammaMvaEleEstimator* fMVA_;
+
+    int verbosity_;
 };
 
 #endif
