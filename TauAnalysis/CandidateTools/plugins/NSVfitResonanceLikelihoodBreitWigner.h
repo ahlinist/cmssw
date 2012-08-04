@@ -36,6 +36,9 @@ class NSVfitResonanceLikelihoodBreitWigner : public NSVfitResonanceLikelihood
   double resonance_width_;
   double resonance_width2_;
   
+  double gamma_;
+  double k_;
+
   double power_;
 };
 
