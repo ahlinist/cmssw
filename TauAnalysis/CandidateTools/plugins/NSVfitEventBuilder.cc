@@ -56,63 +56,65 @@ NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputPa
   //std::cout << "event: polHandedness = " << format_vint(event->polHandedness_) << std::endl;
 
 //--- set polarization status for daughters 
-  if ( event->numResonances() == 2 ) {
-    for ( size_t iResonance = 0; iResonance < event->numResonances(); ++iResonance ) {
-      NSVfitResonanceHypothesis* resonance = event->resonance(iResonance);
+  if ( event->numPolStates_ > 1 || (event->numPolStates_ == 1 && polHandedness_[0] != NSVfitEventHypothesis::kPolUndefined) ) {
+    if ( event->numResonances() == 2 ) {
+      for ( size_t iResonance = 0; iResonance < event->numResonances(); ++iResonance ) {
+	NSVfitResonanceHypothesis* resonance = event->resonance(iResonance);
 
 //--- check that polarization of resonance has not yet been defined by NSVfitResonanceBuilder plugin
 //   (in order not to overwrite polarization states defined by NSVfitResonanceBuilder plugin)
-      if ( resonance->numPolStates_ != 1 )
-	throw cms::Exception("NSVfitEventBuilder")
-	  << " Simultaneous support for Polarization on event and resonance level not implemented yet !!\n";
+	if ( resonance->numPolStates_ != 1 )
+	  throw cms::Exception("NSVfitEventBuilder")
+	    << " Simultaneous support for Polarization on event and resonance level not implemented yet !!\n";
 
-      resonance->polHandedness_.resize(numPolStates_);
-      resonance->polSign_.resize(numPolStates_);
-      resonance->numPolStates_ = numPolStates_;
+	resonance->polHandedness_.resize(numPolStates_);
+	resonance->polSign_.resize(numPolStates_);
+	resonance->numPolStates_ = numPolStates_;
 
-      for ( unsigned iPolState = 0; iPolState < numPolStates_; ++iPolState ) {
-	int event_polHandedness = polHandedness_[iPolState];
-	int resonance_polHandedness = -1;
-	if ( event_polHandedness == NSVfitEventHypothesis::kPolUndefined ) {
-	  resonance_polHandedness = NSVfitResonanceHypothesis::kPolUndefined;
-	} else if ( event_polHandedness == NSVfitEventHypothesis::kPolWLWL ) {
-	  resonance_polHandedness = NSVfitResonanceHypothesis::kPolWL;
-	} else if ( event_polHandedness == NSVfitEventHypothesis::kPolWRWR ) {
-	  resonance_polHandedness = NSVfitResonanceHypothesis::kPolWR;
-	} else if ( event_polHandedness == NSVfitEventHypothesis::kPolWTWT ) {
-	  resonance_polHandedness = NSVfitResonanceHypothesis::kPolWT;
-	} 
-	assert(resonance_polHandedness != -1);
-	resonance->polHandedness_[iPolState] = resonance_polHandedness;
+	for ( unsigned iPolState = 0; iPolState < numPolStates_; ++iPolState ) {
+	  int event_polHandedness = polHandedness_[iPolState];
+	  int resonance_polHandedness = -1;
+	  if ( event_polHandedness == NSVfitEventHypothesis::kPolUndefined ) {
+	    resonance_polHandedness = NSVfitResonanceHypothesis::kPolUndefined;
+	  } else if ( event_polHandedness == NSVfitEventHypothesis::kPolWLWL ) {
+	    resonance_polHandedness = NSVfitResonanceHypothesis::kPolWL;
+	  } else if ( event_polHandedness == NSVfitEventHypothesis::kPolWRWR ) {
+	    resonance_polHandedness = NSVfitResonanceHypothesis::kPolWR;
+	  } else if ( event_polHandedness == NSVfitEventHypothesis::kPolWTWT ) {
+	    resonance_polHandedness = NSVfitResonanceHypothesis::kPolWT;
+	  } 
+	  assert(resonance_polHandedness != -1);
+	  resonance->polHandedness_[iPolState] = resonance_polHandedness;
+	  
+	  double resonace_charge = 0.;
+	  for ( size_t iDaughter = 0; iDaughter < resonance->numDaughters(); ++iDaughter ) {
+	    if ( resonance->daughter(iDaughter)->particle().isNonnull() )
+	      resonace_charge += resonance->daughter(iDaughter)->particle()->charge();
+	  }
 
-	double resonace_charge = 0.;
-	for ( size_t iDaughter = 0; iDaughter < resonance->numDaughters(); ++iDaughter ) {
-          if ( resonance->daughter(iDaughter)->particle().isNonnull() )
-	    resonace_charge += resonance->daughter(iDaughter)->particle()->charge();
+	  int resonance_polSign = 0;
+	  // CV: left-handed  W- and right-handed W+ are assigned polarization -1,
+	  //     right-handed W- and left-handed  W+ are assigned polarization +1
+	  if        ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolWL        ) {
+	    if      ( resonace_charge < -0.5 ) resonance_polSign = -1;
+	    else if ( resonace_charge > +0.5 ) resonance_polSign = +1;
+	  } else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolWR        ) {
+	    if      ( resonace_charge < -0.5 ) resonance_polSign = +1;
+	    else if ( resonace_charge > +0.5 ) resonance_polSign = -1;
+	  } else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolWT        ||
+		      resonance_polHandedness == NSVfitResonanceHypothesis::kPolUndefined ) {
+	    resonance_polSign = 0;
+	  } else assert(0);
+	  resonance->polSign_[iPolState] = resonance_polSign;
 	}
-
-	int resonance_polSign = 0;
-	// CV: left-handed  W- and right-handed W+ are assigned polarization -1,
-	//     right-handed W- and left-handed  W+ are assigned polarization +1
-	if        ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolWL        ) {
-	  if      ( resonace_charge < -0.5 ) resonance_polSign = -1;
-	  else if ( resonace_charge > +0.5 ) resonance_polSign = +1;
-	} else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolWR        ) {
-	  if      ( resonace_charge < -0.5 ) resonance_polSign = +1;
-	  else if ( resonace_charge > +0.5 ) resonance_polSign = -1;
-	} else if ( resonance_polHandedness == NSVfitResonanceHypothesis::kPolWT        ||
-		    resonance_polHandedness == NSVfitResonanceHypothesis::kPolUndefined ) {
-	  resonance_polSign = 0;
-	} else assert(0);
-	resonance->polSign_[iPolState] = resonance_polSign;
+	
+	//std::cout << "resonance: polHandedness = " << format_vint(resonance->polHandedness_) << "," 
+	//	  << " polSign = " << format_vint(resonance->polSign_) << std::endl;
       }
+    } else throw cms::Exception("NSVfitEventBuilder")
+	<< " Support for Polarization not implemented for case of " << event->numResonances() << " resonances yet !!\n";
+  }
 
-      //std::cout << "resonance: polHandedness = " << format_vint(resonance->polHandedness_) << "," 
-      //	  << " polSign = " << format_vint(resonance->polSign_) << std::endl;
-    }
-  } else if ( !(numPolStates_ == 1 || polHandedness_[0] == NSVfitEventHypothesis::kPolUndefined) ) 
-    throw cms::Exception("NSVfitEventBuilder")
-      << " Support for Polarization not implemented for case of " << event->numResonances() << " resonances yet !!\n";
 //--- set fitParameter step-size according to estimated uncertainty on vertex position
   double pvPositionXerr, pvPositionYerr, pvPositionZerr;
   if ( event->eventVertexSVrefittedIsValid() ) {
