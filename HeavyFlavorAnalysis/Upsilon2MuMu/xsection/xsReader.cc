@@ -50,13 +50,11 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
   
   //// Ups(3S) Binning
-  fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.; 
-  fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 11.; fPTbin[12] = 12.; fPTbin[13] = 13.; 
-  fPTbin[14] = 14.; fPTbin[15] = 15.; fPTbin[16] = 16.; fPTbin[17] = 18.; fPTbin[18] = 20.; fPTbin[19] = 22.; fPTbin[20] = 25.; 
-  fPTbin[21] = 30.; fPTbin[22] = 50.; fPTbin[23] = 70.; fPTbin[24] = 100.; 
+  fPTbin[0] = 9.; fPTbin[1] = 10.; fPTbin[2] = 11.; fPTbin[3] = 12.; fPTbin[4] = 13.; fPTbin[5] = 14.; 
+  fPTbin[6] = 15.; fPTbin[7] = 16.; fPTbin[8] = 18.; fPTbin[9] = 20.; fPTbin[10] = 22.; fPTbin[11] = 25.; 
+  fPTbin[12] = 30.; fPTbin[13] = 40.; fPTbin[14] = 55.; fPTbin[15] = 70.; fPTbin[16] = 100.; 
   fYbin[0] = 0.; fYbin[1] = 0.2; fYbin[2] = 0.4; fYbin[3] = 0.6; fYbin[4] = 0.8; fYbin[5] = 1.0; fYbin[6] = 1.2;
-  //fYbin[7] = 1.4; fYbin[8] = 1.6; 
-    
+      
   ///// PidTable Tracking Efficiency for DATA
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
   
@@ -177,6 +175,7 @@ void xsReader::eventProcessing() {
   
   if ( MODE == 3  ) {
     UpsGun_acceptance(2);
+    DiTracks();
     goto end;
   }
   
@@ -297,6 +296,37 @@ void xsReader::freePointers(){
     }  
   
 }
+
+void xsReader::DiTracks(){
+  double dR(-99); double dEta(-99); double dPhi(-99);
+  TAnaTrack *pTrack(0);
+  
+  TLorentzVector Track1; TLorentzVector Track2; TLorentzVector DiTrack;
+  
+  if ( fpEvt->nRecTracks() != 2 ) return;
+  
+  for (int iR = 0; iR < fpEvt->nRecTracks(); ++iR) {
+    
+    if ( iR == 0 ){
+      pTrack = fpEvt->getRecTrack(iR);
+      Track1.SetPtEtaPhiM(pTrack->fPlab.Pt(), pTrack->fPlab.Eta(), pTrack->fPlab.Phi(), MMUON);
+    }
+    if ( iR == 1 ){
+      pTrack = fpEvt->getRecTrack(iR);
+      Track2.SetPtEtaPhiM(pTrack->fPlab.Pt(), pTrack->fPlab.Eta(), pTrack->fPlab.Phi(), MMUON);
+    }
+        
+  }
+  
+  DiTrack = Track1 + Track2;
+  
+  //cout << "Mass = " << DiTrack.M() << endl;
+  ((TH1D*)fpHistFile->Get("DiTrackMass"))->Fill(DiTrack.M());
+  
+}
+
+
+
 
 bool xsReader::CowboyVeto(TAnaCand *pCand){
   bool veto =false;
@@ -1149,9 +1179,9 @@ void xsReader::UpsGun_acceptance(int mode){
 	    //lambdaPhi += fPidTable1SLambdaPhiPos->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
 	    //lambdaThetaPhi += fPidTable1SLambdaThetaPhiPos->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
 	    
-	    lambdaTheta -= fPidTable1SLambdaThetaNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
-	    lambdaPhi -= fPidTable1SLambdaPhiNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
-	    lambdaThetaPhi -= fPidTable1SLambdaThetaPhiNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);	    
+	    //lambdaTheta -= fPidTable1SLambdaThetaNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    //lambdaPhi -= fPidTable1SLambdaPhiNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);
+	    //lambdaThetaPhi -= fPidTable1SLambdaThetaPhiNeg->errD(gUps->fP.Perp(), genCand.Rapidity(), 0.);	    
 	    
 	  }
 	  
@@ -2794,6 +2824,10 @@ void xsReader::bookHist() {
   h = new TH1D("Ups_iso_#eta", "Ups_iso_#eta", 100, -5, 5.);
   h = new TH1D("Ups_iso_#phi", "Ups_iso_#phi", 100, -5, 5.);
   h = new TH1D("Ups_iso_deltaR", "Ups_iso_deltaR", 100, 0., 5.);
+  
+  // DiTrack Histograms
+  h = new TH1D("DiTrackMass", "DiTrackMass", BIN, MASSLO, MASSHI);
+  
   
   // Polarization Histo
   h = new TH1D("Ups_#phi", "Ups_#phi", 100, -4, 4.);

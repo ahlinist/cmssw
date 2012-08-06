@@ -65,6 +65,7 @@ public:
   bool        isMatchedToTrig(TAnaTrack *pTag, TString Label);
   void        x_btest(int mode);
   void        Ups_isolation();
+  void        DiTracks(); 
   void        TriggerComparisonStudy();
   void        trigEffCheck();
   void        freePointers();
@@ -119,7 +120,7 @@ public:
   
   
   double      fWeight;
-  static const int  fNpt = 24;
+  static const int  fNpt = 16;
   static const int  fNy = 6;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
