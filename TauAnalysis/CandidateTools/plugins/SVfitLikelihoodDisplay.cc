@@ -214,29 +214,6 @@ compIntersection_of_lines(const reco::Candidate::Point& offset1, const reco::Can
 //-------------------------------------------------------------------------------
 // auxiliary functions for kinematic reconstruction
 
-double gjAngleFromP4(const reco::Candidate::LorentzVector& p4Vis, const reco::Candidate::LorentzVector& p4Invis, double motherMass)
-{
-  double visMass = p4Vis.mass();
-  double invisMass = p4Invis.mass();
-  double pVis_rf = pVisRestFrame(visMass, invisMass, motherMass);
-  double x = p4Vis.energy()/(p4Vis.energy() + p4Invis.energy());
-  double enVis_lab = p4Vis.energy();
-  double gjAngle = gjAngleFromX(x, visMass, pVis_rf, enVis_lab, motherMass);
-  return gjAngle;
-}
-
-double phi_labFromP4(const reco::Candidate::LorentzVector& p4Vis, const reco::Candidate::LorentzVector& p4Invis)
-{
-  reco::Candidate::Vector u_z = normalize(reco::Candidate::Vector(p4Vis.px(), p4Vis.py(), p4Vis.pz()));
-  reco::Candidate::Vector u_y = normalize(compCrossProduct(u_z, reco::Candidate::Vector(0., 0., 1.)));
-  reco::Candidate::Vector u_x = compCrossProduct(u_y, u_z);
-
-  reco::Candidate::Vector p3Mother_unit = normalize(reco::Candidate::Vector(p4Vis.px() + p4Invis.px(), p4Vis.py() + p4Invis.py(), p4Vis.pz() + p4Invis.pz()));
-  
-  double phi_lab = TMath::ATan2(compScalarProduct(p3Mother_unit, u_y), compScalarProduct(p3Mother_unit, u_x));
-  return phi_lab;
-}
-
 std::pair<reco::Candidate::LorentzVector, reco::Candidate::LorentzVector> 
 reconstructTauNeutrino(double motherTheta, double motherPhi, double motherMass, const reco::Candidate::LorentzVector& p4Vis, double invisMass, int& errorFlag)
 {
@@ -330,6 +307,18 @@ reco::Candidate::LorentzVector compTauP4(double gjAngle, double phi_lab, const r
   
   reco::Candidate::LorentzVector p4Tau = motherP4(tauFlight.Unit(), pTau_lab, motherMass);
   return p4Tau;
+}
+
+double phiLabFromLabMomenta(const reco::Candidate::LorentzVector& motherP4, const reco::Candidate::LorentzVector& visP4)
+{
+  reco::Candidate::Vector u_z = normalize(reco::Candidate::Vector(visP4.px(), visP4.py(), visP4.pz()));
+  reco::Candidate::Vector u_y = normalize(compCrossProduct(reco::Candidate::Vector(0., 0., 1.), u_z));
+  reco::Candidate::Vector u_x = compCrossProduct(u_y, u_z);
+
+  reco::Candidate::Vector p3Mother_unit = normalize(reco::Candidate::Vector(motherP4.px(), motherP4.py(), motherP4.pz()));
+  
+  double phi_lab = TMath::ATan2(compScalarProduct(p3Mother_unit, u_y), compScalarProduct(p3Mother_unit, u_x));
+  return phi_lab;
 }
 //-------------------------------------------------------------------------------
 
@@ -679,14 +668,14 @@ void addParameterReference(double* parameter_original, int numBins_original, dou
     parameterMin_reference1 = parameterMin_original;
     parameterMax_reference1 = parameterMax_original;    
     parameter_reference1_true = parameter_original_true;
-    xAxisLabel = axisLabel_original;
+    xAxisLabel = Form(axisLabel_original.data(), numParameters + 1);
   } else if ( numParameters == 1 ) {
     parameter_reference2 = parameter_original;
     numBins_reference2 = numBins_original;
     parameterMin_reference2 = parameterMin_original;
     parameterMax_reference2 = parameterMax_original;
     parameter_reference2_true = parameter_original_true;
-    yAxisLabel = axisLabel_original;
+    yAxisLabel = Form(axisLabel_original.data(), numParameters + 1);
   } 
 }
 
@@ -701,7 +690,7 @@ void updateParametersToVary(bool doVaryTheta, bool doVaryPhi, bool doVaryInvisMa
   if ( doVaryTheta ) {
     thetaMin = 0.;
     thetaMax = TMath::Pi();
-    addParameterReference(theta, thetaNumBins, thetaMin, thetaMax, theta_true, "#theta / Rad", 
+    addParameterReference(theta, thetaNumBins, thetaMin, thetaMax, theta_true, "#theta_{%u} / Rad", 
 			  parameter1, parameter1NumBins, parameter1Min, parameter1Max, parameter1_true, xAxisLabel,
 			  parameter2, parameter2NumBins, parameter2Min, parameter2Max, parameter2_true, yAxisLabel, numParametersToVary);
     ++numParametersToVary;
@@ -709,7 +698,7 @@ void updateParametersToVary(bool doVaryTheta, bool doVaryPhi, bool doVaryInvisMa
   if ( doVaryPhi ) {
     phiMin = -TMath::Pi();
     phiMax = +TMath::Pi();
-    addParameterReference(phi, phiNumBins, phiMin, phiMax, phi_true, "#phi / Rad",
+    addParameterReference(phi, phiNumBins, phiMin, phiMax, phi_true, "#phi_{%u} / Rad",
 			  parameter1, parameter1NumBins, parameter1Min, parameter1Max, parameter1_true, xAxisLabel,
 			  parameter2, parameter2NumBins, parameter2Min, parameter2Max, parameter2_true, yAxisLabel, numParametersToVary);
     ++numParametersToVary;
@@ -717,7 +706,7 @@ void updateParametersToVary(bool doVaryTheta, bool doVaryPhi, bool doVaryInvisMa
   if ( doVaryInvisMass ) {
     invisMassMin = 0.;
     invisMassMax = 1.8;
-    addParameterReference(invisMass, invisMassNumBins, invisMassMin, invisMassMax, invisMass_true, "M_{#nu#nu} / GeV",
+    addParameterReference(invisMass, invisMassNumBins, invisMassMin, invisMassMax, invisMass_true, "M_{#nu#nu}^{%u} / GeV",
 			  parameter1, parameter1NumBins, parameter1Min, parameter1Max, parameter1_true, xAxisLabel,
 			  parameter2, parameter2NumBins, parameter2Min, parameter2Max, parameter2_true, yAxisLabel, numParametersToVary);
     ++numParametersToVary;
@@ -788,26 +777,26 @@ void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const r
     }
   }
 
-  reco::Candidate::LorentzVector genMEt = genP4Invis1 + genP4Invis2;
-
   double recMEtCovDet = recMEtCov.Determinant();
   TMatrixD recMEtCovInverse = recMEtCov;
   if ( recMEtCovDet != 0. ) recMEtCovInverse.Invert();
   
-  double gjAngle1_true   = gjAngleFromP4(genP4Vis1, genP4Invis1, tauLeptonMass);
+  reco::Candidate::LorentzVector genP4Tau1 = genP4Vis1 + genP4Invis1;
+  double gjAngle1_true   = gjAngleFromLabMomenta(genP4Tau1, genP4Vis1);
   double gjAngle1Min     = gjAngle1_true;
   double gjAngle1Max     = gjAngle1_true;
-  double phi_lab1_true   = phi_labFromP4(genP4Vis1, genP4Invis1);
+  double phi_lab1_true   = phiLabFromLabMomenta(genP4Tau1, genP4Vis1);
   double phi_lab1Min     = phi_lab1_true;
   double phi_lab1Max     = phi_lab1_true;
   double invisMass1_true = genP4Invis1.mass();
   double invisMass1Min   = invisMass1_true;
   double invisMass1Max   = invisMass1_true;
 
-  double gjAngle2_true   = gjAngleFromP4(genP4Vis2, genP4Invis2, tauLeptonMass);
+  reco::Candidate::LorentzVector genP4Tau2 = genP4Vis2 + genP4Invis2;
+  double gjAngle2_true   = gjAngleFromLabMomenta(genP4Tau2, genP4Vis2);
   double gjAngle2Min     = gjAngle2_true;
   double gjAngle2Max     = gjAngle2_true;
-  double phi_lab2_true   = phi_labFromP4(genP4Vis2, genP4Invis2);
+  double phi_lab2_true   = phiLabFromLabMomenta(genP4Tau2, genP4Vis2);
   double phi_lab2Min     = phi_lab2_true;
   double phi_lab2Max     = phi_lab2_true;
   double invisMass2_true = genP4Invis2.mass();
@@ -902,6 +891,7 @@ void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const r
 	      reco::Candidate::Vector tauFlight1;
 	      reco::Candidate::LorentzVector p4Tau1 = compTauP4(gjAngle1, phi_lab1, recP4Vis1, invisMass1, tauLeptonMass, pVis_rf1, tauFlight1);
 	      double X1 = recP4Vis1.E()/p4Tau1.E();
+	      //std::cout << "phi_lab1 = " << phi_lab1 << " (cross-check = " << phiLabFromLabMomenta(p4Tau1, recP4Vis1) << ")" << std::endl;
 
 	      gjAngle2   = gjAngle2Min   + (gjAngleBin2   + 0.5)*(gjAngle2Max   - gjAngle2Min  )/gjAngleNumBins2;
 	      phi_lab2   = phi_lab2Min   + (phi_labBin2   + 0.5)*(phi_lab2Max   - phi_lab2Min  )/phi_labNumBins2;
@@ -910,6 +900,9 @@ void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const r
 	      reco::Candidate::Vector tauFlight2;
 	      reco::Candidate::LorentzVector p4Tau2 = compTauP4(gjAngle2, phi_lab2, recP4Vis2, invisMass2, tauLeptonMass, pVis_rf2, tauFlight2);
 	      double X2 = recP4Vis2.E()/p4Tau2.E();
+	      //std::cout << "phi_lab2 = " << phi_lab2 << " (cross-check = " << phiLabFromLabMomenta(p4Tau2, recP4Vis2) << ")" << std::endl;
+
+	      reco::Candidate::LorentzVector genMEt = (p4Tau1 - recP4Vis1) + (p4Tau2 - recP4Vis2);
 
 	      double negLogP = 0.;
 
@@ -935,7 +928,7 @@ void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const r
 		  evtVertexPos, evtVertexCov, p4Tau2.P(), tauFlight2, recLeadTrack2_transient, recLeadTrackRefPoint2, recLeadTrackDirection2);
 	      }
 
-	      if ( addLikelihoodMEt ) {
+	      if ( addLikelihoodMEt ) {		
 		negLogP += negLogLikelihoodMEt(genMEt, recMEt, recMEtCovDet, recMEtCovInverse);
 	      }
 
@@ -1102,6 +1095,7 @@ struct matchedTauDecayType
       std::cout << " vis: En = " << genVisP4_.E() << ", P = " << genVisP4_.P() << "," 
 		<< " eta = " << genVisP4_.eta() << ", phi = " << genVisP4_.phi() 
 		<< " (mass = " << genVisP4_.mass() << ")" << std::endl;
+      std::cout << " X = " << (genVisP4_.E()/genTauP4_.E()) << std::endl;
       std::cout << " vis(rf): P = " << boostToCOM(genTauP4_, genVisP4_).P() << std::endl;
       std::cout << " angle(vis,tau) = " << angle(genVisP4_, genTauP4_) << std::endl;
       std::cout << " invis: En = " << genInvisP4_.E() << ", P = " << genInvisP4_.P() << "," 
@@ -1124,12 +1118,12 @@ struct matchedTauDecayType
       if ( !errorFlag ) {
 	std::cout << " invis(rec+): En = " << p4Invis_reconstructed.first.E() << ", P = " << p4Invis_reconstructed.first.P() << "," 
 		  << " eta = " << p4Invis_reconstructed.first.eta() << ", phi = " << p4Invis_reconstructed.first.phi() << " "
-		  << "(qjAngle = " << gjAngleFromP4(genVisP4_, p4Invis_reconstructed.first, tauLeptonMass) << "," 
-		  << " phi_lab = " << phi_labFromP4(genVisP4_, genInvisP4_) << ")" << std::endl;
+		  << "(qjAngle = " << gjAngleFromLabMomenta(genTauP4_, genTauP4_ - p4Invis_reconstructed.first) << "," 
+		  << " phi_lab = " << phiLabFromLabMomenta(genTauP4_, genVisP4_) << ")" << std::endl;
 	std::cout << " invis(rec-): En = " << p4Invis_reconstructed.second.E() << ", P = " << p4Invis_reconstructed.second.P() << "," 
 		  << " eta = " << p4Invis_reconstructed.second.eta() << ", phi = " << p4Invis_reconstructed.second.phi() << " "
-		  << "(qjAngle = " << gjAngleFromP4(genVisP4_, p4Invis_reconstructed.second, tauLeptonMass) << "," 
-		  << " phi_lab = " << phi_labFromP4(genVisP4_, genInvisP4_) << ")" << std::endl;
+		  << "(qjAngle = " << gjAngleFromLabMomenta(genTauP4_, genTauP4_ - p4Invis_reconstructed.second) << "," 
+		  << " phi_lab = " << phiLabFromLabMomenta(genTauP4_, genVisP4_) << ")" << std::endl;
       }
       std::cout << "decay-mode = " << genTauDecayMode_ << std::endl;
       unsigned idx_track = 0;
@@ -1246,13 +1240,28 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
   if ( !(matchedTauDecays.size() == 2) ) 
     std::cout << " Failed to find exactly two gen. matched Tau decay products --> skipping !!" << std::endl;
 
+  const matchedTauDecayType* matchedTau1 = matchedTauDecays.at(0);
+  const matchedTauDecayType* matchedTau2 = matchedTauDecays.at(1);
+  assert(matchedTau1 && matchedTau2);
+
+  reco::Candidate::LorentzVector diTauP4 = matchedTau1->genTauP4_ + matchedTau2->genTauP4_;
+  std::cout << " diTau: Mass = " << diTauP4.mass() << " "
+	    << "(visMass = " << (matchedTau1->genVisP4_ + matchedTau2->genVisP4_).mass() << ")," 
+	    << " Pt = " << diTauP4.pt() << std::endl;
+
+  reco::Candidate::LorentzVector genMEtP4 = matchedTau1->genInvisP4_ + matchedTau2->genInvisP4_;
+  std::cout << " MEt(gen): Pt = " << genMEtP4.pt() << ", phi = " << genMEtP4.phi() << " "
+	    << "(Px = " << genMEtP4.px() << ", Py = " << genMEtP4.py() << ")" << std::endl;
+  
   edm::Handle<reco::PFMETCollection> recMETs;
   evt.getByLabel(srcMEt_, recMETs);
   if ( !(recMETs->size() == 1) )
     throw cms::Exception("SVfitLikelihoodDisplay::analyze") 
       << "Failed to find unique MET object !!\n";
   const reco::PFMET& recMEt = recMETs->front();
-  
+  std::cout << " MEt(rec): Pt = " << recMEt.pt() << ", phi = " << recMEt.phi() << " "
+	    << "(Px = " << recMEt.px() << ", Py = " << recMEt.py() << ")" << std::endl;
+
   TMatrixD recMEtCov(2,2);
   if ( srcMEtCov_.label() != "" ) {
     edm::Handle<PFMEtSignCovMatrix> recMEtCovHandle;    
@@ -1261,6 +1270,8 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
   } else {
     recMEtCov = recMEt.getSignificanceMatrix();
   }
+  std::cout << " covMEt(rec):" << std::endl;
+  recMEtCov.Print();
 
   typedef edm::View<reco::Vertex> VertexView;
   edm::Handle<VertexView> vertices;
@@ -1279,11 +1290,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
   reco::Candidate::Point vertexPos_refitted(vertex_refitted.position().x(), vertex_refitted.position().y(), vertex_refitted.position().z());
   TMatrixD vertexCov_refitted = getVertexCov(vertex_refitted);
   std::cout << "event vertex(rec,refitted): x = " << vertexPos_refitted.x() << ", y = " << vertexPos_refitted.y() << ", z = " << vertexPos_refitted.z() 
-	    << " (chi2 = " << vertex_refitted.normalisedChiSquared() << ")" << std::endl;  
-
-  const matchedTauDecayType* matchedTau1 = matchedTauDecays.at(0);
-  const matchedTauDecayType* matchedTau2 = matchedTauDecays.at(1);
-  std::cout << "visMass = " << (matchedTau1->genVisP4_ + matchedTau2->genVisP4_).mass() << std::endl;
+	    << " (chi2 = " << vertex_refitted.normalisedChiSquared() << ")" << std::endl;    
 
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
@@ -1297,7 +1304,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     false,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine1"));
+		     evt, std::string(moduleLabel_).append("_TauDecayKine1_vs_gjAngle1_and_Mnunu1"));
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrack_,
 		     true, true, false, 
@@ -1310,7 +1317,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     false,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_TrackInfo1dca"));
+		     evt, std::string(moduleLabel_).append("_TrackInfo1dca_vs_gjAngle1_and_phiLab1"));
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
 		     true, true, false, 
@@ -1323,7 +1330,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     false,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_TrackInfo1vtx"));
+		     evt, std::string(moduleLabel_).append("_TrackInfo1vtx_vs_gjAngle1_and_phiLab1"));
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
 		     false, false, false,
@@ -1336,7 +1343,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     false,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine2"));
+		     evt, std::string(moduleLabel_).append("_TauDecayKine2_vs_gjAngle2_and_Mnunu2"));
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrack_,
 		     false, false, false,
@@ -1349,7 +1356,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     false,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_TrackInfo2dca"));
+		     evt, std::string(moduleLabel_).append("_TrackInfo2dca_vs_gjAngle2_and_phiLab2"));
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
 		     false, false, false,
@@ -1362,7 +1369,59 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     false,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_TrackInfo2vtx"));
+		     evt, std::string(moduleLabel_).append("_TrackInfo2vtx_vs_gjAngle2_and_phiLab2"));
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
+		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
+		     true, true, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertex_, matchedTau2->genTauDecayVertex_, 
+		     matchedTau2->recVisP4_, matchedTau2->recTracks_,
+		     false, false, false, 
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     trackBuilder, vertexFitAlgo_,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_phiLab1"));
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
+		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
+		     true, false, matchedTau1->isLeptonicDecay_, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertex_, matchedTau2->genTauDecayVertex_, 
+		     matchedTau2->recVisP4_, matchedTau2->recTracks_,
+		     false, false, false, 
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     trackBuilder, vertexFitAlgo_,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_Mnunu1"));
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
+		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
+		     false, false, false, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertex_, matchedTau2->genTauDecayVertex_, 
+		     matchedTau2->recVisP4_, matchedTau2->recTracks_,
+		     true, true, false,
+		     false, false, 		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     trackBuilder, vertexFitAlgo_,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle2_and_phiLab2"));
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
+		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
+		     false, false, false, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertex_, matchedTau2->genTauDecayVertex_, 
+		     matchedTau2->recVisP4_, matchedTau2->recTracks_,
+		     true, false, matchedTau2->isLeptonicDecay_, 
+		     false, false, 		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     trackBuilder, vertexFitAlgo_,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle2_and_Mnunu2"));
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
 		     true, false, false,
@@ -1375,7 +1434,20 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     true,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_MEt"));
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_gjAngle2"));
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
+		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
+		     true, false, false,
+		     true, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertex_, matchedTau2->genTauDecayVertex_, 
+		     matchedTau2->recVisP4_, matchedTau2->recTracks_,
+		     true, false, false, 
+		     true, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     trackBuilder, vertexFitAlgo_,
+		     evt, std::string(moduleLabel_).append("_TauDecayKine_plus_MEt_vs_gjAngle1_and_gjAngle2"));
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertex_, matchedTau1->genTauDecayVertex_, 
 		     matchedTau1->recVisP4_, matchedTau1->recTracks_,
 		     true, false, false,
@@ -1388,7 +1460,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     true,
 		     trackBuilder, vertexFitAlgo_,
-		     evt, std::string(moduleLabel_).append("_all"));
+		     evt, std::string(moduleLabel_).append("_all_vs_gjAngle1_and_gjAngle2"));
 }
 
 void SVfitLikelihoodDisplay::endJob()
