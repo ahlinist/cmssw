@@ -10,6 +10,8 @@
 #include <set>
 #include "TStopwatch.h"
 
+#include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
+
 bool sameDetId(fastRecHit * h1, fastRecHit * h2){ return (h1->id_ == h2->id_); }
 bool sortByDetId( fastRecHit * h1, fastRecHit * h2){return (h1->id_ > h2->id_);}
 bool sortByZ( fastRecHit * h1, fastRecHit * h2){return (h1->position_.z() < h2->position_.z());}
@@ -28,6 +30,7 @@ fastRecHit::fastRecHit(TransientTrackingRecHit::RecHitPointer h,
     position_=GlobalPoint((h->globalPosition()-origin).basicVector());
     v0_=2./position_.perp();
     v1_=position_.phi();
+    subdetid_ = DetId(id_).subdetId();
 }
 
 aCell::aCell(){ 
@@ -525,7 +528,7 @@ void DataDumper::makePeaks(){
 	if (counts_at[b0]==counts_at[b1])
 	  continue;
 	float thales=counts_at[b0] / float(counts_at[b0]-counts_at[b1]);
-	sqc=sqrt( counts_at[b1] );
+	float sqc=sqrt( counts_at[b1] );
 	Nc+=sqc;
 	extrap+= ( b0+ thales * (b1-b0) ) * sqc  ;
       }
@@ -644,10 +647,9 @@ bool DataDumper::isHelix(aCell * c){
 
     c->orderInZ();
 
-
     if ( symetryTopologySelection_!=0 && !c->equilibrate(symetryTopologySelection_)){
-      LogDebug("PeakFinder|CollectPeak")<<" not equilibrated set of hits";
-      return setHelix(c,false,"not equilibrated set");
+      LogDebug("PeakFinder|CollectPeak")<<" not equilibrated set of hits (1)";
+      return setHelix(c,false,"not equilibrated set (1)");
     }
       
     //mask part of the set according to max |z| : resize the set
@@ -659,7 +661,7 @@ bool DataDumper::isHelix(aCell * c){
 	LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after truncation for Z";
 	return setHelix(c,false,"truncation in Z");
       }
-   
+
     //initialization of phiUp
     if ((c->inCercle_.end()-2)->phi > (c->inCercle_.end()-1)->phi)	   
       c->phiUp_=true;
@@ -667,25 +669,52 @@ bool DataDumper::isHelix(aCell * c){
       c->phiUp_=false;
 
     LogDebug("PeakFinder|CollectPeak")<<" this is :"<<(c->phiUp_? "phi up":"phi down");
-	
+
+    uint countInPxl=0;
     // take out the double hits : too close in x,y and z
     for (uint iC1=1;iC1<c->count();++iC1){
+      uint subdetId = c->elements_[iC1]->subdetid_;
+      bool inPixl=(subdetId==PixelSubdetector::PixelBarrel || subdetId==PixelSubdetector::PixelEndcap);
+      if (inPixl) ++countInPxl;
       for (uint iC2=iC1+1;iC2<c->count();++iC2){
-	GlobalVector dist( c->elements_[iC1]->hit_->globalPosition() - c->elements_[iC2]->hit_->globalPosition() );
-	if (fabs( dist.x() ) < 0.1 )
-	  c->inCercle_[iC1].use=false;
-	else if (fabs( dist.y() ) < 0.1 )	  
-	  c->inCercle_[iC1].use=false;
-	else if (fabs( dist.z() ) < 0.1 )	 
-	  c->inCercle_[iC1].use=false;
+	if (inPixl){
+	  GlobalVector dist( c->elements_[iC1]->hit_->globalPosition() - c->elements_[iC2]->hit_->globalPosition() );
+	  if (fabs( dist.x() ) < 0.1 && fabs( dist.y() ) < 0.1 && fabs( dist.z() ) < 0.1)
+	    c->inCercle_[iC1].use=false;
+	}
       }
     }
+
     c->resize();
     LogDebug("PeakFinder|DoubleHits")<<"removed double hits\n"<<c->printElements();
     if ( c->count() < minHitPerPeak_ ){
       LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removing double hits.\n"<<c->print();
       return setHelix(c,false,"Double Hits");     
     }
+
+    // anti jet cut
+    if (countInPxl ==0 ){
+      LogDebug("PeakFinder|CollectPeak")<<" not enough pxl hits "<< countInPxl<<"\n"<<c->print();
+      return setHelix(c,false,"No Pxl Hits");
+    }
+
+    // slim fast :-)
+    uint lastDetId=c->elements_[0]->id_;
+    for (uint iC1=1;iC1<c->count();++iC1){
+      if (lastDetId == c->elements_[iC1]->id_)
+	{
+	  c->inCercle_[iC1].use=false;
+	}
+      lastDetId=c->elements_[iC1]->id_;
+    }
+    c->resize();
+    LogDebug("PeakFinder|DoubleModule")<<"removed hits consecutively on the same module"<<c->printElements();
+
+    if ( c->count() < minHitPerPeak_ ){
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removing hits consecutively on the same module"<<c->print();
+      return setHelix(c,false,"Multiple hit on module");
+    }
+
     // --- search for valid segment
 
      //reset the phi in turn
@@ -712,13 +741,13 @@ bool DataDumper::isHelix(aCell * c){
       phiPreviousPoint=phiThisPoint;
     }
 
-    if (phiSpread < 2.){
+    if (phiSpread < 2){
       LogDebug("PeakFinder|PhiInHelix")<<" There is not enough spread (" << phiSpread <<")in phi in this looper\n"<<c->printElements();
       return setHelix(c,false,"Phi spread");
     }
     
     LogDebug("PeakFinder|PhiInHelix")<<" done for phi turn initialisation\n"<<c->printElements();
-    LogTrace("PeakFinder|Plots")<<"Plot cell in TGraph: "<< cellImage(c,"_test");
+    LogTrace("PeakFinder|Plots")<<"Plot cell in TGraph: "<< cellImage(c,"test_");
     
     //compute the slope between two points once only, and not in a while loop
     std::vector<float> & slopes = c->slopes_;
@@ -784,26 +813,6 @@ bool DataDumper::isHelix(aCell * c){
       return setHelix(c,false,"Slope check");
     }
 
-    /* 
-    // take out the double hits : too close in x,y and z
-    for (uint iC1=1;iC1<c->count();++iC1){
-      for (uint iC2=iC1+1;iC2<c->count();++iC2){
-	GlobalVector dist( c->elements_[iC1]->hit_->globalPosition() - c->elements_[iC2]->hit_->globalPosition() );
-	if (fabs( dist.x() ) < 0.1 )
-	  c->inCercle_[iC1].use=false;
-	else if (fabs( dist.y() ) < 0.1 )	  
-	  c->inCercle_[iC1].use=false;
-	else if (fabs( dist.z() ) < 0.1 )	 
-	  c->inCercle_[iC1].use=false;
-      }
-    }
-    c->resize();
-    LogDebug("PeakFinder|DoubleHits")<<"removed double hits\n"<<c->printElements();
-    if ( c->count() < minHitPerPeak_ ){
-      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after removing double hits.\n"<<c->print();
-      return setHelix(c,false,"Double Hits");     
-    }
-    */
     // now compute better helix center from mediatrice intersections
 
     std::vector<aCell::Line> & mediatrices = c->mediatrices_;
@@ -811,10 +820,14 @@ bool DataDumper::isHelix(aCell * c){
     GlobalPoint zero(0,0,0);
     GlobalPoint p0=zero;
     float minRatio=1000000.,rForMinRatio=-1;
+    aCell::Line * l0=0;
     for (uint iC=0;iC<mediatrices.size();++iC){ 
       if (iC!=0)
 	p0=c->elements_[iC-1]->hit_->globalPosition();
       const GlobalPoint & p1=c->elements_[iC]->hit_->globalPosition();
+
+      //skip close points
+      if ( (p0-p1).perp() < 0.1)	continue;
 
       //mediatrice coordinates
       aCell::Line & l1=mediatrices[iC];
@@ -831,14 +844,14 @@ bool DataDumper::isHelix(aCell * c){
 
       //intersection with previous
       //protect for NAN !!!!
-      if (iC!=0){
-	aCell::Line & l0=mediatrices[iC-1];
-	l1.y=( ( l1.u * l0.w ) - ( l1.w * l0.u  ) )  / ( ( l1.v * l0.u ) - ( l1.u * l0.v ) ) ;
-	l1.x=( -l0.w -( l0.v * l1.y ) ) / l0.u; 
+      if (iC!=0 and l0){
+
+	l1.y=( ( l1.u * l0->w ) - ( l1.w * l0->u  ) )  / ( ( l1.v * l0->u ) - ( l1.u * l0->v ) ) ;
+	l1.x=( -l0->w -( l0->v * l1.y ) ) / l0->u; 
 	//radius obtained: from center to one of the two points
 	l1.r = sqrt( (l1.x-p0.x())*(l1.x-p0.x()) + (l1.y-p0.y())*(l1.y-p0.y()));
 	
-	l1.rr = abs( 1. - (l0.r / l1.r));
+	l1.rr = abs( 1. - (l0->r / l1.r));
 	if (l1.rr < minRatio){ 
 	  minRatio=l1.rr;
 	  rForMinRatio=l1.r;
@@ -848,14 +861,17 @@ bool DataDumper::isHelix(aCell * c){
 	//set the value to the cell value
 	l1.x=c->x_;
 	l1.y=c->y_;
+	l1.r = c->R_;
 	l1.rr = 1.;
       }
+      l0=&l1;
     }
     
     //flag out the outliers in terms of circle radius ratio
     uint nAve=0;
     for (uint iC=0;iC<mediatrices.size();++iC){
       aCell::Line & l1=mediatrices[iC];
+      if (l1.r==0)	continue;
       if (l1.r / rForMinRatio > 2.0)
 	c->inCercle_[iC].use=false;
       else{
@@ -870,6 +886,18 @@ bool DataDumper::isHelix(aCell * c){
       c->aveX_/=nAve;
       c->aveY_/=nAve;
     }
+    else{
+      LogDebug("PeakFinder|CollectPeak")<<" looper's topology prevents from calculating the radius";
+      return setHelix(c,false,"Radius Average");
+    }
+
+    //kill things close to the lower bound
+    if (c->aveR_ > (1.2 * RBound_))
+      {
+	LogDebug("PeakFinder|CollectPeak")<<" looper average radius "<< c->aveR_<<" is too large to be consistent \n"<<c->printElements();
+	return setHelix(c,false,"Radius Check");
+      } 
+    
 
     //remove anything not used
     c->resize();
@@ -879,6 +907,12 @@ bool DataDumper::isHelix(aCell * c){
     if ( c->count() < minHitPerPeak_ ){
       LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after checking on radius spread.\n"<<c->print();
       return setHelix(c,false,"Radius Check");
+    }
+
+    //second leg cut
+    if ( symetryTopologySelection_!=0 && !c->equilibrate(symetryTopologySelection_)){
+      LogDebug("PeakFinder|CollectPeak")<<" not equilibrated set of hits (2)";
+      return setHelix(c,false,"not equilibrated set (2)");
     }
 
     LogDebug("PeakFinder|CollectPeak")<<" this is an helix."<<c->printElements();
