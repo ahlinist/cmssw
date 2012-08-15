@@ -418,10 +418,10 @@ double negLogLikelihoodTrackInfo1Prong(const reco::Candidate::Point& evtVertexPo
   bool hasConverged = false;      
   double prob = 0.;
   do {
-    SVfit::track::TrackExtrapolation track_extrapolation(track_transient, AlgebraicVector3(point_dca.x(), point_dca.y(), point_dca.z()));
+    SVfitTrackExtrapolation track_extrapolation(track_transient, AlgebraicVector3(point_dca.x(), point_dca.y(), point_dca.z()));
     const AlgebraicVector3& tangent_vector = track_extrapolation.tangent();
     reco::Candidate::Vector track_direction_update(tangent_vector(0), tangent_vector(1), tangent_vector(2));
-    const AlgebraicVector3& track_refPoint_update_vector = track_extrapolation.dcaPosition();
+    const AlgebraicVector3& track_refPoint_update_vector = track_extrapolation.point_of_closest_approach();
     reco::Candidate::Point track_refPoint_update(track_refPoint_update_vector(0), track_refPoint_update_vector(1), track_refPoint_update_vector(2));
     reco::Candidate::Point point_dca_update = compIntersection_of_lines(evtVertexPos, tauFlight, track_refPoint, track_direction_update).second;
     reco::Candidate::Vector diff_dca_update = compDifference(point_dca_update, point_dca);
@@ -444,8 +444,8 @@ double negLogLikelihoodTrackInfo1Prong(const reco::Candidate::Point& evtVertexPo
       double dStep = 0.0025;
       for ( double d = -point_dca_wrt_vertex_mag; d <= dMax; d += dStep ) {
 	reco::Candidate::Point point_step = compShiftedPosition(point_dca, d, tauFlight_normalized);
-	SVfit::track::TrackExtrapolation track_extrapolation_step(track_transient, AlgebraicVector3(point_step.x(), point_step.y(), point_step.z()));
-	const AlgebraicVector3& dca_step_vector = track_extrapolation_step.dcaPosition();
+	SVfitTrackExtrapolation track_extrapolation_step(track_transient, AlgebraicVector3(point_step.x(), point_step.y(), point_step.z()));
+	const AlgebraicVector3& dca_step_vector = track_extrapolation_step.point_of_closest_approach();
 	reco::Candidate::Point dca_step(dca_step_vector(0), dca_step_vector(1), dca_step_vector(2));
 	reco::Candidate::Vector dca_residual = compDifference(dca_step, point_step);
 	double dca_residual_mag = TMath::Sqrt(dca_residual.mag2());
@@ -734,7 +734,7 @@ void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const r
   const reco::Track* recLeadTrack1 = recTracks1.at(0);
   assert(recLeadTrack1);
   reco::TransientTrack recLeadTrack1_transient = trackBuilder->build(*recLeadTrack1);
-  SVfit::track::TrackExtrapolation recLeadTrack1_extrapolation(recLeadTrack1_transient, AlgebraicVector3(evtVertexPos.x(), evtVertexPos.y(), evtVertexPos.z()));
+  SVfitTrackExtrapolation recLeadTrack1_extrapolation(recLeadTrack1_transient, AlgebraicVector3(evtVertexPos.x(), evtVertexPos.y(), evtVertexPos.z()));
   const AlgebraicVector3& recLeadTrackDirection1_vector = recLeadTrack1_extrapolation.tangent();
   reco::Candidate::Vector recLeadTrackDirection1(recLeadTrackDirection1_vector(0), recLeadTrackDirection1_vector(1), recLeadTrackDirection1_vector(2));
   reco::Candidate::Point recLeadTrackRefPoint1 = evtVertexPos;
@@ -757,7 +757,7 @@ void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const r
   const reco::Track* recLeadTrack2 = recTracks2.at(0);
   assert(recLeadTrack2);
   reco::TransientTrack recLeadTrack2_transient = trackBuilder->build(*recLeadTrack2);
-  SVfit::track::TrackExtrapolation recLeadTrack2_extrapolation(recLeadTrack2_transient, AlgebraicVector3(evtVertexPos.x(), evtVertexPos.y(), evtVertexPos.z()));
+  SVfitTrackExtrapolation recLeadTrack2_extrapolation(recLeadTrack2_transient, AlgebraicVector3(evtVertexPos.x(), evtVertexPos.y(), evtVertexPos.z()));
   const AlgebraicVector3& recLeadTrackDirection2_vector = recLeadTrack2_extrapolation.tangent();
   reco::Candidate::Vector recLeadTrackDirection2(recLeadTrackDirection2_vector(0), recLeadTrackDirection2_vector(1), recLeadTrackDirection2_vector(2));
   reco::Candidate::Point recLeadTrackRefPoint2 = evtVertexPos;
