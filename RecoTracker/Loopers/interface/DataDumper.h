@@ -16,7 +16,12 @@ public:
   float & v1(){    return v1_;  }
   std::string print(){
     std::stringstream ss;
-    ss<<"["<<v0_<<" ~ 2*R="<<2./v0_<<" , fi="<<v1_<<" , z="<< position_.z()<<", x="<<position_.x()<<", y="<<position_.y()<<"] detId: "<<id_<<" single: "<< single_ <<" ptr "<<this<<" used "<<used_<<"\n";
+    ss<<"["<<v0_<<" ~ 2*R="<<2./v0_<<" , fi="<<v1_<<" , z="<< position_.z()<<", x="<<position_.x()<<", y="<<position_.y()
+      <<"] detId: "<<id_
+      <<" subdetid:"<<subdetid_
+      <<" single: "<< single_ 
+      <<" ptr "<<this
+      <<" used "<<used_<<"\n";
     return ss.str(); 
   }
 
@@ -27,6 +32,7 @@ public:
 
   float v0_,v1_;
   bool single_;
+  uint subdetid_;
   bool used_;
 };
 
