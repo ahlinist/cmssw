@@ -840,10 +840,10 @@ PixelLumiDQM::endLuminosityBlock(edm::LuminosityBlock const& lumiBlock,
     // AR: not using the active crossings; being done by hand for the moment since 
     // the filling scheme info is not in the event, also rate too low to count filled bunch scheme and HF commented out.
 
-    total_recorded *= (/*double(activeCrossingsFromHF)*/1374.d);///double(filledAndUnmaskedBunches));
+    total_recorded *= (/*double(activeCrossingsFromHF)*/1368.d);///double(filledAndUnmaskedBunches));
     //total_recorded *= (/*double(activeCrossingsFromHF)*/1.d/double(filledAndUnmaskedBunches));
     //how to rescale the uncertainty ? here I simply assume it to scale as a sum of squares with the number of bunches 
-    total_recorded_unc_square *= (/*double(activeCrossingsFromHF)*/ 1374.d/double(filledAndUnmaskedBunches));
+    total_recorded_unc_square *= (/*double(activeCrossingsFromHF)*/ 1368.d/double(filledAndUnmaskedBunches));
     //total_recorded_unc_square *= (/*double(activeCrossingsFromHF)*/ 1.d/double(filledAndUnmaskedBunches));
     
     fHistTotalRecordedLumiByLS->setBinContent(ls,total_recorded);
