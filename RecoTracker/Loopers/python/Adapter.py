@@ -2,13 +2,13 @@ import FWCore.ParameterSet.Config as cms
 
 ##function from RECO file, does not need anything else
 #usually cmsDriver.py looper -s USER:RecoTracker/Loopers/Adapter ...
-from RecoTracker.Loopers.LooperClusterRemover_cfi import *
-from Configuration.StandardSequences.Reconstruction_cff import *
+#from RecoTracker.Loopers.LooperClusterRemover_cfi import *
+#from Configuration.StandardSequences.Reconstruction_cff import *
 #from a RECO file
-user =cms.Sequence( siPixelRecHits+
-                    siStripMatchedRecHits+
-                    offlineBeamSpot+
-                    loopersMask)
+#user =cms.Sequence( siPixelRecHits+
+#                    siStripMatchedRecHits+
+#                    offlineBeamSpot+
+#                    loopersMask)
 
 def adapt(process):
     if not hasattr(process,"mix"):
@@ -18,19 +18,29 @@ def adapt(process):
     ##function from a RECO file
     #usually cmsDriver.py looper -s RECO --customise RecoTracker/Loopers/Adapter.<any>
     process.load('RecoTracker/Loopers/LooperClusterRemover_cfi')
+
     process.reconstruction_step.replace(process.siStripMatchedRecHits,
                                         process.siStripMatchedRecHits+
                                         process.offlineBeamSpot+
                                         process.mix+
                                         process.loopersMask)
+    
     process.pixellayertriplets.BPix.skipClusters = cms.InputTag('loopersMask')
     process.pixellayertriplets.FPix.skipClusters = cms.InputTag('loopersMask')
     process.lowPtTripletStepClusters.oldClusterRemovalInfo = cms.InputTag('loopersMask')
     process.initialStepTrajectoryBuilder.clustersToSkip = cms.InputTag('loopersMask')
 
+    if False:
+        from RecoTracker.TrackProducer.TrackRefitter_cfi import TrackRefitter
+        process.looperTracks = TrackRefitter.clone(            src = cms.InputTag('loopersMask')            )
+        process.reconstruction_step.replace( process.loopersMask,
+                                             process.loopersMask+process.looperTracks)
+        
+    
     for o in process.outputModules_():
         om=process.outputModules_()[o]
         om.outputCommands.append('keep *_loopersMask_*_*')
+        om.outputCommands.append('keep *_looperTracks_*_*')
     return (process)
 
 def looperTracks(process):
