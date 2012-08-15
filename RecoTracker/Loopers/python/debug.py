@@ -18,14 +18,15 @@ def debug(process):
     #process.MessageLogger._categoryCanTalk('PeakFinder')
     ### sub-categories
     ## for when a histoset is rejected or accepted
-    #process.MessageLogger._categoryCanTalk('CollectPeak')
+    process.MessageLogger._categoryCanTalk('CollectPeak')
     ## single categories of algo step
-    #process.MessageLogger._categoryCanTalk('Truncate')
-    #process.MessageLogger._categoryCanTalk('Equilibrate')
-    #process.MessageLogger._categoryCanTalk('PhiInHelix')
-    #process.MessageLogger._categoryCanTalk('SlopeCheck')
-    #process.MessageLogger._categoryCanTalk('DoubleHits')
-    #process.MessageLogger._categoryCanTalk('RadiusCheck')
+    process.MessageLogger._categoryCanTalk('Truncate')
+    process.MessageLogger._categoryCanTalk('Equilibrate')
+    process.MessageLogger._categoryCanTalk('PhiInHelix')
+    process.MessageLogger._categoryCanTalk('SlopeCheck')
+    process.MessageLogger._categoryCanTalk('DoubleHits')
+    process.MessageLogger._categoryCanTalk('DoubleModule')
+    process.MessageLogger._categoryCanTalk('RadiusCheck')
     process.MessageLogger._categoryCanTalk('Kinematics')
     process.MessageLogger._categoryCanTalk('Summary')
     process.MessageLogger._categoryCanTalk('Plots')
@@ -35,6 +36,11 @@ def debug(process):
 
     
     process.MessageLogger._moduleCanTalk('loopersMask')
+
+
+    process.MessageLogger._moduleCanTalk('looperTracks')
+    process.MessageLogger._categoryCanTalk('TrackProducer')
+    
     process.TFileService = cms.Service("TFileService",
                                        fileName=cms.string(label+'_TF.root')
                                        )
