@@ -561,7 +561,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
     simtext<<peak->printElements()<<"\n";
     for (uint iH=0;iH!=peak->count();++iH){
       //do the masking
-      uint subdetId = DetId(peak->elements_[iH]->id_).subdetId();
+      uint subdetId = peak->elements_[iH]->subdetid_;
       if (subdetId==PixelSubdetector::PixelBarrel || subdetId==PixelSubdetector::PixelEndcap)
 	{
 	  LogDebug("LooperMethod")<<" in the pixel case"<<std::endl;
