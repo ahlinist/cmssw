@@ -289,7 +289,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][23]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
-  tree_->Branch("phoElectronveto", phoElectronveto_, "phoElectronveto[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
   tree_->Branch("phoPz", phoPz_, "phoPz[nPho]/F");
@@ -333,6 +332,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoVtx", phoVtx_, "phoVtx[nPho][3]/F");
   tree_->Branch("phoOverlap", phoOverlap_, "phoOverlap[nPho]/I");
   tree_->Branch("phohasPixelSeed", phohasPixelSeed_, "phohasPixelSeed[nPho]/I");
+  tree_->Branch("phoElectronveto", phoElectronveto_, "phoElectronveto[nPho]/I");
   tree_->Branch("phoPfChargedHadron", phoPfChargedHadron_, "phoPfChargedHadron[nPho]/F");
   tree_->Branch("phoPfNeutralHadron", phoPfNeutralHadron_, "phoPfNeutralHadron[nPho]/F");
   tree_->Branch("phoPfPhoton", phoPfPhoton_, "phoPfPhoton[nPho]/F");
@@ -1128,11 +1128,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const PFCandidateCollection thePfColl = *(pfCandidatesHandle.product());
 
   // Photon
-  edm::Handle<reco::PhotonCollection> hPhoton;
-  e.getByLabel("photons", hPhoton);
-  Int_t nRecoPho = 0;
-  const reco::PhotonCollection *recoPho = hPhoton.product();
-
   PFIsolationEstimator isolator;
   isolator.initializePhotonIsolation(kTRUE);
   isolator.setConeSize(0.3);
@@ -1238,22 +1233,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
 
       // New PF isolation
-      nRecoPho = -1;
-      for (reco::PhotonCollection::const_iterator aPho = recoPho->begin(); aPho != recoPho->end(); ++aPho) {
+      edm::Ptr<reco::Candidate> recoPhoRef = iPho->originalObjectRef();
+      const reco::Photon *recoPhoton = dynamic_cast<const reco::Photon *>(recoPhoRef.get());
 
-        nRecoPho += 1;
-	if (aPho->et() != iPho->et()) continue;
-
-        reco::PhotonRef myPhotonRef(hPhoton, nRecoPho);
-
-        phoElectronveto_[nPho_] = ConversionTools::hasMatchedPromptElectron(myPhotonRef->superCluster(), hElectrons, hConversions, beamSpot.position());
-
-        // PF isolation from Alternate code
-        isolator.fGetIsolation(&*aPho, &thePfColl, myVtxRef, recVtxs);
-        phoPfChargedHadron_[nPho_] = isolator.getIsolationCharged();
-        phoPfNeutralHadron_[nPho_] = isolator.getIsolationNeutral();
-        phoPfPhoton_[nPho_]        = isolator.getIsolationPhoton();
-      }
+      isolator.fGetIsolation(recoPhoton, &thePfColl, myVtxRef, recVtxs);
+      phoPfChargedHadron_[nPho_] = isolator.getIsolationCharged();
+      phoPfNeutralHadron_[nPho_] = isolator.getIsolationNeutral();
+      phoPfPhoton_[nPho_]        = isolator.getIsolationPhoton();
 
       for (int i=0; i<150; i++) {
         phoEtVtx_[nPho_][i]  = -999.;
@@ -1280,8 +1266,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
       phoR9_[nPho_]            = iPho->r9();
 
-      phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
+      phoOverlap_[nPho_]      = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
+      phoElectronveto_[nPho_] = (int) ConversionTools::hasMatchedPromptElectron(recoPhoton->superCluster(), hElectrons, hConversions, beamSpot.position());
       
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
