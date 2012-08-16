@@ -281,7 +281,6 @@ protected:
   Int_t    nPho_;
   Int_t    phoTrg_[maxP][23];
   Bool_t   phoIsPhoton_[maxP];
-  Bool_t   phoElectronveto_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];
   Float_t  phoPz_[maxP];
@@ -324,6 +323,7 @@ protected:
   Float_t  phoVtx_[maxP][3];
   Int_t    phoOverlap_[maxP];
   Int_t    phohasPixelSeed_[maxP];
+  Int_t    phoElectronveto_[maxP];
   Float_t  phoPfChargedHadron_[maxP];
   Float_t  phoPfNeutralHadron_[maxP];
   Float_t  phoPfPhoton_[maxP];
