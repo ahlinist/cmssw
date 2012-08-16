@@ -1412,12 +1412,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const reco::TrackRef trkr = iMu->globalTrack();
       if (trkr.isNull()) {
 	muNumberOfValidMuonHits_[nMu_] = -99;
-	muNumberOfTrackerLayers_[nMu_] = -99;
 	muChi2NDF_[nMu_] = -99;
       } 
       else {
         muNumberOfValidMuonHits_[nMu_] = trkr->hitPattern().numberOfValidMuonHits();
-	muNumberOfTrackerLayers_[nMu_] = trkr->hitPattern().trackerLayersWithMeasurement();
   	muChi2NDF_[nMu_] = trkr->normalizedChi2();
       }
 
@@ -1427,12 +1425,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         muPVDz_[nMu_] = - 99;
 	muNumberOfValidPixelHits_[nMu_] = -99;
 	muNumberOfValidTrkHits_[nMu_] = -99;
+	muNumberOfTrackerLayers_[nMu_] = -99;
       }
       else {
 	muPVD0_[nMu_] = innertrkr->dxy((*recVtxs)[0].position());
         muPVDz_[nMu_] = innertrkr->dz((*recVtxs)[0].position());
         muNumberOfValidPixelHits_[nMu_] = innertrkr->hitPattern().numberOfValidPixelHits();
-        muNumberOfValidTrkHits_[nMu_] = innertrkr->hitPattern().numberOfValidTrackerHits();
+        muNumberOfValidTrkHits_[nMu_]   = innertrkr->hitPattern().numberOfValidTrackerHits();
+	muNumberOfTrackerLayers_[nMu_]  = innertrkr->hitPattern().trackerLayersWithMeasurement();
       }
       muNumberOfMatchedStations_[nMu_] = iMu->numberOfMatchedStations();
 
