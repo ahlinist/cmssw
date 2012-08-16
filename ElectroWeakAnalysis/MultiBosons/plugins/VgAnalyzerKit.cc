@@ -1366,7 +1366,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
-      
+      if (! (iMu->isPFMuon() || iMu->isGlobalMuon() || iMu->isTrackerMuon())) continue;
+
       muIsPFMu_[nMu_] = iMu->isPFMuon();
       muIsGlobalMu_[nMu_] = iMu->isGlobalMuon();
       muIsTrackerMu_[nMu_] = iMu->isTrackerMuon();
