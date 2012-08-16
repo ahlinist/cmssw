@@ -222,6 +222,10 @@ bool aCell::calculateKinematic( double Bz ){
   pt_=0.3 * Bz * (aveR_/100.); //cm->m
   
   uint secondpoint=1;
+
+  // now going to outwards order
+  reverse();
+
   const GlobalPoint & p0= elements_[0]->hit_->globalPosition();
   GlobalPoint p1= elements_[1]->hit_->globalPosition();
   //option 3: get a z0 in input : just change p0 and p1
@@ -416,7 +420,7 @@ void DataDumper::collect( fastRecHit & hit){
     LogDebug("Collect")<<"starting from hit: "<<hit.print()<<" make the seed: "<<print(seed);
 
     //do not mark the seed as good, it's the grazing circle, and not worth adding
-    if (edgeOff_)    seed->increment(&hit,true,annularCut_);
+    if (edgeOff_==0)    seed->increment(&hit,true,annularCut_);
     
     float & phi0=hit.v1();
     float & overRh=hit.v0();
@@ -492,13 +496,13 @@ void DataDumper::makePeaks(){
   const uint numberOfMax=5;    
   uint averageOccupancy=0;
   std::vector<uint> maxBins(numberOfMax,0);
-  std::vector<uint>counts_at(40,0);
+  std::vector<float>counts_at(40,0);
   for(std::vector<aCell>::iterator iCell=container_.begin();
       iCell!=container_.end();++iCell){
     uint n=iCell->count();
-    if (n==0) continue;
     if (n<counts_at.size())
-      counts_at[n]++;
+      counts_at[n]+=1.;
+    if (n==0) continue;
     if ( n > maxBins[0]) maxBins[0]=n;
     for (uint ib=1;ib<numberOfMax;++ib)
       if (n > maxBins[ib] && n < maxBins[ib-1])	
@@ -509,6 +513,12 @@ void DataDumper::makePeaks(){
   averageOccupancy/=nTotalBins;
   float extrap=0;
   uint baseLineCut = 0;
+
+  std::stringstream ss;
+  for (uint b0=0;b0!=counts_at.size();++b0){
+    ss<<b0<<" : "<<counts_at[b0]<<" ";
+  }
+  LogTrace("PeakFinder|CollectPeak")<< ss.str();  
 
   if (baseLineCut_ > 0)
     {
@@ -522,25 +532,57 @@ void DataDumper::makePeaks(){
   else if (baseLineCut_ > (-counts_at.size()) )
     {
       //one can do the extrapolation of the same counts_at to get a baseline
-      uint b0=3;
+      uint b0=0;
+      uint sinceWhich=0;
       float Nc=0;
-      for (uint b1=b0+1;b1<counts_at.size();++b1){
-	if (counts_at[b0]==counts_at[b1])
-	  continue;
+      // go in log for those which are decreasing order
+      for (uint b1=1;b1<counts_at.size();++b1){
+	b0=b1-1;
+	if (counts_at[b0]<=counts_at[b1]){
+	  counts_at[b0]=0;
+	  sinceWhich=b0;
+	}
+	else
+	  counts_at[b0]=log10(counts_at[b0]);
+      }
+      ++sinceWhich;
+
+      uint untilWhich=std::max(abs(baseLineCut_)+sinceWhich, (uint)counts_at.size());
+      
+      /*      std::stringstream ss;
+	      for (uint b0=0;b0!=counts_at.size();++b0){
+	      ss<<b0<<" : "<<counts_at[b0]<<" ";
+	      }
+	      LogTrace("PeakFinder|CollectPeak")<< ss.str();
+      */
+      b0=sinceWhich;
+      for (uint b1=1+sinceWhich;b1<untilWhich;++b1){
+	//if (counts_at[b1]==0) continue;
+	//if (counts_at[b0]<=counts_at[b1])	  continue;
 	float thales=counts_at[b0] / float(counts_at[b0]-counts_at[b1]);
 	float sqc=sqrt( counts_at[b1] );
 	Nc+=sqc;
 	extrap+= ( b0+ thales * (b1-b0) ) * sqc  ;
       }
-      extrap/=Nc;
-      baseLineCut = extrap;
+      if (Nc!=0){
+	extrap/=Nc;
+	baseLineCut = extrap;
+	LogDebug("PeakFinder|CollectPeak")<<" the linear extrapolation of logs occupancy from n="<<b0<<" and n<"<<untilWhich<<" is :"<<extrap;
+      }
+      else{
+	LogDebug("PeakFinder|CollectPeak")<<" the linear extrapolation of logs occupancy from n="<<b0<<" and n<"<<untilWhich<<" cannot be computed";
+	std::stringstream ss;
+	for (uint b0=0;b0!=counts_at.size();++b0){
+	  ss<<b0<<" : "<<counts_at[b0]<<" ";
+	}
+	LogTrace("PeakFinder|CollectPeak")<< ss.str();
+      }
     }
   else{
     baseLineCut = averageOccupancy;
   }
   
   LogDebug("PeakFinder|CollectPeak")<<"The average occupancy of the histoset is "<<averageOccupancy<<" the "<<numberOfMax<<"th max is: "<<maxBins.back()
-    /*<<" the linear extrapolation from n="<<b0<<" and n="<<b1<<" is :"<<extrap*/
 				    <<" the average linear extrapolation is :"<<extrap
 				    <<".\n"<<baseLineCut<<" is used as a baseline cut";
 
@@ -913,6 +955,22 @@ bool DataDumper::isHelix(aCell * c){
     if ( symetryTopologySelection_!=0 && !c->equilibrate(symetryTopologySelection_)){
       LogDebug("PeakFinder|CollectPeak")<<" not equilibrated set of hits (2)";
       return setHelix(c,false,"not equilibrated set (2)");
+    }
+
+    for (uint iC=1;iC<=c->count();++iC){
+      uint & subdetId = c->elements_[c->count()-iC]->subdetid_;
+      if (!(subdetId==PixelSubdetector::PixelBarrel || subdetId==PixelSubdetector::PixelEndcap))
+	c->inCercle_[c->count()-iC].use=false;
+      else
+	break;
+    }
+    c->resize();
+    LogDebug("PeakFinder|RadiusCheck")<<"removed most center non pixel hits\n"<<c->printElements();
+
+    //are there enough hits left in the set
+    if ( c->count() < minHitPerPeak_ ){
+      LogDebug("PeakFinder|CollectPeak")<<" not enough hits left after checking on inner pixel hits.\n"<<c->print();
+      return setHelix(c,false,"Inner Hits Pixel");
     }
 
     LogDebug("PeakFinder|CollectPeak")<<" this is an helix."<<c->printElements();
