@@ -29,12 +29,11 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                                ),
                              collector = cms.PSet(
                                 maximumTime = cms.double(-1), #time out value
-                                #xAxis = cms.vdouble(34, 1/65., 1/1.5),
-                                xAxis = cms.vdouble(400, 1/65., 1/1.5),
+                                xAxis = cms.vdouble(200, 1/65., 1/1.5),
                                 invertX = cms.bool(True), 
                                 nPhi = cms.uint32(1600),
                                 # negative to roll to average occupancy
-                                baseLineCut = cms.int32(60),
+                                baseLineCut = cms.int32(32),
                                 peakAbove= cms.uint32(6),
                                 RBound=cms.double(30), #maximum radius of looper's helix
                                 linkPoints=cms.bool(True),
@@ -42,7 +41,7 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                                 symetryTopologySelection = cms.uint32(2),
                                 maxZForTruncation = cms.double(20),
                                 phiSpread = cms.double(0.3),
-                                offEdge = cms.int32(0),
+                                offEdge = cms.int32(3),
                                 deltaSlopeCut = cms.double(0.1),
                                 phiSlopeEpsilon = cms.double(0.05)
                                 )
