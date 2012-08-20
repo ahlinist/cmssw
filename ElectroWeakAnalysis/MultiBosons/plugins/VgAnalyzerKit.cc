@@ -859,8 +859,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // Electron
   edm::Handle<reco::GsfElectronCollection> hElectrons;
   e.getByLabel("gsfElectrons", hElectrons);
-  const reco::GsfElectronCollection*  gsfEle= hElectrons.product();
-  Int_t nGsfEle = 0;
 
   // cout << "VgAnalyzerKit: produce: Electron ..." << endl;
   const TriggerObjectMatch *eleTriggerMatch1(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
@@ -1096,28 +1094,23 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       elePVDz_[nEle_] = iEle->gsfTrack()->dz((*recVtxs)[0].position());
 
       eleIsPFID_[nEle_] = iEle->passingMvaPreselection();
+
+      edm::Ptr<reco::Candidate> recoEleRef = iEle->originalObjectRef();                                                                                  
+      const reco::GsfElectron *recoElectron = dynamic_cast<const reco::GsfElectron *>(recoEleRef.get());        
+      eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*recoElectron, hConversions, beamSpot.position(), true, 2.0, 1e-6, 0);
+
       // PF isolation
-      nGsfEle = -1;
-      for(reco::GsfElectronCollection::const_iterator aEle = gsfEle->begin(); aEle != gsfEle->end(); ++aEle) {
+      elePfChargedHadron_[nEle_] = (*(*electronIsoVals)[0])[recoEleRef];
+      elePfNeutralHadron_[nEle_] = (*(*electronIsoVals)[1])[recoEleRef];
+      elePfPhoton_[nEle_]        = (*(*electronIsoVals)[2])[recoEleRef];
 
-        nGsfEle += 1;
-        if (aEle->pt() != iEle->pt()) continue;
-
-        reco::GsfElectronRef myElectronRef(hElectrons, nGsfEle);
-
-        elePfChargedHadron_[nEle_] = (*(*electronIsoVals)[0])[myElectronRef];
-        elePfNeutralHadron_[nEle_] = (*(*electronIsoVals)[1])[myElectronRef];
-        elePfPhoton_[nEle_]        = (*(*electronIsoVals)[2])[myElectronRef];
-	eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*myElectronRef, hConversions, beamSpot.position());
-
-	eleID2012_[nEle_][0] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-	eleID2012_[nEle_][1] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-	eleID2012_[nEle_][2] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-	eleID2012_[nEle_][3] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT, myElectronRef, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-        eleID2012_[nEle_][4] = EgammaCutBasedEleId::PassEoverPCuts(myElectronRef);
-        eleID2012_[nEle_][5] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, myElectronRef);
-        eleID2012_[nEle_][6] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERWP70, myElectronRef);
-      }
+      eleID2012_[nEle_][0] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
+      eleID2012_[nEle_][1] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
+      eleID2012_[nEle_][2] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
+      eleID2012_[nEle_][3] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
+      eleID2012_[nEle_][4] = EgammaCutBasedEleId::PassEoverPCuts(*recoElectron);
+      eleID2012_[nEle_][5] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, *recoElectron);
+      eleID2012_[nEle_][6] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERWP70, *recoElectron);
 
       nEle_++;
     }
