@@ -64,6 +64,42 @@ def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.c
     subprocess.call('rm %s' % tmpOutputFileName, shell = True)
     return retVal
 
+def checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string):
+    outputFileInfos_matched = []
+    for outputFileInfo in outputFileInfos:
+        outputFileName_match = outputFileName_matcher.match(outputFileInfo['file'])
+        if outputFileName_match:
+            outputFileJobId = outputFileName_match.group('jobId')
+            if outputFileJobId == jobId_string:
+                outputFileInfos_matched.append(outputFileInfo)
+    if len(outputFileInfos_matched) == 0:
+        print("Info: jobId = %i produced no output file --> resubmitting it" % jobId)
+        jobIds_force_resubmit.append(jobId)
+    elif len(outputFileInfos_matched) > 1:
+        print("Warning: jobId = %i produced multiple output files = %s !!" \
+                % (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfos_matched ]))
+        # keep file with maximum size;
+        # in case multiple files have the same size, keep the newest one
+        outputFileName_keep = None
+        fileSize_keep = None
+        date_and_time_keep = None
+        outputFiles_to_delete = []
+        for outputFileInfo in outputFileInfos_matched:
+            outputFileName = outputFileInfo['file']
+            fileSize = outputFileInfo['size']
+            date_and_time = outputFileInfo['time']
+            if not outputFileName_keep or fileSize > fileSize_keep or \
+                   (fileSize == fileSize_keep and date_and_time > date_and_time_keep):
+                outputFileName_keep = outputFileName
+                fileSize_keep = fileSize
+                date_and_time_keep = date_and_time
+                for outputFileInfo in outputFileInfos_matched:                                    
+                    if outputFileInfo['file'] != outputFileName_keep:
+                        outputFiles_to_delete.append(outputFileInfo['path'])
+        for outputFileName in outputFiles_to_delete:
+            commandLine = 'rfrm %s' % outputFileName
+            shellScriptCommands.append(commandLine)          
+
 jobStatus_dict = {}
 if os.path.exists(statusFileName):
     if os.path.isfile(statusFileName):
@@ -101,8 +137,8 @@ jobStatus_dict['lastUpdate_time'] = current_time
 time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed to stay
                       # in 'Submitted', 'Ready' or 'Scheduled' state before they get automatically resubmitted 
 ##time_limit = 1 # force immediate resubmission of all crab jobs stuck in 'Scheduled' state
-forceResubmitAllScheduledJobs = False
-##forceResubmitAllScheduledJobs = True
+##forceResubmitAllScheduledJobs = False
+forceResubmitAllScheduledJobs = True
 
 shellScriptCommands = []
 
@@ -123,7 +159,6 @@ for crabJob in crabJobs:
         #print("channel = %s" % channel)
         
         jobIds_force_resubmit = []
-        outputFiles_to_delete = []
         
         crabStatus_lines = runCommand_via_shell('%s -status -c %s' % (executable_crab, os.path.join(crabFilePath, crabJob)))
 
@@ -174,7 +209,18 @@ for crabJob in crabJobs:
         
         # check if job got aborted or stuck in state 'Submitted', 'Ready' or 'Scheduled' for more than one day
         isMatched_status = False
+        isCrabFailure = False
         for crabStatus_line in crabStatus_lines:
+            # CV: check if job status cannot be determined,
+            #     due to crab internal error
+            if isCrabFailure:
+                continue    
+            if crabStatus_line.find("Traceback (most recent call last):"):
+                print("Failed to execute 'crab -status' command --> checking output files:")
+                for jobId in range(1, 5000):
+                    jobId_string = "%i" % jobId
+                    checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string)                            
+                isCrabFailure = True
             crabStatus_match = crabStatus_matcher.match(crabStatus_line)
             if crabStatus_match:
                 #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
@@ -223,37 +269,8 @@ for crabJob in crabJobs:
                                 print("Info: jobId = %i is in state 'Scheduled' --> resubmitting it" % jobId)
                                 jobIds_force_resubmit.append(jobId)
                         elif jobStatus in [ 'Done' ]:
-                            outputFileInfos_matched = []
-                            for outputFileInfo in outputFileInfos:
-                                outputFileName_match = outputFileName_matcher.match(outputFileInfo['file'])
-                                if outputFileName_match:
-                                    outputFileJobId = outputFileName_match.group('jobId')
-                                    if outputFileJobId == jobId_string:
-                                        outputFileInfos_matched.append(outputFileInfo)
-                            if len(outputFileInfos_matched) == 0:
-                                print("Info: jobId = %i produced no output file --> resubmitting it" % jobId)
-                                jobIds_force_resubmit.append(jobId)
-                            elif len(outputFileInfos_matched) > 1:
-                                print("Warning: jobId = %i produced multiple output files = %s !!" \
-                                      % (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfos_matched ]))
-                                # keep file with maximum size;
-                                # in case multiple files have the same size, keep the newest one
-                                outputFileName_keep = None
-                                fileSize_keep = None
-                                date_and_time_keep = None
-                                for outputFileInfo in outputFileInfos_matched:
-                                    outputFileName = outputFileInfo['file']
-                                    fileSize = outputFileInfo['size']
-                                    date_and_time = outputFileInfo['time']
-                                    if not outputFileName_keep or fileSize > fileSize_keep or \
-                                       (fileSize == fileSize_keep and date_and_time > date_and_time_keep):
-                                        outputFileName_keep = outputFileName
-                                        fileSize_keep = fileSize
-                                        date_and_time_keep = date_and_time
-                                for outputFileInfo in outputFileInfos_matched:                                    
-                                    if outputFileInfo['file'] != outputFileName_keep:
-                                        outputFiles_to_delete.append(outputFileInfo['path'])
-                            
+                            checkOutputFiless(outputFileInfos, outputFileName_matcher, jobId_string)
+
                         # update job status dictionary
                         if jobStatus_dict[crabJob].has_key(jobId_string):
                             lastJobStatus, lastJobStatusChange_time = jobStatus_dict[crabJob][jobId_string]
@@ -283,10 +300,6 @@ for crabJob in crabJobs:
                 commandLine = '%s -forceResubmit %s -c %s' % \
                   (executable_crab, jobIds_force_resubmit_string, os.path.join(crabFilePath, crabJob))
                 shellScriptCommands.append(commandLine)
-
-        for outputFileName in outputFiles_to_delete:
-            commandLine = 'rfrm %s' % outputFileName
-            shellScriptCommands.append(commandLine)              
 
         print("")
 
