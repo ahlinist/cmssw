@@ -8,16 +8,13 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.2 2011/05/29 17:58:22 veelken Exp $
+ * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.3 2012/03/14 16:34:47 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
-#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleLikelihood.h"
 
@@ -34,29 +31,14 @@ class NSVfitTauDecayLikelihoodTrackInfo : public NSVfitSingleParticleLikelihood
 
   void beginJob(NSVfitAlgorithmBase*);
 
-  void beginEvent(const edm::Event&, const edm::EventSetup&);
-  void beginCandidate(const NSVfitSingleParticleHypothesis*);
-
   double operator()(const NSVfitSingleParticleHypothesis*, int) const;
 
  private:
-  const TransientTrackBuilder* trackBuilder_;
-
-  mutable std::vector<reco::TransientTrack> selectedTracks_;
-
-  unsigned minNumHits_;
-  unsigned minNumPixelHits_;
-  double   maxChi2DoF_;
-  double   maxDeltaPoverP_;
-  double   minPt_;
-
-  bool useLinearApprox_;
-
   bool useLifetimeConstraint_;
+  bool useBackwardsPenaltyTerm_;
 
-  AlgebraicVector3 pvPosition_;
-  mutable std::vector<SVfit::track::TrackExtrapolation> selectedTrackInfo_;
-  mutable bool isNewCandidate_;
+  bool ignore3Prongs_;
+  bool ignore1Prongs_;
 };
 
 #endif

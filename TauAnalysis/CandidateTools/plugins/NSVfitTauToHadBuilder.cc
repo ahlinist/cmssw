@@ -7,9 +7,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.23 $
+ * \version $Revision: 1.24 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.23 2012/03/22 11:27:23 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.24 2012/03/26 15:47:49 veelken Exp $
  *
  */
 
@@ -45,36 +45,19 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilder
 
   NSVfitSingleParticleHypothesis* build(const NSVfitTauDecayBuilder::inputParticleMap& inputParticles) const 
   {
-    if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadBuilder::build>:" << std::endl;
-
     inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
     assert(particlePtr != inputParticles.end());
 
     NSVfitTauToHadHypothesis* hypothesis = new NSVfitTauToHadHypothesis(particlePtr->second, prodParticleLabel_, barcodeCounter_);
+    if ( verbosity_ ) {
+      std::cout << "<NSVfitTauToHadBuilder::build>:" << std::endl;
+      std::cout << " hypothesis #" << barcodeCounter_ << ": " << hypothesis << std::endl;
+    }
     ++barcodeCounter_;
 
     NSVfitTauDecayBuilder::initialize(hypothesis, particlePtr->second.get());
 
-    // Three prong case: check if we can fit a reconstructed vertex.
-    const std::vector<const reco::Track*>& tracks = hypothesis->tracks();
-
-    if ( tracks.size() > 1 ) {
-      KalmanVertexFitter kvf(true);
-      // Get the associated transient tracks
-      std::vector<reco::TransientTrack> transTracks = trackService_->transientTracks(tracks.begin(), tracks.end());
-      TransientVertex vertex = kvf.vertex(transTracks);
-      hypothesis->fittedVertex_ = vertex;
-    }
-
     return hypothesis;
-  }
-
-  void applyFitParameter(NSVfitSingleParticleHypothesis* hypothesis, const double* param) const
-  {
-    NSVfitTauDecayBuilder::applyFitParameter(hypothesis, param);
-
-    NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<NSVfitTauToHadHypothesis*>(hypothesis);
-    assert(hypothesis_T);
   }
 
   // The two neutrion system in a leptonic decay can have mass.

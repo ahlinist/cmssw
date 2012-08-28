@@ -8,13 +8,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitEventBuilder.h,v 1.3 2011/05/29 17:58:22 veelken Exp $
+ * $Id: NSVfitEventBuilder.h,v 1.4 2012/04/07 15:44:43 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/InputTag.h" 
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
@@ -29,10 +32,13 @@ class NSVfitEventBuilder : public NSVfitEventBuilderBase
   ~NSVfitEventBuilder() {}
 
   void beginJob(NSVfitAlgorithmBase*);
+  void beginEvent(const edm::Event&, const edm::EventSetup&);
 
   typedef edm::Ptr<reco::Candidate> CandidatePtr;
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
+
+  bool applyFitParameter(NSVfitEventHypothesis*, const double*) const;
   
  private:
   /// different possible polarization states of W bosons
@@ -40,6 +46,12 @@ class NSVfitEventBuilder : public NSVfitEventBuilderBase
   unsigned numPolStates_;
 
   NSVfitAlgorithmBase* algorithm_;
+
+  /// optional parameters for setting reconstructed to Monte Carlo truth values
+  edm::InputTag srcGenVertex_;
+  bool fixToGenVertex_;
+  bool initializeToGenVertex_;
+  mutable AlgebraicVector3 genVertexPos_;
 };
 
 #endif

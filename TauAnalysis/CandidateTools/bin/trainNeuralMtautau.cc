@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.1 $
  *
- * $Id: trainNeuralMtautau.cc,v 1.6 2011/09/30 12:26:40 veelken Exp $
+ * $Id: trainNeuralMtautau.cc,v 1.1 2012/03/06 17:34:42 veelken Exp $
  *
  */
 
@@ -97,14 +97,13 @@ int main(int argc, char* argv[])
   TMVA::Tools::Instance();
   TMVA::Factory* factory = new TMVA::Factory("trainNeuralMtautau", &fs.file(), "!V:!Silent:Color:DrawProgressBar");
   
-  Float_t evtWeight = 1.0;
-  factory->AddRegressionTree(tree, evtWeight);
+  factory->AddRegressionTree(tree);
 
   for ( vstring::const_iterator branchName = inputBranchNames.begin();
 	branchName != inputBranchNames.end(); ++branchName ) {
     factory->AddVariable(branchName->c_str(), 'F'); 
   }
-  factory->AddTarget(targetBranchName.c_str(), 'F');
+  factory->AddRegressionTarget(targetBranchName.c_str(), 'F');
 
   TCut cut = "";
   

@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitResonanceBuilderW.h,v 1.2 2012/03/14 16:34:43 veelken Exp $
+ * $Id: NSVfitResonanceBuilderW.h,v 1.1 2012/03/16 17:35:40 veelken Exp $
  *
  */
 
@@ -34,7 +34,7 @@ class NSVfitResonanceBuilderW : public NSVfitResonanceBuilderBase
 
   virtual NSVfitResonanceHypothesis* build(const inputParticleMap&) const;
 
-  virtual void applyFitParameter(NSVfitResonanceHypothesis*, const double*) const;	
+  virtual bool applyFitParameter(NSVfitResonanceHypothesis*, const double*) const;	
 
   virtual void print(std::ostream&) const;
 

@@ -46,6 +46,8 @@ void NSVfitAlgorithmBase::beginEvent(const edm::Event& evt, const edm::EventSetu
     (*likelihood)->beginEvent(evt, es);
   }
 
+  eventModel_->builder_->beginEvent(evt, es);
+
   currentEventSetup_ = &es;
 }
 
@@ -71,6 +73,15 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
   }
 
   fitParameter->regUsedBy(requester);
+}
+
+void NSVfitAlgorithmBase::fixFitParameter(int fitParameterIdx)
+{
+  if ( fitParameterIdx != -1 ) {
+    NSVfitParameter* fitParameter = this->getFitParameter(fitParameterIdx);
+    assert(fitParameter);
+    fitParameter->setIsFixed(true);
+  }
 }
 
 unsigned NSVfitAlgorithmBase::getNumFitParameter(const std::string& name) const
@@ -107,6 +118,34 @@ NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(int idx) const
   return retVal;
 }
 
+void NSVfitAlgorithmBase::setFitParameterInitialValue(int fitParameterIdx, double initialValue)
+{
+  if ( fitParameterIdx != -1 ) {
+    NSVfitParameter* fitParameter = this->getFitParameter(fitParameterIdx);
+    assert(fitParameter);
+    fitParameter->setInitialValue(initialValue);
+  }
+}
+
+void NSVfitAlgorithmBase::setFitParameterLimit(int fitParameterIdx, double lowerLimit, double upperLimit)
+{
+  if ( fitParameterIdx != -1 ) {
+    NSVfitParameter* fitParameter = this->getFitParameter(fitParameterIdx);
+    assert(fitParameter);
+    fitParameter->setLowerLimit(lowerLimit);
+    fitParameter->setUpperLimit(upperLimit);
+  }
+}
+
+void NSVfitAlgorithmBase::setFitParameterStepSize(int fitParameterIdx, double stepSize)
+{
+  if ( fitParameterIdx != -1 ) {
+    NSVfitParameter* fitParameter = this->getFitParameter(fitParameterIdx);
+    assert(fitParameter);
+    fitParameter->setStepSize(stepSize);
+  }
+}
+
 NSVfitEventHypothesisBase* NSVfitAlgorithmBase::fit(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
 {
   // beginEvent should always be called before fit(...)
@@ -119,23 +158,44 @@ NSVfitEventHypothesisBase* NSVfitAlgorithmBase::fit(const inputParticleMap& inpu
 
   currentEventHypothesis_ = eventModel_->builder_->build(inputParticles, eventVertex);
   currentEventHypothesis_->name_ = pluginName_;
+  currentEventHypothesis_isValidSolution_ = true;
 
   eventModel_->beginCandidate(currentEventHypothesis_);
 
   gNSVfitAlgorithm = this;
 
+  if ( verbosity_ >= 1 ) {
+    std::cout << "<NSVfitAlgorithmBase::fit>:" << std::endl;
+    for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
+	  fitParameter != fitParameters_.end(); ++fitParameter ) {
+      fitParameter->dump(std::cout);
+    }
+  }
+
   fitImp();
   fittedEventHypothesis_->nll_ = fittedEventHypothesis_nll_;
-  if ( verbosity_ ) fittedEventHypothesis_->print(std::cout);
+  if ( verbosity_ >= 2 ) fittedEventHypothesis_->print(std::cout);
 
   return fittedEventHypothesis_;
 }
 
+bool NSVfitAlgorithmBase::update(const double* x, const double* param) const
+{
+  currentEventHypothesis_isValidSolution_ = eventModel_->builder_->applyFitParameter(currentEventHypothesis_, x);
+  if ( verbosity_ >= 2 ) {
+    currentEventHypothesis_->print(std::cout);
+    std::cout << "isValidSolution = " << currentEventHypothesis_isValidSolution_ << std::endl;
+  }
+  return currentEventHypothesis_isValidSolution_;
+}
+
 double NSVfitAlgorithmBase::nll(const double* x, const double* param) const
 {
-  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, x);
+  update(x, param);
+
   double nll = eventModel_->nll(currentEventHypothesis_);
   if ( TMath::IsNaN(nll) ) nll = std::numeric_limits<float>::max();
+
   return nll;
 }
 

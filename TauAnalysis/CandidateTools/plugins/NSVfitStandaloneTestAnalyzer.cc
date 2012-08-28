@@ -1,14 +1,18 @@
+#include "TauAnalysis/CandidateTools/plugins/NSVfitStandaloneTestAnalyzer.h"
+
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 
-#include "DataFormats/PatCandidates/interface/MET.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "DQMServices/Core/interface/DQMStore.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "TauAnalysis/CandidateTools/plugins/NSVfitStandaloneTestAnalyzer.h"
-#include "TauAnalysis/CandidateTools/interface/PFMEtSignInterface.h"
+#include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
+#include "TauAnalysis/CandidateTools/interface/PFMEtSignInterface.h"
 
 /// default constructor
 NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer(const edm::ParameterSet& cfg)
@@ -26,6 +30,9 @@ NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer(const edm::ParameterS
   // initialize MET significance calculation 
   metSign_ = new PFMEtSignInterface(cfg.getParameter<edm::ParameterSet>("metSignificance"));
 
+  dqmDirectory_ = cfg.exists("dqmDirectory") ?
+    cfg.getParameter<std::string>("dqmDirectory") : "";
+
   timer_ = new TStopwatch();
   timer_->Stop();
 }
@@ -37,18 +44,44 @@ NSVfitStandaloneTestAnalyzer::~NSVfitStandaloneTestAnalyzer()
   delete timer_;
 }
 
+/// everything that needs to be done before the event loop
+void 
+NSVfitStandaloneTestAnalyzer::beginJob()
+{
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogWarning ("NSVfitStandaloneTestAnalyzer::beginJob")
+      << " Failed to access dqmStore --> histograms will NEITHER be booked NOR filled !!\n";
+    fillHistograms_ = false;
+    return;
+  }
+  
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+
+  dqmStore.setCurrentFolder(dqmDirectory_.data());
+
+  leg1Pt_     = dqmStore.book1D("leg1Pt",     "leg1Pt",      500, 0.,  500.);
+  leg2Pt_     = dqmStore.book1D("leg2Pt",     "leg2Pt",      500, 0.,  500.);
+  metPt_      = dqmStore.book1D("metPt",      "metPt",       500, 0.,  500.);
+  svFitMass_  = dqmStore.book1D("svFitMass",  "svFitMass",  1000, 0., 1000.);
+  visMass_    = dqmStore.book1D("visMass",    "visMass",    1000, 0., 1000.);
+
+  fillHistograms_ = true;
+}
+
 /// everything that needs to be done during the event loop
 void 
 NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
 {
   // fetch MET
-  edm::Handle<std::vector<pat::MET> > met;
+  typedef edm::View<reco::MET> METView;
+  edm::Handle<METView> met;
   event.getByLabel(met_, met);
   // fetch selected muon
-  edm::Handle<edm::View<reco::Candidate> > leps1;
+  typedef edm::View<reco::Candidate> CandidateView;
+  edm::Handle<CandidateView> leps1;
   event.getByLabel(leps1_, leps1);
   // fetch selected electron
-  edm::Handle<edm::View<reco::Candidate> > leps2;
+  edm::Handle<CandidateView> leps2;
   event.getByLabel(leps2_, leps2);
   // ...
   metSign_->beginEvent(event, eventSetup);
@@ -59,7 +92,7 @@ NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& event, const edm::EventS
 
   // make sure to prevent ambiguities
   if ( leps1->size() > 1 || leps2->size() > 1 ) {
-    std::cout << "sorry got mixed up, too many e and mu candidates" << std::endl;
+    std::cout << "Sorry got mixed up: too many e/mu/tau candidates --> skipping !!" << std::endl;
     return;
   }
 
@@ -86,11 +119,20 @@ NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& event, const edm::EventS
       algo.integrate();
       timer_->Stop();
       ++numSVfitCalls_;
+
       // retrieve the results 
       std::cout << "<NSVfitStandaloneTestAnalyzer::endJob>:" << std::endl;
       std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
       std::cout << "--> mass (standalone version) = " << algo.getMass() 
 		<< " + " << algo.massUncert() << " - " << algo.massUncert() << " [" << algo.fitStatus() << "]" << std::endl;
+
+      if ( fillHistograms_ ) {
+	leg1Pt_->Fill(lep1->pt());
+	leg2Pt_->Fill(lep2->pt());
+	metPt_->Fill(met->front().pt()); 
+	svFitMass_->Fill(algo.getMass() );
+	visMass_->Fill((lep1->p4() + lep2->p4()).mass()); 
+      }
     }
   }
 }

@@ -51,6 +51,8 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticle
 
     p4 += daughter->p4();
 
+    lastBuiltDaughters_[*daughterBuilder] = resonance->numDaughters();
+
     resonance->daughters_.push_back(daughter);
   }
 
@@ -70,10 +72,23 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticle
   return resonance;
 }
 
-void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* resonance, const double* params) const
+void NSVfitResonanceBuilderBase::finalize(NSVfitResonanceHypothesis* resonance) const
 {
+  for ( std::vector<NSVfitSingleParticleBuilderBase*>::const_iterator daughterBuilder = daughterBuilders_.begin();
+	daughterBuilder != daughterBuilders_.end(); ++daughterBuilder ) {
+    int idx = lastBuiltDaughters_[*daughterBuilder];
+    NSVfitSingleParticleHypothesis* daughter = dynamic_cast<NSVfitSingleParticleHypothesis*>(&resonance->daughters_[idx]);
+    assert(daughter);
+    (*daughterBuilder)->finalize(daughter);
+  }
+}
+
+bool NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* resonance, const double* params) const
+{
+  bool isValidSolution = true;
+
   for ( unsigned iDaughterBuilder = 0; iDaughterBuilder < numDaughterBuilders_; ++iDaughterBuilder ) {
-    daughterBuilders_[iDaughterBuilder]->applyFitParameter(resonance->daughter(iDaughterBuilder), params);
+    isValidSolution &= daughterBuilders_[iDaughterBuilder]->applyFitParameter(resonance->daughter(iDaughterBuilder), params);
   }
 
   reco::Candidate::LorentzVector dp4(0,0,0,0);
@@ -88,8 +103,12 @@ void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* re
 
   if ( numDaughters == 2 ) {
     const NSVfitSingleParticleHypothesis* daughter1 = resonance->daughter(0);
-    resonance->prod_angle_rf_ = SVfit_namespace::decayAngleFromLabMomenta(resonance->p4_fitted(), daughter1->p4_fitted());
+    resonance->prod_angle_rf_ = SVfit_namespace::gjAngleFromLabMomenta(resonance->p4_fitted(), daughter1->p4_fitted());
   }
+
+  resonance->isValidSolution_ = isValidSolution;
+
+  return isValidSolution;
 }
 
 void NSVfitResonanceBuilderBase::print(std::ostream& stream) const

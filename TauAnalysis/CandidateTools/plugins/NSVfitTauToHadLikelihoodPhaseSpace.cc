@@ -40,10 +40,8 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
 //
   const NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<const NSVfitTauToHadHypothesis*>(hypothesis);
   assert(hypothesis_T != 0);
-
-  //if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
   
-  double decayAngle = hypothesis_T->decay_angle_rf();  
+  double decayAngle = hypothesis_T->gjAngle();  
   //if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;  
   double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
@@ -51,6 +49,13 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   if ( visMass > tauLeptonMass   ) visMass = tauLeptonMass;
   double visMass2 = square(visMass);
   double Pvis_rf = hypothesis_T->p4vis_rf().P();
+
+  if ( this->verbosity_ ) {
+    std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
+    std::cout << " decayAngle = " << decayAngle << std::endl;
+    std::cout << " visEnFracX = " << visEnFracX << std::endl;
+    std::cout << " visMass = " << visMass << std::endl;
+  }
 
   // CV: normalize likelihood function such that 
   //               1
@@ -77,7 +82,7 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
     prob *= probCorr;
   }
   
-  //if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
+  if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
   return prob;
 }

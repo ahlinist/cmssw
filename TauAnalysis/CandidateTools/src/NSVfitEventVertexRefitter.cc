@@ -18,7 +18,8 @@ NSVfitEventVertexRefitter::NSVfitEventVertexRefitter(const edm::ParameterSet& cf
 {
   vertexFitAlgorithm_ = new KalmanVertexFitter(true);
 
-  minNumTracksRefit_ = ( cfg.exists("minNumTracksRefit") ) ? cfg.getParameter<unsigned>("minNumTracksRefit") : 2;
+  minNumTracksRefit_ = ( cfg.exists("minNumTracksRefit") ) ?
+    cfg.getParameter<unsigned>("minNumTracksRefit") : 2;
 }
 
 NSVfitEventVertexRefitter::~NSVfitEventVertexRefitter()
@@ -120,21 +121,4 @@ TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex
     //     in SVfitLikelihoodDiTauTrackInfo in this case <-- FIXME
     return vertexFitAlgorithm_->vertex(pvTracks_original, *beamSpot_);
   }
-}
-
-TransientVertex NSVfitEventVertexRefitter::fitSecondaryVertex(const std::vector<const reco::Track*>& tracks) const 
-{
-//-- return dummy vertex for one-prong tau decays
-//   for which tau decay vertex cannot be determined
-  if ( tracks.size() < 2 || trackBuilder_ == 0 ) return TransientVertex();
-  
-//--- build transient tracks
-  std::vector<reco::TransientTrack> transTracks;
-  for ( std::vector<const reco::Track*>::const_iterator track = tracks.begin();
-	track != tracks.end(); ++track ) {
-    transTracks.push_back(trackBuilder_->build(*track));
-  }
-  
-//--- fit tau decay vertex
-  return vertexFitAlgorithm_->vertex(transTracks);
 }

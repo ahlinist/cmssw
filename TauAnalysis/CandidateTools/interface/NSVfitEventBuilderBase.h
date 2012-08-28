@@ -8,18 +8,20 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: NSVfitEventBuilderBase.h,v 1.5 2011/03/25 14:34:30 veelken Exp $
+ * $Id: NSVfitEventBuilderBase.h,v 1.6 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/InputTag.h" 
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitBuilderBase.h"
@@ -44,13 +46,19 @@ class NSVfitEventBuilderBase : public NSVfitBuilderBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
 
-  virtual void applyFitParameter(NSVfitEventHypothesis*, const double*) const;
+  virtual bool applyFitParameter(NSVfitEventHypothesis*, const double*) const;
 
   virtual void print(std::ostream&) const;
 
  protected:
   std::vector<NSVfitResonanceBuilderBase*> resonanceBuilders_;
   unsigned numResonanceBuilders_;
+
+  mutable std::map<NSVfitResonanceBuilderBase*, int> lastBuiltResonances_;
+
+  edm::InputTag srcBeamSpot_;
+
+  reco::BeamSpot beamSpot_;
 
   NSVfitEventVertexRefitter* eventVertexRefitAlgorithm_;
 

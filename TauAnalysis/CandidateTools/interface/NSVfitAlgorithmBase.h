@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.22 $
+ * \version $Revision: 1.23 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.22 2012/04/09 16:48:47 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.23 2012/04/10 14:56:05 veelken Exp $
  *
  */
 
@@ -47,10 +47,15 @@ class NSVfitAlgorithmBase
   virtual void beginEvent(const edm::Event&, const edm::EventSetup&);
 
   virtual void requestFitParameter(const std::string&, int, const std::string&);
+  virtual void fixFitParameter(int);
 
   virtual unsigned getNumFitParameter(const std::string&) const;
   virtual NSVfitParameter* getFitParameter(const std::string&, int) const;
   virtual NSVfitParameter* getFitParameter(int) const;
+
+  virtual void setFitParameterInitialValue(int, double);
+  virtual void setFitParameterLimit(int, double, double);
+  virtual void setFitParameterStepSize(int, double);
 
   virtual void print(std::ostream&) const {}
 
@@ -61,9 +66,12 @@ class NSVfitAlgorithmBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitEventHypothesisBase* fit(const inputParticleMap&, const reco::Vertex*) const;
 
-  virtual double nll(const double*, const double*) const;
+  virtual bool update(const double* x, const double* param) const;
+  virtual double nll(const double* x, const double* param) const;
 
   static const NSVfitAlgorithmBase* gNSVfitAlgorithm;
+
+  const NSVfitEventHypothesis* currentEventHypothesis() const { return currentEventHypothesis_; }
 
   friend class NSVfitTauLikelihoodTrackInfo;
 
@@ -315,6 +323,7 @@ class NSVfitAlgorithmBase
   edm::Service<NSVfitTrackService> trackService_;
   const edm::EventSetup* currentEventSetup_;
   mutable NSVfitEventHypothesis* currentEventHypothesis_;
+  mutable bool currentEventHypothesis_isValidSolution_;
   mutable NSVfitEventHypothesisBase* fittedEventHypothesis_;
   mutable double fittedEventHypothesis_nll_;
 

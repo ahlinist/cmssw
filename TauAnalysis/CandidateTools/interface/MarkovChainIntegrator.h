@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: MarkovChainIntegrator.h,v 1.4 2012/04/09 16:48:47 veelken Exp $
+ * $Id: MarkovChainIntegrator.h,v 1.5 2012/04/16 07:28:13 veelken Exp $
  *
  */
 
@@ -27,6 +27,8 @@
 
 #include <Math/Functor.h>
 #include <TRandom3.h>
+#include <TFile.h>
+#include <TTree.h>
 
 #include <vector>
 #include <string>
@@ -38,10 +40,17 @@ class MarkovChainIntegrator
   MarkovChainIntegrator(const edm::ParameterSet&);
   ~MarkovChainIntegrator();
 
+//--- set initial position of Markov Chain in N-dimensional space to given values,
+//    in order to start path of chain transitions from non-random point
+  void initializeStartPosition_and_Momentum(const std::vector<double>&);
+
 //--- set function to evaluate the probability P(q)
 //    at every point q in the N-dimensional space in which the integration is performed.
 //   (eq. (11) in [2])
   void setIntegrand(const ROOT::Math::Functor&);
+
+//--- set function to evaluate "valid" (physically allowed) start-position 
+  void setStartPosition_and_MomentumFinder(const ROOT::Math::Functor&);
 
 //--- register "call-back" functions:
 //    A user may register any number of "call-back" functions,
@@ -55,7 +64,12 @@ class MarkovChainIntegrator
 //    N-dimensional space in which the integration is performed.
   void registerCallBackFunction(const ROOT::Math::Functor&);
 
-  void integrate(const std::vector<double>&, const std::vector<double>&, double&, double&, int&);
+//--- set function to evaluate function values 
+//    in N-dimensional space in which the integration is performed
+//   (e.g. to monitor variation of resonance mass)
+  void setF(const ROOT::Math::Functor&);
+
+  void integrate(const std::vector<double>&, const std::vector<double>&, double&, double&, int&, const std::string& = "");
 
   void print(std::ostream&) const;
 
@@ -63,7 +77,7 @@ class MarkovChainIntegrator
 
   void initializeStartPosition_and_Momentum();
 
-  void makeStochasticMove(unsigned, bool&);
+  void makeStochasticMove(unsigned, bool&, bool&);
   void makeDynamicMoves(double);
   
   void sampleSphericallyRandom();
@@ -79,6 +93,8 @@ class MarkovChainIntegrator
   std::string name_;
 
   const ROOT::Math::Functor* integrand_;
+
+  const ROOT::Math::Functor* startPosition_and_MomentumFinder_;
 
   std::vector<const ROOT::Math::Functor*> callBackFunctions_;
     
@@ -164,6 +180,15 @@ class MarkovChainIntegrator
   long numIntegrationCalls_;
   long numMovesTotal_accepted_;
   long numMovesTotal_rejected_;
+
+  void openMonitorFile(const std::string&);
+  void updateMonitorFile();
+  void closeMonitorFile();
+
+  TFile* monitorFile_;
+  TTree* monitorTree_;
+  std::vector<Float_t> branchValues_;
+  const ROOT::Math::Functor* f_;
 
   int verbosity_; // flag to enable/disable debug output
 };

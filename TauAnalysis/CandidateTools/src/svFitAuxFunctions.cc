@@ -28,7 +28,9 @@ namespace SVfit_namespace
 
     if ( up ) {
       up = TMath::Sqrt(up);
-      Double_t px = fX,  py = fY,  pz = fZ;
+      Double_t px = fX;
+      Double_t py = fY;
+      Double_t pz = fZ;
       fX = (u1*u3*px - u2*py + u1*up*pz)/up;
       fY = (u2*u3*px + u1*py + u2*up*pz)/up;
       fZ = (u3*u3*px -    px + u3*up*pz)/up;
@@ -94,6 +96,7 @@ namespace SVfit_namespace
     // Now use the Lorentz equation for pVis along the tau direction to solve for
     // the gamma of the tau boost.
     double pVisRestFrame_parallel = pVisRestFrame*TMath::Cos(gjAngle);
+
     double enVisRestFrame = TMath::Sqrt(square(visMass) + square(pVisRestFrame));
 
     double gamma = (enVisRestFrame*TMath::Sqrt(square(enVisRestFrame) + square(pVisLabFrame_parallel) - square(pVisRestFrame_parallel)) 
@@ -129,17 +132,75 @@ namespace SVfit_namespace
     return motherP4LabFrame;
   }
 
-  double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector& motherP4, const reco::Candidate::LorentzVector& visP4)
+  double gjAngleFromLabMomenta(const reco::Candidate::LorentzVector& motherP4, const reco::Candidate::LorentzVector& visP4)
   {
-    double decayAngle_rf = 0.;
+    double gjAngle = 0.;
     reco::Candidate::LorentzVector visP4_rf = boostToCOM(motherP4, visP4);
     if ( (motherP4.pt()*visP4_rf.pt()) > 0. ) {
       double scalarProduct = (motherP4.px()*visP4_rf.px() 
                             + motherP4.py()*visP4_rf.py() 
                             + motherP4.pz()*visP4_rf.pz())/(motherP4.P()*visP4_rf.P());
-      decayAngle_rf = TMath::ACos(scalarProduct);
+      gjAngle = TMath::ACos(scalarProduct);
     }
-    return decayAngle_rf;
+    return gjAngle;
+  }
+
+  reco::Candidate::Vector normalize(const reco::Candidate::Vector& p)
+  {
+    double p_x = p.x();
+    double p_y = p.y();
+    double p_z = p.z();
+    double mag2 = square(p_x) + square(p_y) + square(p_z);
+    if ( mag2 <= 0. ) return p;
+    double mag = TMath::Sqrt(mag2);
+    return reco::Candidate::Vector(p_x/mag, p_y/mag, p_z/mag);
+  }
+
+  double compScalarProduct(const reco::Candidate::Vector& p1, const reco::Candidate::Vector& p2)
+  {
+    return (p1.x()*p2.x() + p1.y()*p2.y() + p1.z()*p2.z());
+  }
+  
+  reco::Candidate::Vector compCrossProduct(const reco::Candidate::Vector& p1, const reco::Candidate::Vector& p2)
+  {
+    double p3_x = p1.y()*p2.z() - p1.z()*p2.y();
+    double p3_y = p1.z()*p2.x() - p1.x()*p2.z();
+    double p3_z = p1.x()*p2.y() - p1.y()*p2.x();
+    return reco::Candidate::Vector(p3_x, p3_y, p3_z);
+  }
+
+  double phiLabFromLabMomenta(const reco::Candidate::LorentzVector& motherP4, const reco::Candidate::LorentzVector& visP4)
+  {
+    reco::Candidate::Vector u_z = normalize(reco::Candidate::Vector(visP4.px(), visP4.py(), visP4.pz()));
+    reco::Candidate::Vector u_y = normalize(compCrossProduct(reco::Candidate::Vector(0., 0., 1.), u_z));
+    reco::Candidate::Vector u_x = compCrossProduct(u_y, u_z);
+    
+    reco::Candidate::Vector p3Mother_unit = normalize(reco::Candidate::Vector(motherP4.px(), motherP4.py(), motherP4.pz()));
+    
+    double phi_lab = TMath::ATan2(compScalarProduct(p3Mother_unit, u_y), compScalarProduct(p3Mother_unit, u_x));
+    return phi_lab;
+  }
+
+  //
+  //-------------------------------------------------------------------------------
+  //
+
+  void printVector(const std::string& label, const AlgebraicVector3& p)
+  {
+    reco::Candidate::Vector  v(p(0), p(1), p(2));
+    std::cout << label << ": x = " << v.x() << ", y = " << v.y() << ", z = " << v.z() << " (eta = " << v.eta() << ", phi = " << v.phi() << ")" << std::endl;
+  }
+
+  void printMatrix(const std::string& label, const AlgebraicMatrix33& m)
+  {
+    std::cout << label << ":" << std::endl;
+    for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
+      std::cout << " |";
+      for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
+	std::cout << " " << std::setw(12) << m(iRow, iColumn);
+      }
+      std::cout << " |" << std::endl;
+    }
   }
 
   //
@@ -149,7 +210,7 @@ namespace SVfit_namespace
   double logGaussian(double residual, double sigma)
   {
     if ( sigma > 0. ) {
-      return -0.5*TMath::Log(2*TMath::Pi()*square(sigma)) - 0.5*square(residual/sigma);
+      return -0.5*(TMath::Log(2*TMath::Pi()*square(sigma)) + square(residual/sigma));
     } else {
       edm::LogError ("logGaussian")
 	<< " Parameter sigma must not be zero !!";

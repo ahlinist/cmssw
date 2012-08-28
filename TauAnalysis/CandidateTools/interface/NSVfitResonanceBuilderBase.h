@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitResonanceBuilderBase.h,v 1.3 2011/03/03 13:04:47 veelken Exp $
+ * $Id: NSVfitResonanceBuilderBase.h,v 1.4 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
@@ -22,6 +22,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleBuilderBase.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 
 #include <string>
 #include <iostream>
@@ -39,7 +40,9 @@ class NSVfitResonanceBuilderBase : public NSVfitBuilderBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitResonanceHypothesis* build(const inputParticleMap&) const;
 
-  virtual void applyFitParameter(NSVfitResonanceHypothesis*, const double*) const;
+  virtual void finalize(NSVfitResonanceHypothesis*) const;
+
+  virtual bool applyFitParameter(NSVfitResonanceHypothesis*, const double*) const;
 
   virtual void print(std::ostream&) const;
 
@@ -48,6 +51,8 @@ class NSVfitResonanceBuilderBase : public NSVfitBuilderBase
 
   std::vector<NSVfitSingleParticleBuilderBase*> daughterBuilders_;
   unsigned numDaughterBuilders_;
+
+  mutable std::map<NSVfitSingleParticleBuilderBase*, int> lastBuiltDaughters_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

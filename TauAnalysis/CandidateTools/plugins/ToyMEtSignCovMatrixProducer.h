@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: ToyMEtSignCovMatrixProducer.h,v 1.1 2012/02/13 14:00:47 veelken Exp $
+ * $Id: ToyMEtSignCovMatrixProducer.h,v 1.1 2012/03/22 11:27:23 veelken Exp $
  *
  */
 
@@ -20,7 +20,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "TauAnalysis/CandidateTools/interface/PFMEtSignInterfaceBase.h"
+#include "JetMETCorrections/Type1MET/interface/PFMEtSignInterfaceBase.h"
 
 class ToyMEtSignCovMatrixProducer : public edm::EDProducer 
 {

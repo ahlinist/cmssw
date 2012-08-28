@@ -2,6 +2,8 @@
 #define TauAnalysis_CandidateTools_svFitAuxFunctions_h
 
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/GlobalError.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -85,19 +87,13 @@ namespace SVfit_namespace
   }
 
   /// Boost a lorentz vector given in the laboratory frame into the rest frame of another lorentz vector.
-  reco::Candidate::LorentzVector boostToCOM(
-      const reco::Candidate::LorentzVector &comSystem,
-      const reco::Candidate::LorentzVector &p4ToBoost
-  );
+  reco::Candidate::LorentzVector boostToCOM(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
 
   /// Boost a lorentz vector given in the rest frame of another lorentz vector to the laboratory frame.
-  reco::Candidate::LorentzVector boostToLab(
-      const reco::Candidate::LorentzVector &comSystem,
-      const reco::Candidate::LorentzVector &p4ToBoost
-  );
+  reco::Candidate::LorentzVector boostToLab(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
 
   inline double energyFromMomentum(double momentum, double mass) {
-    return TMath::Sqrt(square(mass)+square(momentum));
+    return TMath::Sqrt(square(mass) + square(momentum));
   }
 
   /// Determine Gottfried-Jackson angle from visible energy fraction X
@@ -118,98 +114,20 @@ namespace SVfit_namespace
   /// Compute the tau four vector given the tau direction and momentum
   reco::Candidate::LorentzVector motherP4(const reco::Candidate::Vector&, double, double);
 
-  /// Compute decay angle in rest frame given momentum of tau lepton and visible decay product in lab frame
-  double decayAngleFromLabMomenta(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
+  /// Compute decay angles in rest frame given momentum of tau lepton and visible decay product in lab frame
+  double gjAngleFromLabMomenta(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
+  reco::Candidate::Vector normalize(const reco::Candidate::Vector&);
+  double compScalarProduct(const reco::Candidate::Vector&, const reco::Candidate::Vector&);
+  reco::Candidate::Vector compCrossProduct(const reco::Candidate::Vector&, const reco::Candidate::Vector&);
+  double phiLabFromLabMomenta(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
+  
+  void printVector(const std::string&, const AlgebraicVector3&);
+  void printMatrix(const std::string&, const AlgebraicMatrix33&);
 
-  /// Compute logarithm of Gaussion probability density function
-  /// in one/N dimensions
+  /// Compute logarithm of Gaussian probability density function
   double logGaussian(double, double);
 
-  /// Compute the log likelihood from a residual and n-dim gaussian.  Will
-  /// compute determinant and inverse of covariance in place.
-  template<typename T1, typename T2>
-  double logGaussianNd(const T1& residual, const T2& cov)
-  {
-    //std::cout << "<logGaussianNd>:" << std::endl;
-
-    //std::cout << "residual:" << std::endl;
-    //residual.Print(std::cout);
-    //std::cout << std::endl;
-
-    //std::cout << "cov:" << std::endl;
-    //cov.Print(std::cout);
-    //std::cout << std::endl;
-    unsigned numDimensions = residual.Dim();
-    if ( cov.Diagonal().Dim() != numDimensions ) {
-      edm::LogError ("logGaussianNd")
-	<< " Dimension of covariance matrix = "
-        << cov.Diagonal().Dim() << "x" << cov.Diagonal().Dim()
-	<< " does not match dimension = " << numDimensions
-        << " of residual vector !!";
-      return std::numeric_limits<float>::min();
-    }
-
-    double det = 0.;
-    cov.Det2(det);
-    if ( det == 0. ) {
-      edm::LogError ("logGaussianNd")
-	<< " Cannot invert " << numDimensions << "x" << numDimensions
-        << " covariance matrix, det = " << det << " !!";
-      return std::numeric_limits<float>::min();
-    }
-
-    T2 covInverse(cov);
-    bool flag = covInverse.Invert();
-    if ( flag == false ) {
-      edm::LogError ("logGaussianNd")
-	<< " Failed to invert covariance matrix, error flag = " << flag << " !!";
-      return std::numeric_limits<float>::min();
-    }
-
-    //std::cout << "covInverse:" << std::endl;
-    //covInverse.Print(std::cout);
-    //std::cout << std::endl;
-
-    //std::cout << "--> residual^T V^-1 redidual = " << ROOT::Math::Dot(residual, covInverse*residual) << std::endl;
-    return logGaussianNdInvertedCovariance(residual, covInverse, det);
-  }
-
-  /// Compute multivariate gaussian likelihood with a pre-computed
-  /// inverted covariance matrix and determinant.
-  template<typename T1, typename T2>
-  double logGaussianNdInvertedCovariance(
-      const T1& residual, const T2& covInverse, double det){
-    //std::cout << "<logGaussianNd>:" << std::endl;
-
-    //std::cout << "residual:" << std::endl;
-    //residual.Print(std::cout);
-    //std::cout << std::endl;
-
-    //std::cout << "cov:" << std::endl;
-    //cov.Print(std::cout);
-    //std::cout << std::endl;
-
-    unsigned numDimensions = residual.Dim();
-    if ( covInverse.Diagonal().Dim() != numDimensions ) {
-      edm::LogError ("logGaussianNd")
-	<< " Dimension of covariance matrix = " << covInverse.Diagonal().Dim()
-        << "x" << covInverse.Diagonal().Dim()
-	<< " does not match dimension = " << numDimensions
-        << " of residual vector !!";
-      return std::numeric_limits<float>::min();
-    }
-
-    //std::cout << "covInverse:" << std::endl;
-    //covInverse.Print(std::cout);
-    //std::cout << std::endl;
-
-    //std::cout << "--> residual^T V^-1 redidual = " << ROOT::Math::Dot(residual, covInverse*residual) << std::endl;
-
-    return -0.5*numDimensions*TMath::Log(2*TMath::Pi())
-      - 0.5*TMath::Log(det)
-      - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
-  }
-
+  /// Extract maximum, mean and { 0.84, 0.50, 0.16 } quantiles of distribution
   void extractHistogramProperties(const TH1*, const TH1*, double&, double&, double&, double&, double&, double&);
 }
 

@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitAlgorithmByIntegration2.h,v 1.9 2012/04/03 10:17:08 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration2.h,v 1.1 2012/04/07 15:44:43 veelken Exp $
  *
  */
 
@@ -45,7 +45,8 @@ class NSVfitAlgorithmByIntegration2 : public NSVfitAlgorithmBase
 
   void print(std::ostream&) const {}
 
-  double nll(const double*, const double* = 0) const;
+  bool update(const double* x, const double* param) const;
+  double nll(const double* x, const double* param) const;
 
   void fillProbHistograms(const double*);
 
@@ -56,17 +57,36 @@ class NSVfitAlgorithmByIntegration2 : public NSVfitAlgorithmBase
 
   void setMassResults(NSVfitResonanceHypothesisBase*, const TH1*) const;
     
+  struct NSVfitParameterMappingType
+  {
+    NSVfitParameterMappingType(const NSVfitParameter* base)
+      : base_(base)
+    {}
+    const NSVfitParameter* base_;
+    int idxByIntegration_;
+  };
+
+  std::vector<NSVfitParameterMappingType> fitParameterMappings_;
+
+  std::vector<NSVfitParameterMappingType> constParameterMappings_;
+  unsigned numConstParameters_;
+
   ROOT::Math::Functor* integrand_;
   MarkovChainIntegrator* integrator_;
+  ROOT::Math::Functor* auxPhysicalSolutionFinder_;
   std::vector<double> intBoundaryLower_;
   std::vector<double> intBoundaryUpper_;
   unsigned numDimensions_;
+
+  bool monitorMarkovChain_;  
+  ROOT::Math::Functor* auxResonanceMassValue_;
 
   double* fitParameterValues_;
 
   std::vector<TH1*> probHistFitParameter_;
   std::map<std::string, TH1*> probHistResonanceMass_;
   TH1* probHistEventMass_;
+  mutable std::vector<double> probListEventMass_;
   ROOT::Math::Functor* auxFillProbHistograms_;
 
   edm::RunNumber_t currentRunNumber_;

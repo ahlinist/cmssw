@@ -122,18 +122,15 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
 //
 //    NB: MET likelihood is split into perp/par components along (leptonic) leg1 of the diTau object
 //
-  //if ( this->verbosity_ ) {
-  //  std::cout << "<NSVfitEventLikelihoodMEt2::operator()>:" << std::endl;
-  //  std::cout << " hypothesis = " << hypothesis << std::endl;
-  //}
   
   residual_fitted0_ = hypothesis->dp4MEt_fitted().px();
   residual_fitted1_ = hypothesis->dp4MEt_fitted().py();
 
-  //if ( this->verbosity_ ) {
-  //  std::cout << " pxResidual_fitted = " << residual_fitted0_ << std::endl;
-  //  std::cout << " pyResidual_fitted = " << residual_fitted1_ << std::endl;
-  //}
+  if ( this->verbosity_ ) {
+    std::cout << "<NSVfitEventLikelihoodMEt2::operator()>:" << std::endl;
+    std::cout << " pxResidual_fitted = " << residual_fitted0_ << std::endl;
+    std::cout << " pyResidual_fitted = " << residual_fitted1_ << std::endl;
+  }
 
   double nll = 0.;
   if ( pfMEtCovDet_ != 0. ) {
@@ -152,7 +149,7 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
     nll = std::numeric_limits<float>::max();
   }
 
-  //if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
+  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
   double prob = TMath::Exp(-power_*nll);
 

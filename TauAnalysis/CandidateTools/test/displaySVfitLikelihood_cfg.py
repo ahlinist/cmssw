@@ -14,7 +14,7 @@ process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START52_V9B::All')
+process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1)
@@ -247,6 +247,7 @@ process.displaySVfitLikelihoodSequence += process.selectPrimaryVertex
 
 #--------------------------------------------------------------------------------
 # fill histograms
+
 process.displaySVfitLikelihood = cms.EDAnalyzer("SVfitLikelihoodDisplay",
     srcGenParticles = cms.InputTag('genParticles'),
     srcElectrons = cms.InputTag(''),                                            

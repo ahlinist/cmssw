@@ -808,10 +808,10 @@ void makeSVfitPerformancePlots_WH()
   channels.push_back("WtoMuNuHiggsToDiTau");
 
   std::vector<std::string> label_ZplusJets;
-  label_ZplusJets.push_back(std::string("Sim. Z #rightarrow #tau#tau"));
+  label_ZplusJets.push_back(std::string("Sim. WZ #rightarrow #mu#nu#tau#tau"));
 
   std::vector<std::string> label_Higgs120;
-  label_Higgs120.push_back(std::string("Sim. H #rightarrow #tau#tau"));
+  label_Higgs120.push_back(std::string("Sim. WH #rightarrow #mu#nu#tau#tau"));
   label_Higgs120.push_back(std::string("M = 120 GeV"));
 
   //-----------------------------------------------------------------------------
@@ -864,7 +864,7 @@ void makeSVfitPerformancePlots_WH()
 		     NULL, "",
 		     0.04, 0.61, 0.74, 0.28, 0.15,
 		     label, 0.04, 0.17, 0.89 - labelSizeY, 0.18, labelSizeY, 
-		     0., xMax, xAxisTitle_svFitMass, 1.2,
+		     0., 1.4*xMax, xAxisTitle_svFitMass, 1.2,
 		     true, 1.e-4, 1.e0, "a.u.", 1.4,
 		     Form("svFitPerformance_%s_%s_Fit_vs_Int_log_WH.eps", process.data(), channel->data()));
     }

@@ -922,7 +922,7 @@ void makeSVfitPerformancePlots_AHtautau()
 		     NULL, "",
 		     0.04, 0.61, 0.74, 0.28, 0.15,
 		     label, 0.04, 0.17, 0.89 - labelSizeY, 0.18, labelSizeY, 
-		     0., xMax, xAxisTitle_svFitMass, 1.2,
+		     0., 1.4*xMax, xAxisTitle_svFitMass, 1.2,
 		     true, 1.e-4, 1.e0, "a.u.", 1.4,
 		     Form("svFitPerformance_%s_%s_Fit_vs_Int_log.eps", process.data(), channel->data()));
     }
@@ -1044,7 +1044,7 @@ void makeSVfitPerformancePlots_AHtautau()
 		     histogram4, legendEntry4,
 		     0.04, 0.89 - legendSizeX, 0.74, legendSizeX, 0.15,
 		     label, 0.04, 0.17, 0.89 - labelSizeY, 0.18, labelSizeY, 
-		     0., xMax, xAxisTitle_svFitMass, 1.2,
+		     0., 1.4*xMax, xAxisTitle_svFitMass, 1.2,
 		     true, 1.e-4, 1.e0, "a.u.", 1.4,
 		     Form("svFitPerformance_%s_%s_compLikelihoodModels_log.eps", process.data(), channel->data()));
     }
@@ -1113,7 +1113,7 @@ void makeSVfitPerformancePlots_AHtautau()
 		       NULL, "",
 		       0.04, 0.61, 0.74, 0.28, 0.15,
 		       label, 0.04, 0.175, 0.725, 0.24, 0.165, 
-		       0., xMax, xAxisTitle_svFitMass, 1.2,
+		       0., 1.4*xMax, xAxisTitle_svFitMass, 1.2,
 		       true, 1.e-4, 1.e0, "a.u.", 1.4,
 		       Form("svFitPerformance_%s_%s_PSkine_woLogM_Int_%s_log.eps", process.data(), channel->data(), dPhi_label.data()));
       }
@@ -1305,7 +1305,7 @@ void makeSVfitPerformancePlots_AHtautau()
 		     histograms[3], legendEntries[3],
 		     0.04, 0.61, 0.74, 0.28, 0.15,
 		     label, 0.04, 0.175, 0.725, 0.24, 0.165, 
-		     0., xMax, xAxisTitle_svFitMass, 1.2,
+		     0., 1.4*xMax, xAxisTitle_svFitMass, 1.2,
 		     true, 1.e-4, 1.e0, "a.u.", 1.4,
 		     Form("svFitPerformance_%s_%s_PSkine_woLogM_Int_vs_metResolution_log.eps", process.data(), channel->data()));
     }

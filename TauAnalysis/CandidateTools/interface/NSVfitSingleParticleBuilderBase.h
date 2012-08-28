@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: NSVfitSingleParticleBuilderBase.h,v 1.6 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitSingleParticleBuilderBase.h,v 1.7 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
@@ -21,6 +21,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitBuilderBase.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 
 #include <string>
 #include <iostream>
@@ -40,7 +41,9 @@ class NSVfitSingleParticleBuilderBase : public NSVfitBuilderBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitSingleParticleHypothesis* build(const inputParticleMap&) const = 0;
 
-  virtual void applyFitParameter(NSVfitSingleParticleHypothesis*, const double*) const = 0;
+  virtual void finalize(NSVfitSingleParticleHypothesis*) const = 0;
+
+  virtual bool applyFitParameter(NSVfitSingleParticleHypothesis*, const double*) const = 0;
 
   virtual void print(std::ostream&) const {}
 

@@ -4,6 +4,7 @@ from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import TransientTrac
 import RecoMET.METProducers.METSigParams_cfi as met_config
 import TauAnalysis.CandidateTools.nSVfitAlgorithmTauDecayKineMC_cfi as kineMC_config
 import TauAnalysis.CandidateTools.nSVfitAlgorithmVisPtCutCorrections_cfi as visPtCutCorrections
+from TauAnalysis.CandidateTools.nSVfitAlgorithmTrackQualityCuts_cfi import trackQualityCuts
 
 nSVfitTrackService = cms.Service("NSVfitTrackService")
 
@@ -30,6 +31,7 @@ nSVfitElectronLikelihoodMatrixElement = cms.PSet(
 nSVfitTauToElecBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecBuilder"),
     pluginType = cms.string("NSVfitTauToElecBuilder"),
+    trackQualityCuts = trackQualityCuts,
     verbosity = cms.int32(0)
 )
 
@@ -56,6 +58,7 @@ nSVfitMuonLikelihoodMatrixElement = cms.PSet(
 nSVfitTauToMuBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuBuilder"),
     pluginType = cms.string("NSVfitTauToMuBuilder"),
+    trackQualityCuts = trackQualityCuts,
     verbosity = cms.int32(0)
 )
 
@@ -84,6 +87,7 @@ nSVfitTauLikelihoodMatrixElement = cms.PSet(
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
     pluginType = cms.string("NSVfitTauToHadBuilder"),
+    trackQualityCuts = trackQualityCuts,
     verbosity = cms.int32(0)
 )
 
@@ -177,8 +181,9 @@ nSVfitResonanceBuilder = cms.PSet(
     pluginName = cms.string("nSVfitResonanceBuilder"),
     pluginType = cms.string("NSVfitResonanceBuilder"),
     polStates = cms.vstring( # polarization states to be considered when evaluating likelihoods
-        "LR", "RL", # Z case
-        "LL", "RR"  # Higgs case
+        ##"LR", "RL", # Z case
+        ##"LL", "RR"  # Higgs case
+        "undefined"
     )
 )
 
