@@ -168,7 +168,6 @@ void setAxisLabelsGenTauDecayMode(TAxis* axis)
   axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecayOther, "rare");
 }
 
-
 void setAxisLabelsRecTauDecayMode(TAxis* axis)
 {
 //--- set labels for reconstructed tau decay modes
