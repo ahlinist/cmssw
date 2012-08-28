@@ -133,7 +133,8 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
 
     return retVal
 
-def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName, outputFilePath, samplesToAnalyze, central_or_shift, 
+def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName, outputFilePath, samplesToAnalyze, central_or_shift,
+                                        isCaloMEt,
                                         refBranchName = "qT", projParlBranchName = "uParl", projPerpBranchName = "uPerp"):
 
     """Build cfg.py file to run fitZllRecoilCorrection macro to run on 'plain' ROOT Ntuples
@@ -175,6 +176,8 @@ process.fitZllRecoilCorrection = cms.PSet(
 
     type = cms.string('%s'),
 
+    isCaloMEt = cms.bool(%s),
+
     refBranchName = cms.string('%s'),
     projParlBranchName = cms.string('%s'),
     projPerpBranchName = cms.string('%s'),
@@ -182,7 +185,9 @@ process.fitZllRecoilCorrection = cms.PSet(
     outputFileName = cms.string('%s')
 )
 """ % (inputFileName, directory, 
-       processType, refBranchName, projParlBranchName, projPerpBranchName, outputFileName_full)
+       processType,
+       getStringRep_bool(isCaloMEt),
+       refBranchName, projParlBranchName, projPerpBranchName, outputFileName_full)
 
     configFileName = "fitZllRecoilCorrectionNtuple_%s_%s_%s_%s_cfg.py" % (sampleName, metOptionName, refBranchName, central_or_shift)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
@@ -204,8 +209,9 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
                                                       sampleName, runPeriod,
                                                       metOptionName, inputFilePath, outputFilePath, samplesToAnalyze, 
                                                       central_or_shift,
-                                                      srcMEt, applyMEtShiftCorrection, srcMEtCov, srcJets,
-                                                      hltPaths, srcWeights,
+                                                      srcMEt, applyMEtShiftCorrection, srcMEtCov, sfMEtCov, srcJets,
+                                                      srcNoPileUpMEtInputs, plotNoPileUpMEtInputs,
+                                                      hltPaths, srcWeights,                                                      
                                                       ZllRecoilCorrectionParameterFileNames, intLumiData):
     
     """Build cfg.py file to run FWLiteZllRecoilCorrectionAnalyzer macro on PAT-tuples,
@@ -259,42 +265,59 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
         recoZllRecoilCorrectionParameters_string += "    ),\n"
 
     shiftedMEtCorrX_string = None
-    shiftedMEtCorrY_string = None    
-    if runPeriod == "2011RunA":
-        if processType == 'Data':
-            ##shiftedMEtCorrX_string = "-3.365e-1 + 4.801e-3*x" # CV: x = sumEt, y = numVertices
-            ##shiftedMEtCorrY_string = "+2.578e-1 - 6.124e-3*x"
-            shiftedMEtCorrX_string = "+3.87339e-01 + 2.58294e-01*y"
-            shiftedMEtCorrY_string = "-7.83502e-01 - 2.88899e-01*y"
-        else:
-            ##shiftedMEtCorrX_string = "-9.389e-2 + 1.815e-4*x"
-            ##shiftedMEtCorrY_string = "+1.571e-1 - 3.710e-3*x"
-            shiftedMEtCorrX_string = "-1.94451e-02 - 4.38986e-03*y"
-            shiftedMEtCorrY_string = "-4.31368e-01 - 1.90753e-01*y"
-    elif runPeriod == "2011RunB":
-        if processType == 'Data':
-            ##shiftedMEtCorrX_string = "-3.265e-1 + 5.162e-3*x" # CV: x = sumEt, y = numVertices
-            ##shiftedMEtCorrY_string = "-1.956e-2 - 6.299e-3*x"
-            shiftedMEtCorrX_string = "+6.64470e-01 + 2.71292e-01*y"
-            shiftedMEtCorrY_string = "-1.23999e+00 - 3.18661e-01*y"
-        else:
-            ##shiftedMEtCorrX_string = "-1.070e-1 + 9.587e-5*x"
-            ##shiftedMEtCorrY_string = "-1.517e-2 - 3.357e-3*x"
-            shiftedMEtCorrX_string = "-9.89706e-02 + 6.64796e-03*y"
-            shiftedMEtCorrY_string = "-5.32495e-01 - 1.82195e-01*y"
-    elif runPeriod == "2012RunA":
-        if processType == 'Data':
-            ##shiftedMEtCorrX_string = "-7.67892e-01 + 5.76983e-03*x" # CV: x = sumEt, y = numVertices
-            ##shiftedMEtCorrY_string = "+5.54005e-01 - 2.94046e-03*x"
-            shiftedMEtCorrX_string = "+3.54233e-01 + 2.65299e-01*y"
-            shiftedMEtCorrY_string = "+1.88923e-01 - 1.66425e-01*y"
-        else:
-            ##shiftedMEtCorrX_string = "+1.77344e-01 - 1.34333e-03*x"
-            ##shiftedMEtCorrY_string = "+8.08402e-01 - 2.84264e-03*x"
-            shiftedMEtCorrX_string = "-2.99576e-02 - 6.61932e-02*y"
-            shiftedMEtCorrY_string = "+3.70819e-01 - 1.48617e-01*y"
-    else:
-        raise ValueError("No sys. MET shifts defined for run-period = %s !!" % runPeriod)
+    shiftedMEtCorrY_string = None
+    if metOptionName == "pfMEt" or metOptionName == "pfMEtTypeIcorrected" or metOptionName == "pfMEtTypeIcorrectedSmeared":
+        if runPeriod == "2011RunA":
+            if processType == 'Data':
+                ##shiftedMEtCorrX_string = "-3.365e-1 + 4.801e-3*x" # CV: x = sumEt, y = numVertices
+                ##shiftedMEtCorrY_string = "+2.578e-1 - 6.124e-3*x"
+                shiftedMEtCorrX_string = "+3.87339e-01 + 2.58294e-01*y"
+                shiftedMEtCorrY_string = "-7.83502e-01 - 2.88899e-01*y"
+            else:
+                ##shiftedMEtCorrX_string = "-9.389e-2 + 1.815e-4*x"
+                ##shiftedMEtCorrY_string = "+1.571e-1 - 3.710e-3*x"
+                shiftedMEtCorrX_string = "-1.94451e-02 - 4.38986e-03*y"
+                shiftedMEtCorrY_string = "-4.31368e-01 - 1.90753e-01*y"
+        elif runPeriod == "2011RunB":
+            if processType == 'Data':
+                ##shiftedMEtCorrX_string = "-3.265e-1 + 5.162e-3*x" # CV: x = sumEt, y = numVertices
+                ##shiftedMEtCorrY_string = "-1.956e-2 - 6.299e-3*x"
+                shiftedMEtCorrX_string = "+6.64470e-01 + 2.71292e-01*y"
+                shiftedMEtCorrY_string = "-1.23999e+00 - 3.18661e-01*y"
+            else:
+                ##shiftedMEtCorrX_string = "-1.070e-1 + 9.587e-5*x"
+                ##shiftedMEtCorrY_string = "-1.517e-2 - 3.357e-3*x"
+                shiftedMEtCorrX_string = "-9.89706e-02 + 6.64796e-03*y"
+                shiftedMEtCorrY_string = "-5.32495e-01 - 1.82195e-01*y"
+        elif runPeriod == "2012RunAplusB":
+            if processType == 'Data':
+                ##shiftedMEtCorrX_string = "-7.67892e-01 + 5.76983e-03*x" # CV: x = sumEt, y = numVertices
+                ##shiftedMEtCorrY_string = "+5.54005e-01 - 2.94046e-03*x"
+                shiftedMEtCorrX_string = "+3.54233e-01 + 2.65299e-01*y"
+                shiftedMEtCorrY_string = "+1.88923e-01 - 1.66425e-01*y"
+            else:
+                ##shiftedMEtCorrX_string = "+1.77344e-01 - 1.34333e-03*x"
+                ##shiftedMEtCorrY_string = "+8.08402e-01 - 2.84264e-03*x"
+                shiftedMEtCorrX_string = "-2.99576e-02 - 6.61932e-02*y"
+                shiftedMEtCorrY_string = "+3.70819e-01 - 1.48617e-01*y"
+    elif metOptionName == "pfMEtNoPileUp" or metOptionName == "pfMEtNoPileUpSmeared":
+        if runPeriod == "2012RunAplusB":
+            if processType == 'Data':
+                shiftedMEtCorrX_string = "+2.054e-01 + 1.301e-01*y"
+                shiftedMEtCorrY_string = "-2.658e-01 - 8.730e-02*y"
+            else:
+                shiftedMEtCorrX_string = "+9.895e-02 - 2.787e-02*y"
+                shiftedMEtCorrY_string = "-1.733e-01 - 7.646e-02*y"
+    shiftedMEtCorr_string = ""
+    if shiftedMEtCorrX_string and shiftedMEtCorrY_string:
+        shiftedMEtCorr_string  = "cms.PSet(\n"
+        shiftedMEtCorr_string += "    numJetsMin = cms.int32(-1),\n"
+        shiftedMEtCorr_string += "    numJetsMax = cms.int32(-1),\n"
+        shiftedMEtCorr_string += "    px = cms.string('%s'),\n" % shiftedMEtCorrX_string
+        shiftedMEtCorr_string += "    py = cms.string('%s')\n" % shiftedMEtCorrY_string
+        shiftedMEtCorr_string += ")\n"        
+    if applyMEtShiftCorrection and len(shiftedMEtCorr_string) == 0:
+        raise ValueError("No sys. MET shifts defined for MET type = %s, run-period = %s !!" % (metOptionName, runPeriod))
 
     hltPaths_string = make_inputFileNames_vstring(hltPaths)
     srcWeights_string = make_inputFileNames_vstring(srcWeights)
@@ -323,6 +346,8 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
         maxPUreweight = cms.double(1.e+1)
     ),
 """
+
+    plotNoPileUpMEtInputs_string = make_inputFileNames_vstring(plotNoPileUpMEtInputs) 
 
     selEventsFileName = None 
     if central_or_shift == 'central':
@@ -362,11 +387,16 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcMuons = cms.InputTag('patMuons'), # CV: pat::Muon collection contains 'goodMuons' only
     srcMEt = cms.InputTag('%s'),
     srcMEtSignCovMatrix = cms.InputTag('%s'),
+    sfMEtSignCovMatrix = cms.double(%f),
     srcJets = cms.InputTag('%s'),
     srcPFCandidates = cms.InputTag('particleFlow'),
 
-    shiftedMEtCorrX = cms.string('%s'),
-    shiftedMEtCorrY = cms.string('%s'),
+    shiftedMEtCorr = cms.PSet(
+        jetPtThreshold = cms.double(30.0),
+        parameter = cms.VPSet(
+%s
+        )
+    ),
     applyMEtShiftCorr = cms.bool(%s),
 
     srcTrigger = cms.InputTag('TriggerResults::HLT'),
@@ -380,6 +410,9 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcRhoNeutral = cms.InputTag('kt6PFNeutralJetsForVtxMultReweighting', 'rho'),
 %s
 
+    srcNoPileUpMEtInputs = cms.InputTag('%s'),
+    plotNoPileUpMEtInputs = cms.vstring(%s),
+
     selEventsFileName = cms.string('%s'),
 
     # CV: 'srcEventCounter' is defined in TauAnalysis/Skimming/test/skimTauIdEffSample_cfg.py
@@ -392,8 +425,9 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 )
 """ % (maxEvents, fwliteInput_fileNames, outputFileName_full, directory,
        processType, recoZllRecoilCorrectionParameters_string,
-       srcMEt, srcMEtCov, srcJets, shiftedMEtCorrX_string, shiftedMEtCorrY_string, getStringRep_bool(applyMEtShiftCorrection),
+       srcMEt, srcMEtCov, sfMEtCov, srcJets, shiftedMEtCorr_string, getStringRep_bool(applyMEtShiftCorrection),
        hltPaths_string, srcWeights_string, srcGenPileUpInfo, addPUreweight_string,
+       srcNoPileUpMEtInputs, plotNoPileUpMEtInputs_string,
        os.path.join(outputFilePath, selEventsFileName), allEvents_DBS, xSection, intLumiData)
 
     configFileName = "analyzeZllRecoilCorrectionPATtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, central_or_shift)
@@ -414,7 +448,9 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
 def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleNameMC_signal, sampleNameMCs_background, runPeriod, 
                                                       metOptionName, inputFileName, outputFilePath, samplesToAnalyze, corrLevelMC,
-                                                      central_or_shift):
+                                                      central_or_shift,
+                                                      isCaloMEt,
+                                                      plotNoPileUpMEtInputs):
 
     """Build cfg.py file to run makeZllRecoilCorrectionFinalPlots macro
        and make final control plots of MET in Data compared to Monte Carlo simulation with Z-recoil corrections applied"""
@@ -459,6 +495,19 @@ def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleName
         os.mkdir(outputFilePath_plots)    
     outputFileName_full = os.path.join(outputFilePath_plots, outputFileName)
 
+    plotNoPileUpMEtInputs_string = ""
+    for plotNoPileUpMEtInput in plotNoPileUpMEtInputs:
+        for histogramName_and_xAxisTitle in [ [ 'Pparl', 'P_{#parallel} / GeV' ],
+                                              [ 'Pperp', 'P_{#perp} / GeV'     ],
+                                              [ 'SumEt', '#Sigma E_{T} / GeV'  ] ] :
+            plotNoPileUpMEtInputs_string += \
+"""        
+        cms.PSet(
+            meName = cms.string('%s/%s'),
+            xAxisTitle = cms.string('%s')
+        ),
+""" % (plotNoPileUpMEtInput, histogramName_and_xAxisTitle[0], histogramName_and_xAxisTitle[1])
+
     config = \
 """
 import FWCore.ParameterSet.Config as cms
@@ -486,6 +535,8 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
     sysShiftsUp   = cms.vstring(%s),
     sysShiftsDown = cms.vstring(%s),
 
+    isCaloMEt = cms.bool(%s),
+
     variables = cms.VPSet(
         cms.PSet(
             meName = cms.string('lPlusPt'),
@@ -504,12 +555,12 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
             xAxisTitle = cms.string('q_{T} / GeV')
         ),
         cms.PSet(
-            meName = cms.string('metS'),
+            meName = cms.string('metL'),
             xAxisTitle = cms.string('E_{T}^{miss} / GeV')
         ),
         cms.PSet(
-            meName = cms.string('metL'),
-            xAxisTitle = cms.string('E_{T}^{miss} / GeV')
+            meName = cms.string('metPhi'),
+            xAxisTitle = cms.string('#phi^{miss}')
         ),
         cms.PSet(
             meName = cms.string('metProjParlZ'),
@@ -528,21 +579,45 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
             xAxisTitle = cms.string('E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}')
         ),
         cms.PSet(
+            meName = cms.string('metPullParlZNumJetsPtGt30Eq0'),
+            xAxisTitle = cms.string('E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPullParlZNumJetsPtGt30Eq1'),
+            xAxisTitle = cms.string('E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPullParlZNumJetsPtGt30Eq2'),
+            xAxisTitle = cms.string('E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPullParlZNumJetsPtGt30Ge3'),
+            xAxisTitle = cms.string('E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}')
+        ),
+        cms.PSet(
             meName = cms.string('metSigmaPerpZ'),
             xAxisTitle = cms.string('#sigmaE_{#perp  }^{miss}')
-        ),
+        ),        
         cms.PSet(
             meName = cms.string('metPullPerpZ'),
             xAxisTitle = cms.string('E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}')
         ),
         cms.PSet(
-            meName = cms.string('metPull'),
-            xAxisTitle = cms.string('E_{T}^{miss} / #sigmaE_{T}^{miss}')
+            meName = cms.string('metPullPerpZNumJetsPtGt30Eq0'),
+            xAxisTitle = cms.string('E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}')
         ),
         cms.PSet(
-            meName = cms.string('metPull2'),
-            xAxisTitle = cms.string('E_{T}^{miss} / #sigmaE_{T}^{miss}')
+            meName = cms.string('metPullPerpZNumJetsPtGt30Eq1'),
+            xAxisTitle = cms.string('E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}')
         ),
+        cms.PSet(
+            meName = cms.string('metPullPerpZNumJetsPtGt30Eq2'),
+            xAxisTitle = cms.string('E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}')
+        ),
+        cms.PSet(
+            meName = cms.string('metPullPerpZNumJetsPtGt30Ge3'),
+            xAxisTitle = cms.string('E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}')
+        ),        
         cms.PSet(
             meName = cms.string('uParl'),
             xAxisTitle = cms.string('u_{#parallel} / GeV')
@@ -564,6 +639,10 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
             xAxisTitle = cms.string('Num. Jets, P_{T}^{raw} > 20 GeV')
         ),
         cms.PSet(
+            meName = cms.string('numJetsRawPtGt30'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{raw} > 30 GeV')
+        ),
+        cms.PSet(
             meName = cms.string('numJetsCorrPtGt10'),
             xAxisTitle = cms.string('Num. Jets, P_{T}^{corr} > 10 GeV')
         ),
@@ -576,6 +655,10 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
             xAxisTitle = cms.string('Num. Jets, P_{T}^{corr} > 20 GeV')
         ),
         cms.PSet(
+            meName = cms.string('numJetsCorrPtGt30'),
+            xAxisTitle = cms.string('Num. Jets, P_{T}^{corr} > 30 GeV')
+        ),
+        cms.PSet(
             meName = cms.string('numVertices'),
             xAxisTitle = cms.string('rec. Vertex Multiplicity')
         ),
@@ -586,7 +669,8 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
         cms.PSet(
             meName = cms.string('rhoNeutral'),
             xAxisTitle = cms.string('#rho_{h0} / GeV')
-        )
+        ),
+%s        
     ),
 
     outputFileName = cms.string('%s')
@@ -594,6 +678,8 @@ process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
 """ % (inputFileName, runPeriod_string, directoryData, directoryMC_signal, make_inputFileNames_vstring(directoryMCs_background),
        mcScaleFactors_string,
        sysShiftsUp, sysShiftsDown,
+       getStringRep_bool(isCaloMEt),
+       plotNoPileUpMEtInputs_string,
        outputFileName_full)
 
     configFileName = "makeZllRecoilCorrectionFinalPlots_%s_%s_cfg.py" % (metOptionName, corrLevelMC)

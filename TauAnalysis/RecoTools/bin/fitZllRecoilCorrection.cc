@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.11 2011/12/01 15:42:00 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.12 2011/12/19 14:13:10 veelken Exp $
  *
  */
 
@@ -123,6 +123,8 @@ int main(int argc, char* argv[])
   std::cout << " type = " << processType << std::endl;
   bool isData = (processType == "Data");
 
+  bool isCaloMEt = cfgFitZllRecoilCorrection.getParameter<bool>("isCaloMEt");
+
   fwlite::InputSource inputFiles(cfg); 
 
   TChain* tree = new TChain(std::string(directory).append("/").append(treeName).data());
@@ -163,7 +165,8 @@ int main(int argc, char* argv[])
   TGraphAsymmErrors* graph_uParl_mean = 
     makeGraph_mean("graph_uParl_mean", "<u_{#parallel} > as function of q_{T}", histogram_uParl, histogram_qT);
   TGraphAsymmErrors* graph_uParl_div_qT_mean = 
-    makeGraph_uParl_div_qT("graph_uParl_div_qT_mean", "<u_{#parallel} >/q_{T} as function of q_{T}", histogram_uParl, histogram_qT);
+    makeGraph_uParl_div_qT("graph_uParl_div_qT_mean", "<u_{#parallel} >/q_{T} as function of q_{T}", histogram_uParl, histogram_qT,
+			   isCaloMEt);
   TGraphAsymmErrors* graph_uParl_rms = 
     makeGraph_rms("graph_uParl_rms", "RMS(u_{#perp}  ) as function of q_{T}", histogram_uParl, histogram_qT);
   TGraphAsymmErrors* graph_uPerp_mean = 

@@ -93,9 +93,10 @@ TGraphErrors* compMEtResolution_vs_PileUp(TFile* inputFile,
   std::cout << " " << data_or_mcType.Data() << " " << runPeriod.Data() << " " << projection.Data() << std::endl;
 
   int numVertices = 0;
-  if      ( std::string(runPeriod.Data()) == "2011runA" ) numVertices = 24;
-  else if ( std::string(runPeriod.Data()) == "2011runB" ) numVertices = 24;
-  else if ( std::string(runPeriod.Data()) == "2012runA" ) numVertices = 34;
+  if      ( std::string(runPeriod.Data()) == "2011runA"      ) numVertices = 24;
+  else if ( std::string(runPeriod.Data()) == "2011runB"      ) numVertices = 24;
+  else if ( std::string(runPeriod.Data()) == "2012runA"      ) numVertices = 34;
+  else if ( std::string(runPeriod.Data()) == "2012runAplusB" ) numVertices = 34;
   else assert(0);
 
   TGraphErrors* graph = new TGraphErrors(numVertices);
@@ -291,15 +292,25 @@ TGraphErrors* compMEtResolution_vs_PileUp_mc(TFile* inputFile, const std::string
 
 TF1* fitMEtResolution_vs_PileUp(TGraph* graph, const TString& runPeriod)
 {
+  double xMin = 0;
   double xMax = 0;
-  if      ( std::string(runPeriod.Data()) == "2011runA" ) xMax = 25.;
-  else if ( std::string(runPeriod.Data()) == "2011runB" ) xMax = 25.;
-  else if ( std::string(runPeriod.Data()) == "2012runA" ) xMax = 35.;
-  else assert(0);
+  if ( std::string(runPeriod.Data()) == "2011runA" ) { 
+    xMin = 0.; 
+    xMax = 25.;
+  } else if ( std::string(runPeriod.Data()) == "2011runB" ) {
+    xMin = 0.; 
+    xMax = 25.;
+  } else if ( std::string(runPeriod.Data()) == "2012runA" ) {
+    xMin =  7.;
+    xMax = 20.;
+  } else if ( std::string(runPeriod.Data()) == "2012runAplusB" ) {
+    xMin =  7.;
+    xMax = 25.;
+  } else assert(0);
 
   std::cout << "fitting " << graph->GetName() << ":" << std::endl;
   TString fitName = TString(graph->GetName()).Append("_fit");
-  TF1* fit = new TF1(fitName.Data(), "TMath::Sqrt([0]*[0] + TMath::Power(x, [1])*[2]*[2])", 0., xMax);
+  TF1* fit = new TF1(fitName.Data(), "TMath::Sqrt([0]*[0] + TMath::Power(x, [1])*[2]*[2])", xMin, xMax);
   fit->SetParameter(0, 8.);
   fit->SetParameter(1, 1.);
   //fit->FixParameter(1, 1.);
@@ -430,28 +441,28 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
 {
   TGraphErrors* graph1_data = 0;
   TF1* fit1_data = 0;
-  if ( draw1_data ) {
+  if ( draw1_data && inputFile1 ) {
     graph1_data = compMEtResolution_vs_PileUp_data(inputFile1, "central", runPeriod1.Data(), projection, divide_by_response);
     fit1_data = fitMEtResolution_vs_PileUp(graph1_data, runPeriod1);
   }
 
   TGraphErrors* graph1_mc = 0;
   TF1* fit1_mc = 0;
-  if ( draw1_mc ) {
+  if ( draw1_mc && inputFile1 ) {
     graph1_mc = compMEtResolution_vs_PileUp_mc(inputFile1, "central", runPeriod1.Data(), projection, divide_by_response);
     fit1_mc = fitMEtResolution_vs_PileUp(graph1_mc, runPeriod1);
   }
 
   TGraphErrors* graph2_data = 0;
   TF1* fit2_data = 0;
-  if ( draw2_data ) {
+  if ( draw2_data && inputFile2 ) {
     graph2_data = compMEtResolution_vs_PileUp_data(inputFile2, "central", runPeriod2.Data(), projection, divide_by_response);
     fit2_data = fitMEtResolution_vs_PileUp(graph2_data, runPeriod2);
   }
 
   TGraphErrors* graph2_mc = 0;
   TF1* fit2_mc = 0;
-  if ( draw2_mc ) {
+  if ( draw2_mc && inputFile2 ) {
     graph2_mc = compMEtResolution_vs_PileUp_mc(inputFile2, "central", runPeriod2.Data(), projection, divide_by_response);
     fit2_mc = fitMEtResolution_vs_PileUp(graph2_mc, runPeriod2);
   }
@@ -508,7 +519,7 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
 
   dummyHistogram_top->Draw("axis");
 
-  if ( draw1_data ) {
+  if ( draw1_data && graph1_data && fit1_data ) {
     graph1_data->SetLineColor(1);
     graph1_data->SetMarkerColor(1);
     graph1_data->SetMarkerStyle(20);
@@ -519,7 +530,7 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
     fit1_data->Draw("same");
   }
 
-  if ( draw1_mc ) {
+  if ( draw1_mc  && graph1_mc && fit1_mc ) {
     graph1_mc->SetLineColor(1);
     graph1_mc->SetMarkerColor(1);
     graph1_mc->SetMarkerStyle(24);
@@ -531,7 +542,7 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
     fit1_mc->Draw("same");
   }
 
-  if ( draw2_data ) {
+  if ( draw2_data && graph2_data && fit2_data ) {
     graph2_data->SetLineColor(2);
     graph2_data->SetMarkerColor(2);
     graph2_data->SetMarkerStyle(21);
@@ -542,7 +553,7 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
     fit2_data->Draw("same");
   }
 
-  if ( draw2_mc ) {
+  if ( draw2_mc && graph2_mc && fit2_mc ) {
     graph2_mc->SetLineColor(2);
     graph2_mc->SetMarkerColor(2);
     graph2_mc->SetMarkerStyle(25);
@@ -557,10 +568,10 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
   TLegend* legend = new TLegend(0.165, 0.635, 0.54, 0.87, "", "brNDC"); 
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
-  if ( draw1_data ) legend->AddEntry(graph1_data, TString(legendEntry1).Append(" Data"), "p");
-  if ( draw1_mc   ) legend->AddEntry(graph1_mc,   TString(legendEntry1).Append(" MC"),   "p");
-  if ( draw2_data ) legend->AddEntry(graph2_data, TString(legendEntry2).Append(" Data"), "p");
-  if ( draw2_mc   ) legend->AddEntry(graph2_mc,   TString(legendEntry2).Append(" MC"),   "p");
+  if ( draw1_data && graph1_data ) legend->AddEntry(graph1_data, TString(legendEntry1).Append(" Data"), "p");
+  if ( draw1_mc   && graph1_mc   ) legend->AddEntry(graph1_mc,   TString(legendEntry1).Append(" MC"),   "p");
+  if ( draw2_data && graph2_data ) legend->AddEntry(graph2_data, TString(legendEntry2).Append(" Data"), "p");
+  if ( draw2_mc   && graph2_mc   ) legend->AddEntry(graph2_mc,   TString(legendEntry2).Append(" MC"),   "p");
   legend->Draw();	
 
   canvas->cd();
@@ -600,11 +611,11 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
 
   double xMin = +1.e+3;
   double xMax = -1.e+3;
-  if ( fit1_data ) {
+  if ( fit1_data && fit1_data ) {
     xMin = TMath::Min(xMin, fit1_data->GetXmin());
     xMax = TMath::Max(xMax, fit1_data->GetXmax());
   } 
-  if ( fit2_data ) {
+  if ( fit2_data && fit2_data ) {
     xMin = TMath::Min(xMin, fit2_data->GetXmin());
     xMax = TMath::Max(xMax, fit2_data->GetXmax());
   } 
@@ -615,7 +626,7 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
     line_at_zero->Draw("same");
   }
 
-  if ( draw1_data && draw1_mc ) {
+  if ( draw1_data && draw1_mc && graph1_data && graph1_mc ) {
     TGraphErrors* graph1_data_div_mc = makeGraph_data_div_mc(graph1_data, graph1_mc);
     cloneStyleOptions_graph(graph1_data_div_mc, graph1_data);
     graph1_data_div_mc->Draw("p");
@@ -625,7 +636,7 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
     fit1_data_div_mc->Draw("same");
   }
 
-  if ( draw2_data && draw2_mc ) {
+  if ( draw2_data && draw2_mc && graph2_data && graph2_mc ) {
     TGraphErrors* graph2_data_div_mc = makeGraph_data_div_mc(graph2_data, graph2_mc);
     cloneStyleOptions_graph(graph2_data_div_mc, graph2_data);
     graph2_data_div_mc->Draw("p");
@@ -636,13 +647,14 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
   }
 
   canvas->Update();
-  std::string outputFileName = Form("metResolution_vs_PileUp_%s_%s.eps", metType.Data(), projection.Data());
+  std::string outputFileName = Form("plots/metResolution_vs_PileUp_%s_%s.eps", metType.Data(), projection.Data());
   size_t idx = outputFileName.find_last_of('.');
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   if ( divide_by_response ) outputFileName_plot.append("_div_response");
   if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+  canvas->Print(std::string(outputFileName_plot).append(".root").data());
 
   delete dummyHistogram_top;
   delete legend;
@@ -793,37 +805,38 @@ int main(int argc, const char* argv[])
   TBenchmark clock;
   clock.Start("makeMEtResolution_vs_PileUpPlots");
 
-  TString inputFilePath1 = "/data1/veelken/tmp/ZllRecoilCorrection/v5_19_woMEtSysShiftCorr/2012RunA/";
+  TString inputFilePath1 = "/data1/veelken/tmp/ZllRecoilCorrection/v5_39_wMEtSysShiftCorr_v3/2012RunAplusB/";
   TString inputFileName1 = "analyzeZllRecoilCorrectionHistograms_all_pfMEtTypeIcorrectedSmeared.root";
   TString legendEntry1   = "corr. PFMEt";
-  TString runPeriod1     = "2012runA";
+  TString runPeriod1     = "2012runAplusB";
 
-  TString inputFilePath2 = "/data1/veelken/tmp/ZllRecoilCorrection/v5_19_woMEtSysShiftCorr/2012RunA/";
-  TString inputFileName2 = "analyzeZllRecoilCorrectionHistograms_all_pfMEtMVA.root";
-  TString legendEntry2   = "MVA MEt";
-  TString runPeriod2     = "2012runA";
+  TString inputFilePath2 = "/data1/veelken/tmp/ZllRecoilCorrection/v5_39_wMEtSysShiftCorr_v3/2012RunAplusB/";
+  TString inputFileName2 = "analyzeZllRecoilCorrectionHistograms_all_pfMEtNoPileUpSmeared.root";
+  TString legendEntry2   = "No-PU MEt";
+  TString runPeriod2     = "2012runAplusB";
 
   TFile* inputFile1 = new TFile(getFileName_full(inputFilePath1, inputFileName1));
   TFile* inputFile2 = new TFile(getFileName_full(inputFilePath2, inputFileName2));
+  //TFile* inputFile2 = 0;
   
   TString fit_uParl_formula = "-[0]*x*0.5*(1.0 - TMath::Erf(-[1]*TMath::Power(x, [2])))";
 
   double fit_uParl_xMin = 0.;
   double fit_uParl_xMax = 300.;
 
-  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
+  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_noPileUpMEt", 
 				  "uParl", "RMS(u_{#parallel} ) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, false);
-  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
+  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_noPileUpMEt", 
 				  "uParl", "RMS(u_{#parallel} ) / (<-u_{#parallel} > / q_{T}) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, true);
-  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
+  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_noPileUpMEt", 
 				  "uPerp", "RMS(u_{#perp}  ) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, false);
-  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_mvaMEt", 
+  makeMEtResolution_vs_PileUpPlot("pfMEtType1corr_vs_noPileUpMEt", 
 				  "uPerp", "RMS(u_{#perp}  ) / (<-u_{#parallel} > / q_{T}) [GeV]", 
 				  inputFile1, runPeriod1, legendEntry1,
 				  inputFile2, runPeriod2, legendEntry2, true);

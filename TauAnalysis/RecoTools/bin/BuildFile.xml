@@ -57,3 +57,34 @@
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="root"/>
 </bin>
+<bin   file="fitSysMEtShift.cc" name="fitSysMEtShift">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="root"/>
+</bin>
+<bin   file="trainMVAMEt.cc" name="trainMVAMEt">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="CondFormats/EgammaObjects"/>
+  <use   name="DataFormats/Candidate"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="TauAnalysis/RecoTools"/>
+  <use   name="root"/>
+</bin>
+<bin   file="testBTagSFUtil.cc" name="testBTagSFUtil">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Candidate"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/RecoTools"/>
+  <use   name="root"/>
+</bin>

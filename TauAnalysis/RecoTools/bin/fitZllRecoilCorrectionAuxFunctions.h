@@ -91,7 +91,8 @@ TGraphAsymmErrors* makeGraph_rms(const std::string& name, const std::string& tit
 }
 
 TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::string& title, 
-					  const TH2* histogram_uParl, const TH1* histogram_qT)
+					  const TH2* histogram_uParl, const TH1* histogram_qT,
+					  bool isCaloMEt)
 {
   const TAxis* xAxis = histogram_uParl->GetXaxis();
   int numBins = xAxis->GetNbins();
@@ -118,7 +119,8 @@ TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::st
     if ( !(histogram_uParl_proj->GetEntries() >= 100) ) continue;
 
     if ( x > 0. ) {
-      double y = -histogram_uParl_proj->GetMean()/x;      
+      double y = -histogram_uParl_proj->GetMean()/x;    
+      if ( isCaloMEt ) y -= 1.; 
       double yErr = histogram_uParl_proj->GetMeanError()/x;
       graph->SetPoint(iBin - 1, x, y);      
       graph->SetPointError(iBin - 1, xErrDown, xErrUp, yErr, yErr);
@@ -826,8 +828,10 @@ void drawData_vs_MCcomparison(
        TCanvas* canvas, 
        TH1* dummyHistogram, 
        const std::string& plotLabel,
-       TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc, 
-       const std::string& legendEntry_data, const std::string& legendEntry_mc, double legendX0, double legendY0,
+       const std::string& legendEntry_data, TGraphAsymmErrors* graph_data, 
+       const std::string& legendEntry_mc_signal, TGraphAsymmErrors* graph_mc_signal, 
+       const std::string& legendEntry_mc, TGraphAsymmErrors* graph_mc, 
+       double legendX0, double legendY0,
        bool showIdLine, bool showConstLine, 
        const std::string& yAxisLabel, double yMin, double yMax, bool yDiffDivideByRef, double yDiffMax, 
        const std::string& outputFileName, const std::string& outputFileLabel,
@@ -899,6 +903,12 @@ void drawData_vs_MCcomparison(
     graph_line->Draw("L");
   }
 
+  graph_mc_signal->SetMarkerStyle(27);
+  graph_mc_signal->SetMarkerSize(1);
+  graph_mc_signal->SetMarkerColor(1);
+  graph_mc_signal->SetLineColor(1);
+  graph_mc_signal->SetLineWidth(1);
+
   graph_mc->SetMarkerStyle(24);
   graph_mc->SetMarkerSize(1);
   graph_mc->SetMarkerColor(1);
@@ -906,14 +916,14 @@ void drawData_vs_MCcomparison(
   graph_mc->SetLineWidth(1);
 
   if ( graph_mcErr_sysUncertainty_top ) {
-    //cloneStyleOptions(graph_mcErr_sysUncertainty_top, graph_mc);
-    //graph_mcErr_sysUncertainty_top->Draw("P");
     graph_mcErr_sysUncertainty_top->SetLineColor(396);
     graph_mcErr_sysUncertainty_top->SetLineWidth(0);
     graph_mcErr_sysUncertainty_top->SetFillColor(396);
     graph_mcErr_sysUncertainty_top->SetFillStyle(1001);
     graph_mcErr_sysUncertainty_top->Draw("2");
   }
+
+  graph_mc_signal->Draw("P");
 
   graph_mc->Draw("P");
 
@@ -926,12 +936,13 @@ void drawData_vs_MCcomparison(
 
   double legendX1 = legendX0 + 0.30;
   double legendY1 = ( graph_mcErr_sysUncertainty_top ) ?
-    legendY0 + 0.240 : legendY0 + 0.185;
+    legendY0 + 0.270 : legendY0 + 0.215;
   TLegend legend(legendX0, legendY0, legendX1, legendY1, "", "brNDC"); 
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
-  legend.AddEntry(graph_data, legendEntry_data.data(), "p");
-  legend.AddEntry(graph_mc,   legendEntry_mc.data(),   "p");
+  legend.AddEntry(graph_data,      legendEntry_data.data(),      "p");
+  legend.AddEntry(graph_mc_signal, legendEntry_mc_signal.data(), "p");
+  legend.AddEntry(graph_mc,        legendEntry_mc.data(),        "p");
   legend.Draw();
 
   TPaveText* plotLabel_text = 0;
@@ -980,7 +991,6 @@ void drawData_vs_MCcomparison(
 
   if ( graph_mcErr_sysUncertainty_bottom ) {
     cloneStyleOptions(graph_mcErr_sysUncertainty_bottom, graph_mcErr_sysUncertainty_top);
-    //graph_mcErr_sysUncertainty_bottom->Draw("P");
     graph_mcErr_sysUncertainty_bottom->Draw("2");
   }
   

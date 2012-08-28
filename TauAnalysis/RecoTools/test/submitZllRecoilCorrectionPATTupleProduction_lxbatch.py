@@ -10,30 +10,24 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v5_20'
+version = 'v5_41'
 
 samples = {
-    'Data_runs190456to193557' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
-        'numInputFilesPerJob' : 5,
-        'HLTprocessName' : 'HLT',
-        'isMC' : False
-    },
     'Data_runs190456to193621' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
-        'numInputFilesPerJob' : 5,
+        'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
-    'Data_runs193752to194076' : {
+    'Data_runs193752to195947' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
-        'numInputFilesPerJob' : 5,
+        'numInputFilesPerJob' : 1,
         'HLTprocessName' : 'HLT',
         'isMC' : False
-    },
+    },    
     'ZplusJets_madgraph2' : {
         'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
-        'numInputFilesPerJob' : 3,
+        'numInputFilesPerJob' : 1,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
@@ -72,12 +66,12 @@ samples = {
 runPeriod = '2012RunA'
 
 lxbatch_queue = '1nw'
-#lxbatch_queue = '8nh'
+##lxbatch_queue = '1nd'
+##lxbatch_queue = '8nh'
 
 samplesToAnalyze = [
-    'Data_runs190456to193557',
     'Data_runs190456to193621',
-    'Data_runs193752to194076',
+    'Data_runs193752to195947',
     'ZplusJets_madgraph2',
     'TTplusJets_madgraph2',
     'PPmuXptGt20Mu15v2',

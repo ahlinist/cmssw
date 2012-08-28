@@ -10,6 +10,9 @@
 #include <TVectorD.h>
 
 ZllRecoilCorrectionHistManager::ZllRecoilCorrectionHistManager(const edm::ParameterSet& cfg)
+  : histogramsUvsQtLeadJetBarrel_(0),
+    histogramsUvsQtLeadJetEndcap_(0),
+    histogramsUvsQtLeadJetForward_(0)
 {}
 
 ZllRecoilCorrectionHistManager::~ZllRecoilCorrectionHistManager()
@@ -19,10 +22,22 @@ ZllRecoilCorrectionHistManager::~ZllRecoilCorrectionHistManager()
     delete (*it);
   }
 
-  for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsBinned_.begin();
-	it != histogramsUvsQtNumJetsBinned_.end(); ++it ) {
+  for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt10Binned_.begin();
+	it != histogramsUvsQtNumJetsPtGt10Binned_.end(); ++it ) {
     delete (*it);
   }
+  for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt20Binned_.begin();
+	it != histogramsUvsQtNumJetsPtGt20Binned_.end(); ++it ) {
+    delete (*it);
+  }
+  for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt30Binned_.begin();
+	it != histogramsUvsQtNumJetsPtGt30Binned_.end(); ++it ) {
+    delete (*it);
+  }
+
+  delete histogramsUvsQtLeadJetBarrel_;
+  delete histogramsUvsQtLeadJetEndcap_;
+  delete histogramsUvsQtLeadJetForward_;
 }
 
 void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
@@ -50,6 +65,10 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramNumJetsCorrPtGt17_  = book1D(dir, "numJetsCorrPtGt17",  "Num. Jets (P_{T}^{corr} > 17 GeV)",       20,         -0.5,         19.5);
   histogramNumJetsRawPtGt20_   = book1D(dir, "numJetsRawPtGt20",   "Num. Jets (P_{T}^{raw} > 20 GeV)",        50,         -0.5,         49.5);
   histogramNumJetsCorrPtGt20_  = book1D(dir, "numJetsCorrPtGt20",  "Num. Jets (P_{T}^{corr} > 20 GeV)",       20,         -0.5,         19.5);
+  histogramNumJetsRawPtGt25_   = book1D(dir, "numJetsRawPtGt25",   "Num. Jets (P_{T}^{raw} > 25 GeV)",        50,         -0.5,         49.5);
+  histogramNumJetsCorrPtGt25_  = book1D(dir, "numJetsCorrPtGt25",  "Num. Jets (P_{T}^{corr} > 25 GeV)",       20,         -0.5,         19.5);
+  histogramNumJetsRawPtGt30_   = book1D(dir, "numJetsRawPtGt30",   "Num. Jets (P_{T}^{raw} > 30 GeV)",        50,         -0.5,         49.5);
+  histogramNumJetsCorrPtGt30_  = book1D(dir, "numJetsCorrPtGt30",  "Num. Jets (P_{T}^{corr} > 30 GeV)",       20,         -0.5,         19.5);
 
   histogramJetPtAbsEtaLt11_    = book1D(dir, "jetPtAbsEtaLt11",    "P_{T}^{jet} (|#eta_{jet}| < 1.1)",       100,          0. ,         250.);
   histogramJetResAbsEtaLt11_   = book1D(dir, "jetResAbsEtaLt11",   "Jet res. (|#eta_{jet}| < 1.1)",           40,         -1. ,         +1.);
@@ -72,13 +91,14 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramMEtProjPerpZxl_     = book1D(dir, "metProjPerpZxl",     "E_{T}^{miss} Proj. perp. Z",             200,       -100.0,       +100.0);
   histogramMEtX_               = book1D(dir, "metX",               "E_{X}^{miss}",                            75,        -75.0,        +75.0);
   histogramMEtY_               = book1D(dir, "metY",               "E_{Y}^{miss}",                            75,        -75.0,        +75.0);
+  histogramMEtPhi_             = book1D(dir, "metPhi",             "#phi^{miss}",                             72, -TMath::Pi(), +TMath::Pi());
 
   histogramMEtCovSqrtEigenVal1_ = book1D(dir, "metCovSqrtEigenval1",    
 					 "#sqrt{#lambda_{1}^{miss}}",                                        100,          0.,         100.);          
   histogramMEtCovSqrtEigenVal2_ = book1D(dir, "metCovSqrtEigenval2",    
 					 "#sqrt{#lambda_{2}^{miss}}",                                        100,          0.,         100.);          
   histogramMEtPull_             = book1D(dir, "metPull",            
-					 "E_{T}^{miss} / #sigmaE_{T}^{miss}",                                200,        -10.,         +10.);         
+					 "E_{T}^{miss} / #sigmaE_{T}^{miss}",                                250,          0.,         +25.);         
   histogramMEtSigmaParlZ_       = book1D(dir, "metSigmaParlZ",
 					 "#sigmaE_{#parallel}^{miss}",                                       100,          0.,         100.);           
   histogramMEtPullParlZ_        = book1D(dir, "metPullParlZ",       
@@ -87,8 +107,6 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 					 "#sigmaE_{#perp}^{miss}",                                           100,          0.,         100.);  
   histogramMEtPullPerpZ_        = book1D(dir, "metPullPerpZ",       
 					 "E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}",                       200,        -10.,         +10.);          
-  histogramMEtPull2_            = book1D(dir, "metPull2",            
-					 "E_{T}^{miss} / #sigmaE_{T}^{miss}",                                200,        -10.,         +10.);         
 
   histogramUparl_              = book1D(dir, "uParl",              "u_{#parallel}",                          140,       -275.0,        +75.0);
   histogramUperp_              = book1D(dir, "uPerp",              "u_{#perp}",                               50,        -50.0,        +50.0);
@@ -136,14 +154,34 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
       new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", iNumVtx, iNumVtx));
   }
 
-  histogramsUvsQtNumJetsBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJets",  0,  0));
-  histogramsUvsQtNumJetsBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJets",  1,  1));
-  histogramsUvsQtNumJetsBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJets",  2,  2));
-  histogramsUvsQtNumJetsBinned_.push_back(
-    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJets",  3, -1));
+  histogramsUvsQtNumJetsPtGt10Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt10",  0,  0));
+  histogramsUvsQtNumJetsPtGt10Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt10",  1,  1));
+  histogramsUvsQtNumJetsPtGt10Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt10",  2,  2));
+  histogramsUvsQtNumJetsPtGt10Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt10",  3, -1));
+  histogramsUvsQtNumJetsPtGt20Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt20",  0,  0));
+  histogramsUvsQtNumJetsPtGt20Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt20",  1,  1));
+  histogramsUvsQtNumJetsPtGt20Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt20",  2,  2));
+  histogramsUvsQtNumJetsPtGt20Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt20",  3, -1));
+  histogramsUvsQtNumJetsPtGt30Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt30",  0,  0));
+  histogramsUvsQtNumJetsPtGt30Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt30",  1,  1));
+  histogramsUvsQtNumJetsPtGt30Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt30",  2,  2));
+  histogramsUvsQtNumJetsPtGt30Binned_.push_back(
+    new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumJetsPtGt30",  3, -1));
+
+  histogramsUvsQtLeadJetBarrel_  = new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "LeadJetBarrel");
+  histogramsUvsQtLeadJetEndcap_  = new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "LeadJetEndcap");
+  histogramsUvsQtLeadJetForward_ = new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "LeadJetForward");
 
   //histogramsMEtPhiAsymmetryVsQtBinned_.push_back(
   //  new histogramsMEtPhiAsymmetryVsQtType(this,dir,  -1.,  25.));
@@ -211,6 +249,10 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   int numJetsCorrPtGt17 = 0;
   int numJetsRawPtGt20 = 0;
   int numJetsCorrPtGt20 = 0;
+  int numJetsRawPtGt25 = 0;
+  int numJetsCorrPtGt25 = 0;
+  int numJetsRawPtGt30 = 0;
+  int numJetsCorrPtGt30 = 0;
 
   int numBTagJetsCorrPtGt20 = 0;
   int numBTagJetsCorrPtGt30 = 0;
@@ -233,6 +275,8 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     if ( rawJetP4.pt() > 15. ) ++numJetsRawPtGt15;
     if ( rawJetP4.pt() > 17. ) ++numJetsRawPtGt17;
     if ( rawJetP4.pt() > 20. ) ++numJetsRawPtGt20;
+    if ( rawJetP4.pt() > 25. ) ++numJetsRawPtGt25;
+    if ( rawJetP4.pt() > 30. ) ++numJetsRawPtGt30;
     
     reco::Candidate::LorentzVector corrJetP4 = jet->p4();
     // CV: require pseudo-rapidity of "raw" and corrected jet to match,
@@ -259,7 +303,9 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
       if ( corrJetP4.pt() > 15. ) ++numJetsCorrPtGt15;
       if ( corrJetP4.pt() > 17. ) ++numJetsCorrPtGt17;
       if ( corrJetP4.pt() > 20. ) ++numJetsCorrPtGt20;
-
+      if ( corrJetP4.pt() > 25. ) ++numJetsCorrPtGt25;
+      if ( corrJetP4.pt() > 30. ) ++numJetsCorrPtGt30;
+      
       if ( jet->bDiscriminator(bTagDiscr.data()) > bTagDiscr_cut ) {
 	if ( corrJetP4.pt() > 20. ) ++numBTagJetsCorrPtGt20;
 	if ( corrJetP4.pt() > 30. ) ++numBTagJetsCorrPtGt30;
@@ -276,11 +322,15 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
   histogramNumJetsRawPtGt15_->Fill(numJetsRawPtGt15, evtWeight);
   histogramNumJetsRawPtGt17_->Fill(numJetsRawPtGt17, evtWeight);
   histogramNumJetsRawPtGt20_->Fill(numJetsRawPtGt20, evtWeight);
+  histogramNumJetsRawPtGt25_->Fill(numJetsRawPtGt25, evtWeight);
+  histogramNumJetsRawPtGt30_->Fill(numJetsRawPtGt30, evtWeight);
   histogramNumJetsCorrPtGt10_->Fill(numJetsCorrPtGt10, evtWeight);
   histogramNumJetsCorrPtGt12_->Fill(numJetsCorrPtGt12, evtWeight);
   histogramNumJetsCorrPtGt15_->Fill(numJetsCorrPtGt15, evtWeight);
   histogramNumJetsCorrPtGt17_->Fill(numJetsCorrPtGt17, evtWeight);
   histogramNumJetsCorrPtGt20_->Fill(numJetsCorrPtGt20, evtWeight);
+  histogramNumJetsCorrPtGt25_->Fill(numJetsCorrPtGt25, evtWeight);
+  histogramNumJetsCorrPtGt30_->Fill(numJetsCorrPtGt30, evtWeight);
 
   histogramNumBTagJetsCorrPtGt20_->Fill(numBTagJetsCorrPtGt20, evtWeight);
   histogramNumBTagJetsCorrPtGt30_->Fill(numBTagJetsCorrPtGt30, evtWeight);
@@ -313,6 +363,7 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     histogramMEtY_->Fill(metPy, evtWeight);
     histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
     histogramMEtYvsNumVertices_->Fill(vtxMultiplicity, metPy, evtWeight);
+    histogramMEtPhi_->Fill(met.phi(), evtWeight);
 
     TVectorD metCovEigenValues(2);
     metCov.EigenVectors(metCovEigenValues);
@@ -340,23 +391,7 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
       if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
       histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
       histogramQt_->Fill(qT, evtWeight);
-     
-      for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumVtxBinned_.begin();
-	    it != histogramsUvsQtNumVtxBinned_.end(); ++it ) {
-	if ( ((*it)->numObjMin_ == -1 || vtxMultiplicity >= (*it)->numObjMin_) &&
-	     ((*it)->numObjMax_ == -1 || vtxMultiplicity <= (*it)->numObjMax_) ) {
-	  if ( qT > 0. ) (*it)->histogramUparlDivQtVsQt_->Fill(qT, uParl/qT, evtWeight);
-	  (*it)->histogramUparlVsQt_->Fill(qT, uParl, evtWeight);
-	  if ( qT > 0. ) (*it)->histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
-	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
-	  (*it)->histogramQt_->Fill(qT, evtWeight);
-	  (*it)->histogramMEtX_->Fill(metPx, evtWeight);
-	  (*it)->histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
-	  (*it)->histogramMEtY_->Fill(metPy, evtWeight);
-	  (*it)->histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
-	}
-      }
-            
+                 
       reco::Candidate::LorentzVector met_rotated = compP4inZetaFrame(met.p4(), ZllCand.phi());
       double metParl = met_rotated.px();
       double metPerp = met_rotated.py();
@@ -367,28 +402,69 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
       if ( metSigmaParl > 0. ) histogramMEtPullParlZ_->Fill(metParl/metSigmaParl, evtWeight);
       histogramMEtSigmaPerpZ_->Fill(metSigmaPerp, evtWeight);      
       if ( metSigmaPerp > 0. ) histogramMEtPullPerpZ_->Fill(metPerp/metSigmaPerp, evtWeight);
-      if ( metCov_rotated.Determinant() != 0. ) {
-	TMatrixD metCovInverse_rotated = metCov_rotated;
-	metCovInverse_rotated.Invert();
-	double metPull_rotated =  metParl*(metCovInverse_rotated(0, 0)*metParl + metCovInverse_rotated(0, 1)*metPerp)
-  	                        + metPerp*(metCovInverse_rotated(1, 0)*metParl + metCovInverse_rotated(1, 1)*metPerp); 
-	histogramMEtPull2_->Fill(metPull_rotated, evtWeight);
+
+      for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumVtxBinned_.begin();
+	    it != histogramsUvsQtNumVtxBinned_.end(); ++it ) {
+	if ( ((*it)->numObjMin_ == -1 || vtxMultiplicity >= (*it)->numObjMin_) &&
+	     ((*it)->numObjMax_ == -1 || vtxMultiplicity <= (*it)->numObjMax_) ) {
+	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
+				metParl, metSigmaParl, metPerp, metSigmaPerp,
+				sumEt, vtxMultiplicity, evtWeight);
+	}
       }
 
-      for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsBinned_.begin();
-	    it != histogramsUvsQtNumJetsBinned_.end(); ++it ) {
+      for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt10Binned_.begin();
+	    it != histogramsUvsQtNumJetsPtGt10Binned_.end(); ++it ) {
 	if ( ((*it)->numObjMin_ == -1 || numJetsCorrPtGt10 >= (*it)->numObjMin_) &&
 	     ((*it)->numObjMax_ == -1 || numJetsCorrPtGt10 <= (*it)->numObjMax_) ) {
-	  if ( qT > 0. ) (*it)->histogramUparlDivQtVsQt_->Fill(qT, uParl/qT, evtWeight);
-	  (*it)->histogramUparlVsQt_->Fill(qT, uParl, evtWeight);
-	  if ( qT > 0. ) (*it)->histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
-	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
-	  (*it)->histogramQt_->Fill(qT, evtWeight);
-	  (*it)->histogramMEtX_->Fill(metPx, evtWeight);
-	  (*it)->histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
-	  (*it)->histogramMEtY_->Fill(metPy, evtWeight);
-	  (*it)->histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
+	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
+				metParl, metSigmaParl, metPerp, metSigmaPerp,
+				sumEt, vtxMultiplicity, evtWeight);
 	}
+      }
+      for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt20Binned_.begin();
+	    it != histogramsUvsQtNumJetsPtGt20Binned_.end(); ++it ) {
+	if ( ((*it)->numObjMin_ == -1 || numJetsCorrPtGt20 >= (*it)->numObjMin_) &&
+	     ((*it)->numObjMax_ == -1 || numJetsCorrPtGt20 <= (*it)->numObjMax_) ) {
+	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
+				metParl, metSigmaParl, metPerp, metSigmaPerp,
+				sumEt, vtxMultiplicity, evtWeight);
+	}
+      }
+      for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt30Binned_.begin();
+	    it != histogramsUvsQtNumJetsPtGt30Binned_.end(); ++it ) {
+	if ( ((*it)->numObjMin_ == -1 || numJetsCorrPtGt30 >= (*it)->numObjMin_) &&
+	     ((*it)->numObjMax_ == -1 || numJetsCorrPtGt30 <= (*it)->numObjMax_) ) {
+	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
+				metParl, metSigmaParl, metPerp, metSigmaPerp,
+				sumEt, vtxMultiplicity, evtWeight);
+	}
+      }
+
+      double leadJetPt  = 0.;
+      double leadJetEta = 0.;
+      for ( std::vector<pat::Jet>::const_iterator jet = jets.begin();
+	    jet != jets.end(); ++jet ) {
+	double jetPt = jet->pt();
+	if ( jetPt > leadJetPt ) {
+	  leadJetPt  = jetPt;
+	  leadJetEta = jet->eta();
+	}
+      }
+
+      if ( leadJetPt > 20. ) {
+	if      ( TMath::Abs(leadJetEta) < 1.5 ) 
+	  histogramsUvsQtLeadJetBarrel_->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
+							metParl, metSigmaParl, metPerp, metSigmaPerp,
+							sumEt, vtxMultiplicity, evtWeight);
+	else if ( TMath::Abs(leadJetEta) < 3.0 ) 
+	  histogramsUvsQtLeadJetEndcap_->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
+							metParl, metSigmaParl, metPerp, metSigmaPerp,
+							sumEt, vtxMultiplicity, evtWeight);
+	else if ( TMath::Abs(leadJetEta) < 5.0 ) 
+	  histogramsUvsQtLeadJetForward_->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
+							 metParl, metSigmaParl, metPerp, metSigmaPerp,
+							 sumEt, vtxMultiplicity, evtWeight);
       }
     }
 

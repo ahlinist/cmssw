@@ -14,8 +14,10 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #--------------------------------------------------------------------------------
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
+        ##'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
+        'file:/data1/veelken/CMSSW_5_2_x/skims/selEvents_debugMEtSys_ZplusJets_madgraph_AOD.root'
     ),
+    ##eventsToProcess = cms.untracked.VEventRange('1:41958:16769938'),
     skipEvents = cms.untracked.uint32(0)            
 )
 
@@ -26,15 +28,15 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-##isMC = True # use for MC
-isMC = False # use for Data
+isMC = True # use for MC
+##isMC = False # use for Data
 ##HLTprocessName = "HLT" # use for 2012 Data
 HLTprocessName = "HLT" # use for Spring'12 MC
 #type1JetPtThreshold = 20.0 # increased jet Pt threshold to reduce sensitivity of Type 1 corrected MET to pile-up
 type1JetPtThreshold = 10.0 # current default value recommended by JetMET POG
 #jetCorrUncertaintyTag = "Total"
 jetCorrUncertaintyTag = "SubTotalDataMC"
-runPeriod = "2012RunA" # use for MET sys. shift correction vs. Nvtx
+runPeriod = "2012RunAplusB" # use for MET sys. shift correction vs. Nvtx
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -50,50 +52,24 @@ runPeriod = "2012RunA" # use for MET sys. shift correction vs. Nvtx
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START52_V9B::All')
+    process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_52_V7C::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_52_V9D::All')
 #--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-#
-# configure Jet Energy Corrections
-#
-##process.load("CondCore.DBCommon.CondDBCommon_cfi")
-##process.jec = cms.ESSource("PoolDBESSource",
-##    DBParameters = cms.PSet(
-##        messageLevel = cms.untracked.int32(0)
-##    ),
-##    timetype = cms.string('runnumber'),
-##    toGet = cms.VPSet(
-##        cms.PSet(
-##            record = cms.string('JetCorrectionsRecord'),
-##            tag    = cms.string(''),
-##            label  = cms.untracked.string('AK5PF')
-##        ),
-##        cms.PSet(
-##            record = cms.string('JetCorrectionsRecord'),
-##            tag    = cms.string(''),
-##            label  = cms.untracked.string('AK5Calo')
-##        )
-##    ),
-##    connect = cms.string('')
-##)
-##process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
-##if isMC:
-##    process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Summer12_V3_MC.db')
-##    process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_MC_AK5PF')
-##    process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_MC_AK5Calo')
-##else:
-##    process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Summer12_V3_DATA.db')
-##    process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_DATA_AK5PF')
-##    process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Summer12_V3_DATA_AK5Calo')
-#-------------------------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # print debug information whenever plugins get loaded dynamically from libraries
 # (for debugging problems with plugin related dynamic library loading)
 #process.add_(cms.Service("PrintLoadingPlugins"))
+#--------------------------------------------------------------------------------
+
+process.prePatProductionSequence = cms.Sequence()
+
+#--------------------------------------------------------------------------------
+# load definition of VBTF Z --> mu+ mu- event selection
+# (with no isolation cuts applied on one of the two muons)
+process.load("TauAnalysis.Skimming.goldenZmmSelectionVBTFnoMuonIsolation_cfi")
+process.prePatProductionSequence += process.goldenZmumuSelectionSequence
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -127,7 +103,7 @@ process.kt6PFGammaJetsForVtxMultReweighting = process.kt6PFNeutralJetsForVtxMult
     src = cms.InputTag('pfAllPhotons')
 )
 
-process.prePatProductionSequence = cms.Sequence()
+
 process.prePatProductionSequence += process.selectedPrimaryVertexQuality
 process.prePatProductionSequence += process.selectedPrimaryVertexPosition
 process.prePatProductionSequence += process.produceVertexMultiplicityVsRhoPFNeutralReweights
@@ -155,12 +131,12 @@ process.prePatProductionSequence += process.selectPrimaryVertex
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
 process.vertexMultiplicityReweight3d2012RunAplusB = process.vertexMultiplicityReweight.clone(
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to194076_Mu17_Mu8_v16.root"),
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to195947_Mu17_Mu8.root"),
     type = cms.string("gen3d"),
     mcPeriod = cms.string("Summer12")
 )
 process.vertexMultiplicityReweight1d2012RunAplusB = process.vertexMultiplicityReweight.clone(
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonDist_runs190456to194076_Mu17_Mu8_v16.root"),
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonDist_runs190456to195947_Mu17_Mu8.root"),
     type = cms.string("gen"),
     mcPeriod = cms.string("Summer12")
 )
@@ -180,6 +156,43 @@ if isMC:
     process.prePatProductionSequence += process.vertexMultiplicityReweight3d2012RunAplusB
     process.prePatProductionSequence += process.vertexMultiplicityReweight1d2012RunAplusB
 #--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# produce PFMET significance cov. matrix
+
+# CV: compute PFMET significance cov. matrix for uncorrected jets
+#     in order to include pile-up jets
+#    (which to a significant fraction get killed by L1Fastjet corrections)
+process.ak5PFJetsNotOverlappingWithLeptons = cms.EDFilter("PFJetAntiOverlapSelector",
+    src = cms.InputTag('ak5PFJets'),
+    srcNotToBeFiltered = cms.VInputTag('goodMuons'),
+    dRmin = cms.double(0.5),
+    invert = cms.bool(False),
+    filter = cms.bool(False)                                                          
+)
+process.prePatProductionSequence += process.ak5PFJetsNotOverlappingWithLeptons
+
+from JetMETCorrections.Type1MET.pfMETCorrections_cff import pfCandsNotInJet
+process.pfCandsNotInJetForPFMEtSignCovMatrix = pfCandsNotInJet.clone()
+process.prePatProductionSequence += process.pfCandsNotInJetForPFMEtSignCovMatrix
+
+from RecoMET.METProducers.METSigParams_cfi import *
+process.pfMEtSignCovMatrix = cms.EDProducer("PFMEtSignCovMatrixProducer",
+    METSignificance_params,                     
+    src = cms.VInputTag(
+        'goodMuons',
+        'ak5PFJetsNotOverlappingWithLeptons',                                        
+        'pfCandsNotInJetForPFMEtSignCovMatrix'
+    ),
+    addJERcorr = cms.PSet(
+        inputFileName = cms.FileInPath('PhysicsTools/PatUtils/data/pfJetResolutionMCtoDataCorrLUT.root'),
+        lutName = cms.string('pfJetResolutionMCtoDataCorrLUT')
+    )
+)
+process.prePatProductionSequence += process.pfMEtSignCovMatrix
+#--------------------------------------------------------------------------------
+
+process.patTupleProductionSequence = cms.Sequence()
 
 #--------------------------------------------------------------------------------
 # produce PAT objects
@@ -223,7 +236,7 @@ switchJetCollection(
     outputModules = []
 )
 
-process.patTupleProductionSequence = cms.Sequence(process.patDefaultSequence)
+process.patTupleProductionSequence += process.patDefaultSequence
 
 # configure pat::MET production
 from TauAnalysis.Configuration.tools.metTools import addCorrectedPFMet
@@ -244,38 +257,68 @@ for processAttrName in dir(process):
       (processAttr.type_() == "PATPFJetMETcorrInputProducer" or processAttr.type_() == "PFJetMETcorrInputProducer"):
         print "--> Setting Type 1 MET correction threshold to %1.1f GeV for module: %s" % (type1JetPtThreshold, processAttrName)
         setattr(processAttr, "type1JetPtThreshold", cms.double(type1JetPtThreshold))
-#--------------------------------------------------------------------------------    
 
-#--------------------------------------------------------------------------------
-# produce PFMET significance cov. matrix
-
-# CV: compute PFMET significance cov. matrix for uncorrected jets
-#     in order to include pile-up jets
-#    (which to a significant fraction get killed by L1Fastjet corrections)
-process.ak5PFJetsNotOverlappingWithLeptons = cms.EDFilter("PFJetAntiOverlapSelector",
-    src = cms.InputTag('ak5PFJets'),
-    srcNotToBeFiltered = cms.VInputTag('patMuons'),
-    dRmin = cms.double(0.5),
-    invert = cms.bool(False),
-    filter = cms.bool(False)                                                          
-)
-process.patTupleProductionSequence += process.ak5PFJetsNotOverlappingWithLeptons
-
-from RecoMET.METProducers.METSigParams_cfi import *
-process.pfMEtSignCovMatrix = cms.EDProducer("PFMEtSignCovMatrixProducer",
-    METSignificance_params,                     
-    src = cms.VInputTag(
-        'patMuons',
-        'ak5PFJetsNotOverlappingWithLeptons',                                        
-        'pfCandsNotInJet'
-    ),
-    addJERcorr = cms.PSet(
-        inputFileName = cms.FileInPath('PhysicsTools/PatUtils/data/pfJetResolutionMCtoDataCorrLUT.root'),
-        lutName = cms.string('pfJetResolutionMCtoDataCorrLUT')
+# add minMET(Type 1 corrected PFMET, no-PU MET)
+central_or_shifts = [ "" ]
+if isMC:
+    central_or_shifts.extend(
+        ["JetEnUp", "JetEnDown",
+         "JetResUp", "JetResDown",
+         "UnclusteredEnUp", "UnclusteredEnDown" ])
+for central_or_shift in central_or_shifts:
+    patMinMEtModule = cms.EDProducer("MinPatMETProducer",
+        src = cms.VInputTag(
+            'patType1CorrectedPFMet%s' % central_or_shift,
+            'patPFMetNoPileUp%s' % central_or_shift
+        )
     )
+    patMinMEtModuleName = "patMinMEt%s" % central_or_shift
+    setattr(process, patMinMEtModuleName, patMinMEtModule)
+    process.patTupleProductionSequence += patMinMEtModule
+
+# add CaloMET
+process.patCaloMet = process.patMETs.clone(
+    metSource = cms.InputTag('corMetGlobalMuons'),
+    addMuonCorrections = cms.bool(False),
+    genMETSource = cms.InputTag('genMetCalo')
 )
-process.patTupleProductionSequence += process.pfMEtSignCovMatrix
-#--------------------------------------------------------------------------------
+process.patTupleProductionSequence += process.patCaloMet
+
+process.load("RecoMET/METProducers/MetMuonCorrections_cff")
+process.corMetGlobalMuonsNoHF = process.corMetGlobalMuons.clone(
+    uncorMETInputTag = cms.InputTag('metNoHF')
+)
+process.patTupleProductionSequence += process.corMetGlobalMuonsNoHF
+process.patCaloMetNoHF = process.patCaloMet.clone(
+    metSource = cms.InputTag('corMetGlobalMuonsNoHF')
+)
+process.patTupleProductionSequence += process.patCaloMetNoHF
+
+process.load("JetMETCorrections/Type1MET/caloMETCorrections_cff")
+process.caloJetMETcorr.srcMET = cms.InputTag('met')
+if isMC:
+    process.caloJetMETcorr.jetCorrLabel = cms.string("ak5CaloL2L3")
+else:
+    process.caloJetMETcorr.jetCorrLabel = cms.string("ak5CaloL2L3Residual")
+process.caloType1CorrectedMet.src = cms.InputTag('corMetGlobalMuons')
+process.patTupleProductionSequence += process.caloJetMETcorr
+process.patTupleProductionSequence += process.caloType1CorrectedMet
+process.patType1CorrectedCaloMet = process.patMETs.clone(
+    metSource = cms.InputTag('caloType1CorrectedMet'),
+    addMuonCorrections = cms.bool(False),
+    genMETSource = cms.InputTag('genMetCalo')
+)
+process.patTupleProductionSequence += process.patType1CorrectedCaloMet
+
+process.caloType1CorrectedMetNoHF = process.caloType1CorrectedMet.clone(
+    src = cms.InputTag('corMetGlobalMuonsNoHF')
+)
+process.patTupleProductionSequence += process.caloType1CorrectedMetNoHF
+process.patType1CorrectedCaloMetNoHF = process.patType1CorrectedCaloMet.clone(
+    metSource = cms.InputTag('caloType1CorrectedMetNoHF')
+)
+process.patTupleProductionSequence += process.patType1CorrectedCaloMetNoHF
+#--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
 # add event counter for Mauro's "self baby-sitting" technology
@@ -323,14 +366,19 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_patType1p2CorrectedPFMet*_*_*',
             'keep *_pfMEtSignCovMatrix*_*_*',                      
             'keep *_patPFMetMVA*_*_*',
-            'keep *_patPFMetMVA2*_*_*',                                            
+            'keep *_patPFMetMVA2*_*_*',
+            'keep *_patPFMetNoPileUp*_*_*',
+            'keep CommonMETData_noPileUpPFMEt*_*_*',
+            'keep *_patMinMEt*_*_*',                            
+            'keep *_patCaloMet*_*_*',
+            'keep *_patType1CorrectedCaloMet*_*_*',
             'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*',
             'keep *_kt6PFChargedHadronJetsForVtxMultReweighting_rho_*'                                            
         )
     ),
-    fileName = cms.untracked.string("ZllRecoilCorrectionPATtuple.root")
+    fileName = cms.untracked.string("/data1/veelken/tmp/ZllRecoilCorrectionPATtuple.root")
 )
 
 if isMC:
@@ -409,10 +457,21 @@ if isMC:
     process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer2012RunAplusB
 
 process.savePUreweightHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('ZllRecoilCorrectionPUreweightHistograms.root')
+    outputFileName = cms.string('/data1/veelken/tmp/ZllRecoilCorrectionPUreweightHistograms.root')
 )
 process.produceAndSavePUreweightHistograms += process.savePUreweightHistograms
 #--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# CV: add DEBUGging module
+##process.debugMEtSystematics = cms.EDAnalyzer("MEtSysDEBUGGER",
+##    srcMEt_central = cms.InputTag('patPFMetNoPileUpNoSmearing'),
+##    srcMEt_shifted = cms.InputTag('patPFMetNoPileUp'),
+##    srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons')
+##)
+##process.patTupleProductionSequence += process.debugMEtSystematics
+#--------------------------------------------------------------------------------
+
 
 # before starting to process 1st event, print event content
 process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
@@ -428,6 +487,10 @@ process.p = cms.Path(
 )
 
 process.o = cms.EndPath(process.patTupleOutputModule)
+
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+)
 
 processDumpFile = open('produceZllRecoilCorrectionPATTuple.dump' , 'w')
 print >> processDumpFile, process.dumpPython()

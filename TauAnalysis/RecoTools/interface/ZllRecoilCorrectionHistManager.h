@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.13 2012/04/24 07:23:58 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.14 2012/05/04 15:57:38 veelken Exp $
  *
  */
 
@@ -82,6 +82,10 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramNumJetsCorrPtGt17_;
   TH1* histogramNumJetsRawPtGt20_;
   TH1* histogramNumJetsCorrPtGt20_;
+  TH1* histogramNumJetsRawPtGt25_;
+  TH1* histogramNumJetsCorrPtGt25_;
+  TH1* histogramNumJetsRawPtGt30_;
+  TH1* histogramNumJetsCorrPtGt30_;
 
   TH1* histogramJetPtAbsEtaLt11_;
   TH1* histogramJetResAbsEtaLt11_;
@@ -108,6 +112,7 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramMEtY_;
   TH2* histogramMEtYvsSumEt_;
   TH2* histogramMEtYvsNumVertices_;
+  TH1* histogramMEtPhi_;
 
   TH1* histogramMEtCovSqrtEigenVal1_;
   TH1* histogramMEtCovSqrtEigenVal2_;
@@ -116,7 +121,6 @@ class ZllRecoilCorrectionHistManager
   TH1* histogramMEtPullParlZ_;
   TH1* histogramMEtSigmaPerpZ_;
   TH1* histogramMEtPullPerpZ_;
-  TH1* histogramMEtPull2_;
 
   TH1* histogramUparl_;
   TH1* histogramUperp_;
@@ -141,36 +145,84 @@ class ZllRecoilCorrectionHistManager
       else if ( numObjMin_ == numObjMax_ ) label.Append(Form("Eq%i",   numObjMin_));
       else                                 label.Append(Form("%ito%i", numObjMin_, numObjMax_));
 
+      bookHistograms(histManager, dir, qTnumBins, qTbinning, label.Data());
+    }
+    histogramsUvsQtNumObjType(ZllRecoilCorrectionHistManager* histManager, 
+			      TFileDirectory& dir, int qTnumBins, double* qTbinning, 
+			      const std::string& label)
+      : numObjMin_(-1),
+	numObjMax_(+99)
+    {
+      bookHistograms(histManager, dir, qTnumBins, qTbinning, label);
+    }
+    ~histogramsUvsQtNumObjType() {}
+    void bookHistograms(ZllRecoilCorrectionHistManager* histManager, 
+			TFileDirectory& dir, int qTnumBins, double* qTbinning, 
+			const std::string& label)
+    {
       histogramUparlDivQtVsQt_ = histManager->book2D(
-	dir, TString("uParlDivQtVsQt").Append(label).Data(), "u_{#parallel}/q_{T} vs q_{T}", 
+	dir, TString("uParlDivQtVsQt").Append(label).Data(),    "u_{#parallel}/q_{T} vs q_{T}", 
 	qTnumBins, qTbinning, 400,  -5.0,   +5.0);
       histogramUparlVsQt_ = histManager->book2D(
-	dir, TString("uParlVsQt").Append(label).Data(),      "u_{#parallel} vs q_{T}",   
+	dir, TString("uParlVsQt").Append(label).Data(),         "u_{#parallel} vs q_{T}",   
 	qTnumBins, qTbinning, 230, -500.0,  +75.0);
       histogramUperpDivQtVsQt_ = histManager->book2D(
-        dir, TString("uPerpDivQtVsQt").Append(label).Data(), "u_{#perp}/q_{T} vs q_{T}", 
+        dir, TString("uPerpDivQtVsQt").Append(label).Data(),    "u_{#perp}/q_{T} vs q_{T}", 
 	qTnumBins, qTbinning, 400,  -5.0,   +5.0);
       histogramUperpVsQt_ = histManager->book2D(
-        dir, TString("uPerpVsQt").Append(label).Data(),      "u_{#perp} vs q_{T}",  
+        dir, TString("uPerpVsQt").Append(label).Data(),         "u_{#perp} vs q_{T}",  
 	qTnumBins, qTbinning,  60, -75.0,  +75.0);
       histogramQt_ = histManager->book1D(
-        dir, TString("qT").Append(label).Data(),             "q_{T}",  
+        dir, TString("qT").Append(label).Data(),                "q_{T}",  
 	600, 0., 300.);
 
       histogramMEtX_ = histManager->book1D(
-        dir, TString("metX").Append(label).Data(),           "E_{X}^{miss}", 
+        dir, TString("metX").Append(label).Data(),              "E_{X}^{miss}", 
 	75, -75.0, +75.0);
       histogramMEtXvsSumEt_ = histManager->book2D(
-        dir, TString("metXvsSumEt").Append(label).Data(),    "E_{X}^{miss} vs. #Sigma E_{T}",           
+        dir, TString("metXvsSumEt").Append(label).Data(),       "E_{X}^{miss} vs. #Sigma E_{T}",           
 	100, 0., 1000., 150, -75.0, +75.0);
+      histogramMEtXvsNumVertices_ = histManager->book2D(
+	dir, TString("metXvsNumVertices").Append(label).Data(), "E_{X}^{miss} vs. Num. Vertices",           
+	35, -0.5, 34.5, 150, -75.0, +75.0);
       histogramMEtY_ = histManager->book1D(
-        dir, TString("metY").Append(label).Data(),           "E_{Y}^{miss}", 
+        dir, TString("metY").Append(label).Data(),              "E_{Y}^{miss}", 
 	75, -75.0, +75.0);      
       histogramMEtYvsSumEt_ = histManager->book2D(
-        dir, TString("metYvsSumEt").Append(label).Data(),    "E_{Y}^{miss} vs. #Sigma E_{T}",           
+        dir, TString("metYvsSumEt").Append(label).Data(),       "E_{Y}^{miss} vs. #Sigma E_{T}",           
 	100, 0., 1000., 150, -75.0, +75.0);
+      histogramMEtYvsNumVertices_ = histManager->book2D(
+	dir, TString("metYvsNumVertices").Append(label).Data(), "E_{Y}^{miss} vs. Num. Vertices",           
+	35, -0.5, 34.5, 150, -75.0, +75.0);
+
+      histogramMEtPullParlZ_ = histManager->book1D(
+        dir, TString("metPullParlZ").Append(label).Data(),      "E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}",
+	200, -10., +10.);          
+      histogramMEtPullPerpZ_ = histManager->book1D(
+	dir, TString("metPullPerpZ").Append(label).Data(),      "E_{#perp}^{miss}  / #sigmaE_{#perp}^{miss}",  
+	200, -10., +10.);        
     }
-    ~histogramsUvsQtNumObjType() {}
+    void fillHistograms(double qT, double uParl, double uPerp, double metPx, double metPy, 
+			double metParl, double metSigmaParl, double metPerp, double metSigmaPerp, 
+			double sumEt, int vtxMultiplicity, double evtWeight)
+    {
+      if ( qT > 0. ) histogramUparlDivQtVsQt_->Fill(qT, uParl/qT, evtWeight);
+      histogramUparlVsQt_->Fill(qT, uParl, evtWeight);
+      if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
+      histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
+      histogramQt_->Fill(qT, evtWeight);
+
+      histogramMEtX_->Fill(metPx, evtWeight);
+      histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
+      histogramMEtXvsNumVertices_->Fill(vtxMultiplicity, metPx, evtWeight);
+      histogramMEtY_->Fill(metPy, evtWeight);
+      histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
+      histogramMEtYvsNumVertices_->Fill(vtxMultiplicity, metPy, evtWeight);
+
+      if ( metSigmaParl > 0. ) histogramMEtPullParlZ_->Fill(metParl/metSigmaParl, evtWeight);
+      if ( metSigmaPerp > 0. ) histogramMEtPullPerpZ_->Fill(metPerp/metSigmaPerp, evtWeight);
+    }
+
     int numObjMin_;
     int numObjMax_;
 
@@ -182,13 +234,24 @@ class ZllRecoilCorrectionHistManager
 
     TH1* histogramMEtX_;
     TH2* histogramMEtXvsSumEt_;
+    TH2* histogramMEtXvsNumVertices_;
     TH1* histogramMEtY_;
     TH2* histogramMEtYvsSumEt_;
+    TH2* histogramMEtYvsNumVertices_;
+
+    TH1* histogramMEtPullParlZ_;
+    TH1* histogramMEtPullPerpZ_;
   };
 
   std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumVtxBinned_;
 
-  std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumJetsBinned_;
+  std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumJetsPtGt10Binned_;
+  std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumJetsPtGt20Binned_;
+  std::vector<histogramsUvsQtNumObjType*> histogramsUvsQtNumJetsPtGt30Binned_;
+
+  histogramsUvsQtNumObjType* histogramsUvsQtLeadJetBarrel_;
+  histogramsUvsQtNumObjType* histogramsUvsQtLeadJetEndcap_;
+  histogramsUvsQtNumObjType* histogramsUvsQtLeadJetForward_;
 
   struct histogramsMEtPhiAsymmetryVsQtType
   {

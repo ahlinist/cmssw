@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.16 $
+ * \version $Revision: 1.17 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.16 2012/05/04 13:27:57 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.17 2012/05/04 15:57:38 veelken Exp $
  *
  */
 
@@ -43,9 +43,13 @@
 #include "DataFormats/Common/interface/MergeableCounter.h"
 #include "DataFormats/Common/interface/Handle.h"
 
+#include "JetMETCorrections/Type1MET/interface/SysShiftMETcorrExtractor.h"
+#include "DataFormats/METReco/interface/CorrMETData.h"
+
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionHistManager.h"
+#include "TauAnalysis/RecoTools/interface/NoPileUpMEtInputHistManager.h"
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionAlgorithm.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
 
@@ -103,13 +107,21 @@ int main(int argc, char* argv[])
   edm::InputTag srcJets = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcJets");
   edm::InputTag srcMEt = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMEt");
   edm::InputTag srcMEtSignCovMatrix = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcMEtSignCovMatrix");
+  double sfMEtSignCovMatrix = cfgZllRecoilCorrectionAnalyzer.getParameter<double>("sfMEtSignCovMatrix");
   edm::InputTag srcPFCandidates = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcPFCandidates");
 
-  std::string shiftedMEtCorrX_string = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("shiftedMEtCorrX");
-  TFormula* shiftedMEtCorrX = new TFormula("shiftedMEtCorrX", shiftedMEtCorrX_string.data());
-  std::string shiftedMEtCorrY_string = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("shiftedMEtCorrY");
-  TFormula* shiftedMEtCorrY = new TFormula("shiftedMEtCorrY", shiftedMEtCorrY_string.data());
+  SysShiftMETcorrExtractor* shiftedMEtCorrExtractor = 0;
+  double shiftedMEtCorrJetPtThreshold = -1.;
   bool applyMEtShiftCorr = cfgZllRecoilCorrectionAnalyzer.getParameter<bool>("applyMEtShiftCorr");
+  if ( applyMEtShiftCorr ) {
+    edm::ParameterSet cfgShiftedMEtCorr = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("shiftedMEtCorr");
+    shiftedMEtCorrJetPtThreshold = cfgShiftedMEtCorr.getParameter<double>("jetPtThreshold");
+    cfgShiftedMEtCorr.addParameter<std::string>("name", "FWLiteZllRecoilCorrectionAnalyzer");
+    shiftedMEtCorrExtractor = new SysShiftMETcorrExtractor(cfgShiftedMEtCorr);
+  }
+
+  edm::InputTag srcNoPileUpMEtInputs = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcNoPileUpMEtInputs");
+  vstring plotNoPileUpMEtInputs = cfgZllRecoilCorrectionAnalyzer.getParameter<vstring>("plotNoPileUpMEtInputs");
 
   edm::InputTag srcTrigger = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcTrigger");
   vstring hltPaths = cfgZllRecoilCorrectionAnalyzer.getParameter<vstring>("hltPaths");
@@ -198,18 +210,30 @@ int main(int argc, char* argv[])
 //--- create control plots
   TFileDirectory dir = ( directory != "" ) ? fs.mkdir(directory) : fs;
   edm::ParameterSet cfgZllRecoilCorrectionHistManager;
+  edm::ParameterSet cfgNoPileUpMEtInputHistManager;
+  cfgNoPileUpMEtInputHistManager.addParameter<edm::InputTag>("src", srcNoPileUpMEtInputs);
+  cfgNoPileUpMEtInputHistManager.addParameter<vstring>("inputsToPlot", plotNoPileUpMEtInputs);
   ZllRecoilCorrectionHistManager* histogramsBeforeGenPUreweight 
     = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  NoPileUpMEtInputHistManager* histogramsBeforeGenPUreweight2
+    = new NoPileUpMEtInputHistManager(cfgNoPileUpMEtInputHistManager);
   TFileDirectory subdirBeforeGenPUreweight = dir.mkdir("beforeGenPUreweight");
   histogramsBeforeGenPUreweight->bookHistograms(subdirBeforeGenPUreweight);
+  histogramsBeforeGenPUreweight2->bookHistograms(subdirBeforeGenPUreweight);
   ZllRecoilCorrectionHistManager* histogramsBeforeAddPUreweight 
     = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  NoPileUpMEtInputHistManager* histogramsBeforeAddPUreweight2
+    = new NoPileUpMEtInputHistManager(cfgNoPileUpMEtInputHistManager);
   TFileDirectory subdirBeforeAddPUreweight = dir.mkdir("beforeAddPUreweight");
   histogramsBeforeAddPUreweight->bookHistograms(subdirBeforeAddPUreweight);
+  histogramsBeforeAddPUreweight2->bookHistograms(subdirBeforeAddPUreweight);
   ZllRecoilCorrectionHistManager* histogramsBeforeZllRecoilCorr 
     = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
+  NoPileUpMEtInputHistManager* histogramsBeforeZllRecoilCorr2
+    = new NoPileUpMEtInputHistManager(cfgNoPileUpMEtInputHistManager);
   TFileDirectory subdirBeforeZllRecoilCorr = dir.mkdir("beforeZllRecoilCorr");
   histogramsBeforeZllRecoilCorr->bookHistograms(subdirBeforeZllRecoilCorr);
+  histogramsBeforeZllRecoilCorr2->bookHistograms(subdirBeforeZllRecoilCorr);
   ZllRecoilCorrectionHistManager* histogramsAfterZllRecoilMCtoDataCorr  
     = new ZllRecoilCorrectionHistManager(cfgZllRecoilCorrectionHistManager);
   TFileDirectory subdirAfterZllRecoilMCtoDataCorr = dir.mkdir("afterZllRecoilMCtoDataCorr");
@@ -380,12 +404,19 @@ int main(int argc, char* argv[])
       } else {
 	metCov = met->begin()->getSignificanceMatrix();
       }
+      metCov *= square(sfMEtSignCovMatrix);
   
       pat::MET rawMEt = (*met->begin());
       if ( applyMEtShiftCorr ) {
 	double sumEt = rawMEt.sumEt();
-	double rawMEtPx_sysShiftCorrected = rawMEt.px() - shiftedMEtCorrX->Eval(sumEt, vtxMultiplicity);
-	double rawMEtPy_sysShiftCorrected = rawMEt.py() - shiftedMEtCorrY->Eval(sumEt, vtxMultiplicity);
+	int numJets = 0;
+	for ( pat::JetCollection::const_iterator jet = jets->begin();
+	      jet != jets->end(); ++jet ) {
+	  if ( jet->pt() > shiftedMEtCorrJetPtThreshold ) ++numJets;
+	}
+	CorrMETData sysShiftCorrection = (*shiftedMEtCorrExtractor)(sumEt, vtxMultiplicity, numJets);
+	double rawMEtPx_sysShiftCorrected = rawMEt.px() + sysShiftCorrection.mex;
+	double rawMEtPy_sysShiftCorrected = rawMEt.py() + sysShiftCorrection.mey;
 	double rawMEtPt_sysShiftCorrected = TMath::Sqrt(square(rawMEtPx_sysShiftCorrected) + square(rawMEtPy_sysShiftCorrected));
 	reco::Candidate::LorentzVector rawMEtP4_sysShiftCorrected(rawMEtPx_sysShiftCorrected, 
 								  rawMEtPy_sysShiftCorrected, 
@@ -410,14 +441,20 @@ int main(int argc, char* argv[])
 	*bestZllCandidate, *muons, *jets, rawMEt, metCov, 
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, 1.0);
+      histogramsBeforeGenPUreweight2->fillHistograms(
+	*bestZllCandidate, *muons, *jets, evt, 1.0);     
       histogramsBeforeAddPUreweight->fillHistograms(
         *bestZllCandidate, *muons, *jets, rawMEt, metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight);
+      histogramsBeforeAddPUreweight2->fillHistograms(
+	*bestZllCandidate, *muons, *jets, evt, genPUreweight);
       histogramsBeforeZllRecoilCorr->fillHistograms(
 	*bestZllCandidate, *muons, *jets, rawMEt, metCov,
 	p4PFChargedHadrons, p4PFNeutralHadrons, p4PFGammas, 
 	numPU_bxMinus1, numPU_bx0, numPU_bxPlus1, *vertices, rhoNeutral, genPUreweight*addPUreweight);
+      histogramsBeforeZllRecoilCorr2->fillHistograms(
+	*bestZllCandidate, *muons, *jets, evt, genPUreweight*addPUreweight);
 
       if ( selEventsFile ) (*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
       
@@ -458,8 +495,7 @@ int main(int argc, char* argv[])
     delete inputFile;
   }
 
-  delete shiftedMEtCorrX;
-  delete shiftedMEtCorrY;
+  delete shiftedMEtCorrExtractor;
   delete addPUreweightFile;
   delete corrAlgorithm;
   delete ZllRecoilCorrParameter_data;
@@ -495,8 +531,11 @@ int main(int argc, char* argv[])
     }
 
     histogramsBeforeGenPUreweight->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
+    histogramsBeforeGenPUreweight2->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
     histogramsBeforeAddPUreweight->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
+    histogramsBeforeAddPUreweight2->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
     histogramsBeforeZllRecoilCorr->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
+    histogramsBeforeZllRecoilCorr2->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
     histogramsAfterZllRecoilMCtoDataCorr->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
     histogramsAfterZllRecoilAbsCalib->scaleHistograms(mcScaleFactor*lostStatCorrFactor);
   }
