@@ -25,13 +25,18 @@ samplesToAnalyze = [
     ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to193621',
     ##'data_TauPlusX_Run2012B_PromptReco_v1_runs193752to194076',
     ##'data_TauPlusX_Run2012A_PromptReco_v1_runs190456to193621',
-    'data_TauPlusX_Run2012B_PromptReco_v1_runs193752to194076v2',
+    ##'data_TauPlusX_Run2012B_PromptReco_v1_runs193752to194076v2',
+    ##'data_TauPlusX_Run2012B_PromptReco_v1_runs194108to194479'
+    ##'data_TauPlusX_Run2012B_PromptReco_v1_runs194790to195016',
+    ##'data_TauPlusX_Run2012B_PromptReco_v1_runs195099to195947'
+    'data_TauPlusX_Run2012B_PromptReco_v1_runs195948to196509',
     ##'Zmumu_pythia',
     ##'DYmumuM10to20_pythia',
     ##'PPmuXptGt20Mu15v2',
     ##'ZplusJets_madgraph2',
     ##'Ztautau_pythia',
     ##'WplusJets_madgraph',
+    ##'WplusJets_madgraph_extension'
     ##'Wenu_pythia',
     ##'Wmunu_pythia',
     ##'Wtaunu_pythia',  

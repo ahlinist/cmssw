@@ -24,11 +24,20 @@ process.source = cms.Source("PoolSource",
 # Get all the skim files from the castor directory
 #sourceFilePath = "/castor/cern.ch/user/f/friis/Run50plainharvest/"
 #sourceFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/ZtoMuTau/GenZtoMuTauWithinAcc/"
+#sourceFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/data/"
+#sourceFilePath = "/tmp/veelken/pickEvents/user/v/veelken/CMSSW_5_2_x/skims/data/"
+##sourceFilePath = "/afs/cern.ch/user/k/knutzen/public/WToTauNu_ptmin500_TuneZ2Star_8TeV-pythia6-tauola_Summer12-START50_V13-v1_GEN-SIM_ptgreater300/"
 
 ##jobId = "2011Jun30v2"
+##jobId = "pickevents_"
 
-##import TauAnalysis.Configuration.tools.castor as castor
-##source_files = [ 'rfio:%s' % file_info['path'] for file_info in castor.nslsl(sourceFilePath) ]
+##source_files = []
+##if sourceFilePath.find("/castor/cern.ch/") != -1:
+##    import TauAnalysis.Configuration.tools.castor as castor
+##    source_files = [ 'rfio:%s' % file_info['path'] for file_info in castor.nslsl(sourceFilePath) ]
+##else:
+##    import os
+##    source_files = [ "".join([ "file:", sourceFilePath, file ]) for file in os.listdir(sourceFilePath) ]
 ##
 ##source_files_matched = []
 ##for source_file in source_files:
@@ -44,10 +53,18 @@ dummyEventSelection = cms.untracked.PSet(
     )
 )
 
+originalEventContent = cms.PSet(
+    outputCommands = cms.untracked.vstring(
+        'keep *_*_*_*'
+    )
+) 
+
 process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",
-    AODSIMEventContent,                                  
+    #AODSIMEventContent,
+    originalEventContent,
     fileName = cms.untracked.string(
-        'simZplusJets_madgraph_AOD.root'
+        ##'/data1/veelken/CMSSW_5_2_x/skims/selEvents_WToTauNu_tauPtGt300_lowTriggerEff_GENSIM.root'
+        'simWprimeToTauNu_ptGt500_AOD.root'                                                
     ),
     maxSize = cms.untracked.int32(1000000000)                                                
 )

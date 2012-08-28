@@ -32,56 +32,57 @@ muPFIsoDepositNeutral.src = cms.InputTag('muons')
 muPFIsoDepositGamma.src = cms.InputTag('muons')
 muPFIsoDepositChargedAll.src = cms.InputTag('muons')
 muPFIsoDepositPU.src = cms.InputTag('muons')
-patMuons.isoDeposits = cms.PSet(
-    # CV: strings for IsoDeposits defined in PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc
-    pfChargedHadrons = cms.InputTag("muPFIsoDepositCharged"),
-    pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral"),
-    pfPhotons = cms.InputTag("muPFIsoDepositGamma"),
-    user = cms.VInputTag(
-        cms.InputTag("muPFIsoDepositChargedAll"),
-        cms.InputTag("muPFIsoDepositPU")
-    )
+patMuonsForGoldenZmmSelection = patMuons.clone(
+    isoDeposits = cms.PSet(
+        # CV: strings for IsoDeposits defined in PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc
+        pfChargedHadrons = cms.InputTag("muPFIsoDepositCharged"),
+        pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral"),
+        pfPhotons = cms.InputTag("muPFIsoDepositGamma"),
+        user = cms.VInputTag(
+            cms.InputTag("muPFIsoDepositChargedAll"),
+            cms.InputTag("muPFIsoDepositPU")
+       )
+    ),
+    addGenMatch = cms.bool(False),
+    embedHighLevelSelection = cms.bool(True),
+    usePV = cms.bool(False) # compute transverse impact parameter wrt. beamspot (not event vertex)
 )
 
-patMuons.userIsolation = cms.PSet(
+patMuonsForGoldenZmmSelection.userIsolation = cms.PSet(
     # CV: strings for Isolation values defined in PhysicsTools/PatAlgos/src/MultiIsolator.cc
     pfChargedHadron = cms.PSet(
         deltaR = cms.double(0.4),
-        src = patMuons.isoDeposits.pfChargedHadrons,
+        src = patMuonsForGoldenZmmSelection.isoDeposits.pfChargedHadrons,
         vetos = muPFIsoValueCharged04.deposits[0].vetos,
         skipDefaultVeto = muPFIsoValueCharged04.deposits[0].skipDefaultVeto
     ),
     pfNeutralHadron = cms.PSet(
         deltaR = cms.double(0.4),
-        src = patMuons.isoDeposits.pfNeutralHadrons,
+        src = patMuonsForGoldenZmmSelection.isoDeposits.pfNeutralHadrons,
         vetos = muPFIsoValueNeutral04.deposits[0].vetos,
         skipDefaultVeto = muPFIsoValueNeutral04.deposits[0].skipDefaultVeto
     ),
     pfGamma = cms.PSet(
         deltaR = cms.double(0.4),
-        src = patMuons.isoDeposits.pfPhotons,
+        src = patMuonsForGoldenZmmSelection.isoDeposits.pfPhotons,
         vetos = muPFIsoValueGamma04.deposits[0].vetos,
         skipDefaultVeto = muPFIsoValueGamma04.deposits[0].skipDefaultVeto
     ),
     user = cms.VPSet(
         cms.PSet(
             deltaR = cms.double(0.4),
-            src = patMuons.isoDeposits.user[0],
+            src = patMuonsForGoldenZmmSelection.isoDeposits.user[0],
             vetos = muPFIsoValueChargedAll04.deposits[0].vetos,
             skipDefaultVeto = muPFIsoValueChargedAll04.deposits[0].skipDefaultVeto
         ),
         cms.PSet(
             deltaR = cms.double(0.4),
-            src = patMuons.isoDeposits.user[1],
+            src = patMuonsForGoldenZmmSelection.isoDeposits.user[1],
             vetos = muPFIsoValuePU04.deposits[0].vetos,
             skipDefaultVeto = muPFIsoValuePU04.deposits[0].skipDefaultVeto
         )
     )
 )
-
-patMuons.addGenMatch = cms.bool(False)
-patMuons.embedHighLevelSelection = cms.bool(True)
-patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beamspot (not event vertex)
 
 # Trigger requirements
 import HLTrigger.HLTfilters.hltHighLevel_cfi
@@ -105,7 +106,7 @@ goodVertex = cms.EDFilter("VertexSelector",
 
 # Cuts for both muons, no isolation cuts applied
 goodMuons = cms.EDFilter("PATMuonSelector",
-  src = cms.InputTag("patMuons"),
+  src = cms.InputTag("patMuonsForGoldenZmmSelection"),
     cut = cms.string(
       'pt > 20 & abs(eta) < 2.5 & isGlobalMuon' \
      + ' & innerTrack.hitPattern.numberOfValidTrackerHits > 9 & innerTrack.hitPattern.numberOfValidPixelHits > 0' \
@@ -174,7 +175,7 @@ goldenZmumuSelectionSequence = cms.Sequence(
     * pfNoPileUpSequence
     * pfParticleSelectionSequence
     * muonPFIsolationDepositsSequence
-    * patMuons * goodMuons * goodIsoMuons
+    * patMuonsForGoldenZmmSelection * goodMuons * goodIsoMuons
     * goldenZmumuCandidatesGe0IsoMuons * goldenZmumuCandidatesGe1IsoMuons * goldenZmumuCandidatesGe2IsoMuons
     * goodMuonFilter * goldenZmumuFilter
     * goodMuonIsolationTagAndProbeProducer

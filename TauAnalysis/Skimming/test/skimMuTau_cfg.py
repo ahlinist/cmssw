@@ -147,7 +147,6 @@ process.muTauSkimOutputModule = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('muTauSkim.root')
 )
 
-
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )

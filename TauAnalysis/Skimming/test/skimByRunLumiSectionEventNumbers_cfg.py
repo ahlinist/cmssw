@@ -8,51 +8,46 @@ process = cms.Process("skimByRunLumiSectionEventNumbers2")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START42_V13::All')
+process.GlobalTag.globaltag = cms.string('START52_V9B::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(25000)
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/goldenZmumuEvents_simDYtoMuMu_AOD_496_0_t1h.root',
-        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/goldenZmumuEvents_simDYtoMuMu_AOD_497_0_GNy.root',
-        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/GoldenZmumu/simDYtoMuMu/DoubleMu_v2/goldenZmumuEvents_simDYtoMuMu_AOD_510_0_m4S.root'
-        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/tauIdEffSample_Ztautau_powheg_2011Oct30_RECO_70_1_ynt.root',
-        ##'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Oct30/tauIdEffSample_Ztautau_powheg_2011Oct30_RECO_71_1_ugG.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauFakeRate_WJets_RunB_fromArun/selEvents_Data_2011RunB_Wmunu_AOD.root'
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_183_2_KFf.root'
     )
 )
 
 # Get all the skim files from the castor directory
-##import TauAnalysis.Configuration.tools.castor as castor
-##inputFilePath = '/data2/veelken/CMSSW_4_2_x/skims/TauTriggerStudy/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/'
-##inputFileNames = []
-##if inputFilePath.find('/castor/') != -1:
-##    inputFileNames = [ 'rfio:%s' % file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
-##else:
-##    inputFileNames = [ 'file:%s' % os.path.join(inputFilePath, file_name) for file_name in os.listdir(inputFilePath) ]
+## import TauAnalysis.Configuration.tools.castor as castor
+## inputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/TauIdEffMeas/2012May12/'
+## inputFileNames = []
+## if inputFilePath.find('/castor/') != -1:
+##     inputFileNames = [ 'rfio:%s' % file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
+## else:
+##     inputFileNames = [ 'file:%s' % os.path.join(inputFilePath, file_name) for file_name in os.listdir(inputFilePath) ]
 ##
-##sample = 'Ztautau_powheg'
-##jobId = '2011Jul23'
+## sample = 'WplusJets_madgraph'
+## jobId = '2012May12'
 ##
-##print "inputFileNames = %s" % inputFileNames
+## print "inputFileNames = %s" % inputFileNames
 ##
-##inputFileNames_matched = []
-##inputFile_regex = \
-##  r"[a-zA-Z0-9_/:.]*tauIdEffSample_%s_%s_RECO_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (sample, jobId)
-##for inputFileName in inputFileNames:
-##    inputFile_matcher = re.compile(inputFile_regex)
-##    if inputFile_matcher.match(inputFileName):
-##	inputFileNames_matched.append(inputFileName)
+## inputFileNames_matched = []
+## inputFile_regex = \
+##   r"[a-zA-Z0-9_/:.]*tauIdEffSample_%s_%s_AOD_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (sample, jobId)
+## for inputFileName in inputFileNames:
+##     inputFile_matcher = re.compile(inputFile_regex)
+##     if inputFile_matcher.match(inputFileName):
+## 	inputFileNames_matched.append(inputFileName)
 ##
-##print "inputFileNames_matched = %s" % inputFileNames_matched
+## print "inputFileNames_matched = %s" % inputFileNames_matched
 ##
 ##setattr(process.source, "fileNames", cms.untracked.vstring(inputFileNames_matched))
 
@@ -62,10 +57,9 @@ process.source = cms.Source("PoolSource",
 
 process.selectEventsByRunLumiSectionEventNumber = cms.EDFilter("RunLumiSectionEventNumberFilter",
     runLumiSectionEventNumberFileName = cms.string(
-        #'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/Test/test/selEvents_checkMEtSmearing_unclusteredEnDown.txt'
-        #'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/TauIdEfficiency/test/selEvents_Ztautau_tauIdPassed_but_loosePFIsoFailed.txt'
-        #'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/Skimming/test/TauFakeRate_WJet_TestSampleNVtX15_COR2_HPS0.root_debug.txt'
-        '/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/Skimming/test/debug-passed-nvtx20.txt'
+        ##'/afs/cern.ch/work/c/calpas/CMSSW/FWliteHisto_v1_6_CaloMet20/debug_C1f.txt'
+        ##'debug_C1f.txt'
+        '/afs/cern.ch/user/v/veelken/scratch0/CMSSW_5_2_3_patch3/src/TauAnalysis/Test/test/debugMEtSys_selEvents.txt'
     ),
     separator = cms.string(':')
 )
@@ -97,7 +91,8 @@ process.skimOutputModule = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string(
         #'/data1/veelken/CMSSW_4_2_x/skims/selEvents_checkMEtSmearing_unclusteredEnDown_AOD.root'
         #'/data1/veelken/CMSSW_4_2_x/skims/selEvents_Ztautau_tauIdPassed_but_loosePFIsoFailed_AOD.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauFakeRate_WJets_RunB_fromArun/selEvents_Data_2011RunB_Wmunu_AOD_numVerticesEq20.root'
+        #'/data1/veelken/CMSSW_5_2_x/skims/selEvents_bettysTauIdEff_WplusJets_madgraph_AOD.root'
+        '/data1/veelken/CMSSW_5_2_x/skims/selEvents_debugMEtSys_ZplusJets_madgraph_AOD.root'                                        
     )
 )
 

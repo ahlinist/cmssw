@@ -32,9 +32,9 @@ isMC = True # use for MC
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START52_V9::All')
+    process.GlobalTag.globaltag = cms.string('START52_V11::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_52_V7::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_52_V9::All')
 #--------------------------------------------------------------------------------    
 
 process.source = cms.Source("PoolSource",
