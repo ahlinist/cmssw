@@ -10,6 +10,7 @@ SAMPLES_TO_ANALYZE = [
     'ZplusJets_madgraph2',
     'Ztautau_pythia',
     'WplusJets_madgraph',
+    'WplusJets_madgraph_extension',
     'PPmuXptGt20Mu15',      
     'WW',
     'WZ',
@@ -24,7 +25,7 @@ SAMPLES_TO_PLOT = [
     #'VVsum',
     'TTplusJets_madgraph',
     'ZmumuSum',
-    'WplusJets_madgraph',
+    'WplusJetsSum',
     'qcdSum',
     'ZtautauSum'
 ]
@@ -81,7 +82,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1987776,
         'skim_eff' : 1.0,
-        'x_sec' : 1666*_picobarns,
+        'x_sec' : 1982*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
@@ -98,7 +99,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1963296,
         'skim_eff' : 1.0,
-        'x_sec' : 1666*_picobarns,
+        'x_sec' : 1982*_picobarns,
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
@@ -150,7 +151,27 @@ RECO_SAMPLES = {
     'WplusJets_madgraph' : {
         'datasetpath' : "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 18393090,
+        'events_processed' : (18393090 + 61444940),
+        'number_of_jobs' : 2500,
+        'skim_eff' : 1.0,
+        'x_sec' : 36257.2*_picobarns, # NLO cross-section @ 8 TeV,
+                                      # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'WplusJets_madgraph_extension' : { # CV: this dataset just adds more events to 'WplusJets_madgraph'
+                                       #    --> 'events_processed' need to be summed, in order to obtain correct normalization
+        'datasetpath' : "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9_extension-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : (18393090 + 61444940),
         'number_of_jobs' : 2500,
         'skim_eff' : 1.0,
         'x_sec' : 36257.2*_picobarns, # NLO cross-section @ 8 TeV,
@@ -204,6 +225,8 @@ RECO_SAMPLES = {
         'factorize' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
+
+
     'WW' : {
         'datasetpath' : "/WW_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
@@ -303,7 +326,8 @@ MERGE_SAMPLES = {
     },
     'WplusJetsSum' : {
         'samples' : [
-            'WplusJets_madgraph'
+            'WplusJets_madgraph',
+            'WplusJets_madgraph_extension'
         ],
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
