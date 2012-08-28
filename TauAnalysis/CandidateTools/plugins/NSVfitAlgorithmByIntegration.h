@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.11 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.10 2012/04/07 15:44:43 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.11 2012/04/24 10:14:28 veelken Exp $
  *
  */
 
@@ -54,7 +54,8 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
 
   void print(std::ostream&) const {}
 
-  double nll(const double*, const double*) const;
+  bool update(const double* x, const double* param) const;
+  double nll(const double* x, const double* param) const;
 
  protected:
   void fitImp() const;
@@ -85,6 +86,9 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   };
 
   std::vector<NSVfitParameterMappingType> fitParameterMappings_;
+
+  std::vector<NSVfitParameterMappingType> constParameterMappings_;
+  unsigned numConstParameters_;
 
   edm::RunNumber_t currentRunNumber_;
   edm::LuminosityBlockNumber_t currentLumiSectionNumber_;
