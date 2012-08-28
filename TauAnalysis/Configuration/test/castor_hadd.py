@@ -2,7 +2,9 @@
 
 import TauAnalysis.Configuration.tools.castor as castor
 
+import math
 import os
+import random
 import re
 import shlex
 import subprocess
@@ -42,6 +44,7 @@ inputFile2_matcher = re.compile(inputFileName2_regex)
 
 executable_rfcp = 'rfcp'
 executable_hadd = 'hadd -k'
+executable_make = 'make'
 
 def runCommand(commandLine):
     print(commandLine)
@@ -72,21 +75,17 @@ for inputFileName in inputFileNames:
        inputFile2_matcher.match(os.path.basename(inputFileName)):
         inputFileNames_matched.append(inputFileName)
 
+random.shuffle(inputFileNames_matched)
+
 print "inputFileNames_matched = %s" % inputFileNames_matched
 
 if len(inputFileNames_matched) == 0:
     raise ValueError("No input files found !!")
 
-tmpFileNames = []
 for inputFileName_matched in inputFileNames_matched:
-    tmpFileName = os.path.join(tmpDir, os.path.basename(inputFileName_matched))
-    commandLine = None
     if inputFileName_matched.find('/castor/') != -1:
-        commandLine = '%s %s %s' % (executable_rfcp, inputFileName_matched, tmpFileName)
-    else:
-        commandLine = 'cp %s %s' % (inputFileName_matched, tmpFileName)
-    runCommand(commandLine)
-    tmpFileNames.append(tmpFileName)
+        commandLine = '%s %s' % ('stager_get -M', inputFileName_matched)
+        #runCommand(commandLine)
 
 outputFileName = os.path.basename(inputFileNames_matched[0])
 jobId = None
@@ -99,14 +98,78 @@ elif inputFile2_matcher.match(outputFileName):
     jobId = inputFile2_matcher.match(outputFileName).group('jobId')
 else:
     raise ValueError("Failed to compose output file name !!")
-outputFileName = outputFileName.replace("%s.root" % jobId, "all.root")
-outputFileName = os.path.join(tmpDir, outputFileName)
-print "outputFileName = %s" % outputFileName
+outputFileName_level2 = outputFileName.replace("%s.root" % jobId, "all.root")
+outputFileName_level2 = os.path.join(tmpDir, outputFileName_level2)
+print "outputFileName = %s" % outputFileName_level2
 
-commandLine = 'rm %s' % outputFileName
+commandLine = 'rm %s' % outputFileName_level2
 runCommand(commandLine)
 
-commandLine = '%s %s %s' % (executable_hadd, outputFileName, format_vstring(tmpFileNames))
+# build Makefile for copyint input files
+# (use separate Makefile in order to avoid running more than one rfcp job at the same time)
+makeFileName_part1 = "Makefile_castor_hadd_part1"
+makeFile_part1 = open(makeFileName_part1, "w")
+makeFile_part1.write("\n")
+tmpFileNames = []
+for inputFileName_matched in inputFileNames_matched:
+    tmpFileName = os.path.join(tmpDir, os.path.basename(inputFileName_matched))
+    tmpFileNames.append(tmpFileName)
+makeFile_part1.write("all: %s\n" %
+  format_vstring(tmpFileNames))
+makeFile_part1.write("\n")
+for i, inputFileName_matched in enumerate(inputFileNames_matched):
+    tmpFileName = tmpFileNames[i]
+    commandLine = None
+    if inputFileName_matched.find('/castor/') != -1:
+        commandLine = '%s %s %s' % (executable_rfcp, inputFileName_matched, tmpFileName)
+    else:
+        commandLine = 'cp %s %s' % (inputFileName_matched, tmpFileName)
+    makeFile_part1.write("%s:\n" %
+      (tmpFileName))
+    makeFile_part1.write("\t%s\n" %
+      (commandLine))
+makeFile_part1.write("\n")
+makeFile_part1.close()
+commandLine = '%s -j 1 -f %s' % (executable_make, makeFileName_part1)
+runCommand(commandLine)
+
+# build Makefile for running hadd
+# (run hadd in two stages, in order to reduce number of files that need to be added simultaneously)
+makeFileName_part2 = "Makefile_castor_hadd_part2"
+makeFile_part2 = open(makeFileName_part2, "w")
+makeFile_part2.write("\n")
+makeFile_part2.write("all: %s\n" %
+  (outputFileName_level2))
+makeFile_part2.write("\n")
+numJobs_level1 = int(math.sqrt(len(tmpFileNames)))
+outputFileNames_level1 = []
+for jobIdx in range(numJobs_level1 + 1):
+    outputFileName_level1 = outputFileName.replace("%s.root" % jobId, "part%i.root" % jobIdx)
+    outputFileName_level1 = os.path.join(tmpDir, outputFileName_level1)
+    firstJob = int(numJobs_level1*jobIdx)
+    lastJob = int(numJobs_level1*(jobIdx + 1) - 1)
+    if lastJob >= len(tmpFileNames):
+        lastJob = len(tmpFileNames)
+    if not (lastJob >= firstJob):
+        continue
+    makeFile_part2.write("%s: %s\n" %
+      (outputFileName_level1,
+       format_vstring(tmpFileNames[firstJob:lastJob])))
+    makeFile_part2.write("\t%s %s %s\n" %
+      (executable_hadd,
+       outputFileName_level1,
+       format_vstring(tmpFileNames[firstJob:lastJob])))
+    outputFileNames_level1.append(outputFileName_level1)
+makeFile_part2.write("\n")
+makeFile_part2.write("%s: %s\n" %
+  (outputFileName_level2,
+   format_vstring(outputFileNames_level1)))
+makeFile_part2.write("\t%s %s %s\n" %
+  (executable_hadd,
+   outputFileName_level2,
+   format_vstring(outputFileNames_level1)))
+makeFile_part2.close()
+commandLine = '%s -j 4 -f %s' % (executable_make, makeFileName_part2)
 runCommand(commandLine)
 
 commandLine = None
