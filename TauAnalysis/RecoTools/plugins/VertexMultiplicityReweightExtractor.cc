@@ -203,9 +203,11 @@ double VertexMultiplicityReweightExtractor::operator()(const edm::Event& evt) co
       //    cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupInformation
       int bx = genPileUpInfo->getBunchCrossing();
       //std::cout << "bx = " << bx << std::endl;
-      if      ( bx == bxPrevious_ ) numPileUp_bxPrevious = genPileUpInfo->getPU_NumInteractions();
-      else if ( bx ==  0          ) numPileUp_inTime     = genPileUpInfo->getPU_NumInteractions();
-      else if ( bx == bxNext_     ) numPileUp_bxNext     = genPileUpInfo->getPU_NumInteractions();
+      //int numPileUp = genPileUpInfo->getPU_NumInteractions();
+      int numPileUp = genPileUpInfo->getTrueNumInteractions();
+      if      ( bx == bxPrevious_ ) numPileUp_bxPrevious = numPileUp;
+      else if ( bx ==  0          ) numPileUp_inTime     = numPileUp;
+      else if ( bx == bxNext_     ) numPileUp_bxNext     = numPileUp;
     }    
     if ( numPileUp_bxPrevious == -1 || numPileUp_inTime == -1 || numPileUp_bxNext == -1 ) 
       throw cms::Exception("VertexMultiplicityReweightExtractor") 

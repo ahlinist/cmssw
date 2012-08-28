@@ -21,6 +21,7 @@
   <use   name="DataFormats/DetId"/>
   <use   name="DataFormats/SiPixelDetId"/>
   <use   name="DataFormats/Math"/>
+  <use   name="DataFormats/METReco"/>
   <use   name="SimDataFormats/PileupSummaryInfo"/>
   <use   name="PhysicsTools/IsolationAlgos"/>
   <use   name="PhysicsTools/PatUtils"/>
@@ -29,10 +30,12 @@
   <use   name="CommonTools/UtilAlgos"/>
   <use   name="CondFormats/JetMETObjects"/>
   <use   name="JetMETCorrections/Objects"/>
+  <use   name="JetMETCorrections/Type1MET"/>
   <use   name="SimGeneral/HepPDTRecord"/>
   <use   name="TrackingTools/TransientTrack"/>
   <use   name="TrackingTools/Records"/>
   <use   name="RecoEgamma/EgammaTools"/>
+  <use   name="EGamma/EGammaAnalysisTools"/>
   <use   name="HiggsAnalysis/HiggsToWW2Leptons"/>
   <use   name="AnalysisDataFormats/TauAnalysis"/>
   <use   name="TauAnalysis/CandidateTools"/>

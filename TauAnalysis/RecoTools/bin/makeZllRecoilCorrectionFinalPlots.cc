@@ -107,6 +107,25 @@ TH1* loadHistogram(TFile* inputFile, const std::string& directory,
   return histograms[key];
 }
 
+TH1* loadAndSumHistograms(TFile* inputFile, const vstring& directories, 
+			  const std::map<std::string, double>& mcScaleFactors, const std::string& meName)
+{
+  TH1* me_sum = 0;
+
+  for ( vstring::const_iterator directory = directories.begin();
+	directory != directories.end(); ++directory ) {
+    TH1* me = loadHistogram(inputFile, *directory, mcScaleFactors, meName);
+    if ( !me->GetSumw2N() ) me->Sumw2();
+    if ( !me_sum ) {
+      me_sum = (TH1*)me->Clone(std::string(me->GetName()).append("_cloned").data());
+      if ( !me_sum->GetSumw2N() ) me_sum->Sumw2();
+    }
+    else me_sum->Add(me);
+  }
+
+  return me_sum;
+}
+
 std::string getDirectorySysErr(const std::string& directory, const std::string& sysShift)
 {
   //std::string directory_sysShift = terminate_dqmDirectory(directory).append(sysShift);
@@ -124,6 +143,7 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
 	       std::vector<double>& errUp2MC_smSum, std::vector<double>& errDown2MC_smSum)
 {
   std::cout << "<addSysErr>:" << std::endl;
+  std::cout << " variable = " << variable.meName_ << std::endl;
 
   assert(sysShiftsUp.size() == sysShiftsDown.size());
 
@@ -143,7 +163,7 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
       double value_sysShiftUp   = mcToDataScaleFactor*meMC_sysShiftUp->GetBinContent(iBin);
       double value_sysShiftDown = mcToDataScaleFactor*meMC_sysShiftDown->GetBinContent(iBin);
 
-      std::cout << "bin = " << iBin << ": central = " << value_central << "," 
+      std::cout << "bin = " << iBin << " (x = " << meMC_central->GetBinCenter(iBin) << "): central = " << value_central << "," 
 		<< " " << sysShiftUp << " = " << value_sysShiftUp << ", " << sysShiftDown << " = " << value_sysShiftDown << std::endl;
       
       double value_max = TMath::Max(value_sysShiftUp, value_sysShiftDown);
@@ -183,17 +203,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   meMC_signal_cloned->SetLineWidth(2);
   meMC_signal_cloned->SetFillColor(10);
 
-  TH1* meMC_bgrSum = 0;
-  for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
-	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
-    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, mcScaleFactors, variable.meName_);
-    if ( !meMC_bgr->GetSumw2N() ) meMC_bgr->Sumw2();
-    if ( !meMC_bgrSum ) {
-      meMC_bgrSum = (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data());
-      if ( !meMC_bgrSum->GetSumw2N() ) meMC_bgrSum->Sumw2();
-    }
-    else meMC_bgrSum->Add(meMC_bgr);
-  }
+  TH1* meMC_bgrSum = loadAndSumHistograms(inputFile, directoryMCs_background, mcScaleFactors, variable.meName_);
   if ( meMC_bgrSum ) meMC_bgrSum->SetFillColor(46);
 
   TH1* meMC_smSum = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smSum").data());
@@ -309,7 +319,8 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
 
   TAxis* yAxis_top = stack_smSum.GetYaxis();
   yAxis_top->SetTitle("Events");
-  yAxis_top->SetTitleOffset(1.4);
+  if ( useLogScaleY ) yAxis_top->SetTitleOffset(1.4);
+  else yAxis_top->SetTitleOffset(1.6);
 
   if ( drawSysUncertainty && meMC_smErr ) meMC_smErr->Draw("e2same");
 
@@ -320,9 +331,9 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
   legend.AddEntry(meData, std::string(runPeriod).append(" Data").data(), "p");
-  //legend.AddEntry(meMC_signal, "exp. Signal", "l");
-  legend.AddEntry(meMC_signal, "exp. Z #rightarrow #mu^{+}#mu^{-}", "l");
-  if ( meMC_bgrSum ) legend.AddEntry(meMC_bgrSum, "exp. Background", "f");
+  //legend.AddEntry(meMC_signal, "Sim. Signal", "l");
+  legend.AddEntry(meMC_signal, "Sim. Z #rightarrow #mu^{+}#mu^{-}", "l");
+  if ( meMC_bgrSum ) legend.AddEntry(meMC_bgrSum, "Sim. Background", "f");
   if ( drawSysUncertainty && meMC_smErr ) legend.AddEntry(meMC_smErr, "Sys. Uncertainty", "f");
   legend.Draw();
   
@@ -467,7 +478,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
 
   size_t idx = outputFileName.find_last_of('.');
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
-  outputFileName_plot.append("_").append(variable.meName_);
+  outputFileName_plot.append("_").append(TString(variable.meName_.data()).ReplaceAll("/", "_"));  
   if ( scaleMCtoData ) outputFileName_plot.append("_scaled");
   if ( useLogScaleY ) outputFileName_plot.append("_log");
   else outputFileName_plot.append("_linear");
@@ -487,9 +498,11 @@ struct plotUvsQtNumObjType
 {
   plotUvsQtNumObjType(TFile* inputFile, const std::string& numObjLabel, int numObjMin, int numObjMax,
 		      const std::string& numObjLabel_subscript,
-		      const std::string& directoryData, const std::string& directoryMC,
+		      const std::string& directoryData, 
+		      const std::string& directoryMC_signal, const vstring& directoryMCs_background,
 		      const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
-		      const vstring& sysShiftsUp, const vstring& sysShiftsDown)
+		      const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
+		      bool isCaloMEt)
     : numObjMin_(numObjMin),
       numObjMax_(numObjMax)
   {
@@ -500,6 +513,39 @@ struct plotUvsQtNumObjType
     else if ( numObjMin_ == numObjMax_ ) meLabel_ = Form("%sEq%i",   numObjLabel.data(), numObjMin_);
     else                                 meLabel_ = Form("%s%ito%i", numObjLabel.data(), numObjMin_, numObjMax_);
 
+    if      ( numObjMin_ == -1 && 
+	      numObjMax_ == -1         ) plotLabel_ = ""; 
+    else if ( numObjMin_ == -1         ) plotLabel_ = Form("N_{%s} < %i",      numObjLabel_subscript.data(), numObjMax_);
+    else if ( numObjMax_ == -1         ) plotLabel_ = Form("N_{%s} > %i",      numObjLabel_subscript.data(), numObjMin_);
+    else if ( numObjMin_ == numObjMax_ ) plotLabel_ = Form("N_{%s} = %i",      numObjLabel_subscript.data(), numObjMin_);
+    else                                 plotLabel_ = Form("%i < N_{%s} < %i", numObjMin_, numObjLabel_subscript.data(), numObjMax_);
+    
+    loadHistograms(inputFile, directoryData, directoryMC_signal, directoryMCs_background, 
+		   mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown, isCaloMEt);
+  }
+  plotUvsQtNumObjType(TFile* inputFile, const std::string& label,
+		      const std::string& directoryData, 
+		      const std::string& directoryMC_signal, const vstring& directoryMCs_background,
+		      const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
+		      const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
+		      bool isCaloMEt)
+    : numObjMin_(-1),
+      numObjMax_(99)
+  {
+    meLabel_ = label;
+    
+    plotLabel_ = ""; 
+
+    loadHistograms(inputFile, directoryData, directoryMC_signal, directoryMCs_background, 
+		   mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown, isCaloMEt);
+  }
+  void loadHistograms(TFile* inputFile, 
+		      const std::string& directoryData, 
+		      const std::string& directoryMC_signal, const vstring& directoryMCs_background,  
+		      const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
+		      const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
+		      bool isCaloMEt)
+  {
     meUparlDivQtVsQtData_ = dynamic_cast<TH2*>(
       loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
     meUparlVsQtData_ = dynamic_cast<TH2*>(
@@ -511,7 +557,7 @@ struct plotUvsQtNumObjType
 
     graphUparlResponseData_ = makeGraph_uParl_div_qT(
       "graph_uParl_div_qT_mean_data", "<-u_{#parallel} >/q_{T} as function of q_{T}",
-      meUparlVsQtData_, meQtData_);
+      meUparlVsQtData_, meQtData_, isCaloMEt);
     graphUparlResolutionData_ = makeGraph_rms(
       "graph_uParl_rms_data", "RMS(u_{#parallel} ) as function of q_{T}", 
       meUparlVsQtData_, meQtData_);
@@ -519,18 +565,44 @@ struct plotUvsQtNumObjType
       "graph_uPerp_rms_data", "RMS(u_{#perp}  ) as function of q_{T}", 
       meUperpVsQtData_, meQtData_);
 
+    meUparlDivQtVsQtMC_signal_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
+    meUparlVsQtMC_signal_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
+    meUperpVsQtMC_signal_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
+    meQtMC_signal_ = dynamic_cast<TH1*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+
+    graphUparlResponseMC_signal_ = makeGraph_uParl_div_qT(
+      "graph_uParl_div_qT_mean_mc", "<-u_{#parallel} >/q_{T} as function of q_{T}",
+      meUparlVsQtMC_signal_, meQtMC_signal_, isCaloMEt);
+    graphUparlResolutionMC_signal_ = makeGraph_rms(
+      "graph_uParl_rms_mc", "RMS(u_{#parallel} ) as function of q_{T}", 
+      meUparlVsQtMC_signal_, meQtMC_signal_);
+    graphUperpResolutionMC_signal_ = makeGraph_rms(
+      "graph_uPerp_rms_mc", "RMS(u_{#perp}  ) as function of q_{T}", 
+      meUperpVsQtMC_signal_, meQtMC_signal_);
+
+    vstring directoryMCs;
+    directoryMCs.push_back(directoryMC_signal);
+    for ( vstring::const_iterator directoryMC_background = directoryMCs_background.begin();
+	  directoryMC_background != directoryMCs_background.end(); ++directoryMC_background ) {
+      directoryMCs.push_back(*directoryMC_background);
+    }
+
     meUparlDivQtVsQtMC_ = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
     meUparlVsQtMC_ = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
     meUperpVsQtMC_ = dynamic_cast<TH2*>(
-      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
     meQtMC_ = dynamic_cast<TH1*>(
-      loadHistogram(inputFile, directoryMC, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
 
     graphUparlResponseMC_ = makeGraph_uParl_div_qT(
       "graph_uParl_div_qT_mean_mc", "<-u_{#parallel} >/q_{T} as function of q_{T}",
-      meUparlVsQtMC_, meQtMC_);
+      meUparlVsQtMC_, meQtMC_, isCaloMEt);
     graphUparlResolutionMC_ = makeGraph_rms(
       "graph_uParl_rms_mc", "RMS(u_{#parallel} ) as function of q_{T}", 
       meUparlVsQtMC_, meQtMC_);
@@ -547,23 +619,53 @@ struct plotUvsQtNumObjType
     
     for ( vstring::const_iterator sysUncertainty = sysUncertainties_.begin();
 	  sysUncertainty != sysUncertainties_.end(); ++sysUncertainty ) {
-      std::string directoryMCsysUncertainty = getDirectorySysErr(directoryMC, *sysUncertainty);
+      std::string directoryMCsysUncertainty_signal = getDirectorySysErr(directoryMC_signal, *sysUncertainty);
+
+      TH2* meUparlDivQtVsQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH2*>(
+	loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
+      meUparlDivQtVsQtMCsysUncertainty_signal_.push_back(meUparlDivQtVsQtMCsysUncertainty_sysUncertainty_signal);
+      TH2* meUparlVsQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
+      meUparlVsQtMCsysUncertainty_signal_.push_back(meUparlVsQtMCsysUncertainty_sysUncertainty_signal);
+      TH2* meUperpVsQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
+      meUperpVsQtMCsysUncertainty_signal_.push_back(meUperpVsQtMCsysUncertainty_sysUncertainty_signal);
+      TH1* meQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH1*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+      meQtMCsysUncertainty_signal_.push_back(meQtMCsysUncertainty_sysUncertainty_signal);
+
+      graphUparlResponseMCsysUncertainty_signal_.push_back(makeGraph_uParl_div_qT(
+	Form("graph_uParl_div_qT_mean_mc_%s", sysUncertainty->data()), "<-u_{#parallel} >/q_{T} as function of q_{T}",
+        meUparlVsQtMCsysUncertainty_sysUncertainty_signal, meQtMCsysUncertainty_sysUncertainty_signal, isCaloMEt));
+      graphUparlResolutionMCsysUncertainty_signal_.push_back(makeGraph_rms(
+        Form("graph_uParl_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#parallel} ) as function of q_{T}", 
+        meUparlVsQtMCsysUncertainty_sysUncertainty_signal, meQtMCsysUncertainty_sysUncertainty_signal));
+      graphUperpResolutionMCsysUncertainty_signal_.push_back(makeGraph_rms(
+        Form("graph_uPerp_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#perp}  ) as function of q_{T}", 
+        meUperpVsQtMCsysUncertainty_sysUncertainty_signal, meQtMCsysUncertainty_sysUncertainty_signal));
+
+      vstring directoryMCsSysUncertainty;
+      for ( vstring::const_iterator directoryMC = directoryMCs.begin();
+	    directoryMC != directoryMCs.end(); ++directoryMC ) {
+	directoryMCsSysUncertainty.push_back(getDirectorySysErr(*directoryMC, *sysUncertainty));
+      }
+      
       TH2* meUparlDivQtVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
-	loadHistogram(inputFile, directoryMCsysUncertainty,mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
+	loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
       meUparlDivQtVsQtMCsysUncertainty_.push_back(meUparlDivQtVsQtMCsysUncertainty_sysUncertainty);
       TH2* meUparlVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
-        loadHistogram(inputFile, directoryMCsysUncertainty, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
       meUparlVsQtMCsysUncertainty_.push_back(meUparlVsQtMCsysUncertainty_sysUncertainty);
       TH2* meUperpVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
-        loadHistogram(inputFile, directoryMCsysUncertainty, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
       meUperpVsQtMCsysUncertainty_.push_back(meUperpVsQtMCsysUncertainty_sysUncertainty);
       TH1* meQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH1*>(
-        loadHistogram(inputFile, directoryMCsysUncertainty, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
       meQtMCsysUncertainty_.push_back(meQtMCsysUncertainty_sysUncertainty);
 
       graphUparlResponseMCsysUncertainty_.push_back(makeGraph_uParl_div_qT(
 	Form("graph_uParl_div_qT_mean_mc_%s", sysUncertainty->data()), "<-u_{#parallel} >/q_{T} as function of q_{T}",
-        meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
+        meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty, isCaloMEt));
       graphUparlResolutionMCsysUncertainty_.push_back(makeGraph_rms(
         Form("graph_uParl_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#parallel} ) as function of q_{T}", 
         meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
@@ -571,13 +673,6 @@ struct plotUvsQtNumObjType
         Form("graph_uPerp_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#perp}  ) as function of q_{T}", 
         meUperpVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
     }
-
-    if      ( numObjMin_ == -1 && 
-	      numObjMax_ == -1         ) plotLabel_ = ""; 
-    else if ( numObjMin_ == -1         ) plotLabel_ = Form("N_{%s} < %i",      numObjLabel_subscript.data(), numObjMax_);
-    else if ( numObjMax_ == -1         ) plotLabel_ = Form("N_{%s} > %i",      numObjLabel_subscript.data(), numObjMin_);
-    else if ( numObjMin_ == numObjMax_ ) plotLabel_ = Form("N_{%s} = %i",      numObjLabel_subscript.data(), numObjMin_);
-    else                                 plotLabel_ = Form("%i < N_{%s} < %i", numObjMin_, numObjLabel_subscript.data(), numObjMax_);
 
     legendEntryData_ = std::string(runPeriod).append(" Data");
     legendEntryMC_   = std::string("Simulation");
@@ -598,6 +693,15 @@ struct plotUvsQtNumObjType
   TGraphAsymmErrors* graphUparlResolutionData_;
   TGraphAsymmErrors* graphUperpResolutionData_;
 
+  TH2* meUparlDivQtVsQtMC_signal_;
+  TH2* meUparlVsQtMC_signal_;
+  TH2* meUperpVsQtMC_signal_;
+  TH1* meQtMC_signal_;
+
+  TGraphAsymmErrors* graphUparlResponseMC_signal_;
+  TGraphAsymmErrors* graphUparlResolutionMC_signal_;
+  TGraphAsymmErrors* graphUperpResolutionMC_signal_;
+
   TH2* meUparlDivQtVsQtMC_;
   TH2* meUparlVsQtMC_;
   TH2* meUperpVsQtMC_;
@@ -608,6 +712,15 @@ struct plotUvsQtNumObjType
   TGraphAsymmErrors* graphUperpResolutionMC_;
 
   vstring sysUncertainties_;
+
+  std::vector<TH2*> meUparlDivQtVsQtMCsysUncertainty_signal_; 
+  std::vector<TH2*> meUparlVsQtMCsysUncertainty_signal_;
+  std::vector<TH2*> meUperpVsQtMCsysUncertainty_signal_;
+  std::vector<TH1*> meQtMCsysUncertainty_signal_;
+
+  std::vector<TGraphAsymmErrors*> graphUparlResponseMCsysUncertainty_signal_;
+  std::vector<TGraphAsymmErrors*> graphUparlResolutionMCsysUncertainty_signal_;
+  std::vector<TGraphAsymmErrors*> graphUperpResolutionMCsysUncertainty_signal_;
 
   std::vector<TH2*> meUparlDivQtVsQtMCsysUncertainty_; 
   std::vector<TH2*> meUparlVsQtMCsysUncertainty_;
@@ -629,9 +742,30 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
   const double xMin = 0.;
   const double xMax = 300.;
 
+  int numSysUncertainties = plotUvsQtNumObj->sysUncertainties_.size();
+
   TF1* f_uParl_div_qT_mean_data = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_data", plotUvsQtNumObj->graphUparlResponseData_, xMin, xMax);
   TF1* f_uParl_rms_data = fitGraph_uParl_rms("f_uParl_rms_data", plotUvsQtNumObj->graphUparlResolutionData_, xMin, xMax);
   TF1* f_uPerp_rms_data = fitGraph_uPerp_rms("f_uPerp_rms_data", plotUvsQtNumObj->graphUperpResolutionData_, xMin, xMax);
+
+  TF1* f_uParl_div_qT_mean_mc_signal = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc_signal", plotUvsQtNumObj->graphUparlResponseMC_signal_, xMin, xMax);
+  TF1* f_uParl_rms_mc_signal = fitGraph_uParl_rms("f_uParl_rms_mc_signal", plotUvsQtNumObj->graphUparlResolutionMC_signal_, xMin, xMax);
+  TF1* f_uPerp_rms_mc_signal = fitGraph_uPerp_rms("f_uPerp_rms_mc_signal", plotUvsQtNumObj->graphUperpResolutionMC_signal_, xMin, xMax);
+  std::vector<TF1*> f_uParl_div_qT_mean_mcSysUncertainties_signal;
+  std::vector<TF1*> f_uParl_rms_mcSysUncertainties_signal;
+  std::vector<TF1*> f_uPerp_rms_mcSysUncertainties_signal;
+  for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
+    const std::string& sysUncertainty = plotUvsQtNumObj->sysUncertainties_[iSysUncertainty];
+    f_uParl_div_qT_mean_mcSysUncertainties_signal.push_back(fitGraph_uParl_div_qT(
+      std::string("f_uParl_div_qT_mean_mc").append("_").append(sysUncertainty), 
+      plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_signal_[iSysUncertainty], xMin, xMax));
+    f_uParl_rms_mcSysUncertainties_signal.push_back(fitGraph_uParl_rms(
+      std::string("f_uParl_rms_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_signal_[iSysUncertainty], xMin, xMax));
+    f_uPerp_rms_mcSysUncertainties_signal.push_back(fitGraph_uPerp_rms(
+      std::string("f_uPerp_rms_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_signal_[iSysUncertainty], xMin, xMax));
+  }
 
   TF1* f_uParl_div_qT_mean_mc = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc", plotUvsQtNumObj->graphUparlResponseMC_, xMin, xMax);
   TF1* f_uParl_rms_mc = fitGraph_uParl_rms("f_uParl_rms_mc", plotUvsQtNumObj->graphUparlResolutionMC_, xMin, xMax);
@@ -639,7 +773,6 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
   std::vector<TF1*> f_uParl_div_qT_mean_mcSysUncertainties;
   std::vector<TF1*> f_uParl_rms_mcSysUncertainties;
   std::vector<TF1*> f_uPerp_rms_mcSysUncertainties;
-  int numSysUncertainties = plotUvsQtNumObj->sysUncertainties_.size();
   for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
     const std::string& sysUncertainty = plotUvsQtNumObj->sysUncertainties_[iSysUncertainty];
     f_uParl_div_qT_mean_mcSysUncertainties.push_back(fitGraph_uParl_div_qT(
@@ -667,14 +800,25 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
 			  "Data", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitData");
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUparlResponseMC_signal_, f_uParl_div_qT_mean_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			 outputFileName, "uParlResponseFitMC",
+			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_signal_, &f_uParl_div_qT_mean_mcSysUncertainties_signal);  
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseMC_, f_uParl_div_qT_mean_mc,
 			 "Simulation", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitMC",
-			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_, &f_uParl_div_qT_mean_mcSysUncertainties);  
+			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_, &f_uParl_div_qT_mean_mcSysUncertainties); 
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResolutionData_, f_uParl_rms_data,
 			 "Data",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
 			 outputFileName, "uParlResolutionFitData");
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUparlResolutionMC_signal_, f_uParl_rms_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
+			 outputFileName, "uParlResolutionFitMC",
+			 &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_signal_, &f_uParl_rms_mcSysUncertainties_signal);
+
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResolutionMC_, f_uParl_rms_mc,
 			 "Simulation",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
@@ -685,34 +829,51 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
 			 "Data", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
 			 outputFileName, "uPerpResolutionFitData");
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUperpResolutionMC_signal_, f_uPerp_rms_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
+			 outputFileName, "uPerpResolutionFitMC",
+			 &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_signal_, &f_uPerp_rms_mcSysUncertainties_signal);
+  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUperpResolutionMC_, f_uPerp_rms_mc,
 			 "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
 			 outputFileName, "uPerpResolutionFitMC",
 			 &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_, &f_uPerp_rms_mcSysUncertainties);
 
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
-			   plotUvsQtNumObj->graphUparlResponseData_, plotUvsQtNumObj->graphUparlResponseMC_, 
-			   "Data", "Simulation", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.20,
+			   "Data", plotUvsQtNumObj->graphUparlResponseData_, 
+			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphUparlResponseMC_signal_,
+			   "Simulation", plotUvsQtNumObj->graphUparlResponseMC_, 
+			   0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.20,
 			   outputFileName, "uParlResponseData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_);
-  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
-			   plotUvsQtNumObj->graphUparlResolutionData_, plotUvsQtNumObj->graphUparlResolutionMC_, 
-			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
+  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 			   
+			   "Data", plotUvsQtNumObj->graphUparlResolutionData_, 
+			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphUparlResolutionMC_signal_, 
+			   "Simulation", plotUvsQtNumObj->graphUparlResolutionMC_, 
+			   0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
 			   outputFileName, "uParlResolutionData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_);
-  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
-			   plotUvsQtNumObj->graphUperpResolutionData_, plotUvsQtNumObj->graphUperpResolutionMC_, 
-			   "Data", "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
+  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 			   
+			   "Data", plotUvsQtNumObj->graphUperpResolutionData_, 
+			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphUperpResolutionMC_signal_, 
+			   "Simulation", plotUvsQtNumObj->graphUperpResolutionMC_, 
+			   0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
 			   outputFileName, "uPerpResolutionData_vs_MC",
 			   &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_);
 
   delete f_uParl_div_qT_mean_data;
   delete f_uParl_rms_data;
   delete f_uPerp_rms_data;
+  delete f_uParl_div_qT_mean_mc_signal;
+  delete f_uParl_rms_mc_signal;
+  delete f_uPerp_rms_mc_signal;
   delete f_uParl_div_qT_mean_mc;
   delete f_uParl_rms_mc;
   delete f_uPerp_rms_mc;
-  for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
+  for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {    
+    delete f_uParl_div_qT_mean_mcSysUncertainties_signal[iSysUncertainty];
+    delete f_uParl_rms_mcSysUncertainties_signal[iSysUncertainty];
+    delete f_uPerp_rms_mcSysUncertainties_signal[iSysUncertainty];
     delete f_uParl_div_qT_mean_mcSysUncertainties[iSysUncertainty];
     delete f_uParl_rms_mcSysUncertainties[iSysUncertainty];
     delete f_uPerp_rms_mcSysUncertainties[iSysUncertainty];
@@ -876,6 +1037,8 @@ int main(int argc, const char* argv[])
     throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
       << "Number of 'up' shifts must match number of 'down' shifts !!\n";
 
+  bool isCaloMEt = cfgMakeZllRecoilCorrectionPlots.getParameter<bool>("isCaloMEt");
+
   vParameterSet cfgVariables = cfgMakeZllRecoilCorrectionPlots.getParameter<vParameterSet>("variables");
   std::vector<variableEntryType> variables;
   for ( vParameterSet::const_iterator cfgVariable = cfgVariables.begin();
@@ -911,55 +1074,155 @@ int main(int argc, const char* argv[])
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
   plotUvsQtNumObjType* plotUvsQt  = 
     new plotUvsQtNumObjType(inputFile, "", -1, -1, "", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
   fitAndMakeControlPlots(plotUvsQt, outputFileName);
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
 //    in different bins of reconstructed jet multiplicity
-  plotUvsQtNumObjType* plotUvsQtNumJetsEq0 = 
-    new plotUvsQtNumObjType(inputFile, "NumJets", 0,  0, "jet", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  fitAndMakeControlPlots(plotUvsQtNumJetsEq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsEq0->meLabel_));
-  plotUvsQtNumObjType* plotUvsQtNumJetsEq1 = 
-    new plotUvsQtNumObjType(inputFile, "NumJets", 1,  1, "jet", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  fitAndMakeControlPlots(plotUvsQtNumJetsEq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsEq1->meLabel_));
-  plotUvsQtNumObjType* plotUvsQtNumJetsEq2 = 
-    new plotUvsQtNumObjType(inputFile, "NumJets", 2,  2, "jet", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  fitAndMakeControlPlots(plotUvsQtNumJetsEq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsEq2->meLabel_));
-  plotUvsQtNumObjType* plotUvsQtNumJetsGe3 = 
-    new plotUvsQtNumObjType(inputFile, "NumJets", 3, -1, "jet", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  fitAndMakeControlPlots(plotUvsQtNumJetsGe3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsGe3->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt10Eq0 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt10", 0,  0, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Eq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Eq0->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt10Eq1 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt10", 1,  1, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Eq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Eq1->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt10Eq2 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt10", 2,  2, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Eq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Eq2->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt10Ge3 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt10", 3, -1, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Ge3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Ge3->meLabel_));
+
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Eq0 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt20", 0,  0, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Eq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Eq0->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Eq1 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt20", 1,  1, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background,
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Eq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Eq1->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Eq2 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt20", 2,  2, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Eq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Eq2->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Ge3 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt20", 3, -1, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Ge3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Ge3->meLabel_));
+
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Eq0 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt30", 0,  0, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Eq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Eq0->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Eq1 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt30", 1,  1, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Eq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Eq1->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Eq2 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt30", 2,  2, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Eq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Eq2->meLabel_));
+  plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Ge3 = 
+    new plotUvsQtNumObjType(inputFile, "NumJetsPtGt30", 3, -1, "jet", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Ge3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Ge3->meLabel_));
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT and rms(uPerp)/qT
 //    in different bins of reconstructed vertex multiplicity (pile-up)
-  plotUvsQtNumObjType* plotUvsQtNumVerticesEq1 =
-    new plotUvsQtNumObjType(inputFile, "NumVertices",  1,  1, "vertex", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  plotUvsQtNumObjType* plotUvsQtNumVerticesEq11 =
-    new plotUvsQtNumObjType(inputFile, "NumVertices", 11, 11, "vertex", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  plotUvsQtNumObjType* plotUvsQtNumVerticesEq21 =
-    new plotUvsQtNumObjType(inputFile, "NumVertices", 21, 21, "vertex", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  plotUvsQtNumObjType* plotUvsQtNumVerticesEq31 =
-    new plotUvsQtNumObjType(inputFile, "NumVertices", 31, 31, "vertex", 
-			    directoryData, directoryMC_signal, mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown);
-  std::vector<plotUvsQtNumObjType*> plotUvsQtNumObjs;
-  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq1);
-  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq11);
-  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq21);
-  plotUvsQtNumObjs.push_back(plotUvsQtNumVerticesEq31);
-  std::vector<std::string> legendEntries;
-  legendEntries.push_back("1 Vertex (No PU)");
-  legendEntries.push_back("11 Vertices");
-  legendEntries.push_back("21 Vertices");
-  legendEntries.push_back("31 Vertices");
-  fitAndCompare(plotUvsQtNumObjs, legendEntries, true, false, true, false, getOutputFileName_plot(outputFileName, "puDependenceMC"));
-  fitAndCompare(plotUvsQtNumObjs, legendEntries, true, false, true, false, getOutputFileName_plot(outputFileName, "puDependenceData"));
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq4 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices",  4,  4, "vertex", 
+			    directoryData, directoryMC_signal, directoryMCs_background,
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq12 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices", 12, 12, "vertex", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq20 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices", 20, 20, "vertex", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  plotUvsQtNumObjType* plotUvsQtNumVerticesEq28 =
+    new plotUvsQtNumObjType(inputFile, "NumVertices", 28, 28, "vertex", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  std::vector<plotUvsQtNumObjType*> plotUvsQtNumObjsNvtx;
+  plotUvsQtNumObjsNvtx.push_back(plotUvsQtNumVerticesEq4);
+  plotUvsQtNumObjsNvtx.push_back(plotUvsQtNumVerticesEq12);
+  plotUvsQtNumObjsNvtx.push_back(plotUvsQtNumVerticesEq20);
+  plotUvsQtNumObjsNvtx.push_back(plotUvsQtNumVerticesEq28);
+  std::vector<std::string> legendEntriesNvtx;
+  legendEntriesNvtx.push_back("4 Vertices");
+  legendEntriesNvtx.push_back("12 Vertices");
+  legendEntriesNvtx.push_back("20 Vertices");
+  legendEntriesNvtx.push_back("28 Vertices");
+  fitAndCompare(plotUvsQtNumObjsNvtx, legendEntriesNvtx, true, false, true, false, 
+		getOutputFileName_plot(outputFileName, "puDependenceMC"));
+  fitAndCompare(plotUvsQtNumObjsNvtx, legendEntriesNvtx, true, false, false, true, 
+		getOutputFileName_plot(outputFileName, "puDependenceData"));
 
+//--- compare mean(uParl)/qT, rms(uParl)/qT and rms(uPerp)/qT
+//    for events in which the highest Pt jet is in the Barrel, the Endcap or the HF
+  plotUvsQtNumObjType* plotUvsQtLeadJetBarrel =
+    new plotUvsQtNumObjType(inputFile, "LeadJetBarrel",
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  plotUvsQtNumObjType* plotUvsQtLeadJetEndcap =
+    new plotUvsQtNumObjType(inputFile, "LeadJetEndcap", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  plotUvsQtNumObjType* plotUvsQtLeadJetForward =
+    new plotUvsQtNumObjType(inputFile, "LeadJetForward", 
+			    directoryData, directoryMC_signal, directoryMCs_background, 
+			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
+			    isCaloMEt);
+  std::vector<plotUvsQtNumObjType*> plotUvsQtNumObjsLeadJetEta;
+  plotUvsQtNumObjsLeadJetEta.push_back(plotUvsQtLeadJetBarrel);
+  plotUvsQtNumObjsLeadJetEta.push_back(plotUvsQtLeadJetEndcap);
+  plotUvsQtNumObjsLeadJetEta.push_back(plotUvsQtLeadJetForward);
+  std::vector<std::string> legendEntriesLeadJetEta;
+  legendEntriesLeadJetEta.push_back("Lead. Jet Barrel");
+  legendEntriesLeadJetEta.push_back("Lead. Jet Endcap");
+  legendEntriesLeadJetEta.push_back("Lead. Jet Forward");
+  fitAndCompare(plotUvsQtNumObjsLeadJetEta, legendEntriesLeadJetEta, true, false, true, false, 
+		getOutputFileName_plot(outputFileName, "leadJetEtaDependenceMC"));
+  fitAndCompare(plotUvsQtNumObjsLeadJetEta, legendEntriesLeadJetEta, true, false, false, true, 
+		getOutputFileName_plot(outputFileName, "leadJetEtaDependenceData"));
+ 
   delete inputFile;
 
 //--print time that it took macro to run
