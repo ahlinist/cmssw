@@ -13,6 +13,7 @@ NSVfitTrackService::NSVfitTrackService(const edm::ParameterSet& pset, edm::Activ
   reg.watchPostProcessEvent(this, &NSVfitTrackService::reset);
 }
 
+/*
 const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(const reco::Track* track) const 
 {
   // Check if we've already computed this linearization.
@@ -29,6 +30,7 @@ const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(cons
   assert(insertResult.second);
   return insertResult.first->second;
 }
+*/
 
 void NSVfitTrackService::setup(const edm::EventSetup& es, const reco::Candidate::Point& refPoint) 
 {

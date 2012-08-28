@@ -7,9 +7,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.18 $
+ * \version $Revision: 1.19 $
  *
- * $Id: NSVfitTauToLepBuilder.cc,v 1.18 2011/07/22 15:01:55 veelken Exp $
+ * $Id: NSVfitTauToLepBuilder.cc,v 1.19 2012/03/26 15:47:49 veelken Exp $
  *
  */
 
@@ -42,13 +42,15 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilder
 
   NSVfitSingleParticleHypothesis* build(const NSVfitTauDecayBuilder::inputParticleMap& inputParticles) const 
   {
-    if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepBuilder::build>:" << std::endl;
-
     inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
     assert(particlePtr != inputParticles.end());
 
     NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>* hypothesis = 
       new NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
+    if ( verbosity_ ) {
+      std::cout << "<NSVfitTauToLepBuilder::build>:" << std::endl;
+      std::cout << " hypothesis #" << barcodeCounter_ << ": " << hypothesis << std::endl;
+    }
     ++barcodeCounter_;
 
     NSVfitTauDecayBuilder::initialize(hypothesis, particlePtr->second.get());

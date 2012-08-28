@@ -1,10 +1,10 @@
-#ifndef TauAnalysis_CandidateTools_NSVfitEventVertexRefitter_h
-#define TauAnalysis_CandidateTools_NSVfitEventVertexRefitter_h
+#ifndef TauAnalysis_CandidateTools_NSVfitDecayVertexFitter_h
+#define TauAnalysis_CandidateTools_NSVfitDecayVertexFitter_h
 
-/** \class NSVfitEventVertexRefitter
+/** \class NSVfitDecayVertexFitter
  *
- * Class to refit position of primary event vertex,
- * excluding the tracks associated to tau decay products
+ * Class to fit position of tau decay vertex
+ * (speficic to hadronic 3-prong tau decays)
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
@@ -20,33 +20,27 @@
 
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-#include "DataFormats/BeamSpot/interface/BeamSpot.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 
-class NSVfitEventVertexRefitter
+class NSVfitDecayVertexFitter
 {
  public:
-  NSVfitEventVertexRefitter(const edm::ParameterSet&);
-  ~NSVfitEventVertexRefitter();
+  NSVfitDecayVertexFitter(const edm::ParameterSet&);
+  ~NSVfitDecayVertexFitter();
 
   void beginEvent(const edm::Event&, const edm::EventSetup&);
 
-  /// Refit the primary vertex after subtracting the tau associated tracks.
-  TransientVertex refit(const reco::Vertex*, const std::vector<const reco::Track*>* = 0);
+  /// Fit decay vertex of three-prong tau
+  TransientVertex fitSecondaryVertex(const std::vector<const reco::Track*>&) const;
 
  private:
-  edm::InputTag srcBeamSpot_;
-
-  const reco::BeamSpot* beamSpot_;
-
   const TransientTrackBuilder* trackBuilder_;
 
   const KalmanVertexFitter* vertexFitAlgorithm_;
 
-  unsigned minNumTracksRefit_;
+  unsigned minNumTracksFit_;
 };
 
 #endif

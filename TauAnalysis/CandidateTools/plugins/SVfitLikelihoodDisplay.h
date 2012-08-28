@@ -10,6 +10,7 @@
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventVertexRefitter.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitDecayVertexFitter.h"
 
 #include <vector>
 #include <string>
@@ -42,7 +43,8 @@ class SVfitLikelihoodDisplay : public edm::EDAnalyzer
   typedef std::vector<edm::InputTag> vInputTag;
   vInputTag srcWeights_;
 
-  NSVfitEventVertexRefitter* vertexFitAlgo_;
+  NSVfitEventVertexRefitter* eventVertexFitAlgorithm_;
+  NSVfitDecayVertexFitter* decayVertexFitAlgorithm_;
 };
 
 #endif   

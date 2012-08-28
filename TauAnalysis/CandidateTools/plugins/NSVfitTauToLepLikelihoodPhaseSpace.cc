@@ -49,7 +49,7 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     dynamic_cast<const NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>*>(hypothesis);
   assert(hypothesis_T != 0);
 
-  double decayAngle = hypothesis_T->decay_angle_rf();
+  double decayAngle = hypothesis_T->gjAngle();
   double nuMass = hypothesis_T->p4invis_rf().mass();
   if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
   double visEnFracX = hypothesis_T->visEnFracX();

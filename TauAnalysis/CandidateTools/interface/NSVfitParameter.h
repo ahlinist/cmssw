@@ -13,7 +13,7 @@ namespace nSVfit_namespace
     // fit parameters related to shifts of primary event vertex
     kPV_shiftX, kPV_shiftY, kPV_shiftZ,
     // fit parameters specific to tau decays
-    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass,
+    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab_shift, kTau_nuInvMass,
     // fit parameters specific to electrons, muons not originating from tau decays
     kLep_shiftEn,
     // fit parameters specific to neutrinos (not originating from tau decays)
@@ -39,13 +39,14 @@ class NSVfitParameter
 
   void regUsedBy(const std::string& requester) { usedBy_.push_back(requester); }
 
-  void setInitialValue(double initialValue) { initialValue_ = initialValue; }
+  void setInitialValue(double initialValue) { initialValue_ = initialValue; value_ = initialValue_; }
   void setValue(double value) { value_ = value; }
   void setErrUp(double errUp) { errUp_ = errUp; }
   void setErrDown(double errDown) { errDown_ = errDown; }
   void setStepSize(double stepSize) { stepSize_ = stepSize; }
   void setLowerLimit(double lowerLimit) { lowerLimit_ = lowerLimit; }
   void setUpperLimit(double upperLimit) { upperLimit_ = upperLimit; }
+  void setIsFixed(bool isFixed) { isFixed_ = isFixed; }
 
   void reset() 
   { 
@@ -59,6 +60,7 @@ class NSVfitParameter
 
   int Type() const { return type_; }
 
+  double InitialValue() const { return initialValue_; }
   double Value() const { return value_; }
   double ErrUp() const { return errUp_; }
   double ErrDown() const { return errDown_; }

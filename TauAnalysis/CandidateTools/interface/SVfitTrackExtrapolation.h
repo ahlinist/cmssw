@@ -17,63 +17,30 @@
 
 #include <iostream>
 
-namespace SVfit { namespace track {
-class TrackExtrapolation {
-  public:
-    // Default construct
-    TrackExtrapolation() {}
-    // Constructor from a transient track and reference spatial point
-    TrackExtrapolation(const reco::TransientTrack&, const AlgebraicVector3&);
-    // Constructor from values for testing
-    TrackExtrapolation(
-        const GlobalPoint& refPoint,
-        const GlobalPoint& dcaPosition,
-        const GlobalVector& tangent,
-        const AlgebraicMatrix33& covMatrix);
+class SVfitTrackExtrapolation 
+{
+ public:
+  // Default construct
+  SVfitTrackExtrapolation() {}
+  // Constructor from transient track plus reference point
+  SVfitTrackExtrapolation(const reco::TransientTrack&, const AlgebraicVector3&);
 
-    const AlgebraicVector3& tangent() const { return tangent_; }
-    const AlgebraicVector3& dcaPosition() const { return dcaPosition_; }
-    const AlgebraicVector3& refPoint() const { return refPoint_; }
-    const AlgebraicMatrix33& covariance() const { return covMatrix_; }
-    // The appoximate spatial error on the track
-    double approximateTrackError() const { return approximateTrackError_; }
+  const AlgebraicVector3& tangent() const { return tangent_; }
+  const AlgebraicVector3& point_of_closest_approach() const { return dcaPosition_; }
+  const AlgebraicVector3& refPoint() const { return refPoint_; }
+  const AlgebraicMatrix33& covariance() const { return covMatrix_; }
 
-    // Compute the displacent of a test point from the extrapolated track.
-    AlgebraicVector3 displacementFromTrack(const AlgebraicVector3&) const;
+  int errorFlag() const { return errorFlag_; }
 
-    // Log-likelihood given a secondary vertex
-    double logLikelihood(const AlgebraicVector3&) const;
+ private:
+  void initialize(const GlobalPoint&, const GlobalPoint&, const GlobalVector&, const AlgebraicMatrix33&);
 
-    // Log-likelihood given the displacement
-    double logLikelihoodFromDisplacement(const AlgebraicVector3&) const;
-
-  private:
-    // Implementation of the constructors
-    void construct(
-        const GlobalPoint& refPoint,
-        const GlobalPoint& dcaPosition,
-        const GlobalVector& tangent,
-        const AlgebraicMatrix33& covMatrix);
-
-    AlgebraicVector3 tangent_;
-    AlgebraicVector3 dcaPosition_;
-    AlgebraicVector3 refPoint_;
-    AlgebraicMatrix33 invRotationMatrix_;
-    AlgebraicMatrix33 covMatrix_;
-    AlgebraicMatrix33 rotCovMatrix_;
-    AlgebraicMatrix22 rotCovMatrix2_;
-    // Inverted rotated covariance matrix
-    AlgebraicMatrix22 invRotCovMatrx2_;
-    // Determinant of rotated covariance matrix
-    double detRotCovMatrix2_;
-    // Get the error in the direction of the ref. point
-    double approximateTrackError_;
-
-    int errorFlag_;
+  AlgebraicVector3 tangent_;
+  AlgebraicVector3 dcaPosition_;
+  AlgebraicVector3 refPoint_;
+  AlgebraicMatrix33 covMatrix_;
+  
+  int errorFlag_;
 };
-}} // end namespace SVfit::track
 
-// Print to stream
-std::ostream& operator<<(std::ostream& stream,
-    const SVfit::track::TrackExtrapolation& trk);
 #endif

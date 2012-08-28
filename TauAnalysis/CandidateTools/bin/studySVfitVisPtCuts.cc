@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: studySVfitVisPtCuts.cc,v 1.2 2012/03/13 11:17:12 veelken Exp $
+ * $Id: studySVfitVisPtCuts.cc,v 1.3 2012/03/14 09:52:49 veelken Exp $
  *
  */
 
@@ -359,7 +359,7 @@ struct plotEntryType
       histogramLeg2NuMassVsX_->Fill(genX2, inputVariables.genNu2Mass_, evtWeight);
 
       reco::Candidate::LorentzVector genTauPair = inputVariables.genTau1P4_ + inputVariables.genTau2P4_;
-      Float_t prodAngle_rf = SVfit_namespace::decayAngleFromLabMomenta(genTauPair, inputVariables.genTau1P4_);
+      Float_t prodAngle_rf = SVfit_namespace::gjAngleFromLabMomenta(genTauPair, inputVariables.genTau1P4_);
       histogramProdAngle_rf_->Fill(prodAngle_rf);
 
       Float_t dPhi12 = TMath::ACos(TMath::Cos(inputVariables.genVis1P4_.phi() - inputVariables.genVis2P4_.phi()));

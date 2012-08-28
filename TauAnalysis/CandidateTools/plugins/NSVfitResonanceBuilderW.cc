@@ -89,7 +89,7 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderW::build(const inputParticleMap
   return resonance;
 }
 
-void NSVfitResonanceBuilderW::applyFitParameter(NSVfitResonanceHypothesis* resonance, const double* param) const
+bool NSVfitResonanceBuilderW::applyFitParameter(NSVfitResonanceHypothesis* resonance, const double* param) const
 {
   assert(resonance->numDaughters() == 2);
 
@@ -144,6 +144,12 @@ void NSVfitResonanceBuilderW::applyFitParameter(NSVfitResonanceHypothesis* reson
   resonance->mass_ = W_mass;
   resonance->dp4_ = chargedLepton->dp4_fitted() + neutrino->dp4_fitted();
   resonance->prod_angle_rf_ = gjAngle;
+
+  // CV: check for "valid" (physically allowed) solutions not implemented yet <-- FIXME
+  bool isValidSolution = true;
+  resonance->isValidSolution_ = isValidSolution;
+
+  return isValidSolution;
 }
 
 void NSVfitResonanceBuilderW::print(std::ostream& stream) const

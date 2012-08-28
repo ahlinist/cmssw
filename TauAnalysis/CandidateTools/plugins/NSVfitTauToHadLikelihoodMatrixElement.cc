@@ -406,7 +406,7 @@ double NSVfitTauToHadLikelihoodMatrixElement::operator()(const NSVfitSingleParti
   
   //if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodMatrixElement::operator()>:" << std::endl;
 
-  double decayAngle = hypothesis_T->decay_angle_rf();  
+  double decayAngle = hypothesis_T->gjAngle();  
   double visEnFracX = hypothesis_T->visEnFracX();
   double visMass = hypothesis_T->p4vis_rf().mass();
   if ( visMass < chargedPionMass ) visMass = chargedPionMass;

@@ -9,6 +9,9 @@
 #include <TArrayF.h>
 #include <TH1D.h>
 #include <TMath.h>
+#include <TString.h>
+
+#include <algorithm>
 
 using namespace SVfit_namespace;
 
@@ -31,18 +34,38 @@ namespace
 
     virtual double DoEval(const double* x) const
     {
-      //unsigned numDimensions = NDim();
-      //for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
-      //  std::cout << "x[" << iDimension << "] = " << x[iDimension] << std::endl;
-      //}
       double nll = algorithm_->nll(x, 0);
       double retVal = TMath::Exp(-nll);
       //static long callCounter = 0;
-      //if ( (callCounter % 10000) == 0 ) 
-      //  std::cout << "<Integrand> (call = " << callCounter << "):" 
-      //	    << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
+      //if ( (callCounter % 10000) == 0 ) {
+      //  std::cout << "<Integrand> (call = " << callCounter << "):" << std::endl;
+      //  unsigned numDimensions = NDim();
+      //  for ( unsigned iDimension = 0; iDimension < numDimensions; ++iDimension ) {
+      //    std::cout << " x[" << iDimension << "] = " << x[iDimension] << std::endl;
+      //  }
+      //  std::cout << "nll = " << nll << " --> returning retVal = " << retVal << std::endl;
+      //}
       //++callCounter;
       return retVal;
+    } 
+
+    NSVfitAlgorithmByIntegration2* algorithm_;
+  };
+
+  class AuxPhysicalSolutionFinder : public ROOT::Math::Functor
+  {
+   public:
+
+    AuxPhysicalSolutionFinder(NSVfitAlgorithmByIntegration2* algorithm)
+      : algorithm_(algorithm)
+    {}
+
+   private:
+
+    virtual double DoEval(const double* x) const
+    {
+      bool isPhysicalSolution = algorithm_->update(x, 0);
+      return ( isPhysicalSolution ) ? 1. : 0.;
     } 
 
     NSVfitAlgorithmByIntegration2* algorithm_;
@@ -66,25 +89,52 @@ namespace
 
     NSVfitAlgorithmByIntegration2* algorithm_;
   };
+
+  class AuxResonanceMassValue : public ROOT::Math::Functor
+  {
+   public:
+
+    AuxResonanceMassValue(NSVfitAlgorithmByIntegration2* algorithm)
+      : algorithm_(algorithm)
+    {}
+
+   private:
+
+    virtual double DoEval(const double* x) const
+    {
+      const NSVfitResonanceHypothesis* resonance = algorithm_->currentEventHypothesis()->resonance(0);
+      assert(resonance);
+      return resonance->p4_fitted().mass();
+    } 
+
+    NSVfitAlgorithmByIntegration2* algorithm_;
+  };
 }
 
 NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2(const edm::ParameterSet& cfg)
   : NSVfitAlgorithmBase(cfg),
     integrand_(0),
     integrator_(0),
-    probHistEventMass_(0),
+    auxPhysicalSolutionFinder_(0),
+    auxResonanceMassValue_(0),
+    fitParameterValues_(0),
+    probHistEventMass_(0),        
     auxFillProbHistograms_(0)
 {
   edm::ParameterSet cfgMarkovChainOptions = cfg.getParameter<edm::ParameterSet>("markovChainOptions");
   cfgMarkovChainOptions.addParameter<std::string>("name", pluginName_);
   cfgMarkovChainOptions.addParameter<int>("verbosity", verbosity_);
   integrator_ = new MarkovChainIntegrator(cfgMarkovChainOptions);
+
+  monitorMarkovChain_ = ( cfg.exists("monitorMarkovChain") ) ?
+    cfg.getParameter<bool>("monitorMarkovChain") : false;
 }
 
 NSVfitAlgorithmByIntegration2::~NSVfitAlgorithmByIntegration2() 
 {
   delete integrand_;
   delete integrator_;
+  delete auxPhysicalSolutionFinder_;
 
   delete [] fitParameterValues_;
 
@@ -92,40 +142,66 @@ NSVfitAlgorithmByIntegration2::~NSVfitAlgorithmByIntegration2()
 	it != probHistFitParameter_.end(); ++it ) {
     delete (*it);
   }
+
   for ( std::map<std::string, TH1*>::iterator it = probHistResonanceMass_.begin();
 	it != probHistResonanceMass_.end(); ++it ) {
     delete it->second;
   }
   delete probHistEventMass_;
   delete auxFillProbHistograms_;
+
+  delete auxResonanceMassValue_;
 }
 
 void NSVfitAlgorithmByIntegration2::beginJob()
 {
   NSVfitAlgorithmBase::beginJob();
 
-  numDimensions_ = fitParameters_.size();
+  numDimensions_ = 0;
+  numConstParameters_ = 0;
+
+  for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
+	fitParameter != fitParameters_.end(); ++fitParameter ) {
+    bool isFixed = fitParameter->IsFixed();
+    
+    if ( !isFixed ) {
+      NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
+      fitParameterMapping.idxByIntegration_ = numDimensions_;
+      fitParameterMappings_.push_back(fitParameterMapping);
+      ++numDimensions_;
+    }
+
+    if ( isFixed ) {
+      NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
+      fitParameterMapping.idxByIntegration_ = numConstParameters_;
+      constParameterMappings_.push_back(fitParameterMapping);
+      ++numConstParameters_;
+    }
+  }
+
+  fitParameterValues_ = new double[fitParameters_.size()];
 
   integrand_ = new Integrand(this);
   integrator_->setIntegrand(*integrand_);
 
+  auxPhysicalSolutionFinder_ = new AuxPhysicalSolutionFinder(this);
+  integrator_->setStartPosition_and_MomentumFinder(*auxPhysicalSolutionFinder_);
+
   intBoundaryLower_.resize(numDimensions_);
   intBoundaryUpper_.resize(numDimensions_);
-  for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
-	fitParameter != fitParameters_.end(); ++fitParameter ) {
-    intBoundaryLower_[fitParameter->index()] = fitParameter->LowerLimit();
-    intBoundaryUpper_[fitParameter->index()] = fitParameter->UpperLimit();
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    const NSVfitParameter* fitParameter_ref = fitParameterMappings_[iDimension].base_;
+    intBoundaryLower_[iDimension] = fitParameter_ref->LowerLimit();
+    intBoundaryUpper_[iDimension] = fitParameter_ref->UpperLimit();
   }
 
-  fitParameterValues_ = new double[numDimensions_];
-
   probHistFitParameter_.resize(numDimensions_);
-  for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
-	fitParameter != fitParameters_.end(); ++fitParameter ) {
-    const std::string& fitParameterName = fitParameter->UniqueName();
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    const NSVfitParameter* fitParameter_ref = fitParameterMappings_[iDimension].base_;
+    const std::string& fitParameterName = fitParameter_ref->UniqueName();
     std::string histogramName = std::string(pluginName_).append("_").append(fitParameterName);
-    TH1* histogram = new TH1D(histogramName.data(), histogramName.data(), 1000, fitParameter->LowerLimit(), fitParameter->UpperLimit());
-    probHistFitParameter_[fitParameter->index()] = histogram;
+    TH1* histogram = new TH1D(histogramName.data(), histogramName.data(), 1000, fitParameter_ref->LowerLimit(), fitParameter_ref->UpperLimit());
+    probHistFitParameter_[iDimension] = histogram;
   }
   for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
 	resonance != eventModel_->resonances_.end(); ++resonance ) {
@@ -137,6 +213,11 @@ void NSVfitAlgorithmByIntegration2::beginJob()
   probHistEventMass_ = bookMassHistogram("probHistEventMass");
   auxFillProbHistograms_ = new AuxFillProbHistograms(this);
   integrator_->registerCallBackFunction(*auxFillProbHistograms_);
+
+  if ( monitorMarkovChain_ ) {
+    auxResonanceMassValue_ = new AuxResonanceMassValue(this);
+    integrator_->setF(*auxResonanceMassValue_);
+  }
 }
 
 void NSVfitAlgorithmByIntegration2::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
@@ -145,19 +226,16 @@ void NSVfitAlgorithmByIntegration2::beginEvent(const edm::Event& evt, const edm:
 
   for ( std::vector<TH1*>::iterator histogram = probHistFitParameter_.begin();
 	histogram != probHistFitParameter_.end(); ++histogram ) {
-    //std::cout << "clearing histogram = " << (*histogram)->GetName() << ":" 
-    //	        << " entries = " << (*histogram)->GetEntries() << std::endl;
     (*histogram)->Reset();
   }
+
   for ( std::map<std::string, TH1*>::iterator histogram = probHistResonanceMass_.begin();
 	histogram != probHistResonanceMass_.end(); ++histogram ) {
-    //std::cout << "clearing histogram = " << histogram->second->GetName() << ":" 
-    //	        << " entries = " << histogram->second->GetEntries() << std::endl;
     histogram->second->Reset();
   }
-  //std::cout << "clearing histogram = " << probHistEventMass_->GetName() << ":" 
-  //	      << " entries = " << probHistEventMass_->GetEntries() << std::endl;
+
   probHistEventMass_->Reset();
+  probListEventMass_.clear();
 
   currentRunNumber_ = evt.id().run();
   currentLumiSectionNumber_ = evt.luminosityBlock();
@@ -184,11 +262,34 @@ TH1* NSVfitAlgorithmByIntegration2::bookMassHistogram(const std::string& histogr
 
 void NSVfitAlgorithmByIntegration2::fitImp() const
 {
-  //std::cout << "<NSVfitAlgorithmByIntegration2::fitImp>:" << std::endl;
+  std::vector<double> startPosition(numDimensions_);
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    const NSVfitParameter* fitParameter_ref = fitParameterMappings_[iDimension].base_; 
+    startPosition[iDimension] = fitParameter_ref->InitialValue();
+  }
+  if ( verbosity_ >= 2 ) std::cout << "startPosition = " << format_vdouble(startPosition) << std::endl;
+
+  // CV: transform startPosition into interval ]-1..+1[
+  //     expected by MarkovChainIntegrator class
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    double x_i = startPosition[iDimension];
+    double xMax = intBoundaryUpper_[iDimension];
+    double xMin = intBoundaryLower_[iDimension];
+    assert(xMax > xMin);
+    startPosition[iDimension] = (x_i - xMin)/(xMax - xMin);
+  }
+  if ( verbosity_ >= 2 ) std::cout << "startPosition (mapped into interval ]-1..+1[) = " << format_vdouble(startPosition) << std::endl;
+  integrator_->initializeStartPosition_and_Momentum(startPosition);
 
   double integral, integralErr;
   int errorFlag = 0;
-  integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr, errorFlag);
+  std::string monitorFileName;
+  if ( monitorMarkovChain_ ) {
+    monitorFileName = Form("%s_run%i_ls%i_ev%i_mc.root", pluginName_.data(), currentRunNumber_, currentLumiSectionNumber_, currentEventNumber_);
+  } else {
+    monitorFileName = "";
+  }
+  integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr, errorFlag, monitorFileName);
 
 //--- set central values and uncertainties on reconstructed masses
   for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
@@ -202,14 +303,27 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     else resonance->isValidSolution_ = false;
   }
 
-  //currentEventHypothesis_->print(std::cout);
+  if ( verbosity_ >= 2 ) {
+    currentEventHypothesis_->print(std::cout);
+    std::vector<double> quantiles;
+    quantiles.push_back(0.16);
+    quantiles.push_back(0.50);
+    quantiles.push_back(0.84);
+    std::sort(probListEventMass_.begin(), probListEventMass_.end());
+    for ( std::vector<double>::const_iterator quantile = quantiles.begin();
+	  quantile != quantiles.end(); ++quantile ) {
+      int idx = TMath::Nint((*quantile)*probListEventMass_.size());
+      std::cout << "probListEventMass[" << idx << "] (" << (*quantile)*100. << "% quantile) = " << probListEventMass_[idx] << std::endl;
+    }
+  }
 
   fittedEventHypothesis_ = currentEventHypothesis_;  
   if ( errorFlag == 0 ) {
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
       double valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084;
-      extractHistogramProperties(probHistFitParameter_[iDimension], probHistFitParameter_[iDimension],
-				 valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084);
+      extractHistogramProperties(
+        probHistFitParameter_[iDimension], probHistFitParameter_[iDimension],
+	valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084);
       fitParameterValues_[iDimension] = valueMaximum_interpol;
     }
     fittedEventHypothesis_nll_ = this->nll(fitParameterValues_, 0);
@@ -236,8 +350,9 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
 
   if ( histMassResult_density->Integral() > 0. ) {
     double massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084;
-    extractHistogramProperties(histMassResult, histMassResult_density,
-			       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
+    extractHistogramProperties(
+      histMassResult, histMassResult_density,
+      massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
     double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
     double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
@@ -245,10 +360,11 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
   
     resonance->isValidSolution_ = true;
     
-    //std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
-    //std::cout << "--> mass = " << resonance->mass_ << std::endl;
-    //std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
-    //resonance->print(std::cout);
+    if ( verbosity_ >= 1 ) {
+      std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
+      std::cout << "--> mass = " << resonance->mass_ << std::endl;
+      std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
+    }
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration2::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";
@@ -258,13 +374,39 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
   delete histMassResult_density;
 }
 
+bool NSVfitAlgorithmByIntegration2::update(const double* x, const double* param) const
+{
+//--- copy fitParameter
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    const NSVfitParameter* fitParameter_ref = fitParameterMappings_[iDimension].base_;
+    fitParameterValues_[fitParameter_ref->index()] = x[iDimension];
+  }
+
+//--- copy constant parameters
+  for ( unsigned iConstParameter = 0; iConstParameter < numConstParameters_; ++iConstParameter ) {
+    const NSVfitParameter* fitParameter_ref = constParameterMappings_[iConstParameter].base_;
+    fitParameterValues_[fitParameter_ref->index()] = fitParameter_ref->Value();    
+  }
+
+//--- build event, resonance and particle hypotheses
+//    and check if hypothesis corresponds to a "valid" (physically allowed) solution
+  currentEventHypothesis_isValidSolution_ = eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
+  if ( verbosity_ >= 2 ) {
+    currentEventHypothesis_->print(std::cout);
+    std::cout << "isValidSolution = " << currentEventHypothesis_isValidSolution_ << std::endl;
+  }
+  return currentEventHypothesis_isValidSolution_;
+}
+
 double NSVfitAlgorithmByIntegration2::nll(const double* x, const double* param) const
 {
-//--- build event, resonance and particle hypotheses
-  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, x);
+  bool isPhysicalSolution = update(x, param);
 
-//--- compute likelihood;
-  double nll = eventModel_->nll(currentEventHypothesis_);
+  double nll = std::numeric_limits<float>::max();
+  if ( isPhysicalSolution ) {
+    nll = eventModel_->nll(currentEventHypothesis_);
+  }
+  if ( TMath::IsNaN(nll) ) nll = std::numeric_limits<float>::max();
 
   return nll;
 }
@@ -287,6 +429,7 @@ void NSVfitAlgorithmByIntegration2::fillProbHistograms(const double* x)
     histogram->Fill(resonance->p4_fitted().mass());
   }
   probHistEventMass_->Fill(currentEventHypothesis_->p4_fitted().mass());  
+  probListEventMass_.push_back(currentEventHypothesis_->p4_fitted().mass());  
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

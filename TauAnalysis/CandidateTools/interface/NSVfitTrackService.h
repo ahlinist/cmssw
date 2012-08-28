@@ -36,13 +36,14 @@ namespace edm {
   class ModuleDescription;
 }
 
-class NSVfitTrackService {
-public:
+class NSVfitTrackService 
+{
+ public:
   NSVfitTrackService (const edm::ParameterSet&, edm::ActivityRegistry&);
   virtual ~NSVfitTrackService() {};
-
+  
   /// Linearize a track about a reference point
-  const SVfit::track::TrackExtrapolation& linearizedTrack(const reco::Track*) const;
+    //const SVfitTrackExtrapolation& linearizedTrack(const reco::Track*) const;
 
   /// *Must* be called before any other functions are called.  The [point]
   /// argument is the spatial point about which to linearize the tracks
@@ -71,7 +72,7 @@ private:
   edm::ESHandle<TransientTrackBuilder> builder_;
   typedef std::map<const reco::Track*, reco::TransientTrack> TransTrackCache;
   mutable TransTrackCache cacheTransientTrack_;
-  typedef std::map<const reco::Track*, SVfit::track::TrackExtrapolation> TrackExtrapolationCache;
+  typedef std::map<const reco::Track*, SVfitTrackExtrapolation> TrackExtrapolationCache;
   mutable TrackExtrapolationCache cacheTrackExtrapolations_;
   bool isValid_;
   AlgebraicVector3 refPoint_;

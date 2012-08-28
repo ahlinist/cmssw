@@ -7,9 +7,9 @@
  *
  * \author Evan K. Friis, Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitTauDecayBuilder.h,v 1.1 2011/05/29 17:58:22 veelken Exp $
+ * $Id: NSVfitTauDecayBuilder.h,v 1.2 2012/03/16 17:35:40 veelken Exp $
  *
  */
 
@@ -17,9 +17,16 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/Common/interface/View.h"
+
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitTrackService.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitDecayVertexFitter.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesis.h"
 
@@ -29,18 +36,25 @@ class NSVfitAlgorithmBase;
 class NSVfitTauDecayBuilder : public NSVfitSingleParticleBuilderBase
 {
   public:
-    NSVfitTauDecayBuilder(const edm::ParameterSet& cfg)
-      : NSVfitSingleParticleBuilderBase(cfg),
-        algorithm_(0),
-        idxFitParameter_nuInvMass_(-1)
-    {}
-    virtual ~NSVfitTauDecayBuilder() {}
+    NSVfitTauDecayBuilder(const edm::ParameterSet&);
+    virtual ~NSVfitTauDecayBuilder();
 
     // Setup the parameters of the fit.
     virtual void beginJob(NSVfitAlgorithmBase*);
 
+    // Access TrackBuilder
+    virtual void beginEvent(const edm::Event&, const edm::EventSetup&);
+
+    // Add Tracking information
+    // 
+    // NOTE: this function needs to be called after the event has been build,
+    //       as the tracking information depends on the primary event vertex
+    //      (which in turn depends on the tracks of daughter particles)
+    //
+    virtual void finalize(NSVfitSingleParticleHypothesis*) const;
+
     // Build the tau decay hypothesis from the fit parameters
-    virtual void applyFitParameter(NSVfitSingleParticleHypothesis*, const double*) const;
+    virtual bool applyFitParameter(NSVfitSingleParticleHypothesis*, const double*) const;
 
     /* Abstract functions overridden by the different decay type builders */
     // Overridden to allocate the specific decay type.
@@ -59,15 +73,42 @@ class NSVfitTauDecayBuilder : public NSVfitSingleParticleBuilderBase
     NSVfitAlgorithmBase* algorithm_;
 
     edm::Service<NSVfitTrackService> trackService_;
+    const TransientTrackBuilder* trackBuilder_;
+
+    mutable std::vector<reco::TransientTrack> selectedTracks_;
+
+    NSVfitDecayVertexFitter* decayVertexFitAlgorithm_;
+
+    unsigned trackMinNumHits_;
+    unsigned trackMinNumPixelHits_;
+    double   trackMaxChi2DoF_;
+    double   trackMaxDeltaPoverP_;
+    double   trackMinPt_;
 
     int idxFitParameter_visEnFracX_;
     int idxFitParameter_phi_lab_;
     int idxFitParameter_nuInvMass_; // used for leptonic decays only.
     int idxFitParameter_deltaR_;
 
-    int idxFitParameter_pvShiftX_;
-    int idxFitParameter_pvShiftY_;
-    int idxFitParameter_pvShiftZ_;
+    /// optional parameters for setting reconstructed to Monte Carlo truth values
+    edm::InputTag srcGenTaus_;
+    typedef edm::View<reco::GenParticle> GenParticleView;
+    edm::Handle<GenParticleView> genParticles_;
+    double dRmatch_;
+    bool fixToGenVisEnFracX_;
+    bool initializeToGenVisEnFracX_;
+    mutable double genVisEnFracX_;
+    bool fixToGenPhiLab_;
+    bool initializeToGenPhiLab_;
+    mutable double genPhiLab_;
+    bool fixToGenNuInvMass_;
+    bool initializeToGenNuInvMass_;
+    mutable double genNuInvMass_;
+    bool fixToGenDeltaR_;
+    bool initializeToGenDeltaR_;
+    mutable double genDeltaR_;
+    bool fixToGenVisP4_;
+    mutable reco::Candidate::LorentzVector genVisP4_;
 };
 
 void applyOptionalFitParameter(const double*, int, double&);

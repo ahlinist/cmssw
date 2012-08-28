@@ -1,10 +1,10 @@
 #ifndef TauAnalysis_CandidateTools_interface_NSVfitStandaloneTestAnalyzer_h
 #define TauAnalysis_CandidateTools_interface_NSVfitStandaloneTestAnalyzer_h
 
-#include "FWCore/ServiceRegistry/interface/Service.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+
+#include "DQMServices/Core/interface/MonitorElement.h"
 
 #include <TStopwatch.h>
 
@@ -40,7 +40,7 @@ class NSVfitStandaloneTestAnalyzer : public edm::EDAnalyzer {
   /// default destructor
   virtual ~NSVfitStandaloneTestAnalyzer();
   /// everything that needs to be done before the event loop
-  void beginJob() {}
+  void beginJob();
   /// everything that needs to be done after the event loop
   void endJob();
   /// everything that needs to be done during the event loop
@@ -63,6 +63,14 @@ class NSVfitStandaloneTestAnalyzer : public edm::EDAnalyzer {
 
   /// MET significance interface
   PFMEtSignInterface* metSign_;
+
+  std::string dqmDirectory_;
+  bool fillHistograms_;
+  MonitorElement* leg1Pt_;
+  MonitorElement* leg2Pt_;
+  MonitorElement* metPt_;
+  MonitorElement* svFitMass_;
+  MonitorElement* visMass_;
 
   TStopwatch* timer_;
   long numSVfitCalls_;

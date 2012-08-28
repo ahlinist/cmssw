@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.7 2012/03/16 17:35:40 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.8 2012/03/22 11:27:22 veelken Exp $
  *
  */
 
@@ -21,7 +21,6 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "RecoMET/METAlgorithms/interface/SignAlgoResolutions.h"
-#include "RecoMET/METAlgorithms/interface/SigInputObj.h"
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
