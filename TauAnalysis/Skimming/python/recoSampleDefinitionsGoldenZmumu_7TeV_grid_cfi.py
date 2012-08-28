@@ -10,17 +10,18 @@ from TauAnalysis.Configuration.recoSampleDefaults_cfi import SAMPLE_DEFAULTS
 SAMPLES_TO_ANALYZE = [
     #'Data_runs190456to191859'
     #'Data_runs190456to193336',
-    'Data_runs190456to193557',
-    'Data_runs190456to193621',
-    'Data_runs193752to194076',
+    #'Data_runs190456to193557',
+    #'Data_runs190456to193621',
+    #'Data_runs193752to194076',
+    'Data_runs193752to195947',
     #'ZplusJets_madgraph',
-    'ZplusJets_madgraph2',
-    'TTplusJets_madgraph2',
-    'PPmuXptGt20Mu15',
-    'PPmuXptGt20Mu15v2',
-    'WW',
-    'WZ',
-    'ZZ'
+    #'ZplusJets_madgraph2',
+    #'TTplusJets_madgraph2',
+    #'PPmuXptGt20Mu15',
+    #'PPmuXptGt20Mu15v2',
+    #'WW',
+    #'WZ',
+    #'ZZ'
 ]
 
 _millibarns = 1.0e+9
@@ -48,7 +49,7 @@ RECO_SAMPLES = {
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
-    'Data_runs193752to194076' : {
+    'Data_runs193752to194076v2' : {
         'datasetpath'      : '/DoubleMu/Run2012B-PromptReco-v1/AOD',
         'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",        
         'events_processed' : 3061986, # 2012/05/21
@@ -56,7 +57,16 @@ RECO_SAMPLES = {
         'runselection'     : "193752-194076",
         'lumis_per_job'    : "25",
         'type'             : 'Data'
-    },    
+    },
+    'Data_runs193752to195947' : {
+        'datasetpath'      : '/DoubleMu/Run2012B-PromptReco-v1/AOD',
+        'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",        
+        'events_processed' : 18795393, # 2012/06/17
+        'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195947_8TeV_PromptReco_Collisions12_JSON.txt",
+        'runselection'     : "193752-195947",
+        'lumis_per_job'    : "25",
+        'type'             : 'Data'
+    },
     'ZplusJets_madgraph2' : {
         'datasetpath'      : "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM",
         'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
@@ -68,7 +78,7 @@ RECO_SAMPLES = {
         'datasetpath'      : "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM",
         'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 6736135,
-        'x_sec'            : 225.197*_picobarns,
+        'x_sec'            : 234.*_picobarns, # CV: taken from arXiv:1205.3453
         'type'             : 'smMC'
     },
     'PPmuXptGt20Mu15' : {

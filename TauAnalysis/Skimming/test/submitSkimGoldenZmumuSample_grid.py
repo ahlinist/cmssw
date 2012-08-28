@@ -16,10 +16,11 @@ samplesToAnalyze = [
     ##'Data_runs190456to193557',
     ##'Data_runs190456to193621',
     ##'Data_runs193752to194076',
+    'Data_runs193752to195947',
     ##'ZplusJets_madgraph2',
     ##'TTplusJets_madgraph2',
     ##'PPmuXptGt20Mu15',
-    'PPmuXptGt20Mu15v2'
+    ##'PPmuXptGt20Mu15v2'
     ##'WW',
     ##'WZ',
     ##'ZZ'
