@@ -13,7 +13,12 @@ class NSVfitResonanceHypothesisBase
 {
  public:
 
-  NSVfitResonanceHypothesisBase() {}
+  NSVfitResonanceHypothesisBase() 
+    : mass_(-1.),
+      massErrUp_(0.),
+      massErrDown_(0.),
+      isValidSolution_(false) 
+  {}
   NSVfitResonanceHypothesisBase(const NSVfitResonanceHypothesisBase&);
   virtual ~NSVfitResonanceHypothesisBase() {}
 

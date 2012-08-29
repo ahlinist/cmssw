@@ -49,6 +49,8 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
 namespace {
   struct AnalysisDataFormats_TauAnalysis_dictionary {
     /// create dictionaries for DiCandidatePair objects
@@ -332,10 +334,14 @@ namespace {
     MEtTopologyCollection dummyMEtTopologyCollection;
     edm::Wrapper<MEtTopologyCollection> dummyMEtTopologyCollectionWrapper;
 
-	/// create dictionaries for HtRatio objects
-	HtRatio dummyHtRatio;
-	edm::Wrapper<HtRatio> dymmyHtRatioWrapper;
-	HtRatioCollection dummyHtRatioCollection;
-	edm::Wrapper<HtRatioCollection> dummyHtRatioCollectionWrapper;
+    /// create dictionaries for HtRatio objects
+    HtRatio dummyHtRatio;
+    edm::Wrapper<HtRatio> dymmyHtRatioWrapper;
+    HtRatioCollection dummyHtRatioCollection;
+    edm::Wrapper<HtRatioCollection> dummyHtRatioCollectionWrapper;
+
+    // create dictionaries for edm::Wrapper<reco::Vertex> 
+    // (needed by TauAnalysis/GenSimTools/GenVertexProducer) 
+    edm::Wrapper<reco::Vertex> dummyVertexWrapper;
   };
 }

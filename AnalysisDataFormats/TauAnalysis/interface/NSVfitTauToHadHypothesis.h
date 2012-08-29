@@ -37,8 +37,7 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
       decay_angle_VMa1_(bluePrint.decay_angle_VMa1_),
       decay_angle_VMa1r_theta_(bluePrint.decay_angle_VMa1r_theta_),
       decay_angle_VMa1r_phi_(bluePrint.decay_angle_VMa1r_phi_),
-      mass2_VMa1_(bluePrint.mass2_VMa1_),
-      fittedVertex_(bluePrint.fittedVertex_) 
+      mass2_VMa1_(bluePrint.mass2_VMa1_)
   {}
   ~NSVfitTauToHadHypothesis() {}
 
@@ -56,7 +55,6 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
     decay_angle_VMa1r_theta_ = bluePrint.decay_angle_VMa1r_theta_;
     decay_angle_VMa1r_phi_ = bluePrint.decay_angle_VMa1r_phi_;
     mass2_VMa1_ = bluePrint.mass2_VMa1_;
-    fittedVertex_ = bluePrint.fittedVertex_;
     return (*this);
   }
 
@@ -67,12 +65,6 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   double decay_angle_VMa1r_theta() const { return decay_angle_VMa1r_theta_; }
   double decay_angle_VMa1r_phi() const { return decay_angle_VMa1r_phi_; }
   double mass2_VMa1() const { return mass2_VMa1_; }
-
-  bool hasFittedVertex() const { return fittedVertex_.isValid(); }
-  virtual const reco::Vertex& fittedVertex() const 
-  {
-    return fittedVertex_;
-  }
 
   friend class NSVfitTauToHadBuilder;
 
@@ -85,8 +77,6 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   double decay_angle_VMa1r_theta_;
   double decay_angle_VMa1r_phi_;
   double mass2_VMa1_;
-
-  reco::Vertex fittedVertex_;
 };
 
 #endif

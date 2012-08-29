@@ -78,6 +78,7 @@ class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
 	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() 
 	   << " (Px = " << p4_fitted().px() << ", Py = " << p4_fitted().py() << ")" << std::endl;
     stream << "(x = " << (p4_.energy()/p4_fitted().energy()) << ")" << std::endl;
+    stream << " isValidSolution = " << isValidSolution_ << std::endl;
   }
 
   unsigned numPolStates() const { return numPolStates_; }

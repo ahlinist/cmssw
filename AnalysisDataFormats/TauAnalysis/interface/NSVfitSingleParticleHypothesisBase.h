@@ -14,35 +14,25 @@ class NSVfitSingleParticleHypothesisBase
  public:
 
   NSVfitSingleParticleHypothesisBase()
-  {
-    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
-    //std::cout << " default constructor" << std::endl;
-  }
+    : isValidSolution_(false) 
+  {}
   NSVfitSingleParticleHypothesisBase(const std::string& name, int barcode)
     : name_(name),
-      barcode_(barcode)
-  {
-    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
-    //std::cout << " constructor(std::string, int)" << std::endl;
-  }  
+      barcode_(barcode),
+      isValidSolution_(false) 
+  {}  
   NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
     : name_(name),
       barcode_(barcode),
-      particle_(particle)
-  {
-    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
-    //std::cout << " constructor(const edm::Ptr<reco::Candidate>&, std::string, int)" << std::endl;
-    //assert(particle_.get() != 0);
-  }
+      particle_(particle),
+      isValidSolution_(false) 
+  {}
   NSVfitSingleParticleHypothesisBase(const NSVfitSingleParticleHypothesisBase& bluePrint)
     : name_(bluePrint.name_),
       barcode_(bluePrint.barcode_),
-      particle_(bluePrint.particle_)
-  {
-    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
-    //std::cout << " copy constructor" << std::endl;
-    //assert(particle_.get() != 0);
-  }
+      particle_(bluePrint.particle_),
+      isValidSolution_(false) 
+  {}
   virtual ~NSVfitSingleParticleHypothesisBase() {}
 
   virtual NSVfitSingleParticleHypothesisBase* clone() const = 0;
@@ -69,6 +59,7 @@ class NSVfitSingleParticleHypothesisBase
     stream << " name = " << name_ << std::endl;
     stream << " barcode = " << barcode_ << std::endl;
     stream << " particle(id:key) = " << particle_.id() << ":" << particle_.key() << std::endl;
+    stream << " isValidSolution = " << isValidSolution_ << std::endl;
   }
 
  protected:
@@ -81,6 +72,9 @@ class NSVfitSingleParticleHypothesisBase
 
   /// pointer to reco::Candidate from which this hypothesis was made
   edm::Ptr<reco::Candidate> particle_;
+
+  /// flag indicating that computed mass hypotheses are physically "valid" solutions
+  bool isValidSolution_;
 };
 
 // CV: implementation of operator< needed to store NSVfitSingleParticleHypothesisBase objects in edm::OwnVector
