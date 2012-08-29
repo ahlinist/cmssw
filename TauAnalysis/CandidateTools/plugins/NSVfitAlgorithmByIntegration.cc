@@ -22,15 +22,11 @@ namespace
   {
     double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (const double*)param);
     double retVal = TMath::Exp(-nll);
-    static long callCounter = 0;
-    //if ( (callCounter % 10000) == 0 ) {
-    //  std::cout << "<g> (call = " << callCounter << "):" << std::endl;
-    //  for ( unsigned iDimension = 0; iDimension < dim; ++iDimension ) {
-    //	  std::cout << " x[" << iDimension << "] = " << x[iDimension] << std::endl;
-    //  }
-    //  std::cout << "nll = " << nll << " --> returning retVal = " << retVal << std::endl;
-    //}
-    ++callCounter;
+    //static long callCounter = 0;
+    //if ( (callCounter % 10000) == 0 ) 
+    //  std::cout << "<g> (call = " << callCounter << "):" 
+    //	  	  << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
+    //++callCounter;
     return retVal;
   }
 }
@@ -108,8 +104,6 @@ NSVfitAlgorithmByIntegration::~NSVfitAlgorithmByIntegration()
 
 void NSVfitAlgorithmByIntegration::beginJob()
 {
-  //std::cout << "<NSVfitAlgorithmByIntegration::beginJob>:" << std::endl;
-
   NSVfitAlgorithmBase::beginJob();
   
   for ( std::vector<fitParameterReplacementType*>::iterator fitParameterReplacement = fitParameterReplacements_.begin();
@@ -126,7 +120,6 @@ void NSVfitAlgorithmByIntegration::beginJob()
   }
 
   numDimensions_ = 0;
-  numConstParameters_ = 0;
 
   for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
 	fitParameter != fitParameters_.end(); ++fitParameter ) {
@@ -136,27 +129,13 @@ void NSVfitAlgorithmByIntegration::beginJob()
       if ( fitParameter->index() == (*fitParameterReplacement)->idxToReplace_ ) isReplaced = true;
     }
     
-    bool isFixed = fitParameter->IsFixed();
-    if ( isReplaced && isFixed )
-      throw cms::Exception("NSVfitAlgorithmByIntegration::beginJob")
-	<< " Fit parameters used in replace statements must not be fixed !!\n";
-    
-    if ( !isReplaced && !isFixed ) {
+    if ( !isReplaced ) {
       NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
       fitParameterMapping.idxByIntegration_ = numDimensions_;
       fitParameterMappings_.push_back(fitParameterMapping);
       ++numDimensions_;
     }
-
-    if ( isFixed ) {
-      NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
-      fitParameterMapping.idxByIntegration_ = numConstParameters_;
-      constParameterMappings_.push_back(fitParameterMapping);
-      ++numConstParameters_;
-    }
   }
-
-  //std::cout << "numDimensions = " << numDimensions_ << std::endl;
 
   fitParameterValues_ = new double[fitParameters_.size()];
 
@@ -200,12 +179,11 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   }
 
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    const NSVfitParameter* fitParameter_ref = fitParameterMappings_[iDimension].base_; 
-    xl_[iDimension] = fitParameter_ref->LowerLimit(); 
-    xu_[iDimension] = fitParameter_ref->UpperLimit();
-    //std::cout << " fitParameter #" << iDimension 
-    //          << " (" << fitParameter_ref->Name() << ":" << fitParameter_ref->Type() << "):"
-    //          << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
+    xl_[iDimension] = fitParameterMappings_[iDimension].base_->LowerLimit(); 
+    xu_[iDimension] = fitParameterMappings_[iDimension].base_->UpperLimit();
+    //std::cout << " fitParameter #" << iDimension << " (" << fitParameterMappings_[iDimension].base_->Name() << ":" 
+    //	        << fitParameterMappings_[iDimension].base_->Type() << "):"
+    //	        << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
   }
 
   //gsl_monte_vegas_init(workspace_);
@@ -360,7 +338,7 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     
     double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
     double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
-    NSVfitAlgorithmBase::setMassResults(resonance, massQuantile050, massErrUp, massErrDown);
+    NSVfitAlgorithmBase::setMassResults(resonance, massMaximum_interpol, massErrUp, massErrDown);
 
     resonance->massMean_ = massMean;
     resonance->massMedian_ = massQuantile050;
@@ -368,11 +346,10 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     resonance->massMaxInterpol_ = massMaximum_interpol;
     resonance->isValidSolution_ = true;
     
-    if ( verbosity_ >= 1 ) {
-      std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
-      std::cout << "--> mass = " << resonance->mass_ << std::endl;
-      std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
-    }
+    //std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
+    //std::cout << "--> mass = " << resonance->mass_ << std::endl;
+    //std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
+    //resonance->print(std::cout);
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";
@@ -507,22 +484,11 @@ NSVfitParameter* NSVfitAlgorithmByIntegration::getFitParameter(const std::string
   return NSVfitAlgorithmBase::getFitParameter(name, type);
 }
 
-bool NSVfitAlgorithmByIntegration::update(const double* x, const double* param) const
+double NSVfitAlgorithmByIntegration::nll(const double* x, const double* param) const
 {
-  if ( verbosity_ >= 2 ) {
-    std::cout << "<NSVfitAlgorithmByIntegration::update>:" << std::endl;
-  }
-
 //--- copy fitParameter
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    const NSVfitParameter* fitParameter_ref = fitParameterMappings_[iDimension].base_;
-    fitParameterValues_[fitParameter_ref->index()] = x[iDimension];
-  }
-
-//--- copy constant parameters
-  for ( unsigned iConstParameter = 0; iConstParameter < numConstParameters_; ++iConstParameter ) {
-    const NSVfitParameter* fitParameter_ref = constParameterMappings_[iConstParameter].base_;
-    fitParameterValues_[fitParameter_ref->index()] = fitParameter_ref->Value();    
+    fitParameterValues_[fitParameterMappings_[iDimension].base_->index()] = x[iDimension];
   }
 
 //--- set additional fitParameters according to mass parameter values
@@ -540,73 +506,38 @@ bool NSVfitAlgorithmByIntegration::update(const double* x, const double* param) 
 //    return probability zero if not
     double fitParameterValue = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
     //std::cout << "value = " << fitParameterValue << std::endl;
-    int idxToReplace = (*fitParameterReplacement)->idxToReplace_;
-    const NSVfitParameter& fitParameterToReplace = fitParameters_[idxToReplace];
-    //std::cout << "limit: = [" << fitParameterToReplace.LowerLimit() << ".." << fitParameterToReplace.UpperLimit() << "]" << std::endl;
-    if ( fitParameterValue >= fitParameterToReplace.LowerLimit() &&
-	 fitParameterValue <= fitParameterToReplace.UpperLimit() ) {
-      fitParameterValues_[idxToReplace] = fitParameterValue;
+    if ( fitParameterValue >= fitParameters_[(*fitParameterReplacement)->idxToReplace_].LowerLimit() &&
+	 fitParameterValue <= fitParameters_[(*fitParameterReplacement)->idxToReplace_].UpperLimit() ) {
+      fitParameterValues_[(*fitParameterReplacement)->idxToReplace_] = fitParameterValue;
     } else {
-      //std::cout << "replacement FAILED." << std::endl;
       return std::numeric_limits<float>::max();
     }
   }
 
-  if ( verbosity_ >= 2 ) {
-    std::cout << "<NSVfitAlgorithmByIntegration::update>:" << std::endl;
-    std::vector<double> fitParameterValues_vector;
-    int idx = 0;
-    for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
-	  fitParameter != fitParameters_.end(); ++fitParameter ) {
-      fitParameter->dump(std::cout);
-      fitParameterValues_vector.push_back(fitParameterValues_[idx]);
-      ++idx;
-    }
-    std::cout << " fitParameterValues = " << format_vdouble(fitParameterValues_vector) << std::endl;
-  }
-
 //--- build event, resonance and particle hypotheses
-//    and check if hypothesis corresponds to a "valid" (physically allowed) solution
-  currentEventHypothesis_isValidSolution_ = eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
-  if ( verbosity_ >= 2 ) {
-    currentEventHypothesis_->print(std::cout);
-    std::cout << "isValidSolution = " << currentEventHypothesis_isValidSolution_ << std::endl;
-  }
-  return currentEventHypothesis_isValidSolution_;
-}
+  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
 
-double NSVfitAlgorithmByIntegration::nll(const double* x, const double* param) const
-{
-  if ( verbosity_ >= 2 ) {
-    std::cout << "<NSVfitAlgorithmByIntegration::nll>:" << std::endl;
-  }
-
-  bool isPhysicalSolution = update(x, param);
-
-  double nll = std::numeric_limits<float>::max();
-  if ( isPhysicalSolution ) {
-    nll = eventModel_->nll(currentEventHypothesis_);
-
-//--- add derrivatives of delta functions for each fit parameter that is replaced in integration
+//--- compute likelihood;
+//    add derrivatives of delta functions for each fit parameter that is replaced in integration
 //   (cf. http://en.wikipedia.org/wiki/Dirac_delta_function )
-    for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
-	  fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
-      TFormula* formula = (*fitParameterReplacement)->deltaFuncDerrivative_;
-      //std::cout << "formula = " << formula->GetTitle() << std::endl;
-      
-      for ( int iPar = 0; iPar < (*fitParameterReplacement)->numParForDeltaFuncDerrivative_; ++iPar ) {
-	formula->SetParameter(iPar, (*(*fitParameterReplacement)->parForDeltaFuncDerrivative_[iPar])(fitParameterValues_));
-	//std::cout << "par #" << iPar << " = " << formula->GetParameter(iPar) << std::endl;
-      }
+  double nll = eventModel_->nll(currentEventHypothesis_);
 
-      double probCorr = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
-      //std::cout << "value = " << probCorr << std::endl;
-      if ( probCorr > 0. ) {
-	nll -= TMath::Log(probCorr);
-      }
+   for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
+	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
+    TFormula* formula = (*fitParameterReplacement)->deltaFuncDerrivative_;
+    //std::cout << "formula = " << formula->GetTitle() << std::endl;
+
+    for ( int iPar = 0; iPar < (*fitParameterReplacement)->numParForDeltaFuncDerrivative_; ++iPar ) {
+      formula->SetParameter(iPar, (*(*fitParameterReplacement)->parForDeltaFuncDerrivative_[iPar])(fitParameterValues_));
+      //std::cout << "par #" << iPar << " = " << formula->GetParameter(iPar) << std::endl;
+    }
+
+    double probCorr = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
+    //std::cout << "value = " << probCorr << std::endl;
+    if ( probCorr > 0. && !TMath::IsNaN(probCorr) ) {
+      nll -= TMath::Log(probCorr);
     }
   }
-  if ( TMath::IsNaN(nll) ) nll = std::numeric_limits<float>::max();
 
   return nll;
 }
