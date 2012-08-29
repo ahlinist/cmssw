@@ -1,3 +1,3 @@
-#this file was automatically created by SCRAM
+#this file was automatically created by SCRA
 #
 #
