@@ -5,9 +5,9 @@ NSVfitEventHypothesisBase::NSVfitEventHypothesisBase(const NSVfitEventHypothesis
     barcode_(bluePrint.barcode_),
     nll_(bluePrint.nll_),
     met_(bluePrint.met_),
-    eventVertexPosition_(bluePrint.eventVertexPosition_),
-    eventVertexPositionErr_(bluePrint.eventVertexPositionErr_),
-    eventVertexPositionShift_(bluePrint.eventVertexPositionShift_),
+    eventVertexPos_(bluePrint.eventVertexPos_),
+    eventVertexCov_(bluePrint.eventVertexCov_),
+    eventVertexShift_(bluePrint.eventVertexShift_),
     eventVertexIsValid_(bluePrint.eventVertexIsValid_),
     resonances_(bluePrint.resonances_),
     mass_(bluePrint.mass_),
@@ -22,9 +22,9 @@ NSVfitEventHypothesisBase& NSVfitEventHypothesisBase::operator=(const NSVfitEven
   barcode_ = bluePrint.barcode_;
   nll_ = bluePrint.nll_;
   met_ = bluePrint.met_;
-  eventVertexPosition_ = bluePrint.eventVertexPosition_;
-  eventVertexPositionErr_ = bluePrint.eventVertexPositionErr_;
-  eventVertexPositionShift_ = bluePrint.eventVertexPositionShift_;
+  eventVertexPos_ = bluePrint.eventVertexPos_;
+  eventVertexCov_ = bluePrint.eventVertexCov_;
+  eventVertexShift_ = bluePrint.eventVertexShift_;
   eventVertexIsValid_ = bluePrint.eventVertexIsValid_;
   resonances_ = bluePrint.resonances_;
   mass_ = bluePrint.mass_;

@@ -47,11 +47,12 @@ class NSVfitEventHypothesisBase
   ///     as uncertainty on "correction" to primary event vertex position
   ///     determined by NSVfit algorithm is not taken into account
   ///
-  bool eventVertexSVrefittedIsValid() const { return eventVertexIsValid_; }
-  AlgebraicVector3 eventVertexPosSVrefitted() const { return (eventVertexPosition_ + eventVertexPositionShift_); }
-  const AlgebraicSymMatrix33& eventVertexErrSVrefitted() const { return eventVertexPositionErr_; }
+  bool eventVertexIsValid() const { return eventVertexIsValid_; }
+  AlgebraicVector3 reconstructedEventVertexPos() const { return eventVertexPos_; }
+  AlgebraicVector3 eventVertexPos() const { return (eventVertexPos_ + eventVertexShift_); }
+  const AlgebraicSymMatrix33& eventVertexCov() const { return eventVertexCov_; }
 
-  const AlgebraicVector3& eventVertexShiftSVrefitted() const { return eventVertexPositionShift_; }
+  const AlgebraicVector3& eventVertexShift() const { return eventVertexShift_; }
 
   /// fit hypotheses of lepton-pair resonances
   size_t numResonances() const { return resonances_.size(); }
@@ -103,9 +104,9 @@ class NSVfitEventHypothesisBase
 
   /// position of primary event vertex (tau lepton production vertex);
   /// refitted by SVfit algorithm after excluding from fit tracks associated to tau lepton decay products
-  AlgebraicVector3 eventVertexPosition_;
-  AlgebraicSymMatrix33 eventVertexPositionErr_;
-  AlgebraicVector3 eventVertexPositionShift_;
+  AlgebraicVector3 eventVertexPos_;
+  AlgebraicSymMatrix33 eventVertexCov_;
+  AlgebraicVector3 eventVertexShift_;
   bool eventVertexIsValid_;
 
   /// fit hypotheses for daughter particles

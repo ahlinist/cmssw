@@ -59,6 +59,15 @@
   <class name="NSVfitTauDecayHypothesisBaseT<NSVfitSingleParticleHypothesisBase>"/>
   <class name="NSVfitTauDecayHypothesis">
     <field name="tracks_" transient="true"/>
+    <field name="selTracks_" transient="true"/>
+    <field name="selTrackTrajectories_" transient="true"/>
+    <field name="leadTrack_" transient="true"/>
+    <field name="leadTrackTrajectory_" transient="true"/>    
+    <field name="leadTrack_direction_" transient="true"/>
+    <field name="leadTrack_refPoint_" transient="true"/>
+    <field name="leadTrackExtrapolationError_" transient="true"/>
+    <field name="leadTrackExtrapolationNLL_" transient="true"/>      
+    <field name="expectedFlightPath_unit_" transient="true"/>
   </class>
   <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesisBase, pat::Electron>"/>
   <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesisBase, pat::Muon>"/>
@@ -268,10 +277,13 @@
   <class name="edm::Wrapper<MEtTopology>"/>
   <class name="edm::Wrapper<std::vector<MEtTopology> >"/>
 
-
   <!-- create dictionaries for HtRatio objects -->
   <class name="HtRatio"/>
   <class name="std::vector<HtRatio>"/>
   <class name="edm::Wrapper<HtRatio>"/>
   <class name="edm::Wrapper<std::vector<HtRatio> >"/> 
+
+  <!-- create dictionaries for edm::Wrapper<reco::Vertex> 
+      (needed by TauAnalysis/GenSimTools/GenVertexProducer) -->
+  <class name="edm::Wrapper<reco::Vertex>"/> 
 </lcgdict>
