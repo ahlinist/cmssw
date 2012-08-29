@@ -54,8 +54,7 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
 
   void print(std::ostream&) const {}
 
-  bool update(const double* x, const double* param) const;
-  double nll(const double* x, const double* param) const;
+  double nll(const double*, const double*) const;
 
  protected:
   void fitImp() const;
@@ -86,9 +85,6 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   };
 
   std::vector<NSVfitParameterMappingType> fitParameterMappings_;
-
-  std::vector<NSVfitParameterMappingType> constParameterMappings_;
-  unsigned numConstParameters_;
 
   edm::RunNumber_t currentRunNumber_;
   edm::LuminosityBlockNumber_t currentLumiSectionNumber_;
