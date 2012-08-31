@@ -152,10 +152,10 @@ void DQMEfficiencyFromFitProducer<FittingAlgo>::fitSlices(const pair<MonitorElem
   const int nBinsX = refRisto->GetNbinsX();
   const int nTargets = plotSet.second.size();
   Measurement1D outputs[nBinsX][nTargets];
-  cout <<moduleLabel_ << "  Computing Efficiencies..." << endl;
-  cout << "reference: " << plotSet.first->getFullname() << endl;
-  for(int mePos = 0; mePos < nTargets; ++mePos)
-    cout << "     test: " << plotSet.second[mePos]->getFullname() << endl;
+  // cout <<moduleLabel_ << "  Computing Efficiencies..." << endl;
+  // cout << "reference: " << plotSet.first->getFullname() << endl;
+  // for(int mePos = 0; mePos < nTargets; ++mePos)
+  //   cout << "     test: " << plotSet.second[mePos]->getFullname() << endl;
 
   for(int i=1; i<=nBinsX; i++){
     bool refFitIsGood = true;
@@ -194,7 +194,7 @@ void DQMEfficiencyFromFitProducer<FittingAlgo>::fitSlices(const pair<MonitorElem
 	double thisErr = (thisFitIsGood) ? fitresult.err : 0;
 	prj->Delete();
 	double ratio = (thisFitIsGood && refVal != 0) ? thisVal/refVal : -1;
-	double err   = (thisFitIsGood && ratio  >  0) ? (1./ratio)*TMath::Sqrt(TMath::Power(refErr/refVal,2) + TMath::Power(thisErr/thisVal,2)) : 0.;
+	double err   = (thisFitIsGood && ratio  >  0) ? TMath::Sqrt( TMath::Abs( ( (1.-2.*ratio)*thisErr*thisErr + ratio*ratio*refErr*refErr )/(refVal*refVal) ) ) : 0.; //Used binomial error formula as in previous version (1./ratio)*TMath::Sqrt(TMath::Power(refErr/refVal,2) + TMath::Power(thisErr/thisVal,2)) : 0.;
 	Measurement1D binVal(ratio,err);
 	outputs[i-1][mePos] = binVal;
       }//if(refFitIsGood){
