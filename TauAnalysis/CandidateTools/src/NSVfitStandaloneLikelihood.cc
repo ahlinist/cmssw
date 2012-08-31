@@ -5,22 +5,34 @@
 using namespace NSVfitStandalone;
 using namespace SVfit_namespace;
 
+/// global function pointer for minuit or VEGAS
 const NSVfitStandaloneLikelihood* NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood = 0;
+/// indicate first iteration for integration or fit cycle for debugging
+static bool FIRST = true;
 
-NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, bool verbose) 
-  :  metPower_(1.0), 
-     addLogM_(false), 
-     addDelta_(true),
-     addSinTheta_(false),
-     verbose_(verbose), 
-     idxObjFunctionCall_(0), 
-     invCovMET_(2, 2)
+NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, bool verbose) :  
+  metPower_(1.0), 
+  addLogM_(false), 
+  addDelta_(true),
+  addSinTheta_(false),
+  verbose_(verbose), 
+  idxObjFunctionCall_(0), 
+  invCovMET_(2,2)
 {
-  if (verbose_ ){
+  if(verbose_){
     std::cout << "<NSVfitStandaloneLikelihood::constructor>" << std::endl;
   }
   measuredMET_ = measuredMET;
-  measuredTauLeptons_ = measuredTauLeptons;
+  // for integration mode the order of lepton or tau matters due to the choice of order in which 
+  // way the integration boundaries are defined. In this case the lepton should always go before
+  // the tau. For tau-tau or lep-lep the order is irrelevant.
+  if(measuredTauLeptons[0].decayType() == NSVfitStandalone::kHadDecay){
+    measuredTauLeptons_.push_back(measuredTauLeptons[1]);
+    measuredTauLeptons_.push_back(measuredTauLeptons[0]);
+  }
+  else{
+    measuredTauLeptons_= measuredTauLeptons;
+  }
   if ( measuredTauLeptons_.size() != 2 ){
     std::cout << " >> ERROR : the numer of measured leptons must be 2 but is found to be: " << measuredTauLeptons_.size() << std::endl;
     assert(0);
@@ -28,9 +40,10 @@ NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLe
   // determine transfer matrix for MET
   invCovMET_= covMET;
   covDet_ = invCovMET_.Determinant();
-  if ( covDet_ != 0 ) { 
+  if(covDet_!=0){ 
     invCovMET_.Invert(); 
-  } else {
+  } 
+  else{
     std::cout << " >> ERROR: cannot invert MET covariance Matrix (det=0)." << std::endl;
     assert(0);
   }
@@ -38,88 +51,73 @@ NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLe
   gNSVfitStandaloneLikelihood = this;
 }
 
-double 
-NSVfitStandaloneLikelihood::prob(const double* xPrime, double phiPenalty) const
-{
-  if ( verbose_ ) {
-    std::cout << "<NSVfitStandaloneLikelihood:prob(const double*, double)> ..." << std::endl;
-  }
-  // start the combined likelihood construction from MET
-  double prob = probMET(xPrime[kDMETx], xPrime[kDMETy], covDet_, invCovMET_, metPower_, verbose_);
-  //std::cout << "prob(1) = " << prob << std::endl;
-  // add likelihoods for the decay branches
-  for ( unsigned int idx = 0; idx < measuredTauLeptons_.size(); ++idx ) {
-    switch(measuredTauLeptons_[idx].decayType()) {
-    case kHadDecay :
-      prob *= probTauToHadPhaseSpace(xPrime[idx==0 ? kDecayAngle1 : kDecayAngle2], xPrime[idx==0 ? kNuNuMass1 : kNuNuMass2], xPrime[idx==0 ? kVisMass1 : kVisMass2], xPrime[idx==0 ? kMaxNLLParams : (kMaxNLLParams+1)], addSinTheta_, verbose_);
-      //std::cout << "prob(had) = " << prob << std::endl;
-      break;
-    case kLepDecay :
-      prob *= probTauToLepPhaseSpace(xPrime[idx==0 ? kDecayAngle1 : kDecayAngle2], xPrime[idx==0 ? kNuNuMass1 : kNuNuMass2], xPrime[idx==0 ? kVisMass1 : kVisMass2], xPrime[idx==0 ? kMaxNLLParams : (kMaxNLLParams+1)], addSinTheta_, verbose_);
-      //std::cout << "prob(lep) = " << prob << std::endl;
-      break;
-    }
-  }
-  //std::cout << "prob(2) = " << prob << std::endl;
-  // add additional logM term if configured such 
-  if ( addLogM_ ) {
-    if ( xPrime[kMTauTau] > 0. ) prob *= (1.0/xPrime[kMTauTau]);
-  }
-  if ( addDelta_ ) {
-    prob *= (2.0*xPrime[kMaxNLLParams]/xPrime[kMTauTau]);
-    //std::cout << "prob(3) = " << prob << std::endl;
-  }
-  if ( verbose_ ) {
-    if ( addLogM_ ) {
-      std::cout << " >> [single likelihood term nllLogM] prob = " << xPrime[kMTauTau] << std::endl;
-    }
-    std::cout   << " >> [penalty term on phi] nll = " << phiPenalty << std::endl;
-    std::cout   << " >> [combined nll term] prob = " << prob << std::endl;
-  }
-  // add additional phiPenalty in case kPhi in the fit parameters 
-  // (kFitParams) trespassed the physical boundaries from +/-pi 
-  if ( phiPenalty > 0. ) prob *= TMath::Exp(-phiPenalty);
-  return prob;
-}
-
 const double*
 NSVfitStandaloneLikelihood::transformint(double* xPrime, const double* x, const double mtest, const int par) const
 {
-  LorentzVector fittedDiTauSystem;
   int ip = 0;
-  double nunuMass, labframeXFrac, labframePhi, vmm;
-
-  for ( unsigned int idx = 0; idx < measuredTauLeptons_.size(); ++idx ) {
-    // for each tau decay
-    if ( idx == 0 ){
-      labframeXFrac = x[ip]; // visible energy fraction x in labframe
-      ip++;
-      xPrime[kMaxNLLParams] = labframeXFrac;
-    } else {
-      vmm = (measuredTauLeptons_[0].p4() + measuredTauLeptons_[1].p4()).mass();
+  bool skipLOG = false;
+  LorentzVector fittedDiTauSystem;
+  double nunuMass, labframeXFrac, labframePhi;
+  // used for determination of xFrac for second lepton
+  double vmm = (measuredTauLeptons_[0].p4() + measuredTauLeptons_[1].p4()).mass();
+  for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
+     // for each tau decay
+    if(idx == 0){
+      labframeXFrac=x[ip]; // visible energy fraction x in labframe
+      if(verbose_ && FIRST){
+	skipLOG = (pow(vmm/mtest, 2)/x[0]>1.);
+	if(!skipLOG){
+	  std::cout << "Boundary Check: labframeXFrac[" << measuredTauLeptons_[idx].decayType() << "] -> " << ip << std::endl; 
+	}
+      }
+      ++ip;
+      xPrime[kMaxNLLParams]=labframeXFrac;
+    } 
+    else {
       labframeXFrac = pow(vmm/mtest, 2)/x[0];
-      if ( labframeXFrac > 1. ) return 0;
-      //std::cout << "mtest = " << mtest << ": mvis = " << vmm << ", X1 = " << x[0] << ", X2 = " << labframeXFrac << std::endl;
-      xPrime[kMaxNLLParams + 1] = labframeXFrac;
+      if(labframeXFrac>1.){
+	// return 0 pointer will lead to 0 evaluation of prob 
+	return 0; 
+      }
+      xPrime[kMaxNLLParams+1]=labframeXFrac;
     }
-    if ( (par == 5 || par == 4) && measuredTauLeptons_[idx].decayType() == kLepDecay ) {
-      nunuMass = x[ip];      // nunu inv mass (can be const 0 for had tau decays)
-      ip++;
-      labframePhi = x[ip];   // phi in labframe
-      ip++;
-    } else {
-      nunuMass = 0.0;
-      labframePhi = x[ip];
-      ip++;
+    if((par == 5 || par == 4)){
+      if(measuredTauLeptons_[idx].decayType() == kLepDecay){
+	nunuMass=x[ip]; // nunu inv mass (can be const 0 for had tau decays)
+	if(verbose_ && FIRST && !skipLOG){ 
+	  std::cout << "Boundary Check: nunuMass     [" << measuredTauLeptons_[idx].decayType() << "] -> " << ip << std::endl; 
+	}
+	++ip;
+	labframePhi=x[ip]; // phi in labframe
+	if(verbose_ && FIRST && !skipLOG){ 
+	  std::cout << "Boundary Check: labframePhi  [" << measuredTauLeptons_[idx].decayType() << "] -> " << ip << std::endl; 
+	}
+	++ip;
+      } 
+      else{
+	nunuMass=0.;
+	labframePhi=x[ip];
+	if(verbose_ && FIRST && !skipLOG){ 
+	  std::cout << "Boundary Check: labframePhi  [" << measuredTauLeptons_[idx].decayType() << "] -> " << ip << std::endl; 
+	}
+	++ip;
+      }     
+    } 
+    else{
+      nunuMass=0.;
+      labframePhi=x[ip];
+      if(verbose_ && FIRST && !skipLOG){ 
+	std::cout << "Boundary Check: labframePhi  [" << measuredTauLeptons_[idx].decayType() << "] -> " << ip << std::endl; 
+      }
+      ++ip;
     }
     double labframeVisMom = measuredTauLeptons_[ idx ].momentum(); // visible momentum in lab-frame
     double labframeVisEn  = measuredTauLeptons_[ idx ].energy();   // visible energy in lab-frame
     double visMass        = measuredTauLeptons_[ idx ].mass();     // vis mass
-    
     // add protection against zero mass for visMass. If visMass is lower than the electron mass, set it
     // to the electron mass
-    if ( visMass < 5.1e-4 ) { 
-      visMass = 5.1e-4; 
+    if(visMass<5.1e-4){ 
+      visMass=5.1e-4; 
     }    
     // momentum of visible decay products in tau lepton restframe
     double restframeVisMom     = SVfit_namespace::pVisRestFrame(visMass, nunuMass, SVfit_namespace::tauLeptonMass);
@@ -137,11 +135,6 @@ NSVfitStandaloneLikelihood::transformint(double* xPrime, const double* x, const 
     xPrime[ idx == 0 ? kVisMass1    : kVisMass2    ] = visMass;
     xPrime[ idx == 0 ? kDecayAngle1 : kDecayAngle2 ] = restframeDecayAngle;
   }
-  // determine fittedMET
-  // subtract the visible part from it. The remainder is the pure neutrino part. Minus the 
-  // the remainder is the estimate of the fittedMET
-  //Vector fittedMom(fittedDiTauSystem.px(), fittedDiTauSystem.py(), fittedDiTauSystem.pz());
-  //Vector fittedMET = -(fittedMom - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p())); 
   /*
     I believe that the following line contains a sign bug in the official version of SVfit:
     http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h?revision=1.11&view=markup
@@ -153,13 +146,15 @@ NSVfitStandaloneLikelihood::transformint(double* xPrime, const double* x, const 
     dp4_ should be the neutrino momentum --> the neutrino MET would by -dp4_ --> the residual of the measured MET and the fitted MET shyould be 
     p4MEt - fittedMEt = p4MEt + dp4_
   */
+  // subtract the visible part from it. The remainder is the pure neutrino part. Minus the the remainder is the estimate of the fittedMET
+  //Vector fittedMET = -(fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p())); 
   Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p() + measuredTauLeptons_[1].p()); 
   // fill event-wise nll parameters
   xPrime[ kDMETx   ] = measuredMET_.x() - fittedMET.x(); 
   xPrime[ kDMETy   ] = measuredMET_.y() - fittedMET.y();
   xPrime[ kMTauTau ] = mtest;
 
-  if ( verbose_ ) {
+  if(verbose_ && FIRST){
     std::cout << " >> input values for transformed variables: " << std::endl;
     std::cout << "    MET[x] = " <<  fittedMET.x() << " (fitted)  " << measuredMET_.x() << " (measured) " << std::endl; 
     std::cout << "    MET[y] = " <<  fittedMET.y() << " (fitted)  " << measuredMET_.y() << " (measured) " << std::endl; 
@@ -182,14 +177,29 @@ NSVfitStandaloneLikelihood::transformint(double* xPrime, const double* x, const 
   }
   return xPrime;
 }
+
+double
+NSVfitStandaloneLikelihood::probint(const double* x, const double mtest, const int par) const 
+{
+  double phiPenalty = 0.;
+  double xPrime[kMaxNLLParams+2];
+  const double* xPrime_ptr = transformint(xPrime, x, mtest, par);
+  if(xPrime_ptr){
+    return prob(xPrime_ptr, phiPenalty);
+  }
+  else{
+    return 0.;
+  }
+}
+
 const double*
 NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
 {
-  if ( verbose_ ) {
+  if(verbose_){
     std::cout << "<NSVfitStandaloneLikelihood:transform(double*, const double*)>" << std::endl;
   }
   LorentzVector fittedDiTauSystem;
-  for ( unsigned int idx = 0; idx < measuredTauLeptons_.size(); ++idx ) {
+  for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
     // map to local variables to be more clear on the meaning of the individual parameters. The fit parameters are ayered 
     // for each tau decay
     double nunuMass       = x[ idx*kMaxFitParams + kMNuNu ];       // nunu inv mass (can be const 0 for had tau decays) 
@@ -201,8 +211,8 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
 
     // add protection against zero mass for visMass. If visMass is lower than the electron mass, set it
     // to the electron mass
-    if ( visMass < 5.1e-4 ) { 
-      visMass = 5.1e-4; 
+    if(visMass<5.1e-4){ 
+      visMass=5.1e-4; 
     }    
     // momentum of visible decay products in tau lepton restframe
     double restframeVisMom     = pVisRestFrame(visMass, nunuMass, tauLeptonMass);
@@ -228,7 +238,7 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
   xPrime[ kDMETy   ] = measuredMET_.y() - fittedMET.y();
   xPrime[ kMTauTau ] = fittedDiTauSystem.mass();
 
-  if ( verbose_ ) {
+  if(verbose_ && FIRST){
     std::cout << " >> input values for transformed variables: " << std::endl;
     std::cout << "    MET[x] = " <<  fittedMET.x() << " (fitted)  " << measuredMET_.x() << " (measured) " << std::endl; 
     std::cout << "    MET[y] = " <<  fittedMET.y() << " (fitted)  " << measuredMET_.y() << " (measured) " << std::endl; 
@@ -255,11 +265,11 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
 double
 NSVfitStandaloneLikelihood::prob(const double* x) const 
 {
-  if ( verbose_ ) {
+  if(verbose_){
     std::cout << "<NSVfitStandaloneLikelihood:prob(const double*)>" << std::endl;
   }
   ++idxObjFunctionCall_;
-  if ( verbose_ ) {
+  if(verbose_ && FIRST){
     std::cout << " >> ixdObjFunctionCall : " << idxObjFunctionCall_ << std::endl;  
     std::cout << " >> fit parameters before transformation: " << std::endl;
     std::cout << "    x[kXFrac1] = " << x[                kXFrac] << std::endl;
@@ -271,39 +281,82 @@ NSVfitStandaloneLikelihood::prob(const double* x) const
   }
   // prevent kPhi in the fit parameters (kFitParams) from trespassing the 
   // +/-pi boundaries
-  double phiPenalty = 0.;
-  for ( unsigned int idx = 0; idx < measuredTauLeptons_.size(); ++idx ) {
-    if ( TMath::Abs(idx*kMaxFitParams + x[kPhi]) > TMath::Pi() ) {
+  double phiPenalty=0.;
+  for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
+    if(TMath::Abs(idx*kMaxFitParams + x[kPhi])>TMath::Pi()){
       phiPenalty += (TMath::Abs(x[kPhi]) - TMath::Pi())*(TMath::Abs(x[kPhi]) - TMath::Pi());
     }
   }
   // xPrime are the transformed variables from which to construct the nll
   // transform performs the transformation from the fit parameters x to the 
-  // nll parameters xPrime. nllPrime is the actual combined log likelihood
+  // nll parameters xPrime. prob is the actual combined likelihood. The
   // phiPenalty prevents the fit to converge to unphysical values beyond
   // +/-phi 
   double xPrime[ kMaxNLLParams + 2 ];
   return prob(transform(xPrime, x), phiPenalty);
 }
 
-double
-NSVfitStandaloneLikelihood::probint(const double* x, const double mtest, const int par) const 
+double 
+NSVfitStandaloneLikelihood::prob(const double* xPrime, double phiPenalty) const
 {
-  double phiPenalty = 0.;
-  double xPrime[ kMaxNLLParams + 2 ];
-  const double* xPrime_ptr = transformint(xPrime, x, mtest, par);
-  if ( xPrime_ptr ) return prob(xPrime_ptr, phiPenalty);
-  else return 0.;
+  if(verbose_&& FIRST){
+    std::cout << "<NSVfitStandaloneLikelihood:prob(const double*, double)> ..." << std::endl;
+  }
+  // start the combined likelihood construction from MET
+  double prob = probMET(xPrime[kDMETx], xPrime[kDMETy], covDet_, invCovMET_, metPower_, (verbose_&& FIRST));
+  if(verbose_ && FIRST){
+    std::cout << "probMET         = " << prob << std::endl;
+  }
+  // add likelihoods for the decay branches
+  for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
+    switch(measuredTauLeptons_[idx].decayType()){
+    case kHadDecay :
+      prob *= probTauToHadPhaseSpace(xPrime[idx==0 ? kDecayAngle1 : kDecayAngle2], xPrime[idx==0 ? kNuNuMass1 : kNuNuMass2], xPrime[idx==0 ? kVisMass1 : kVisMass2], xPrime[idx==0 ? kMaxNLLParams : (kMaxNLLParams+1)], addSinTheta_, (verbose_&& FIRST));
+      if(verbose_ && FIRST){
+	std::cout << " *probTauToHad  = " << prob << std::endl;
+      }
+      break;
+    case kLepDecay :
+      prob *= probTauToLepPhaseSpace(xPrime[idx==0 ? kDecayAngle1 : kDecayAngle2], xPrime[idx==0 ? kNuNuMass1 : kNuNuMass2], xPrime[idx==0 ? kVisMass1 : kVisMass2], xPrime[idx==0 ? kMaxNLLParams : (kMaxNLLParams+1)], addSinTheta_, (verbose_&& FIRST));
+      if(verbose_ && FIRST){
+	std::cout << " *probTauToLep  = " << prob << std::endl;
+      }
+      break;
+    }
+  }
+  // add additional logM term if configured such 
+  if(addLogM_){
+    if(xPrime[kMTauTau]>0.) prob *= (1.0/xPrime[kMTauTau]);
+    if(verbose_ && FIRST){
+      std::cout << " *1/mtautau     = " << prob << std::endl;
+    }
+  }
+  if(addDelta_){
+    prob *= (2.0*xPrime[kMaxNLLParams]/xPrime[kMTauTau]);
+    if(verbose_ && FIRST){
+      std::cout << " *deltaDeriv.   = " << prob << std::endl;
+    }
+  }
+  // add additional phiPenalty in case kPhi in the fit parameters 
+  // (kFitParams) trespassed the physical boundaries from +/-pi 
+  if(phiPenalty>0.){
+    prob *= TMath::Exp(-phiPenalty);
+    if(verbose_ && FIRST){
+      std::cout << "* phiPenalty   = " << prob << std::endl;
+    }
+  }
+  // set FIRST to false after the first complete evaluation of the likelihood 
+  FIRST=false;
+  return prob;
 }
-
 
 void
 NSVfitStandaloneLikelihood::results(std::vector<LorentzVector>& fittedTauLeptons, const double* x) const
 {
-  if ( verbose_ ) {
+  if(verbose_){
     std::cout << "<NSVfitStandaloneLikelihood:results(std::vector<LorentzVector>&, const double*)>" << std::endl;
   }
-  for (unsigned int idx = 0; idx < measuredTauLeptons_.size(); ++idx ) {
+  for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
     // map to local variables to be more clear on the meaning of the individual parameters. The fit parameters are ayered 
     // for each tau decay
     double nunuMass       = x[ idx*kMaxFitParams + kMNuNu ];       // nunu inv mass (can be const 0 for had tau decays) 
