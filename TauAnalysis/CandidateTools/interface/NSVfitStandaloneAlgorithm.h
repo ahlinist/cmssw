@@ -137,12 +137,11 @@ class NSVfitStandaloneAlgorithm
     */
   bool isValidSolution() { return fitStatus_ == 0; };
   /// return mass of the fitted di-tau system 
-  double mass() const { return fittedDiTauSystem().mass(); };
+  double mass() const { return mass_; };
   /// return uncertainty on the mass of the fitted di-tau system
   double massUncert() const { return massUncert_; };
-  
-  // mtt mass, svfit integration
-  double getMass() const {return mass_;};
+    // mtt mass, svfit integration
+  double getMass() const {return mass();};
 
   /// return 4-vectors of the fitted tau leptons
   std::vector<LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; }
