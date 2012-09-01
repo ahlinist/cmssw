@@ -127,6 +127,9 @@ namespace SVfit_namespace
   /// Compute logarithm of Gaussian probability density function
   double logGaussian(double, double);
 
+  /// Compute point-of-closest-approach between two lines
+  AlgebraicVector3 compIntersection_of_lines(const AlgebraicVector3&, const AlgebraicVector3&, const AlgebraicVector3&, const AlgebraicVector3&, long&, int);
+
   /// Extract maximum, mean and { 0.84, 0.50, 0.16 } quantiles of distribution
   void extractHistogramProperties(const TH1*, const TH1*, double&, double&, double&, double&, double&, double&);
 }

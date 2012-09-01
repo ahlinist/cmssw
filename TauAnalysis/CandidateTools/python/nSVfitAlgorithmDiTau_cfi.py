@@ -282,6 +282,7 @@ nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
             maxIntEvalIter = cms.uint32(5),                                          
             precision = cms.double(0.00001)
         ),
+        max_or_median = cms.string("max"),                                         
         verbosity = cms.int32(0)
     ),
     dRmin = cms.double(0.3),
@@ -312,6 +313,7 @@ nSVfitProducerByIntegration2 = cms.EDProducer("NSVfitProducerByIntegration2",
             epsilon0 = cms.double(1.e-4),
             nu = cms.double(0.71)
         ),
+        max_or_median = cms.string("max"),
         verbosity = cms.int32(0)
     ),
     dRmin = cms.double(0.3),

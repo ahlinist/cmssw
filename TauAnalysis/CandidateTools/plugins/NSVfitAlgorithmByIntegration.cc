@@ -16,6 +16,8 @@
 
 using namespace SVfit_namespace;
 
+enum { kMax, kMedian };
+
 namespace 
 {
   double g(double* x, size_t dim, void* param)
@@ -80,6 +82,12 @@ NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration(const edm::ParameterS
   maxChi2_         = cfg_vegas.getParameter<double>("maxChi2");
   maxIntEvalIter_  = cfg_vegas.getParameter<unsigned>("maxIntEvalIter");
   precision_       = cfg_vegas.getParameter<double>("precision");
+
+  std::string max_or_median_string = cfg.getParameter<std::string>("max_or_median");
+  if      ( max_or_median_string == "max"    ) max_or_median_ = kMax;
+  else if ( max_or_median_string == "median" ) max_or_median_ = kMedian;
+  else throw cms::Exception("NSVfitAlgorithmByIntegration2")
+    << " Invalid Configuration Parameter 'max_or_median' = " << max_or_median_string << " !!\n";
 }
 
 NSVfitAlgorithmByIntegration::~NSVfitAlgorithmByIntegration() 
@@ -181,9 +189,11 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     xl_[iDimension] = fitParameterMappings_[iDimension].base_->LowerLimit(); 
     xu_[iDimension] = fitParameterMappings_[iDimension].base_->UpperLimit();
-    //std::cout << " fitParameter #" << iDimension << " (" << fitParameterMappings_[iDimension].base_->Name() << ":" 
-    //	        << fitParameterMappings_[iDimension].base_->Type() << "):"
-    //	        << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
+    if ( verbosity_ >= 2 ) { 
+      std::cout << " fitParameter #" << iDimension << " (" << fitParameterMappings_[iDimension].base_->Name() << ":" 
+    	        << fitParameterMappings_[iDimension].base_->Type() << "):"
+    	        << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
+    }
   }
 
   //gsl_monte_vegas_init(workspace_);
@@ -251,8 +261,10 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 	//std::cout << " chi2 = " << chi2 << std::endl;
       } while ( chi2 > maxChi2_ && iteration < maxIntEvalIter_ );	
       
-      //std::cout << "--> M = " << format_vdouble(massParameterValues) << ": p = " << p << " +/- " << pErr 
-      //	  << " (chi2 = " << chi2 << ")" << std::endl;
+      if ( verbosity_ >= 2 ) {
+	std::cout << "--> M = " << format_vdouble(massParameterValues) << ": p = " << p << " +/- " << pErr 
+		  << " (chi2 = " << chi2 << ")" << std::endl;
+      }
       
       // CV: in order to reduce computing time, skip precise computation of integral
       //     if in high mass tail and probability negligible anyway
@@ -316,10 +328,12 @@ void NSVfitAlgorithmByIntegration::setMassResults(
   }
   assert(histMassResult1d_density);
 
-  //for ( int iBin = 1; iBin <= histMassResult1d_density->GetNbinsX(); ++iBin ) {
-  //  std::cout << " iBin " << iBin << " (" << histMassResult1d_density->GetBinCenter(iBin) <<  "):" 
-  //	        << " " << histMassResult1d_density->GetBinContent(iBin) << std::endl;
-  //}
+  if ( verbosity_ >= 2 ) { 
+    for ( int iBin = 1; iBin <= histMassResult1d_density->GetNbinsX(); ++iBin ) {
+      std::cout << " iBin " << iBin << " (" << histMassResult1d_density->GetBinCenter(iBin) <<  "):" 
+  	        << " " << histMassResult1d_density->GetBinContent(iBin) << std::endl;
+    }
+  }
   
   std::string histMassResult1dName = std::string(histMassResult1d_density->GetName()).append("_cloned");
   TH1* histMassResult1d = (TH1*)histMassResult1d_density->Clone(histMassResult1dName.data());
@@ -336,9 +350,13 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     extractHistogramProperties(histMassResult1d, histMassResult1d_density,
 			       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
-    double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
-    double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
-    NSVfitAlgorithmBase::setMassResults(resonance, massMaximum_interpol, massErrUp, massErrDown);
+    double mass;
+    if      ( max_or_median_ == kMax    ) mass = massMaximum_interpol;
+    else if ( max_or_median_ == kMedian ) mass = massQuantile050;
+    else assert(0);
+    double massErrUp   = TMath::Abs(massQuantile084 - mass);
+    double massErrDown = TMath::Abs(mass - massQuantile016);
+    NSVfitAlgorithmBase::setMassResults(resonance, mass, massErrUp, massErrDown);
 
     resonance->massMean_ = massMean;
     resonance->massMedian_ = massQuantile050;
@@ -346,10 +364,13 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     resonance->massMaxInterpol_ = massMaximum_interpol;
     resonance->isValidSolution_ = true;
     
-    //std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
-    //std::cout << "--> mass = " << resonance->mass_ << std::endl;
-    //std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
-    //resonance->print(std::cout);
+    if ( verbosity_ >= 1 ) { 
+      std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
+      std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+      std::cout << "--> mass = " << resonance->mass_ << std::endl;
+      std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
+      //resonance->print(std::cout);
+    }
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";
@@ -515,27 +536,30 @@ double NSVfitAlgorithmByIntegration::nll(const double* x, const double* param) c
   }
 
 //--- build event, resonance and particle hypotheses
-  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
+  currentEventHypothesis_isValidSolution_ = eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
 
 //--- compute likelihood;
 //    add derrivatives of delta functions for each fit parameter that is replaced in integration
 //   (cf. http://en.wikipedia.org/wiki/Dirac_delta_function )
-  double nll = eventModel_->nll(currentEventHypothesis_);
+  double nll = std::numeric_limits<float>::max();
+  if ( currentEventHypothesis_isValidSolution_ ) {
+    nll = eventModel_->nll(currentEventHypothesis_);
 
-   for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
-	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
-    TFormula* formula = (*fitParameterReplacement)->deltaFuncDerrivative_;
-    //std::cout << "formula = " << formula->GetTitle() << std::endl;
+    for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
+	  fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
+      TFormula* formula = (*fitParameterReplacement)->deltaFuncDerrivative_;
+      //std::cout << "formula = " << formula->GetTitle() << std::endl;
 
-    for ( int iPar = 0; iPar < (*fitParameterReplacement)->numParForDeltaFuncDerrivative_; ++iPar ) {
-      formula->SetParameter(iPar, (*(*fitParameterReplacement)->parForDeltaFuncDerrivative_[iPar])(fitParameterValues_));
-      //std::cout << "par #" << iPar << " = " << formula->GetParameter(iPar) << std::endl;
-    }
+      for ( int iPar = 0; iPar < (*fitParameterReplacement)->numParForDeltaFuncDerrivative_; ++iPar ) {
+	formula->SetParameter(iPar, (*(*fitParameterReplacement)->parForDeltaFuncDerrivative_[iPar])(fitParameterValues_));
+	//std::cout << "par #" << iPar << " = " << formula->GetParameter(iPar) << std::endl;
+      }
 
-    double probCorr = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
-    //std::cout << "value = " << probCorr << std::endl;
-    if ( probCorr > 0. && !TMath::IsNaN(probCorr) ) {
-      nll -= TMath::Log(probCorr);
+      double probCorr = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
+      //std::cout << "value = " << probCorr << std::endl;
+      if ( probCorr > 0. && !TMath::IsNaN(probCorr) ) {
+	nll -= TMath::Log(probCorr);
+      }
     }
   }
 

@@ -52,6 +52,8 @@ using namespace SVfit_namespace;
 const int minNumTracksRefit = 2;
 const int minNumTracksFit = 2;
 
+const int verbosity = 0;
+
 SVfitLikelihoodDisplay::SVfitLikelihoodDisplay(const edm::ParameterSet& cfg)
   : moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
@@ -103,54 +105,6 @@ namespace
   double norm2(const AlgebraicVector3& p)
   {
     return square(p(0)) + square(p(1)) + square(p(2));
-  }
-}
-//-------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------
-// auxiliary functions for vertex reconstruction
-
-namespace
-{
-  AlgebraicVector3 compIntersection_of_lines(const AlgebraicVector3& offset1, const AlgebraicVector3& slope1, 
-					     const AlgebraicVector3& offset2, const AlgebraicVector3& slope2)
-  {
-    // CV: algorithm taken from http://www.softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
-
-    //if ( verbosity ) {
-    //  std::cout << "<compIntersection_of_lines>:" << std::endl;
-    //  printVector("offset1", offset1);
-    //  printVector("slope1", slope1);
-    //  printVector("offset2", offset2);
-    //  printVector("slope2", slope2);
-    //}
-
-    AlgebraicVector3 w0(offset1(0) - offset2(0), offset1(1) - offset2(1), offset1(2) - offset2(2));
-
-    double a = compScalarProduct(slope1, slope1);
-    double b = compScalarProduct(slope1, slope2);
-    double c = compScalarProduct(slope2, slope2);
-    double d = compScalarProduct(slope1, w0);
-    double e = compScalarProduct(slope2, w0);
-    
-    double denominator = (a*c - square(b));
-    if ( !(denominator >= 0.) ) {
-      edm::LogWarning ("compIntersection_of_lines")
-	<< "Lines given as arguments are parallel --> returning s = t = 0 !!";
-      return offset2;
-    }
-
-    double t = (a*e - b*d)/denominator;
-
-    // CV: limit tau decay distance to 100 cm
-    if ( t > 100. ) t = 100.;
-
-    AlgebraicVector3 solution(offset2(0) + t*slope2(0), offset2(1) + t*slope2(1), offset2(2) + t*slope2(2));
-    //if ( verbosity ) {
-    //  printVector("solution", solution);
-    //}
-
-    return solution;
   }
 }
 //-------------------------------------------------------------------------------
@@ -237,7 +191,12 @@ namespace
     // CV: code copied from TauAnalysis/CandidateTools/plugins/NSVfitTauDecayLikelihoodTrackInfo.cc
     double a = (p/tauLeptonMass)*cTauLifetime;
     if ( tauFlightPath < 0. ) tauFlightPath = 0.;
-    return TMath::Log(a) + tauFlightPath/a;
+    double nll = TMath::Log(a) + tauFlightPath/a;
+    if ( verbosity >= 3 ) {
+      std::cout << "<negLogLikelihoodExponentialDecay>:" << std::endl;
+      std::cout << " -log(P) = " << nll << std::endl;
+    }
+    return nll;
   }
 
   double backwardsPenaltyTerm(const AlgebraicVector3& flight_direction, double fligt_distance, const reco::Candidate::LorentzVector& visP4)
@@ -272,8 +231,16 @@ namespace
       prob /= (1. + 1.e+6*square(invisMass - invisMass_limit));
     }
     
-    if ( prob > 0. ) return -TMath::Log(prob);  
-    else return 1.e+37;
+    double nll;
+    if ( prob > 0. ) nll = -TMath::Log(prob);  
+    else nll = 1.e+37;
+
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodTauToLepDecay>:" << std::endl;
+      std::cout << " -log(P) = " << nll << std::endl;
+    }
+    
+    return nll;
   }
   
   double negLogLikelihoodTauToHadDecay(double gjAngle, double pVis_rf, double X, double visMass)
@@ -291,8 +258,16 @@ namespace
       prob /= (1. + 1.e+6*square(X - X_limit));
     }
     
-    if ( prob > 0. ) return -TMath::Log(prob);  
-    else return 1.e+37;
+    double nll;
+    if ( prob > 0. ) nll = -TMath::Log(prob);  
+    else nll = 1.e+37;
+
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodTauToHadDecay>:" << std::endl;
+      std::cout << " -log(P) = " << nll << std::endl;
+    }
+    
+    return nll;
   }
   
   double negLogLikelihoodTrackInfo1Prong(const AlgebraicVector3& eventVertexPos, const AlgebraicMatrix33& eventVertexCov,
@@ -300,14 +275,19 @@ namespace
 					 const reco::TransientTrack& track_trajectory, 
 					 const AlgebraicVector3& track_refPoint, const AlgebraicVector3& track_direction)
   {
-    //std::cout << "<negLogLikelihoodTrackInfo1Prong>:" << std::endl;
-    //printVector("tauFlightPath_unit", tauFlightPath_unit);
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodTrackInfo1Prong>:" << std::endl;
+      printVector("tauFlightPath_unit", tauFlightPath_unit);
+    }
 
-    AlgebraicVector3 pcaPos0 = compIntersection_of_lines(eventVertexPos, tauFlightPath_unit, track_refPoint, track_direction);
-    //AlgebraicVector3 pcaPos_wrt_vertex = pcaPos0 - eventVertexPos;
-    //std::cout << "pcaPos(initial):" 
-    //	        << " x = " << pcaPos(0) << ", y = " << pcaPos(1) << ", z = " << pcaPos(2) 
-    //	        << " (d = " << TMath::Sqrt(norm2(pcaPos_wrt_vertex)) << ")" << std::endl;      
+    long numWarnings = 0;
+    AlgebraicVector3 pcaPos0 = compIntersection_of_lines(eventVertexPos, tauFlightPath_unit, track_refPoint, track_direction, numWarnings, verbosity);
+    if ( verbosity >= 2 ) {
+      AlgebraicVector3 pcaPos_wrt_vertex = pcaPos0 - eventVertexPos;
+      std::cout << "pcaPos(initial):" 
+    	        << " x = " << pcaPos0(0) << ", y = " << pcaPos0(1) << ", z = " << pcaPos0(2) 
+    	        << " (d = " << TMath::Sqrt(norm2(pcaPos_wrt_vertex)) << ")" << std::endl;      
+    }
         
     AlgebraicVector3 pcaPos = pcaPos0;
     int iteration = 0;
@@ -320,18 +300,21 @@ namespace
 	errorFlag |= track_extrapolation_update.errorFlag();
 	if ( !errorFlag ) {
 	  const AlgebraicVector3& track_direction_update = track_extrapolation_update.tangent();
-	  //printVector("track_direction_update", track_direction_update);
+	  if ( verbosity >= 2 ) printVector("track_direction_update", track_direction_update);
 	  const AlgebraicVector3& track_refPoint_update = track_extrapolation_update.point_of_closest_approach();
-	  //printVector("track_refPoint_update", track_refPoint_update);
+	  if ( verbosity >= 2 ) printVector("track_refPoint_update", track_refPoint_update);
+	  long numWarnings = 0;
 	  AlgebraicVector3 pcaPos_update = compIntersection_of_lines(
-	    eventVertexPos, tauFlightPath_unit, track_refPoint_update, track_direction_update);
-	  //AlgebraicVector3 pcaPos_wrt_vertex_update = pcaPos_update - eventVertexPos;
-	  //std::cout << "pcaPos(iteration #" << iteration << "):" 
-	  //	  << " x = " << pcaPos_update(0) << ", y = " << pcaPos_update(1) << ", z = " << pcaPos_update(2) 
-	  //	  << " (d = " << TMath::Sqrt(norm2(pcaPos_wrt_vertex_update)) << ")" << std::endl;    
+	    eventVertexPos, tauFlightPath_unit, track_refPoint_update, track_direction_update, numWarnings, verbosity);
+	  if ( verbosity >= 2 ) {
+	    AlgebraicVector3 pcaPos_wrt_vertex_update = pcaPos_update - eventVertexPos;
+	    std::cout << "pcaPos(iteration #" << iteration << "):" 
+		      << " x = " << pcaPos_update(0) << ", y = " << pcaPos_update(1) << ", z = " << pcaPos_update(2) 
+		      << " (d = " << TMath::Sqrt(norm2(pcaPos_wrt_vertex_update)) << ")" << std::endl;    
+	  }
 	  double diff_pca_update2 = norm2(pcaPos_update - pcaPos);
-	  //std::cout << "diff_pca_update2 = " << diff_pca_update2 << std::endl;
-	  if ( !diff_pca_update2 < 1.e-8 ) {
+	  if ( verbosity >= 2 ) std::cout << "diff_pca_update2 = " << diff_pca_update2 << std::endl;
+	  if ( diff_pca_update2 < 1.e-8 ) {
 	    hasConverged = true;	 
 	  } else {
 	    pcaPos = pcaPos_update;
@@ -347,11 +330,11 @@ namespace
     } while ( !errorFlag && !hasConverged && iteration < maxIterations ); 
     
     if ( errorFlag || !hasConverged ) pcaPos = pcaPos0;
-    //printVector("pcaPos(final)", pcaPos);
+    if ( verbosity >= 2 ) printVector("pcaPos(final)", pcaPos);
     
     double prob = 0.;
     double decayDistance = TMath::Sqrt(norm2(pcaPos - eventVertexPos));
-    //std::cout << "decayDistance = " << decayDistance << std::endl;
+    if ( verbosity >= 2 ) std::cout << "decayDistance = " << decayDistance << std::endl;
     double dMax  = 2.5000;
     double dStep = 0.0025;
     for ( double decayDistance_shift = -decayDistance; decayDistance_shift <= dMax; decayDistance_shift += dStep ) {
@@ -375,64 +358,83 @@ namespace
       double nll_lifetime = negLogLikelihoodExponentialDecay(decayDistance + decayDistance_shift, pTau_lab);	 
       double nll_penalty = backwardsPenaltyTerm(tauFlightPath_unit, decayDistance + decayDistance_shift, p4Vis);
       double nll = nll_dca + nll_lifetime + nll_penalty;
-      //if ( TMath::Abs(decayDistance_shift) < (0.5*dStep) ) {
-      //  printVector("expectedDecayVertexPos", expectedDecayVertexPos);
-      //  printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
-      //  printVector("reconstructedDecayVertexPos", reconstructedDecayVertexPos);
-      //  printMatrix("reconstructedDecayVertexCov", reconstructedDecayVertexCov);
-      //  printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
-      //  std::cout << "residual: x = " << residual(0) << ", y = " << residual(1) << ", z = " << residual(2) 
-      //	        << " ( |residual| = " << TMath::Sqrt(norm2(residual)) << ")" << std::endl;
-      //  printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
-      //  std::cout << "sigma = " << TMath::Sqrt(sigma2) << std::endl;
-      //  std::cout << "--> -log(P) = " << nll
-      //	        << " ( -log(P_dca) = " << nll_dca << ", -log(P_lifetime) = " << nll_lifetime << ", -log(P_penalty) = " << nll_penalty << ")" << std::endl;
-      //}
+      if ( verbosity >= 2 ) {
+	//if ( (TMath::Nint(decayDistance_shift/dStep) % 10) == 0 ) {
+	if ( TMath::Abs(decayDistance_shift) < (0.5*dStep) ) {
+	  std::cout << "decayDistance_shift = " << decayDistance_shift << std::endl;
+	  if ( verbosity >= 3 ) {
+	    printVector("expectedDecayVertexPos", expectedDecayVertexPos);
+	    printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
+	    printVector("reconstructedDecayVertexPos", reconstructedDecayVertexPos);
+	    printMatrix("reconstructedDecayVertexCov", reconstructedDecayVertexCov);
+	    printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
+	    std::cout << "residual: x = " << residual(0) << ", y = " << residual(1) << ", z = " << residual(2) 
+		      << " ( |residual| = " << TMath::Sqrt(norm2(residual)) << ")" << std::endl;
+	    printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
+	    std::cout << "sigma = " << TMath::Sqrt(sigma2) << std::endl;
+	  }
+	  std::cout << "--> -log(P) = " << nll
+		    << " ( -log(P_dca) = " << nll_dca << ", -log(P_lifetime) = " << nll_lifetime << ", -log(P_penalty) = " << nll_penalty << ")" << std::endl;
+	}
+      }
       prob += (TMath::Exp(-nll)*dStep);
     }
     
-    //std::cout << "prob = " << prob << std::endl;
+    double nll;
+    if ( prob > 0. ) nll = -TMath::Log(prob);  
+    else nll = 1.e+37;
+
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodTrackInfo1Prong>:" << std::endl;
+      std::cout << " -log(P) = " << nll << std::endl;
+    }
     
-    if ( prob > 0. ) return -TMath::Log(prob);
-    else return 1.e+37;
+    return nll;
   }
   
   double negLogLikelihoodTrackInfo3Prong(const AlgebraicVector3& eventVertexPos, const AlgebraicMatrix33& eventVertexCov,
 					 double pTau_lab, const reco::Candidate::LorentzVector& p4Vis, const AlgebraicVector3& tauFlightPath_unit,
 					 const AlgebraicVector3& reconstructedDecayVertexPos, const AlgebraicMatrix33& reconstructedDecayVertexCov)
   {
-    //std::cout << "<negLogLikelihoodTrackInfo3Prong>:" << std::endl;
+    if ( verbosity >= 2 ) std::cout << "<negLogLikelihoodTrackInfo3Prong>:" << std::endl;
     AlgebraicVector3 decayVertex_wrt_eventVertexPos = reconstructedDecayVertexPos - eventVertexPos;
-    //printVector("decayVertex_wrt_eventVertexPos", decayVertex_wrt_eventVertexPos);
+    if ( verbosity >= 2 ) printVector("decayVertex_wrt_eventVertexPos", decayVertex_wrt_eventVertexPos);
     double decayDistance_projection = compScalarProduct(decayVertex_wrt_eventVertexPos, tauFlightPath_unit);
-    //std::cout << "decayDistance_projection = " << decayDistance_projection << std::endl;
+    if ( verbosity >= 2 ) std::cout << "decayDistance_projection = " << decayDistance_projection << std::endl;
     AlgebraicVector3 expectedDecayVertexPos = compDecayPosition(eventVertexPos, decayDistance_projection, tauFlightPath_unit);
-    //printVector("expectedDecayVertexPos", expectedDecayVertexPos);
+    if ( verbosity >= 2 ) printVector("expectedDecayVertexPos", expectedDecayVertexPos);
     AlgebraicMatrix33 expectedDecayVertexCov = eventVertexCov;
-    //printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
+    if ( verbosity >= 2 ) printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
     
     AlgebraicVector3 residual = reconstructedDecayVertexPos - expectedDecayVertexPos;
-    //printVector("residual", residual);
+    if ( verbosity >= 2 ) printVector("residual", residual);
     double residual2 = norm2(residual);
-    //std::cout << "residual2 = " << residual2 << std::endl;
+    if ( verbosity >= 2 ) std::cout << "residual2 = " << residual2 << std::endl;
     AlgebraicMatrix33 reconstructed_wrt_expectedDecayVertexCov = reconstructedDecayVertexCov;
     for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
       for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
 	reconstructed_wrt_expectedDecayVertexCov(iRow, iColumn) += expectedDecayVertexCov(iRow, iColumn);
       }
     }
-    //printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
+    if ( verbosity >= 2 ) printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
     double sigma2 = ROOT::Math::Similarity(residual, reconstructed_wrt_expectedDecayVertexCov)/residual2;
-    //std::cout << "sigma2 = " << sigma2 << std::endl;
+    if ( verbosity >= 2 ) std::cout << "sigma2 = " << sigma2 << std::endl;
     double nll_dca = -logGaussian(TMath::Sqrt(residual2), TMath::Sqrt(sigma2));
     double nll_lifetime = negLogLikelihoodExponentialDecay(decayDistance_projection, pTau_lab);	 
     double nll_penalty = backwardsPenaltyTerm(tauFlightPath_unit, decayDistance_projection, p4Vis);
     double nll = nll_dca + nll_lifetime + nll_penalty;
-    //std::cout << "residual: x = " << residual(0) << ", y = " << residual(1) << ", z = " << residual(2) 
-    //	        << " ( |residual| = " << TMath::Sqrt(norm2(residual)) << ", sigma = " << TMath::Sqrt(sigma2) << ")" << std::endl;
-    //std::cout << "--> -log(P) = " << nll
-    //	        << " ( -log(P_dca) = " << nll_dca << ", -log(P_lifetime) = " << nll_lifetime << ", -log(P_penalty) = " << nll_penalty << ")" << std::endl;
-    
+    if ( verbosity >= 2 ) {
+      std::cout << "residual: x = " << residual(0) << ", y = " << residual(1) << ", z = " << residual(2) 
+    	        << " ( |residual| = " << TMath::Sqrt(norm2(residual)) << ", sigma = " << TMath::Sqrt(sigma2) << ")" << std::endl;
+      std::cout << "--> -log(P) = " << nll
+    	        << " ( -log(P_dca) = " << nll_dca << ", -log(P_lifetime) = " << nll_lifetime << ", -log(P_penalty) = " << nll_penalty << ")" << std::endl;
+    }
+
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodTrackInfo3Prong>:" << std::endl;
+      std::cout << " -log(P) = " << nll << std::endl;
+    }
+
     return nll;
   }
   
@@ -441,6 +443,7 @@ namespace
   {
     // code copied from TauAnalysis/CandidateTools/plugins/NSVfitEventLikelihoodMEt2.cc
     
+    double nll;
     if ( recMEtCovDet != 0. ) {
       double residualPx = recMEt.px() - genMEt.px();
       double residualPy = recMEt.py() - genMEt.py();
@@ -448,10 +451,17 @@ namespace
       double term1 = TMath::Log(2.*TMath::Pi()) + 0.5*TMath::Log(TMath::Abs(recMEtCovDet));
       double term2 = 0.5*(residualPx*(recMEtCovInverse(0,0)*residualPx + recMEtCovInverse(0,1)*residualPy)
 			  + residualPy*(recMEtCovInverse(1,0)*residualPx + recMEtCovInverse(1,1)*residualPy));
-      return term1 + term2;
+      nll = term1 + term2;
     } else {
-      return 0.;
+      nll = 0.;
     }
+
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodMEt>:" << std::endl;
+      std::cout << " -log(P) = " << nll << std::endl;
+    }
+
+    return nll;
   }
 }
 //-------------------------------------------------------------------------------
@@ -804,11 +814,11 @@ namespace
     
     int numPoints = 0;
     for ( int gjAngle_or_XBin1 = 0; gjAngle_or_XBin1 < gjAngle_or_XNumBins1; ++gjAngle_or_XBin1 ) { 
-    //for ( double gjAngle_or_X1 = 0.8; gjAngle_or_X1 <= 0.8; gjAngle_or_X1 += 0.5 ) {
+    //for ( double gjAngle_or_X1 = 0.494759; gjAngle_or_X1 <= 0.5; gjAngle_or_X1 += 0.5 ) {
       for ( int phi_labBin1 = 0; phi_labBin1 < phi_labNumBins1; ++phi_labBin1 ) {
 	for ( int invisMassBin1 = 0; invisMassBin1 < invisMassNumBins1; ++invisMassBin1 ) {
 	  for ( int gjAngle_or_XBin2 = 0; gjAngle_or_XBin2 < gjAngle_or_XNumBins2; ++gjAngle_or_XBin2 ) {    
-	  //for ( double gjAngle_or_X2 = 0.2; gjAngle_or_X2 <= 0.2; gjAngle_or_X2 += 0.5 ) {
+	  //for ( double gjAngle_or_X2 = 0.527036; gjAngle_or_X2 <= 0.6; gjAngle_or_X2 += 0.5 ) {
 	    for ( int phi_labBin2 = 0; phi_labBin2 < phi_labNumBins2; ++phi_labBin2 ) {
 	      for ( int invisMassBin2 = 0; invisMassBin2 < invisMassNumBins2; ++invisMassBin2 ) {
 		
@@ -1094,7 +1104,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
   } else {
     std::cout << "event vertex(rec,refitted): NA (vertex fit failed)" << std::endl;
   }
-
+/*
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     true, false, false, matchedTau1->isLeptonicDecay_, 
@@ -1396,6 +1406,7 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
 		     recMEt.p4(), recMEtCov,
 		     true,
 		     evt, std::string(moduleLabel_).append("_all_vs_gjAngle1_and_gjAngle2"));
+ */
   makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     false, true, false, false,

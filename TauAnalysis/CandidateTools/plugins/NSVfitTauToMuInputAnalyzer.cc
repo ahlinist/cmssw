@@ -180,8 +180,8 @@ void NSVfitTauToMuInputAnalyzer::analyze(const edm::Event& evt, const edm::Event
   genTauPhi_->Fill(matchedTau->genTauP4_.phi(), evtWeight);
   genTauVisEnFrac_->Fill(matchedTau->genVisP4_.E()/matchedTau->genTauP4_.E(), evtWeight);
   genTauDecayDistance_->Fill(matchedTau->genTauDecayDistance_, evtWeight);
-  genTau_phi_lab_->Fill(gjAngleFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
-  genTau_gjAngle_->Fill(phiLabFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
+  genTau_phi_lab_->Fill(phiLabFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
+  genTau_gjAngle_->Fill(gjAngleFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
 
   const reco::GenParticle* genMuon = 0;
   for ( std::vector<const reco::GenParticle*>::const_iterator genTauDecayProduct = matchedTau->genTauDecayProducts_.begin();

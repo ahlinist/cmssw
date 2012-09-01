@@ -23,7 +23,14 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
-    )
+    ),
+    ##eventsToProcess = cms.untracked.VEventRange(
+    ##    '1:2399:719456',
+    ##    '1:2418:725094',
+    ##    '1:2418:725139',
+    ##    '1:2418:725278',
+    ##    '1:3202:960464'
+    ##)
 )
 
 #--------------------------------------------------------------------------------
@@ -324,7 +331,7 @@ process.nSVfitEventLikelihoodTrackInfo = cms.PSet(
 nSVfitProducerModuleNames = dict()
 svFitAnalyzerModuleTypes = dict()
 
-for option in [ 1, 2, 3, 4 ]:
+for option in [ 1, 2, 3, 4, 5, 6 ]:
         
     nSVfitProducerModule = None
     nSVfitProducerModuleName = None
@@ -347,7 +354,8 @@ for option in [ 1, 2, 3, 4 ]:
         nSVfitProducerModuleName = "nSVfitProducerByIntegrationWOtracks"
         svFitAnalyzerModuleType = "NSVfitEventHypothesisByIntegrationAnalyzer"
     elif option == 2:
-        # option 2: Markov Chain integration of likelihood functions, no tracking information used
+        # option 2: Markov Chain integration of likelihood functions, no tracking information used,
+        #           maximum taken as "the" SVfit mass
         nSVfitProducerModule = process.nSVfitProducerByIntegration2.clone()
         nSVfitProducerModule.config.event.resonances.A.daughters.leg1.src = cms.InputTag('genMatchedPatMuons')
         nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(process.nSVfitMuonLikelihoodMatrixElement)
@@ -370,11 +378,41 @@ for option in [ 1, 2, 3, 4 ]:
         nSVfitProducerModule.algorithm.markovChainOptions.numBatches = cms.uint32(1)
         nSVfitProducerModule.algorithm.markovChainOptions.epsilon0 = cms.double(5.e-2)
         nSVfitProducerModule.algorithm.monitorMarkovChain = cms.bool(False)
+        nSVfitProducerModule.algorithm.max_or_median = cms.string("max")
         nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
-        nSVfitProducerModuleName = "nSVfitProducerByIntegration2WOtracks"
+        nSVfitProducerModuleName = "nSVfitProducerByIntegration2WOtracksMax"
         svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"
     elif option == 3:
-        # option 3: Markov Chain integration of likelihood functions, tracking information used for 3-prongs only
+        # option 3: Markov Chain integration of likelihood functions, no tracking information used,
+        #           maximum taken as "the" SVfit mass
+        nSVfitProducerModule = process.nSVfitProducerByIntegration2.clone()
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.src = cms.InputTag('genMatchedPatMuons')
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(process.nSVfitMuonLikelihoodMatrixElement)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.builder = process.nSVfitTauToMuBuilder
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.src = cms.InputTag('genMatchedPatTaus')
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(process.nSVfitTauLikelihoodPhaseSpace)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = process.nSVfitTauToHadBuilder
+        nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
+        nSVfitProducerModule.config.event.srcMEt = cms.InputTag('pfType1CorrectedMet')
+        nSVfitProducerModule.config.event.builder = process.nSVfitEventBuilder
+        nSVfitProducerModule.algorithm.markovChainOptions.initMode = cms.string("none")
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterBurnin = cms.uint32(50000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSampling = cms.uint32(500000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(30000)
+        nSVfitProducerModule.algorithm.markovChainOptions.alpha = cms.double(0.9999)
+        nSVfitProducerModule.algorithm.markovChainOptions.numChains = cms.uint32(1)
+        nSVfitProducerModule.algorithm.markovChainOptions.numBatches = cms.uint32(1)
+        nSVfitProducerModule.algorithm.markovChainOptions.epsilon0 = cms.double(5.e-2)
+        nSVfitProducerModule.algorithm.monitorMarkovChain = cms.bool(False)
+        nSVfitProducerModule.algorithm.max_or_median = cms.string("median")
+        nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
+        nSVfitProducerModuleName = "nSVfitProducerByIntegration2WOtracksMedian"
+        svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"        
+    elif option == 4:
+        # option 4: Markov Chain integration of likelihood functions, tracking information used for 3-prongs only
         nSVfitProducerModule = process.nSVfitProducerByIntegration2.clone()
         nSVfitProducerModule.config.event.resonances.A.daughters.leg1.src = cms.InputTag('genMatchedPatMuons')
         nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(process.nSVfitMuonLikelihoodMatrixElement)
@@ -405,8 +443,9 @@ for option in [ 1, 2, 3, 4 ]:
         nSVfitProducerModule.algorithm.verbosity = cms.int32(0)
         nSVfitProducerModuleName = "nSVfitProducerByIntegration2WtracksFor3prongsOnly"
         svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"
-    elif option == 4:
-        # option 4: Markov Chain integration of likelihood functions, tracking information used for all tau decays
+    elif option == 5:
+        # option 5: Markov Chain integration of likelihood functions, tracking information used for all tau decays,
+        #           likelihood term for tau lifetime enabled, maximum taken as "the" SVfit mass
         nSVfitProducerModule = process.nSVfitProducerByIntegration2.clone()
         nSVfitProducerModule.config.event.resonances.A.daughters.leg1.src = cms.InputTag('genMatchedPatMuons')
         nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(process.nSVfitMuonLikelihoodMatrixElement, process.nSVfitMuonLikelihoodTrackInfo)
@@ -432,11 +471,48 @@ for option in [ 1, 2, 3, 4 ]:
         nSVfitProducerModule.algorithm.markovChainOptions.alpha = cms.double(0.9999)
         nSVfitProducerModule.algorithm.markovChainOptions.numChains = cms.uint32(1)
         nSVfitProducerModule.algorithm.markovChainOptions.numBatches = cms.uint32(1)
+        nSVfitProducerModule.algorithm.markovChainOptions.epsilon0 = cms.double(5.e-2)        
+        nSVfitProducerModule.algorithm.monitorMarkovChain = cms.bool(False)
+        nSVfitProducerModule.algorithm.max_or_median = cms.string("max")
+        nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
+        nSVfitProducerModuleName = "nSVfitProducerByIntegration2WtracksFor1prongsAnd3prongsWlifetimeConstraintMax"
+        svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"
+    elif option == 6:
+        # option 6: Markov Chain integration of likelihood functions, tracking information used for all tau decays,
+        #           likelihood term for tau lifetime enabled, median taken as "the" SVfit mass
+        nSVfitProducerModule = process.nSVfitProducerByIntegration2.clone()
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.src = cms.InputTag('genMatchedPatMuons')
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(process.nSVfitMuonLikelihoodMatrixElement, process.nSVfitMuonLikelihoodTrackInfo.clone())
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].useLifetimeConstraint = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.builder = process.nSVfitTauToMuBuilder
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.src = cms.InputTag('genMatchedPatTaus')
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(process.nSVfitTauLikelihoodPhaseSpace, process.nSVfitTauLikelihoodTrackInfo.clone())
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[1].ignore3Prongs = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[1].ignore1Prongs = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[1].useLifetimeConstraint = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = process.nSVfitTauToHadBuilder
+        nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
+        ## CV: varying primary event vertex position makes algorithm numerically unstable !!
+        ##nSVfitProducerModule.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt2, process.nSVfitEventLikelihoodTrackInfo)
+        nSVfitProducerModule.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt2)
+        nSVfitProducerModule.config.event.srcMEt = cms.InputTag('pfType1CorrectedMet')
+        nSVfitProducerModule.config.event.builder = process.nSVfitEventBuilder
+        nSVfitProducerModule.algorithm.markovChainOptions.initMode = cms.string("none")
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterBurnin = cms.uint32(50000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSampling = cms.uint32(500000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(30000)
+        nSVfitProducerModule.algorithm.markovChainOptions.alpha = cms.double(0.9999)
+        nSVfitProducerModule.algorithm.markovChainOptions.numChains = cms.uint32(1)
+        nSVfitProducerModule.algorithm.markovChainOptions.numBatches = cms.uint32(1)
         nSVfitProducerModule.algorithm.markovChainOptions.epsilon0 = cms.double(5.e-2)
         nSVfitProducerModule.algorithm.monitorMarkovChain = cms.bool(False)
+        nSVfitProducerModule.algorithm.max_or_median = cms.string("median")
         nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
-        nSVfitProducerModuleName = "nSVfitProducerByIntegration2WtracksFor1prongsAnd3prongs"
-        svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"
+        nSVfitProducerModuleName = "nSVfitProducerByIntegration2WtracksFor1prongsAnd3prongsWlifetimeConstraintMedian"
+        svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"     
     else:
         raise ValueError("Option %i undefined !!" % option)
 
@@ -502,7 +578,7 @@ process.p = cms.Path(process.testSVfitTrackLikelihoodSequence)
 # than SVfit mass reconstructed without using track information
 # in likelihood model
 
-for option1_vs_2 in [ [ 2, 3 ], [ 2, 4 ] ]:
+for option1_vs_2 in [ [ 2, 3 ], [ 2, 4 ], [ 2, 5 ], [ 2, 6 ] ]:
     
     option1 = option1_vs_2[0]
     nSVfitProducerModuleName1 = nSVfitProducerModuleNames[option1]

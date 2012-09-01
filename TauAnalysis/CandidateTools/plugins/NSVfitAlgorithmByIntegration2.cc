@@ -15,6 +15,8 @@
 
 using namespace SVfit_namespace;
 
+enum { kMax, kMedian };
+
 namespace 
 {
   class Integrand : public ROOT::Math::Functor
@@ -128,6 +130,12 @@ NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2(const edm::Paramete
 
   monitorMarkovChain_ = ( cfg.exists("monitorMarkovChain") ) ?
     cfg.getParameter<bool>("monitorMarkovChain") : false;
+
+  std::string max_or_median_string = cfg.getParameter<std::string>("max_or_median");
+  if      ( max_or_median_string == "max"    ) max_or_median_ = kMax;
+  else if ( max_or_median_string == "median" ) max_or_median_ = kMedian;
+  else throw cms::Exception("NSVfitAlgorithmByIntegration2")
+    << " Invalid Configuration Parameter 'max_or_median' = " << max_or_median_string << " !!\n";
 }
 
 NSVfitAlgorithmByIntegration2::~NSVfitAlgorithmByIntegration2() 
@@ -187,6 +195,7 @@ void NSVfitAlgorithmByIntegration2::beginJob()
   auxPhysicalSolutionFinder_ = new AuxPhysicalSolutionFinder(this);
   integrator_->setStartPosition_and_MomentumFinder(*auxPhysicalSolutionFinder_);
 
+  startPosition_.resize(numDimensions_);
   intBoundaryLower_.resize(numDimensions_);
   intBoundaryUpper_.resize(numDimensions_);
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
@@ -262,24 +271,25 @@ TH1* NSVfitAlgorithmByIntegration2::bookMassHistogram(const std::string& histogr
 
 void NSVfitAlgorithmByIntegration2::fitImp() const
 {
-  std::vector<double> startPosition(numDimensions_);
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     const NSVfitParameter* fitParameter_ref = fitParameterMappings_[iDimension].base_; 
-    startPosition[iDimension] = fitParameter_ref->InitialValue();
+    startPosition_[iDimension] = fitParameter_ref->InitialValue();
+    intBoundaryUpper_[iDimension] = fitParameter_ref->UpperLimit(); 
+    intBoundaryLower_[iDimension] = fitParameter_ref->LowerLimit();
   }
-  if ( verbosity_ >= 2 ) std::cout << "startPosition = " << format_vdouble(startPosition) << std::endl;
+  if ( verbosity_ >= 2 ) std::cout << "startPosition = " << format_vdouble(startPosition_) << std::endl;
 
   // CV: transform startPosition into interval ]-1..+1[
   //     expected by MarkovChainIntegrator class
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    double x_i = startPosition[iDimension];
+    double x_i = startPosition_[iDimension];
     double xMax = intBoundaryUpper_[iDimension];
     double xMin = intBoundaryLower_[iDimension];
     assert(xMax > xMin);
-    startPosition[iDimension] = (x_i - xMin)/(xMax - xMin);
+    startPosition_[iDimension] = (x_i - xMin)/(xMax - xMin);
   }
-  if ( verbosity_ >= 2 ) std::cout << "startPosition (mapped into interval ]-1..+1[) = " << format_vdouble(startPosition) << std::endl;
-  integrator_->initializeStartPosition_and_Momentum(startPosition);
+  if ( verbosity_ >= 2 ) std::cout << "startPosition (mapped into interval ]-1..+1[) = " << format_vdouble(startPosition_) << std::endl;
+  integrator_->initializeStartPosition_and_Momentum(startPosition_);
 
   double integral, integralErr;
   int errorFlag = 0;
@@ -324,7 +334,9 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
       extractHistogramProperties(
         probHistFitParameter_[iDimension], probHistFitParameter_[iDimension],
 	valueMaximum, valueMaximum_interpol, valueMean, valueQuantile016, valueQuantile050, valueQuantile084);
-      fitParameterValues_[iDimension] = valueMaximum_interpol;
+      if      ( max_or_median_ == kMax    ) fitParameterValues_[iDimension] = valueMaximum_interpol;
+      else if ( max_or_median_ == kMedian ) fitParameterValues_[iDimension] = valueQuantile050;
+      else assert(0);
     }
     fittedEventHypothesis_nll_ = this->nll(fitParameterValues_, 0);
   } else {
@@ -354,14 +366,19 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
       histMassResult, histMassResult_density,
       massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084);
     
-    double massErrUp   = TMath::Abs(massQuantile084 - massMaximum_interpol);
-    double massErrDown = TMath::Abs(massMaximum_interpol - massQuantile016);
-    NSVfitAlgorithmBase::setMassResults(resonance, massMaximum_interpol, massErrUp, massErrDown);
+    double mass;
+    if      ( max_or_median_ == kMax    ) mass = massMaximum_interpol;
+    else if ( max_or_median_ == kMedian ) mass = massQuantile050;
+    else assert(0);
+    double massErrUp   = TMath::Abs(massQuantile084 - mass);
+    double massErrDown = TMath::Abs(mass - massQuantile016);
+    NSVfitAlgorithmBase::setMassResults(resonance, mass, massErrUp, massErrDown);
   
     resonance->isValidSolution_ = true;
     
     if ( verbosity_ >= 1 ) {
       std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
+      std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
       std::cout << "--> mass = " << resonance->mass_ << std::endl;
       std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
     }

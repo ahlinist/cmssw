@@ -227,8 +227,8 @@ void NSVfitTauToHadInputAnalyzer::analyze(const edm::Event& evt, const edm::Even
   genTauVisMass_->Fill(matchedTau->genVisP4_.mass(), evtWeight);
   genTauDecayDistance_->Fill(matchedTau->genTauDecayDistance_, evtWeight);
   genTauDecayMode_->getTH1()->Fill(matchedTau->genTauDecayMode_.data(), evtWeight);
-  genTau_phi_lab_->Fill(gjAngleFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
-  genTau_gjAngle_->Fill(phiLabFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
+  genTau_phi_lab_->Fill(phiLabFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
+  genTau_gjAngle_->Fill(gjAngleFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
 
   const reco::GenParticle* genLeadTrack = 0;
   double genLeadTrackPt = -1.;

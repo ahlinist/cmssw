@@ -7,9 +7,9 @@
  *
  * \author Evan K. Friis, Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitTauDecayBuilder.h,v 1.2 2012/03/16 17:35:40 veelken Exp $
+ * $Id: NSVfitTauDecayBuilder.h,v 1.3 2012/08/28 15:00:20 veelken Exp $
  *
  */
 
@@ -109,6 +109,8 @@ class NSVfitTauDecayBuilder : public NSVfitSingleParticleBuilderBase
     mutable double genDeltaR_;
     bool fixToGenVisP4_;
     mutable reco::Candidate::LorentzVector genVisP4_;
+
+    mutable long numWarnings_compIntersection_of_lines_;
 };
 
 void applyOptionalFitParameter(const double*, int, double&);

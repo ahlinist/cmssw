@@ -14,7 +14,7 @@
 <use   name="DataFormats/TrackReco"/>
 <use   name="DataFormats/VertexReco"/>
 <use   name="AnalysisDataFormats/TauAnalysis"/>
-<use   name="JetMETCorrections/Type1MET"/>
+<use   name="JetMETCorrections/METPUSubtraction"/>
 <use   name="PhysicsTools/JetMCUtils"/>
 <use   name="RecoMET/METAlgorithms"/> 
 <use   name="RecoVertex/VertexPrimitives"/>
