@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: PFMEtSignInterface.h,v 1.3 2012/03/14 09:49:22 veelken Exp $
+ * $Id: PFMEtSignInterface.h,v 1.4 2012/08/28 15:00:20 veelken Exp $
  *
  */
 
@@ -24,7 +24,7 @@
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 
-#include "JetMETCorrections/Type1MET/interface/PFMEtSignInterfaceBase.h"
+#include "JetMETCorrections/METPUSubtraction/interface/PFMEtSignInterfaceBase.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventLikelihood.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"

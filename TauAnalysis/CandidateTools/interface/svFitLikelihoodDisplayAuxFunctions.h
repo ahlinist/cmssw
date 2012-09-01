@@ -35,10 +35,11 @@ struct matchedTauDecayType
   reco::Candidate::LorentzVector genInvisP4_;
   
   const reco::Candidate* recCandidate_;
-  reco::Candidate::LorentzVector recVisP4_;
+  reco::Candidate::LorentzVector recVisP4_;  
   std::vector<const reco::Track*> recTracks_;
   const reco::Track* recLeadTrack_;
   reco::TransientTrack* recLeadTrackTrajectory_;
+  const TransientTrackBuilder* trackBuilder_;
   TransientVertex* recTauDecayVertex_;
   AlgebraicVector3 recTauDecayVertexPos_;
   AlgebraicMatrix33 recTauDecayVertexCov_;

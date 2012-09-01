@@ -112,7 +112,7 @@ void NSVfitEventInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSe
 {
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(srcGenParticles_, genParticles);
-  
+
   std::vector<const reco::GenParticle*> genTaus;
   reco::Candidate::LorentzVector genMEtP4(0,0,0,0);
   for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin();
@@ -122,7 +122,7 @@ void NSVfitEventInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSe
     if ( absPdgId == 15 && status == 2 ) genTaus.push_back(&(*genParticle));
     else if ( (absPdgId == 12 || absPdgId == 14 || absPdgId == 16) && status == 1 ) genMEtP4 += genParticle->p4();
   }
-  
+
   edm::Handle<reco::PFMETCollection> recMETs;
   evt.getByLabel(srcMEt_, recMETs);
   if ( !(recMETs->size() == 1) )
@@ -178,7 +178,7 @@ void NSVfitEventInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSe
     evt.getByLabel(srcTaus_, taus);
     matchRecToGenTauDecays(*taus, genTaus, 0.3, matchedTauDecays);
   }
-  
+
   std::vector<const reco::Track*> tauTracks;
   for ( std::vector<matchedTauDecayType*>::const_iterator matchedTauDecay = matchedTauDecays.begin();
 	matchedTauDecay != matchedTauDecays.end(); ++matchedTauDecay ) {
@@ -244,7 +244,7 @@ void NSVfitEventInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSe
   genVertexR_->Fill(genVertexR, evtWeight);
   genVertexPhi_->Fill(genVertexPos_point.phi(), evtWeight);
   genVertexZ_->Fill(genVertexPos(2), evtWeight);
-  
+
   if ( recVertexIsValid ) {
     AlgebraicVector3 recWrtGenVertexPos = recVertexPos_refitted - genVertexPos;
 
@@ -253,7 +253,7 @@ void NSVfitEventInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSe
     recVertexDeltaZ_->Fill(recWrtGenVertexPos(2), evtWeight);
     recVertexNDoF_->Fill(recVertex_refitted.degreesOfFreedom(), evtWeight);
     recVertexNormalizedChi2_->Fill(recVertex_refitted.normalisedChiSquared(), evtWeight);
-    
+
     double recVertexSigmaX = TMath::Sqrt(recVertexCov_refitted(0, 0));
     double recVertexSigmaY = TMath::Sqrt(recVertexCov_refitted(1, 1));
     double recVertexSigmaZ = TMath::Sqrt(recVertexCov_refitted(2, 2));
@@ -261,7 +261,7 @@ void NSVfitEventInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSe
     recVertexSigmaX_->Fill(recVertexSigmaX, evtWeight);
     recVertexSigmaY_->Fill(recVertexSigmaY, evtWeight);
     recVertexSigmaZ_->Fill(recVertexSigmaZ, evtWeight);
-  
+
     double recVertexSigma3d = TMath::Sqrt(ROOT::Math::Similarity(recWrtGenVertexPos.Unit(), recVertexCov_refitted));
     if ( recVertexSigma3d > 0. ) recVertexPull3d_->Fill(TMath::Sqrt(norm2(recWrtGenVertexPos))/recVertexSigma3d, evtWeight);
     if ( recVertexSigmaX  > 0. ) recVertexPullX_->Fill(recWrtGenVertexPos(0)/recVertexSigmaX, evtWeight);

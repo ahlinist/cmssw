@@ -217,6 +217,59 @@ namespace SVfit_namespace
       return std::numeric_limits<float>::min();
     }
   }
+  
+  //
+  //-------------------------------------------------------------------------------
+  //
+
+  double compScalarProduct(const AlgebraicVector3& p1, const AlgebraicVector3& p2)
+  {
+    return (p1(0)*p2(0) + p1(1)*p2(1) + p1(2)*p2(2));
+  }
+
+  AlgebraicVector3 compIntersection_of_lines(const AlgebraicVector3& offset1, const AlgebraicVector3& slope1, 
+					     const AlgebraicVector3& offset2, const AlgebraicVector3& slope2, long& numWarnings, int verbosity)
+  {
+    // CV: algorithm taken from http://www.softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
+
+    //if ( verbosity ) {
+    //  std::cout << "<compIntersection_of_lines>:" << std::endl;
+    //  printVector("offset1", offset1);
+    //  printVector("slope1", slope1);
+    //  printVector("offset2", offset2);
+    //  printVector("slope2", slope2);
+    //}
+
+    AlgebraicVector3 w0(offset1(0) - offset2(0), offset1(1) - offset2(1), offset1(2) - offset2(2));
+
+    double a = compScalarProduct(slope1, slope1);
+    double b = compScalarProduct(slope1, slope2);
+    double c = compScalarProduct(slope2, slope2);
+    double d = compScalarProduct(slope1, w0);
+    double e = compScalarProduct(slope2, w0);
+    
+    double denominator = (a*c - square(b));
+    if ( !(denominator >= 0.) ) {
+      if ( numWarnings < 3 ) {
+	edm::LogWarning ("compIntersection_of_lines")
+	  << "Lines given as arguments are parallel --> returning s = t = 0 !!";
+	++numWarnings;
+      }
+      return offset2;
+    }
+
+    double t = (a*e - b*d)/denominator;
+
+    // CV: limit tau decay distance to 100 cm
+    if ( t > 100. ) t = 100.;
+
+    AlgebraicVector3 solution(offset2(0) + t*slope2(0), offset2(1) + t*slope2(1), offset2(2) + t*slope2(2));
+    //if ( verbosity ) {
+    //  printVector("solution", solution);
+    //}
+
+    return solution;
+  }
 
   //
   //-------------------------------------------------------------------------------

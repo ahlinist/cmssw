@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitAlgorithmByIntegration2.h,v 1.1 2012/04/07 15:44:43 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration2.h,v 1.2 2012/08/28 15:00:22 veelken Exp $
  *
  */
 
@@ -74,8 +74,9 @@ class NSVfitAlgorithmByIntegration2 : public NSVfitAlgorithmBase
   ROOT::Math::Functor* integrand_;
   MarkovChainIntegrator* integrator_;
   ROOT::Math::Functor* auxPhysicalSolutionFinder_;
-  std::vector<double> intBoundaryLower_;
-  std::vector<double> intBoundaryUpper_;
+  mutable std::vector<double> startPosition_;
+  mutable std::vector<double> intBoundaryLower_;
+  mutable std::vector<double> intBoundaryUpper_;
   unsigned numDimensions_;
 
   bool monitorMarkovChain_;  
@@ -88,6 +89,8 @@ class NSVfitAlgorithmByIntegration2 : public NSVfitAlgorithmBase
   TH1* probHistEventMass_;
   mutable std::vector<double> probListEventMass_;
   ROOT::Math::Functor* auxFillProbHistograms_;
+
+  int max_or_median_;
 
   edm::RunNumber_t currentRunNumber_;
   edm::LuminosityBlockNumber_t currentLumiSectionNumber_;

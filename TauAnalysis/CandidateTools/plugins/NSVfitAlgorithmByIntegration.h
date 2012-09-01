@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.13 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.11 2012/04/24 10:14:28 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.13 2012/08/29 14:40:49 veelken Exp $
  *
  */
 
@@ -215,6 +215,8 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
 
   unsigned numMassParameters_;
   IndepCombinatoricsGeneratorT<int>* massParForReplacements_;
+
+  int max_or_median_;
 };
 
 #endif

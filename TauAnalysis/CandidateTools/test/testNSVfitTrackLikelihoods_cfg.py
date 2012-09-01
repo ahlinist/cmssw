@@ -17,12 +17,18 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+    input = cms.untracked.int32(20)
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
+    ),
+    eventsToProcess = cms.untracked.VEventRange(
+        #'1:2399:719456',
+        #'1:2418:725094',
+        '1:2418:725139',
+        #'1:2418:725278'
     )
 )
 
@@ -263,7 +269,7 @@ process.testSVfitTrackLikelihoodSequence += process.genEventVertex
 process.load("TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi")
 
 # CV: fix tau decay parameters to Monte Carlo truth values
-##process.nSVfitTauToMuBuilder.fixToGenVisEnFracX = cms.bool(True)
+#process.nSVfitTauToMuBuilder.fixToGenVisEnFracX = cms.bool(True)
 process.nSVfitTauToMuBuilder.initializeToGenVisEnFracX = cms.bool(True)
 process.nSVfitTauToMuBuilder.fixToGenPhiLab = cms.bool(True)
 process.nSVfitTauToMuBuilder.fixToGenNuInvMass = cms.bool(True)
@@ -273,11 +279,12 @@ process.nSVfitTauToMuBuilder.fixToGenVisP4 = cms.bool(True)
 process.nSVfitTauToMuBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToMuBuilder.dRmatch = cms.double(0.3)
 
-##process.nSVfitTauToHadBuilder.fixToGenVisEnFracX = cms.bool(True)
+#process.nSVfitTauToHadBuilder.fixToGenVisEnFracX = cms.bool(True)
 process.nSVfitTauToHadBuilder.initializeToGenVisEnFracX = cms.bool(True)
 process.nSVfitTauToHadBuilder.fixToGenPhiLab = cms.bool(True)
 process.nSVfitTauToHadBuilder.fixToGenNuInvMass = cms.bool(True)
-process.nSVfitTauToHadBuilder.fixToGenDeltaR = cms.bool(True)
+#process.nSVfitTauToHadBuilder.fixToGenDeltaR = cms.bool(True)
+process.nSVfitTauToHadBuilder.fixToGenDeltaR = cms.bool(False)
 process.nSVfitTauToHadBuilder.fixToGenVisP4 = cms.bool(True)
 process.nSVfitTauToHadBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToHadBuilder.dRmatch = cms.double(0.3)
@@ -380,11 +387,11 @@ process.nSVfitProducerByIntegration2WOtracks.config.event.builder = process.nSVf
 process.nSVfitProducerByIntegration2WOtracks.config.event.builder.verbosity = cms.int32(0)
 process.nSVfitProducerByIntegration2WOtracks.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
 process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.initMode = cms.string("none")
-process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterBurnin = cms.uint32(500000)
-process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterSampling = cms.uint32(5000000)
-process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(100000)
-process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(300000)
-process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.alpha = cms.double(0.99999)
+process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterBurnin = cms.uint32(50)
+process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterSampling = cms.uint32(500)
+process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10)
+process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(30)
+process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.alpha = cms.double(0.9)
 process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numChains = cms.uint32(1)
 process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.numBatches = cms.uint32(1)
 process.nSVfitProducerByIntegration2WOtracks.algorithm.markovChainOptions.epsilon0 = cms.double(5.e-2)
@@ -394,14 +401,19 @@ process.nSVfitProducerByIntegration2WOtracks.algorithm.verbosity = cms.int32(1)
 
 process.nSVfitProducerByIntegration2Wtracks = process.nSVfitProducerByIntegration2WOtracks.clone()
 process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(process.nSVfitMuonLikelihoodMatrixElement, process.nSVfitMuonLikelihoodTrackInfo)
-process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg1.builder.verbosity = cms.int32(0)
+process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].verbosity = cms.int32(0)
+process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg1.likelihoodFunctions[1].verbosity = cms.int32(0)
+process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg1.builder.verbosity = cms.int32(2)
 process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(process.nSVfitTauLikelihoodPhaseSpace, process.nSVfitTauLikelihoodTrackInfo)
-process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg2.builder.verbosity = cms.int32(0)
+process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].verbosity = cms.int32(0)
+process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg2.likelihoodFunctions[1].verbosity = cms.int32(0)
+process.nSVfitProducerByIntegration2Wtracks.config.event.resonances.A.daughters.leg2.builder.verbosity = cms.int32(2)
 ##process.nSVfitProducerByIntegration2Wtracks.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt2, process.nSVfitEventLikelihoodTrackInfo)
 process.nSVfitProducerByIntegration2Wtracks.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt2)
+process.nSVfitProducerByIntegration2Wtracks.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
 process.nSVfitProducerByIntegration2Wtracks.config.event.builder.verbosity = cms.int32(0)
 process.nSVfitProducerByIntegration2Wtracks.algorithm.monitorMarkovChain = cms.bool(True)
-process.nSVfitProducerByIntegration2Wtracks.algorithm.verbosity = cms.int32(1)
+process.nSVfitProducerByIntegration2Wtracks.algorithm.verbosity = cms.int32(2)
 process.testSVfitTrackLikelihoodSequence += process.nSVfitProducerByIntegration2Wtracks
 #--------------------------------------------------------------------------------
 

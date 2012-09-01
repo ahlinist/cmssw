@@ -237,6 +237,7 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 
     for ( unsigned iMove = 0; iMove < numIterBurnin_; ++iMove ) {
 //--- propose Markov Chain transition to new, randomly chosen, point
+      if ( verbosity_ >= 2 ) std::cout << "burn-in move #" << iMove << ":" << std::endl;
       bool isAccepted = false;
       bool isValid = true;
       do {
@@ -249,18 +250,15 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
     for ( unsigned iMove = 0; iMove < numIterSampling_; ++iMove ) {
 //--- propose Markov Chain transition to new, randomly chosen, point;
 //    evaluate "call-back" functions at this point
-      //std::cout << "move #" << iMove << ":" << std::endl;
-      //verbosity_ = 1;
+      if ( verbosity_ >= 2 ) std::cout << "sampling move #" << iMove << ":" << std::endl;
       bool isAccepted = false;
       bool isValid = true;
       do {
 	makeStochasticMove(numIterBurnin_ + iMove, isAccepted, isValid);
       } while ( !isValid );
       if ( isAccepted ) {
-	//if ( verbosity_ ) std::cout << "move accepted." << std::endl;
 	++numMoves_accepted_;
       } else {
-	//if ( verbosity_ ) std::cout << "move rejected." << std::endl;
 	++numMoves_rejected_;
       }
 
@@ -509,7 +507,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
 //    compute change in phase-space volume for "dummy" momentum components
 //   (eqs. 25 in [2])
   double probProposal = evalProb(qProposal_);
-  //if ( verbosity_ ) std::cout << "prob(proposed) = " << probProposal << std::endl;
+  if ( verbosity_ >= 2 ) std::cout << "prob(proposed) = " << probProposal << std::endl;
 
   double deltaE = 0.;
   if      ( probProposal > 0. && prob_ > 0. ) deltaE = -TMath::Log(probProposal/prob_);
@@ -531,9 +529,12 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
   double base = 1. - deltaE_or_H/Kd;
   double rho = ( base > 0. ) ? 
     TMath::Power(base, 0.5*numDimensions_ - 1.) : 0.;
-  //if ( verbosity_ ) std::cout << " rho = " << rho << std::endl;
+  if ( verbosity_ >= 2 ) std::cout << " rho = " << rho << std::endl;
   
-  if ( rnd_.Uniform(0., 1.) < rho ) {
+  double u = rnd_.Uniform(0., 1.);
+  if ( verbosity_ >= 2 ) std::cout << "u = " << u << std::endl;
+  if ( u < rho ) {
+    if ( verbosity_ >= 2 ) std::cout << "move accepted." << std::endl;
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {    
       q_[iDimension] = qProposal_[iDimension];
     }
@@ -545,6 +546,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
     prob_ = evalProb(q_);
     isAccepted = true;
   } else {
+    if ( verbosity_ >= 2 ) std::cout << "move rejected." << std::endl;
     isAccepted = false;
   }
 }

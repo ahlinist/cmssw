@@ -35,8 +35,18 @@ NSVfitTauDecayLikelihoodTrackInfo::~NSVfitTauDecayLikelihoodTrackInfo()
 
 void NSVfitTauDecayLikelihoodTrackInfo::beginJob(NSVfitAlgorithmBase* algorithm)
 {
+  algorithm_ = algorithm;
+
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,                 pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_decayDistance_lab_shift, pluginName_);
+}
+
+void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticleHypothesis*)
+{
+  NSVfitParameter* fitParameter = algorithm_->getFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_decayDistance_lab_shift);
+  assert(fitParameter);
+  decayDistance_lab_shift_lowerLimit_ = fitParameter->LowerLimit();
+  decayDistance_lab_shift_upperLimit_ = fitParameter->UpperLimit();
 }
 
 namespace{
@@ -122,6 +132,19 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
       } else {
 	nll += hypothesis_T->leadTrackExtrapolationNLL();
       }
+      //if ( useLifetimeConstraint_ ) { 
+      // CV: add likelihood correction term to account for the fact 
+      //     that integration of decay distance is truncated to reduce computing times
+      //  double d0 = TMath::Max(0., hypothesis_T->expectedDecayDistance() + decayDistance_lab_shift_lowerLimit_);
+      //  double d1 = hypothesis_T->expectedDecayDistance() + decayDistance_lab_shift_upperLimit_;
+      //  double p = hypothesis_T->p4_fitted().P();
+      //  if ( p < 1. ) p = 1.;
+      //  double a = (p/tauLeptonMass)*cTauLifetime;
+      //  double tauFlightPath = hypothesis_T->expectedDecayDistance();
+      //  if ( tauFlightPath < 0. ) tauFlightPath = 0.;
+      //  double norm = 1./(TMath::Exp(-d0/a) - TMath::Exp(-d1/a));
+      //  nll -= TMath::Log(norm);
+      //}    
     }
   }
 

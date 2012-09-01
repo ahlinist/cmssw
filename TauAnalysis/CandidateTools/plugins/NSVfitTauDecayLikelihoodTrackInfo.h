@@ -8,9 +8,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.3 2012/03/14 16:34:47 veelken Exp $
+ * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.4 2012/08/28 15:00:23 veelken Exp $
  *
  */
 
@@ -30,6 +30,7 @@ class NSVfitTauDecayLikelihoodTrackInfo : public NSVfitSingleParticleLikelihood
   ~NSVfitTauDecayLikelihoodTrackInfo();
 
   void beginJob(NSVfitAlgorithmBase*);
+  void beginCandidate(const NSVfitSingleParticleHypothesis*);
 
   double operator()(const NSVfitSingleParticleHypothesis*, int) const;
 
@@ -39,6 +40,11 @@ class NSVfitTauDecayLikelihoodTrackInfo : public NSVfitSingleParticleLikelihood
 
   bool ignore3Prongs_;
   bool ignore1Prongs_;
+
+  NSVfitAlgorithmBase* algorithm_;
+
+  double decayDistance_lab_shift_lowerLimit_;
+  double decayDistance_lab_shift_upperLimit_;
 };
 
 #endif

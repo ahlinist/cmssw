@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: ToyMEtSignCovMatrixProducer.h,v 1.1 2012/03/22 11:27:23 veelken Exp $
+ * $Id: ToyMEtSignCovMatrixProducer.h,v 1.2 2012/08/28 15:00:24 veelken Exp $
  *
  */
 
@@ -20,7 +20,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "JetMETCorrections/Type1MET/interface/PFMEtSignInterfaceBase.h"
+#include "JetMETCorrections/METPUSubtraction/interface/PFMEtSignInterfaceBase.h"
 
 class ToyMEtSignCovMatrixProducer : public edm::EDProducer 
 {
