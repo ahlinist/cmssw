@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.9 2012/05/30 14:17:39 meridian Exp $
+# $Id: common_dump_config.py,v 1.10 2012/06/09 19:30:22 meridian Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -28,7 +28,6 @@ process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
-
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
@@ -61,7 +60,6 @@ process.monster = cms.EDFilter(
 
 
 ###########  EB SPIKE CLEANING BEGIN #####################
-
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('Configuration/StandardSequences/GeometryExtended_cff')
 process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
@@ -78,7 +76,7 @@ process.load("RecoMET.Configuration.RecoGenMET_cff")
 process.load("RecoMET.Configuration.GenMETParticles_cff")
 process.load("JetMETCorrections.Configuration.DefaultJEC_cff")
 #process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")    # new for 52X
-process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")   # chiara: controlla la storia dell'ordine
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")        # chiara: controlla la storia dell'ordine
 
 #process.ak5CaloL1Offset.useCondDB = False
 #process.ak5PFL1Offset.useCondDB = False
@@ -115,6 +113,30 @@ process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
 
 # mva jetId
 from CMGTools.External.pujetidsequence_cff import puJetMva
+
+# chiara - init!
+# this is the PF candidate isolation with pfnopu input and custom vetoes
+from CommonTools.ParticleFlow.pfNoPileUp_cff import *
+pfPileUp.PFCandidates = "particleFlow"
+pfNoPileUp.bottomCollection = "particleFlow"
+process.myPfPUSequence = cms.Sequence( pfPileUp * pfNoPileUp )
+
+# here the isolations
+from MyAnalysis.IsolationTools.electronPFIsolations_cff import *
+from MyAnalysis.IsolationTools.muonPFIsolations_cff import *
+process.myElectronPFIsoChHad03  = electronPFIsoChHad03.clone()
+process.myElectronPFIsoNHad03   = electronPFIsoNHad03.clone();
+process.myElectronPFIsoPhoton03 = electronPFIsoPhoton03.clone();
+process.myElectronPFIsoChHad04  = electronPFIsoChHad04.clone()
+process.myElectronPFIsoNHad04   = electronPFIsoNHad04.clone();
+process.myElectronPFIsoPhoton04 = electronPFIsoPhoton04.clone();
+process.myElectronPFIsoChHad05  = electronPFIsoChHad05.clone()
+process.myElectronPFIsoNHad05   = electronPFIsoNHad05.clone();
+process.myElectronPFIsoPhoton05 = electronPFIsoPhoton05.clone();
+#
+process.myPfIsolationSingleType = cms.Sequence(process.myElectronPFIsoChHad03 * process.myElectronPFIsoNHad03 * process.myElectronPFIsoPhoton03 * process.myElectronPFIsoChHad04 * process.myElectronPFIsoNHad04 * process.myElectronPFIsoPhoton04 * process.myElectronPFIsoChHad05 * process.myElectronPFIsoNHad05 * process.myElectronPFIsoPhoton05 );
+# chiara - end!
+
 
 #from HiggsAnalysis.HiggsToGammaGamma.PhotonFixParams4_2_cfi import *
 ## dumper module
@@ -170,12 +192,12 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     puJetIDAlgos = puJetMva.algos,
                                     
     genjetptthr = cms.double(5.),
-    calojetptthr = cms.double(3.),
-    pfjetptthr = cms.double(4.),
-    jptjetptthr = cms.double(4.),
+    calojetptthr = cms.double(5.),
+    pfjetptthr = cms.double(6.),
+    jptjetptthr = cms.double(6.),
     genjetnmin = cms.int32(10),
-    pfjetnmin = cms.int32(10),
-    jptjetnmin = cms.int32(10),
+    pfjetnmin = cms.int32(5),
+    jptjetnmin = cms.int32(5),
     JetIDParams = theJetIDParams,
     Xsec = cms.double(1.)
                                     
@@ -244,5 +266,10 @@ if (is41X):
 if (doCleanMet):    
     process.analysisSequence *=  (process.highPurityTracks * process.ak5PFJets *process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.PF2PAT * process.ak5PFJetsL1FastL2L3 * process.metCorSequence * process.ClusteredPFMetProducerStd  * process.cleanMETProducer *  process.producePFNoPileUp * process.myanalysis)
 else:
-    process.analysisSequence *=  (process.highPurityTracks * process.ak5PFJets * process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.ClusteredPFMetProducerStd * process.pfJetMETcorr * process.pfchsMETcorr * process.pfType1CorrectedMet * process.myanalysis)
+    process.analysisSequence *=  (process.highPurityTracks * process.ak5PFJets * process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.ClusteredPFMetProducerStd * process.pfJetMETcorr * process.pfchsMETcorr * process.pfType1CorrectedMet * process.myPfPUSequence * process.myPfIsolationSingleType * process.myanalysis)
 
+#process.out = cms.OutputModule("PoolOutputModule",
+#                               fileName = cms.untracked.string("azzo.root")
+#                               )
+process.mypath = cms.Path(process.analysisSequence)
+#process.outpath = cms.EndPath(process.out)
