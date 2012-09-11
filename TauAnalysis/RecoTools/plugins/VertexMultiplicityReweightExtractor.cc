@@ -59,7 +59,7 @@ namespace
     }
     return retVal;
   }
-  std::vector<float> gen_pileup_summer12mc()
+  std::vector<float> gen_pileup_summer12mc_S07()
   {
     const int gen_pu_max = 60;
     const double npu_probs[gen_pu_max] = {
@@ -75,6 +75,30 @@ namespace
       2.746E-03, 1.698E-03, 9.971E-04, 5.549E-04, 2.924E-04,
       1.457E-04, 6.864E-05, 3.054E-05, 1.282E-05, 5.081E-06,
       1.898E-06, 6.688E-07, 2.221E-07, 6.947E-08, 2.047E-08
+    };
+    std::vector<float> retVal(gen_pu_max);
+    for ( int i = 0; i < gen_pu_max; ++i ) {
+      retVal[i] = npu_probs[i];
+    }
+    return retVal;
+  }
+
+  std::vector<float> gen_pileup_summer12mc_S10()
+  {
+    const int gen_pu_max = 60;
+    const double npu_probs[gen_pu_max] = {
+      2.560E-06, 5.239E-06, 1.420E-05, 5.005E-05, 1.001E-04,
+      2.705E-04, 1.999E-03, 6.097E-03, 1.046E-02, 1.383E-02,
+      1.685E-02, 2.055E-02, 2.572E-02, 3.262E-02, 4.121E-02,
+      4.977E-02, 5.539E-02, 5.725E-02, 5.607E-02, 5.312E-02,
+      5.008E-02, 4.763E-02, 4.558E-02, 4.363E-02, 4.159E-02,
+      3.933E-02, 3.681E-02, 3.406E-02, 3.116E-02, 2.818E-02,
+      2.519E-02, 2.226E-02, 1.946E-02, 1.682E-02, 1.437E-02,
+      1.215E-02, 1.016E-02, 8.400E-03, 6.873E-03, 5.564E-03,
+      4.457E-03, 3.533E-03, 2.772E-03, 2.154E-03, 1.656E-03,
+      1.261E-03, 9.513E-04, 7.107E-04, 5.259E-04, 3.856E-04,
+      2.801E-04, 2.017E-04, 1.439E-04, 1.017E-04, 7.126E-05,
+      4.948E-05, 3.405E-05, 2.322E-05, 1.570E-05, 5.005E-06
     };
     std::vector<float> retVal(gen_pu_max);
     for ( int i = 0; i < gen_pu_max; ++i ) {
@@ -125,12 +149,16 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
       gen_pileup_mc = gen_pileup_fall11mc();
       bxPrevious_ = -1;
       bxNext_ = +1;
-    } else if ( mcPeriod.compare("Summer12") == 0 ) {
-      gen_pileup_mc = gen_pileup_summer12mc();
+    } else if ( mcPeriod.compare("Summer12_S07") == 0 ) {
+      gen_pileup_mc = gen_pileup_summer12mc_S07();
+      bxPrevious_ = -1;
+      bxNext_ = +1;
+    } else if ( mcPeriod.compare("Summer12_S10") == 0 ) {
+      gen_pileup_mc = gen_pileup_summer12mc_S10();
       bxPrevious_ = -1;
       bxNext_ = +1;
     } else throw cms::Exception("VertexMultiplicityReweightExtractor")
-	<< " Configuration parameter 'mcPeriod' must be 'Summer11', 'Fall11', or 'Summer12'.\n"; 
+	<< " Configuration parameter 'mcPeriod' must be 'Summer11', 'Fall11', 'Summer12_S07' or 'Summer12_S10'.\n"; 
     //std::cout << " gen_pileup_mc(" << mcPeriod << ") = " << format_vfloat(gen_pileup_mc) << std::endl;
 
     inputFile_ = new TFile(inputFileName.fullPath().data());
@@ -158,7 +186,7 @@ VertexMultiplicityReweightExtractor::VertexMultiplicityReweightExtractor(const e
       genLumiReweight_ = new edm::LumiReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
     } else if ( type_ == kGenLevel3d ) {
       std::string tmpStr("MC_distr");
-      genLumiReweight3d_ = new edm::Lumi3DReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data());
+      genLumiReweight3d_ = new edm::Lumi3DReWeighting(puFileName_mc.data(), inputFileName.fullPath().data(), "MC_distr", lutName.data(), "");
       // CV: For 2011 data use pp inelastic cross-section of 73.5mb measured by TOTEM
       //     instead of CMS measurement of 68mb (default in Lumi3DReWeighting).
       //     For 2012 data use pp inelastic cross-section measured by CMS
