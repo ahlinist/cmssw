@@ -48,7 +48,7 @@ class NSVfitEventHypothesisBase
   ///     determined by NSVfit algorithm is not taken into account
   ///
   bool eventVertexIsValid() const { return eventVertexIsValid_; }
-  AlgebraicVector3 reconstructedEventVertexPos() const { return eventVertexPos_; }
+  const AlgebraicVector3& reconstructedEventVertexPos() const { return eventVertexPos_; }
   AlgebraicVector3 eventVertexPos() const { return (eventVertexPos_ + eventVertexShift_); }
   const AlgebraicSymMatrix33& eventVertexCov() const { return eventVertexCov_; }
 

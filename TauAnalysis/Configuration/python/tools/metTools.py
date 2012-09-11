@@ -41,7 +41,7 @@ def addCorrectedPFMet(process, isMC, doApplyType0corr, doApplySysShiftCorr, runP
     )
     process.patMEtMVAsequence = cms.Sequence(process.pfMEtMVAsequence + process.patPFMetMVA)
 
-    process.load("JetMETCorrections.Type1MET.noPileUpPFMET_cff")
+    process.load("JetMETCorrections.METPUSubtraction.noPileUpPFMET_cff")
     if isMC:
         process.calibratedAK5PFJetsForNoPileUpMEt.correctors = cms.vstring("ak5PFL1FastL2L3")
     else:

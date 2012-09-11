@@ -82,9 +82,10 @@ def makeYieldPlot(selEventsFileName = None, jsonFileName = None, outputFileName 
     lumiCalcFileName = "lumiCalc_goodrunlist.csv"
     #tmpFiles.append(lumiCalcFileName)
 
-    #commandLine = 'lumiCalc.py -i %s -o %s lumibylsXing' % (jsonFileName, lumiCalcFileName)
-    commandLine = 'lumiCalc.py -i %s -o %s lumibyls' % (jsonFileName, lumiCalcFileName)
-    #_runCommand(commandLine)
+    executable_lumiCalc = '/afs/cern.ch/user/v/veelken/scratch0/CMSSW_5_2_3_patch3/src/RecoLuminosity/LumiDB/scripts/lumiCalc2.py'
+    commandLine = '%s -i %s -o %s lumibylsXing' % (executable_lumiCalc, jsonFileName, lumiCalcFileName)
+    #commandLine = '%s -i %s -o %s lumibyls' % (executable_lumiCalc, jsonFileName, lumiCalcFileName)
+    _runCommand(commandLine)
 
     httpAddress = "http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/FWCore/PythonUtilities/scripts/generateEDF.py?revision=1.9"
     commandLine = 'wget "%s" -O generateEDF.py' % httpAddress

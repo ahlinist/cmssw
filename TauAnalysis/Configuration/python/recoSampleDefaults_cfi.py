@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 SAMPLE_DEFAULTS = {
     'dbs_url'                                    : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    'conditions'                                 : 'START52_V9::All',
+    'conditions'                                 : 'START52_V9B::All',
     'hlt_paths'                                  : [],
     'lumi_mask'                                  : '',
     'runselection'                               : '',

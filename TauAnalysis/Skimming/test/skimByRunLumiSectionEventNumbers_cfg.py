@@ -21,7 +21,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_183_2_KFf.root'
+##        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_183_2_KFf.root'
+        'file:/data1/veelken/CMSSW_5_2_x/skims/simWprimeToTauNu_ptGt500_AOD_3_1_rZI.root'                                
     )
 )
 
@@ -59,7 +60,9 @@ process.selectEventsByRunLumiSectionEventNumber = cms.EDFilter("RunLumiSectionEv
     runLumiSectionEventNumberFileName = cms.string(
         ##'/afs/cern.ch/work/c/calpas/CMSSW/FWliteHisto_v1_6_CaloMet20/debug_C1f.txt'
         ##'debug_C1f.txt'
-        '/afs/cern.ch/user/v/veelken/scratch0/CMSSW_5_2_3_patch3/src/TauAnalysis/Test/test/debugMEtSys_selEvents.txt'
+        ##'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_5_2_3_patch3/src/TauAnalysis/Test/test/debugMEtSys_selEvents.txt'
+        ##'/afs/cern.ch/user/v/veelken/scratch0/CMSSW_5_2_3_patch3/src/TauAnalysis/Test/test/runPATTauDEBUGGERforSimon_selEvents.txt'
+        '/afs/cern.ch/user/v/veelken/scratch0/CMSSW_5_2_3_patch3/src/TauAnalysis/Test/test/runPATTauDEBUGGERforSimon_selEvents_discrAgainstMuonsFailed.txt'                                                           
     ),
     separator = cms.string(':')
 )
@@ -92,7 +95,9 @@ process.skimOutputModule = cms.OutputModule("PoolOutputModule",
         #'/data1/veelken/CMSSW_4_2_x/skims/selEvents_checkMEtSmearing_unclusteredEnDown_AOD.root'
         #'/data1/veelken/CMSSW_4_2_x/skims/selEvents_Ztautau_tauIdPassed_but_loosePFIsoFailed_AOD.root'
         #'/data1/veelken/CMSSW_5_2_x/skims/selEvents_bettysTauIdEff_WplusJets_madgraph_AOD.root'
-        '/data1/veelken/CMSSW_5_2_x/skims/selEvents_debugMEtSys_ZplusJets_madgraph_AOD.root'                                        
+        #'/data1/veelken/CMSSW_5_2_x/skims/selEvents_debugMEtSys_ZplusJets_madgraph_AOD.root'
+        #'/data1/veelken/CMSSW_5_2_x/skims/selEvents_debugPATTaus_forSimon_AOD.root'
+        '/data1/veelken/CMSSW_5_2_x/skims/selEvents_debugPATTaus_forSimon_discrAgainstMuonsFailed_AOD.root'
     )
 )
 

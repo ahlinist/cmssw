@@ -923,7 +923,7 @@ void drawData_vs_MCcomparison(
     graph_mcErr_sysUncertainty_top->Draw("2");
   }
 
-  graph_mc_signal->Draw("P");
+  //graph_mc_signal->Draw("P");
 
   graph_mc->Draw("P");
 
@@ -941,7 +941,7 @@ void drawData_vs_MCcomparison(
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
   legend.AddEntry(graph_data,      legendEntry_data.data(),      "p");
-  legend.AddEntry(graph_mc_signal, legendEntry_mc_signal.data(), "p");
+  //legend.AddEntry(graph_mc_signal, legendEntry_mc_signal.data(), "p");
   legend.AddEntry(graph_mc,        legendEntry_mc.data(),        "p");
   legend.Draw();
 
