@@ -93,22 +93,22 @@ int main(int argc, const char* argv[])
   TBenchmark clock;
   clock.Start("fitSysMEtShift");
 
-  //std::string sample = "Data";
-  std::string sample = "ZplusJets_madgraph2";
+  std::string sample = "Data";
+  //std::string sample = "ZplusJets_madgraph2";
 
   std::string runPeriod = "2012RunA";
 
   std::string inputFilePath;
-  if ( runPeriod == "2012RunA" ) inputFilePath = "/data1/veelken/tmp/ZllRecoilCorrection/v5_41_woMEtSysShiftCorr_v1/2012RunAplusB";
+  if ( runPeriod == "2012RunA" ) inputFilePath = "/data1/veelken/tmp/ZllRecoilCorrection/v5_41_woMEtSysShiftCorr_v6/2012RunAplusB";
   else assert(0);
   
   std::string inputFileName;
   if ( sample == "Data" ) 
-    //inputFileName = "analyzeZllRecoilCorrectionHistograms_Data_pfMEtTypeIcorrectedSmeared_central.root";
-    inputFileName = "analyzeZllRecoilCorrectionHistograms_Data_pfMEtNoPileUpSmeared_central.root";
+    inputFileName = "analyzeZllRecoilCorrectionHistograms_Data_pfMEtTypeIcorrectedSmeared_central.root";
+    //inputFileName = "analyzeZllRecoilCorrectionHistograms_Data_pfMEtNoPileUpSmeared_central.root";
   else if ( sample == "ZplusJets_madgraph2" ) 
-    //inputFileName = "analyzeZllRecoilCorrectionHistograms_ZplusJets_madgraph2_pfMEtTypeIcorrectedSmeared_central.root";
-    inputFileName = "analyzeZllRecoilCorrectionHistograms_ZplusJets_madgraph2_pfMEtNoPileUpSmeared_central.root";
+    inputFileName = "analyzeZllRecoilCorrectionHistograms_ZplusJets_madgraph2_pfMEtTypeIcorrectedSmeared_central.root";
+    //inputFileName = "analyzeZllRecoilCorrectionHistograms_ZplusJets_madgraph2_pfMEtNoPileUpSmeared_central.root";
 
   TString inputFileName_full = inputFilePath.data();
   if ( !inputFileName_full.EndsWith("/") ) inputFileName_full.Append("/");

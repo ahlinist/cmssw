@@ -54,13 +54,12 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
       reconstructedDecayVertexPos_(bluePrint.reconstructedDecayVertexPos_),
       reconstructedDecayVertexCov_(bluePrint.reconstructedDecayVertexCov_),
       hasDecayVertexFit_(bluePrint.hasDecayVertexFit_),
-      leadTrack_direction_(bluePrint.leadTrack_direction_),
-      leadTrack_refPoint_(bluePrint.leadTrack_refPoint_),
       leadTrackExtrapolationIsValid_(bluePrint.leadTrackExtrapolationIsValid_),
       expectedDecayVertexPos_(bluePrint.expectedDecayVertexPos_),
       expectedDecayVertexCov_(bluePrint.expectedDecayVertexCov_),
       expectedFlightPath_unit_(bluePrint.expectedFlightPath_unit_),
-      expectedDecayDistance_(bluePrint.expectedDecayDistance_)
+      expectedDecayDistance_(bluePrint.expectedDecayDistance_),
+      expectedDecayDistanceJacobiFactor_(bluePrint.expectedDecayDistanceJacobiFactor_)
   {}
 
   ~NSVfitTauDecayHypothesis() {}
@@ -83,13 +82,12 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
     reconstructedDecayVertexPos_ = bluePrint.reconstructedDecayVertexPos_;
     reconstructedDecayVertexCov_ = bluePrint.reconstructedDecayVertexCov_;
     hasDecayVertexFit_ = bluePrint.hasDecayVertexFit_;
-    leadTrack_direction_ = bluePrint.leadTrack_direction_;
-    leadTrack_refPoint_ = bluePrint.leadTrack_refPoint_;
     leadTrackExtrapolationIsValid_ = bluePrint.leadTrackExtrapolationIsValid_;
     expectedDecayVertexPos_ = bluePrint.expectedDecayVertexPos_;
     expectedDecayVertexCov_ = bluePrint.expectedDecayVertexCov_;
     expectedFlightPath_unit_ = bluePrint.expectedFlightPath_unit_;
     expectedDecayDistance_ = bluePrint.expectedDecayDistance_;
+    expectedDecayDistanceJacobiFactor_ = bluePrint.expectedDecayDistanceJacobiFactor_;
     return (*this);
   }
 
@@ -127,7 +125,6 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
 
   bool leadTrackExtrapolationIsValid() const { return leadTrackExtrapolationIsValid_; }
   int leadTrackExtrapolationError() const { return leadTrackExtrapolationError_; }
-  double leadTrackExtrapolationNLL() const { return leadTrackExtrapolationNLL_; }
 
   bool hasDecayVertexFit() const { return hasDecayVertexFit_; }
 
@@ -137,6 +134,7 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
   const AlgebraicMatrix33& expectedDecayVertexCov() const { return expectedDecayVertexCov_; }
   const AlgebraicVector3& expectedFlightPath_unit() const { return expectedFlightPath_unit_; }
   double expectedDecayDistance() const { return expectedDecayDistance_; }
+  double expectedDecayDistanceJacobiFactor() const { return expectedDecayDistanceJacobiFactor_; }
 
   void print(std::ostream& stream) const
   {
@@ -192,16 +190,14 @@ class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSing
   
   bool hasDecayVertexFit_;
 
-  AlgebraicVector3 leadTrack_direction_;                        // transient data-member
-  AlgebraicVector3 leadTrack_refPoint_;                         // transient data-member
   bool leadTrackExtrapolationIsValid_;   
   int leadTrackExtrapolationError_;                             // transient data-member 
-  double leadTrackExtrapolationNLL_;                            // transient data-member
 
   AlgebraicVector3 expectedDecayVertexPos_;
   AlgebraicMatrix33 expectedDecayVertexCov_;
   AlgebraicVector3 expectedFlightPath_unit_;                    // transient data-member
   double expectedDecayDistance_;
+  double expectedDecayDistanceJacobiFactor_;                    // transient data-member
 };
 
 #endif /* end of include guard: AnalysisDataFormats_TauAnalysis_NSVfitTauDecayHypothesis_h */

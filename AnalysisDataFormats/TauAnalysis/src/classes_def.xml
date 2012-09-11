@@ -63,11 +63,9 @@
     <field name="selTrackTrajectories_" transient="true"/>
     <field name="leadTrack_" transient="true"/>
     <field name="leadTrackTrajectory_" transient="true"/>    
-    <field name="leadTrack_direction_" transient="true"/>
-    <field name="leadTrack_refPoint_" transient="true"/>
     <field name="leadTrackExtrapolationError_" transient="true"/>
-    <field name="leadTrackExtrapolationNLL_" transient="true"/>      
     <field name="expectedFlightPath_unit_" transient="true"/>
+    <field name="expectedDecayDistanceJacobiFactor_" transient="true"/>
   </class>
   <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesisBase, pat::Electron>"/>
   <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesisBase, pat::Muon>"/>

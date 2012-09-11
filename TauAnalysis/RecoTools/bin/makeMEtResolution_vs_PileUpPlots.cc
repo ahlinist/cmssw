@@ -504,8 +504,8 @@ void makeMEtResolution_vs_PileUpPlot(const TString& metType,
   dummyHistogram_top->SetMinimum(0.);
   
   TAxis* xAxis_top = dummyHistogram_top->GetXaxis();
-  if      ( xAxis_mode == kGenNumPileUpInteractions ) xAxis_top->SetTitle("Num. Pile-Up Interactions");
-  else if ( xAxis_mode == kRecVertices              ) xAxis_top->SetTitle("Num. rec. Vertices");
+  if      ( xAxis_mode == kGenNumPileUpInteractions ) xAxis_top->SetTitle("N_{PU}");
+  else if ( xAxis_mode == kRecVertices              ) xAxis_top->SetTitle("N_{vtx}");
   else assert(0);
 
   xAxis_top->SetTitleOffset(1.15);

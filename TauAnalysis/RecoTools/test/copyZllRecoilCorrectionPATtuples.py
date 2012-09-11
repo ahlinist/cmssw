@@ -8,7 +8,7 @@ import subprocess
 import shlex
 import time
 
-version = 'v5_41'
+version = 'v5_42'
 
 # Get all the skim files from the castor directory
 sourceFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/" % version

@@ -293,13 +293,13 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
             if processType == 'Data':
                 ##shiftedMEtCorrX_string = "-7.67892e-01 + 5.76983e-03*x" # CV: x = sumEt, y = numVertices
                 ##shiftedMEtCorrY_string = "+5.54005e-01 - 2.94046e-03*x"
-                shiftedMEtCorrX_string = "+3.54233e-01 + 2.65299e-01*y"
-                shiftedMEtCorrY_string = "+1.88923e-01 - 1.66425e-01*y"
+                shiftedMEtCorrX_string = "+1.68804e-01 + 3.37139e-01*y"
+                shiftedMEtCorrY_string = "-1.72555e-01 - 1.79594e-01*y"
             else:
                 ##shiftedMEtCorrX_string = "+1.77344e-01 - 1.34333e-03*x"
                 ##shiftedMEtCorrY_string = "+8.08402e-01 - 2.84264e-03*x"
-                shiftedMEtCorrX_string = "-2.99576e-02 - 6.61932e-02*y"
-                shiftedMEtCorrY_string = "+3.70819e-01 - 1.48617e-01*y"
+                shiftedMEtCorrX_string = "+2.22335e-02 - 6.59183e-02*y"
+                shiftedMEtCorrY_string = "+1.52720e-01 - 1.28052e-01*y"
     elif metOptionName == "pfMEtNoPileUp" or metOptionName == "pfMEtNoPileUpSmeared":
         if runPeriod == "2012RunAplusB":
             if processType == 'Data':

@@ -33,7 +33,9 @@
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
+  <use   name="JetMETCorrections/Type1MET"/>
   <use   name="PhysicsTools/FWLite"/>
+  <use   name="PhysicsTools/PatUtils"/>
   <use   name="SimDataFormats/PileupSummaryInfo"/>
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="TauAnalysis/RecoTools"/>

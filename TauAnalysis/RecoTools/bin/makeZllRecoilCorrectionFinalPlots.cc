@@ -331,7 +331,6 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   legend.SetBorderSize(0);
   legend.SetFillColor(0);
   legend.AddEntry(meData, std::string(runPeriod).append(" Data").data(), "p");
-  //legend.AddEntry(meMC_signal, "Sim. Signal", "l");
   legend.AddEntry(meMC_signal, "Sim. Z #rightarrow #mu^{+}#mu^{-}", "l");
   if ( meMC_bgrSum ) legend.AddEntry(meMC_bgrSum, "Sim. Background", "f");
   if ( drawSysUncertainty && meMC_smErr ) legend.AddEntry(meMC_smErr, "Sys. Uncertainty", "f");
@@ -797,16 +796,16 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
 
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseData_, f_uParl_div_qT_mean_data,
-			  "Data", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			  "Data", 0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitData");
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseMC_signal_, f_uParl_div_qT_mean_mc_signal,
-			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitMC",
 			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_signal_, &f_uParl_div_qT_mean_mcSysUncertainties_signal);  
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseMC_, f_uParl_div_qT_mean_mc,
-			 "Simulation", 0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.10,
+			 "Simulation", 0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitMC",
 			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_, &f_uParl_div_qT_mean_mcSysUncertainties); 
   drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
@@ -843,7 +842,7 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
 			   "Data", plotUvsQtNumObj->graphUparlResponseData_, 
 			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphUparlResponseMC_signal_,
 			   "Simulation", plotUvsQtNumObj->graphUparlResponseMC_, 
-			   0.62, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2, true, 0.20,
+			   0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.20,
 			   outputFileName, "uParlResponseData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_);
   drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 			   

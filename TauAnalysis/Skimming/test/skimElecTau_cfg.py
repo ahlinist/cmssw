@@ -124,7 +124,6 @@ process.elecTauSkimOutputModule = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('elecTauSkim.root')
 )
 
-
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
