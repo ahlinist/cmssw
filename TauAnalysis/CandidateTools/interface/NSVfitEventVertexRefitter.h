@@ -8,9 +8,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitEventVertexRefitter.h,v 1.2 2011/03/31 16:31:33 veelken Exp $
+ * $Id: NSVfitEventVertexRefitter.h,v 1.3 2012/08/28 15:00:19 veelken Exp $
  *
  */
 
@@ -19,6 +19,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -35,18 +36,24 @@ class NSVfitEventVertexRefitter
   void beginEvent(const edm::Event&, const edm::EventSetup&);
 
   /// Refit the primary vertex after subtracting the tau associated tracks.
-  TransientVertex refit(const reco::Vertex*, const std::vector<const reco::Track*>* = 0);
+  TransientVertex refit(const reco::Vertex*, const std::vector<const reco::Track*>* = 0) const;
 
  private:
   edm::InputTag srcBeamSpot_;
 
   const reco::BeamSpot* beamSpot_;
+  VertexState beamSpotState_;
+  bool beamSpotIsValid_;
 
   const TransientTrackBuilder* trackBuilder_;
 
-  const KalmanVertexFitter* vertexFitAlgorithm_;
+  const VertexFitter<5>* vertexFitAlgorithm_;
 
   unsigned minNumTracksRefit_;
+
+  bool applyBeamSpotConstraint_;
+
+  int verbosity_;
 };
 
 #endif

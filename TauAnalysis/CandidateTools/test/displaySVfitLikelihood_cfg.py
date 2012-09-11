@@ -26,9 +26,16 @@ process.source = cms.Source("PoolSource",
     ),
     eventsToProcess = cms.untracked.VEventRange(
         #'1:2399:719456',
+        #'1:2399:719393'                        
         #'1:2418:725094',
-        '1:2418:725139',
+        #'1:2418:725139',
         #'1:2418:725278'
+        '1:2367:709922',
+        '1:2398:719150',
+        '1:2398:719242',
+        '1:2449:734448',
+        '1:2449:734537',
+        '1:2450:734750'                               
     )
 )
 
@@ -198,7 +205,7 @@ process.load("JetMETCorrections/Type1MET/pfMETCorrectionType0_cfi")
 process.displaySVfitLikelihoodSequence += process.type0PFMEtCorrection
 
 process.load("JetMETCorrections/Type1MET/pfMETsysShiftCorrections_cfi")
-process.pfMEtSysShiftCorr.parameter = process.pfMEtSysShiftCorrParameters_2012runAvsNvtx_mc
+process.pfMEtSysShiftCorr.parameter = process.pfMEtSysShiftCorrParameters_2012runAplusBvsNvtx_mc
 process.displaySVfitLikelihoodSequence += process.pfMEtSysShiftCorrSequence
 
 process.load("JetMETCorrections/Type1MET/pfMETCorrections_cff")
@@ -233,7 +240,8 @@ from RecoMET.METProducers.METSigParams_cfi import *
 process.pfMEtSignCovMatrix = cms.EDProducer("PFMEtSignCovMatrixProducer",
     METSignificance_params,                     
     src = cms.VInputTag(
-        'goodMuons',
+        'genMatchedMuons',
+        'genMatchedTaus',
         'ak5PFJetsNotOverlappingWithLeptons',                                        
         'pfCandsNotInJetForPFMEtSignCovMatrix'
     ),
@@ -246,9 +254,31 @@ process.displaySVfitLikelihoodSequence += process.pfMEtSignCovMatrix
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# rerun primary event vertex reconstruction
+process.load("RecoVertex/PrimaryVertexProducer/OfflinePrimaryVertices_cfi")
+process.offlinePrimaryVertices.verbose = cms.untracked.bool(True)
+##process.displaySVfitLikelihoodSequence += process.offlinePrimaryVertices
+process.load("RecoVertex/PrimaryVertexProducer/OfflinePrimaryVerticesWithBS_cfi")
+##process.displaySVfitLikelihoodSequence += process.offlinePrimaryVerticesWithBS
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # select primary event vertex
-process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
-process.displaySVfitLikelihoodSequence += process.selectPrimaryVertex
+process.load("TauAnalysis/RecoTools/recoVertexSelectionByLeptonTracks_cff")
+process.selectedPrimaryVertexQuality.src = cms.InputTag('offlinePrimaryVerticesWithBS')
+process.selectedPrimaryVertexByLeptonMatch.srcLeptons = cms.VInputTag(
+    'genMatchedMuons',
+    'genMatchedTaus'
+)
+process.displaySVfitLikelihoodSequence += process.selectPrimaryVertexByLeptonTracks
+
+# require event to have exactly one vertex associated to tracks of tau decay products
+process.recEventVertexFilter = cms.EDFilter("VertexCountFilter",
+    src = cms.InputTag('selectedPrimaryVertexByLeptonMatch'),
+    minNumber = cms.uint32(1),
+    maxNumber = cms.uint32(1)                                            
+)
+process.displaySVfitLikelihoodSequence += process.recEventVertexFilter
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -261,11 +291,22 @@ process.displaySVfitLikelihood = cms.EDAnalyzer("SVfitLikelihoodDisplay",
     srcTaus = cms.InputTag('genMatchedTaus'),
     srcMEt = cms.InputTag('pfType1CorrectedMet'),
     srcMEtCov = cms.InputTag('pfMEtSignCovMatrix'),                                            
-    srcVertices = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
-    srcBeamSpot = cms.InputTag('offlineBeamSpot'),    
-    srcWeights = cms.VInputTag()    
+    srcVertices = cms.InputTag('selectedPrimaryVertexByLeptonMatch'),
+    srcBeamSpot = cms.InputTag('offlineBeamSpot'),
+    applyBeamSpotConstraint = cms.bool(False),
+    sfProdVertexCov = cms.double(2.0),
+    sfDecayVertexCov = cms.double(2.0),                                            
+    srcWeights = cms.VInputTag(),
+    verbosity = cms.int32(0)                                                
 )
 process.displaySVfitLikelihoodSequence += process.displaySVfitLikelihood
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(process.displaySVfitLikelihoodSequence)
+
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+)
+
+processDumpFile = open('displaySVfitLikelihood.dump' , 'w')
+print >> processDumpFile, process.dumpPython()

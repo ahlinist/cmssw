@@ -236,10 +236,13 @@ void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypo
   resonance.massErrUp_ = massErrUp;
   resonance.massErrDown_ = massErrDown;
 
-  //std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::setMassResults>:" << std::endl;
-  //std::cout << "--> mass = " << resonance.mass_ 
-  //	      << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ << std::endl;
-  //resonance.print(std::cout);
+  if ( verbosity_ >= 2 ) {
+    std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::setMassResults>:" << std::endl;
+    std::cout << " pluginName = " << pluginName_ << std::endl;
+    std::cout << "--> mass = " << resonance.mass_ 
+  	      << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ << std::endl;
+    //resonance.print(std::cout);
+  }
 }
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const

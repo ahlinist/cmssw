@@ -34,7 +34,8 @@ NSVfitEventBuilder::NSVfitEventBuilder(const edm::ParameterSet& cfg)
 
   fixToGenVertex_        = ( cfg.exists("fixToGenVertex")        ) ? cfg.getParameter<bool>("fixToGenVertex")        : false;
   initializeToGenVertex_ = ( cfg.exists("initializeToGenVertex") ) ? cfg.getParameter<bool>("initializeToGenVertex") : fixToGenVertex_;
-  if ( fixToGenVertex_ || initializeToGenVertex_ ) {
+  if ( fixToGenVertex_ ) initializeToGenVertex_ = true;
+  if ( initializeToGenVertex_ ) {
     srcGenVertex_ = cfg.getParameter<edm::InputTag>("srcGenVertex");
   }
 }
@@ -57,25 +58,22 @@ void NSVfitEventBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
     if ( idxFitParameter_pvShiftX_ != -1 ) algorithm->fixFitParameter(idxFitParameter_pvShiftX_);
     if ( idxFitParameter_pvShiftY_ != -1 ) algorithm->fixFitParameter(idxFitParameter_pvShiftY_);
     if ( idxFitParameter_pvShiftZ_ != -1 ) algorithm->fixFitParameter(idxFitParameter_pvShiftZ_);
-    doEventVertexRefit_ = false;
   }
 }
 
 void NSVfitEventBuilder::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
+  if ( verbosity_ ) std::cout << "<NSVfitEventBuilder::beginEvent>:" << std::endl;
+
   NSVfitEventBuilderBase::beginEvent(evt, es);
   
-  if ( fixToGenVertex_ || initializeToGenVertex_ ) {
+  if ( initializeToGenVertex_ ) {    
     edm::Handle<reco::Vertex> genVertex;
     evt.getByLabel(srcGenVertex_, genVertex);
     genVertexPos_(0) = genVertex->position().x();    
     genVertexPos_(1) = genVertex->position().y(); 
-    genVertexPos_(2) = genVertex->position().z(); 
-  }
-
-  if ( verbosity_ ) {
-    std::cout << "<NSVfitEventBuilder::beginEvent>:" << std::endl;
-    std::cout << " genVertexPos: x = " << genVertexPos_(0) << ", y = " << genVertexPos_(1) << ", z = " << genVertexPos_(2) << std::endl;
+    genVertexPos_(2) = genVertex->position().z();     
+    if ( verbosity_ >= 2 ) printVector("genVertexPos", genVertexPos_);
   }
 }
 
@@ -150,17 +148,10 @@ NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputPa
 	<< " Support for Polarization not implemented for case of " << event->numResonances() << " resonances yet !!\n";
   }
 
-  if ( fixToGenVertex_ ) {
-    event->eventVertexPos_ = genVertexPos_;
-    std::cout << "fixing:" << std::endl;
-    std::cout << " eventVertexPos: x = " << event->eventVertexPos_(0) << ", y = " << event->eventVertexPos_(1) << ", z = " << event->eventVertexPos_(2) << std::endl;
-  } 
-
   double initialShiftX = 0.;
   double initialShiftY = 0.;
   double initialShiftZ = 0.;
-
-  if ( !fixToGenVertex_ && initializeToGenVertex_ ) {
+  if ( initializeToGenVertex_ ) {
     initialShiftX = genVertexPos_(0) - eventVertex->position().x();
     algorithm_->setFitParameterInitialValue(idxFitParameter_pvShiftX_, initialShiftX);
     initialShiftY = genVertexPos_(1) - eventVertex->position().y();
@@ -168,14 +159,19 @@ NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputPa
     initialShiftZ = genVertexPos_(2) - eventVertex->position().z();
     algorithm_->setFitParameterInitialValue(idxFitParameter_pvShiftZ_, initialShiftZ);
     if ( verbosity_ ) {
-      std::cout << "initializing:" << std::endl;
-      std::cout << " initialShift: x = " << initialShiftX << ", y = " << initialShiftY << ", z = " << initialShiftZ << std::endl;
+      if ( fixToGenVertex_) {
+	std::cout << "fixing:" << std::endl;
+	std::cout << " eventVertexPos: x = " << genVertexPos_(0) << ", y = " << genVertexPos_(1) << ", z = " << genVertexPos_(2) << std::endl;
+      } else {
+	std::cout << "initializing:" << std::endl;
+	std::cout << " initialShift: x = " << initialShiftX << ", y = " << initialShiftY << ", z = " << initialShiftZ << std::endl;
+      }
     }
   }
 
 //--- set fitParameter step-size according to estimated uncertainty on vertex position
 //   (event vertex position and uncertainty set in NSVfitEventBuilderBase class)
-  if ( !fixToGenVertex_ && doEventVertexRefit_ ) {
+  if ( !fixToGenVertex_ ) {
     double vertexSigmaX = TMath::Sqrt(event->eventVertexCov().Diagonal()(0));
     algorithm_->setFitParameterLimit(idxFitParameter_pvShiftX_, initialShiftX - 10.*vertexSigmaX, initialShiftX + 10.*vertexSigmaX);
     algorithm_->setFitParameterStepSize(idxFitParameter_pvShiftX_, 0.25*vertexSigmaX);
@@ -188,19 +184,6 @@ NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputPa
   }
     
   return event;
-}
-
-bool NSVfitEventBuilder::applyFitParameter(NSVfitEventHypothesis* event, const double* param) const
-{
-  bool isValidSolution = NSVfitEventBuilderBase::applyFitParameter(event, param);
-
-  if ( fixToGenVertex_ ) {
-    event->eventVertexShift_(0) = 0.;
-    event->eventVertexShift_(1) = 0.;
-    event->eventVertexShift_(2) = 0.;
-  } 
-
-  return isValidSolution;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

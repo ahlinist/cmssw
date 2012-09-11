@@ -52,6 +52,7 @@ class NSVfitTauToHadInputAnalyzer : public edm::EDAnalyzer
   MonitorElement* genTauVisEnFrac_;
   MonitorElement* genTauVisMass_;
   MonitorElement* genTauDecayDistance_;
+  MonitorElement* genTauDecayDistanceNormalized_;
   MonitorElement* genTauDecayMode_;
   MonitorElement* genTau_phi_lab_;
   MonitorElement* genTau_gjAngle_;
@@ -66,6 +67,7 @@ class NSVfitTauToHadInputAnalyzer : public edm::EDAnalyzer
   MonitorElement* recTauHadDeltaPhi_;
   MonitorElement* recTauHadDeltaVisMass_absolute_;
   MonitorElement* recTauHadDeltaVisMass_relative_;
+  MonitorElement* recTauDecayMode_;
 
   MonitorElement* recLeadTrackDeltaPt_absolute_;
   MonitorElement* recLeadTrackDeltaPt_relative_;

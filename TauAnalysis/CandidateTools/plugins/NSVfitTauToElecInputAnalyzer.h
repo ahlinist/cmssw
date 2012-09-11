@@ -1,5 +1,5 @@
-#ifndef TauAnalysis_CandidateTools_NSVfitTauToMuInputAnalyzer_h
-#define TauAnalysis_CandidateTools_NSVfitTauToMuInputAnalyzer_h
+#ifndef TauAnalysis_CandidateTools_NSVfitTauToElecInputAnalyzer_h
+#define TauAnalysis_CandidateTools_NSVfitTauToElecInputAnalyzer_h
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -17,14 +17,14 @@
 
 #include <string>
 
-class NSVfitTauToMuInputAnalyzer : public edm::EDAnalyzer 
+class NSVfitTauToElecInputAnalyzer : public edm::EDAnalyzer 
 {
  public:
   // constructor 
-  explicit NSVfitTauToMuInputAnalyzer(const edm::ParameterSet&);
+  explicit NSVfitTauToElecInputAnalyzer(const edm::ParameterSet&);
     
   // destructor
-  ~NSVfitTauToMuInputAnalyzer();
+  ~NSVfitTauToElecInputAnalyzer();
     
  private:
   void beginJob();
@@ -55,16 +55,16 @@ class NSVfitTauToMuInputAnalyzer : public edm::EDAnalyzer
   MonitorElement* genTau_phi_lab_;
   MonitorElement* genTau_gjAngle_;
 
-  MonitorElement* genMuonPt_;
-  MonitorElement* genMuonEta_;
-  MonitorElement* genMuonPhi_;
+  MonitorElement* genElectronPt_;
+  MonitorElement* genElectronEta_;
+  MonitorElement* genElectronPhi_;
 
-  MonitorElement* recMuonDeltaPt_absolute_;
-  MonitorElement* recMuonDeltaPt_relative_;
-  MonitorElement* recMuonDeltaEta_;
-  MonitorElement* recMuonDeltaPhi_;
-  MonitorElement* recMuonDeltaVisMass_absolute_;
-  MonitorElement* recMuonDeltaVisMass_relative_;
+  MonitorElement* recElectronDeltaPt_absolute_;
+  MonitorElement* recElectronDeltaPt_relative_;
+  MonitorElement* recElectronDeltaEta_;
+  MonitorElement* recElectronDeltaPhi_;
+  MonitorElement* recElectronDeltaVisMass_absolute_;
+  MonitorElement* recElectronDeltaVisMass_relative_;
 
   MonitorElement* recLeadTrackDeltaPt_absolute_;
   MonitorElement* recLeadTrackDeltaPt_relative_;

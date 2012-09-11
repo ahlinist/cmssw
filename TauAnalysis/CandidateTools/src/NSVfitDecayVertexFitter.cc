@@ -1,6 +1,5 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitDecayVertexFitter.h"
 
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
@@ -31,18 +30,19 @@ void NSVfitDecayVertexFitter::beginEvent(const edm::Event& evt, const edm::Event
   edm::ESHandle<TransientTrackBuilder> trackBuilderHandle;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilderHandle);
   trackBuilder_ = trackBuilderHandle.product();
-  if ( !trackBuilder_ ) {
-    edm::LogError ("NSVfitDecayVertexFitter::beginEvent")
-      << " Failed to access TransientTrackBuilder !!";
-  }
+  if ( !trackBuilder_ ) 
+    throw cms::Exception("NSVfitDecayVertexFitter::beginEvent")
+      << " Failed to access TransientTrackBuilder !!\n";
 }
 
 TransientVertex NSVfitDecayVertexFitter::fitSecondaryVertex(const std::vector<const reco::Track*>& tracks) const 
 {
 //-- return dummy vertex for one-prong tau decays
 //   for which tau decay vertex cannot be determined
-  if ( tracks.size() < minNumTracksFit_ || trackBuilder_ == 0 ) return TransientVertex();
-  
+
+  if ( tracks.size() < minNumTracksFit_ ) return TransientVertex();
+  assert(trackBuilder_);
+
 //--- build transient tracks
   std::vector<reco::TransientTrack> track_trajectories;
   for ( std::vector<const reco::Track*>::const_iterator track = tracks.begin();

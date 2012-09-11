@@ -8,9 +8,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.4 2012/08/28 15:00:23 veelken Exp $
+ * $Id: NSVfitTauDecayLikelihoodTrackInfo.h,v 1.5 2012/09/01 08:45:45 veelken Exp $
  *
  */
 
@@ -40,6 +40,9 @@ class NSVfitTauDecayLikelihoodTrackInfo : public NSVfitSingleParticleLikelihood
 
   bool ignore3Prongs_;
   bool ignore1Prongs_;
+
+  double sfProdVertexCov_;
+  double sfDecayVertexCov_;
 
   NSVfitAlgorithmBase* algorithm_;
 

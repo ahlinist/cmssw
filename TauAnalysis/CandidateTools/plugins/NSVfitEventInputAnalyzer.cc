@@ -101,11 +101,6 @@ namespace
                    + dir3.y()*(cov22(1,0)*dir3.x() + cov22(1,1)*dir3.y());
     return retVal;
   }
-
-  double norm2(const AlgebraicVector3& p)
-  {
-    return square(p(0)) + square(p(1)) + square(p(2));
-  }
 }
 
 void NSVfitEventInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)

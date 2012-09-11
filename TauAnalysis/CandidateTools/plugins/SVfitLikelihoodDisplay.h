@@ -45,6 +45,11 @@ class SVfitLikelihoodDisplay : public edm::EDAnalyzer
 
   NSVfitEventVertexRefitter* eventVertexFitAlgorithm_;
   NSVfitDecayVertexFitter* decayVertexFitAlgorithm_;
+
+  double sfProdVertexCov_;
+  double sfDecayVertexCov_;
+
+  int verbosity_;
 };
 
 #endif   

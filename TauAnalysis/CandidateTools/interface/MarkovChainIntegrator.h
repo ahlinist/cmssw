@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: MarkovChainIntegrator.h,v 1.5 2012/04/16 07:28:13 veelken Exp $
+ * $Id: MarkovChainIntegrator.h,v 1.6 2012/08/28 15:00:19 veelken Exp $
  *
  */
 
@@ -78,7 +78,7 @@ class MarkovChainIntegrator
   void initializeStartPosition_and_Momentum();
 
   void makeStochasticMove(unsigned, bool&, bool&);
-  void makeDynamicMoves(double);
+  void makeDynamicMoves(const std::vector<double>&);
   
   void sampleSphericallyRandom();
 
@@ -150,27 +150,30 @@ class MarkovChainIntegrator
   //  L:        number of "dynamical moves" performed per "stochastic move"
   //  epsilon0: average step-size used for "dynamical moves"
   //  nu:       spread of step-sizes used for "dynamical moves"
-  std::vector<double> dqDerr_; // index = dimension
+  typedef std::vector<double> vdouble;
+  vdouble dqDerr_; // index = dimension
   unsigned L_;
   double epsilon0_;
+  vdouble epsilon0s_;
+  bool useVariableEpsilon0_;
   double nu_;
 
   // random number generator
   TRandom3 rnd_;
 
   // internal variables storing current state of Markov Chain
-  std::vector<double> p_;
-  std::vector<double> q_;
-  std::vector<double> gradE_;
+  vdouble p_;
+  vdouble q_;
+  vdouble gradE_;
   double prob_;
 
   // temporary variables used for computations
-  std::vector<double> u_;
-  std::vector<double> pProposal_;
-  std::vector<double> qProposal_;
+  vdouble u_;
+  vdouble pProposal_;
+  vdouble qProposal_;
 
-  std::vector<double> probSum_; // index = chain*numBatches + batch 
-  std::vector<double> integral_;
+  vdouble probSum_; // index = chain*numBatches + batch 
+  vdouble integral_;
 
   long numMoves_accepted_;
   long numMoves_rejected_;

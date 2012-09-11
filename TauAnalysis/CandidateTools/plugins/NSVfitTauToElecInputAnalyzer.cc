@@ -1,4 +1,4 @@
-#include "TauAnalysis/CandidateTools/plugins/NSVfitTauToMuInputAnalyzer.h"
+#include "TauAnalysis/CandidateTools/plugins/NSVfitTauToElecInputAnalyzer.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
@@ -21,7 +21,7 @@ using namespace SVfit_namespace;
 const int minNumTracksRefit = 2;
 const int minNumTracksFit = 2;
 
-NSVfitTauToMuInputAnalyzer::NSVfitTauToMuInputAnalyzer(const edm::ParameterSet& cfg)
+NSVfitTauToElecInputAnalyzer::NSVfitTauToElecInputAnalyzer(const edm::ParameterSet& cfg)
   : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
     eventVertexFitAlgorithm_(0),
     decayVertexFitAlgorithm_(0)
@@ -45,16 +45,16 @@ NSVfitTauToMuInputAnalyzer::NSVfitTauToMuInputAnalyzer(const edm::ParameterSet& 
   decayVertexFitAlgorithm_ = new NSVfitDecayVertexFitter(cfgDecayVertexFitAlgorithm);
 }
 
-NSVfitTauToMuInputAnalyzer::~NSVfitTauToMuInputAnalyzer()
+NSVfitTauToElecInputAnalyzer::~NSVfitTauToElecInputAnalyzer()
 {
   delete eventVertexFitAlgorithm_;
   delete decayVertexFitAlgorithm_;
 }
 
-void NSVfitTauToMuInputAnalyzer::beginJob()
+void NSVfitTauToElecInputAnalyzer::beginJob()
 {
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    throw cms::Exception("NSVfitTauToMuInputAnalyzer") 
+    throw cms::Exception("NSVfitTauToElecInputAnalyzer") 
       << " Failed to access dqmStore --> histograms will NEITHER be booked NOR filled !!\n";
   }
 
@@ -71,14 +71,14 @@ void NSVfitTauToMuInputAnalyzer::beginJob()
   genTau_phi_lab_                = dqmStore.book1D("genTau_phi_lab",                "genTau_phi_lab",                 360,     -TMath::Pi(),     +TMath::Pi());
   genTau_gjAngle_                = dqmStore.book1D("genTau_gjAngle",                "genTau_gjAngle",                 180,               0.,      TMath::Pi());
 
-  genMuonPt_                     = dqmStore.book1D("genMuonPt",                     "genMuonPt",                      500,               0.,             500.);
-  genMuonEta_                    = dqmStore.book1D("genMuonEta",                    "genMuonEta",                     100,             -5.0,             +5.0);
-  genMuonPhi_                    = dqmStore.book1D("genMuonPhi",                    "genMuonPhi",                     360,     -TMath::Pi(),     +TMath::Pi());
+  genElectronPt_                 = dqmStore.book1D("genElectronPt",                 "genElectronPt",                  500,               0.,             500.);
+  genElectronEta_                = dqmStore.book1D("genElectronEta",                "genElectronEta",                 100,             -5.0,             +5.0);
+  genElectronPhi_                = dqmStore.book1D("genElectronPhi",                "genElectronPhi",                 360,     -TMath::Pi(),     +TMath::Pi());
 
-  recMuonDeltaPt_absolute_       = dqmStore.book1D("recMuonDeltaPt_absolute",       "recMuonDeltaPt_absolute",        100,             -50.,             +50.);
-  recMuonDeltaPt_relative_       = dqmStore.book1D("recMuonDeltaPt_relative",       "recMuonDeltaPt_relative",        200,              -1.,              +1.);
-  recMuonDeltaEta_               = dqmStore.book1D("recMuonDeltaEta",               "recMuonDeltaEta",                100,             -0.5,             +0.5);
-  recMuonDeltaPhi_               = dqmStore.book1D("recMuonDeltaPhi",               "recMuonDeltaPhi",                360,     -TMath::Pi(),     +TMath::Pi());
+  recElectronDeltaPt_absolute_   = dqmStore.book1D("recElectronDeltaPt_absolute",   "recElectronDeltaPt_absolute",    100,             -50.,             +50.);
+  recElectronDeltaPt_relative_   = dqmStore.book1D("recElectronDeltaPt_relative",   "recElectronDeltaPt_relative",    200,              -1.,              +1.);
+  recElectronDeltaEta_           = dqmStore.book1D("recElectronDeltaEta",           "recElectronDeltaEta",            100,             -0.5,             +0.5);
+  recElectronDeltaPhi_           = dqmStore.book1D("recElectronDeltaPhi",           "recElectronDeltaPhi",            360,     -TMath::Pi(),     +TMath::Pi());
 
   recLeadTrackDeltaPt_absolute_  = dqmStore.book1D("recLeadTrackDeltaPt_absolute",  "recTrackDeltaPt_absolute",       100,             -50.,             +50.);
   recLeadTrackDeltaPt_relative_  = dqmStore.book1D("recLeadTrackDeltaPt_relative",  "recTrackDeltaPt_relative",       200,              -1.,              +1.);
@@ -91,13 +91,13 @@ void NSVfitTauToMuInputAnalyzer::beginJob()
   recLeadTrackPCApull3d_         = dqmStore.book1D("recLeadTrackPCApull3d",         "recTrackPCApull3d",              250,               0.,              25.);
 }
 
-void NSVfitTauToMuInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
+void NSVfitTauToElecInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
   edm::ESHandle<TransientTrackBuilder> trackBuilderHandle;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilderHandle);
   const TransientTrackBuilder* trackBuilder = trackBuilderHandle.product();
   if ( !trackBuilder ) {
-    throw cms::Exception("NSVfitTauToMuInputAnalyzer::analyze")
+    throw cms::Exception("NSVfitTauToElecInputAnalyzer::analyze")
       << " Failed to access TransientTrackBuilder !!\n";
   }
 
@@ -139,9 +139,9 @@ void NSVfitTauToMuInputAnalyzer::analyze(const edm::Event& evt, const edm::Event
     matchRecToGenTauDecays(*taus, genTaus, 0.3, matchedTauToHadDecays);
   }
 
-  //std::cout << "matchedTauToMuDecays.size = " << matchedTauToMuDecays.size()  << std::endl;
-  const matchedTauDecayType* matchedTau = ( matchedTauToMuDecays.size() >= 1 ) ?
-    matchedTauToMuDecays.at(0) : 0;
+  //std::cout << "matchedTauToElecDecays.size = " << matchedTauToElecDecays.size()  << std::endl;
+  const matchedTauDecayType* matchedTau = ( matchedTauToElecDecays.size() >= 1 ) ?
+    matchedTauToElecDecays.at(0) : 0;
   if ( !matchedTau ) return;
 
   std::vector<matchedTauDecayType*> matchedTauDecays;
@@ -183,39 +183,39 @@ void NSVfitTauToMuInputAnalyzer::analyze(const edm::Event& evt, const edm::Event
   genTau_phi_lab_->Fill(phiLabFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
   genTau_gjAngle_->Fill(gjAngleFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
 
-  const reco::GenParticle* genMuon = 0;
+  const reco::GenParticle* genElectron = 0;
   for ( std::vector<const reco::GenParticle*>::const_iterator genTauDecayProduct = matchedTau->genTauDecayProducts_.begin();
 	genTauDecayProduct != matchedTau->genTauDecayProducts_.end(); ++genTauDecayProduct ) {
-    if ( TMath::Abs((*genTauDecayProduct)->pdgId()) == 13 ) {
-      genMuon = (*genTauDecayProduct);
+    if ( TMath::Abs((*genTauDecayProduct)->pdgId()) == 11 ) {
+      genElectron = (*genTauDecayProduct);
       break;
     }
   }
 
-  if ( genMuon ) {
-    genMuonPt_->Fill(genMuon->pt(), evtWeight);
-    genMuonEta_->Fill(genMuon->eta(), evtWeight);
-    genMuonPhi_->Fill(genMuon->phi(), evtWeight);
+  if ( genElectron ) {
+    genElectronPt_->Fill(genElectron->pt(), evtWeight);
+    genElectronEta_->Fill(genElectron->eta(), evtWeight);
+    genElectronPhi_->Fill(genElectron->phi(), evtWeight);
   }
 
   double deltaPt_absolute = matchedTau->recVisP4_.pt() - matchedTau->genVisP4_.pt();
-  recMuonDeltaPt_absolute_->Fill(deltaPt_absolute, evtWeight);
+  recElectronDeltaPt_absolute_->Fill(deltaPt_absolute, evtWeight);
   if ( matchedTau->genVisP4_.pt() > 0. ) {
     double deltaPt_relative = deltaPt_absolute/matchedTau->genVisP4_.pt();
-    recMuonDeltaPt_relative_->Fill(deltaPt_relative, evtWeight);
+    recElectronDeltaPt_relative_->Fill(deltaPt_relative, evtWeight);
   }
-  recMuonDeltaEta_->Fill(matchedTau->recVisP4_.eta() - matchedTau->genVisP4_.eta(), evtWeight);
-  recMuonDeltaPhi_->Fill(matchedTau->recVisP4_.phi() - matchedTau->genVisP4_.phi(), evtWeight);
+  recElectronDeltaEta_->Fill(matchedTau->recVisP4_.eta() - matchedTau->genVisP4_.eta(), evtWeight);
+  recElectronDeltaPhi_->Fill(matchedTau->recVisP4_.phi() - matchedTau->genVisP4_.phi(), evtWeight);
 
-  if ( genMuon && matchedTau->recLeadTrack_ ) {
-    double deltaPt_absolute = matchedTau->recLeadTrack_->pt() - genMuon->pt();
+  if ( genElectron && matchedTau->recLeadTrack_ ) {
+    double deltaPt_absolute = matchedTau->recLeadTrack_->pt() - genElectron->pt();
     recLeadTrackDeltaPt_absolute_->Fill(deltaPt_absolute, evtWeight);
-    if ( genMuon->pt() > 0. ) {
-      double deltaPt_relative = deltaPt_absolute/genMuon->pt();
+    if ( genElectron->pt() > 0. ) {
+      double deltaPt_relative = deltaPt_absolute/genElectron->pt();
       recLeadTrackDeltaPt_relative_->Fill(deltaPt_relative, evtWeight);
     }
-    recLeadTrackDeltaEta_->Fill(matchedTau->recLeadTrack_->eta() - genMuon->eta(), evtWeight);
-    recLeadTrackDeltaPhi_->Fill(matchedTau->recLeadTrack_->phi() - genMuon->phi(), evtWeight);
+    recLeadTrackDeltaEta_->Fill(matchedTau->recLeadTrack_->eta() - genElectron->eta(), evtWeight);
+    recLeadTrackDeltaPhi_->Fill(matchedTau->recLeadTrack_->phi() - genElectron->phi(), evtWeight);
     recLeadTrackNumHits_->Fill(matchedTau->recLeadTrack_->numberOfValidHits(), evtWeight);
     recLeadTrackNumPixelHits_->Fill(matchedTau->recLeadTrack_->hitPattern().numberOfValidPixelHits(), evtWeight);
     recLeadTrackNormalizedChi2_->Fill(matchedTau->recLeadTrack_->normalizedChi2(), evtWeight);
@@ -239,7 +239,7 @@ void NSVfitTauToMuInputAnalyzer::analyze(const edm::Event& evt, const edm::Event
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_FWK_MODULE(NSVfitTauToMuInputAnalyzer);
+DEFINE_FWK_MODULE(NSVfitTauToElecInputAnalyzer);
 
 
 

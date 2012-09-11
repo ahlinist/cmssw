@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: NSVfitEventBuilder.h,v 1.4 2012/04/07 15:44:43 veelken Exp $
+ * $Id: NSVfitEventBuilder.h,v 1.5 2012/08/28 15:00:22 veelken Exp $
  *
  */
 
@@ -37,8 +37,6 @@ class NSVfitEventBuilder : public NSVfitEventBuilderBase
   typedef edm::Ptr<reco::Candidate> CandidatePtr;
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
-
-  bool applyFitParameter(NSVfitEventHypothesis*, const double*) const;
   
  private:
   /// different possible polarization states of W bosons

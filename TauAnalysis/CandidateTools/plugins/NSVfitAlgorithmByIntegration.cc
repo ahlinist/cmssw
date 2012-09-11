@@ -119,14 +119,6 @@ void NSVfitAlgorithmByIntegration::beginJob()
     (*fitParameterReplacement)->beginJob(this);
   } 
 
-  massParForReplacements_ = new IndepCombinatoricsGeneratorT<int>(numMassParameters_);
-  for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {
-    const fitParameterReplacementType* fitParameterReplacement = fitParameterReplacements_[iMassParameter];
-    massParForReplacements_->setLowerLimit(iMassParameter, 0);
-    massParForReplacements_->setUpperLimit(iMassParameter, fitParameterReplacement->gridPoints_->GetSize() - 1);
-    massParForReplacements_->setStepSize(iMassParameter, 1);
-  }
-
   numDimensions_ = 0;
 
   for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
@@ -174,16 +166,29 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 
   for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
 	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
+    double minVisMass = -1.;
     for ( std::vector<replaceParBase*>::const_iterator par = (*fitParameterReplacement)->parForReplacements_.begin();
 	  par != (*fitParameterReplacement)->parForReplacements_.end(); ++par ) {
       replaceParByResonanceHypothesis* par_resonance = dynamic_cast<replaceParByResonanceHypothesis*>(*par);
       if ( par_resonance ) {
 	const NSVfitResonanceHypothesis* resonance = 
-	  dynamic_cast<const NSVfitResonanceHypothesis*>(
+          dynamic_cast<const NSVfitResonanceHypothesis*>(
             currentEventHypothesis_->NSVfitEventHypothesisBase::resonance(par_resonance->resonanceName_));
 	par_resonance->value_ = (*par_resonance->valueExtractor_)(*resonance);
+	double visMass = resonance->p4().mass();
+	if ( minVisMass == -1. || visMass < minVisMass ) minVisMass = visMass;
       }
     }
+    (*fitParameterReplacement)->beginEvent(minVisMass);
+  }
+
+  delete massParForReplacements_;
+  massParForReplacements_ = new IndepCombinatoricsGeneratorT<int>(numMassParameters_);
+  for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {
+    const fitParameterReplacementType* fitParameterReplacement = fitParameterReplacements_[iMassParameter];
+    massParForReplacements_->setLowerLimit(iMassParameter, 0);
+    massParForReplacements_->setUpperLimit(iMassParameter, fitParameterReplacement->gridPoints_->GetSize() - 1);
+    massParForReplacements_->setStepSize(iMassParameter, 1);
   }
 
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
@@ -195,9 +200,6 @@ void NSVfitAlgorithmByIntegration::fitImp() const
     	        << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
     }
   }
-
-  //gsl_monte_vegas_init(workspace_);
-  massParForReplacements_->reset();
 
   TH1* histResults = 0;
   std::ostringstream histResultsName;
@@ -366,7 +368,7 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     
     if ( verbosity_ >= 1 ) { 
       std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
-      std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+      std::cout << " pluginName = " << pluginName_ << std::endl;
       std::cout << "--> mass = " << resonance->mass_ << std::endl;
       std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
       //resonance->print(std::cout);

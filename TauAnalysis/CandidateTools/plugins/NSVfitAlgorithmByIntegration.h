@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.13 2012/08/29 14:40:49 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.14 2012/09/01 08:45:44 veelken Exp $
  *
  */
 
@@ -136,31 +136,6 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     }
     void beginJob(NSVfitAlgorithmByIntegration* algorithm)
     {
-      std::vector<double> gridPoints_vector;
-      double gridPoint = iterLowerLimit_;
-      bool isGridComplete = false;
-      while ( !isGridComplete ) {
-	if ( gridPoint >= iterUpperLimit_ ) isGridComplete = true;
-	gridPoints_vector.push_back(gridPoint);
-	double stepSize = TMath::Max((iterStepSizeFactor_ - 1.)*gridPoint, iterMinStepSize_);
-	gridPoint += stepSize;	
-      }
-      // CV: always probe Z mass
-      gridPoints_vector.push_back(SVfit_namespace::mZ);
-      std::sort(gridPoints_vector.begin(), gridPoints_vector.end());
-      
-      numGridPoints_ = gridPoints_vector.size();
-      gridPoints_ = new TArrayF(numGridPoints_);
-      resBinning_ = new TArrayF(numGridPoints_ + 1);
-      for ( int iGridPoint = 0; iGridPoint < numGridPoints_; ++iGridPoint ) {
-	double gridPoint = gridPoints_vector[iGridPoint];
-	(*gridPoints_)[iGridPoint] = gridPoint;
-	if   ( iGridPoint == 0 ) (*resBinning_)[0]          = gridPoint - 0.5*TMath::Abs(gridPoints_vector[1] - gridPoint);
-	else                     (*resBinning_)[iGridPoint] = 0.5*(gridPoints_vector[iGridPoint - 1] + gridPoint);
-	if   ( iGridPoint == (numGridPoints_ - 1) ) 
-	  (*resBinning_)[numGridPoints_] = gridPoint + 0.5*TMath::Abs(gridPoint - gridPoints_vector[iGridPoint - 1]);
-      }
-
       NSVfitParameter* fitParameterToReplace = algorithm->getFitParameter(toReplace_);
       if ( !fitParameterToReplace ) {
 	throw cms::Exception("fitParameterReplacementType::beginJob")
@@ -175,6 +150,34 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
       for ( std::vector<replaceParBase*>::iterator par = parForDeltaFuncDerrivative_.begin();
 	    par != parForDeltaFuncDerrivative_.end(); ++par ) {
 	(*par)->beginJob(algorithm);
+      }
+    }
+    void beginEvent(double eventLowerLimit)
+    {
+      std::cout << "<fitParameterReplacementType::beginEvent>:" << std::endl;
+      std::vector<double> gridPoints_vector;
+      double gridPoint = TMath::Max(iterLowerLimit_, eventLowerLimit);
+      bool isGridComplete = false;
+      while ( !isGridComplete ) {
+	if ( gridPoint >= iterUpperLimit_ ) isGridComplete = true;
+	gridPoints_vector.push_back(gridPoint);
+	double stepSize = TMath::Max((iterStepSizeFactor_ - 1.)*gridPoint, iterMinStepSize_);
+	gridPoint += stepSize;	
+      }
+      std::sort(gridPoints_vector.begin(), gridPoints_vector.end());
+      
+      numGridPoints_ = gridPoints_vector.size();
+      delete gridPoints_;
+      gridPoints_ = new TArrayF(numGridPoints_);       
+      delete resBinning_;
+      resBinning_ = new TArrayF(numGridPoints_ + 1);
+      for ( int iGridPoint = 0; iGridPoint < numGridPoints_; ++iGridPoint ) {
+	double gridPoint = gridPoints_vector[iGridPoint];
+	(*gridPoints_)[iGridPoint] = gridPoint;
+	if   ( iGridPoint == 0 ) (*resBinning_)[0]          = gridPoint - 0.5*TMath::Abs(gridPoints_vector[1] - gridPoint);
+	else                     (*resBinning_)[iGridPoint] = 0.5*(gridPoints_vector[iGridPoint - 1] + gridPoint);
+	if   ( iGridPoint == (numGridPoints_ - 1) ) 
+	  (*resBinning_)[numGridPoints_] = gridPoint + 0.5*TMath::Abs(gridPoint - gridPoints_vector[iGridPoint - 1]);
       }
     }
     std::string name_;
@@ -214,7 +217,7 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   unsigned numDimensions_;
 
   unsigned numMassParameters_;
-  IndepCombinatoricsGeneratorT<int>* massParForReplacements_;
+  mutable IndepCombinatoricsGeneratorT<int>* massParForReplacements_;
 
   int max_or_median_;
 };
