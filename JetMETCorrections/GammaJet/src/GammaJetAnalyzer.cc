@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.65 2012/05/30 14:19:13 meridian Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.66 2012/06/09 19:30:23 meridian Exp $
 //
 //
 
@@ -152,6 +152,9 @@ using namespace reco;
 //values for Jet Vertex PU ID
 #define DEF_GOODVTX_NDOF 4
 #define DEF_GOODVTX_Z 24
+
+// 2011 or 2012
+#define IS2012 1
 
 // Signed version of delta_phi
 inline float GammaJetAnalyzer::delta_phi(float phi1, float phi2) {
@@ -650,9 +653,43 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   ecorr_=new EGEnergyCorrector();
   //  PhotonFix::initialiseParameters(iConfig);
   cicPhotonId = new CiCPhotonID(iConfig);
+
+
+  // chiara --------------------------
+  // electron IDs MVAs                                                                                               
+  if (IS2012) {
+    std::vector<std::string> myManualCatWeigths;
+    myManualCatWeigths.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml").fullPath());
+    myManualCatWeigths.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml").fullPath());
+    myManualCatWeigths.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml").fullPath());
+    myManualCatWeigths.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml").fullPath());
+    myManualCatWeigths.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml").fullPath());
+    myManualCatWeigths.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml").fullPath());
+    
+    Bool_t manualCat = true;
+    myMVANonTrig = new EGammaMvaEleEstimator();
+    myMVANonTrig->initialize("BDT",
+			     EGammaMvaEleEstimator::kNonTrig,
+			     manualCat,
+			     myManualCatWeigths);
+    
+    std::vector<std::string> myManualCatWeigthsTrig;
+    myManualCatWeigthsTrig.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_TrigV0_Cat1.weights.xml").fullPath());
+    myManualCatWeigthsTrig.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_TrigV0_Cat2.weights.xml").fullPath());
+    myManualCatWeigthsTrig.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_TrigV0_Cat3.weights.xml").fullPath());
+    myManualCatWeigthsTrig.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_TrigV0_Cat4.weights.xml").fullPath());
+    myManualCatWeigthsTrig.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_TrigV0_Cat5.weights.xml").fullPath());
+    myManualCatWeigthsTrig.push_back(edm::FileInPath("JetMETCorrections/GammaJet/data/Electrons_BDTG_TrigV0_Cat6.weights.xml").fullPath());
+    myMVATrig = new EGammaMvaEleEstimator();
+    myMVATrig->initialize("BDT",
+			EGammaMvaEleEstimator::kTrig,
+			  manualCat,
+			  myManualCatWeigthsTrig);
+  }
+  // chiara --------------------
 }
-
-
+  
+  
 GammaJetAnalyzer::~GammaJetAnalyzer()
 {
 
@@ -666,6 +703,13 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
    //file_prova->Close();
   delete cicPhotonId;
   delete ecorr_;
+
+  // chiara
+  if (IS2012) {
+    delete eIsoFromPFCandsValueMap_;
+    delete myMVANonTrig;
+    delete myMVATrig;
+  }
 }
 
 
@@ -1027,6 +1071,27 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    //   iSetup.get<TrackerDigiGeometryRecord>().get(trackerHandle_);
   
    //ClusterShapeAlgo algo;
+
+   // chiara -------------------------------------------------------------------
+   // for electrons PF isolation and MVA ID
+   if (IS2012) {
+     eIsoFromPFCandsValueMap_ = new isoContainer(9);
+     iEvent.getByLabel( "myElectronPFIsoChHad03",(*eIsoFromPFCandsValueMap_)[0] );
+     iEvent.getByLabel( "myElectronPFIsoNHad03",(*eIsoFromPFCandsValueMap_)[1] );
+     iEvent.getByLabel( "myElectronPFIsoPhoton03",(*eIsoFromPFCandsValueMap_)[2] );
+     iEvent.getByLabel( "myElectronPFIsoChHad04",(*eIsoFromPFCandsValueMap_)[3] );
+     iEvent.getByLabel( "myElectronPFIsoNHad04",(*eIsoFromPFCandsValueMap_)[4] );
+     iEvent.getByLabel( "myElectronPFIsoPhoton04",(*eIsoFromPFCandsValueMap_)[5] );
+     iEvent.getByLabel( "myElectronPFIsoChHad05",(*eIsoFromPFCandsValueMap_)[6] );
+     iEvent.getByLabel( "myElectronPFIsoNHad05",(*eIsoFromPFCandsValueMap_)[7] );
+     iEvent.getByLabel( "myElectronPFIsoPhoton05",(*eIsoFromPFCandsValueMap_)[8] );
+   }
+
+   // transient track builder needed for ele ID MVA
+   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder_);  
+   const TransientTrackBuilder thebuilder = *(trackBuilder_.product());
+   // chiara -------------------------------------------------------------------
+
 
 //---------------------------HLT Trigger ---------------------------------------------------------------------------------------------
 // You Can See HLT Name list ->  " JetMETCorrections/GammaJet/test/HLTList.txt " file 
@@ -1975,8 +2040,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	       //    if (photonsForVertexComputation.size()>=2)
 	       //     {
 	       
-	       
-	       
+
 	       //Run HggVertexAnalysis
 	       vtxAna->analyze(aVtx,(*iphot1).second,(*iphot2).second);
 
@@ -2536,18 +2600,24 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 nElePhot++;       
        }	 
      ++nPhot;
-  }
+   }
    
-   
+   // chiara
+   unsigned index_gsf = 0;
    for (GsfElectronCollection::const_iterator itElectron = ElectronHandle->begin();
-	itElectron != ElectronHandle->end(); ++itElectron) {
+	itElectron != ElectronHandle->end(); ++itElectron, ++index_gsf) {
+
+     // chiara
+     GsfElectronRef eleRef = GsfElectronRef(ElectronHandle, index_gsf);
      
      const EBRecHitCollection* rechits = ( itElectron->isEB()) ? rhitseb : rhitsee;     
      const Ptr<CaloCluster> theSeed = itElectron->superCluster()->seed();
      float e9=EcalClusterTools::e3x3( *theSeed, &(*rechits), topology );
      float sigIPhiIPhi=sqrt((EcalClusterTools::localCovariances( *theSeed, &(*rechits), topology ))[2]);
-     electron_pt[nEle]       = itElectron->pt();
-     electron_energy[nEle]   = itElectron->energy();
+     electron_pt[nEle]          = itElectron->pt();
+     electron_energy[nEle]      = itElectron->energy();
+     electron_ecalEnergy[nEle]  = itElectron->ecalEnergy();                 // chiara
+     electron_trackPatVtx[nEle] = itElectron->trackMomentumAtVtx().R();     // chiara
      electron_px[nEle]       = itElectron->px();
      electron_py[nEle]       = itElectron->py();
      electron_pz[nEle]       = itElectron->pz();
@@ -2565,6 +2635,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ConversionInfo convInfo = convFinder.getConversionInfo(*itElectron,tracks, bfield);      
      electron_dist[nEle] = (convInfo.dist() == -9999.? 9999:convInfo.dist());
      electron_dcot[nEle] = (convInfo.dcot() == -9999.? 9999:convInfo.dcot());
+     bool matchesConv = ConversionTools::hasMatchedConversion(*eleRef,hConversions,recoBeamSpotHandle->position());
+     electron_matchedConv[nEle] = matchesConv;
      electron_seedType[nEle]       = itElectron->ecalDrivenSeed()+2*itElectron->trackerDrivenSeed();
      electron_nSubClusters[nEle]       = itElectron->numberOfBrems();
      electron_HoE[nEle]          = itElectron->hadronicOverEm();
@@ -2582,6 +2654,59 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      electron_sc_energy[nEle]    = itElectron->superCluster()->energy();
      electron_sc_eta[nEle]       = itElectron->superCluster()->eta();
      electron_sc_phi[nEle]       = itElectron->superCluster()->phi();
+    
+     // chiara ----------------------------
+     if (IS2012) {
+       const reco::GsfElectron *ele = &(*itElectron);
+       
+       double mvaidnontrig = myMVANonTrig->mvaValue(*ele, 
+						    VertexHandleJetId->front(), 
+						    thebuilder,
+						    lazyTools,
+						    false);
+       
+       double mvaidtrig = myMVATrig->mvaValue(*ele,
+					      VertexHandleJetId->front(),
+					      thebuilder,
+					      lazyTools,
+					      false);
+       
+       electron_mvaNonTrig[nEle] = mvaidnontrig;
+       electron_mvaTrig[nEle]    = mvaidtrig;
+       
+       const isoFromPFCandsMap & electronsPfCandChHad03IsoVal  = *( (*eIsoFromPFCandsValueMap_)[0] );
+       const isoFromPFCandsMap & electronsPfCandNHad03IsoVal   = *( (*eIsoFromPFCandsValueMap_)[1] );
+       const isoFromPFCandsMap & electronsPfCandPhoton03IsoVal = *( (*eIsoFromPFCandsValueMap_)[2] );
+       const isoFromPFCandsMap & electronsPfCandChHad04IsoVal  = *( (*eIsoFromPFCandsValueMap_)[3] );
+       const isoFromPFCandsMap & electronsPfCandNHad04IsoVal   = *( (*eIsoFromPFCandsValueMap_)[4] );
+       const isoFromPFCandsMap & electronsPfCandPhoton04IsoVal = *( (*eIsoFromPFCandsValueMap_)[5] );
+       const isoFromPFCandsMap & electronsPfCandChHad05IsoVal  = *( (*eIsoFromPFCandsValueMap_)[6] );
+       const isoFromPFCandsMap & electronsPfCandNHad05IsoVal   = *( (*eIsoFromPFCandsValueMap_)[7] );
+       const isoFromPFCandsMap & electronsPfCandPhoton05IsoVal = *( (*eIsoFromPFCandsValueMap_)[8] );
+       electron_chHad03Iso[nEle] = electronsPfCandChHad03IsoVal[eleRef]; 
+       electron_nHad03Iso[nEle]  = electronsPfCandNHad03IsoVal[eleRef];
+       electron_phot03Iso[nEle]  = electronsPfCandPhoton03IsoVal[eleRef];
+       electron_chHad04Iso[nEle] = electronsPfCandChHad04IsoVal[eleRef]; 
+       electron_nHad04Iso[nEle]  = electronsPfCandNHad04IsoVal[eleRef];
+       electron_phot04Iso[nEle]  = electronsPfCandPhoton04IsoVal[eleRef];
+       electron_chHad05Iso[nEle] = electronsPfCandChHad05IsoVal[eleRef]; 
+       electron_nHad05Iso[nEle]  = electronsPfCandNHad05IsoVal[eleRef];
+       electron_phot05Iso[nEle]  = electronsPfCandPhoton05IsoVal[eleRef];
+     } else {
+       electron_mvaNonTrig[nEle] = -999.;
+       electron_mvaTrig[nEle]    = -999.;
+       electron_chHad03Iso[nEle] = -999.;
+       electron_nHad03Iso[nEle]  = -999.; 
+       electron_phot03Iso[nEle]  = -999.; 
+       electron_chHad04Iso[nEle] = -999.; 
+       electron_nHad04Iso[nEle]  = -999.; 
+       electron_phot04Iso[nEle]  = -999.; 
+       electron_chHad05Iso[nEle] = -999.; 
+       electron_nHad05Iso[nEle]  = -999.;
+       electron_phot05Iso[nEle]  = -999.;
+     }
+     // chiara ----------------------------
+
      nEle++;
    }//end of for loop
 
@@ -2598,7 +2723,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  eJet_kt4[nJet_kt4] = it->energy();	 
 	  etaJet_kt4[nJet_kt4] = it->eta();	 
 	  phiJet_kt4[nJet_kt4] = it->phi();
-       //emfJet_kt4[nJet_kt4] = it->emEnergyFraction();	      
+	  //emfJet_kt4[nJet_kt4] = it->emEnergyFraction();	      
 	  emfJet_kt4[nJet_kt4] = fixEMF(it->emEnergyFraction(), it->eta());
 	  
 	  nJet_kt4++;
@@ -2774,62 +2899,310 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  
 	  vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
 	  
-	  float sumPt_cands=0.;
-	  float sumPt2_cands=0.;
-	  float rms_cands=0.;
+	  float rms_cands_wrong=0.;
+
+	  float SumW=0;
+	  float SumW2=0;
+	  float SumDeta=0;
+	  float SumDeta2=0;
+	  float SumDphi=0;
+	  float SumDphi2=0;
+	  float SumDetaDphi=0;
 	  
-	  for (vector<PFCandidatePtr>::const_iterator jt = pfCandidates.begin();
-	       jt != pfCandidates.end(); ++jt) {
-	    
-	    PFCandidate::ParticleType id = (*jt)->particleId();
-	    // Convert particle momentum to normal TLorentzVector, wrong type :(
-	    math::XYZTLorentzVectorD const& p4t = (*jt)->p4();
-	    TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	    TLorentzVector jetp4;
-	    jetp4.SetPtEtaPhiE(it->pt(), it->eta(), it->phi(), it->energy());
-	    if(p4.Pt()!=0){
-	      sumPt_cands += p4.Pt();
-	      sumPt2_cands += (p4.Pt()*p4.Pt());
-	      //float deltaR = it->p4().DeltaR(p4);
-	      float deltaR = jetp4.DeltaR(p4);
-	      rms_cands += (p4.Pt()*p4.Pt()*deltaR*deltaR);
-	    }
+	  float SumW_QC=0;
+	  float SumW2_QC=0;
+	  float SumDeta_QC=0;
+	  float SumDeta2_QC=0;
+	  float SumDphi_QC=0;
+	  float SumDphi2_QC=0;
+	  float SumDetaDphi_QC=0;
+	  
+	  float Eta0=it->eta();
+	  float Phi0=it->phi();
 
-	    // Store PFCandidates for two leading jets
-	    
-	    if (id==PFCandidate::h) { // charged hadrons
-	      nChargedHadrons += 1;
-	      p4ChargedHadrons += p4;
-	    }
-	    if (id==PFCandidate::e) { // electrons
-	      nElectrons += 1;
-	      p4Electrons += p4;
-	    }
-	    if (id==PFCandidate::mu) { // muons
-	      nMuons += 1;
-	      p4Muons += p4;
-	    }
-	    if (id==PFCandidate::gamma) { // photons
-	      nPhotons += 1;
-	      p4Photons += p4;
-	    }
-	    if (id==PFCandidate::h0) { // neutral hadrons
-	      nNeutralHadrons += 1;
-	      p4NeutralHadrons += p4;
-	    }
-	    if (id==PFCandidate::h_HF) { // HF hadrons
-	      nHFHadrons += 1;
-	      p4HFHadrons += p4;
-	    }
-	    if (id==PFCandidate::egamma_HF) { // HF EM clusters
-	      nHFEM += 1;
-	      p4HFEM += p4;
-	    }
-	    
-	  } //for PFCandidates
+        // initialize:
+        rmsCandJet_pfakt5[nJet_pfakt5] =  -999.;
+        ptDJet_pfakt5[nJet_pfakt5] =      -999.;
+        axis1Jet_pfakt5[nJet_pfakt5] =    -999.;
+        axis2Jet_pfakt5[nJet_pfakt5] =    -999.;
+        pullJet_pfakt5[nJet_pfakt5] =     -999.;
+        tanaJet_pfakt5[nJet_pfakt5]  =    -999.;
 
-	  ptDJet_pfakt5[nJet_pfakt5] = sqrt( sumPt2_cands )/sumPt_cands;
-	  rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands/sumPt2_cands;
+        rmsCandTrue_QCJet_pfakt5[nJet_pfakt5] =  -999.;
+        ptD_QCJet_pfakt5[nJet_pfakt5] =      -999.;
+        axis1_QCJet_pfakt5[nJet_pfakt5] =    -999.;
+        axis2_QCJet_pfakt5[nJet_pfakt5] =    -999.;
+        pull_QCJet_pfakt5[nJet_pfakt5] =     -999.;
+        tana_QCJet_pfakt5[nJet_pfakt5]  =    -999.;
+
+        RchgJet_pfakt5[nJet_pfakt5] = 0.;
+        RneutralJet_pfakt5[nJet_pfakt5] = 0.;
+        RJet_pfakt5[nJet_pfakt5] = 0.;
+        Rchg_QCJet_pfakt5[nJet_pfakt5] = 0.;
+
+	  pTMaxJet_pfakt5[nJet_pfakt5] = 0.;
+	  pTMaxChgJet_pfakt5[nJet_pfakt5] = 0.;
+	  pTMaxNeutralJet_pfakt5[nJet_pfakt5] = 0.;
+        pTMaxChg_QCJet_pfakt5[nJet_pfakt5] = 0.;
+
+        nChg_ptCutJet_pfakt5[nJet_pfakt5] = 0;
+        nChg_QCJet_pfakt5[nJet_pfakt5] = 0;
+        nChg_ptCut_QCJet_pfakt5[nJet_pfakt5] = 0;
+        nNeutral_ptCutJet_pfakt5[nJet_pfakt5] = 0;
+
+        std::vector<bool> jetPart_forMult,jetPart_forAxis;
+
+	  
+	  for(int i=0;i<it->nConstituents();++i)
+		{
+
+		reco::TrackRef itrk ;
+		reco::PFCandidatePtr  part = it->getPFConstituent(i);
+
+		double pt=part->pt();
+		double eta=part->eta();
+		double phi=part->phi();
+
+		PFCandidate::ParticleType id = part->particleId();
+		// Convert particle momentum to normal TLorentzVector, wrong type :(
+		math::XYZTLorentzVectorD const& p4t = part->p4();
+		TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+		TLorentzVector jetp4;
+		jetp4.SetPtEtaPhiE(it->pt(), it->eta(), it->phi(), it->energy());
+
+		if (id==PFCandidate::h) { // charged hadrons
+		  nChargedHadrons += 1;
+		  p4ChargedHadrons += p4;
+		}
+		if (id==PFCandidate::e) { // electrons
+		  nElectrons += 1;
+		  p4Electrons += p4;
+		}
+		if (id==PFCandidate::mu) { // muons
+		  nMuons += 1;
+		  p4Muons += p4;
+		}
+		if (id==PFCandidate::gamma) { // photons
+		  nPhotons += 1;
+		  p4Photons += p4;
+		}
+		if (id==PFCandidate::h0) { // neutral hadrons
+		  nNeutralHadrons += 1;
+		  p4NeutralHadrons += p4;
+		}
+		if (id==PFCandidate::h_HF) { // HF hadrons
+		  nHFHadrons += 1;
+		  p4HFHadrons += p4;
+		}
+		if (id==PFCandidate::egamma_HF) { // HF EM clusters
+		  nHFEM += 1;
+		  p4HFEM += p4;
+		}
+
+
+
+		if (part.isNonnull())
+		  itrk = (*part).trackRef();
+		if (pt > pTMaxJet_pfakt5[nJet_pfakt5]) 
+		  pTMaxJet_pfakt5[nJet_pfakt5] = pt;
+		if (itrk.isNonnull() && pt > pTMaxChgJet_pfakt5[nJet_pfakt5]) 
+		  pTMaxChgJet_pfakt5[nJet_pfakt5] = pt;
+		if (!itrk.isNonnull() && pt > pTMaxNeutralJet_pfakt5[nJet_pfakt5]) 
+		  pTMaxNeutralJet_pfakt5[nJet_pfakt5] = pt;
+		if (!itrk.isNonnull() && pt > 1.0) 
+		  nNeutral_ptCutJet_pfakt5[nJet_pfakt5]++;
+		
+		bool trkForAxis = false;
+		bool trkForMult = false;
+		
+		//-----matching with vertex tracks-------
+		if (!itrk.isNonnull()) { 
+		  trkForMult = true;
+		  trkForAxis = true;
+		}
+		else {
+		  if (pt > 1.0)
+		    nChg_ptCutJet_pfakt5[nJet_pfakt5]++;
+		  float dZmin = 999;
+		  int index_min = 999;
+		  reco::VertexCollection::const_iterator vtxClose;
+		  for(unsigned ivtx = 0;ivtx < VertexHandle->size();ivtx++) {
+		    float dZ_cut = fabs(itrk->dz((*VertexHandle)[ivtx].position()));
+		    float sumpT = 0;
+		    for(reco::Vertex::trackRef_iterator itk = (*VertexHandle)[ivtx].tracks_begin();itk!=(*VertexHandle)[ivtx].tracks_end(); ++itk) {
+		      sumpT = sumpT + ((*itk)->pt())*((*itk)->pt());
+		    }
+		    if (dZ_cut < dZmin) {
+		      dZmin = dZ_cut;
+		      index_min = ivtx;
+		        //  std::cout<<"dz=="<<dZ_cut<<std::endl;
+		    }
+		  }//Loop over vertices 
+		  if (index_min == 0) {
+		    float dz = itrk->dz((*VertexHandle)[0].position());
+		    float d0 = itrk->dxy((*VertexHandle)[0].position());
+		    float vtx_xError = (*VertexHandle)[0].xError();
+		    float vtx_yError = (*VertexHandle)[0].yError();
+		    float vtx_zError = (*VertexHandle)[0].zError();
+		    float d0_sigma=sqrt(pow(itrk->d0Error(),2) + pow(vtx_xError,2) + pow(vtx_yError,2));
+		    float dz_sigma=sqrt(pow(itrk->dzError(),2) + pow(vtx_zError,2));
+		    if (itrk->quality(reco::TrackBase::qualityByName("highPurity")) && fabs(dz/dz_sigma) < 5.) {
+		      trkForAxis = true;
+		      if (fabs(d0/d0_sigma) < 5.)
+		        trkForMult = true;
+		    }//
+		  }
+		  if (trkForMult)
+		    nChg_QCJet_pfakt5[nJet_pfakt5]++;
+		  if (itrk.isNonnull() && trkForMult && pt > 1.0)
+		    nChg_ptCut_QCJet_pfakt5[nJet_pfakt5]++;
+		  if (pt > pTMaxChg_QCJet_pfakt5[nJet_pfakt5] && trkForAxis) 
+		    pTMaxChg_QCJet_pfakt5[nJet_pfakt5] = pt;
+		}// for charged particles only
+
+
+            jetPart_forMult.push_back(trkForMult);
+            jetPart_forAxis.push_back(trkForAxis);
+
+		double dphi = 2*atan(tan((phi-Phi0)/2));      
+		double deta = eta-Eta0;
+		SumW+=pt;
+		SumW2+=pt*pt;
+		SumDeta+=pt*pt*deta;
+		SumDeta2+=pt*pt*deta*deta;
+		SumDphi+=pt*pt*dphi;
+		SumDphi2+=pt*pt*dphi*dphi;
+		SumDetaDphi+=pt*pt*deta*dphi;
+		float deltaR = jetp4.DeltaR(p4);
+		rms_cands_wrong += (p4.Pt()*p4.Pt()*deltaR*deltaR);
+		if (trkForAxis) {
+		  SumW_QC+=pt;
+		  SumW2_QC+=pt*pt;
+		  SumDeta_QC+=pt*pt*deta;
+		  SumDeta2_QC+=pt*pt*deta*deta;
+		  SumDphi_QC+=pt*pt*dphi;
+		  SumDphi2_QC+=pt*pt*dphi*dphi;
+		  SumDetaDphi_QC+=pt*pt*deta*dphi;
+		}
+
+	}
+	float ave_deta = SumDeta/SumW2;
+	float ave_dphi = SumDphi/SumW2;
+	float  ave_deta2 = SumDeta2/SumW2;
+	float  ave_dphi2 = SumDphi2/SumW2;
+      float a = ave_deta2-ave_deta*ave_deta;
+      float b = ave_dphi2-ave_dphi*ave_dphi;
+      float c = -(SumDetaDphi/SumW2-ave_deta*ave_dphi);
+      float delta = sqrt(fabs((a-b)*(a-b)+4*c*c));
+      if (a+b+delta > 0) {
+        axis1Jet_pfakt5[nJet_pfakt5] = sqrt(0.5*(a+b+delta));
+      }
+      if (a+b-delta > 0) {  
+        axis2Jet_pfakt5[nJet_pfakt5] = sqrt(0.5*(a+b-delta));
+      }
+      if (c != 0) {
+        tanaJet_pfakt5[nJet_pfakt5] = 0.5*(b-a+delta)/c;
+      }	
+
+	float ave_deta_QC = SumDeta_QC/SumW2_QC;
+	float ave_dphi_QC = SumDphi_QC/SumW2_QC;
+	float  ave_deta2_QC = SumDeta2_QC/SumW2_QC;
+	float  ave_dphi2_QC = SumDphi2_QC/SumW2_QC;
+      float a_QC = ave_deta2_QC-ave_deta_QC*ave_deta_QC;
+      float b_QC = ave_dphi2_QC-ave_dphi_QC*ave_dphi_QC;
+      float c_QC = -(SumDetaDphi_QC/SumW2_QC-ave_deta_QC*ave_dphi_QC);
+      float delta_QC = sqrt(fabs((a_QC-b_QC)*(a_QC-b_QC)+4*c_QC*c_QC));
+      if (a_QC+b_QC+delta_QC > 0) {
+        axis1_QCJet_pfakt5[nJet_pfakt5] = sqrt(0.5*(a_QC+b_QC+delta_QC));
+      }
+      if (a_QC+b_QC-delta_QC > 0) {  
+        axis2_QCJet_pfakt5[nJet_pfakt5] = sqrt(0.5*(a_QC+b_QC-delta_QC));
+      }
+      if (c_QC != 0) {
+        tana_QCJet_pfakt5[nJet_pfakt5] = 0.5*(b_QC-a_QC+delta_QC)/c_QC;
+      }	
+
+      ptDJet_pfakt5[nJet_pfakt5] =sqrt( SumW2/ (SumW*SumW));
+      ptD_QCJet_pfakt5[nJet_pfakt5] =sqrt( SumW2_QC/ (SumW_QC*SumW_QC));
+
+      // this is thw rong definition of rms, kept only for backwards compatibility:
+	rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands_wrong/SumW2;
+
+	//-------calculate pull------
+    	float ddetaR_sum(0.0), ddphiR_sum(0.0),ddetaR_sum_QC(0.0), ddphiR_sum_QC(0.0);
+      float sum_ddR = 0.;
+      float sum_ddR_QC = 0.;
+    	for(int i=0; i<it->nConstituents(); ++i) {
+			double pt=it->getJetConstituentsQuick()[i]->pt();
+			double eta=it->getJetConstituentsQuick()[i]->eta();
+			double phi=it->getJetConstituentsQuick()[i]->phi();
+			double dphi = 2*atan(tan((phi-Phi0)/2));      
+			double deta = eta-Eta0;
+  		    float weight = pt*pt;
+  		    float ddeta, ddphi,ddR;
+  		    ddeta = deta - ave_deta ;//jetPart_deta[i] - ave_deta ; 
+  		    ddphi = 2*atan(tan(( dphi - ave_dphi)/2.)) ;
+  		    ddR = sqrt(ddeta*ddeta + ddphi*ddphi);
+		    sum_ddR += ddR *ddR* weight;
+  		    ddetaR_sum += ddR*ddeta*weight;
+  		    ddphiR_sum += ddR*ddphi*weight;
+                if (jetPart_forAxis[i]) { // this should be ave_deta_QC
+  		      float ddeta_QC = deta - ave_deta_QC ;//jetPart_deta[i] - ave_deta ; 
+  		      float ddphi_QC = 2*atan(tan(( dphi - ave_dphi_QC)/2.)) ;
+  		      float ddR_QC = sqrt(ddeta_QC*ddeta_QC + ddphi_QC*ddphi_QC);
+		      sum_ddR_QC += ddR_QC *ddR_QC* weight;
+  		      ddetaR_sum_QC += ddR_QC*ddeta_QC*weight;
+  		      ddphiR_sum_QC += ddR_QC*ddphi_QC*weight;
+                }
+  		  }//second loop over constituents  
+  if (SumW2 > 0) {
+    float ddetaR_ave = ddetaR_sum/SumW2;
+    float ddphiR_ave = ddphiR_sum/SumW2;
+    pullJet_pfakt5[nJet_pfakt5] = sqrt(ddetaR_ave*ddetaR_ave+ddphiR_ave*ddphiR_ave);
+  }
+
+  if (SumW2_QC > 0) {
+    float ddetaR_ave_QC = ddetaR_sum_QC/SumW2_QC;
+    float ddphiR_ave_QC = ddphiR_sum_QC/SumW2_QC;
+    pull_QCJet_pfakt5[nJet_pfakt5] = sqrt(ddetaR_ave_QC*ddetaR_ave_QC+ddphiR_ave_QC*ddphiR_ave_QC);
+  }
+
+  rmsCandTrueJet_pfakt5[nJet_pfakt5] = sqrt( sum_ddR / SumW2);
+  rmsCandTrue_QCJet_pfakt5[nJet_pfakt5] = sqrt( sum_ddR_QC / SumW2_QC);
+
+  RchgJet_pfakt5[nJet_pfakt5] = pTMaxChgJet_pfakt5[nJet_pfakt5]/SumW;
+  RneutralJet_pfakt5[nJet_pfakt5] = pTMaxNeutralJet_pfakt5[nJet_pfakt5]/SumW;
+  RJet_pfakt5[nJet_pfakt5] = pTMaxJet_pfakt5[nJet_pfakt5]/SumW;
+  Rchg_QCJet_pfakt5[nJet_pfakt5] = pTMaxChg_QCJet_pfakt5[nJet_pfakt5]/SumW_QC;
+
+
+
+
+//	  float sumPt_cands=0.;
+//	  float sumPt2_cands=0.;
+//	  
+//	  for (vector<PFCandidatePtr>::const_iterator jt = pfCandidates.begin();
+//	       jt != pfCandidates.end(); ++jt) {
+//	    
+//	    PFCandidate::ParticleType id = (*jt)->particleId();
+//	    // Convert particle momentum to normal TLorentzVector, wrong type :(
+//	    math::XYZTLorentzVectorD const& p4t = (*jt)->p4();
+//	    TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+//	    TLorentzVector jetp4;
+//	    jetp4.SetPtEtaPhiE(it->pt(), it->eta(), it->phi(), it->energy());
+//	    if(p4.Pt()!=0){
+//	      sumPt_cands += p4.Pt();
+//	      sumPt2_cands += (p4.Pt()*p4.Pt());
+//	      //float deltaR = it->p4().DeltaR(p4);
+//	      float deltaR = jetp4.DeltaR(p4);
+//	      rms_cands += (p4.Pt()*p4.Pt()*deltaR*deltaR);
+//	    }
+
+	    
+	  //} //for PFCandidates
+
+	  //ptDJet_pfakt5[nJet_pfakt5] = sqrt( sumPt2_cands )/sumPt_cands;
+	  //rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands/sumPt2_cands;
 
 	  PileupJetIdentifier jetIdentifer_vars = jetMVACalculator.computeIdVariables(&correctedJet, scale, selectedVtx, vertexCollection);
 	  jetId_dRMean_pfakt5[nJet_pfakt5]=jetIdentifer_vars.dRMean();
@@ -2850,7 +3223,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	    PileupJetIdAlgo* ialgo = (jetId_algos[imva]);
 	    ialgo->set(jetIdentifer_vars);
 	    PileupJetIdentifier id = ialgo->computeMva();
-	    if (jetMVAAlgos.size() != 4) cout << "problem with jet mva" << jetMVAAlgos.size() << endl;
+	    // if (jetMVAAlgos.size() != 4) cout << "problem with jet mva" << jetMVAAlgos.size() << endl;
 	    // mva values
 	    if (imva==0) jetIdSimple_mva_pfakt5[nJet_pfakt5]   = id.mva() ;
 	    if (imva==1) jetIdFull_mva_pfakt5[nJet_pfakt5]     = id.mva() ;
@@ -2960,8 +3333,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	  if(it->pt() > 10. ){
 	    // B tagging
-	    //combinedSecondaryVertexBJetTags_pfakt5[index] =  (*combinedSecondaryVertexBJetTags)[index].second ;
-	    //combinedSecondaryVertexMVABJetTags_pfakt5[index] =  (*combinedSecondaryVertexMVABJetTags)[index].second ;
+	    combinedSecondaryVertexBJetTags_pfakt5[index] =  (*combinedSecondaryVertexBJetTags)[index].second ;
+	    combinedSecondaryVertexMVABJetTags_pfakt5[index] =  (*combinedSecondaryVertexMVABJetTags)[index].second ;
 	    jetBProbabilityBJetTags_pfakt5[index] =  (*jetBProbabilityBJetTags)[index].second ;
 	    jetProbabilityBJetTags_pfakt5[index] =  (*jetProbabilityBJetTags)[index].second ;
 	    simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighEffBJetTags)[index].second ;
@@ -3260,13 +3633,39 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   muon_vx[x]  = (*muonHandle)[x].vx();
 	   muon_vy[x]  = (*muonHandle)[x].vy();
 	   muon_vz[x]  = (*muonHandle)[x].vz();
-	   
+
+	   // PF isolation (for 2012 data) - chiara
+	   if (IS2012) {
+	     muon_pfiso04_chHad[x] = (*muonHandle)[x].pfIsolationR04().sumChargedHadronPt;
+	     muon_pfiso04_chPar[x] = (*muonHandle)[x].pfIsolationR04().sumChargedParticlePt;
+	     muon_pfiso04_nHad[x]  = (*muonHandle)[x].pfIsolationR04().sumNeutralHadronEt;
+	     muon_pfiso04_Phot[x]  = (*muonHandle)[x].pfIsolationR04().sumPhotonEt;
+	     muon_pfiso04_PUPt[x]  = (*muonHandle)[x].pfIsolationR04().sumPUPt;
+	     muon_pfiso03_chHad[x] = (*muonHandle)[x].pfIsolationR03().sumChargedHadronPt;
+	     muon_pfiso03_chPar[x] = (*muonHandle)[x].pfIsolationR03().sumChargedParticlePt;
+	     muon_pfiso03_nHad[x]  = (*muonHandle)[x].pfIsolationR03().sumNeutralHadronEt;
+	     muon_pfiso03_Phot[x]  = (*muonHandle)[x].pfIsolationR03().sumPhotonEt;
+	     muon_pfiso03_PUPt[x]  = (*muonHandle)[x].pfIsolationR03().sumPUPt;
+	     muon_isPFMuon[x]      = (*muonHandle)[x].isPFMuon();   
+	   } else {
+	     muon_pfiso04_chHad[x] = -999.;
+	     muon_pfiso04_chPar[x] = -999.;
+	     muon_pfiso04_nHad[x]  = -999.;
+	     muon_pfiso04_Phot[x]  = -999.;
+	     muon_pfiso04_PUPt[x]  = -999.;
+	     muon_pfiso03_chHad[x] = -999.;
+	     muon_pfiso03_chPar[x] = -999.;
+	     muon_pfiso03_nHad[x]  = -999.;
+	     muon_pfiso03_Phot[x]  = -999.;
+	     muon_pfiso03_PUPt[x]  = -999.;
+	     muon_isPFMuon[x]      = -999;
+	   }
+
 	   //tia's stuff
 	   muon_isGlobalMuon[x] =     (*muonHandle)[x].isGlobalMuon();
 	   muon_isTrackerMuon[x] =    (*muonHandle)[x].isTrackerMuon();
 	   muon_isStandAloneMuon[x] = (*muonHandle)[x].isStandAloneMuon();
 	   
-
 	   //FIXME: Seems needed  top and bottom referene point, but not sure how to do that !!!
 	   reco::TrackRef moTrkref;
 	   if((muon_isGlobalMuon[x]) || (muon_isTrackerMuon[x])){
@@ -3305,12 +3704,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	   muon_normChi2[x]= -99;
 	   muon_validHits[x]= -99;
-
+	   
 	   if((*muonHandle)[x].globalTrack().isNonnull() ){
 	     muon_normChi2[x] = (*muonHandle)[x].globalTrack()->chi2()/(*muonHandle)[x].globalTrack()->ndof();
 	     muon_validHits[x] = (*muonHandle)[x].globalTrack()->hitPattern().numberOfValidMuonHits();
 	   }
-
+	   
 	   muon_numberOfMatches[x] = (*muonHandle)[x].numberOfMatches();
 
 	   muon_tkHits[x] =-99;
@@ -3319,6 +3718,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   if((*muonHandle)[x].track().isNonnull() ){
 	     muon_tkHits[x] = (*muonHandle)[x].track()->numberOfValidHits();
 	     muon_pixHits[x] = (*muonHandle)[x].track()->hitPattern().numberOfValidPixelHits();
+	     muon_trkLayerWithMeas[x] = (*muonHandle)[x].track()->hitPattern().trackerLayersWithMeasurement();  // chiara
 	   }
 	   
 	   nMuons++;
@@ -3613,6 +4013,30 @@ GammaJetAnalyzer::beginJob()
       m_tree->Branch("phiJet_pfakt5",&phiJet_pfakt5,"phiJet_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("ptDJet_pfakt5",&ptDJet_pfakt5,"ptDJet_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("rmsCandJet_pfakt5",&rmsCandJet_pfakt5,"rmsCandJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("rmsCandTrueJet_pfakt5",&rmsCandTrueJet_pfakt5,"rmsCandTrueJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("rmsCandTrue_QCJet_pfakt5",&rmsCandTrue_QCJet_pfakt5,"rmsCandTrue_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("axis1Jet_pfakt5",&axis1Jet_pfakt5,"axis1Jet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("axis2Jet_pfakt5",&axis2Jet_pfakt5,"axis2Jet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("pullJet_pfakt5",&pullJet_pfakt5,"pullJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("tanaJet_pfakt5",&tanaJet_pfakt5,"tanaJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptD_QCJet_pfakt5",&ptD_QCJet_pfakt5,"ptD_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("rmsCandTrue_QCJet_pfakt5",&rmsCandTrue_QCJet_pfakt5,"rmsCandTrue_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("axis1_QCJet_pfakt5",&axis1_QCJet_pfakt5,"axis1_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("axis2_QCJet_pfakt5",&axis2_QCJet_pfakt5,"axis2_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("pull_QCJet_pfakt5",&pull_QCJet_pfakt5,"pull_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("tana_QCJet_pfakt5",&tana_QCJet_pfakt5,"tana_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("RchgJet_pfakt5",&RchgJet_pfakt5,"RchgJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("RneutralJet_pfakt5",&RneutralJet_pfakt5,"RneutralJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("RJet_pfakt5",&RJet_pfakt5,"RJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("Rchg_QCJet_pfakt5",&Rchg_QCJet_pfakt5,"Rchg_QCJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("nChg_ptCutJet_pfakt5",&nChg_ptCutJet_pfakt5,"nChg_ptCutJet_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nChg_QCJet_pfakt5",&nChg_QCJet_pfakt5,"nChg_QCJet_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nChg_ptCut_QCJet_pfakt5",&nChg_ptCut_QCJet_pfakt5,"nChg_ptCut_QCJet_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nNeutral_ptCutJet_pfakt5",&nNeutral_ptCutJet_pfakt5,"nNeutral_ptCutJet_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("pTMaxJet_pfakt5",&pTMaxJet_pfakt5,"pTMaxJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("pTMaxChgJet_pfakt5",&pTMaxChgJet_pfakt5,"pTMaxChgJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("pTMaxNeutralJet_pfakt5",&pTMaxNeutralJet_pfakt5,"pTMaxNeutralJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("pTMaxChg_QCJet_pfakt5",&pTMaxChg_QCJet_pfakt5,"pTMaxChg_QCJet_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("jetId_dRMean_pfakt5",&jetId_dRMean_pfakt5,"jetId_dRMean_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("jetId_frac01_pfakt5",&jetId_frac01_pfakt5,"jetId_frac01_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("jetId_frac02_pfakt5",&jetId_frac02_pfakt5,"jetId_frac02_pfakt5[nJet_pfakt5]/F");
@@ -3932,11 +4356,14 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("electron_eta",&electron_eta,"electron_eta[nEle]/F");
   m_tree->Branch("electron_phi",&electron_phi,"electron_phi[nEle]/F");
   m_tree->Branch("electron_energy",&electron_energy,"electron_energy[nEle]/F");
+  m_tree->Branch("electron_ecalEnergy",&electron_ecalEnergy,"electron_ecalEnergy[nEle]/F");     // chiara
+  m_tree->Branch("electron_trackPatVtx",&electron_trackPatVtx,"electron_trackPatVtx[nEle]/F");  // chiara
   m_tree->Branch("electron_charge",&electron_charge,"electron_charge[nEle]/F");
   m_tree->Branch("electron_fBrem",&electron_fBrem,"electron_fBrem[nEle]/F");
   m_tree->Branch("electron_dist",&electron_dist,"electron_dist[nEle]/F");
   m_tree->Branch("electron_dcot",&electron_dcot,"electron_dcot[nEle]/F");
   m_tree->Branch("electron_misHits",&electron_misHits,"electron_misHits[nEle]/I");
+  m_tree->Branch("electron_matchedConv",&electron_matchedConv,"electron_matchedConv[nEle]/I");  // chiara
   m_tree->Branch("electron_seedType",&electron_seedType,"electron_seedType[nEle]/I");
   m_tree->Branch("electron_EoP",&electron_EoP,"electron_EoP[nEle]/F");
   m_tree->Branch("electron_OneOverEMinusOneOverP",&electron_OneOverEMinusOneOverP,"electron_OneOverEMinusOneOverP[nEle]/F");
@@ -3957,6 +4384,19 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("electron_sc_energy",&electron_sc_energy,"electron_sc_energy[nEle]/F");
   m_tree->Branch("electron_sc_eta",&electron_sc_eta,"electron_sc_eta[nEle]/F");
   m_tree->Branch("electron_sc_phi",&electron_sc_phi,"electron_sc_phi[nEle]/F");
+  // chiara
+  m_tree->Branch("electron_mvaNonTrig",&electron_mvaNonTrig,"electron_mvaNonTrig[nEle]/F");
+  m_tree->Branch("electron_mvaTrig",   &electron_mvaTrig,   "electron_mvaTrig[nEle]/F");
+  m_tree->Branch("electron_chHad03Iso",&electron_chHad03Iso,"electron_chHad03Iso[nEle]/F");
+  m_tree->Branch("electron_nHad03Iso", &electron_nHad03Iso, "electron_nHad03Iso[nEle]/F");
+  m_tree->Branch("electron_phot03Iso", &electron_phot03Iso, "electron_phot03Iso[nEle]/F");
+  m_tree->Branch("electron_chHad04Iso",&electron_chHad04Iso,"electron_chHad04Iso[nEle]/F");
+  m_tree->Branch("electron_nHad04Iso", &electron_nHad04Iso, "electron_nHad04Iso[nEle]/F");
+  m_tree->Branch("electron_phot04Iso", &electron_phot04Iso, "electron_phot04Iso[nEle]/F");
+  m_tree->Branch("electron_chHad05Iso",&electron_chHad05Iso,"electron_chHad05Iso[nEle]/F");
+  m_tree->Branch("electron_nHad05Iso", &electron_nHad05Iso, "electron_nHad05Iso[nEle]/F");
+  m_tree->Branch("electron_phot05Iso", &electron_phot05Iso, "electron_phot05Iso[nEle]/F");
+  // chiara
 
   if (dumpBeamHaloInformations_)
     {
@@ -3990,11 +4430,25 @@ GammaJetAnalyzer::beginJob()
       m_tree->Branch("Muon_isGlobalMuon",muon_isGlobalMuon,"muon_isGlobalMuon[nMuons]/O");
       m_tree->Branch("Muon_isTrackerMuon",muon_isTrackerMuon,"muon_isTrackerMuon[nMuons]/O");
       m_tree->Branch("Muon_isStandAloneMuon",muon_isStandAloneMuon,"muon_isStandAloneMuon[nMuons]/O");
+      m_tree->Branch("Muon_trkLayerWithMeas",muon_trkLayerWithMeas,"Muon_trkLayerWithMeas[nMuons]/I"); // chiara
       m_tree->Branch("Muon_InnerTrack_isNonnull",muon_InnerTrack_isNonnull,"muon_InnerTrack_isNonnull[nMuons]/O");
       m_tree->Branch("Muon_OuterTrack_isNonnull",muon_OuterTrack_isNonnull,"muon_OuterTrack_isNonnull[nMuons]/O");
       m_tree->Branch("Muon_OuterPoint_x",muon_OuterPoint_x,"muon_OuterPoint_x[nMuons]/F");
       m_tree->Branch("Muon_OuterPoint_y",muon_OuterPoint_y,"muon_OuterPoint_y[nMuons]/F");
       m_tree->Branch("Muon_OuterPoint_z",muon_OuterPoint_z,"muon_OuterPoint_z[nMuons]/F");
+      // chiara
+      m_tree->Branch("Muon_isPFMuon",muon_isPFMuon,"muon_isPFMuon[nMuons]/O");  
+      m_tree->Branch("Muon_pfiso04_chHad",muon_pfiso04_chHad,"muon_pfiso04_chHad[nMuons]/F");
+      m_tree->Branch("Muon_pfiso04_chPar",muon_pfiso04_chPar,"muon_pfiso04_chPar[nMuons]/F");
+      m_tree->Branch("Muon_pfiso04_nHad", muon_pfiso04_nHad, "muon_pfiso04_nHad[nMuons]/F");
+      m_tree->Branch("Muon_pfiso04_Phot", muon_pfiso04_Phot, "muon_pfiso04_Phot[nMuons]/F");
+      m_tree->Branch("Muon_pfiso04_PUPt", muon_pfiso04_PUPt, "muon_pfiso04_PUPt[nMuons]/F");
+      m_tree->Branch("Muon_pfiso03_chHad",muon_pfiso03_chHad,"muon_pfiso03_chHad[nMuons]/F");
+      m_tree->Branch("Muon_pfiso03_chPar",muon_pfiso03_chPar,"muon_pfiso03_chPar[nMuons]/F");
+      m_tree->Branch("Muon_pfiso03_nHad", muon_pfiso03_nHad, "muon_pfiso03_nHad[nMuons]/F");
+      m_tree->Branch("Muon_pfiso03_Phot", muon_pfiso03_Phot, "muon_pfiso03_Phot[nMuons]/F");
+      m_tree->Branch("Muon_pfiso03_PUPt", muon_pfiso03_PUPt, "muon_pfiso03_PUPt[nMuons]/F");
+      // chiara
       //for Global,Tracker muon
       m_tree->Branch("Muon_InnerPoint_x",muon_InnerPoint_x,"muon_InnerPoint_x[nMuons]/F");
       m_tree->Branch("Muon_InnerPoint_y",muon_InnerPoint_y,"muon_InnerPoint_y[nMuons]/F");
