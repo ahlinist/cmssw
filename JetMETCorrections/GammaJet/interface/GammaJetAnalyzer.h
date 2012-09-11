@@ -28,6 +28,13 @@
 #include "CMGTools/External/interface/PileupJetIdAlgo.h"
 #include "CMGTools/External/interface/PileupJetIdentifier.h"
 
+// chiara
+// for lepton PF iso and ID
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "EGamma/EGammaAnalysisTools/interface/EGammaMvaEleEstimator.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
@@ -370,6 +377,10 @@ TH2D* h2_n_vs_eta;
       float electron_vy[200];
       float electron_vz[200];
       float electron_energy[200];
+      float electron_ecalEnergy[200];     // chiara
+      float electron_trackPatVtx[200];    // chiara
+      float electron_mvaNonTrig[200];     // chiara
+      float electron_mvaTrig[200];        // chiara
       float electron_charge[200];
       float electron_eta[200];
       float electron_phi[200];
@@ -386,6 +397,7 @@ TH2D* h2_n_vs_eta;
       float electron_fBrem[200];
       float electron_dist[200];
       float electron_dcot[200];
+      int electron_matchedConv[200];   // chiara
       float electron_EoP[200];
       float electron_r9[200];
       Int_t electron_nSubClusters[200];
@@ -397,7 +409,9 @@ TH2D* h2_n_vs_eta;
       float electron_sc_energy[200];
       float electron_sc_eta[200];
       float electron_sc_phi[200];
-      
+      float electron_chHad03Iso[200], electron_nHad03Iso[200], electron_phot03Iso[200];
+      float electron_chHad04Iso[200], electron_nHad04Iso[200], electron_phot04Iso[200];
+      float electron_chHad05Iso[200], electron_nHad05Iso[200], electron_phot05Iso[200];
 
       Int_t nJet_akt5;
       Float_t ptJet_akt5[100];
@@ -463,6 +477,29 @@ TH2D* h2_n_vs_eta;
       Float_t phiJet_pfakt5[100];
       Float_t ptDJet_pfakt5[100];
       Float_t rmsCandJet_pfakt5[100];
+      Float_t rmsCandTrueJet_pfakt5[100];
+      Float_t axis1Jet_pfakt5[100];
+      Float_t axis2Jet_pfakt5[100];
+      Float_t pullJet_pfakt5[100];
+      Float_t tanaJet_pfakt5[100];
+      Float_t ptD_QCJet_pfakt5[100];
+      Float_t rmsCandTrue_QCJet_pfakt5[100];
+      Float_t axis1_QCJet_pfakt5[100];
+      Float_t axis2_QCJet_pfakt5[100];
+      Float_t pull_QCJet_pfakt5[100];
+      Float_t tana_QCJet_pfakt5[100];
+      Float_t RchgJet_pfakt5[100];
+      Float_t RneutralJet_pfakt5[100];
+      Float_t RJet_pfakt5[100];
+      Float_t Rchg_QCJet_pfakt5[100];
+      Int_t   nChg_ptCutJet_pfakt5[100];
+      Int_t   nChg_QCJet_pfakt5[100];
+      Int_t   nChg_ptCut_QCJet_pfakt5[100];
+      Int_t   nNeutral_ptCutJet_pfakt5[100];
+      Float_t pTMaxJet_pfakt5[100];
+      Float_t pTMaxChgJet_pfakt5[100];
+      Float_t pTMaxNeutralJet_pfakt5[100];
+      Float_t pTMaxChg_QCJet_pfakt5[100];
 
       Float_t jetId_dRMean_pfakt5[100];
       Float_t jetId_frac01_pfakt5[100];
@@ -740,12 +777,20 @@ TH2D* h2_n_vs_eta;
       float muon_ecalIso[200];
       float muon_hcalIso[200];
       float muon_relIso[200];
-      int   muon_normChi2[200];
+      float muon_normChi2[200];
       int   muon_validHits[200];
       int   muon_tkHits[200];
       int   muon_pixHits[200];
       int  muon_numberOfMatches[200];
-      
+      // chiara
+      Bool_t muon_isPFMuon[200];       
+      int muon_trkLayerWithMeas[200];  
+      Float_t muon_pfiso04_chHad[200], muon_pfiso04_chPar[200], muon_pfiso04_nHad[200];
+      Float_t muon_pfiso04_Phot[200], muon_pfiso04_PUPt[200];
+      Float_t muon_pfiso03_chHad[200], muon_pfiso03_chPar[200], muon_pfiso03_nHad[200];
+      Float_t muon_pfiso03_Phot[200], muon_pfiso03_PUPt[200];
+      // chiara
+
       //cosmicmuon variables
       Int_t nCosmicMuons;
       Float_t cosmicmuon_pt[200];
@@ -796,5 +841,13 @@ TH2D* h2_n_vs_eta;
       TMVA::Reader *tmvaPerEvtReader_;
       std::string tmvaPerVtxMethod;
       std::string tmvaPerEvtMethod;
+
+      // chiara
+      EGammaMvaEleEstimator* myMVANonTrig, *myMVATrig;
+      edm::ESHandle<TransientTrackBuilder> trackBuilder_;
+
+      typedef edm::ValueMap<float> isoFromPFCandsMap;
+      typedef std::vector< edm::Handle<isoFromPFCandsMap> > isoContainer;
+      isoContainer *eIsoFromPFCandsValueMap_;
 };
 
