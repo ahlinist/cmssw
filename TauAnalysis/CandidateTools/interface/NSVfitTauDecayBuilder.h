@@ -7,9 +7,9 @@
  *
  * \author Evan K. Friis, Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitTauDecayBuilder.h,v 1.3 2012/08/28 15:00:20 veelken Exp $
+ * $Id: NSVfitTauDecayBuilder.h,v 1.4 2012/09/01 08:45:44 veelken Exp $
  *
  */
 
@@ -89,28 +89,23 @@ class NSVfitTauDecayBuilder : public NSVfitSingleParticleBuilderBase
     int idxFitParameter_phi_lab_;
     int idxFitParameter_nuInvMass_; // used for leptonic decays only.
     int idxFitParameter_deltaR_;
-
+    
     /// optional parameters for setting reconstructed to Monte Carlo truth values
     edm::InputTag srcGenTaus_;
     typedef edm::View<reco::GenParticle> GenParticleView;
     edm::Handle<GenParticleView> genParticles_;
     double dRmatch_;
     bool fixToGenVisEnFracX_;
-    bool initializeToGenVisEnFracX_;
-    mutable double genVisEnFracX_;
     bool fixToGenPhiLab_;
-    bool initializeToGenPhiLab_;
-    mutable double genPhiLab_;
     bool fixToGenNuInvMass_;
-    bool initializeToGenNuInvMass_;
-    mutable double genNuInvMass_;
     bool fixToGenDeltaR_;
-    bool initializeToGenDeltaR_;
-    mutable double genDeltaR_;
     bool fixToGenVisP4_;
+    bool initializeToGen_;
+    mutable double genVisEnFracX_;
+    mutable double genPhiLab_;
+    mutable double genNuInvMass_;
+    mutable double genDeltaR_;
     mutable reco::Candidate::LorentzVector genVisP4_;
-
-    mutable long numWarnings_compIntersection_of_lines_;
 };
 
 void applyOptionalFitParameter(const double*, int, double&);

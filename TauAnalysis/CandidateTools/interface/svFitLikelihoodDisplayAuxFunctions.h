@@ -25,6 +25,7 @@ struct matchedTauDecayType
   
   const reco::GenParticle* genTau_;
   reco::Candidate::LorentzVector genTauP4_;
+  double genTauCharge_;
   std::vector<const reco::GenParticle*> genTauDecayProducts_;
   AlgebraicVector3 genTauProdVertexPos_;
   AlgebraicVector3 genTauDecayVertexPos_;
@@ -36,11 +37,13 @@ struct matchedTauDecayType
   
   const reco::Candidate* recCandidate_;
   reco::Candidate::LorentzVector recVisP4_;  
+  int recTauDecayMode_;
   std::vector<const reco::Track*> recTracks_;
+  std::vector<const reco::Track*> recSelTracks_;
   const reco::Track* recLeadTrack_;
   reco::TransientTrack* recLeadTrackTrajectory_;
   const TransientTrackBuilder* trackBuilder_;
-  TransientVertex* recTauDecayVertex_;
+  TransientVertex recTauDecayVertex_;
   AlgebraicVector3 recTauDecayVertexPos_;
   AlgebraicMatrix33 recTauDecayVertexCov_;
   bool hasRecTauDecayVertex_;

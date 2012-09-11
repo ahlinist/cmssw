@@ -122,13 +122,27 @@ namespace SVfit_namespace
   double phiLabFromLabMomenta(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
   
   void printVector(const std::string&, const AlgebraicVector3&);
+  void printVector(const std::string&, const AlgebraicVector2&);
   void printMatrix(const std::string&, const AlgebraicMatrix33&);
+  void printMatrix(const std::string&, const AlgebraicMatrix22&);
 
   /// Compute logarithm of Gaussian probability density function
   double logGaussian(double, double);
 
-  /// Compute point-of-closest-approach between two lines
-  AlgebraicVector3 compIntersection_of_lines(const AlgebraicVector3&, const AlgebraicVector3&, const AlgebraicVector3&, const AlgebraicVector3&, long&, int);
+  /// Auxiliary functions for track likelihood analysis
+  double compScalarProduct(const AlgebraicVector3&, const AlgebraicVector3&);
+  AlgebraicVector3 compCrossProduct(const AlgebraicVector3&, const AlgebraicVector3&);
+  double norm2(const AlgebraicVector3&);
+  double norm2(const AlgebraicVector2&);
+  AlgebraicVector3 normalize(const AlgebraicVector3&);
+  AlgebraicVector3 compDecayPosition_helix(const AlgebraicVector3&, double, const reco::Candidate::LorentzVector&, double);
+  AlgebraicVector3 compDecayPosition_line(const AlgebraicVector3&, double, const AlgebraicVector3&);
+  void compLocalCoordinates(const AlgebraicVector3&, AlgebraicVector3&, AlgebraicVector3&, AlgebraicVector3&);
+  AlgebraicVector3 transformToLocalCoordinatesPos(const AlgebraicVector3&, const AlgebraicVector3&, const AlgebraicVector3&, const AlgebraicVector3&);
+  AlgebraicMatrix33 transformToLocalCoordinatesCov(const AlgebraicMatrix33&, const AlgebraicVector3&, const AlgebraicVector3&, const AlgebraicVector3&);
+  void extractEigenValues(const AlgebraicMatrix33&, double&, double&, double&);
+  double logGaussian2d(const AlgebraicVector2&, const AlgebraicMatrix22&);
+  double logGaussian3d(const AlgebraicVector3&, const AlgebraicMatrix33&);
 
   /// Extract maximum, mean and { 0.84, 0.50, 0.16 } quantiles of distribution
   void extractHistogramProperties(const TH1*, const TH1*, double&, double&, double&, double&, double&, double&);

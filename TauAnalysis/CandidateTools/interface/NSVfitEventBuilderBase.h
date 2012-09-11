@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: NSVfitEventBuilderBase.h,v 1.6 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitEventBuilderBase.h,v 1.7 2012/08/28 15:00:19 veelken Exp $
  *
  */
 
@@ -61,12 +61,12 @@ class NSVfitEventBuilderBase : public NSVfitBuilderBase
   reco::BeamSpot beamSpot_;
 
   NSVfitEventVertexRefitter* eventVertexRefitAlgorithm_;
+  bool doEventVertexRefit_;
 
   int idxFitParameter_pvShiftX_;
   int idxFitParameter_pvShiftY_;
   int idxFitParameter_pvShiftZ_;
-
-  bool doEventVertexRefit_;
+  bool doFitParameter_pvShift_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

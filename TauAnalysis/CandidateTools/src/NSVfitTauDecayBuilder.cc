@@ -36,20 +36,22 @@ NSVfitTauDecayBuilder::NSVfitTauDecayBuilder(const edm::ParameterSet& cfg)
   cfgVertexFitAlgorithm.addParameter<unsigned>("minNumTracksFit", minNumTracksFit);
   decayVertexFitAlgorithm_ = new NSVfitDecayVertexFitter(cfgVertexFitAlgorithm);
 
-  fixToGenVisEnFracX_        = ( cfg.exists("fixToGenVisEnFracX")        ) ? cfg.getParameter<bool>("fixToGenVisEnFracX")        : false;
-  initializeToGenVisEnFracX_ = ( cfg.exists("initializeToGenVisEnFracX") ) ? cfg.getParameter<bool>("initializeToGenVisEnFracX") : fixToGenVisEnFracX_;
-  fixToGenPhiLab_            = ( cfg.exists("fixToGenPhiLab")            ) ? cfg.getParameter<bool>("fixToGenPhiLab")            : false;
-  initializeToGenPhiLab_     = ( cfg.exists("initializeToGenPhiLab")     ) ? cfg.getParameter<bool>("initializeToGenPhiLab")     : fixToGenPhiLab_;
-  fixToGenNuInvMass_         = ( cfg.exists("fixToGenNuInvMass")         ) ? cfg.getParameter<bool>("fixToGenNuInvMass")         : false;
-  initializeToGenNuInvMass_  = ( cfg.exists("initializeToGenNuInvMass")  ) ? cfg.getParameter<bool>("initializeToGenNuInvMass")  : fixToGenNuInvMass_;
-  fixToGenDeltaR_            = ( cfg.exists("fixToGenDeltaR")            ) ? cfg.getParameter<bool>("fixToGenDeltaR")            : false;
-  initializeToGenDeltaR_     = ( cfg.exists("initializeToGenDeltaR")     ) ? cfg.getParameter<bool>("initializeToGenDeltaR")     : fixToGenDeltaR_;
-  fixToGenVisP4_             = ( cfg.exists("fixToGenVisP4")             ) ? cfg.getParameter<bool>("fixToGenVisP4")             : false;
-  if ( fixToGenVisEnFracX_ || initializeToGenVisEnFracX_ ||
-       fixToGenPhiLab_     || initializeToGenPhiLab_     ||
-       fixToGenNuInvMass_  || initializeToGenNuInvMass_  ||
-       fixToGenDeltaR_     || initializeToGenDeltaR_     ||
+  fixToGenVisEnFracX_ = ( cfg.exists("fixToGenVisEnFracX") ) ? cfg.getParameter<bool>("fixToGenVisEnFracX")  : false;
+  fixToGenPhiLab_     = ( cfg.exists("fixToGenPhiLab")     ) ? cfg.getParameter<bool>("fixToGenPhiLab")      : false;
+  fixToGenNuInvMass_  = ( cfg.exists("fixToGenNuInvMass")  ) ? cfg.getParameter<bool>("fixToGenNuInvMass")   : false;
+  fixToGenDeltaR_     = ( cfg.exists("fixToGenDeltaR")     ) ? cfg.getParameter<bool>("fixToGenDeltaR")      : false;
+  fixToGenVisP4_      = ( cfg.exists("fixToGenVisP4")      ) ? cfg.getParameter<bool>("fixToGenVisP4")       : false;
+
+  initializeToGen_    = ( cfg.exists("initializeToGen")    ) ? cfg.getParameter<bool>("initializeToGen")     : false;
+  if ( fixToGenVisEnFracX_ || 
+       fixToGenPhiLab_     ||
+       fixToGenNuInvMass_  ||
+       fixToGenDeltaR_     ||
        fixToGenVisP4_      ) {
+    initializeToGen_ = true;
+  }
+
+  if ( initializeToGen_ ) {
     srcGenTaus_ = cfg.getParameter<edm::InputTag>("srcGenTaus");
     dRmatch_ = cfg.getParameter<double>("dRmatch");
   }
@@ -100,14 +102,9 @@ void NSVfitTauDecayBuilder::beginEvent(const edm::Event& evt, const edm::EventSe
 
   decayVertexFitAlgorithm_->beginEvent(evt, es);
   
-  if ( fixToGenVisEnFracX_ || initializeToGenVisEnFracX_ ||
-       fixToGenPhiLab_     || initializeToGenPhiLab_     ||
-       fixToGenNuInvMass_  || initializeToGenNuInvMass_  ||
-       fixToGenDeltaR_     || initializeToGenDeltaR_     ) {
+  if ( initializeToGen_ ) {
     evt.getByLabel(srcGenTaus_, genParticles_);
   }
-
-  numWarnings_compIntersection_of_lines_ = 0;
 }
 
 namespace
@@ -115,11 +112,6 @@ namespace
   bool isHigherPt(const reco::Track* track1, const reco::Track* track2)
   {
     return (track1->pt() > track2->pt());
-  }
-
-  double norm2(const AlgebraicVector3& p)
-  {
-    return square(p(0)) + square(p(1)) + square(p(2));
   }
 }
 
@@ -183,20 +175,7 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
   if ( hypothesis->selTrackTrajectories_.size() >= 1 ) hypothesis->leadTrackTrajectory_ = &hypothesis->selTrackTrajectories_.at(0);
   else hypothesis->leadTrackTrajectory_ = 0;
 
-  hypothesis->expectedDecayDistance_ = 0.;
-  hypothesis->expectedDecayVertexPos_(0) = 0.;
-  hypothesis->expectedDecayVertexPos_(1) = 0.;
-  hypothesis->expectedDecayVertexPos_(2) = 0.;
-  for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
-    for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
-      hypothesis->expectedDecayVertexCov_(iRow, iColumn) = 0.;
-    }
-  }
-
-  if ( fixToGenVisEnFracX_ || initializeToGenVisEnFracX_ ||
-       fixToGenPhiLab_     || initializeToGenPhiLab_     ||
-       fixToGenNuInvMass_  || initializeToGenNuInvMass_  ||
-       fixToGenDeltaR_     || initializeToGenDeltaR_     ) {
+  if ( initializeToGen_ ) {
     bool isMatched = false;
     int idx = 0;
     for ( GenParticleView::const_iterator genParticle = genParticles_->begin();
@@ -265,10 +244,9 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
       hypothesis->visMass_    = genVisP4_.mass();
     }
 
-    if ( initializeToGenVisEnFracX_ && idxFitParameter_visEnFracX_  != -1 ) algorithm_->setFitParameterInitialValue(idxFitParameter_visEnFracX_, genVisEnFracX_);
-    if ( initializeToGenPhiLab_     && idxFitParameter_phi_lab_     != -1 ) algorithm_->setFitParameterInitialValue(idxFitParameter_phi_lab_,    genPhiLab_);
-    if ( initializeToGenNuInvMass_  && idxFitParameter_nuInvMass_   != -1 ) algorithm_->setFitParameterInitialValue(idxFitParameter_nuInvMass_,  genNuInvMass_);
-    if ( initializeToGenDeltaR_     && idxFitParameter_deltaR_      != -1 ) algorithm_->setFitParameterInitialValue(idxFitParameter_deltaR_,     genDeltaR_);
+    if ( idxFitParameter_visEnFracX_  != -1 ) algorithm_->setFitParameterInitialValue(idxFitParameter_visEnFracX_, genVisEnFracX_);
+    if ( idxFitParameter_phi_lab_     != -1 ) algorithm_->setFitParameterInitialValue(idxFitParameter_phi_lab_,    genPhiLab_);
+    if ( idxFitParameter_nuInvMass_   != -1 ) algorithm_->setFitParameterInitialValue(idxFitParameter_nuInvMass_,  genNuInvMass_);
   }
 }
 
@@ -285,58 +263,85 @@ NSVfitTauDecayBuilder::finalize(NSVfitSingleParticleHypothesis* hypothesis) cons
   const NSVfitEventHypothesis* event = hypothesis_T->mother()->eventHypothesis();
   assert(event);
 
-  AlgebraicVector3 eventVertexPos = event->reconstructedEventVertexPos();
-  //printVector("eventVertexPos", eventVertexPos);
-  //printMatrix("eventVertexCov", event->eventVertexCov());
-
-  if ( event->eventVertexIsValid() && hypothesis_T->leadTrackTrajectory_ ) {
-    SVfitTrackExtrapolation leadTrack_extrapolation(*hypothesis_T->leadTrackTrajectory_, eventVertexPos);
-    hypothesis_T->leadTrack_direction_ = leadTrack_extrapolation.tangent();
-    //printVector("leadTrack_direction_", hypothesis_T->leadTrack_direction_);
-    hypothesis_T->leadTrack_refPoint_ = event->reconstructedEventVertexPos();
-    //printVector("leadTrack_refPoint_", hypothesis_T->leadTrack_refPoint_);
+  AlgebraicVector3 eventVertexPos = event->eventVertexPos();
+  const AlgebraicMatrix33& eventVertexCov = event->eventVertexCov();
+  if ( verbosity_ >= 2 ) {
+    printVector("eventVertexPos", eventVertexPos);
+    printMatrix("eventVertexCov", eventVertexCov);
   }
+
+  hypothesis_T->expectedDecayDistance_  = 0.;
+  hypothesis_T->expectedDecayVertexPos_ = eventVertexPos;
+  hypothesis_T->expectedDecayVertexCov_ = eventVertexCov;
 
   hypothesis_T->hasDecayVertexFit_ = false;
-  if ( hypothesis_T->selTracks_.size() >= minNumTracksFit ) {
-    TransientVertex decayVertex = decayVertexFitAlgorithm_->fitSecondaryVertex(hypothesis_T->selTracks_);
-    if ( decayVertex.isValid() ) {
-      hypothesis_T->reconstructedDecayVertexPos_(0) = decayVertex.position().x();
-      hypothesis_T->reconstructedDecayVertexPos_(1) = decayVertex.position().y();
-      hypothesis_T->reconstructedDecayVertexPos_(2) = decayVertex.position().z();
-      if ( verbosity_ >= 2 ) printVector("decayVertexPos", hypothesis_T->reconstructedDecayVertexPos_);
-      hypothesis_T->reconstructedDecayVertexCov_ = decayVertex.positionError().matrix_new();
-      if ( verbosity_ >= 2 ) printMatrix("decayVertexCov", hypothesis_T->reconstructedDecayVertexCov_);
-      hypothesis_T->hasDecayVertexFit_ = true;
+  if ( idxFitParameter_deltaR_ != -1 ) {
+    if ( hypothesis_T->selTracks_.size() >= minNumTracksFit ) {
+      TransientVertex decayVertex = decayVertexFitAlgorithm_->fitSecondaryVertex(hypothesis_T->selTracks_);
+      if ( decayVertex.isValid() ) {
+	hypothesis_T->reconstructedDecayVertexPos_(0) = decayVertex.position().x();
+	hypothesis_T->reconstructedDecayVertexPos_(1) = decayVertex.position().y();
+	hypothesis_T->reconstructedDecayVertexPos_(2) = decayVertex.position().z();
+	hypothesis_T->reconstructedDecayVertexCov_ = decayVertex.positionError().matrix_new();
+	hypothesis_T->hasDecayVertexFit_ = true;
       
-      AlgebraicVector3 reconstructedDecay_wrt_eventVertexPos = hypothesis_T->reconstructedDecayVertexPos_ - eventVertexPos;
-      double sigma = TMath::Sqrt(ROOT::Math::Similarity(reconstructedDecay_wrt_eventVertexPos.Unit(), hypothesis_T->reconstructedDecayVertexCov_));
+	AlgebraicMatrix33 reconstructedDecayVertex_wrt_eventVertexCov;
+	for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
+	  for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
+	    reconstructedDecayVertex_wrt_eventVertexCov(iRow, iColumn) = hypothesis_T->reconstructedDecayVertexCov_(iRow, iColumn) + eventVertexCov(iRow, iColumn);
+	  }
+	}
+	double EigenValue1, EigenValue2, EigenValue3;
+	extractEigenValues(reconstructedDecayVertex_wrt_eventVertexCov, EigenValue1, EigenValue2, EigenValue3);
+	if ( EigenValue1 < 1.e-4 ) EigenValue1 = 1.e-4; // CV: assume resolution of tau decay vertex reconstruction 
+	                                                //     to be never better than 100 microns in tau direction
+	double sigma = TMath::Sqrt(EigenValue1);
       
-      if ( verbosity_ >= 2 ) std::cout << "restricting fitParameter #" << idxFitParameter_deltaR_ << " to range " << (-5.*sigma) << ".." << (+5.*sigma) << std::endl;
-      algorithm_->setFitParameterLimit(idxFitParameter_deltaR_, -5.*sigma, +5.*sigma);
-      algorithm_->setFitParameterStepSize(idxFitParameter_deltaR_, 0.25*sigma);      
-    }
-  }
-  if ( !hypothesis_T->hasDecayVertexFit_ ) {
-    hypothesis_T->reconstructedDecayVertexPos_(0) = 0.;
-    hypothesis_T->reconstructedDecayVertexPos_(1) = 0.;
-    hypothesis_T->reconstructedDecayVertexPos_(2) = 0.;
-    for ( int iRow = 0; iRow < 3; ++iRow ) {
-      for ( int iColumn = 0; iColumn < 3; ++iColumn ) {
-	hypothesis_T->reconstructedDecayVertexCov_(iRow, iColumn) = 1.e+3;
+	if ( verbosity_ >= 2 ) {
+	  printVector("decayVertexPos", hypothesis_T->reconstructedDecayVertexPos_);
+	  printMatrix("decayVertexCov", hypothesis_T->reconstructedDecayVertexCov_);
+	  std::cout << "restricting fitParameter #" << idxFitParameter_deltaR_ << " to range " << (-5.*sigma) << ".." << (+5.*sigma) << std::endl;
+	}
+
+	double fitParameterLowerLimit = -5.*sigma;
+	double fitParameterUpperLimit = +5.*sigma;
+	if ( initializeToGen_ ) {
+	  double recDeltaR = TMath::Sqrt(norm2(hypothesis_T->reconstructedDecayVertexPos_ - eventVertexPos));
+	  algorithm_->setFitParameterInitialValue(idxFitParameter_deltaR_, genDeltaR_ - recDeltaR);
+	  fitParameterLowerLimit = TMath::Min(fitParameterLowerLimit, -3*sigma + (genDeltaR_ - recDeltaR));
+	  fitParameterUpperLimit = TMath::Max(fitParameterUpperLimit, +3*sigma + (genDeltaR_ - recDeltaR));
+	} else {
+	  algorithm_->setFitParameterInitialValue(idxFitParameter_deltaR_, 0.);
+	}
+	algorithm_->setFitParameterLimit(idxFitParameter_deltaR_, fitParameterLowerLimit, fitParameterUpperLimit);
+	algorithm_->setFitParameterStepSize(idxFitParameter_deltaR_, 0.25*sigma);            
       }
     }
-
-    algorithm_->setFitParameterLimit(idxFitParameter_deltaR_, -2.5, +2.5);
-    algorithm_->setFitParameterStepSize(idxFitParameter_deltaR_, 0.0025);
-  }
-}
-
-namespace
-{
-  AlgebraicVector3 compDecayPosition(const AlgebraicVector3& origin, double d, const AlgebraicVector3& direction)
-  {
-    return AlgebraicVector3(origin(0) + d*direction(0), origin(1) + d*direction(1), origin(2) + d*direction(2));
+    if ( !hypothesis_T->hasDecayVertexFit_ ) {
+      hypothesis_T->reconstructedDecayVertexPos_(0) = 0.;
+      hypothesis_T->reconstructedDecayVertexPos_(1) = 0.;
+      hypothesis_T->reconstructedDecayVertexPos_(2) = 0.;
+      for ( int iRow = 0; iRow < 3; ++iRow ) {
+	for ( int iColumn = 0; iColumn < 3; ++iColumn ) {
+	  hypothesis_T->reconstructedDecayVertexCov_(iRow, iColumn) = 1.e+3;
+	}
+      }
+      
+      double fitParameterLowerLimit =  0.;
+      double fitParameterUpperLimit = 10.;
+      if ( initializeToGen_ ) { 
+	double enTau_lab  = genVisP4_.energy()/genVisEnFracX_;
+	double pTau_lab = TMath::Sqrt(square(enTau_lab) - tauLeptonMass2);
+	double a = (pTau_lab/tauLeptonMass)*cTauLifetime;
+	if ( verbosity_ >= 2 ) std::cout << "a(gen) = " << a << " --> setting fitParameter #" << idxFitParameter_deltaR_ << " to " << (genDeltaR_/a) << std::endl;
+	algorithm_->setFitParameterInitialValue(idxFitParameter_deltaR_, genDeltaR_/a);
+	fitParameterUpperLimit = TMath::Max(fitParameterUpperLimit, 5. + (genDeltaR_/a));
+      } else {
+	algorithm_->setFitParameterInitialValue(idxFitParameter_deltaR_, 1.);
+      }
+      algorithm_->setFitParameterLimit(idxFitParameter_deltaR_, fitParameterLowerLimit, fitParameterUpperLimit);
+      algorithm_->setFitParameterStepSize(idxFitParameter_deltaR_, 0.25);
+    }
   }
 }
 
@@ -420,103 +425,43 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
   if ( idxFitParameter_deltaR_ != -1 ) {
     const NSVfitEventHypothesis* event = hypothesis_T->mother()->eventHypothesis();
     AlgebraicVector3 eventVertexPos = event->eventVertexPos();
-    const AlgebraicSymMatrix33& eventVertexCov = event->eventVertexCov();
+    if ( verbosity_ >= 2  ) printVector(" eventVertexPos", eventVertexPos);
     
-    double decayDistance_shift = param[idxFitParameter_deltaR_];
-
     hypothesis_T->expectedFlightPath_unit_ = AlgebraicVector3(p3Tau_unit.x(), p3Tau_unit.y(), p3Tau_unit.z());
-    hypothesis_T->expectedDecayDistance_ = 0.;
-    hypothesis_T->expectedDecayVertexPos_ = eventVertexPos;
-
-    if ( hypothesis_T->hasDecayVertexFit_ ) {
-      double decayDistance = TMath::Sqrt(norm2(hypothesis_T->reconstructedDecayVertexPos_ - eventVertexPos));
-      hypothesis_T->expectedDecayDistance_ = decayDistance + decayDistance_shift;
-      if ( fixToGenDeltaR_ ) hypothesis_T->expectedDecayDistance_ = genDeltaR_;
-      if ( hypothesis_T->expectedDecayDistance_ < 0. ) {
-	if ( verbosity_ >= 2 ) std::cout << "expectedDecayDistance (3-prong) = " << hypothesis_T->expectedDecayDistance_ << " --> setting isValidSolution = false." << std::endl;
-	hypothesis_T->expectedDecayDistance_ = 0.;
-	isValidSolution = false;
+    hypothesis_T->expectedDecayDistanceJacobiFactor_ = 1.;
+    if ( hypothesis_T->hasDecayVertexFit_ ) {      
+      if ( !fixToGenDeltaR_ ) {
+	double decayDistance0 = TMath::Sqrt(norm2(hypothesis_T->reconstructedDecayVertexPos_ - eventVertexPos));
+	double decayDistance_shift = param[idxFitParameter_deltaR_];
+	hypothesis_T->expectedDecayDistance_ = decayDistance0 + decayDistance_shift;
       }
-      hypothesis_T->expectedDecayVertexPos_ = compDecayPosition(eventVertexPos, hypothesis_T->expectedDecayDistance_, hypothesis_T->expectedFlightPath_unit_);
     } else if ( hypothesis_T->leadTrackTrajectory_ ) {
-      AlgebraicVector3 pcaPos0 = compIntersection_of_lines(
-	eventVertexPos, hypothesis_T->expectedFlightPath_unit_, hypothesis_T->leadTrack_refPoint_, hypothesis_T->leadTrack_direction_, numWarnings_compIntersection_of_lines_, verbosity_);
-      if ( verbosity_ ) printVector("pcaPos(initial)", pcaPos0);
+      if ( !fixToGenDeltaR_ ) {
+	double a = (pTau_lab/tauLeptonMass)*cTauLifetime;
+	hypothesis_T->expectedDecayDistanceJacobiFactor_ = a;
+	hypothesis_T->expectedDecayDistance_ = param[idxFitParameter_deltaR_]*a;
+      }
+    }
+    if ( hypothesis_T->expectedDecayDistance_ < 0. || hypothesis_T->expectedDecayDistance_ > 25. ) {
+      if ( verbosity_ >= 2 ) std::cout << "expectedDecayDistance = " << hypothesis_T->expectedDecayDistance_ << " --> setting isValidSolution = false." << std::endl;
+      hypothesis_T->expectedDecayDistance_ = 0.;
+      isValidSolution = false;
+    }
+    
+    if ( isValidSolution ) {
+      //hypothesis_T->expectedDecayVertexPos_ = compDecayPosition_line(eventVertexPos, hypothesis_T->expectedDecayDistance_, hypothesis_T->expectedFlightPath_unit_);
+      hypothesis_T->expectedDecayVertexPos_ = compDecayPosition_helix(eventVertexPos, hypothesis_T->expectedDecayDistance_, p4Tau_lab, hypothesis_T->particle()->charge());
 
-      AlgebraicVector3 pcaPos = pcaPos0;
-      AlgebraicMatrix33 pcaCov;
-      int iteration = 0;
-      const int maxIterations = 10;
-      int errorFlag = 0;
-      bool hasConverged = false;      
-      do {
-	if ( norm2(pcaPos) < 1.e+4 ) {
-	  SVfitTrackExtrapolation leadTrack_extrapolation_update(*hypothesis_T->leadTrackTrajectory_, pcaPos);
-	  errorFlag |= leadTrack_extrapolation_update.errorFlag();
-	  if ( !errorFlag ) {
-	    const AlgebraicVector3& leadTrack_direction_update = leadTrack_extrapolation_update.tangent();
-	    const AlgebraicVector3& leadTrack_refPoint_update = leadTrack_extrapolation_update.point_of_closest_approach();
-	    AlgebraicVector3 pcaPos_update = compIntersection_of_lines(
-	      eventVertexPos, hypothesis_T->expectedFlightPath_unit_, leadTrack_refPoint_update, leadTrack_direction_update, numWarnings_compIntersection_of_lines_, verbosity_ );
-	    if ( verbosity_ ) printVector(Form("pcaPos(iteration #%i)", iteration), pcaPos);
-	    double diff_pca_update2 = norm2(pcaPos_update - pcaPos);
-	    if ( diff_pca_update2 < 1.e-8 ) {
-	      hasConverged = true;	 
-	    } else {
-	      pcaPos = pcaPos_update;
-	      // CV: do not spend computing time running up to 10 iterations for events
-	      //     for which no convergence is likely to be reached at the end.
-	      if ( diff_pca_update2 > 1. ) iteration = maxIterations;
-	    } 
-	  }
-	} else {
-	  errorFlag = 1;
+      if ( hypothesis_T->leadTrackTrajectory_ && !hypothesis_T->hasDecayVertexFit_ ) {      	
+	SVfitTrackExtrapolation leadTrack_extrapolation(*hypothesis_T->leadTrackTrajectory_, hypothesis_T->expectedDecayVertexPos_);
+	hypothesis_T->reconstructedDecayVertexPos_ = leadTrack_extrapolation.point_of_closest_approach();
+	hypothesis_T->reconstructedDecayVertexCov_ = leadTrack_extrapolation.covariance();
+	hypothesis_T->leadTrackExtrapolationError_ = leadTrack_extrapolation.errorFlag();
+	if ( verbosity_ >= 2  ) {
+	  std::cout << "SVfitTrackExtrapolation:" << std::endl;
+	  printVector("reconstructedDecayVertexPos", hypothesis_T->reconstructedDecayVertexPos_);
+	  printMatrix("reconstructedDecayVertexCov", hypothesis_T->reconstructedDecayVertexCov_);
 	}
-	++iteration;
-      } while ( !errorFlag && !hasConverged && iteration < maxIterations ); 
-
-      if ( errorFlag || !hasConverged ) pcaPos = pcaPos0;
-      if ( verbosity_ ) printVector("pcaPos(final)", pcaPos);
-
-      //if ( hasConverged ) {
-      hypothesis_T->leadTrackExtrapolationIsValid_ = hasConverged;
-
-      if ( norm2(pcaPos) < 1.e+4 ) {
-	double decayDistance = TMath::Sqrt(norm2(pcaPos - eventVertexPos));
-	//std::cout << "decayDistance = " << decayDistance << std::endl;
-	hypothesis_T->expectedDecayDistance_ = decayDistance + decayDistance_shift;
-	if ( fixToGenDeltaR_ ) hypothesis_T->expectedDecayDistance_ = genDeltaR_;
-	if ( hypothesis_T->expectedDecayDistance_ < 0. ) {
-	  if ( verbosity_ >= 2 ) std::cout << "expectedDecayDistance (1-prong) = " << hypothesis_T->expectedDecayDistance_ << " --> setting isValidSolution = false." << std::endl;
-	  hypothesis_T->expectedDecayDistance_ = 0.;
-	  isValidSolution = false;
-	}
-	hypothesis_T->expectedDecayVertexPos_ = compDecayPosition(eventVertexPos, hypothesis_T->expectedDecayDistance_, hypothesis_T->expectedFlightPath_unit_);
-	//printVector("expectedDecayVertexPos", hypothesis_T->expectedDecayVertexPos_);
-	hypothesis_T->expectedDecayVertexCov_ = eventVertexCov;
-	
-	SVfitTrackExtrapolation leadTrack_extrapolation_shifted(*hypothesis_T->leadTrackTrajectory_, hypothesis_T->expectedDecayVertexPos_);
-	hypothesis_T->reconstructedDecayVertexPos_ = leadTrack_extrapolation_shifted.point_of_closest_approach();
-	//printVector("reconstructedDecayVertexPos", hypothesis_T->reconstructedDecayVertexPos_);
-	hypothesis_T->reconstructedDecayVertexCov_ = leadTrack_extrapolation_shifted.covariance();
-	//printMatrix("reconstructedDecayVertexCov", hypothesis_T->reconstructedDecayVertexCov_);
-	hypothesis_T->leadTrackExtrapolationError_ = leadTrack_extrapolation_shifted.errorFlag();
-	hypothesis_T->leadTrackExtrapolationNLL_ = 0.;
-	//} else {
-	//  hypothesis_T->leadTrackExtrapolationIsValid_ = false;
-	//	
-	//  hypothesis_T->expectedDecayVertexPos_(0) = 0.;
-	//  hypothesis_T->expectedDecayVertexPos_(1) = 0.;
-	//  hypothesis_T->expectedDecayVertexPos_(2) = 0.;
-	//  for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
-	//    for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
-	//      hypothesis_T->reconstructedDecayVertexCov_(iRow, iColumn) = 1.e+6;
-	//    }
-	//  }
-	//}
-      } else {
-	hypothesis_T->leadTrackExtrapolationError_ = 1;
-	hypothesis_T->leadTrackExtrapolationNLL_ = TMath::Log(norm2(pcaPos));
       }
     }
   }
@@ -529,7 +474,7 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
     std::cout << " visMass = " << visMass << std::endl;
     std::cout << " nuInvMass = " << hypothesis_T->p4invis_rf_.mass() << std::endl;
     std::cout << " gjAngle_rf = " << gjAngle_rf << std::endl;
-    if ( idxFitParameter_deltaR_ != -1 ) std::cout << " decayDistance_shift = " << param[idxFitParameter_deltaR_] << std::endl;
+    if ( idxFitParameter_deltaR_ != -1 ) std::cout << " decayDistance = " << hypothesis_T->expectedDecayDistance_ << std::endl;
     std::cout << "p4Vis (lab): E = " << hypothesis_T->p4_.energy() << ","
 	      << " px = " << hypothesis_T->p4_.px() << ", py = " << hypothesis_T->p4_.py() << ","
 	      << " pz = " << hypothesis_T->p4_.pz() << std::endl;

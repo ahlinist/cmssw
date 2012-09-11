@@ -52,7 +52,11 @@ using namespace SVfit_namespace;
 const int minNumTracksRefit = 2;
 const int minNumTracksFit = 2;
 
-const int verbosity = 0;
+const double dcaCovFudgeFactor1Prong = 1.;
+const double dcaCovFudgeFactor3Prong = 1.;
+
+enum { kGenVisP4, kRecVisP4 };
+const int flagVisP4 = kGenVisP4;
 
 SVfitLikelihoodDisplay::SVfitLikelihoodDisplay(const edm::ParameterSet& cfg)
   : moduleLabel_(cfg.getParameter<std::string>("@module_label"))
@@ -68,12 +72,23 @@ SVfitLikelihoodDisplay::SVfitLikelihoodDisplay(const edm::ParameterSet& cfg)
   srcWeights_      = cfg.getParameter<vInputTag>("srcWeights");
 
   edm::ParameterSet cfgEventVertexFitAlgo(cfg);
+  cfgEventVertexFitAlgo.addParameter<std::string>("algorithm", "AdaptiveVertexFitter");
   cfgEventVertexFitAlgo.addParameter<unsigned>("minNumTracksRefit", minNumTracksRefit);
+  cfgEventVertexFitAlgo.addParameter<int>("verbosity", verbosity_);
   eventVertexFitAlgorithm_ = new NSVfitEventVertexRefitter(cfgEventVertexFitAlgo);
 
   edm::ParameterSet cfgDecayVertexFitAlgorithm(cfg);
   cfgDecayVertexFitAlgorithm.addParameter<unsigned>("minNumTracksFit", minNumTracksFit);
   decayVertexFitAlgorithm_ = new NSVfitDecayVertexFitter(cfgDecayVertexFitAlgorithm);
+
+  // CV: fugde factors to account for the fact that distribution of pulls
+  //       (genVertexPos - recVertexPos)^T * recVertexCov^-1 * (genVertexPos - recVertexPos)
+  //     do not peak at 1.0, but close to 1.4
+  sfProdVertexCov_  = cfg.getParameter<double>("sfProdVertexCov");
+  sfDecayVertexCov_ = cfg.getParameter<double>("sfDecayVertexCov");
+
+  verbosity_ = cfg.exists("verbosity") ?
+    cfg.getParameter<int>("verbosity") : 0;
 }
 
 SVfitLikelihoodDisplay::~SVfitLikelihoodDisplay()
@@ -86,28 +101,6 @@ void SVfitLikelihoodDisplay::beginJob()
 {
 // nothing to be done yet...
 }
-
-//-------------------------------------------------------------------------------
-// auxiliary functions for vector algebra
-
-namespace
-{
-  AlgebraicVector3 compDecayPosition(const AlgebraicVector3& origin, double d, const AlgebraicVector3& direction)
-  {
-    return AlgebraicVector3(origin(0) + d*direction(0), origin(1) + d*direction(1), origin(2) + d*direction(2));
-  }
-  
-  double compScalarProduct(const AlgebraicVector3& p1, const AlgebraicVector3& p2)
-  {
-    return (p1(0)*p2(0) + p1(1)*p2(1) + p1(2)*p2(2));
-  }
-
-  double norm2(const AlgebraicVector3& p)
-  {
-    return square(p(0)) + square(p(1)) + square(p(2));
-  }
-}
-//-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
 // auxiliary functions for kinematic reconstruction
@@ -127,7 +120,12 @@ namespace
     reco::Candidate::Vector p3Vis_unit = normalize(reco::Candidate::Vector(p4Vis.px(), p4Vis.py(), p4Vis.pz()));
   
 //--- compute energy and momentum of visible decay products in tau lepton rest-frame
-    pVis_rf = TMath::Sqrt((motherMass2 - square(visMass + invisMass))*(motherMass2 - square(visMass - invisMass)))/(2.*motherMass);
+    double pVis2_rf = (motherMass2 - square(visMass + invisMass))*(motherMass2 - square(visMass - invisMass))/(4.*motherMass2);
+    if ( pVis2_rf < 0. ) {
+      pVis2_rf = 0.;
+      isValidSolution = false;
+    }
+    pVis_rf = TMath::Sqrt(pVis2_rf);
     double enVis_rf = TMath::Sqrt(square(pVis_rf) + square(visMass));
 
 //--- compute Gottfried-Jackson angle
@@ -137,7 +135,7 @@ namespace
       
       double beta2 = 1. - square(visEnFracX*motherMass/enVis_lab);
       double beta = TMath::Sqrt(beta2);
-      
+
       double cosGjAngle_rf = (visEnFracX*motherMass - enVis_rf)/(beta*pVis_rf);
       //std::cout << " cosGjAngle_rf = " << cosGjAngle_rf;
       isValidSolution = true;
@@ -191,12 +189,7 @@ namespace
     // CV: code copied from TauAnalysis/CandidateTools/plugins/NSVfitTauDecayLikelihoodTrackInfo.cc
     double a = (p/tauLeptonMass)*cTauLifetime;
     if ( tauFlightPath < 0. ) tauFlightPath = 0.;
-    double nll = TMath::Log(a) + tauFlightPath/a;
-    if ( verbosity >= 3 ) {
-      std::cout << "<negLogLikelihoodExponentialDecay>:" << std::endl;
-      std::cout << " -log(P) = " << nll << std::endl;
-    }
-    return nll;
+    return TMath::Log(a) + tauFlightPath/a;
   }
 
   double backwardsPenaltyTerm(const AlgebraicVector3& flight_direction, double fligt_distance, const reco::Candidate::LorentzVector& visP4)
@@ -214,28 +207,33 @@ namespace
     //return penalty;
   }
   
-  double negLogLikelihoodTauToLepDecay(double gjAngle, double X, double invisMass)
+  double negLogLikelihoodTauToLepDecay(double gjAngle, double X, double invisMass, 
+				       int verbosity)
   {
     // CV: code copied from TauAnalysis/CandidateTools/plugins/NSVfitTauToLepLikelihoodMatrixElement.cc
     //    (for the case that tau lepton is unpolarized)
     
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodTauToLepDecay>:" << std::endl;
+      std::cout << " gjAngle = " << gjAngle << std::endl;
+      std::cout << " X = " << X << std::endl;
+      std::cout << " invisMass = " << invisMass << std::endl;
+    }
+
     double invisMass2 = square(invisMass);
     
     double prob = 1.;
     if ( invisMass < TMath::Sqrt((1. - X)*tauLeptonMass2) ) { // LB: physical solution
       prob = (13./tauLeptonMass4)*(tauLeptonMass2 - invisMass2)*(tauLeptonMass2 + 2.*invisMass2)*invisMass;
-    } else {                                                  // LB: unphysical solution
-      double invisMass_limit  = TMath::Sqrt((1. - X)*tauLeptonMass2);
-      double invisMass2_limit = square(invisMass_limit);
-      prob = (13./tauLeptonMass4)*(tauLeptonMass2 - invisMass2_limit)*(tauLeptonMass2 + 2.*invisMass2_limit)*invisMass_limit;
-      prob /= (1. + 1.e+6*square(invisMass - invisMass_limit));
+    } else  {                                                 // LB: unphysical solution
+      prob = 0.;
     }
     
     double nll;
     if ( prob > 0. ) nll = -TMath::Log(prob);  
     else nll = 1.e+37;
 
-    if ( verbosity >= 2 ) {
+    if ( verbosity >= 1 ) {
       std::cout << "<negLogLikelihoodTauToLepDecay>:" << std::endl;
       std::cout << " -log(P) = " << nll << std::endl;
     }
@@ -243,26 +241,33 @@ namespace
     return nll;
   }
   
-  double negLogLikelihoodTauToHadDecay(double gjAngle, double pVis_rf, double X, double visMass)
+  double negLogLikelihoodTauToHadDecay(double gjAngle, double pVis_rf, double X, double visMass, 
+				       int verbosity)
   {
     // CV: code copied from TauAnalysis/CandidateTools/plugins/NSVfitTauToHadLikelihoodPhaseSpace.cc
     
+    if ( verbosity >= 2 ) {
+      std::cout << "<negLogLikelihoodTauToHadDecay>:" << std::endl;
+      std::cout << " gjAngle = " << gjAngle << std::endl;
+      std::cout << " pVis_rf = " << pVis_rf << std::endl;
+      std::cout << " X = " << X << std::endl;
+      std::cout << " visMass = " << visMass << std::endl;
+    }
+
     double visMass2 = square(visMass);
     
-    double prob = tauLeptonMass/(2.*pVis_rf);
-    if ( X < (visMass2/tauLeptonMass2) ) {
-      double X_limit = visMass2/tauLeptonMass2;
-      prob /= (1. + 1.e+6*square(X - X_limit));
-    } else if ( X > 1. ) {
-      double X_limit = 1.;
-      prob /= (1. + 1.e+6*square(X - X_limit));
+    double prob = 1.;
+    if ( X > (visMass2/tauLeptonMass2) && X < 1. ) { // LB: physical solution
+      prob = tauLeptonMass/(2.*pVis_rf);
+    } else {                                         // LB: unphysical solution
+      prob = 0.;
     }
     
     double nll;
     if ( prob > 0. ) nll = -TMath::Log(prob);  
     else nll = 1.e+37;
 
-    if ( verbosity >= 2 ) {
+    if ( verbosity >= 1 ) {
       std::cout << "<negLogLikelihoodTauToHadDecay>:" << std::endl;
       std::cout << " -log(P) = " << nll << std::endl;
     }
@@ -271,120 +276,110 @@ namespace
   }
   
   double negLogLikelihoodTrackInfo1Prong(const AlgebraicVector3& eventVertexPos, const AlgebraicMatrix33& eventVertexCov,
-					 double pTau_lab, const reco::Candidate::LorentzVector& p4Vis, const AlgebraicVector3& tauFlightPath_unit, 
+					 double pTau_lab, const reco::Candidate::LorentzVector& p4Vis, const AlgebraicVector3& tauFlightPath_unit, double tauCharge,
 					 const reco::TransientTrack& track_trajectory, 
-					 const AlgebraicVector3& track_refPoint, const AlgebraicVector3& track_direction)
+					 const AlgebraicVector3& track_refPoint, const AlgebraicVector3& track_direction, 
+					 double sfProdVertexCov, double sfDecayVertexCov,
+					 int verbosity)
   {
     if ( verbosity >= 2 ) {
       std::cout << "<negLogLikelihoodTrackInfo1Prong>:" << std::endl;
+      std::cout << " pTau_lab = " << pTau_lab << std::endl;
       printVector("tauFlightPath_unit", tauFlightPath_unit);
+      std::cout << " tauCharge = " << tauCharge << std::endl;
     }
 
-    long numWarnings = 0;
-    AlgebraicVector3 pcaPos0 = compIntersection_of_lines(eventVertexPos, tauFlightPath_unit, track_refPoint, track_direction, numWarnings, verbosity);
+    double tauEn = TMath::Sqrt(square(pTau_lab) + tauLeptonMass2);
+    reco::Candidate::LorentzVector tauP4(pTau_lab*tauFlightPath_unit(0), pTau_lab*tauFlightPath_unit(1), pTau_lab*tauFlightPath_unit(2), tauEn);
     if ( verbosity >= 2 ) {
-      AlgebraicVector3 pcaPos_wrt_vertex = pcaPos0 - eventVertexPos;
-      std::cout << "pcaPos(initial):" 
-    	        << " x = " << pcaPos0(0) << ", y = " << pcaPos0(1) << ", z = " << pcaPos0(2) 
-    	        << " (d = " << TMath::Sqrt(norm2(pcaPos_wrt_vertex)) << ")" << std::endl;      
+      std::cout << " tauP4: En = " << tauP4.E() << ", Px = " << tauP4.px() << ", Py = " << tauP4.py() << ", Pz = " << tauP4.pz() << " (mass = " << tauP4.mass() << ")" << std::endl;
     }
-        
-    AlgebraicVector3 pcaPos = pcaPos0;
-    int iteration = 0;
-    const int maxIterations = 10;
-    int errorFlag = 0;
-    bool hasConverged = false;     
-    do {
-      if ( norm2(pcaPos) < 1.e+4 ) {
-	SVfitTrackExtrapolation track_extrapolation_update(track_trajectory, pcaPos);
-	errorFlag |= track_extrapolation_update.errorFlag();
-	if ( !errorFlag ) {
-	  const AlgebraicVector3& track_direction_update = track_extrapolation_update.tangent();
-	  if ( verbosity >= 2 ) printVector("track_direction_update", track_direction_update);
-	  const AlgebraicVector3& track_refPoint_update = track_extrapolation_update.point_of_closest_approach();
-	  if ( verbosity >= 2 ) printVector("track_refPoint_update", track_refPoint_update);
-	  long numWarnings = 0;
-	  AlgebraicVector3 pcaPos_update = compIntersection_of_lines(
-	    eventVertexPos, tauFlightPath_unit, track_refPoint_update, track_direction_update, numWarnings, verbosity);
-	  if ( verbosity >= 2 ) {
-	    AlgebraicVector3 pcaPos_wrt_vertex_update = pcaPos_update - eventVertexPos;
-	    std::cout << "pcaPos(iteration #" << iteration << "):" 
-		      << " x = " << pcaPos_update(0) << ", y = " << pcaPos_update(1) << ", z = " << pcaPos_update(2) 
-		      << " (d = " << TMath::Sqrt(norm2(pcaPos_wrt_vertex_update)) << ")" << std::endl;    
-	  }
-	  double diff_pca_update2 = norm2(pcaPos_update - pcaPos);
-	  if ( verbosity >= 2 ) std::cout << "diff_pca_update2 = " << diff_pca_update2 << std::endl;
-	  if ( diff_pca_update2 < 1.e-8 ) {
-	    hasConverged = true;	 
-	  } else {
-	    pcaPos = pcaPos_update;
-	    // CV: do not spend computing time running up to 10 iterations for events
-	    //     for which no convergence is likely to be reached at the end.
-	    if ( diff_pca_update2 > 1. ) iteration = maxIterations;
-	  } 
-	} 
-      } else {
-	errorFlag = 1;
-      }
-      ++iteration;
-    } while ( !errorFlag && !hasConverged && iteration < maxIterations ); 
-    
-    if ( errorFlag || !hasConverged ) pcaPos = pcaPos0;
-    if ( verbosity >= 2 ) printVector("pcaPos(final)", pcaPos);
-    
+
+    double a = (pTau_lab/tauLeptonMass)*cTauLifetime;
+    if ( verbosity >= 2 ) {
+      std::cout << " a = " << a << std::endl;
+    }
+
     double prob = 0.;
-    double decayDistance = TMath::Sqrt(norm2(pcaPos - eventVertexPos));
-    if ( verbosity >= 2 ) std::cout << "decayDistance = " << decayDistance << std::endl;
-    double dMax  = 2.5000;
-    double dStep = 0.0025;
-    for ( double decayDistance_shift = -decayDistance; decayDistance_shift <= dMax; decayDistance_shift += dStep ) {
-      AlgebraicVector3 expectedDecayVertexPos = compDecayPosition(eventVertexPos, decayDistance + decayDistance_shift, tauFlightPath_unit);
+    const double xStep = 1.e-2;
+    for ( double x = 0.5*xStep; x < 10.; x += xStep ) {
+      double decayDistance = x*a;
+      if ( decayDistance > 25. ) continue;
+
+      AlgebraicVector3 expectedDecayVertexPos_line = compDecayPosition_line(eventVertexPos, decayDistance, tauFlightPath_unit);    
+      AlgebraicVector3 expectedDecayVertexPos_helix = compDecayPosition_helix(eventVertexPos, decayDistance, tauP4, tauCharge);
       AlgebraicMatrix33 expectedDecayVertexCov = eventVertexCov;
-      
-      SVfitTrackExtrapolation track_extrapolation_shifted(track_trajectory, expectedDecayVertexPos);
-      AlgebraicVector3 reconstructedDecayVertexPos = track_extrapolation_shifted.point_of_closest_approach();
-      AlgebraicMatrix33 reconstructedDecayVertexCov = track_extrapolation_shifted.covariance();
-      
-      AlgebraicVector3 residual = reconstructedDecayVertexPos - expectedDecayVertexPos;
-      double residual2 = norm2(residual);
+
+      SVfitTrackExtrapolation track_extrapolation(track_trajectory, expectedDecayVertexPos_helix);
+      if ( track_extrapolation.errorFlag() ) {
+	edm::LogWarning ("negLogLikelihoodTrackInfo1Prong")
+	  << "Track extrapolation failed for decayDistance = " << decayDistance << " !!";
+	continue;
+      }
+
+      AlgebraicVector3 reconstructedDecayVertexPos = track_extrapolation.point_of_closest_approach();
+      AlgebraicMatrix33 reconstructedDecayVertexCov = track_extrapolation.covariance();
+
+      AlgebraicVector3 u1, u2, u3;
+      compLocalCoordinates(tauFlightPath_unit, u1, u2, u3); 
+      AlgebraicVector3 residual = reconstructedDecayVertexPos - expectedDecayVertexPos_helix;
+      AlgebraicVector3 residual_U = transformToLocalCoordinatesPos(residual, u1, u2, u3);
       AlgebraicMatrix33 reconstructed_wrt_expectedDecayVertexCov = reconstructedDecayVertexCov;
       for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
 	for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
-	  reconstructed_wrt_expectedDecayVertexCov(iRow, iColumn) += expectedDecayVertexCov(iRow, iColumn);
+	  reconstructed_wrt_expectedDecayVertexCov(iRow, iColumn) *= sfDecayVertexCov;
+	  reconstructed_wrt_expectedDecayVertexCov(iRow, iColumn) += (sfProdVertexCov*expectedDecayVertexCov(iRow, iColumn));
 	}
       }
-      double sigma2 = ROOT::Math::Similarity(residual, reconstructed_wrt_expectedDecayVertexCov)/residual2;
-      double nll_dca = -logGaussian(TMath::Sqrt(residual2), TMath::Sqrt(sigma2));
-      double nll_lifetime = negLogLikelihoodExponentialDecay(decayDistance + decayDistance_shift, pTau_lab);	 
-      double nll_penalty = backwardsPenaltyTerm(tauFlightPath_unit, decayDistance + decayDistance_shift, p4Vis);
+      AlgebraicMatrix33 reconstructed_wrt_expectedDecayVertexCov_U = transformToLocalCoordinatesCov(reconstructed_wrt_expectedDecayVertexCov, u1, u2, u3);       
+      AlgebraicVector2 residual2d;
+      residual2d(0) = residual_U(0);
+      residual2d(1) = residual_U(1);
+      AlgebraicMatrix22 reconstructed_wrt_expectedDecayVertexCov2d;
+      for ( int iRow = 0; iRow < 2; ++iRow ) {
+	for ( int iColumn = 0; iColumn < 2; ++iColumn ) {
+	  reconstructed_wrt_expectedDecayVertexCov2d(iRow, iColumn) = reconstructed_wrt_expectedDecayVertexCov_U(iRow, iColumn);
+	}
+      }
+
+      double nll_dca = -logGaussian2d(residual2d, reconstructed_wrt_expectedDecayVertexCov2d);
+      double nll_lifetime = negLogLikelihoodExponentialDecay(decayDistance, pTau_lab);	       
+      double nll_penalty = backwardsPenaltyTerm(tauFlightPath_unit, decayDistance, p4Vis);
       double nll = nll_dca + nll_lifetime + nll_penalty;
       if ( verbosity >= 2 ) {
-	//if ( (TMath::Nint(decayDistance_shift/dStep) % 10) == 0 ) {
-	if ( TMath::Abs(decayDistance_shift) < (0.5*dStep) ) {
-	  std::cout << "decayDistance_shift = " << decayDistance_shift << std::endl;
-	  if ( verbosity >= 3 ) {
-	    printVector("expectedDecayVertexPos", expectedDecayVertexPos);
-	    printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
-	    printVector("reconstructedDecayVertexPos", reconstructedDecayVertexPos);
-	    printMatrix("reconstructedDecayVertexCov", reconstructedDecayVertexCov);
-	    printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
-	    std::cout << "residual: x = " << residual(0) << ", y = " << residual(1) << ", z = " << residual(2) 
-		      << " ( |residual| = " << TMath::Sqrt(norm2(residual)) << ")" << std::endl;
-	    printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
-	    std::cout << "sigma = " << TMath::Sqrt(sigma2) << std::endl;
-	  }
+	if ( (TMath::Nint(x/xStep) % 10) == 0 ) {
+	  std::cout << "decayDistance = " << decayDistance << std::endl;
+	  printVector("expectedDecayVertexPos_line", expectedDecayVertexPos_line);
+	  printVector("expectedDecayVertexPos_helix", expectedDecayVertexPos_helix);
+	  printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
+	  printVector("reconstructedDecayVertexPos", reconstructedDecayVertexPos);
+	  printMatrix("reconstructedDecayVertexCov", reconstructedDecayVertexCov);
+	  printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
+	  printVector("residual", residual);
+	  printVector("residual(U)", residual_U);
+	  printVector("u1", u1);
+	  printVector("u2", u2);
+	  printVector("u3", u3);
+	  std::cout << "u1*u2 = " << compScalarProduct(u1, u2) << std::endl;
+	  std::cout << "u1*u3 = " << compScalarProduct(u1, u3) << std::endl;
+	  std::cout << "u2*u3 = " << compScalarProduct(u2, u3) << std::endl;
+	  std::cout << "residual: u1 = " << residual2d(0) << ", u2 = " << residual2d(1) 
+		    << " ( |residual| = " << TMath::Sqrt(norm2(residual2d)) << ")" << std::endl;
+	  printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov2d);
+	  double sigma2 = ROOT::Math::Similarity(residual2d, reconstructed_wrt_expectedDecayVertexCov2d)/norm2(residual2d);
+	  std::cout << "sigma(approx.) = " << TMath::Sqrt(sigma2) << std::endl;
 	  std::cout << "--> -log(P) = " << nll
 		    << " ( -log(P_dca) = " << nll_dca << ", -log(P_lifetime) = " << nll_lifetime << ", -log(P_penalty) = " << nll_penalty << ")" << std::endl;
 	}
       }
-      prob += (TMath::Exp(-nll)*dStep);
+      prob += (TMath::Exp(-nll)*xStep*a);
     }
     
     double nll;
     if ( prob > 0. ) nll = -TMath::Log(prob);  
     else nll = 1.e+37;
-
-    if ( verbosity >= 2 ) {
+    
+    if ( verbosity >= 1 ) {
       std::cout << "<negLogLikelihoodTrackInfo1Prong>:" << std::endl;
       std::cout << " -log(P) = " << nll << std::endl;
     }
@@ -393,53 +388,99 @@ namespace
   }
   
   double negLogLikelihoodTrackInfo3Prong(const AlgebraicVector3& eventVertexPos, const AlgebraicMatrix33& eventVertexCov,
-					 double pTau_lab, const reco::Candidate::LorentzVector& p4Vis, const AlgebraicVector3& tauFlightPath_unit,
-					 const AlgebraicVector3& reconstructedDecayVertexPos, const AlgebraicMatrix33& reconstructedDecayVertexCov)
+					 double pTau_lab, const reco::Candidate::LorentzVector& p4Vis, const AlgebraicVector3& tauFlightPath_unit, double tauCharge,
+					 const AlgebraicVector3& reconstructedDecayVertexPos, const AlgebraicMatrix33& reconstructedDecayVertexCov,
+					 double sfProdVertexCov, double sfDecayVertexCov,
+					 int verbosity)
   {
-    if ( verbosity >= 2 ) std::cout << "<negLogLikelihoodTrackInfo3Prong>:" << std::endl;
-    AlgebraicVector3 decayVertex_wrt_eventVertexPos = reconstructedDecayVertexPos - eventVertexPos;
-    if ( verbosity >= 2 ) printVector("decayVertex_wrt_eventVertexPos", decayVertex_wrt_eventVertexPos);
-    double decayDistance_projection = compScalarProduct(decayVertex_wrt_eventVertexPos, tauFlightPath_unit);
-    if ( verbosity >= 2 ) std::cout << "decayDistance_projection = " << decayDistance_projection << std::endl;
-    AlgebraicVector3 expectedDecayVertexPos = compDecayPosition(eventVertexPos, decayDistance_projection, tauFlightPath_unit);
-    if ( verbosity >= 2 ) printVector("expectedDecayVertexPos", expectedDecayVertexPos);
-    AlgebraicMatrix33 expectedDecayVertexCov = eventVertexCov;
-    if ( verbosity >= 2 ) printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
-    
-    AlgebraicVector3 residual = reconstructedDecayVertexPos - expectedDecayVertexPos;
-    if ( verbosity >= 2 ) printVector("residual", residual);
-    double residual2 = norm2(residual);
-    if ( verbosity >= 2 ) std::cout << "residual2 = " << residual2 << std::endl;
-    AlgebraicMatrix33 reconstructed_wrt_expectedDecayVertexCov = reconstructedDecayVertexCov;
-    for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
-      for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
-	reconstructed_wrt_expectedDecayVertexCov(iRow, iColumn) += expectedDecayVertexCov(iRow, iColumn);
-      }
-    }
-    if ( verbosity >= 2 ) printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
-    double sigma2 = ROOT::Math::Similarity(residual, reconstructed_wrt_expectedDecayVertexCov)/residual2;
-    if ( verbosity >= 2 ) std::cout << "sigma2 = " << sigma2 << std::endl;
-    double nll_dca = -logGaussian(TMath::Sqrt(residual2), TMath::Sqrt(sigma2));
-    double nll_lifetime = negLogLikelihoodExponentialDecay(decayDistance_projection, pTau_lab);	 
-    double nll_penalty = backwardsPenaltyTerm(tauFlightPath_unit, decayDistance_projection, p4Vis);
-    double nll = nll_dca + nll_lifetime + nll_penalty;
     if ( verbosity >= 2 ) {
-      std::cout << "residual: x = " << residual(0) << ", y = " << residual(1) << ", z = " << residual(2) 
-    	        << " ( |residual| = " << TMath::Sqrt(norm2(residual)) << ", sigma = " << TMath::Sqrt(sigma2) << ")" << std::endl;
-      std::cout << "--> -log(P) = " << nll
-    	        << " ( -log(P_dca) = " << nll_dca << ", -log(P_lifetime) = " << nll_lifetime << ", -log(P_penalty) = " << nll_penalty << ")" << std::endl;
+      std::cout << "<negLogLikelihoodTrackInfo3Prong>:" << std::endl;
+      std::cout << " pTau_lab = " << pTau_lab << std::endl;
+      printVector("tauFlightPath_unit", tauFlightPath_unit);
+      std::cout << " tauCharge = " << tauCharge << std::endl;
     }
 
+    double tauEn = TMath::Sqrt(square(pTau_lab) + tauLeptonMass2);
+    reco::Candidate::LorentzVector tauP4(pTau_lab*tauFlightPath_unit(0), pTau_lab*tauFlightPath_unit(1), pTau_lab*tauFlightPath_unit(2), tauEn);
     if ( verbosity >= 2 ) {
+      std::cout << " tauP4: En = " << tauP4.E() << ", Px = " << tauP4.px() << ", Py = " << tauP4.py() << ", Pz = " << tauP4.pz() << " (mass = " << tauP4.mass() << ")" << std::endl;
+    }
+    
+    AlgebraicVector3 reconstructedDecayVertex_wrt_eventVertexPos = reconstructedDecayVertexPos - eventVertexPos;
+    AlgebraicMatrix33 reconstructedDecayVertex_wrt_eventVertexCov;
+    for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
+      for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
+	reconstructedDecayVertex_wrt_eventVertexCov(iRow, iColumn) = reconstructedDecayVertexCov(iRow, iColumn) + eventVertexCov(iRow, iColumn);
+      }
+    }
+    double EigenValue1, EigenValue2, EigenValue3;
+    extractEigenValues(reconstructedDecayVertex_wrt_eventVertexCov, EigenValue1, EigenValue2, EigenValue3);
+    assert(EigenValue1 > 0.);
+    double a = TMath::Sqrt(EigenValue1);
+    if ( verbosity >= 2 ) {
+      printVector("reconstructedDecayVertex_wrt_eventVertexPos", reconstructedDecayVertex_wrt_eventVertexPos);
+      std::cout << " a = " << a << std::endl;
+    }
+    
+    double decayDistance0 = TMath::Sqrt(norm2(reconstructedDecayVertex_wrt_eventVertexPos));
+    if ( verbosity >= 2 ) std::cout << "decayDistance0 = " << decayDistance0 << std::endl;
+
+    double prob = 0.;
+    const double xStep = 1.e-2;
+    for ( double x = -5.; x < +5.; x += xStep ) {
+      double decayDistance = decayDistance0 + x*a;
+      if ( decayDistance < 0. || decayDistance > 25. ) continue;
+
+      AlgebraicVector3 expectedDecayVertexPos_line = compDecayPosition_line(eventVertexPos, decayDistance, tauFlightPath_unit);
+      AlgebraicVector3 expectedDecayVertexPos_helix = compDecayPosition_helix(eventVertexPos, decayDistance, tauP4, tauCharge);
+      AlgebraicMatrix33 expectedDecayVertexCov = eventVertexCov;
+
+      AlgebraicVector3 residual = reconstructedDecayVertexPos - expectedDecayVertexPos_helix;
+      AlgebraicMatrix33 reconstructed_wrt_expectedDecayVertexCov = reconstructedDecayVertexCov;
+      for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
+	for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
+	  reconstructed_wrt_expectedDecayVertexCov(iRow, iColumn) *= sfDecayVertexCov;
+	  reconstructed_wrt_expectedDecayVertexCov(iRow, iColumn) += (sfProdVertexCov*expectedDecayVertexCov(iRow, iColumn));
+	}
+      }
+
+      double nll_dca = -logGaussian3d(residual, reconstructed_wrt_expectedDecayVertexCov);
+      double nll_lifetime = negLogLikelihoodExponentialDecay(decayDistance, pTau_lab);	 
+      double nll_penalty = backwardsPenaltyTerm(tauFlightPath_unit, decayDistance, p4Vis);
+      double nll = nll_dca + nll_lifetime + nll_penalty;
+      if ( verbosity >= 2 ) {
+	if ( (TMath::Nint(x/xStep) % 10) == 0 ) {
+	  std::cout << "decayDistance = " << decayDistance << std::endl;
+	  printVector("expectedDecayVertexPos_line", expectedDecayVertexPos_line);
+	  printVector("expectedDecayVertexPos_helix", expectedDecayVertexPos_helix);
+	  printMatrix("expectedDecayVertexCov", expectedDecayVertexCov);
+	  std::cout << "residual: x = " << residual(0) << ", y = " << residual(1) << ", z = " << residual(2) 
+		    << " ( |residual| = " << TMath::Sqrt(norm2(residual)) << ")" << std::endl;
+	  printMatrix("reconstructed_wrt_expectedDecayVertexCov", reconstructed_wrt_expectedDecayVertexCov);
+	  double sigma2 = ROOT::Math::Similarity(residual, reconstructed_wrt_expectedDecayVertexCov)/norm2(residual);
+	  std::cout << "sigma(approx.) = " << TMath::Sqrt(sigma2) << std::endl;
+	  std::cout << "--> -log(P) = " << nll
+		    << " ( -log(P_dca) = " << nll_dca << ", -log(P_lifetime) = " << nll_lifetime << ", -log(P_penalty) = " << nll_penalty << ")" << std::endl;
+	}
+      }
+      prob += (TMath::Exp(-nll)*xStep*a);
+    }
+    
+    double nll;
+    if ( prob > 0. ) nll = -TMath::Log(prob);  
+    else nll = 1.e+37;
+    
+    if ( verbosity >= 1 ) {
       std::cout << "<negLogLikelihoodTrackInfo3Prong>:" << std::endl;
       std::cout << " -log(P) = " << nll << std::endl;
     }
-
+    
     return nll;
   }
   
   double negLogLikelihoodMEt(const reco::Candidate::LorentzVector& genMEt, const reco::Candidate::LorentzVector& recMEt, 
-			     double recMEtCovDet, const TMatrixD& recMEtCovInverse)
+			     double recMEtCovDet, const TMatrixD& recMEtCovInverse,
+			     int verbosity)
   {
     // code copied from TauAnalysis/CandidateTools/plugins/NSVfitEventLikelihoodMEt2.cc
     
@@ -456,7 +497,7 @@ namespace
       nll = 0.;
     }
 
-    if ( verbosity >= 2 ) {
+    if ( verbosity >= 1 ) {
       std::cout << "<negLogLikelihoodMEt>:" << std::endl;
       std::cout << " -log(P) = " << nll << std::endl;
     }
@@ -524,7 +565,7 @@ namespace
     //if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
     canvas->Print(std::string(outputFileName_plot).append(".png").data());
     //canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
-    canvas->Print(std::string(outputFileName_plot).append(".root").data());
+    //canvas->Print(std::string(outputFileName_plot).append(".root").data());
   
     delete label;
     delete canvas;  
@@ -589,7 +630,7 @@ namespace
     //if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
     canvas->Print(std::string(outputFileName_plot).append(".png").data());
     //canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
-    canvas->Print(std::string(outputFileName_plot).append(".root").data());
+    //canvas->Print(std::string(outputFileName_plot).append(".root").data());
     
     delete label;
     delete canvas;  
@@ -663,13 +704,13 @@ namespace
     }
   }
 
-  void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const reco::Candidate::LorentzVector& genP4Invis1, const std::string& genTauDecayMode1,
+  void makeLikelihoodPlot(const reco::Candidate::LorentzVector& genP4Vis1, const reco::Candidate::LorentzVector& genP4Invis1, const std::string& genTauDecayMode1, double genTauCharge1,
 			  const AlgebraicVector3& genProdVertexPos1, const AlgebraicVector3& genDecayVertexPos1, 
 			  const reco::Candidate::LorentzVector& recP4Vis1, const reco::TransientTrack* recLeadTrack1_trajectory, 
 			  bool hasRecDecayVertex1, const AlgebraicVector3& recDecayVertexPos1, const AlgebraicMatrix33& recDecayVertexCov1, 
 			  bool doVaryTheta1, bool doVaryX1, bool doVaryPhi1, bool doVaryInvisMass1,
 			  bool addLikelihoodTauDecayKine1, bool addLikelihoodTrackInfo1, 
-			  const reco::Candidate::LorentzVector& genP4Vis2, const reco::Candidate::LorentzVector& genP4Invis2, const std::string& genTauDecayMode2,
+			  const reco::Candidate::LorentzVector& genP4Vis2, const reco::Candidate::LorentzVector& genP4Invis2, const std::string& genTauDecayMode2, double genTauCharge2,
 			  const AlgebraicVector3& genProdVertexPos2, const AlgebraicVector3& genDecayVertexPos2, 
 			  const reco::Candidate::LorentzVector& recP4Vis2, const reco::TransientTrack* recLeadTrack2_trajectory, 
 			  bool hasRecDecayVertex2, const AlgebraicVector3& recDecayVertexPos2, const AlgebraicMatrix33& recDecayVertexCov2, 
@@ -678,7 +719,9 @@ namespace
 			  const AlgebraicVector3& eventVertexPos, const AlgebraicMatrix33& eventVertexCov,
 			  const reco::Candidate::LorentzVector& recMEt, const TMatrixD& recMEtCov,
 			  bool addLikelihoodMEt,			  
-			  const edm::Event& evt, const std::string& outputFileName)
+			  const edm::Event& evt, const std::string& outputFileName,
+			  double sfProdVertexCov, double sfDecayVertexCov, 
+			  int verbosity)
   {
     std::cout << "<makeLikelihoodPlot>:" << std::endl;
         
@@ -687,14 +730,29 @@ namespace
       throw cms::Exception("makeLikelihoodPlot")
 	<< " Cannot vary gjAngle and X simultaneously !!\n";
 
+    if ( !(recLeadTrack1_trajectory && recLeadTrack2_trajectory) ) {
+      if ( !recLeadTrack1_trajectory ) std::cout << "Tau1 has no lead. Track --> skipping !!" << std::endl;
+      if ( !recLeadTrack2_trajectory ) std::cout << "Tau2 has no lead. Track --> skipping !!" << std::endl;
+      return;
+    }
+
+    reco::Candidate::LorentzVector refP4Vis1, refP4Vis2;
+    if        ( flagVisP4 == kGenVisP4 ) {
+      refP4Vis1 = genP4Vis1;
+      refP4Vis2 = genP4Vis2;
+    } else if ( flagVisP4 == kGenVisP4 ) {
+      refP4Vis1 = recP4Vis1;
+      refP4Vis2 = recP4Vis2;
+    } else assert(0);
+
     SVfitTrackExtrapolation recLeadTrack1_extrapolation(*recLeadTrack1_trajectory, eventVertexPos);
     const AlgebraicVector3& recLeadTrackDirection1 = recLeadTrack1_extrapolation.tangent();
     const AlgebraicVector3& recLeadTrackRefPoint1 = eventVertexPos;
-        
+
     SVfitTrackExtrapolation recLeadTrack2_extrapolation(*recLeadTrack2_trajectory, eventVertexPos);
     const AlgebraicVector3& recLeadTrackDirection2 = recLeadTrack2_extrapolation.tangent();
     const AlgebraicVector3& recLeadTrackRefPoint2 = eventVertexPos;
-    
+
     double recMEtCovDet = recMEtCov.Determinant();
     TMatrixD recMEtCovInverse = recMEtCov;
     if ( recMEtCovDet != 0. ) recMEtCovInverse.Invert();
@@ -717,7 +775,7 @@ namespace
     double invisMass1_true  = genP4Invis1.mass();
     double invisMass1Min    = invisMass1_true;
     double invisMass1Max    = invisMass1_true;
-    
+
     reco::Candidate::LorentzVector genP4Tau2 = genP4Vis2 + genP4Invis2;
     double gjAngle_or_X2_true;
     bool isX2;
@@ -736,7 +794,7 @@ namespace
     double invisMass2_true  = genP4Invis2.mass();
     double invisMass2Min    = invisMass2_true;
     double invisMass2Max    = invisMass2_true;
-    
+
     int gjAngle_or_XNumBins = 100;
     int phi_labNumBins      = 100;
     int invisMassNumBins    = 100;
@@ -767,16 +825,18 @@ namespace
 			   parameter1, parameter1NumBins, parameter1Min, parameter1Max, parameter1_true, xAxisLabel, 
 			   parameter2, parameter2NumBins, parameter2Min, parameter2Max, parameter2_true, yAxisLabel,
 			   numParametersToVary);
-    
+
     int gjAngle_or_XNumBins1 = ( gjAngle_or_X1Max > gjAngle_or_X1Min ) ? gjAngle_or_XNumBins : 1;
     int phi_labNumBins1      = ( phi_lab1Max      > phi_lab1Min      ) ? phi_labNumBins      : 1;
     int invisMassNumBins1    = ( invisMass1Max    > invisMass1Min    ) ? invisMassNumBins    : 1;
     std::cout << " numBins(1): gjAngle/X = " << gjAngle_or_XNumBins1 << ", phi_lab = " << phi_labNumBins1 << ", invisMass = " << invisMassNumBins1 << std::endl;
-    
+    if ( numParametersToVary >= 1 ) assert(parameter1);
+
     int gjAngle_or_XNumBins2 = ( gjAngle_or_X2Max > gjAngle_or_X2Min ) ? gjAngle_or_XNumBins : 1;
     int phi_labNumBins2      = ( phi_lab2Max      > phi_lab2Min      ) ? phi_labNumBins      : 1;
     int invisMassNumBins2    = ( invisMass2Max    > invisMass2Min    ) ? invisMassNumBins    : 1;
     std::cout << " numBins(2): gjAngle/X = " << gjAngle_or_XNumBins2 << ", phi_lab = " << phi_labNumBins2 << ", invisMass = " << invisMassNumBins2 << std::endl;
+    if ( numParametersToVary >= 2 ) assert(parameter2);
     
     bool isLeptonicDecay1 = (genTauDecayMode1 == "electron" || genTauDecayMode1 == "muon");
     bool isLeptonicDecay2 = (genTauDecayMode2 == "electron" || genTauDecayMode2 == "muon");
@@ -790,7 +850,7 @@ namespace
     if ( doVaryInvisMass2 && !isLeptonicDecay2 )
       throw cms::Exception("makeLikelihoodPlot")
 	<< " Cannot vary Mass of invisible decay products of second tau, decay mode = " << genTauDecayMode2 << " !!\n";
-    
+
     TH1* histogram_likelihood = 0;
     TH1* histogram_mass       = 0;
     if      ( numParametersToVary == 1 ) {
@@ -808,17 +868,17 @@ namespace
 				      "makeLikelihoodPlot_histogram_mass",       
 				      parameter1NumBins, parameter1Min, parameter1Max, parameter2NumBins, parameter2Min, parameter2Max);  
     } else assert(0);
-    
+
     TAxis* xAxis = histogram_likelihood->GetXaxis();
     TAxis* yAxis = histogram_likelihood->GetYaxis();
-    
+
     int numPoints = 0;
     for ( int gjAngle_or_XBin1 = 0; gjAngle_or_XBin1 < gjAngle_or_XNumBins1; ++gjAngle_or_XBin1 ) { 
-    //for ( double gjAngle_or_X1 = 0.494759; gjAngle_or_X1 <= 0.5; gjAngle_or_X1 += 0.5 ) {
+    //for ( double gjAngle_or_X1 = 0.304091; gjAngle_or_X1 <= 1.0; gjAngle_or_X1 += 1.0 ) {
       for ( int phi_labBin1 = 0; phi_labBin1 < phi_labNumBins1; ++phi_labBin1 ) {
 	for ( int invisMassBin1 = 0; invisMassBin1 < invisMassNumBins1; ++invisMassBin1 ) {
 	  for ( int gjAngle_or_XBin2 = 0; gjAngle_or_XBin2 < gjAngle_or_XNumBins2; ++gjAngle_or_XBin2 ) {    
-	  //for ( double gjAngle_or_X2 = 0.527036; gjAngle_or_X2 <= 0.6; gjAngle_or_X2 += 0.5 ) {
+	  //for ( double gjAngle_or_X2 = 0.67784; gjAngle_or_X2 <= 1.0; gjAngle_or_X2 += 1.0 ) {
 	    for ( int phi_labBin2 = 0; phi_labBin2 < phi_labNumBins2; ++phi_labBin2 ) {
 	      for ( int invisMassBin2 = 0; invisMassBin2 < invisMassNumBins2; ++invisMassBin2 ) {
 		
@@ -830,8 +890,13 @@ namespace
 		double pVis_rf1, gjAngle1;
 		reco::Candidate::Vector tauFlight1;
 		bool isPhysicalSolution1;
-		//if ( isX1 ) std::cout << "X1 = " << gjAngle_or_X1 << std::endl;
-		reco::Candidate::LorentzVector p4Tau1 = compTauP4(gjAngle_or_X1, isX1, phi_lab1, recP4Vis1, invisMass1, tauLeptonMass, pVis_rf1, gjAngle1, tauFlight1, isPhysicalSolution1);
+		if ( verbosity >= 2 && isX1 ) std::cout << "X1 = " << gjAngle_or_X1 << std::endl;
+		reco::Candidate::LorentzVector p4Tau1 = compTauP4(gjAngle_or_X1, isX1, phi_lab1, refP4Vis1, invisMass1, tauLeptonMass, pVis_rf1, gjAngle1, tauFlight1, isPhysicalSolution1);
+		if ( verbosity >= 2 ) {
+		  std::cout << "p4Tau1: En = " << p4Tau1.E() << ", P = " << p4Tau1.P() << "," 
+			    << " eta = " << p4Tau1.eta() << ", phi = " << p4Tau1.phi() 
+			    << " (mass = " << p4Tau1.mass() << ")" << std::endl;
+		}
 		double X1 = recP4Vis1.E()/p4Tau1.E();
 		double tauFlight1_mag = TMath::Sqrt(tauFlight1.mag2());
 		AlgebraicVector3 tauFlightPath1_unit(tauFlight1.x()/tauFlight1_mag, tauFlight1.y()/tauFlight1_mag, tauFlight1.z()/tauFlight1_mag);
@@ -842,55 +907,88 @@ namespace
 		double pVis_rf2, gjAngle2;
 		reco::Candidate::Vector tauFlight2;
 		bool isPhysicalSolution2;
-		//if ( isX2 ) std::cout << "X2 = " << gjAngle_or_X2 << std::endl;
-		reco::Candidate::LorentzVector p4Tau2 = compTauP4(gjAngle_or_X2, isX2, phi_lab2, recP4Vis2, invisMass2, tauLeptonMass, pVis_rf2, gjAngle2, tauFlight2, isPhysicalSolution2);		
+		if ( verbosity >= 2 && isX2 ) std::cout << "X2 = " << gjAngle_or_X2 << std::endl;
+		reco::Candidate::LorentzVector p4Tau2 = compTauP4(gjAngle_or_X2, isX2, phi_lab2, refP4Vis2, invisMass2, tauLeptonMass, pVis_rf2, gjAngle2, tauFlight2, isPhysicalSolution2);		
+		if ( verbosity >= 2 ) {
+		  std::cout << "p4Tau2: En = " << p4Tau2.E() << ", P = " << p4Tau2.P() << "," 
+			    << " eta = " << p4Tau2.eta() << ", phi = " << p4Tau2.phi() 
+			    << " (mass = " << p4Tau2.mass() << ")" << std::endl;
+		}
 		double X2 = recP4Vis2.E()/p4Tau2.E();
 		double tauFlight2_mag = TMath::Sqrt(tauFlight2.mag2());
 		AlgebraicVector3 tauFlightPath2_unit(tauFlight2.x()/tauFlight2_mag, tauFlight2.y()/tauFlight2_mag, tauFlight2.z()/tauFlight2_mag);
 		
-		reco::Candidate::LorentzVector genMEt = (p4Tau1 - recP4Vis1) + (p4Tau2 - recP4Vis2);
+		reco::Candidate::LorentzVector genMEt = (p4Tau1 - refP4Vis1) + (p4Tau2 - refP4Vis2);
 		
 		double negLogP = 0.;
-		
+
 		if ( addLikelihoodTauDecayKine1 ) {
-		  if ( isLeptonicDecay1 ) negLogP += negLogLikelihoodTauToLepDecay(gjAngle1, X1, invisMass1);
-		  else negLogP += negLogLikelihoodTauToHadDecay(gjAngle1, pVis_rf1, X1, recP4Vis1.mass());
+		  if ( isLeptonicDecay1 ) negLogP += negLogLikelihoodTauToLepDecay(gjAngle1, X1, invisMass1, verbosity);
+		  else negLogP += negLogLikelihoodTauToHadDecay(gjAngle1, pVis_rf1, X1, refP4Vis1.mass(), verbosity);
 		}
 		if ( addLikelihoodTrackInfo1 ) {
 		  if ( hasRecDecayVertex1 ) negLogP += negLogLikelihoodTrackInfo3Prong(
-		    eventVertexPos, eventVertexCov, p4Tau1.P(), recP4Vis1, tauFlightPath1_unit, recDecayVertexPos1, recDecayVertexCov1);
+		    eventVertexPos, eventVertexCov, p4Tau1.P(), refP4Vis1, tauFlightPath1_unit, genTauCharge1, recDecayVertexPos1, recDecayVertexCov1, sfProdVertexCov, sfDecayVertexCov, verbosity);
 		  else negLogP += negLogLikelihoodTrackInfo1Prong(
-		    eventVertexPos, eventVertexCov, p4Tau1.P(), recP4Vis1, tauFlightPath1_unit, *recLeadTrack1_trajectory, recLeadTrackRefPoint1, recLeadTrackDirection1);
+		    eventVertexPos, eventVertexCov, p4Tau1.P(), refP4Vis1, tauFlightPath1_unit, genTauCharge1, *recLeadTrack1_trajectory, recLeadTrackRefPoint1, recLeadTrackDirection1, sfProdVertexCov, sfDecayVertexCov, verbosity);
 		}
 		
 		if ( addLikelihoodTauDecayKine2 ) {
-		  if ( isLeptonicDecay2 ) negLogP += negLogLikelihoodTauToLepDecay(gjAngle2, X2, invisMass2);
-		  else negLogP += negLogLikelihoodTauToHadDecay(gjAngle2, pVis_rf2, X2, recP4Vis2.mass());
+		  if ( isLeptonicDecay2 ) negLogP += negLogLikelihoodTauToLepDecay(gjAngle2, X2, invisMass2, verbosity);
+		  else negLogP += negLogLikelihoodTauToHadDecay(gjAngle2, pVis_rf2, X2, refP4Vis2.mass(), verbosity);
 		}
 		if ( addLikelihoodTrackInfo2 ) {
 		  if ( hasRecDecayVertex2 ) negLogP += negLogLikelihoodTrackInfo3Prong(
-		    eventVertexPos, eventVertexCov, p4Tau2.P(), recP4Vis2, tauFlightPath2_unit, recDecayVertexPos2, recDecayVertexCov2);
+		    eventVertexPos, eventVertexCov, p4Tau2.P(), refP4Vis2, tauFlightPath2_unit, genTauCharge2, recDecayVertexPos2, recDecayVertexCov2, sfProdVertexCov, sfDecayVertexCov, verbosity);
 		  else negLogP += negLogLikelihoodTrackInfo1Prong(
-		    eventVertexPos, eventVertexCov, p4Tau2.P(), recP4Vis2, tauFlightPath2_unit, *recLeadTrack2_trajectory, recLeadTrackRefPoint2, recLeadTrackDirection2);
+		    eventVertexPos, eventVertexCov, p4Tau2.P(), refP4Vis2, tauFlightPath2_unit, genTauCharge2, *recLeadTrack2_trajectory, recLeadTrackRefPoint2, recLeadTrackDirection2, sfProdVertexCov, sfDecayVertexCov, verbosity);
 		}
 		
 		if ( addLikelihoodMEt ) {		
-		  negLogP += negLogLikelihoodMEt(genMEt, recMEt, recMEtCovDet, recMEtCovInverse);
+		  negLogP += negLogLikelihoodMEt(genMEt, recMEt, recMEtCovDet, recMEtCovInverse, verbosity);
 		}
 
 		if ( !(isPhysicalSolution1 && isPhysicalSolution2) ) negLogP += 1.e+37;
 		
 		double mass = (p4Tau1 + p4Tau2).mass();
 		
+		// CV: in case parameter is X1 or X2, plot actual values 
+		//    (values returned by routine for tau kinematic reconstuction, incl. rounding errors)
+		double parameter1_value = 0.;
+		if ( numParametersToVary >= 1 ) {
+		  parameter1_value = (*parameter1);
+		  //if ( (*parameter1) == gjAngle_or_X1 ) parameter1_value = X1;
+		}
+		double parameter2_value = 0.;
+		if ( numParametersToVary >= 2 ) {
+		  parameter2_value = (*parameter2);
+		  //if ( (*parameter2) == gjAngle_or_X2 ) parameter2_value = X2;
+		}
+
 		if        ( numParametersToVary == 1 ) {
-		  int binX = xAxis->FindBin(*parameter1);
-		  histogram_likelihood->SetBinContent(binX, negLogP);
-		  histogram_mass->SetBinContent(binX, mass);
-		} else if ( numParametersToVary == 2 ) {
-		  int binX = xAxis->FindBin(*parameter1);
-		  int binY = yAxis->FindBin(*parameter2);
-		  histogram_likelihood->SetBinContent(binX, binY, negLogP);
-		  histogram_mass->SetBinContent(binX, binY, mass);
+		  int binX = xAxis->FindBin(parameter1_value);
+		  if ( binX >= 1 && binX <= xAxis->GetNbins() ) {
+		    histogram_likelihood->SetBinContent(binX, negLogP);
+		    histogram_mass->SetBinContent(binX, mass);
+		  } else {
+		    edm::LogWarning ("makeLikelihoodPlot")
+		      << "Parameter1 = " << parameter1_value << " not within histogram range !!";
+		  }
+		} else if ( numParametersToVary == 2 ) {		  
+		  int binX = xAxis->FindBin(parameter1_value);
+		  int binY = yAxis->FindBin(parameter2_value);
+		  if ( binX >= 1 && binX <= xAxis->GetNbins() &&
+		       binY >= 1 && binY <= yAxis->GetNbins() ) {
+		    histogram_likelihood->SetBinContent(binX, binY, negLogP);
+		    histogram_mass->SetBinContent(binX, binY, mass);
+		  } else {
+		    if ( !(binX >= 1 && binX <= xAxis->GetNbins()) )
+		      edm::LogWarning ("makeLikelihoodPlot")
+			<< "Parameter1 = " << parameter1_value << " not within histogram range !!";
+		    if ( !(binY >= 1 && binY <= yAxis->GetNbins()) )
+		      edm::LogWarning ("makeLikelihoodPlot")
+			<< "Parameter2 = " << parameter2_value << " not within histogram range !!";
+		  }
 		} else assert(0);
 		
 		++numPoints;
@@ -900,7 +998,7 @@ namespace
 	}
       }
     }
-    
+
     double minBinContent = 1.e+37;
     for ( int iBinX = 1; iBinX <= xAxis->GetNbins(); ++iBinX ) {
       for ( int iBinY = 1; iBinY <= yAxis->GetNbins(); ++iBinY ) {
@@ -922,7 +1020,7 @@ namespace
 	}
       }
     }
-    
+
     edm::RunNumber_t runNumber = evt.id().run();
     edm::LuminosityBlockNumber_t lumiSectionNumber = evt.luminosityBlock();
     edm::EventNumber_t eventNumber = evt.id().event();
@@ -936,7 +1034,7 @@ namespace
     if ( idx != std::string::npos ) outputFileName_mass.append(std::string(outputFileName_mass, idx));
     
     std::vector<std::string> labelTextLines_empty;
-    
+
     if (        numParametersToVary == 1 ) {
       showHistogram1d(800, 600,
 		      histogram_likelihood,
@@ -974,7 +1072,7 @@ namespace
 		      parameter1_true, parameter2_true,
 		      outputFileName_mass);
     } else assert(0);
-    
+
     delete histogram_likelihood;
     delete histogram_mass;
   }
@@ -1085,7 +1183,10 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
   evt.getByLabel(srcVertices_, vertices);
   if ( vertices->size() != 1 ) return;
   const reco::Vertex& vertex = vertices->front();
-  std::cout << "event vertex(rec): x = " << vertex.x() << ", y = " << vertex.y() << ", z = " << vertex.z() 
+  std::cout << "event vertex(rec):" 
+	    << " x = " << vertex.x() << " +/- " << TMath::Sqrt(vertex.covariance()(0, 0)) << ","
+	    << " y = " << vertex.y() << " +/- " << TMath::Sqrt(vertex.covariance()(1, 1)) << ","
+	    << " z = " << vertex.z() << " +/- " << TMath::Sqrt(vertex.covariance()(2, 2)) << ","
 	    << " (chi2 = " << vertex.normalizedChi2() << ")" << std::endl;
   
   std::vector<const reco::Track*> tauTracks;
@@ -1099,326 +1200,380 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
   if ( vertex_refitted.isValid() ) {
     vertexPos_refitted = AlgebraicVector3(vertex_refitted.position().x(), vertex_refitted.position().y(), vertex_refitted.position().z());
     vertexCov_refitted = vertex_refitted.positionError().matrix_new();
-    std::cout << "event vertex(rec,refitted): x = " << vertexPos_refitted(0) << ", y = " << vertexPos_refitted(1) << ", z = " << vertexPos_refitted(2) 
+    std::cout << "event vertex(rec,refitted):" 
+	      << " x = " << vertexPos_refitted(0) << " +/- " << TMath::Sqrt(vertexCov_refitted(0, 0)) << ","
+	      << " y = " << vertexPos_refitted(1) << " +/- " << TMath::Sqrt(vertexCov_refitted(1, 1)) << ","
+	      << " z = " << vertexPos_refitted(2) << " +/- " << TMath::Sqrt(vertexCov_refitted(2, 2)) 
 	      << " (chi2 = " << vertex_refitted.normalisedChiSquared() << ")" << std::endl;    
   } else {
     std::cout << "event vertex(rec,refitted): NA (vertex fit failed)" << std::endl;
   }
-/*
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     true, false, false, matchedTau1->isLeptonicDecay_, 
-		     true, false,
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine1_vs_gjAngle1_and_Mnunu1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, true, false, matchedTau1->isLeptonicDecay_, 
-		     true, false,
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine1_vs_X1_and_Mnunu1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, false, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     true, false, true, false, 
-		     false, true, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo1dca_vs_gjAngle1_and_phiLab1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, false, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, true, true, false, 
-		     false, true, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo1dca_vs_X1_and_phiLab1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     true, false, true, false, 
-		     false, true, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo1vtx_vs_gjAngle1_and_phiLab1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, true, true, false, 
-		     false, true, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo1vtx_vs_X1_and_phiLab1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     true, false, false, matchedTau2->isLeptonicDecay_, 
-		     true, false,		     
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine2_vs_gjAngle2_and_Mnunu2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, true, false, matchedTau2->isLeptonicDecay_, 
-		     true, false,		     
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine2_vs_X2_and_Mnunu2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, false, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     true, false, true, false, 
-		     false, true, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo2dca_vs_gjAngle2_and_phiLab2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, false, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, true, true, false, 
-		     false, true, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo2dca_vs_X2_and_phiLab2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     true, false, true, false, 
-		     false, true, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo2vtx_vs_gjAngle2_and_phiLab2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, true, true, false, 
-		     false, true, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     false,
-		     evt, std::string(moduleLabel_).append("_TrackInfo2vtx_vs_X2_and_phiLab2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     true, false, true, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_phiLab1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, true, true, false,
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_X1_and_phiLab1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     true, false, false, matchedTau1->isLeptonicDecay_, 
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_Mnunu1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, true, false, matchedTau1->isLeptonicDecay_, 
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_X1_and_Mnunu1"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     true, false, true, false,
-		     false, false, 		     
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle2_and_phiLab2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, true, true, false,
-		     false, false, 		     
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_X2_and_phiLab2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     true, false, false, matchedTau2->isLeptonicDecay_, 
-		     false, false, 		     
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle2_and_Mnunu2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
-		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
-		     false, false, false, false, 
-		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
-		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
-		     false, true, false, matchedTau2->isLeptonicDecay_, 
-		     false, false, 		     
-		     vertexPos_refitted, vertexCov_refitted,
-		     recMEt.p4(), recMEtCov,
-		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_X2_and_Mnunu2"));
 
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     true, false, false, matchedTau1->isLeptonicDecay_, 
+		     true, false,
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TauDecayKine1_vs_gjAngle1_and_Mnunu1"),
+		     sfProdVertexCov_, sfDecayVertexCov_, 
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, true, false, matchedTau1->isLeptonicDecay_, 
+		     true, false,
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TauDecayKine1_vs_X1_and_Mnunu1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, false, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     true, false, true, false, 
+		     false, true, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo1dca_vs_gjAngle1_and_phiLab1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, false, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, true, true, false, 
+		     false, true, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo1dca_vs_X1_and_phiLab1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     true, false, true, false, 
+		     false, true, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo1vtx_vs_gjAngle1_and_phiLab1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, true, true, false, 
+		     false, true, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo1vtx_vs_X1_and_phiLab1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     true, false, false, matchedTau2->isLeptonicDecay_, 
+		     true, false,		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TauDecayKine2_vs_gjAngle2_and_Mnunu2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, true, false, matchedTau2->isLeptonicDecay_, 
+		     true, false,		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TauDecayKine2_vs_X2_and_Mnunu2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, false, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     true, false, true, false, 
+		     false, true, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo2dca_vs_gjAngle2_and_phiLab2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, false, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, true, true, false, 
+		     false, true, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo2dca_vs_X2_and_phiLab2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     true, false, true, false, 
+		     false, true, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo2vtx_vs_gjAngle2_and_phiLab2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, true, true, false, 
+		     false, true, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     false,
+		     evt, std::string(moduleLabel_).append("_TrackInfo2vtx_vs_X2_and_phiLab2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     true, false, true, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_phiLab1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, true, true, false,
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_X1_and_phiLab1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     true, false, false, matchedTau1->isLeptonicDecay_, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_Mnunu1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, true, false, matchedTau1->isLeptonicDecay_, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_X1_and_Mnunu1"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     true, false, true, false,
+		     false, false, 		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle2_and_phiLab2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, true, true, false,
+		     false, false, 		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_X2_and_phiLab2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     true, false, false, matchedTau2->isLeptonicDecay_, 
+		     false, false, 		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle2_and_Mnunu2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
+		     false, false, false, false, 
+		     false, false, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
+		     false, true, false, matchedTau2->isLeptonicDecay_, 
+		     false, false, 		     
+		     vertexPos_refitted, vertexCov_refitted,
+		     recMEt.p4(), recMEtCov,
+		     true,
+		     evt, std::string(moduleLabel_).append("_MEt_vs_X2_and_Mnunu2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     true, false, false, false,
 		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
 		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
 		     true, false, false, false, 
 		     false, false, 
 		     vertexPos_refitted, vertexCov_refitted,
 		     recMEt.p4(), recMEtCov,
 		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_gjAngle2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     evt, std::string(moduleLabel_).append("_MEt_vs_gjAngle1_and_gjAngle2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     false, true, false, false,
 		     false, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
 		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
 		     false, true, false, false, 
 		     false, false, 
 		     vertexPos_refitted, vertexCov_refitted,
 		     recMEt.p4(), recMEtCov,
 		     true,
-		     evt, std::string(moduleLabel_).append("_MEt_vs_X1_and_X2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     evt, std::string(moduleLabel_).append("_MEt_vs_X1_and_X2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     true, false, false, false,
 		     true, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
 		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
 		     true, false, false, false, 
 		     true, false, 
 		     vertexPos_refitted, vertexCov_refitted,
 		     recMEt.p4(), recMEtCov,
 		     true,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine_plus_MEt_vs_gjAngle1_and_gjAngle2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     evt, std::string(moduleLabel_).append("_TauDecayKine_plus_MEt_vs_gjAngle1_and_gjAngle2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     false, true, false, false,
 		     true, false, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
 		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
 		     false, true, false, false, 
 		     true, false, 
 		     vertexPos_refitted, vertexCov_refitted,
 		     recMEt.p4(), recMEtCov,
 		     true,
-		     evt, std::string(moduleLabel_).append("_TauDecayKine_plus_MEt_vs_X1_and_X2"));
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     evt, std::string(moduleLabel_).append("_TauDecayKine_plus_MEt_vs_X1_and_X2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     true, false, false, false,
 		     true, true, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
 		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
 		     true, false, false, false, 
 		     true, true, 
 		     vertexPos_refitted, vertexCov_refitted,
 		     recMEt.p4(), recMEtCov,
 		     true,
-		     evt, std::string(moduleLabel_).append("_all_vs_gjAngle1_and_gjAngle2"));
- */
-  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
+		     evt, std::string(moduleLabel_).append("_all_vs_gjAngle1_and_gjAngle2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
+  makeLikelihoodPlot(matchedTau1->genVisP4_, matchedTau1->genInvisP4_, matchedTau1->genTauDecayMode_, matchedTau1->genTauCharge_, matchedTau1->genTauProdVertexPos_, matchedTau1->genTauDecayVertexPos_, 
 		     matchedTau1->recVisP4_, matchedTau1->recLeadTrackTrajectory_, matchedTau1->hasRecTauDecayVertex_, matchedTau1->recTauDecayVertexPos_, matchedTau1->recTauDecayVertexCov_, 
 		     false, true, false, false,
 		     true, true, 
-		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
+		     matchedTau2->genVisP4_, matchedTau2->genInvisP4_, matchedTau2->genTauDecayMode_, matchedTau2->genTauCharge_, matchedTau2->genTauProdVertexPos_, matchedTau2->genTauDecayVertexPos_, 
 		     matchedTau2->recVisP4_, matchedTau2->recLeadTrackTrajectory_, matchedTau2->hasRecTauDecayVertex_, matchedTau2->recTauDecayVertexPos_, matchedTau2->recTauDecayVertexCov_, 
 		     false, true, false, false, 
 		     true, true, 
 		     vertexPos_refitted, vertexCov_refitted,
 		     recMEt.p4(), recMEtCov,
 		     true,
-		     evt, std::string(moduleLabel_).append("_all_vs_X1_and_X2"));
+		     evt, std::string(moduleLabel_).append("_all_vs_X1_and_X2"),
+		     sfProdVertexCov_, sfDecayVertexCov_,
+		     verbosity_);
 }
 
 void SVfitLikelihoodDisplay::endJob()

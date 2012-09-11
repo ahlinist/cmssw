@@ -18,6 +18,7 @@
 <use   name="PhysicsTools/JetMCUtils"/>
 <use   name="RecoMET/METAlgorithms"/> 
 <use   name="RecoVertex/VertexPrimitives"/>
+<use   name="RecoVertex/AdaptiveVertexFit"/>
 <use   name="RecoVertex/KalmanVertexFit"/>
 <use   name="TrackingTools/TransientTrack"/>
 <use   name="TrackingTools/Records"/>

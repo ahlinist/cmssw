@@ -5,9 +5,13 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 
 #include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Common/interface/View.h"
 
 #include "TauAnalysis/CandidateTools/interface/SVfitTrackExtrapolation.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
@@ -51,6 +55,9 @@ NSVfitTauToHadInputAnalyzer::~NSVfitTauToHadInputAnalyzer()
 
 namespace
 {
+  // CV: code for setting axis labels copied from TauAnalysis/Core/src/histManagerAuxFunctions.cc
+  //     to avoid dependency of TauAnalysis/CandidateTools on TauAnalysis/Core package
+
   void setAxisLabel(TAxis* axis, int tauDecayMode)
   {
 //--- set label for tau decay mode passed as function argument
@@ -78,6 +85,30 @@ namespace
     axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero, "threeProngOther");
     axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecayOther, "rare");
   }
+
+  void setAxisLabelsRecTauDecayMode(TAxis* axis)
+  {
+//--- set labels for reconstructed tau decay modes
+
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecaysElectron);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecayMuon);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion3PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion4PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion0PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion1PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion2PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion3PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion4PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion2PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion3PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero);
+    setAxisLabel(axis, reco::PFTauDecayMode::tauDecayOther);
+  }
 }
 
 void NSVfitTauToHadInputAnalyzer::beginJob()
@@ -97,6 +128,7 @@ void NSVfitTauToHadInputAnalyzer::beginJob()
   genTauVisEnFrac_                = dqmStore.book1D("genTauVisEnFrac",                "genTauVisEnFrac",                 100,               0.,              1.0);
   genTauVisMass_                  = dqmStore.book1D("genTauVisMass",                  "genTauVisMass",                   180,               0.,              1.8);
   genTauDecayDistance_            = dqmStore.book1D("genTauDecayDistance",            "genTauDecayDistance",            2000,               0.,              10.);
+  genTauDecayDistanceNormalized_  = dqmStore.book1D("genTauDecayDistanceNormalized",  "genTauDecayDistanceNormalized",   250,               0.,              25.);
   genTauDecayMode_                = dqmStore.book1D("genTauDecayMode",                "genTauDecayMode",                  20,             -0.5,             19.5);
   setAxisLabelsGenTauDecayMode(genTauDecayMode_->getTH1()->GetXaxis());
   genTau_phi_lab_                 = dqmStore.book1D("genTau_phi_lab",                 "genTau_phi_lab",                  360,     -TMath::Pi(),     +TMath::Pi());
@@ -112,6 +144,8 @@ void NSVfitTauToHadInputAnalyzer::beginJob()
   recTauHadDeltaPhi_              = dqmStore.book1D("recTauHadDeltaPhi",              "recTauHadDeltaPhi",               200,             -0.1,             +0.1);
   recTauHadDeltaVisMass_absolute_ = dqmStore.book1D("recTauHadDeltaVisMass_absolute", "recTauHadDeltaVisMass_absolute",  360,             -1.8,              1.8);
   recTauHadDeltaVisMass_relative_ = dqmStore.book1D("recTauHadDeltaVisMass_relative", "recTauHadDeltaVisMass_relative",  400,             -10.,             +10.);
+  recTauDecayMode_                = dqmStore.book1D("recTauDecayMode",                "recTauDecayMode",                  20,             -0.5,             19.5);
+  setAxisLabelsRecTauDecayMode(recTauDecayMode_->getTH1()->GetXaxis());
 
   recLeadTrackDeltaPt_absolute_   = dqmStore.book1D("recLeadTrackDeltaPt_absolute",   "recLeadTrackDeltaPt_absolute",    100,             -50.,             +50.);
   recLeadTrackDeltaPt_relative_   = dqmStore.book1D("recLeadTrackDeltaPt_relative",   "recLeadTrackDeltaPt_relative",    200,              -1.,              +1.);
@@ -129,14 +163,6 @@ void NSVfitTauToHadInputAnalyzer::beginJob()
   recDecayVertexPull3d_           = dqmStore.book1D("recDecayVertexPull3d",           "recDecayVertexPull3d",            250,               0.,              25.);
   recDecayVertexNDoF_             = dqmStore.book1D("recDecayVertexNDoF",             "recDecayVertexNDoF",              100,               0.,             100.);
   recDecayVertexNormalizedChi2_   = dqmStore.book1D("recDecayVertexNormalizedChi2",   "recDecayVertexNormalizedChi2",    250,               0.,              25.);
-}
-
-namespace
-{
-  double norm2(const AlgebraicVector3& p)
-  {
-    return square(p(0)) + square(p(1)) + square(p(2));
-  }
 }
 
 void NSVfitTauToHadInputAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
@@ -188,7 +214,8 @@ void NSVfitTauToHadInputAnalyzer::analyze(const edm::Event& evt, const edm::Even
   matchRecToGenTauDecays(*taus, genTaus, 0.3, matchedTauToHadDecays);
 
   //std::cout << "matchedTauToHadDecays.size = " << matchedTauToHadDecays.size()  << std::endl;
-  const matchedTauDecayType* matchedTau = matchedTauToHadDecays.at(0);
+  const matchedTauDecayType* matchedTau = ( matchedTauToHadDecays.size() >= 1 ) ?
+    matchedTauToHadDecays.at(0) : 0;
   if ( !matchedTau ) return;
 
   std::vector<matchedTauDecayType*> matchedTauDecays;
@@ -226,6 +253,8 @@ void NSVfitTauToHadInputAnalyzer::analyze(const edm::Event& evt, const edm::Even
   genTauVisEnFrac_->Fill(matchedTau->genVisP4_.E()/matchedTau->genTauP4_.E(), evtWeight);
   genTauVisMass_->Fill(matchedTau->genVisP4_.mass(), evtWeight);
   genTauDecayDistance_->Fill(matchedTau->genTauDecayDistance_, evtWeight);
+  double a = (matchedTau->genTauP4_.P()/tauLeptonMass)*cTauLifetime;
+  if ( a > 0. ) genTauDecayDistanceNormalized_->Fill(matchedTau->genTauDecayDistance_/a, evtWeight);
   genTauDecayMode_->getTH1()->Fill(matchedTau->genTauDecayMode_.data(), evtWeight);
   genTau_phi_lab_->Fill(phiLabFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
   genTau_gjAngle_->Fill(gjAngleFromLabMomenta(matchedTau->genTauP4_, matchedTau->genVisP4_), evtWeight);
@@ -259,7 +288,8 @@ void NSVfitTauToHadInputAnalyzer::analyze(const edm::Event& evt, const edm::Even
     double deltaVisMass_relative = deltaVisMass_absolute/matchedTau->genVisP4_.mass();
     recTauHadDeltaVisMass_relative_->Fill(deltaVisMass_relative, evtWeight);
   }
-
+  recTauDecayMode_->getTH1()->Fill(matchedTau->recTauDecayMode_, evtWeight);
+  
   if ( genLeadTrack && matchedTau->recLeadTrack_ ) {
     double deltaPt_absolute = matchedTau->recLeadTrack_->pt() - genLeadTrack->pt();
     recLeadTrackDeltaPt_absolute_->Fill(deltaPt_absolute, evtWeight);
@@ -304,8 +334,8 @@ void NSVfitTauToHadInputAnalyzer::analyze(const edm::Event& evt, const edm::Even
     recDecayVertexDeltaZ_->Fill(residual(2), evtWeight);
     double sigma2 = ROOT::Math::Similarity(residual.Unit(), matchedTau->recTauDecayVertexCov_);
     if ( sigma2 > 0. ) recDecayVertexPull3d_->Fill(TMath::Sqrt(norm2(residual)/sigma2), evtWeight);
-    recDecayVertexNDoF_->Fill(matchedTau->recTauDecayVertex_->degreesOfFreedom(), evtWeight);
-    recDecayVertexNormalizedChi2_->Fill(matchedTau->recTauDecayVertex_->normalisedChiSquared(), evtWeight);
+    recDecayVertexNDoF_->Fill(matchedTau->recTauDecayVertex_.degreesOfFreedom(), evtWeight);
+    recDecayVertexNormalizedChi2_->Fill(matchedTau->recTauDecayVertex_.normalisedChiSquared(), evtWeight);
   }
 }
 

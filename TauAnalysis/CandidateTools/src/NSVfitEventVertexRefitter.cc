@@ -16,10 +16,19 @@ NSVfitEventVertexRefitter::NSVfitEventVertexRefitter(const edm::ParameterSet& cf
     trackBuilder_(0),
     vertexFitAlgorithm_(0)
 {
-  vertexFitAlgorithm_ = new KalmanVertexFitter(true);
-
+  std::string algorithm = cfg.getParameter<std::string>("algorithm");
+  if      ( algorithm == "KalmanVertexFitter"   ) vertexFitAlgorithm_ = new KalmanVertexFitter();
+  else if ( algorithm == "AdaptiveVertexFitter" ) vertexFitAlgorithm_ = new AdaptiveVertexFitter();  
+  else throw cms::Exception("NSVfitEventVertexRefitter")
+    << " Invalid Configuration Parameter 'algorithm' = " << algorithm << " !!\n";
+  
   minNumTracksRefit_ = ( cfg.exists("minNumTracksRefit") ) ?
     cfg.getParameter<unsigned>("minNumTracksRefit") : 2;
+
+  applyBeamSpotConstraint_ = cfg.getParameter<bool>("applyBeamSpotConstraint");
+
+  verbosity_ = cfg.exists("verbosity") ?
+    cfg.getParameter<int>("verbosity") : 0;
 }
 
 NSVfitEventVertexRefitter::~NSVfitEventVertexRefitter()
@@ -33,30 +42,32 @@ void NSVfitEventVertexRefitter::beginEvent(const edm::Event& evt, const edm::Eve
   edm::Handle<reco::BeamSpot> beamSpotHandle;
   evt.getByLabel(srcBeamSpot_, beamSpotHandle);
   beamSpot_ = beamSpotHandle.product();
-  if ( !beamSpot_ ) {
+  if ( beamSpot_ ) {
+    beamSpotState_ = VertexState(*beamSpot_);    
+    beamSpotIsValid_ = (beamSpotState_.error().cxx() > 0. &&
+			beamSpotState_.error().cyy() > 0. &&
+			beamSpotState_.error().czz() > 0.);
+  } else {
     edm::LogError ("NSVfitEventVertexRefitter::beginEvent")
       << " Failed to access BeamSpot !!";
+    beamSpotIsValid_ = false;
   }
 
 //--- get pointer to TransientTrackBuilder
   edm::ESHandle<TransientTrackBuilder> trackBuilderHandle;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilderHandle);
   trackBuilder_ = trackBuilderHandle.product();
-  if ( !trackBuilder_ ) {
-    edm::LogError ("NSVfitEventVertexRefitter::beginEvent")
-      << " Failed to access TransientTrackBuilder !!";
-  }
+  if ( !trackBuilder_ ) 
+    throw cms::Exception("NSVfitEventVertexRefitter::beginEvent")
+      << " Failed to access TransientTrackBuilder !!\n";
 }
 
 //-------------------------------------------------------------------------------
 // auxiliary functions to compare two Tracks 
 bool tracksMatchByDeltaR(const reco::Track* trk1, const reco::Track* trk2)
 {
-  if ( reco::deltaR(*trk1, *trk2) < 0.01 && trk1->charge() == trk2->charge() &&
-       TMath::Abs(trk1->pt() - trk2->pt()) < 0.05*(trk1->pt() + trk2->pt()) )
-    return true;
-  else
-    return false;
+  if ( reco::deltaR(*trk1, *trk2) < 1.e-2 && trk1->charge() == trk2->charge() ) return true;
+  else return false;
 }
 
 // auxiliary function to exclude tracks associated to tau lepton decay "leg"
@@ -81,12 +92,45 @@ void removeTracks(TransientTrackMap& pvTracks_toRefit, const std::vector<const r
 }
 //-------------------------------------------------------------------------------
 
-TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex, const std::vector<const reco::Track*>* svTracks)
+void printTracks(const TransientTrackMap& pvTrackMap)
+{
+  int idx = 0;
+  for ( TransientTrackMap::const_iterator pvTrack = pvTrackMap.begin();
+	pvTrack != pvTrackMap.end(); ++pvTrack ) {
+    std::cout << "Track #" << idx << ": Pt = " << pvTrack->first->pt() << "," 
+	      << " eta = " << pvTrack->first->eta() << ", phi = " << pvTrack->first->phi() 
+	      << " (charge = " << pvTrack->first->charge() << ", chi2 = " << pvTrack->first->normalizedChi2() << ")" << std::endl;
+    ++idx;
+  }
+}
+
+TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex, const std::vector<const reco::Track*>* svTracks) const
 {
 //--- return (invalid) dummy vertex in case primary event vertex cannot be refitted,
 //    due to insufficient information
 
-  if ( !(eventVertex && beamSpot_ && trackBuilder_) ) return TransientVertex();
+  if ( verbosity_ >= 1 ) {
+    std::cout << "<NSVfitEventVertexRefitter::refit>:" << std::endl;
+    std::cout << " vertex: x = " << eventVertex->position().x() << ", y = " << eventVertex->position().y() << ", z = " << eventVertex->position().z() << std::endl;
+    std::cout << " #svTracks = " << svTracks->size() << ":" << std::endl;  
+    if ( verbosity_ >= 2 ) {
+      int idx = 0;
+      for ( std::vector<const reco::Track*>::const_iterator svTrack = svTracks->begin();
+	    svTrack != svTracks->end(); ++svTrack ) {
+	std::cout << "Track #" << idx << ": Pt = " << (*svTrack)->pt() << "," 
+		  << " eta = " << (*svTrack)->eta() << ", phi = " << (*svTrack)->phi() 
+		  << " (charge = " << (*svTrack)->charge() << ", chi2 = " << (*svTrack)->normalizedChi2() << ")" << std::endl;
+	++idx;
+      }
+    }
+    std::cout << " beam-spot:" 
+	      << " x = " << beamSpot_->position().x() << " +/- " << TMath::Sqrt(beamSpotState_.error().cxx()) << "," 
+	      << " y = " << beamSpot_->position().y() << " +/- " << TMath::Sqrt(beamSpotState_.error().cyy()) << "," 
+	      << " y = " << beamSpot_->position().z() << " +/- " << TMath::Sqrt(beamSpotState_.error().czz()) << std::endl;
+  }
+
+  if ( !(eventVertex && beamSpot_) ) return TransientVertex();
+  assert(trackBuilder_);
 
   std::vector<reco::TransientTrack> pvTracks_original;
   TransientTrackMap pvTrackMap_refit;
@@ -96,10 +140,18 @@ TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex
     pvTracks_original.push_back(pvTrack_transient);
     pvTrackMap_refit.insert(std::make_pair(pvTrack->get(), pvTrack_transient));
   }
+  if ( verbosity_ >= 1 ) {
+    std::cout << "#pvTracks (before excl. leptons) = " << pvTrackMap_refit.size() << std::endl;
+    if ( verbosity_ >= 2 ) printTracks(pvTrackMap_refit);
+  }
 
 //--- exclude tracks associated to any one of the two tau lepton decay "legs"
 //    from the primary event vertex refit
   if ( svTracks ) removeTracks(pvTrackMap_refit, *svTracks);
+  if ( verbosity_ >= 1 ) {
+    std::cout << "#pvTracks (after excl. leptons) = " << pvTrackMap_refit.size() << std::endl;
+    if ( verbosity_ >= 2 ) printTracks(pvTrackMap_refit);
+  }
 
   std::vector<reco::TransientTrack> pvTracks_refit;
   for ( TransientTrackMap::iterator pvTrack = pvTrackMap_refit.begin();
@@ -112,13 +164,15 @@ TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex
 //    after excluding the tracks associated to tau lepton decay "leg",
 //    refit the primary event vertex with all tracks used in the original primary event vertex fit
   if ( pvTracks_refit.size() >= minNumTracksRefit_ ) {
-    return vertexFitAlgorithm_->vertex(pvTracks_refit, *beamSpot_);
+    if ( applyBeamSpotConstraint_ && beamSpotIsValid_ ) return vertexFitAlgorithm_->vertex(pvTracks_refit, *beamSpot_);
+    else return vertexFitAlgorithm_->vertex(pvTracks_refit);
   } else {
     edm::LogWarning ("NSVfitEventVertexRefitter::refit")
       << "Insufficient tracks remaining after excluding tracks associated to tau decay products"
       << " --> skipping primary event vertex refit !!";
     // CV: need to enlarge errors on reconstructed event vertex position
-    //     in SVfitLikelihoodDiTauTrackInfo in this case <-- FIXME
-    return vertexFitAlgorithm_->vertex(pvTracks_original, *beamSpot_);
+    //     in SVfitLikelihoodDiTauTrackInfo in this case <-- FIXME    
+    if ( applyBeamSpotConstraint_ && beamSpotIsValid_ ) return vertexFitAlgorithm_->vertex(pvTracks_original, *beamSpot_);
+    else return vertexFitAlgorithm_->vertex(pvTracks_original);
   }
 }

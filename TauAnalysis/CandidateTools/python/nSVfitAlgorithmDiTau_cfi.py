@@ -229,7 +229,9 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
 nSVfitEventBuilder = cms.PSet(
     pluginName = cms.string("nSVfitEventBuilder"),
     pluginType = cms.string("NSVfitEventBuilder"),
-    srcBeamSpot = cms.InputTag("offlineBeamSpot")
+    srcBeamSpot = cms.InputTag('offlineBeamSpot'),
+    algorithm = cms.string("AdaptiveVertexFitter"),
+    applyBeamSpotConstraint = cms.bool(False)
 )
 
 nSVfitConfig_template = cms.PSet(
@@ -269,7 +271,7 @@ nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
                 min = cms.double(5.),
                 max = cms.double(2000.),                                         
                 stepSizeFactor = cms.double(1.025), # nextM = max(stepSizeFactor*currentM, minStepSize)
-                minStepSize = cms.double(2.5),      
+                minStepSize = cms.double(0.),      
                 replace = cms.string("leg1.x"),
                 by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x"),
                 deltaFuncDerrivative = cms.string("2.*leg1.x/mass_A")                                                   

@@ -378,7 +378,7 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     
     if ( verbosity_ >= 1 ) {
       std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
-      std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+      std::cout << " pluginName = " << pluginName_ << std::endl;
       std::cout << "--> mass = " << resonance->mass_ << std::endl;
       std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
     }

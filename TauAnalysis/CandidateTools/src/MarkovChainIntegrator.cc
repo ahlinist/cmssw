@@ -95,7 +95,14 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
   
 //--- get parameters specific to "dynamic moves" 
   L_ = cfg.getParameter<unsigned>("L");
-  epsilon0_ = cfg.getParameter<double>("epsilon0");
+  if ( cfg.existsAs<double>("epsilon0") ) {
+    epsilon0_  = cfg.getParameter<double>("epsilon0");
+    useVariableEpsilon0_ = false;
+  } else if ( cfg.existsAs<vdouble >("epsilon0") ) {
+    epsilon0s_ = cfg.getParameter<vdouble>("epsilon0");
+    useVariableEpsilon0_ = true;
+  } else throw cms::Exception("MarkovChainIntegrator")
+      << "Configuration Parameter 'epsilon0' undefined !!\n";
   nu_ = cfg.getParameter<double>("nu");
 
   verbosity_ = ( cfg.exists("verbosity") ) ?
@@ -133,6 +140,18 @@ void MarkovChainIntegrator::setIntegrand(const ROOT::Math::Functor& integrand)
     dqDerr_[iDimension] = 1.e-6;
   }
 
+  if ( useVariableEpsilon0_ ) {
+    if ( epsilon0s_.size() != numDimensions_ ) 
+      throw cms::Exception("MarkovChainIntegrator::setIntegrand")
+	<< "Mismatch in dimensionality between integrand = " << numDimensions_
+	<< " and Configuration Parameter 'epsilon0' = " << epsilon0s_.size() << " !!\n";
+  } else {
+    epsilon0s_.resize(numDimensions_); 
+    for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+      epsilon0s_[iDimension] = epsilon0_;
+    }
+  }
+
   p_.resize(2*numDimensions_);   // first N entries = "significant" components, last N entries = "dummy" components
   q_.resize(numDimensions_);     // "potential energy" E(q) depends in the first N "significant" components only
   gradE_.resize(numDimensions_); 
@@ -143,7 +162,7 @@ void MarkovChainIntegrator::setIntegrand(const ROOT::Math::Functor& integrand)
   qProposal_.resize(numDimensions_);
 
   probSum_.resize(numChains_*numBatches_);  
-  for ( std::vector<double>::iterator probSum_i = probSum_.begin();
+  for ( vdouble::iterator probSum_i = probSum_.begin();
 	probSum_i != probSum_.end(); ++probSum_i ) {
     (*probSum_i) = 0.;
   }
@@ -205,35 +224,50 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
   numChainsRun_ = 0; 
 
   for ( unsigned iChain = 0; iChain < numChains_; ++iChain ) {
-    if ( initMode_ == kUniform || initMode_ == kGaus ) {
-      bool isValidStartPos = false;
-      unsigned iTry = 0;
-      while ( !isValidStartPos && iTry < maxCallsStartingPos_ ) {
-	initializeStartPosition_and_Momentum();
-//--- CV: check if start-position is within "valid" (physically allowed) region 
-	bool isWithinPhysicalRegion = true;
-	if ( startPosition_and_MomentumFinder_ ) {
-	  updateX(q_);
-	  isWithinPhysicalRegion = ((*startPosition_and_MomentumFinder_)(x_) > 0.5);
+    bool isValidStartPos = false;
+    if ( initMode_ == kNone ) {
+      prob_ = evalProb(q_);
+      if ( prob_ > 0. ) {
+	bool isWithinBounds = true;
+	for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+	  double q_i = q_[iDimension];
+	  if ( !(q_i > 0. && q_i < 1.) ) isWithinBounds = false;
 	}
-	if ( isWithinPhysicalRegion ) {
-	  prob_ = evalProb(q_);
-	  if ( prob_ > 0. ) {
-	    isValidStartPos = true;
-	  } else {
-	    if ( iTry > 0 && (iTry % 100000) == 0 ) {
-	      if ( iTry == 100000 ) std::cout << "<MarkovChainIntegrator::integrate (name = " << name_ << ")>:" << std::endl;
-	      std::cout << "try #" << iTry << ": did not find valid start-position yet." << std::endl;
-	      //std::cout << "(q = " << format_vdouble(q_) << ", prob = " << prob_ << ")" << std::endl;
-	    }
+	if ( isWithinBounds ) {
+	  isValidStartPos = true;
+	} else {
+	  edm::LogWarning ("MarkovChainIntegrator::integrate")
+	    << "Requested start-position = " << format_vdouble(q_) << " not within interval ]0..1[ --> searching for valid alternative !!";
+	}
+      } else {
+	edm::LogWarning ("MarkovChainIntegrator::integrate")
+	  << "Requested start-position = " << format_vdouble(q_) << " returned probability zero --> searching for valid alternative !!";
+      }
+    }    
+    unsigned iTry = 0;
+    while ( !isValidStartPos && iTry < maxCallsStartingPos_ ) {
+      initializeStartPosition_and_Momentum();
+//--- CV: check if start-position is within "valid" (physically allowed) region 
+      bool isWithinPhysicalRegion = true;
+      if ( startPosition_and_MomentumFinder_ ) {
+	updateX(q_);
+	isWithinPhysicalRegion = ((*startPosition_and_MomentumFinder_)(x_) > 0.5);
+      }
+      if ( isWithinPhysicalRegion ) {
+	prob_ = evalProb(q_);
+	if ( prob_ > 0. ) {
+	  isValidStartPos = true;
+	} else {
+	  if ( iTry > 0 && (iTry % 100000) == 0 ) {
+	    if ( iTry == 100000 ) std::cout << "<MarkovChainIntegrator::integrate (name = " << name_ << ")>:" << std::endl;
+	    std::cout << "try #" << iTry << ": did not find valid start-position yet." << std::endl;
+	    //std::cout << "(q = " << format_vdouble(q_) << ", prob = " << prob_ << ")" << std::endl;
 	  }
 	}
-	++iTry;
       }
-      if ( !isValidStartPos ) continue;
-    } else {
-      prob_ = evalProb(q_);
+      ++iTry;
     }
+    if ( !isValidStartPos ) continue;
 
     for ( unsigned iMove = 0; iMove < numIterBurnin_; ++iMove ) {
 //--- propose Markov Chain transition to new, randomly chosen, point
@@ -370,9 +404,8 @@ void MarkovChainIntegrator::initializeStartPosition_and_Momentum()
     bool isInitialized = false;
     while ( !isInitialized ) {
       double q0 = 0.;
-      if      ( initMode_ == kUniform ) q0 = rnd_.Uniform(0., 1.);
-      else if ( initMode_ == kGaus    ) q0 = rnd_.Gaus(0.5, 0.5);
-      else assert(0);
+      if ( initMode_ == kGaus ) q0 = rnd_.Gaus(0.5, 0.5);
+      else q0 = rnd_.Uniform(0., 1.);
       if ( q0 > 0. && q0 < 1. ) {
 	q_[iDimension] = q0;
 	isInitialized = true;
@@ -452,15 +485,22 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
   }
 
 //--- choose random step size 
-  double C = rnd_.BreitWigner(0., 1.);
-  double epsilon = epsilon0_*TMath::Exp(nu_*C);
-  if ( verbosity_ >= 2 ) std::cout << "epsilon = " << epsilon << std::endl;
+  double exp_nu_times_C = 0.;
+  do {
+    double C = rnd_.BreitWigner(0., 1.);
+    exp_nu_times_C = TMath::Exp(nu_*C);
+  } while ( TMath::IsNaN(exp_nu_times_C) || !TMath::Finite(exp_nu_times_C) || exp_nu_times_C > 1.e+6 );
+  vdouble epsilon(numDimensions_);
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
+    epsilon[iDimension] = epsilon0s_[iDimension]*exp_nu_times_C;
+  }
+  if ( verbosity_ >= 2 ) std::cout << "epsilon = " << format_vdouble(epsilon) << std::endl;
 
   if        ( moveMode_ == kMetropolis ) { // Metropolis algorithm: move according to eq. (27) in [2]
 //--- update position components
 //    by single step of chosen size in direction of the momentum components
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {    
-      qProposal_[iDimension] = q_[iDimension] + epsilon*p_[iDimension];
+      qProposal_[iDimension] = q_[iDimension] + epsilon[iDimension]*p_[iDimension];
     }
   } else if ( moveMode_ == kHybrid     ) { // Hybrid algorithm: move according to eqs. (20)-(23) in [2]
 //--- initialize position components
@@ -477,31 +517,14 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
 
   if ( verbosity_ >= 2 ) std::cout << "q(proposed) = " << format_vdouble(qProposal_) << std::endl;
 
-//--- check that proposed new point is within defined integration region
-  bool isWithinBounds = true;
-  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {     
+//--- ensure that proposed new point is within integration region
+//   (take integration region to be "cyclic")
+  for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {         
     double q_i = qProposal_[iDimension];
-    if ( !(q_i > 0. && q_i < 1.) ) {
-      if ( verbosity_ >= 2 ) {
-        std::cout << " q[" << iDimension << "] = " << q_i << " outside bounds" 
-		  << " --> setting prob(proposed) = 0 !!" << std::endl;
-      }
-      isWithinBounds = false;
-      break;
-    }
+    q_i = q_i - TMath::Floor(q_i);
+    assert(q_i >= 0. && q_i <= 1.);
+    qProposal_[iDimension] = q_i;
   }
-  
-//--- CV: check if start-position is within "valid" (physically allowed) region 
-  bool isWithinPhysicalRegion = true;
-  if ( isWithinBounds && startPosition_and_MomentumFinder_ ) {
-    updateX(qProposal_);
-    isWithinPhysicalRegion = ((*startPosition_and_MomentumFinder_)(x_) > 0.5);
-  }
-
-//--- CV: return immediately in case move is invalid (in order to safe computing time);
-//        invalid moves are repeated without "counting" them by calling code
-  isValid = (isWithinBounds && isWithinPhysicalRegion);
-  if ( !isValid ) return;
 
 //--- check if proposed move of Markov Chain to new position is accepted or not:
 //    compute change in phase-space volume for "dummy" momentum components
@@ -551,7 +574,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
   }
 }
 
-void MarkovChainIntegrator::makeDynamicMoves(double epsilon)
+void MarkovChainIntegrator::makeDynamicMoves(const std::vector<double>& epsilon)
 {
 //--- perform "dynamical move"
 //   (execute series of L "leap-frog" steps, eqs. 20-23 in [2])
@@ -560,10 +583,10 @@ void MarkovChainIntegrator::makeDynamicMoves(double epsilon)
     updateGradE(qProposal_);
     //if ( verbosity_ ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
     double step_p = ( iLeapFrogStep == 0 ) ? 
-      0.5*epsilon : epsilon;
+      0.5 : 1.0;
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-      pProposal_[iDimension] -= step_p*gradE_[iDimension];
-      qProposal_[iDimension] += epsilon*pProposal_[iDimension];
+      pProposal_[iDimension] -= step_p*epsilon[iDimension]*gradE_[iDimension];
+      qProposal_[iDimension] += epsilon[iDimension]*pProposal_[iDimension];
     }
     //if ( verbosity_ ) {
     //  std::cout << " p(" << (iLeapFrogStep + 0.5) << ") = " << format_vdouble(pProposal_) << std::endl;
@@ -576,7 +599,7 @@ void MarkovChainIntegrator::makeDynamicMoves(double epsilon)
   updateGradE(qProposal_);
   //if ( verbosity_ ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    pProposal_[iDimension] -= 0.5*epsilon*gradE_[iDimension];
+    pProposal_[iDimension] -= 0.5*epsilon[iDimension]*gradE_[iDimension];
   }
   //if ( verbosity_ ) {  
   //  std::cout << " p(" << L_ << ") = " << format_vdouble(pProposal_) << std::endl;

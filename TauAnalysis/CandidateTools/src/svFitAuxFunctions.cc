@@ -8,6 +8,8 @@
 
 #include <TMath.h>
 #include <Math/VectorUtil.h>
+#include <TMatrixD.h>
+#include <TVectorD.h>
 
 #include <limits>
 
@@ -187,8 +189,14 @@ namespace SVfit_namespace
 
   void printVector(const std::string& label, const AlgebraicVector3& p)
   {
-    reco::Candidate::Vector  v(p(0), p(1), p(2));
+    reco::Candidate::Vector v(p(0), p(1), p(2));
     std::cout << label << ": x = " << v.x() << ", y = " << v.y() << ", z = " << v.z() << " (eta = " << v.eta() << ", phi = " << v.phi() << ")" << std::endl;
+  }
+
+  void printVector(const std::string& label, const AlgebraicVector2& p)
+  {
+    reco::Candidate::Vector v(p(0), p(1), 0.);
+    std::cout << label << ": x = " << v.x() << ", y = " << v.y() << " (phi = " << v.phi() << ")" << std::endl;
   }
 
   void printMatrix(const std::string& label, const AlgebraicMatrix33& m)
@@ -197,6 +205,18 @@ namespace SVfit_namespace
     for ( unsigned iRow = 0; iRow < 3; ++iRow ) {
       std::cout << " |";
       for ( unsigned iColumn = 0; iColumn < 3; ++iColumn ) {
+	std::cout << " " << std::setw(12) << m(iRow, iColumn);
+      }
+      std::cout << " |" << std::endl;
+    }
+  }
+
+  void printMatrix(const std::string& label, const AlgebraicMatrix22& m)
+  {
+    std::cout << label << ":" << std::endl;
+    for ( unsigned iRow = 0; iRow < 2; ++iRow ) {
+      std::cout << " |";
+      for ( unsigned iColumn = 0; iColumn < 2; ++iColumn ) {
 	std::cout << " " << std::setw(12) << m(iRow, iColumn);
       }
       std::cout << " |" << std::endl;
@@ -227,48 +247,155 @@ namespace SVfit_namespace
     return (p1(0)*p2(0) + p1(1)*p2(1) + p1(2)*p2(2));
   }
 
-  AlgebraicVector3 compIntersection_of_lines(const AlgebraicVector3& offset1, const AlgebraicVector3& slope1, 
-					     const AlgebraicVector3& offset2, const AlgebraicVector3& slope2, long& numWarnings, int verbosity)
+  AlgebraicVector3 compCrossProduct(const AlgebraicVector3& p1, const AlgebraicVector3& p2)
+  {    
+    double p3_x = p1(1)*p2(2) - p1(2)*p2(1);
+    double p3_y = p1(2)*p2(0) - p1(0)*p2(2);
+    double p3_z = p1(0)*p2(1) - p1(1)*p2(0);
+    return AlgebraicVector3(p3_x, p3_y, p3_z);
+  }
+
+  double norm2(const AlgebraicVector3& p)
   {
-    // CV: algorithm taken from http://www.softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
+    return compScalarProduct(p, p);
+  }
 
-    //if ( verbosity ) {
-    //  std::cout << "<compIntersection_of_lines>:" << std::endl;
-    //  printVector("offset1", offset1);
-    //  printVector("slope1", slope1);
-    //  printVector("offset2", offset2);
-    //  printVector("slope2", slope2);
-    //}
+  double norm2(const AlgebraicVector2& p)
+  {
+    return (p(0)*p(0) + p(1)*p(1));
+  }
 
-    AlgebraicVector3 w0(offset1(0) - offset2(0), offset1(1) - offset2(1), offset1(2) - offset2(2));
+  AlgebraicVector3 normalize(const AlgebraicVector3& p)
+  {
+    double p_mag2 = norm2(p);
+    if ( p_mag2 > 0. ) {
+      double p_mag = TMath::Sqrt(p_mag2);
+      return AlgebraicVector3(p(0)/p_mag, p(1)/p_mag, p(2)/p_mag);
+    } else {
+      return AlgebraicVector3(0., 0., 0.);
+    }
+  }
 
-    double a = compScalarProduct(slope1, slope1);
-    double b = compScalarProduct(slope1, slope2);
-    double c = compScalarProduct(slope2, slope2);
-    double d = compScalarProduct(slope1, w0);
-    double e = compScalarProduct(slope2, w0);
-    
-    double denominator = (a*c - square(b));
-    if ( !(denominator >= 0.) ) {
-      if ( numWarnings < 3 ) {
-	edm::LogWarning ("compIntersection_of_lines")
-	  << "Lines given as arguments are parallel --> returning s = t = 0 !!";
-	++numWarnings;
+  AlgebraicVector3 compDecayPosition_helix(const AlgebraicVector3& origin, double s, const reco::Candidate::LorentzVector& p4, double charge)
+  {
+    const double B = 3.8;   // Tesla
+    const double c = 3.e+8; // m/s
+    double R = p4.pt()/(1.e-11*c*B);
+    double sign_of_kappa = 0.;
+    if      ( charge > +0.5 ) sign_of_kappa = -1.;
+    else if ( charge < -0.5 ) sign_of_kappa = +1.;
+    double one_div_kappa = sign_of_kappa*R;
+    double kappa = ( one_div_kappa != 0. ) ? (1./one_div_kappa) : 0.;
+    double phi = p4.phi();
+    double x0 = origin(0) - one_div_kappa*TMath::Sin(phi);
+    double y0 = origin(1) + one_div_kappa*TMath::Cos(phi);
+    double z0 = origin(2);
+    double s_xy = s*TMath::Sin(p4.theta());
+    double s_z = s*TMath::Cos(p4.theta());
+    return AlgebraicVector3(x0 + one_div_kappa*TMath::Sin(phi + kappa*s_xy), y0 - one_div_kappa*TMath::Cos(phi + kappa*s_xy), z0 + s_z);
+  }
+
+  AlgebraicVector3 compDecayPosition_line(const AlgebraicVector3& origin, double s, const AlgebraicVector3& tauFlightPath_unit)
+  {
+    return AlgebraicVector3(origin(0) + s*tauFlightPath_unit(0), origin(1) + s*tauFlightPath_unit(1), origin(2) + s*tauFlightPath_unit(2));
+  }
+  
+  void compLocalCoordinates(const AlgebraicVector3& direction, AlgebraicVector3& u1, AlgebraicVector3& u2, AlgebraicVector3& u3)
+  {
+    u3 = normalize(direction);
+    u2 = normalize(compCrossProduct(AlgebraicVector3(0., 0., 1.), u3));
+    u1 = compCrossProduct(u2, u3);
+  }
+
+  AlgebraicVector3 transformToLocalCoordinatesPos(const AlgebraicVector3& p, const AlgebraicVector3& u1, const AlgebraicVector3& u2, const AlgebraicVector3& u3)
+  {
+    double c1 = compScalarProduct(p, u1);
+    double c2 = compScalarProduct(p, u2);
+    double c3 = compScalarProduct(p, u3);
+    return AlgebraicVector3(c1, c2, c3);    
+  }
+
+  AlgebraicMatrix33 transformToLocalCoordinatesCov(const AlgebraicMatrix33& cov, const AlgebraicVector3& u1, const AlgebraicVector3& u2, const AlgebraicVector3& u3)
+  {
+    AlgebraicMatrix33 R;    
+    for ( int i = 0; i < 3; ++i ) {
+      R(0, i) = u1(i);
+      R(1, i) = u2(i);
+      R(2, i) = u3(i);
+    }
+    AlgebraicMatrix33 R_T;
+    for ( int i = 0; i < 3; ++i ) {
+      for ( int j = 0; j < 3; ++j ) {
+	R_T(i, j) = R(j, i);
       }
-      return offset2;
+    }
+    AlgebraicMatrix33 R_times_cov_times_R_T = R*cov*R_T;
+    return R_times_cov_times_R_T;
+  }
+
+  void extractEigenValues(const AlgebraicMatrix33& cov, double& EigenValue1, double& EigenValue2, double& EigenValue3)
+  {
+    TMatrixD covMatrix(3, 3);
+    for ( int iRow = 0; iRow < 3; ++iRow ) {
+      for ( int iColumn = 0; iColumn < 3; ++iColumn ) {
+	covMatrix(iRow, iColumn) = cov(iRow, iColumn);
+      }
+    }
+    
+    TVectorD EigenValues;
+    covMatrix.EigenVectors(EigenValues);
+
+    EigenValue1 = EigenValues(0); // largest EigenValue
+    EigenValue2 = EigenValues(1); 
+    EigenValue3 = EigenValues(2); // smallest EigenValue
+  }
+
+  double logGaussian2d(const AlgebraicVector2& residual, const AlgebraicMatrix22& cov)
+  {
+    // Warning: This function is specific to the computation of track likelihoods.
+    //          Residual and covariance matrix are assumed to be given in a coordinate system
+    //          in which the Eigenvector with the largest Eigenvalue of the covariance matrix
+    //          corresponds to the 3rd component.
+    //          Following the suggestion of John Smith in
+    //            https://hypernews.cern.ch/HyperNews/CMS/get/recoTracking/1262/1/1/1.html
+    //          the 3rd component is ignored when computing track likelihood values, 
+    //          as the uncertainties of the track extrapolation in this direction are ill-defined.
+
+    double det = cov(0, 0)*cov(1, 1) - cov(0, 1)*cov(1, 0);
+    if ( det != 0. ) {
+      double covInverse00 =  cov(1, 1)/det;
+      double covInverse01 = -cov(0, 1)/det;
+      double covInverse10 = -cov(1, 0)/det;
+      double covInverse11 =  cov(0, 0)/det;
+      double pull =  residual(0)*(covInverse00*residual(0) + covInverse01*residual(1))
+        	   + residual(1)*(covInverse10*residual(0) + covInverse11*residual(1));
+      return -TMath::Log(2.*TMath::Pi()*TMath::Sqrt(det)) - 0.5*pull;
+    } else {
+       edm::LogError ("logGaussian2d")
+	 << " Cannot invert 2x2 covariance matrix, det = " << det << " !!";
+       return std::numeric_limits<float>::min();
+    }
+  }
+
+  double logGaussian3d(const AlgebraicVector3& residual, const AlgebraicMatrix33& cov)
+  {
+    double det;
+    bool statusFlag = cov.Det2(det); // True = calculation successful
+    if ( det != 0. && statusFlag ) {
+      AlgebraicMatrix33 covInverse = cov;
+      bool statusFlag = covInverse.Invert();
+      if ( statusFlag ) {
+        double pull =  residual(0)*(covInverse(0, 0)*residual(0) + covInverse(0, 1)*residual(1) + covInverse(0, 2)*residual(2))
+                     + residual(1)*(covInverse(1, 0)*residual(0) + covInverse(1, 1)*residual(1) + covInverse(1, 2)*residual(2))
+                     + residual(2)*(covInverse(2, 0)*residual(0) + covInverse(2, 1)*residual(1) + covInverse(2, 2)*residual(2));      
+        return -1.5*TMath::Log(2.*TMath::Pi()) - 0.5*TMath::Log(det) - 0.5*pull;
+      }
     }
 
-    double t = (a*e - b*d)/denominator;
-
-    // CV: limit tau decay distance to 100 cm
-    if ( t > 100. ) t = 100.;
-
-    AlgebraicVector3 solution(offset2(0) + t*slope2(0), offset2(1) + t*slope2(1), offset2(2) + t*slope2(2));
-    //if ( verbosity ) {
-    //  printVector("solution", solution);
-    //}
-
-    return solution;
+    edm::LogError ("logGaussian3d")
+      << " Cannot invert 3x3 covariance matrix, det = " << det << " !!";
+    cov.Print(std::cout);
+    return std::numeric_limits<float>::min();
   }
 
   //

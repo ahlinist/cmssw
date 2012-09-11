@@ -55,8 +55,10 @@ void NSVfitEventBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm)
   idxFitParameter_pvShiftX_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftX, true); // optional parameter
   idxFitParameter_pvShiftY_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftY, true);
   idxFitParameter_pvShiftZ_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftZ, true);
+  doFitParameter_pvShift_ = (idxFitParameter_pvShiftX_ != -1 && idxFitParameter_pvShiftY_ != -1 && idxFitParameter_pvShiftZ_ != -1);
 
-  doEventVertexRefit_ = (idxFitParameter_pvShiftX_ != -1 && idxFitParameter_pvShiftY_ != -1 && idxFitParameter_pvShiftZ_ != -1);
+  // CV: always perform event vertex refit
+  doEventVertexRefit_ = true;
 }
 
 void NSVfitEventBuilderBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
@@ -121,7 +123,7 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
       event->eventVertexPos_(0) = eventVertex_refitted.position().x();
       event->eventVertexPos_(1) = eventVertex_refitted.position().y();
       event->eventVertexPos_(2) = eventVertex_refitted.position().z();
-      
+
       event->eventVertexCov_ = eventVertex_refitted.positionError().matrix_new();
 
       event->eventVertexIsValid_ = true;
@@ -180,6 +182,10 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
       event->eventVertexIsValid_ = false;
     }
   }
+
+  event->eventVertexShift_(0) = 0.;
+  event->eventVertexShift_(1) = 0.;
+  event->eventVertexShift_(2) = 0.;
   
   if ( verbosity_ ) {
     std::cout << "<NSVfitEventBuilderBase::build>:" << std::endl;
@@ -206,7 +212,7 @@ bool NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* event, con
 {
   bool isValidSolution = true;
 
-  if ( doEventVertexRefit_ ) {
+  if ( doFitParameter_pvShift_ ) {
     event->eventVertexShift_(0) = param[idxFitParameter_pvShiftX_];
     event->eventVertexShift_(1) = param[idxFitParameter_pvShiftY_];
     event->eventVertexShift_(2) = param[idxFitParameter_pvShiftZ_];

@@ -10,6 +10,7 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
+#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/Math/interface/angle.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -29,11 +30,6 @@ namespace
   bool isHigherPt(const reco::Track* track1, const reco::Track* track2)
   {
     return (track1->pt() > track2->pt());
-  }
-
-  double norm2(const AlgebraicVector3& p)
-  {
-    return square(p(0)) + square(p(1)) + square(p(2));
   }
 
   reco::Candidate::LorentzVector compFlightP4(const AlgebraicVector3& decayVertex, const AlgebraicVector3& prodVertex, double p, double motherMass)
@@ -122,12 +118,11 @@ matchedTauDecayType::matchedTauDecayType(const reco::GenParticle* genTau, const 
     recCandidate_(recCandidate),
     recLeadTrack_(0),
     recLeadTrackTrajectory_(0),
-    trackBuilder_(trackBuilder),
-    recTauDecayVertex_(0),
-    hasRecTauDecayVertex_(false)
+    trackBuilder_(trackBuilder)
 {
   assert(genTau);
   genTauP4_ = genTau->p4();
+  genTauCharge_ = genTau->charge();
   reco::Candidate::Point genTauProdVertex_point = genTau->vertex();
   genTauProdVertexPos_ = AlgebraicVector3(genTauProdVertex_point.x(), genTauProdVertex_point.y(), genTauProdVertex_point.z());
   genTauDecayMode_ = getGenTauDecayMode(genTau);
@@ -146,16 +141,20 @@ matchedTauDecayType::matchedTauDecayType(const reco::GenParticle* genTau, const 
     const reco::GsfElectron* electron = dynamic_cast<const reco::GsfElectron*>(recCandidate_);
     if ( !electron->gsfTrack().isNull() ) recTracks_.push_back(electron->gsfTrack().get());
     //else if ( !electron->closestCtfTrackRef().isNull() ) recTracks_.push_back(electron->closestCtfTrackRef().get());
+    recTauDecayMode_ = reco::PFTauDecayMode::tauDecaysElectron;
   } else if ( dynamic_cast<const pat::Electron*>(recCandidate_) ) {
     const pat::Electron* electron = dynamic_cast<const pat::Electron*>(recCandidate_);
     if ( !electron->gsfTrack().isNull() ) recTracks_.push_back(electron->gsfTrack().get());
     //else if ( !electron->closestCtfTrackRef().isNull() ) recTracks_.push_back(electron->closestCtfTrackRef().get());
+    recTauDecayMode_ = reco::PFTauDecayMode::tauDecaysElectron;
   } else if ( dynamic_cast<const reco::Muon*>(recCandidate_) ) {
     const reco::Muon* muon = dynamic_cast<const reco::Muon*>(recCandidate_);
     if ( !muon->innerTrack().isNull() ) recTracks_.push_back(muon->innerTrack().get());
+    recTauDecayMode_ = reco::PFTauDecayMode::tauDecayMuon;
   } else if ( dynamic_cast<const pat::Muon*>(recCandidate_) ) {
     const pat::Muon* muon = dynamic_cast<const pat::Muon*>(recCandidate_);
     if ( !muon->innerTrack().isNull() ) recTracks_.push_back(muon->innerTrack().get());
+    recTauDecayMode_ = reco::PFTauDecayMode::tauDecayMuon;
   } else if ( dynamic_cast<const reco::PFTau*>(recCandidate_) ) {
     const reco::PFTau* tau = dynamic_cast<const reco::PFTau*>(recCandidate_);
     const reco::PFCandidateRefVector& tauPFChargedHadrCands = tau->signalPFChargedHadrCands();
@@ -164,6 +163,7 @@ matchedTauDecayType::matchedTauDecayType(const reco::GenParticle* genTau, const 
       if ( !(*tauPFChargedHadrCand)->trackRef().isNull() ) recTracks_.push_back((*tauPFChargedHadrCand)->trackRef().get());
       else if ( !(*tauPFChargedHadrCand)->gsfTrackRef().isNull() ) recTracks_.push_back((*tauPFChargedHadrCand)->gsfTrackRef().get());
     }
+    recTauDecayMode_ = tau->decayMode();
   } else if ( dynamic_cast<const pat::Tau*>(recCandidate_) ) {
     const pat::Tau* tau = dynamic_cast<const pat::Tau*>(recCandidate_);
     if ( tau->isPFTau() ) {
@@ -173,12 +173,14 @@ matchedTauDecayType::matchedTauDecayType(const reco::GenParticle* genTau, const 
 	if ( !(*tauPFChargedHadrCand)->trackRef().isNull() ) recTracks_.push_back((*tauPFChargedHadrCand)->trackRef().get());
 	else if ( !(*tauPFChargedHadrCand)->gsfTrackRef().isNull() ) recTracks_.push_back((*tauPFChargedHadrCand)->gsfTrackRef().get());
       }
+      recTauDecayMode_ = tau->decayMode();
     } else if ( tau->isCaloTau() ) {
       const reco::TrackRefVector& tauSignalTracks = tau->signalTracks();
       for ( reco::TrackRefVector::const_iterator tauSignalTrack = tauSignalTracks.begin();
 	    tauSignalTrack != tauSignalTracks.end(); ++tauSignalTrack ) {
 	recTracks_.push_back(tauSignalTrack->get());
       }
+      recTauDecayMode_ = reco::PFTauDecayMode::tauDecayOther; // CV: decay mode reconstruction not implemented for CaloTaus
     } else assert(0);
   } else {
     throw cms::Exception("matchedTauDecayType::matchedTauDecayType")
@@ -187,19 +189,34 @@ matchedTauDecayType::matchedTauDecayType(const reco::GenParticle* genTau, const 
 
   // sort tracks by **decreasing** Pt and determine "leading" (highest Pt) track
   std::sort(recTracks_.begin(), recTracks_.end(), isHigherPt);
-  if ( recTracks_.size() >= 1 ) {
-    recLeadTrack_ = recTracks_.front();
+ 
+  for ( std::vector<const reco::Track*>::const_iterator recTrack = recTracks_.begin();
+	recTrack != recTracks_.end(); ++recTrack ) {
+    const reco::HitPattern& trackHitPattern = (*recTrack)->hitPattern();
+    if ( trackHitPattern.numberOfValidTrackerHits() >= 5 &&
+	 trackHitPattern.numberOfValidPixelHits() >= 2 &&
+	 (*recTrack)->normalizedChi2() < 20. &&
+	 ((*recTrack)->ptError()/(*recTrack)->pt()) < 0.5 &&
+	 (*recTrack)->pt() > 2.0 ) {
+      recSelTracks_.push_back(*recTrack);
+    }
+  }
+
+  if ( recSelTracks_.size() >= 1 ) {
+    recLeadTrack_ = recSelTracks_.at(0);
     if ( trackBuilder_ ) recLeadTrackTrajectory_ = new reco::TransientTrack(trackBuilder_->build(*recLeadTrack_));
   }
 
   if ( decayVertexFitAlgorithm ) {
-    if ( recTracks_.size() >= 2 ) {
-      recTauDecayVertex_ = new TransientVertex(decayVertexFitAlgorithm->fitSecondaryVertex(recTracks_));
-      recTauDecayVertexPos_(0) = recTauDecayVertex_->position().x();
-      recTauDecayVertexPos_(1) = recTauDecayVertex_->position().y();
-      recTauDecayVertexPos_(2) = recTauDecayVertex_->position().z();
-      recTauDecayVertexCov_ = recTauDecayVertex_->positionError().matrix_new();
-      hasRecTauDecayVertex_ = recTauDecayVertex_->isValid();
+    if ( recSelTracks_.size() >= 2 ) {
+      recTauDecayVertex_ = decayVertexFitAlgorithm->fitSecondaryVertex(recSelTracks_);
+    }
+    if ( recTauDecayVertex_.isValid() ) {
+      recTauDecayVertexPos_(0) = recTauDecayVertex_.position().x();
+      recTauDecayVertexPos_(1) = recTauDecayVertex_.position().y();
+      recTauDecayVertexPos_(2) = recTauDecayVertex_.position().z();
+      recTauDecayVertexCov_ = recTauDecayVertex_.positionError().matrix_new();
+      hasRecTauDecayVertex_ = true;
     } else {
       recTauDecayVertexPos_(0) = 0.;
       recTauDecayVertexPos_(1) = 0.;
@@ -209,6 +226,7 @@ matchedTauDecayType::matchedTauDecayType(const reco::GenParticle* genTau, const 
 	  recTauDecayVertexCov_(iRow, iColumn) = 1.e+3;
 	}
       }
+      hasRecTauDecayVertex_ = false;
     }
   }
 }
@@ -257,9 +275,12 @@ void matchedTauDecayType::print(std::ostream& stream) const
 	   << " phi_lab = " << phiLabFromLabMomenta(genTauP4_, genVisP4_) << ")" << std::endl;
   }
   stream << "decay-mode = " << genTauDecayMode_ << std::endl;
+  stream << " vis(rec): En = " << recVisP4_.E() << ", P = " << recVisP4_.P() << "," 
+	 << " eta = " << recVisP4_.eta() << ", phi = " << recVisP4_.phi() 
+	 << " (mass = " << recVisP4_.mass() << ")" << std::endl;
   unsigned idx_track = 0;
-  for ( std::vector<const reco::Track*>::const_iterator recTrack = recTracks_.begin();
-	recTrack != recTracks_.end(); ++recTrack ) {
+  for ( std::vector<const reco::Track*>::const_iterator recTrack = recSelTracks_.begin();
+	recTrack != recSelTracks_.end(); ++recTrack ) {
     stream << "Track #" << idx_track << ": Pt = " << (*recTrack)->pt() << "," 
 	   << " eta = " << (*recTrack)->eta() << ", phi = " << (*recTrack)->phi() 
 	   << " (charge = " << (*recTrack)->charge() << ", chi2 = " << (*recTrack)->normalizedChi2() << ")" << std::endl;
@@ -272,10 +293,15 @@ void matchedTauDecayType::print(std::ostream& stream) const
 	const AlgebraicVector3& track_pcaPos = track_extrapolation.point_of_closest_approach();
 	const AlgebraicMatrix33& track_pcaCov = track_extrapolation.covariance();
 	AlgebraicVector3 pcaPos_wrt_genTauDecayVertexPos = track_pcaPos - genTauDecayVertexPos_;
+	AlgebraicVector3 tauFlightPath_unit = normalize(AlgebraicVector3(p4Flight.px(), p4Flight.py(), p4Flight.pz()));
+	AlgebraicVector3 u1, u2, u3;
+	compLocalCoordinates(tauFlightPath_unit, u1, u2, u3); 
+	AlgebraicVector3 residual_U = transformToLocalCoordinatesPos(pcaPos_wrt_genTauDecayVertexPos, u1, u2, u3);
+	AlgebraicMatrix33 track_pcaCov_U = transformToLocalCoordinatesCov(track_pcaCov, u1, u2, u3); 
 	stream << "DCA(decay vertex): " 
-	       << " dx = " << pcaPos_wrt_genTauDecayVertexPos(0) << " +/- " << TMath::Sqrt(track_pcaCov(0, 0)) << "," 
-	       << " dy = " << pcaPos_wrt_genTauDecayVertexPos(1) << " +/- " << TMath::Sqrt(track_pcaCov(1, 1)) << "," 
-	       << " dz = " << pcaPos_wrt_genTauDecayVertexPos(2) << " +/- " << TMath::Sqrt(track_pcaCov(2, 2)) << std::endl;
+	       << " dU1 = " << residual_U(0) << " +/- " << TMath::Sqrt(track_pcaCov_U(0, 0)) << "," 
+	       << " dU2 = " << residual_U(1) << " +/- " << TMath::Sqrt(track_pcaCov_U(1, 1)) 
+	       << " (rho = " << track_pcaCov_U(1, 0)/TMath::Sqrt(track_pcaCov_U(0, 0)*track_pcaCov_U(1, 1)) << ")" << std::endl;
       }
     }
     ++idx_track;
@@ -286,7 +312,7 @@ void matchedTauDecayType::print(std::ostream& stream) const
 	      << " x = " << recTauDecayVertexPos_(0) << " +/- " << TMath::Sqrt(recTauDecayVertexCov_(0, 0)) << "," 
 	      << " y = " << recTauDecayVertexPos_(1) << " +/- " << TMath::Sqrt(recTauDecayVertexCov_(1, 1)) << "," 
 	      << " z = " << recTauDecayVertexPos_(2) << " +/- " << TMath::Sqrt(recTauDecayVertexCov_(2, 2)) 
-	      << " (d = " << TMath::Sqrt(norm2(recDecayVertex_wrt_ProdVertex)) << ", chi2 = " << recTauDecayVertex_->normalisedChiSquared() << ")" << std::endl;
+	      << " (d = " << TMath::Sqrt(norm2(recDecayVertex_wrt_ProdVertex)) << ", chi2 = " << recTauDecayVertex_.normalisedChiSquared() << ")" << std::endl;
     AlgebraicVector3 recDecayVertex_wrt_genDecayVertex = recTauDecayVertexPos_ - genTauDecayVertexPos_;
     std::cout << "distance(rec-gen):" 
 	      << " x = " << recDecayVertex_wrt_genDecayVertex(0) << " +/- " << TMath::Sqrt(recTauDecayVertexCov_(0, 0)) << "," 
@@ -294,16 +320,6 @@ void matchedTauDecayType::print(std::ostream& stream) const
 	      << " z = " << recDecayVertex_wrt_genDecayVertex(2) << " +/- " << TMath::Sqrt(recTauDecayVertexCov_(2, 2)) 
 	      << " (d = " << TMath::Sqrt(norm2(recDecayVertex_wrt_genDecayVertex)) << ")" << std::endl;
     printMatrix("recTauDecayVertexCov", recTauDecayVertexCov_);
-    if ( recLeadTrackTrajectory_ ) {
-      SVfitTrackExtrapolation leadTrack_extrapolation(*recLeadTrackTrajectory_, recTauDecayVertexPos_);
-      const AlgebraicVector3& pcaPos = leadTrack_extrapolation.point_of_closest_approach();
-      const AlgebraicMatrix33& pcaCov = leadTrack_extrapolation.covariance();      
-      stream << "PCA(lead. Track):" 
-	     << " x = " << pcaPos(0) << " +/- " << TMath::Sqrt(pcaCov(0, 0)) << "," 
-	     << " y = " << pcaPos(1) << " +/- " << TMath::Sqrt(pcaCov(1, 1)) << "," 
-	     << " z = " << pcaPos(2) << " +/- " << TMath::Sqrt(pcaCov(2, 2)) << std::endl;
-      printMatrix("pcaCov", pcaCov);
-    }
   } else {
     stream << "decay vertex(rec): NA" << std::endl;
   }
