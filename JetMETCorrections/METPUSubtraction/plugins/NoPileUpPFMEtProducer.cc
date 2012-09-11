@@ -9,6 +9,7 @@
 #include "DataFormats/METReco/interface/MVAMETData.h"
 #include "DataFormats/METReco/interface/MVAMETDataFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/METReco/interface/SigInputObj.h"
 
 #include "JetMETCorrections/METPUSubtraction/interface/noPileUpMEtUtilities.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
