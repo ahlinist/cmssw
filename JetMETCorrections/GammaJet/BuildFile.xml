@@ -42,6 +42,7 @@
 <use   name="RecoEgamma/EgammaIsolationAlgos"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
 <use   name="CMGTools/External"/>
+<use   name="EGamma/EGammaAnalysisTools"/>
 <use   name="HiggsAnalysis/HiggsTo2photons"/>
 
 <flags   EDM_PLUGIN="1"/>
