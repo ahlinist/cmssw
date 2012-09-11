@@ -11,7 +11,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START52_V9::All')
+process.GlobalTag.globaltag = cms.string('START53_V11::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -64,7 +64,7 @@ process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",
     originalEventContent,
     fileName = cms.untracked.string(
         ##'/data1/veelken/CMSSW_5_2_x/skims/selEvents_WToTauNu_tauPtGt300_lowTriggerEff_GENSIM.root'
-        'simWprimeToTauNu_ptGt500_AOD.root'                                                
+        'simZplusJets_madgraph_AOD.root'                                                
     ),
     maxSize = cms.untracked.int32(1000000000)                                                
 )

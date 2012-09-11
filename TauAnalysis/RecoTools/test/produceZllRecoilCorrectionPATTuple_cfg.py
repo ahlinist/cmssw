@@ -7,7 +7,7 @@ process = cms.Process("produceZllRecoilCorrectionPATTuple")
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.load('Configuration/StandardSequences/GeometryIdeal_cff')
+process.load('Configuration/Geometry/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
@@ -52,9 +52,9 @@ runPeriod = "2012RunAplusB" # use for MET sys. shift correction vs. Nvtx
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START52_V11C::All')
+    process.GlobalTag.globaltag = cms.string('START53_V11::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_52_V9D::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_53_V13::All')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -133,12 +133,12 @@ process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
 process.vertexMultiplicityReweight3d2012RunAplusB = process.vertexMultiplicityReweight.clone(
     inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to195947_Mu17_Mu8.root"),
     type = cms.string("gen3d"),
-    mcPeriod = cms.string("Summer12")
+    mcPeriod = cms.string("Summer12_S10")
 )
 process.vertexMultiplicityReweight1d2012RunAplusB = process.vertexMultiplicityReweight.clone(
     inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonDist_runs190456to195947_Mu17_Mu8.root"),
     type = cms.string("gen"),
-    mcPeriod = cms.string("Summer12")
+    mcPeriod = cms.string("Summer12_S10")
 )
 
 process.selectedPrimaryVerticesTrackPtSumGt10 = cms.EDFilter("VertexByTrackPtSumSelector",

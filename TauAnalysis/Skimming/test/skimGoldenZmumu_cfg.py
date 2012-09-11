@@ -32,15 +32,16 @@ isMC = True # use for MC
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START52_V11::All')
+    process.GlobalTag.globaltag = cms.string('START53_V11::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_52_V9::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_53_V13::All')
 #--------------------------------------------------------------------------------    
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/ZplusJets/simZplusJets_AOD_1_1_ZkM.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/data/data2012runA_doubleMu_AOD_1_1_Fzg.root'                        
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/data/data2012runA_doubleMu_AOD_1_1_Fzg.root'
+        '/store/user/veelken/CMSSW_5_3_x/skims/simZplusJets_madgraph_AOD.root'                            
     )
 )
 
