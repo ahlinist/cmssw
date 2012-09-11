@@ -1,5 +1,5 @@
 #
-# $Id: dump_DATA_52X.py,v 1.1 2012/05/30 14:22:24 meridian Exp $
+# $Id: dump_DATA_52X.py,v 1.2 2012/06/09 19:30:22 meridian Exp $
 #
 #  configuration to dump ntuples in data
 #   the only diff should be for jetmet corrections
@@ -25,13 +25,14 @@ process.p = cms.Path( process.DiPhotonHltFilter* process.analysisSequence )
 ## DO NOT CHANGE THE PATH HERE! New modules should be added ONLY in the common configuration 
 #  only paramaters should be changes for data and MC
 process.source.fileNames = cms.untracked.vstring(
-    #'file:/tmp/testPhotonAOD.root'
-#    '/store/data/Run2012A/Photon/AOD/PromptReco-v1/000/191/226/9E7EF5CF-DA87-E111-8BC6-5404A63886C6.root'
-    '/store/data/Run2012A/Photon/RECO/PromptReco-v1/000/191/226/78D726A3-F887-E111-9A04-001D09F27003.root'
+    #'file:/tmp/capalmer/electronevents//tmp/testPhotonAOD.root'
+    #    '/store/data/Run2012A/Photon/AOD/PromptReco-v1/000/191/226/9E7EF5CF-DA87-E111-8BC6-5404A63886C6.root'
+    #    '/store/data/Run2012A/Photon/RECO/PromptReco-v1/000/191/226/78D726A3-F887-E111-9A04-001D09F27003.root'
+    'file:/afs/cern.ch/work/p/pandolf/public/DoubleMu_DC0254E0-8097-E111-9EC0-003048F11112.root'
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(-1)
 )
 
 # Global tag
