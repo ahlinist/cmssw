@@ -8,7 +8,7 @@ process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-process.load('Configuration/StandardSequences/GeometryIdeal_cff')
+process.load('Configuration/Geometry/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START53_V11::All')

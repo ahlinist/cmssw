@@ -10,7 +10,7 @@ process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-process.load('Configuration/StandardSequences/GeometryIdeal_cff')
+process.load('Configuration/Geometry/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
@@ -39,9 +39,7 @@ else:
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/ZplusJets/simZplusJets_AOD_1_1_ZkM.root'
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/data/data2012runA_doubleMu_AOD_1_1_Fzg.root'
-        '/store/user/veelken/CMSSW_5_3_x/skims/simZplusJets_madgraph_AOD.root'                            
+        '/store/user/veelken/CMSSW_5_3_x/skims/simZplusJets_madgraph_AOD_1_1_txi.root'
     )
 )
 

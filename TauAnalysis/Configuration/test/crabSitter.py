@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.eos as eos
 
 import json
 import os
@@ -24,13 +25,12 @@ import time
 
 print("<crabSitter>:")
 
-#crabFilePath = '/tmp/veelken/crab'
-crabFilePath = '/afs/cern.ch/work/v/veelken/CMSSW_5_2_x/crab/TauAnalysis_Skimming'
+crabFilePath = '/afs/cern.ch/work/v/veelken/CMSSW_5_3_x/crab/TauAnalysis_Skimming'
 
 statusFileName = 'crabSitter.json'
 #jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
-jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012May12'
-#jobName_regex = r'crabdir_skimGoldenZmumu_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012Apr12'
+#jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012Sep12'
+jobName_regex = r'crabdir_skimGoldenZmumu_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012Sep12'
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
@@ -205,8 +205,13 @@ for crabJob in crabJobs:
         if not outputFilePath.endswith('/'):
             outputFilePath += '/'
         print("outputFilePath = %s" % outputFilePath)
-        outputFileInfos = [ outputFileInfo for outputFileInfo in castor.nslsl(outputFilePath) ]
-        
+        if outputFilePath.find("/castor") != -1:
+            outputFileInfos = [ outputFileInfo for outputFileInfo in castor.nslsl(outputFilePath) ]
+        elif outputFilePath.find("/store") != -1:
+            outputFileInfos = [ outputFileInfo for outputFileInfo in eos.lsl(outputFilePath) ]
+        else:
+            raise ValueError("Failed to identify file-system for path = %s !!" % castor_output_directory)
+            
         # check if job got aborted or stuck in state 'Submitted', 'Ready' or 'Scheduled' for more than one day
         isMatched_status = False
         isCrabFailure = False

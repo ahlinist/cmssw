@@ -89,10 +89,13 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
 zmmHLTFilter.HLTPaths = [
-    # double muon triggers (2012 Run A + B)
-    'HLT_Mu17_Mu8_v16',    
+    # double muon triggers (2012 Run A+B+C)
+    'HLT_Mu17_Mu8_v16',
     'HLT_Mu17_Mu8_v17',
-    # double muon triggers (Summer'12 MC, produced with CMSSW_5_2_x)
+    'HLT_Mu17_Mu8_v18',
+    'HLT_Mu17_Mu8_v19',
+    'HLT_Mu17_Mu8_v21',
+    # double muon triggers (Summer'12 MC, produced with CMSSW_5_3_x)
     'HLT_Mu17_Mu8_v13'
 ]
 zmmHLTFilter.throw = cms.bool(False)
