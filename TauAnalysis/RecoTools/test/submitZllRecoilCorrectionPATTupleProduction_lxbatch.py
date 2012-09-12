@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.eos as eos
 from TauAnalysis.Configuration.tools.jobtools import make_bsub_script
 from TauAnalysis.Configuration.tools.harvestingLXBatch import make_harvest_scripts
 
@@ -10,60 +11,78 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v5_42'
+version = 'v6_00'
 
 samples = {
     'Data_runs190456to193621' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'Data_runs193834to196531' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
-    'Data_runs193752to195947' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
-        'numInputFilesPerJob' : 1,
+    'Data_runs190782to190949_recover' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'Data_runs197770to198913' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
+    'Data_runs198934to202016' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },    
-    'ZplusJets_madgraph2' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+    'ZplusJets_madgraph' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
         'numInputFilesPerJob' : 1,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
-    'TTplusJets_madgraph2' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+    'TTplusJets_madgraph' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
         'numInputFilesPerJob' : 1,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
-    'PPmuXptGt20Mu15v2' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+    'PPmuXptGt20Mu15' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'WW' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'WZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'ZZ' : {
-        'skimFilePath' : '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/2012Apr12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     }
 }
 
-runPeriod = '2012RunA'
+runPeriod = '2012RunABC'
 
 lxbatch_queue = '1nw'
 ##lxbatch_queue = '1nd'
@@ -71,10 +90,13 @@ lxbatch_queue = '1nw'
 
 samplesToAnalyze = [
     'Data_runs190456to193621',
-    'Data_runs193752to195947',
-    'ZplusJets_madgraph2',
-    'TTplusJets_madgraph2',
-    'PPmuXptGt20Mu15v2',
+    'Data_runs193834to196531',
+    'Data_runs190782to190949_recover',
+    'Data_runs197770to198913',
+    'Data_runs198934to202016',
+    'ZplusJets_madgraph',
+    'TTplusJets_madgraph',
+    'PPmuXptGt20Mu15',
     'WW',
     'WZ',
     'ZZ'
@@ -82,7 +104,7 @@ samplesToAnalyze = [
 
 skipExistingPATtuples = True
 
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s" % version
+outputFilePath = "/store/user/veelken/CMSSW_5_3_x/PATtuples/ZllRecoilCorrection/%s" % version
 
 executable_bsub = 'bsub'
 executable_waitForLXBatchJobs = 'python %s/src/TauAnalysis/Configuration/python/tools/waitForLXBatchJobs.py' % os.environ['CMSSW_BASE']
@@ -90,13 +112,24 @@ executable_rfrm = '- rfrm' # CV: ignore error code returned by 'rfrm' in case fi
 executable_hadd = 'hadd -f'
 executable_shell = '/bin/csh'
 
-try:
-    castor.rfstat(outputFilePath)
-except RuntimeError:
-    # outputFilePath does not yet exist, create it
-    print "outputFilePath does not yet exist, creating it."
-    os.system("rfmkdir %s" % outputFilePath)
-    os.system("rfchmod 777 %s" % outputFilePath)
+# create outputFilePath in case it does not yet exist
+if outputFilePath.find("/castor") != -1:
+    try:
+        castor.rfstat(outputFilePath)
+    except RuntimeError:
+        print "outputFilePath does not yet exist, creating it."
+        os.system("rfmkdir %s" % outputFilePath)
+        os.system("rfchmod 777 %s" % outputFilePath)
+elif outputFilePath.find("/store") != -1:
+    try:
+        eos.lsl(outputFilePath)
+    except IOError:
+        print "outputFilePath does not yet exist, creating it."
+        eos.mkdir(outputFilePath)
+else:
+    if not os.path.isdir(outputFilePath):
+        print "outputFilePath does not yet exist, creating it."
+        os.mkdir(outputFilePath)
 
 if not os.path.isdir("lxbatch"):
     os.mkdir('lxbatch')
@@ -116,7 +149,12 @@ def input_mapper(inputFileNames, sampleToAnalyze):
     inputFile_matcher = re.compile(inputFile_regex)
     for input_file in inputFileNames:
         if inputFile_matcher.match(input_file):
-            yield "".join(["rfio:", input_file])
+            if input_file.find("/castor") != -1:
+                yield "".join(["rfio:", input_file])
+            elif input_file.find("/store") != -1:
+                yield input_file
+            else:
+                yield "".join(["file:", input_file])
 
 # Define what output ntuple file name a sample will have
 def output_mapper(sample, jobId, version):
@@ -181,7 +219,13 @@ for sampleToAnalyze in samplesToAnalyze:
     inputFilePath = samples[sampleToAnalyze]['skimFilePath']
     print " inputFilePath = %s" % inputFilePath
     
-    inputFileNames = [ file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
+    inputFileNames = None
+    if inputFilePath.find("/castor") != -1:
+        inputFileNames = [ file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
+    elif inputFilePath.find("/store") != -1:
+        inputFileNames = [ file_info['path'] for file_info in eos.lsl(inputFilePath) ]
+    else:
+        inputFileNames = [ file for file in os.listdir(inputFilePath) ]
     #print " inputFileNames = %s" % inputFileNames
     
     inputFileNames_matched = [ os.path.basename(input_file) for input_file in input_mapper(inputFileNames, sampleToAnalyze) ]
@@ -307,7 +351,13 @@ makeFileName = "Makefile_ZllRecoilCorrectionPATTupleProduction"
 makeFile = open(makeFileName, "w")
 makeFile.write("\n")
 jobsZllRecoilCorrectionPATtupleProduction = []
-existingOutputFiles = [ file_info['file'] for file_info in castor.nslsl(outputFilePath) ]
+existingOutputFiles = None
+if outputFilePath.find("/castor") != -1:
+    existingOutputFiles = [ file_info['file'] for file_info in castor.nslsl(outputFilePath) ]
+elif outputFilePath.find("/store") != -1:
+    existingOutputFiles = [ file_info['file'] for file_info in eos.lsl(outputFilePath) ]
+else:
+    existingOutputFiles = [ file for file in os.listdir(outputFilePath) ]
 for sampleToAnalyze in samplesToAnalyze:
     for jobId in bsubScriptFileNames[sampleToAnalyze].keys():
         outputFilesExist = True

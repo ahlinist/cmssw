@@ -8,6 +8,7 @@ Author: Evan K. Friis, UC Davis
 
 import os
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.eos as eos
 import TauAnalysis.Configuration.tools.crab as crab
 import re
 
@@ -37,6 +38,19 @@ def castor_source(directory):
     for file_info in files:
         if not file_info['size']:
             print "Warning <castor_source>: file %s has size 0" % \
+                    file_info['path']
+        yield file_info
+
+def eos_source(directory):
+    " Build a generator that lists file in a EOS directory, sorted by time "
+    print "<eos_source>", directory
+    # First sort by time
+    files = list(eos.lsl(directory))
+    # Sort by time
+    files.sort(key = lambda x: x['time'])
+    for file_info in files:
+        if not file_info['size']:
+            print "Warning <eos_source>: file %s has size 0" % \
                     file_info['path']
         yield file_info
 

@@ -25,12 +25,11 @@ $runselection
 
 [USER]
 ui_working_dir = $ui_working_dir
-check_user_remote_dir = 0
 return_data = $return_data
 copy_data = $copy_data
 storage_element = $storage_element
-storage_path = $storage_path
 user_remote_dir = $user_remote_dir
+#check_user_remote_dir = 0
 
 [GRID]
 $SE_white_list
@@ -50,9 +49,13 @@ _CRAB_DEFAULTS = {
     'scheduler' : 'glite', 
     #------------------------------------
     # for storing output of crab job on castor @ CERN
-    'storage_element' : 'srm-cms.cern.ch',
-    'storage_path' : '/srm/managerv2?SFN=/castor/cern.ch',
-    'publish_data' : 0,
+    ##'storage_element' : 'srm-cms.cern.ch',
+    ##'storage_path' : '/srm/managerv2?SFN=/castor/cern.ch',
+    ##'publish_data' : 0,
+    #------------------------------------
+    #------------------------------------
+    # for storing output of crab job on eos @ CERN
+    'storage_element' : 'T2_CH_CERN',
     #------------------------------------
     #------------------------------------
     # for publishing output in DBS

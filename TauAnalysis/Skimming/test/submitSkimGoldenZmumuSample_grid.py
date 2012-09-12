@@ -8,22 +8,22 @@ import os
 import subprocess
 
 configFile = 'skimGoldenZmumu_cfg.py'
-jobId = '2012Apr12'
+jobId = '2012Sep12'
 
-outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/skims/GoldenZmumu/%s/' % jobId
+outputFilePath = 'CMSSW_5_3_x/skims/GoldenZmumu/%s/' % jobId
 
 samplesToAnalyze = [
-    ##'Data_runs190456to193557',
-    ##'Data_runs190456to193621',
-    ##'Data_runs193752to194076',
-    'Data_runs193752to195947',
-    ##'ZplusJets_madgraph2',
-    ##'TTplusJets_madgraph2',
-    ##'PPmuXptGt20Mu15',
-    ##'PPmuXptGt20Mu15v2'
-    ##'WW',
-    ##'WZ',
-    ##'ZZ'
+    #'Data_runs190456to193621',
+    #'Data_runs193834to196531',
+    #'Data_runs190782to190949_recover',
+    #'Data_runs197770to198913',
+    #'Data_runs198934to202016',
+    #'ZplusJets_madgraph',
+    'TTplusJets_madgraph',
+    #'PPmuXptGt20Mu15',
+    #'WW',
+    #'WZ',
+    #'ZZ'    
 ]
 
 # Define what output file name a skimmed sample will have

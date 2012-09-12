@@ -1,6 +1,7 @@
-from TauAnalysis.Configuration.tools.harvesting import castor_source
+from TauAnalysis.Configuration.tools.harvesting import castor_source, eos_source
 import TauAnalysis.Configuration.tools.jobtools as jobtools
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.castor as eos
 import TauAnalysis.Configuration.tools.crab as crab
 import TauAnalysis.Configuration.userRegistry as reg
 from collections import defaultdict
@@ -63,8 +64,12 @@ def make_harvest_scripts(plot_regex, skim_regex,
 
     print "Getting files from destination"
     # Get all the tmp files (that are non-zero)
-    tmp_files_info = [x for x in castor_source(castor_output_directory)
-                      if x['size']]
+    if castor_output_directory.find("/castor") != -1:
+        tmp_files_info = [ x for x in castor_source(castor_output_directory) if x['size'] ]
+    elif castor_output_directory.find("/store") != -1:
+        tmp_files_info = [ x for x in eos_source(castor_output_directory) if x['size'] ]
+    else:
+        raise ValueError("Failed to identify file-system for path = %s !!" % castor_output_directory)
     tmp_files = set(x['file'] for x in tmp_files_info)
     #print "tmp_files_info = %s" % tmp_files_info
 
@@ -184,7 +189,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
 
             # Keep track of what jobId was used for a paticular output file
             job_registry = {}
-            # If a file is not produced by a job (already exists in CASTOR),
+            # If a file is not produced by a job (already exists in CASTOR/EOS),
             # then the job ID returned is none.
             get_job_name = lambda x : x in job_registry and job_registry[x] or None
 
@@ -418,14 +423,3 @@ def make_harvest_scripts(plot_regex, skim_regex,
     retVal['local_copy_script']   = local_copy_script
     return retVal
 
-if __name__ == "__main__":
-    #regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    plot_regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    skim_regex = r"final_events_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    #plot_regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run31_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    #skim_regex = r"final_events_AHtoMuTau_(?P<sample>\w+?)_Run31_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    #make_harvest_scripts(
-    #    plot_regex, skim_regex, os.path.join(os.environ['CASTOR_HOME'], 'Run32'),
-    #    os.path.join(os.environ['CASTOR_HOME'], 'Run32harvest',),
-    #    local_copy_mapper = lambda s: '/data1/friis/Run32/harvested_AHtoMuTau_%s_Run32.root' % s,
-    #)

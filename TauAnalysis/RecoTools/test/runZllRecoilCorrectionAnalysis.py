@@ -7,14 +7,14 @@ from TauAnalysis.Skimming.recoSampleDefinitionsGoldenZmumu_7TeV_grid_cfi import 
 
 import os
 
-version = 'v5_42'
+version = 'v6_00'
 
-inputFilePath = '/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
-               + 'user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
+inputFilePath = '/data2/veelken/CMSSW_5_5_x/PATtuples/ZllRecoilCorrection/%s/' % version \
+               + 'user/v/veelken/CMSSW_5_5_x/PATtuples/ZllRecoilCorrection/%s/' % version
 outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s_v1' % version
 
 samplesToAnalyze = {
-    'Data_2012RunAplusB' : {
+    'Data_2012RunABC' : {
         'samples' : [
             'Data_runs190456to193621',
             'Data_runs193752to195947'
@@ -97,17 +97,19 @@ maxEvents = -1
 intLumiData = None
 hltPaths = None
 srcWeights = None
-if runPeriod == '2012RunAplusB':
-    samplesToAnalyze['Data'] = samplesToAnalyze['Data_2012RunAplusB']
-    intLumiData = 3924 # runs 190389-195947
+if runPeriod == '2012RunABC':
+    samplesToAnalyze['Data'] = samplesToAnalyze['Data_2012RunABC']
+    intLumiData = 10251 # runs 190456-202016
     hltPaths = {
         'Data' : [
             'HLT_Mu17_Mu8_v16',
-            'HLT_Mu17_Mu8_v17'
+            'HLT_Mu17_Mu8_v17',
+            'HLT_Mu17_Mu8_v18',
+            'HLT_Mu17_Mu8_v19',
+            'HLT_Mu17_Mu8_v21'
         ],
         'smMC' : [
-            'HLT_Mu17_Mu8_v13', # ZplusJets_madgraph
-            'HLT_Mu17_Mu8_v16'  # TTplusJets_madgraph
+            'HLT_Mu17_Mu8_v17'
         ]
     }
     srcWeights = {
