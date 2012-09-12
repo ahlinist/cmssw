@@ -44,6 +44,12 @@ def runCommand(commandLine):
     retVal.wait()
     return retVal.stdout.readlines()
 
+whoami = runCommand('whoami')
+if len(whoami) != 1:
+    raise ValueError("Failed to identify userName !!")
+userName = whoami[0].strip()
+print("userName = %s" % userName)
+
 # delete crabSitter.json file to reset all time-stamps
 #runCommand('%s %s' % (executable_rm, statusFileName))
 
@@ -97,7 +103,12 @@ def checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string):
                     if outputFileInfo['file'] != outputFileName_keep:
                         outputFiles_to_delete.append(outputFileInfo['path'])
         for outputFileName in outputFiles_to_delete:
-            commandLine = 'rfrm %s' % outputFileName
+            if outputFileName.find("/castor") != -1:
+                commandLine = 'rfrm %s' % outputFileName
+            elif outputFileName.find("/store") != -1:
+                commandLine = 'eos rm %s' % outputFileName
+            else:
+                commandLine = 'rm %s' % outputFileName
             shellScriptCommands.append(commandLine)          
 
 jobStatus_dict = {}
@@ -183,12 +194,13 @@ for crabJob in crabJobs:
                 elif key == 'storage_path':    
                     storage_path_match = storage_path_matcher.match(value)
                     if storage_path_match:
+                        # output files stored on castor
                         outputFilePath_prefix = storage_path_match.group('storage_path')
-                    else:
-                        raise ValueError("Failed to read 'storage_path' from config file %s !!" \
-                                         % crabConfigFileName)
+        if not outputFilePath_prefix:
+            # output files stored on EOS
+            outputFilePath_prefix = '/store/user/%s/' % userName
         if not (outputFileName and outputFilePath_prefix and outputFilePath_suffix):
-            raise ValueError("Failed to read 'output_file', 'user_remote_dir' and 'storage_path' from config file %s !!" \
+            raise ValueError("Failed to read 'output_file' and 'user_remote_dir' from config file %s !!" \
                              % crabConfigFileName)
         # CV: multiple output files not supported yet
         print("outputFileName = %s" % outputFileName)
