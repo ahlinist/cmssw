@@ -43,7 +43,7 @@
 ## Fall 2011 MC + 16Jan 2011A + 2011B rereco
 
 # VERSION=19
-## Fall 2011 MC + 30Jan 2011A + 2011B rereco, AN-12-048 JSON and
+## Fall 2011 MC + 30Nov 2011A + 2011B rereco, AN-12-048 JSON and
 ## analysis PU distribution from data
 
 # VERSION=20
@@ -77,7 +77,7 @@ VERSION=21
 # DATASET=DoubleMu_Run2011A-PromptReco-v6_glite_Dimuon_RECO-42X-v9
 # DATASET=DoubleMu_Run2011B-PromptReco-v1_condor_Dimuon_RECO-42X-v9
 # DATASET=DoubleMu_Run2011A-16Jan2012-v1_condor_Dimuon_AOD-42X-v10
-# DATASET=DoubleMu_Run2011B-16Jan2012-v1_condor_Dimuon_AOD-42X-v10
+DATASET=DoubleMu_Run2011B-16Jan2012-v1_condor_Dimuon_AOD-42X-v10
 # DATASET=DoubleMu_Run2011A-30Nov2011-v1_condor_Dimuon_AOD-42X-v10_DBS
 # DATASET=DoubleMu_Run2011B-30Nov2011-v1_condor_Dimuon_AOD-42X-v10_DBS
 
@@ -86,20 +86,20 @@ VERSION=21
 # JSON_FILE=Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON.txt
 # JSON_FILE=Cert_Golden_new.json
 # JSON_FILE=Cert_160404-180252_5Aug-v3_Prompt_Golden.txt
-# JSON_FILE=Cert_160404-180252_AN-12-048_HggMVA.json
-# TOTAL_SECTIONS=8
-# for SECTION in `seq $TOTAL_SECTIONS`; do
-#     nohup cmsRun PmvTreeMaker_cfg.py \
-#         inputFiles_clear \
-#         inputFiles_load=files_${DATASET}.dat \
-#         jsonFile=$JSON_FILE \
-#         isMC=False \
-#         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/pmvTree_V${VERSION}_${DATASET} \
-#         totalSections=$TOTAL_SECTIONS \
-#         section=$SECTION \
-#         >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
-# done
+JSON_FILE=Cert_160404-180252_AN-12-048_HggMVA.json
+TOTAL_SECTIONS=8
+for SECTION in `seq $TOTAL_SECTIONS`; do
+    nohup cmsRun PmvTreeMaker_cfg.py \
+        inputFiles_clear \
+        inputFiles_load=files_${DATASET}.dat \
+        jsonFile=$JSON_FILE \
+        isMC=False \
+        maxEvents=-1 \
+        outputFile=/wntmp/veverka/pmvTree_V${VERSION}_${DATASET} \
+        totalSections=$TOTAL_SECTIONS \
+        section=$SECTION \
+        >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
+done
 
 
 
@@ -160,27 +160,27 @@ VERSION=21
 # DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1_glidein_Dimuon_RECO-42X-v9
 # DATASET=DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1_condor_Dimuon_AOD-42X-v9
 # DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall11-PU_S6_START42_V14B-v1_glite_Dimuon_AOD-42X-v10_10Feb
-DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall11-PU_S6_START42_V14B-v1_condor_Dimuon_AOD-42X-v10_10Feb
-
-TOTAL_BATCHES=5
-JOBS_PER_BATCH=8
-(( TOTAL_SECTIONS = JOBS_PER_BATCH * TOTAL_BATCHES ))
-BATCH=${1:-1}
-
-FIRST_SECTION=$((JOBS_PER_BATCH*(BATCH-1)+1))
-LAST_SECTION=$((JOBS_PER_BATCH*BATCH))
-for SECTION in $(seq $FIRST_SECTION $LAST_SECTION); do
-    nohup cmsRun PmvTreeMaker_cfg.py \
-        print \
-        inputFiles_clear \
-        inputFiles_load=files_${DATASET}.dat \
-        isMC=True \
-        maxEvents=-1 \
-        outputFile=/wntmp/veverka/pmvTree_V${VERSION}_${DATASET} \
-        totalSections=$TOTAL_SECTIONS \
-        section=$SECTION \
-        >& /wntmp/veverka/pmvTree_V${VERSION}_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.log &
-done
+# DATASET=DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall11-PU_S6_START42_V14B-v1_condor_Dimuon_AOD-42X-v10_10Feb
+# 
+# TOTAL_BATCHES=5
+# JOBS_PER_BATCH=8
+# (( TOTAL_SECTIONS = JOBS_PER_BATCH * TOTAL_BATCHES ))
+# BATCH=${1:-1}
+# 
+# FIRST_SECTION=$((JOBS_PER_BATCH*(BATCH-1)+1))
+# LAST_SECTION=$((JOBS_PER_BATCH*BATCH))
+# for SECTION in $(seq $FIRST_SECTION $LAST_SECTION); do
+#     nohup cmsRun PmvTreeMaker_cfg.py \
+#         print \
+#         inputFiles_clear \
+#         inputFiles_load=files_${DATASET}.dat \
+#         isMC=True \
+#         maxEvents=-1 \
+#         outputFile=/wntmp/veverka/pmvTree_V${VERSION}_${DATASET} \
+#         totalSections=$TOTAL_SECTIONS \
+#         section=$SECTION \
+#         >& /wntmp/veverka/pmvTree_V${VERSION}_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.log &
+# done
 
 
 ################ Higaga ##################
