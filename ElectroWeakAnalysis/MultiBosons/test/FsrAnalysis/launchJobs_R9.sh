@@ -1,11 +1,14 @@
 VERSION=1
 ## Added cluster-correction and gen-level variables
 
+VERSION=2
+## Added e5x5 and e3x3
+
 # ###################### SMALL MC ####################
 # DATASET=g93p01
 # DATASET=g94cms
 DATASET=g94p02
-TOTAL_SECTIONS=1
+TOTAL_SECTIONS=4
 for SECTION in `seq $TOTAL_SECTIONS`; do
     nohup cmsRun r9Tree_cfg.py \
         print \
