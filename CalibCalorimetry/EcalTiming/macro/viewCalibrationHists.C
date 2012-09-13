@@ -31,10 +31,10 @@ void viewCalibrationHists(char *fileName)
   TH2F *sigmaMapEEM   = (TH2F*) theFile->Get( (  folderInFile + std::string("sigmaMapEEM") ).c_str() ) ;
   TH2F *sigmaMapEEP   = (TH2F*) theFile->Get( (  folderInFile + std::string("sigmaMapEEP") ).c_str() ) ;
 
-  float minTimeAverageDistribution = -1.5;//Min time for x axis on time distribution hists
-  float maxTimeAverageDistribution = 1.5;
-  float minTimeAverage = -0.5;//Min time for z axis on timing maps hists
-  float maxTimeAverage = 0.5;
+  float minTimeAverageDistribution = -3.0;//Min time for x axis on time distribution hists
+  float maxTimeAverageDistribution = 3.0;
+  float minTimeAverage = -1.0;//Min time for z axis on timing maps hists
+  float maxTimeAverage = 1.0;
   
   char *dataType = fileName;
   string fileNameString = dataType;
