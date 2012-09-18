@@ -12,9 +12,9 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Math/interface/deltaR.h"
-#include "DataFormats/METReco/interface/MVAMEtData.h"
-#include "DataFormats/METReco/interface/MVAMEtDataFwd.h"
-#include "DataFormats/METReco/interface/SigInputObj.h"
+#include "DataFormats/METReco/interface/MVAMEtData.h"       
+#include "DataFormats/METReco/interface/MVAMEtDataFwd.h"    
+#include "RecoMET/METAlgorithms/interface/SigInputObj.h"    //PH: preserve 5_3_x dependence
 
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 

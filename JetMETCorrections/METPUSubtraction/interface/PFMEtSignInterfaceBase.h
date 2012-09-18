@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PFMEtSignInterfaceBase.h,v 1.3 2012/04/24 07:41:02 veelken Exp $
+ * $Id: PFMEtSignInterfaceBase.h,v 1.1 2012/08/31 08:45:31 veelken Exp $
  *
  */
 
@@ -20,7 +20,8 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "RecoMET/METAlgorithms/interface/SignAlgoResolutions.h"
-#include "DataFormats/METReco/interface/SigInputObj.h"
+//#include "DataFormats/METReco/interface/SigInputObj.h" => PH: not in 5_3_X  
+#include "RecoMET/METAlgorithms/interface/SigInputObj.h" //=> PH: in 5_3_X
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
