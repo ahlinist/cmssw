@@ -10,9 +10,9 @@
  *
  * \authors Christian Veelken, LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: JVFJetIdProducer.h,v 1.2 2012/05/25 15:34:39 veelken Exp $
+ * $Id: JVFJetIdProducer.h,v 1.1 2012/08/31 08:45:32 veelken Exp $
  *
  */
 
@@ -22,7 +22,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
-#include "CMGTools/External/interface/PileupJetIdentifier.h"
+#include "RecoJets/JetProducers/interface/PileupJetIdentifier.h" //PH: migrated to CMSSW
 
 class JVFJetIdProducer : public edm::EDProducer
 {
