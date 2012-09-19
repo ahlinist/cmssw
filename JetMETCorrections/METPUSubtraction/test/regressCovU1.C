@@ -14,12 +14,12 @@ void regressCovU1(std::string iName) {
   
   GBRTrainer *train = new GBRTrainer;
   train->AddTree(lRegress);
-  train->SetTrainingCut("(nbtag == 0)");
+  train->SetTrainingCut("(nbtag == 0)*(pt_z > 0)");//*TMath::Max(pt_z,100)*(pt_z > 2)");
   train->SetMinEvents(250);
-  train->SetShrinkage(0.05);
+  train->SetShrinkage(0.3);
   train->SetMinCutSignificance(3.0);  
   
-  train->SetTargetVar( "((pt_z*sqrt(cos(phi_z)*cos(uphix_mva) + sin(phi_z)*sin(uphix_mva))-ux_mva)**2)/ux_mva/ux_mva" );
+  train->SetTargetVar( "abs(pt_z*cos(phi_z-uphix_mva)-ux_mva)/ux_mva*sqrt(TMath::Pi()/2.)" );
   
   std::vector<std::string> *lVec = new std::vector<std::string>;
   lVec->push_back( "sumet"      );
@@ -54,9 +54,9 @@ void regressCovU1(std::string iName) {
   }
   
   ROOT::Cintex::Cintex::Enable();   
-  const GBRForest *forest = train->TrainForest(1000);
+  const GBRForest *forest = train->TrainForest(300);
   
-  TFile *fout = new TFile("gbru1cov2.root","RECREATE");    
+  TFile *fout = new TFile("gbru1cov.root","RECREATE");    
   fout->WriteObject(forest,"CovU1");
   fout->WriteObject(lVec, "varlist");
   fout->Close();
