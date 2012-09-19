@@ -8,7 +8,8 @@ tag=METPU_5_3_X_v0
 
 cd ../../../
 cvs co -r HEAD -d pharrisTmp UserCode/pharris/MVAMet/data
-cp  -d pharrisTmp/*53*.root  JetMETCorrections/METPUSubtraction/data/
+cp  -d pharrisTmp/*53.root                JetMETCorrections/METPUSubtraction/data/
+cp  -d pharrisTmp/*53_UnityResponse.root  JetMETCorrections/METPUSubtraction/data/
 rm -rf pharrisTmp
 
 cvs co -r $tag RecoJets/JetProducers
