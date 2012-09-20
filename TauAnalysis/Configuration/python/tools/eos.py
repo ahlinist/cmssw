@@ -12,7 +12,6 @@ def runCommand(commandLine):
     #sys.stdout.write("%s\n" % commandLine)
     args = shlex.split(commandLine)
     retVal = subprocess.Popen(args, stdout = subprocess.PIPE)
-    retVal.wait()
     return retVal
 
 def lsl(file_or_path):
@@ -29,12 +28,12 @@ def lsl(file_or_path):
     directory = os.path.dirname(file_or_path)
     
     ls_command = runCommand('%s ls -l %s' % (executable_eos, file_or_path))
-    status = ls_command.returncode
-    if status != 0:
-        raise IOError("File/path = %s does not exist !!" % file_or_path)
-    #print "status = ", status
     stdout, stderr = ls_command.communicate()
     #print "stdout = ", stdout
+    status = ls_command.returncode
+    #print "status = ", status
+    if status != 0:
+        raise IOError("File/path = %s does not exist !!" % file_or_path)
 
     retVal = []
     for line in stdout.splitlines():
@@ -57,6 +56,7 @@ def lsl(file_or_path):
         else:
             file_info['time'] = time.strptime(time_stamp, "%b %d %Y")
         file_info['path'] = os.path.join(directory, file_info['file'])
+        #print "file_info = " % file_info
         retVal.append(file_info)
     return retVal
 

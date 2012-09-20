@@ -26,7 +26,7 @@ def addCorrectedPFMet(process, isMC, doApplyType0corr, doApplySysShiftCorr, runP
 
     process.load("PhysicsTools.PatUtils.patPFMETCorrections_cff")
     
-    process.load("RecoMET.METProducers.mvaPFMET_cff")
+    process.load("JetMETCorrections.METPUSubtraction.mvaPFMET_cff")
     if isMC:
         process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3")
     else:
@@ -74,17 +74,7 @@ def addCorrectedPFMet(process, isMC, doApplyType0corr, doApplySysShiftCorr, runP
     sysShiftCorrParameter = None
     if doApplySysShiftCorr:
         process.load("JetMETCorrections.Type1MET.pfMETsysShiftCorrections_cfi")
-        if runPeriod == "2011RunA":
-            if isMC:
-                sysShiftCorrParameter = process.pfMEtSysShiftCorrParameters_2011runAvsNvtx_mc
-            else:
-                sysShiftCorrParameter = process.pfMEtSysShiftCorrParameters_2011runAvsNvtx_data
-        elif runPeriod == "2011RunB":
-            if isMC:
-                sysShiftCorrParameter = process.pfMEtSysShiftCorrParameters_2011runBvsNvtx_mc
-            else:
-                sysShiftCorrParameter = process.pfMEtSysShiftCorrParameters_2011runBvsNvtx_data
-        elif runPeriod == "2012RunAplusB":
+        if runPeriod == "2012RunABC":
             if isMC:
                 sysShiftCorrParameter = process.pfMEtSysShiftCorrParameters_2012runAvsNvtx_mc
             else:
@@ -132,53 +122,6 @@ def addCorrectedPFMet(process, isMC, doApplyType0corr, doApplySysShiftCorr, runP
         process.makeCorrectedPatMETs += process.producePatPFMETCorrections
         process.makeCorrectedPatMETs += process.patMEtMVAsequence
         process.makeCorrectedPatMETs += process.patMEtNoPileUpSequence
-
-    ##process.noPileUpPFMEtData.verbosity = cms.int32(1)
-    ##process.noPileUpPFMEt.verbosity = cms.int32(1)
-    ##if hasattr(process, "noPileUpPFMEtDataNoSmearing") and hasattr(process, "noPileUpPFMEtNoSmearing"):
-    ##    process.noPileUpPFMEtDataNoSmearing.verbosity = cms.int32(1)
-    ##    process.noPileUpPFMEtNoSmearing.verbosity = cms.int32(1)
-        
-    process.load("JetMETCorrections.Type1MET.mvaPFMET_cff")
-    process.pfMEtInputForMVAMEt = cms.EDProducer("PFMEtFromPATMEtProducer",
-        src = cms.InputTag('patType1CorrectedPFMet'),
-        srcCov = cms.InputTag('pfMEtSignCovMatrix')
-    )
-    process.makeCorrectedPatMETs += process.pfMEtInputForMVAMEt
-    process.mvaPFMEt.srcMEt = cms.InputTag('pfMEtInputForMVAMEt')
-    ##process.mvaPFMEt.srcMEtCov = cms.InputTag('pfMEtSignCovMatrix')
-    process.mvaPFMEt.srcMEtCov = cms.InputTag('') # NOTE: take MET covariance matrix from reco::PFMET object
-    process.mvaPFMEt.srcLeptons = cms.VInputTag('patMuons')    
-    if isMC:
-        process.calibratedAK5PFJetsForMVAMEt.correctors = cms.vstring('ak5PFL1FastL2L3')
-        import RecoMET.METProducers.METSigParams_cfi as jetResolutions
-        process.smearedAK5PFJetsForTauAnalysisMEtTools = cms.EDProducer("SmearedPFJetProducer",
-            src = cms.InputTag('calibratedAK5PFJetsForMVAMEt'),
-            dRmaxGenJetMatch = cms.string('TMath::Min(0.5, 0.1 + 0.3*TMath::Exp(-0.05*(genJetPt - 10.)))'),
-            sigmaMaxGenJetMatch = cms.double(5.),                                                                  
-            inputFileName = cms.FileInPath('PhysicsTools/PatUtils/data/pfJetResolutionMCtoDataCorrLUT.root'),
-            lutName = cms.string('pfJetResolutionMCtoDataCorrLUT'),
-            jetResolutions = jetResolutions.METSignificance_params,
-            skipRawJetPtThreshold = cms.double(10.), # GeV
-            skipCorrJetPtThreshold = cms.double(1.e-2),
-            srcGenJets = cms.InputTag('ak5GenJetsNoNu'),
-            ##verbosity = cms.int32(1)
-        )
-        process.ak5PFJetSequenceForMVAMEt += process.smearedAK5PFJetsForTauAnalysisMEtTools
-        process.puJetIdDataForMVAMEt.jets = cms.InputTag('smearedAK5PFJetsForTauAnalysisMEtTools')
-        process.puJetIdForMVAMEt.jets = cms.InputTag('smearedAK5PFJetsForTauAnalysisMEtTools')
-        process.mvaPFMEtData.srcJets = cms.InputTag('smearedAK5PFJetsForTauAnalysisMEtTools')
-        process.mvaPFMEt.sysShiftCorrections = process.sysShiftCorrections_2012runAplusBvsNvtx_mc
-    else:
-        process.calibratedAK5PFJetsForMVAMEt.correctors = cms.vstring('ak5PFL1FastL2L3Residual')
-        process.mvaPFMEt.sysShiftCorrections = process.sysShiftCorrections_2012runAplusBvsNvtx_data
-    process.makeCorrectedPatMETs += process.mvaPFMEtSequence
-    process.patPFMetMVA2 = process.patMETs.clone(
-        metSource = cms.InputTag('mvaPFMEt'),
-        addMuonCorrections = cms.bool(False),
-        genMETSource = cms.InputTag('genMetTrue')
-    )
-    process.makeCorrectedPatMETs += process.patPFMetMVA2
 
     return process.makeCorrectedPatMETs
 

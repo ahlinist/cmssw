@@ -7,7 +7,7 @@ SAMPLE_DEFAULTS = {
     'lumi_mask'                                  : '',
     'runselection'                               : '',
     'SE_white_list'                              : '',
-    'SE_black_list'                              : '',
+    'SE_black_list'                              : 'T2_BE_IIHE',
     'disableDuplicateCheck'                      : False,
     'skim_eff'                                   : 1.,
     'genPhaseSpaceCut'                           : '',

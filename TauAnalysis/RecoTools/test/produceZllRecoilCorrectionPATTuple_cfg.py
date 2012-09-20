@@ -14,8 +14,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #--------------------------------------------------------------------------------
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        ##'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
-        'file:/data1/veelken/CMSSW_5_2_x/skims/selEvents_debugMEtSys_ZplusJets_madgraph_AOD.root'
+        '/store/user/veelken/CMSSW_5_3_x/skims/simZplusJets_madgraph_AOD_1_1_txi.root'
     ),
     ##eventsToProcess = cms.untracked.VEventRange('1:41958:16769938'),
     skipEvents = cms.untracked.uint32(0)            
@@ -36,7 +35,7 @@ HLTprocessName = "HLT" # use for Spring'12 MC
 type1JetPtThreshold = 10.0 # current default value recommended by JetMET POG
 #jetCorrUncertaintyTag = "Total"
 jetCorrUncertaintyTag = "SubTotalDataMC"
-runPeriod = "2012RunAplusB" # use for MET sys. shift correction vs. Nvtx
+runPeriod = "2012RunABC" # use for MET sys. shift correction vs. Nvtx
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -130,13 +129,13 @@ process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
 process.prePatProductionSequence += process.selectPrimaryVertex
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
-process.vertexMultiplicityReweight3d2012RunAplusB = process.vertexMultiplicityReweight.clone(
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to195947_Mu17_Mu8.root"),
+process.vertexMultiplicityReweight3d2012RunABC = process.vertexMultiplicityReweight.clone(
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to202016_Mu17_Mu8.root"),
     type = cms.string("gen3d"),
     mcPeriod = cms.string("Summer12_S10")
 )
-process.vertexMultiplicityReweight1d2012RunAplusB = process.vertexMultiplicityReweight.clone(
-    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonDist_runs190456to195947_Mu17_Mu8.root"),
+process.vertexMultiplicityReweight1d2012RunABC = process.vertexMultiplicityReweight.clone(
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonDist_runs190456to202016_Mu17_Mu8.root"),
     type = cms.string("gen"),
     mcPeriod = cms.string("Summer12_S10")
 )
@@ -153,8 +152,8 @@ process.prePatProductionSequence += process.selectedPrimaryVerticesTrackPtSumGt1
 
 # produce pile-up reweighting factors
 if isMC:
-    process.prePatProductionSequence += process.vertexMultiplicityReweight3d2012RunAplusB
-    process.prePatProductionSequence += process.vertexMultiplicityReweight1d2012RunAplusB
+    process.prePatProductionSequence += process.vertexMultiplicityReweight3d2012RunABC
+    process.prePatProductionSequence += process.vertexMultiplicityReweight1d2012RunABC
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -445,16 +444,16 @@ process.produceAndSavePUreweightHistograms += process.pfNeutralHadronAnalyzer
 process.produceAndSavePUreweightHistograms += process.pfPhotonAnalyzer
                            
 if isMC:
-    process.producePUreweightHistogramsKt6PFNeutralJets2012RunAplusB = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
-        srcWeight = cms.InputTag('vertexMultiplicityReweight3d2012RunAplusB')
+    process.producePUreweightHistogramsKt6PFNeutralJets2012RunABC = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
+        srcWeight = cms.InputTag('vertexMultiplicityReweight3d2012RunABC')
     )
-    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets2012RunAplusB
+    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets2012RunABC
 
-    process.rhoNeutralAnalyzer2012RunAplusB = process.rhoNeutralAnalyzer.clone(
+    process.rhoNeutralAnalyzer2012RunABC = process.rhoNeutralAnalyzer.clone(
         srcGenPileUp = cms.InputTag('addPileupInfo'),
-        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d2012RunAplusB')
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d2012RunABC')
     )
-    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer2012RunAplusB
+    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer2012RunABC
 
 process.savePUreweightHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('/data1/veelken/tmp/ZllRecoilCorrectionPUreweightHistograms.root')

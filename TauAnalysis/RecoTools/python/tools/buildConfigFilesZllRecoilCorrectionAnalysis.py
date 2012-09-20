@@ -267,41 +267,15 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
     shiftedMEtCorrX_string = None
     shiftedMEtCorrY_string = None
     if metOptionName == "pfMEt" or metOptionName == "pfMEtTypeIcorrected" or metOptionName == "pfMEtTypeIcorrectedSmeared":
-        if runPeriod == "2011RunA":
+        if runPeriod == "2012RunABC":
             if processType == 'Data':
-                ##shiftedMEtCorrX_string = "-3.365e-1 + 4.801e-3*x" # CV: x = sumEt, y = numVertices
-                ##shiftedMEtCorrY_string = "+2.578e-1 - 6.124e-3*x"
-                shiftedMEtCorrX_string = "+3.87339e-01 + 2.58294e-01*y"
-                shiftedMEtCorrY_string = "-7.83502e-01 - 2.88899e-01*y"
-            else:
-                ##shiftedMEtCorrX_string = "-9.389e-2 + 1.815e-4*x"
-                ##shiftedMEtCorrY_string = "+1.571e-1 - 3.710e-3*x"
-                shiftedMEtCorrX_string = "-1.94451e-02 - 4.38986e-03*y"
-                shiftedMEtCorrY_string = "-4.31368e-01 - 1.90753e-01*y"
-        elif runPeriod == "2011RunB":
-            if processType == 'Data':
-                ##shiftedMEtCorrX_string = "-3.265e-1 + 5.162e-3*x" # CV: x = sumEt, y = numVertices
-                ##shiftedMEtCorrY_string = "-1.956e-2 - 6.299e-3*x"
-                shiftedMEtCorrX_string = "+6.64470e-01 + 2.71292e-01*y"
-                shiftedMEtCorrY_string = "-1.23999e+00 - 3.18661e-01*y"
-            else:
-                ##shiftedMEtCorrX_string = "-1.070e-1 + 9.587e-5*x"
-                ##shiftedMEtCorrY_string = "-1.517e-2 - 3.357e-3*x"
-                shiftedMEtCorrX_string = "-9.89706e-02 + 6.64796e-03*y"
-                shiftedMEtCorrY_string = "-5.32495e-01 - 1.82195e-01*y"
-        elif runPeriod == "2012RunAplusB":
-            if processType == 'Data':
-                ##shiftedMEtCorrX_string = "-7.67892e-01 + 5.76983e-03*x" # CV: x = sumEt, y = numVertices
-                ##shiftedMEtCorrY_string = "+5.54005e-01 - 2.94046e-03*x"
-                shiftedMEtCorrX_string = "+1.68804e-01 + 3.37139e-01*y"
+                shiftedMEtCorrX_string = "+1.68804e-01 + 3.37139e-01*y" # CV: x = sumEt, y = numVertices
                 shiftedMEtCorrY_string = "-1.72555e-01 - 1.79594e-01*y"
             else:
-                ##shiftedMEtCorrX_string = "+1.77344e-01 - 1.34333e-03*x"
-                ##shiftedMEtCorrY_string = "+8.08402e-01 - 2.84264e-03*x"
                 shiftedMEtCorrX_string = "+2.22335e-02 - 6.59183e-02*y"
                 shiftedMEtCorrY_string = "+1.52720e-01 - 1.28052e-01*y"
     elif metOptionName == "pfMEtNoPileUp" or metOptionName == "pfMEtNoPileUpSmeared":
-        if runPeriod == "2012RunAplusB":
+        if runPeriod == "2012RunABC":
             if processType == 'Data':
                 shiftedMEtCorrX_string = "+2.054e-01 + 1.301e-01*y"
                 shiftedMEtCorrY_string = "-2.658e-01 - 8.730e-02*y"

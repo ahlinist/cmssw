@@ -70,7 +70,7 @@ def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.c
     subprocess.call('rm %s' % tmpOutputFileName, shell = True)
     return retVal
 
-def checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string):
+def checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit):
     outputFileInfos_matched = []
     for outputFileInfo in outputFileInfos:
         outputFileName_match = outputFileName_matcher.match(outputFileInfo['file'])
@@ -132,6 +132,8 @@ multipleJobs_regex     = r'(?P<jobId_first>[0-9]+)-(?P<jobId_last>[0-9]+)'
 multipleJobs_matcher   = re.compile(multipleJobs_regex)
 singleJob_regex        = r'(?P<jobId>[0-9]+)'
 singleJob_matcher      = re.compile(singleJob_regex)
+numJobs_regex          = r'[a-zA-Z0-9\:\-,\.\[\]\s]*Total of (?P<numJobs>[0-9]+) jobs created.'
+numJobs_matcher        = re.compile(numJobs_regex)
 
 key_value_pair_regex   = r'(?P<key>[a-zA-Z0-9_]+)\s*=\s*(?P<value>.+)\s*'
 key_value_pair_matcher = re.compile(key_value_pair_regex)
@@ -155,7 +157,7 @@ shellScriptCommands = []
 
 crabJobs = runCommand('%s %s' % (executable_ls, crabFilePath))
 for crabJob in crabJobs:
-    print("crabJob = %s" % crabJob)
+    print("crabJob = %s" % crabJob.replace('\n', ''))
     crabJob_match = jobName_matcher.match(crabJob)
     if crabJob_match:
         
@@ -196,6 +198,7 @@ for crabJob in crabJobs:
                     if storage_path_match:
                         # output files stored on castor
                         outputFilePath_prefix = storage_path_match.group('storage_path')
+        crabConfigFile.close()
         if not outputFilePath_prefix:
             # output files stored on EOS
             outputFilePath_prefix = '/store/user/%s/' % userName
@@ -205,9 +208,24 @@ for crabJob in crabJobs:
         # CV: multiple output files not supported yet
         print("outputFileName = %s" % outputFileName)
         if outputFileName.find(',') != -1:
-            raise ValueError("Multiple putput files not yet supported !!")
+            raise ValueError("Multiple output files not yet supported !!")
         outputFileName_regex = outputFileName.replace('.', '_(?P<jobId>\d+)_(?P<try>\d+)_(?P<hash>[a-zA-Z0-9]+).')
         outputFileName_matcher = re.compile(outputFileName_regex)
+
+        # read number of jobs from crab log file
+        crabLogFileName = os.path.join(crabFilePath, crabJob, 'log/crab.log')
+        crabLogFile = open(crabLogFileName, "r")
+        crabLog_lines = crabLogFile.readlines()
+        numJobs = None
+        for crabLog_line in crabLog_lines:
+            numJobs_match = numJobs_matcher.match(crabLog_line)
+            if numJobs_match:
+                numJobs = int(numJobs_match.group('numJobs'))
+        crabLogFile.close()
+        if not numJobs:            
+            raise ValueError("Failed to read number of jobs from log file %s !!" \
+                             % crabLogFileName)
+        print "numJobs = %i" % numJobs
 
         # read list of files existing in output file path
         outputFilePath = outputFilePath_prefix
@@ -234,9 +252,9 @@ for crabJob in crabJobs:
                 continue    
             if crabStatus_line.find("Traceback (most recent call last):"):
                 print("Failed to execute 'crab -status' command --> checking output files:")
-                for jobId in range(1, 5000):
+                for jobId in range(1, numJobs):
                     jobId_string = "%i" % jobId
-                    checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string)                            
+                    checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit)                            
                 isCrabFailure = True
             crabStatus_match = crabStatus_matcher.match(crabStatus_line)
             if crabStatus_match:
@@ -286,7 +304,7 @@ for crabJob in crabJobs:
                                 print("Info: jobId = %i is in state 'Scheduled' --> resubmitting it" % jobId)
                                 jobIds_force_resubmit.append(jobId)
                         elif jobStatus in [ 'Done' ]:
-                            checkOutputFiless(outputFileInfos, outputFileName_matcher, jobId_string)
+                            checkOutputFiless(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit)
 
                         # update job status dictionary
                         if jobStatus_dict[crabJob].has_key(jobId_string):
