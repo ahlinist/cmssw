@@ -5,7 +5,6 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-#include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
 #include <TMath.h>
