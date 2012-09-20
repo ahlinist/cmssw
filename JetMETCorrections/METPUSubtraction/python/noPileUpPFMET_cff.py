@@ -10,18 +10,13 @@ calibratedAK5PFJetsForNoPileUpMEt = cms.EDProducer('PFJetCorrectionProducer',
 ak5PFJetSequenceForNoPileUpMEt = cms.Sequence(calibratedAK5PFJetsForNoPileUpMEt)
 noPileUpPFMEtSequence += ak5PFJetSequenceForNoPileUpMEt
 
-from CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
-puJetIdDataForNoPileUpMEt = puJetId.clone(
-    jets = cms.InputTag('calibratedAK5PFJetsForNoPileUpMEt'),
+from RecoJets.JetProducers.PileupJetID_cfi import pileupJetIdProducer
+puJetIdForNoPileUpMEt = pileupJetIdProducer.clone(
+    produceJetIds = cms.bool(True),
+    runMvas = cms.bool(True),
+    jets = cms.InputTag("calibratedAK5PFJetsForNoPileUpMEt"),
     applyJec = cms.bool(False),
-    inputIsCorrected = cms.bool(True)               
-)
-noPileUpPFMEtSequence += puJetIdDataForNoPileUpMEt
-puJetIdForNoPileUpMEt = puJetMva.clone(
-    jetids = cms.InputTag('puJetIdDataForNoPileUpMEt'),
-    jets = cms.InputTag('calibratedAK5PFJetsForNoPileUpMEt'),
-    applyJec = cms.bool(False),
-    inputIsCorrected = cms.bool(True)               
+    inputIsCorrected = cms.bool(True),                                     
 )
 noPileUpPFMEtSequence += puJetIdForNoPileUpMEt
 

@@ -9,7 +9,7 @@ from RecoJets.JetProducers.PileupJetIDParams_cfi                        import J
 
 calibratedAK5PFJetsForPFMEtMVA = cms.EDProducer('PFJetCorrectionProducer',
     src = cms.InputTag('ak5PFJets'),
-    correctors = cms.vstring("ak5PFL1FastL2L3Residual") #for Data
+    correctors = cms.vstring("ak5PFL1FastL2L3Residual")
 )
 
 pfMEtMVA = cms.EDProducer("PFMETProducerMVA",
@@ -56,7 +56,6 @@ pfMEtMVA = cms.EDProducer("PFMETProducerMVA",
     ),
     tmvaSpectators = cms.vstring(),
     JetIdParams = JetIdParams,
-    label = cms.string("PhilV1"),
     verbosity = cms.int32(0)
 )
 
