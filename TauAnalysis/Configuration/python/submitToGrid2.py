@@ -27,6 +27,9 @@ $runselection
 ui_working_dir = $ui_working_dir
 return_data = $return_data
 copy_data = $copy_data
+publish_data = $publish_data
+publish_data_name = $publish_data_name
+dbs_url_for_publication = $dbs_url_for_publication
 storage_element = $storage_element
 user_remote_dir = $user_remote_dir
 #check_user_remote_dir = 0
@@ -35,9 +38,6 @@ user_remote_dir = $user_remote_dir
 $SE_white_list
 $SE_black_list
 ''')
-##publish_data = $publish_data
-##publish_data_name = $publish_data_name
-##dbs_url_for_publication = $dbs_url_for_publication
 
 _CRAB_DEFAULTS = {
     'number_of_jobs' : 150,
@@ -55,14 +55,14 @@ _CRAB_DEFAULTS = {
     #------------------------------------
     #------------------------------------
     # for storing output of crab job on eos @ CERN
-    'storage_element' : 'T2_CH_CERN',
+    #'storage_element' : 'T2_CH_CERN',
     #------------------------------------
     #------------------------------------
     # for publishing output in DBS
-    ##'storage_element' : 'T2_FR_GRIF_LLR',
-    ##'publish_data' : 1,
-    ##'publish_data_name' : 'ElecMuStream',
-    ##'dbs_url_for_publication' : 'https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet', 
+    'storage_element' : 'T2_FR_GRIF_LLR',
+    'publish_data' : 1,
+    'publish_data_name' : 'ZmumuRecoilSelection',
+    'dbs_url_for_publication' : 'https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet', 
     #------------------------------------
     'lumi_mask' : '',
     'runselection' : ''
@@ -111,7 +111,8 @@ def submitToGrid(configFile, jobInfo, crabOptions, crabFileName_full = None, ui_
         crabFileName = "crab_" + jobName + ".cfg"
         crabFileName_full = os.path.join(submissionDirectory, crabFileName)
         crabFile = open(crabFileName_full, 'w')
-        crabFile.write(_CRAB_TEMPLATE.substitute(fullCrabOptions))
+        crabConfig = _CRAB_TEMPLATE.substitute(fullCrabOptions)
+        crabFile.write(crabConfig)
         crabFile.close()
     elif ui_working_dir is None:
         raise ValueError('Undefined ui_working_dir !!')
