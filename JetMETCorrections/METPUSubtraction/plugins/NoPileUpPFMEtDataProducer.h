@@ -8,9 +8,9 @@
  * \authors Phil Harris, CERN
  *          Christian Veelken, LLR
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NoPileUpPFMEtDataProducer.h,v 1.1 2012/08/31 08:45:32 veelken Exp $
+ * $Id: NoPileUpPFMEtDataProducer.h,v 1.2 2012/09/18 02:08:49 pharris Exp $
  *
  */
 
@@ -20,7 +20,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
-#include "RecoJets/JetProducers//interface/PileupJetIdentifier.h" //PH: migrate to CMSSW
+#include "DataFormats/JetReco/interface/PileupJetIdentifier.h" 
 
 #include "JetMETCorrections/METPUSubtraction/interface/PFMEtSignInterfaceBase.h"
 
