@@ -151,6 +151,18 @@ NSVfitAlgorithmByIntegration2::~NSVfitAlgorithmByIntegration2()
     delete (*it);
   }
 
+  for ( std::map<std::string, TH1*>::iterator it = probHistResonancePt_.begin();
+	it != probHistResonancePt_.end(); ++it ) {
+    delete it->second;
+  }
+  for ( std::map<std::string, TH1*>::iterator it = probHistResonanceEta_.begin();
+	it != probHistResonanceEta_.end(); ++it ) {
+    delete it->second;
+  }
+  for ( std::map<std::string, TH1*>::iterator it = probHistResonancePhi_.begin();
+	it != probHistResonancePhi_.end(); ++it ) {
+    delete it->second;
+  }
   for ( std::map<std::string, TH1*>::iterator it = probHistResonanceMass_.begin();
 	it != probHistResonanceMass_.end(); ++it ) {
     delete it->second;
@@ -215,9 +227,18 @@ void NSVfitAlgorithmByIntegration2::beginJob()
   for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
 	resonance != eventModel_->resonances_.end(); ++resonance ) {
     const std::string& resonanceName = (*resonance)->resonanceName_;
-    std::string histogramName = std::string("probHistResonanceMass").append("_").append(resonanceName);
-    TH1* histogram = bookMassHistogram(histogramName.data());
-    probHistResonanceMass_.insert(std::pair<std::string, TH1*>(resonanceName, histogram));
+    std::string histogramPtName = std::string("probHistResonancePt").append("_").append(resonanceName);
+    TH1* histogramPt = bookPtHistogram(histogramPtName.data());
+    probHistResonancePt_.insert(std::pair<std::string, TH1*>(resonanceName, histogramPt));
+    std::string histogramEtaName = std::string("probHistResonanceEta").append("_").append(resonanceName);
+    TH1* histogramEta = bookEtaHistogram(histogramEtaName.data());
+    probHistResonanceEta_.insert(std::pair<std::string, TH1*>(resonanceName, histogramEta));
+    std::string histogramPhiName = std::string("probHistResonancePhi").append("_").append(resonanceName);
+    TH1* histogramPhi = bookPhiHistogram(histogramPhiName.data());
+    probHistResonancePhi_.insert(std::pair<std::string, TH1*>(resonanceName, histogramPhi));
+    std::string histogramMassName = std::string("probHistResonanceMass").append("_").append(resonanceName);
+    TH1* histogramMass = bookMassHistogram(histogramMassName.data());
+    probHistResonanceMass_.insert(std::pair<std::string, TH1*>(resonanceName, histogramMass));
   }
   probHistEventMass_ = bookMassHistogram("probHistEventMass");
   auxFillProbHistograms_ = new AuxFillProbHistograms(this);
@@ -251,11 +272,44 @@ void NSVfitAlgorithmByIntegration2::beginEvent(const edm::Event& evt, const edm:
   currentEventNumber_ = evt.id().event();
 }
 
+TH1* NSVfitAlgorithmByIntegration2::bookPtHistogram(const std::string& histogramName)
+{
+  double xMin = 1.;
+  double xMax = 1.e+3;
+  double logBinWidth = 1.01;
+  int numBins = 1 + TMath::Log(xMax/xMin)/TMath::Log(logBinWidth);
+  TArrayF binning(numBins + 1);
+  binning[0] = 0.;
+  double x = xMin;  
+  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    binning[iBin] = x;
+    //std::cout << "binning[" << iBin << "] = " << binning[iBin] << std::endl;
+    x *= logBinWidth;
+  }  
+  std::string histogramName_full = std::string(pluginName_).append("_").append(histogramName);
+  TH1* histogram = new TH1D(histogramName_full.data(), histogramName_full.data(), numBins, binning.GetArray());
+  return histogram;
+}
+
+TH1* NSVfitAlgorithmByIntegration2::bookEtaHistogram(const std::string& histogramName)
+{
+  std::string histogramName_full = std::string(pluginName_).append("_").append(histogramName);
+  TH1* histogram = new TH1D(histogramName_full.data(), histogramName_full.data(), 198, -9.9, +9.9);
+  return histogram;
+}
+
+TH1* NSVfitAlgorithmByIntegration2::bookPhiHistogram(const std::string& histogramName)
+{
+  std::string histogramName_full = std::string(pluginName_).append("_").append(histogramName);
+  TH1* histogram = new TH1D(histogramName_full.data(), histogramName_full.data(), 360, -TMath::Pi(), +TMath::Pi());
+  return histogram;
+}
+
 TH1* NSVfitAlgorithmByIntegration2::bookMassHistogram(const std::string& histogramName)
 {
   double xMin = 1.e+1;
   double xMax = 1.e+4;
-  double logBinWidth = 1.01;
+  double logBinWidth = 1.025;
   int numBins = TMath::Log(xMax/xMin)/TMath::Log(logBinWidth);
   TArrayF binning(numBins + 1);
   double x = xMin;  
@@ -267,6 +321,21 @@ TH1* NSVfitAlgorithmByIntegration2::bookMassHistogram(const std::string& histogr
   std::string histogramName_full = std::string(pluginName_).append("_").append(histogramName);
   TH1* histogram = new TH1D(histogramName_full.data(), histogramName_full.data(), numBins, binning.GetArray());
   return histogram;
+}
+
+TH1* compHistogramDensity(const TH1* histogram)
+{
+  std::string histogramName_density = std::string(histogram->GetName()).append("_density");
+  TH1* histogram_density = (TH1*)histogram->Clone(histogramName_density.data());
+  for ( int iBin = 1; iBin <= histogram->GetNbinsX(); ++iBin ) {
+    double binContent = histogram->GetBinContent(iBin);
+    double binError = histogram->GetBinError(iBin);
+    double binWidth = histogram->GetBinWidth(iBin);
+    assert(binWidth > 0.);
+    histogram_density->SetBinContent(iBin, binContent/binWidth);
+    histogram_density->SetBinError(iBin, binError/binWidth);
+  }
+  return histogram_density;
 }
 
 void NSVfitAlgorithmByIntegration2::fitImp() const
@@ -307,10 +376,41 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     const std::string& resonanceName = (*resonance)->resonanceName_;
     NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance(resonanceName));
     assert(resonance);
-    std::map<std::string, TH1*>::const_iterator histogram = probHistResonanceMass_.find(resonanceName);
-    assert(histogram != probHistResonanceMass_.end());
-    if ( errorFlag == 0 ) setMassResults(resonance, histogram->second);
-    else resonance->isValidSolution_ = false;
+    std::map<std::string, TH1*>::const_iterator histogramMass = probHistResonanceMass_.find(resonanceName);
+    assert(histogramMass != probHistResonanceMass_.end());
+    if ( errorFlag == 0 ) {
+      setMassResults(resonance, histogramMass->second);
+      std::map<std::string, TH1*>::const_iterator histogramPt = probHistResonancePt_.find(resonanceName);
+      assert(histogramPt != probHistResonancePt_.end());
+      TH1* histogramPt_density = compHistogramDensity(histogramPt->second);
+      std::map<std::string, TH1*>::const_iterator histogramEta = probHistResonanceEta_.find(resonanceName);
+      assert(histogramEta != probHistResonanceEta_.end());
+      TH1* histogramEta_density = compHistogramDensity(histogramEta->second);
+      std::map<std::string, TH1*>::const_iterator histogramPhi = probHistResonancePhi_.find(resonanceName);
+      assert(histogramPhi != probHistResonancePhi_.end());
+      TH1* histogramPhi_density = compHistogramDensity(histogramPhi->second);
+      if ( histogramPt_density->Integral()  > 0. &&
+	   histogramEta_density->Integral() > 0. &&
+	   histogramPhi_density->Integral() > 0. ) {
+	double ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084;
+        extractHistogramProperties(
+          histogramPt->second, histogramPt_density,
+          ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
+	double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
+        extractHistogramProperties(
+          histogramEta->second, histogramEta_density,
+          etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084);
+	double phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084;
+        extractHistogramProperties(
+          histogramPhi->second, histogramPhi_density,
+          phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084);
+	reco::Candidate::PolarLorentzVector resonanceP4_fitted(
+	  ptMaximum_interpol, etaMaximum_interpol, phiMaximum_interpol, resonance->mass_);
+	resonance->dp4_ = resonanceP4_fitted - resonance->p4_;
+      }
+    } else {
+      resonance->isValidSolution_ = false;
+    }
   }
 
   if ( verbosity_ >= 2 ) {
@@ -349,17 +449,7 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
 
 void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase* resonance, const TH1* histMassResult) const
 {
-  std::string histMassResultName_density = std::string(histMassResult->GetName()).append("_cloned");
-  TH1* histMassResult_density = (TH1*)histMassResult->Clone(histMassResultName_density.data());
-  for ( int iBin = 1; iBin <= histMassResult->GetNbinsX(); ++iBin ) {
-    double binContent = histMassResult->GetBinContent(iBin);
-    double binError = histMassResult->GetBinError(iBin);
-    double binWidth = histMassResult->GetBinWidth(iBin);
-    assert(binWidth > 0.);
-    histMassResult_density->SetBinContent(iBin, binContent/binWidth);
-    histMassResult_density->SetBinError(iBin, binError/binWidth);
-  }
-
+  TH1* histMassResult_density = compHistogramDensity(histMassResult);
   if ( histMassResult_density->Integral() > 0. ) {
     double massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084;
     extractHistogramProperties(
@@ -373,7 +463,7 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     double massErrUp   = TMath::Abs(massQuantile084 - mass);
     double massErrDown = TMath::Abs(mass - massQuantile016);
     NSVfitAlgorithmBase::setMassResults(resonance, mass, massErrUp, massErrDown);
-  
+     
     resonance->isValidSolution_ = true;
     
     if ( verbosity_ >= 1 ) {
@@ -441,9 +531,19 @@ void NSVfitAlgorithmByIntegration2::fillProbHistograms(const double* x)
     const std::string& resonanceName = (*resonance)->resonanceName_;
     const NSVfitResonanceHypothesis* resonance = currentEventHypothesis_->resonance(resonanceName);
     assert(resonance);
-    TH1* histogram = probHistResonanceMass_[resonanceName];
-    assert(histogram);
-    histogram->Fill(resonance->p4_fitted().mass());
+    reco::Candidate::LorentzVector resonanceP4_fitted = resonance->p4_fitted();
+    TH1* histogramPt = probHistResonancePt_[resonanceName];
+    assert(histogramPt);
+    histogramPt->Fill(resonanceP4_fitted.pt());
+    TH1* histogramEta = probHistResonanceEta_[resonanceName];
+    assert(histogramEta);
+    histogramEta->Fill(resonanceP4_fitted.eta());
+    TH1* histogramPhi  = probHistResonancePhi_[resonanceName];
+    assert(histogramPhi);
+    histogramPhi->Fill(resonanceP4_fitted.phi());
+    TH1* histogramMass = probHistResonanceMass_[resonanceName];
+    assert(histogramMass);
+    histogramMass->Fill(resonanceP4_fitted.mass());
   }
   probHistEventMass_->Fill(currentEventHypothesis_->p4_fitted().mass());  
   probListEventMass_.push_back(currentEventHypothesis_->p4_fitted().mass());  

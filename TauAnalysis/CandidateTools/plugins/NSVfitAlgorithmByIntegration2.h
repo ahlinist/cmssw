@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitAlgorithmByIntegration2.h,v 1.2 2012/08/28 15:00:22 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration2.h,v 1.3 2012/09/01 08:45:44 veelken Exp $
  *
  */
 
@@ -51,6 +51,9 @@ class NSVfitAlgorithmByIntegration2 : public NSVfitAlgorithmBase
   void fillProbHistograms(const double*);
 
  protected:
+  TH1* bookPtHistogram(const std::string& name);
+  TH1* bookEtaHistogram(const std::string& name);
+  TH1* bookPhiHistogram(const std::string& name);
   TH1* bookMassHistogram(const std::string& name);
 
   void fitImp() const;
@@ -85,6 +88,9 @@ class NSVfitAlgorithmByIntegration2 : public NSVfitAlgorithmBase
   double* fitParameterValues_;
 
   std::vector<TH1*> probHistFitParameter_;
+  std::map<std::string, TH1*> probHistResonancePt_;
+  std::map<std::string, TH1*> probHistResonanceEta_;
+  std::map<std::string, TH1*> probHistResonancePhi_;
   std::map<std::string, TH1*> probHistResonanceMass_;
   TH1* probHistEventMass_;
   mutable std::vector<double> probListEventMass_;
