@@ -6,18 +6,22 @@
 
 usage(){
   echo
-  echo "Usage: $0 tagName iovsToCheck.txt XMLFiles.txt"
+  echo "Usage: $0 tagName database iovsToCheck.txt XMLFiles.txt"
   echo "    where tagName is the name of the tag in the DB"
+  echo "          databaseName is the name of the  database that the tag is in"
+  echo "          pathName is the name of the authentication Path"
   echo "          iovsToCheck is a file listing the (since) IOVs, one per line"
   echo "          XMLFiles is a file listing the XML files to be compared in the same order as the IOVs, one per line"
   echo
-  echo "Example: $0 EcalTimeCalibConstants_v06_offline iovsToCheck.txt xmlsToCheck.txt"
+  echo "Example: $0 EcalTimeCalibConstants_v06_offline oracle://cms_orcoff_prod/CMS_COND_31X_ECAL /afs/cern.ch/cms/DB/conddb/ADG iovsToCheck.txt xmlsToCheck.txt"
   exit 1
 }
 
 myTagName=$1
-iovFile=$2
-xmlFile=$3
+myDatabaseName=$2
+myPathName=$3
+iovFile=$4
+xmlFile=$5
 
 # validate user input
 if [ -z "$myTagName" ] && [ "${myTagName+xxx}" = "xxx" ]; then
@@ -54,7 +58,7 @@ for i in $(seq 0 $((${#myIOVs[@]} - 1))); do
   myFileName=$myTagName${myIOVs[$i]}.xml
   echo
   echo "Dumping IOV: ${myIOVs[$i]} from tag: $myTagName into file: $myFileName"
-  $myCondDBTool --dump=$myFileName -t $myTagName -s ${myIOVs[$i]}
+  $myCondDBTool --dump=$myFileName -c $myDatabaseName -P $myPathName  -t $myTagName -s ${myIOVs[$i]}
   # Diff to local XML
   echo "Diffing $myFileName to ${myXMLs[$i]}"
   diff $myFileName ${myXMLs[$i]}
