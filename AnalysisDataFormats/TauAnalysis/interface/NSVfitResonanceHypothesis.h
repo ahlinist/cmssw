@@ -79,6 +79,7 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   friend class NSVfitResonanceBuilder;
   friend class NSVfitResonanceBuilderW;
   friend class NSVfitAlgorithmByLikelihoodMaximization;
+  friend class NSVfitAlgorithmByIntegration2;
   friend class NSVfitResonanceLikelihoodMatrixElementW;
   template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
 
