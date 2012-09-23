@@ -223,13 +223,19 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
       sumNoPUjetOffsetEnCorr->mey   += jet->offsetEnCorr_*TMath::Sin(jet->p4_.phi())*TMath::Sin(jet->p4_.theta());
       sumNoPUjetOffsetEnCorr->mez   += jet->offsetEnCorr_*TMath::Cos(jet->p4_.theta());
       sumNoPUjetOffsetEnCorr->sumet += jet->offsetEnCorr_*TMath::Sin(jet->p4_.theta());
-      metsig::SigInputObj pfMEtSignObjectOffsetEnCorr(
-        jet->pfMEtSignObj_.get_type(),
-	jet->offsetEnCorr_,
-	jet->pfMEtSignObj_.get_phi(),
-	(jet->offsetEnCorr_/jet->p4_.E())*jet->pfMEtSignObj_.get_sigma_e(),
-	jet->pfMEtSignObj_.get_sigma_tan());
-      metSignObjectsNoPUjetOffsetEnCorr.push_back(pfMEtSignObjectOffsetEnCorr);
+      std::string pType     = jet->pfMEtSignObj_.get_type();
+      double      pOffset   = jet->offsetEnCorr_;
+      double      pPhi      = jet->pfMEtSignObj_.get_phi();
+      double      pSigma    = (jet->offsetEnCorr_/jet->p4_.E())*jet->pfMEtSignObj_.get_sigma_e();
+      double      pSigmaTan = jet->pfMEtSignObj_.get_sigma_tan();
+      metsig::SigInputObj pfMEtSignObjectOffsetEnCorr(pType,pOffset,pPhi,pSigma,pSigmaTan);
+      //metsig::SigInputObj pfMEtSignObjectOffsetEnCorr(
+      //  jet->pfMEtSignObj_.get_type(),
+      //	jet->offsetEnCorr_,
+      //jet->pfMEtSignObj_.get_phi(),
+      //	(jet->offsetEnCorr_/jet->p4_.E())*jet->pfMEtSignObj_.get_sigma_e(),
+      //	jet->pfMEtSignObj_.get_sigma_tan());
+      //metSignObjectsNoPUjetOffsetEnCorr.push_back(pfMEtSignObjectOffsetEnCorr);
       ++jetIdx;
     } else {
       if ( verbosity_ ) printP4("jet", jetIdx, " (PU)", jet->p4_);
