@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.66 2012/06/09 19:30:23 meridian Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.67 2012/09/11 08:44:43 meridian Exp $
 //
 //
 
@@ -2859,6 +2859,279 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	}
       }
     }
+  Int_t nPfCand_all = 0;
+  Int_t nPfCand_injet = 0;
+  Int_t nChargedHadrons = 0;
+  Int_t nChargedHadronsgoodvtx = 0;
+  Int_t nChargedHadronsnoothervtx = 0;
+  Int_t nPhotons = 0;
+  Int_t nNeutralHadrons = 0;
+  Int_t nElectrons = 0;
+  Int_t nMuons = 0;
+  Int_t nHFHadrons = 0;
+  Int_t nHFEM = 0;
+  
+  TLorentzVector p4PfCand_all;
+  TLorentzVector p4ChargedHadrons_uncl;
+  TLorentzVector p4ChargedHadronsgoodvtx_uncl;
+  TLorentzVector p4ChargedHadronsnoothervtx_uncl;
+  TLorentzVector p4Photons_uncl;
+  TLorentzVector p4NeutralHadrons_uncl;
+  TLorentzVector p4Electrons_uncl;
+  TLorentzVector p4Muons_uncl;
+  TLorentzVector p4HFHadrons_uncl;
+  TLorentzVector p4HFEM_uncl;
+
+  sumptpfcand_all = 0;
+  sumptChargedHadrons_uncl = 0;
+  sumptChargedHadronsgoodvtx_uncl = 0;
+  sumptChargedHadronsnoothervtx_uncl = 0;
+  sumptPhotons_uncl = 0;
+  sumptNeutralHadrons_uncl = 0;
+  sumptElectrons_uncl = 0;
+  sumptMuons_uncl = 0;
+  sumptHFHadrons_uncl = 0;
+  sumptHFEM_uncl = 0;
+	  
+  for (PFCandidateCollection::const_iterator jt = PFCandidates->begin();
+       jt != PFCandidates->end(); ++jt) {
+
+    PFCandidate::ParticleType id = jt->particleId();
+    // Convert particle momentum to normal TLorentzVector, wrong type :(
+    math::XYZTLorentzVectorD const& p4t = jt->p4();
+    TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+    TLorentzVector jetp4;
+    nPfCand_all += 1;
+    p4PfCand_all += p4;
+    sumptpfcand_all += p4.Pt();
+ 
+    bool injet(0);
+    int countjet(0);
+
+    for (PFJetCollection::const_iterator it = pfjetsakt5->begin(); 
+	 it != pfjetsakt5->end(); ++it) {
+      
+      vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
+      
+      for (vector<PFCandidatePtr>::const_iterator jtjet = pfCandidates.begin();
+	   jtjet != pfCandidates.end(); ++jtjet) {
+	
+
+	if (jt->pt() == (*jtjet)->pt() && it->pt() > pfjetptthr_ && countjet<100) 
+	  {
+	    injet = 1;
+	    nPfCand_injet += 1;    
+	  }
+      }     
+      countjet++;
+      
+    }
+
+    if(!injet) {
+      PFCandidate::ParticleType id = jt->particleId();
+      
+      if (id==PFCandidate::h) { // charged hadrons
+	nChargedHadrons += 1;
+	p4ChargedHadrons_uncl += p4;
+	sumptChargedHadrons_uncl += p4.Pt();
+	int myVertex=-1;
+	//---- loop over all vertices ----------------------------
+	for(unsigned ivtx = 0;ivtx <  VertexHandle->size();ivtx++) {
+	  //---- loop over the tracks associated with the vertex ---
+	  if (!((* VertexHandle)[ivtx].isFake()) && (* VertexHandle)[ivtx].ndof() >= DEF_GOODVTX_NDOF && fabs((* VertexHandle)[ivtx].z()) <= DEF_GOODVTX_Z) {
+	    for(reco::Vertex::trackRef_iterator i_vtxTrk = (* VertexHandle)[ivtx].tracks_begin(); i_vtxTrk != (* VertexHandle)[ivtx].tracks_end(); ++i_vtxTrk) {
+	      //---- match the jet track to the track from the vertex ----
+	      reco::TrackRef trkRef(i_vtxTrk->castTo<reco::TrackRef>());
+	      //---- check if the tracks match -------------------------
+	      if (trkRef == jt->trackRef()) 
+		{
+		  myVertex=ivtx;
+		  if(ivtx == 0){
+		    nChargedHadronsgoodvtx += 1;
+		    p4ChargedHadronsgoodvtx_uncl += p4;
+		    sumptChargedHadronsgoodvtx_uncl += p4.Pt();
+		    nChargedHadronsnoothervtx += 1;
+		    p4ChargedHadronsnoothervtx_uncl += p4;
+		    sumptChargedHadronsnoothervtx_uncl += p4.Pt();
+		  }
+		  break;
+		}
+	    }
+	  }	  
+	}
+	if (myVertex==-1){
+	  nChargedHadronsnoothervtx += 1;
+	  p4ChargedHadronsnoothervtx_uncl += p4;	  
+	  sumptChargedHadronsnoothervtx_uncl += p4.Pt();
+	}
+	
+      }
+      else if (id==PFCandidate::e) { // electrons
+	nElectrons += 1;
+	p4Electrons_uncl += p4;
+	sumptElectrons_uncl += p4.Pt();
+      }
+      else if (id==PFCandidate::mu) { // muons
+	nMuons += 1;
+	p4Muons_uncl += p4;
+ 	sumptMuons_uncl += p4.Pt();
+     }
+      else if (id==PFCandidate::gamma) { // photons
+	nPhotons += 1;
+	p4Photons_uncl += p4;
+	sumptPhotons_uncl += p4.Pt();
+      }
+      else if (id==PFCandidate::h0) { // neutral hadrons
+	nNeutralHadrons += 1;
+	p4NeutralHadrons_uncl += p4;
+	sumptNeutralHadrons_uncl += p4.Pt();
+      }
+      else if (id==PFCandidate::h_HF) { // HF hadrons
+	nHFHadrons += 1;
+	p4HFHadrons_uncl += p4;
+	sumptHFHadrons_uncl += p4.Pt();
+      }
+      else if (id==PFCandidate::egamma_HF) { // HF EM clusters
+	nHFEM += 1;
+	p4HFEM_uncl += p4;
+	sumptHFEM_uncl += p4.Pt();
+      }
+      else cout << "SCREAMMMMMM" << endl;
+    }
+  }
+  
+  npfcand_all =  nPfCand_all;
+  const TLorentzVector *p = 0;
+  p = &p4PfCand_all;
+  epfcand_all = p->E();
+  if(p->E()){
+    ptpfcand_all = p->Pt();
+    etapfcand_all = p->Eta();
+    phipfcand_all = p->Phi();
+  }else{	    
+    ptpfcand_all = 0.;
+    etapfcand_all = -999.;
+    phipfcand_all = -999.;
+  }	
+
+  nChargedHadrons_uncl =  nChargedHadrons;
+  p = &p4ChargedHadrons_uncl;
+  eChargedHadrons_uncl = p->E();
+  if(p->E()){
+    ptChargedHadrons_uncl = p->Pt();
+    etaChargedHadrons_uncl = p->Eta();
+    phiChargedHadrons_uncl = p->Phi();
+  }else{	    
+    ptChargedHadrons_uncl = 0.;
+    etaChargedHadrons_uncl = -999.;
+    phiChargedHadrons_uncl = -999.;
+  }	
+  
+  nChargedHadronsgoodvtx_uncl =  nChargedHadronsgoodvtx;
+  p = &p4ChargedHadronsgoodvtx_uncl;
+  eChargedHadronsgoodvtx_uncl = p->E();
+  if(p->E()){
+    ptChargedHadronsgoodvtx_uncl = p->Pt();
+    etaChargedHadronsgoodvtx_uncl = p->Eta();
+    phiChargedHadronsgoodvtx_uncl = p->Phi();
+  }else{	    
+    ptChargedHadronsgoodvtx_uncl = 0.;
+    etaChargedHadronsgoodvtx_uncl = -999.;
+    phiChargedHadronsgoodvtx_uncl = -999.;
+  }	
+  
+  nChargedHadronsnoothervtx_uncl =  nChargedHadronsnoothervtx;
+  p = &p4ChargedHadronsnoothervtx_uncl;
+  eChargedHadronsnoothervtx_uncl = p->E();
+  if(p->E()){
+    ptChargedHadronsnoothervtx_uncl = p->Pt();
+    etaChargedHadronsnoothervtx_uncl = p->Eta();
+    phiChargedHadronsnoothervtx_uncl = p->Phi();
+  }else{	    
+    ptChargedHadronsnoothervtx_uncl = 0.;
+    etaChargedHadronsnoothervtx_uncl = -999.;
+    phiChargedHadronsnoothervtx_uncl = -999.;
+  }	
+  
+  nElectrons_uncl =  nElectrons;
+  p = &p4Electrons_uncl;
+  eElectrons_uncl = p->E();
+  if(p->E()){
+    ptElectrons_uncl = p->Pt();
+    etaElectrons_uncl = p->Eta();
+    phiElectrons_uncl = p->Phi();
+  }else{
+    ptElectrons_uncl = 0.;
+    etaElectrons_uncl = -999.;
+    phiElectrons_uncl = -999.;
+  }
+  
+  nMuons_uncl =  nMuons;
+  p = &p4Muons_uncl;
+  eMuons_uncl = p->E();
+  if(p->E()){
+    ptMuons_uncl = p->Pt();
+    etaMuons_uncl = p->Eta();
+    phiMuons_uncl = p->Phi();
+  }else{
+    ptMuons_uncl = 0.;
+    etaMuons_uncl = -999.;
+    phiMuons_uncl = -999.;
+  }
+  
+  nPhotons_uncl =  nPhotons;
+  p = &p4Photons_uncl;
+  ePhotons_uncl = p->E();
+  if(p->E()){	  
+    ptPhotons_uncl = p->Pt();
+    etaPhotons_uncl = p->Eta();
+    phiPhotons_uncl = p->Phi();
+  }else{
+    ptPhotons_uncl = 0.;
+    etaPhotons_uncl = -999.;
+    phiPhotons_uncl = -999.;
+  }
+  
+  nNeutralHadrons_uncl =  nNeutralHadrons;
+  p = &p4NeutralHadrons_uncl;
+  eNeutralHadrons_uncl = p->E();
+  if(p->E()){	  
+    ptNeutralHadrons_uncl = p->Pt();
+    etaNeutralHadrons_uncl = p->Eta();
+    phiNeutralHadrons_uncl = p->Phi();
+  }else{
+    ptNeutralHadrons_uncl = 0.;
+    etaNeutralHadrons_uncl = -999.;
+    phiNeutralHadrons_uncl = -999.;
+  }
+  
+  nHFHadrons_uncl =  nHFHadrons;
+  p = &p4HFHadrons_uncl;
+  eHFHadrons_uncl = p->E();
+  if(p->E()){	  
+    ptHFHadrons_uncl = p->Pt();
+    etaHFHadrons_uncl = p->Eta();
+    phiHFHadrons_uncl = p->Phi();
+  }else{
+    ptHFHadrons_uncl = 0.;
+    etaHFHadrons_uncl = -999.;
+    phiHFHadrons_uncl = -999.;
+  }	    
+  
+  nHFEM_uncl =  nHFEM;
+  p = &p4HFEM_uncl;
+  eHFEM_uncl = p->E();
+  if(p->E()){	  
+    ptHFEM_uncl = p->Pt();
+    etaHFEM_uncl = p->Eta();
+    phiHFEM_uncl = p->Phi();
+  }else{
+    ptHFEM_uncl = 0.;
+    etaHFEM_uncl = -999.;
+    phiHFEM_uncl = -999.;
+  }	    
+
+  Int_t nCandinjet = 0;
 
   if (dumpAKT5Jets_)
     {
@@ -2882,6 +3155,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  
 	  // Extra variables for PFlow studies
 	  Int_t nChargedHadrons = 0;
+	  Int_t nChargedHadronsgoodvtx = 0;
+	  Int_t nChargedHadronsnoothervtx = 0;
 	  Int_t nPhotons = 0;
 	  Int_t nNeutralHadrons = 0;
 	  Int_t nElectrons = 0;
@@ -2890,6 +3165,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  Int_t nHFEM = 0;
 	  
 	  TLorentzVector p4ChargedHadrons;
+	  TLorentzVector p4ChargedHadronsgoodvtx;
+	  TLorentzVector p4ChargedHadronsnoothervtx;
 	  TLorentzVector p4Photons;
 	  TLorentzVector p4NeutralHadrons;
 	  TLorentzVector p4Electrons;
@@ -2897,6 +3174,16 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  TLorentzVector p4HFHadrons;
 	  TLorentzVector p4HFEM;
 	  
+	  sumptChargedHadrons_pfakt5[nJet_pfakt5] = 0;
+	  sumptChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = 0;
+	  sumptChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = 0;
+	  sumptPhotons_pfakt5[nJet_pfakt5] = 0;
+	  sumptNeutralHadrons_pfakt5[nJet_pfakt5] = 0;
+	  sumptElectrons_pfakt5[nJet_pfakt5] = 0;
+	  sumptMuons_pfakt5[nJet_pfakt5] = 0;
+	  sumptHFHadrons_pfakt5[nJet_pfakt5] = 0;
+	  sumptHFEM_pfakt5[nJet_pfakt5] = 0;
+
 	  vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
 	  
 	  float rms_cands_wrong=0.;
@@ -2973,30 +3260,37 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 		if (id==PFCandidate::h) { // charged hadrons
 		  nChargedHadrons += 1;
 		  p4ChargedHadrons += p4;
+		  sumptChargedHadrons_pfakt5[nJet_pfakt5] += p4.Pt();
 		}
 		if (id==PFCandidate::e) { // electrons
 		  nElectrons += 1;
 		  p4Electrons += p4;
+		  sumptElectrons_pfakt5[nJet_pfakt5] += p4.Pt();
 		}
 		if (id==PFCandidate::mu) { // muons
 		  nMuons += 1;
 		  p4Muons += p4;
+		  sumptMuons_pfakt5[nJet_pfakt5] += p4.Pt();
 		}
 		if (id==PFCandidate::gamma) { // photons
 		  nPhotons += 1;
 		  p4Photons += p4;
+		  sumptPhotons_pfakt5[nJet_pfakt5] += p4.Pt();
 		}
 		if (id==PFCandidate::h0) { // neutral hadrons
 		  nNeutralHadrons += 1;
 		  p4NeutralHadrons += p4;
+		  sumptNeutralHadrons_pfakt5[nJet_pfakt5] += p4.Pt();
 		}
 		if (id==PFCandidate::h_HF) { // HF hadrons
 		  nHFHadrons += 1;
 		  p4HFHadrons += p4;
+		  sumptHFHadrons_pfakt5[nJet_pfakt5] += p4.Pt();
 		}
 		if (id==PFCandidate::egamma_HF) { // HF EM clusters
 		  nHFEM += 1;
 		  p4HFEM += p4;
+		  sumptHFEM_pfakt5[nJet_pfakt5] += p4.Pt();
 		}
 
 
@@ -3239,31 +3533,93 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  nChargedHadrons_pfakt5[nJet_pfakt5] =  nChargedHadrons;
 	  p = &p4ChargedHadrons;
 	  eChargedHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){
+	    ptChargedHadrons_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaChargedHadrons_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiChargedHadrons_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{	    
+	    ptChargedHadrons_pfakt5[nJet_pfakt5] = 0.;
+	    etaChargedHadrons_pfakt5[nJet_pfakt5] = -999.;
+	    phiChargedHadrons_pfakt5[nJet_pfakt5] = -999.;
+	  }	
 	  
 	  nElectrons_pfakt5[nJet_pfakt5] =  nElectrons;
 	  p = &p4Electrons;
 	  eElectrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){
+	    ptElectrons_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaElectrons_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiElectrons_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{
+	    ptElectrons_pfakt5[nJet_pfakt5] = 0.;
+	    etaElectrons_pfakt5[nJet_pfakt5] = -999.;
+	    phiElectrons_pfakt5[nJet_pfakt5] = -999.;
+	  }
 	  
 	  nMuons_pfakt5[nJet_pfakt5] =  nMuons;
 	  p = &p4Muons;
 	  eMuons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){
+	    ptMuons_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaMuons_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiMuons_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{
+	    ptMuons_pfakt5[nJet_pfakt5] = 0.;
+	    etaMuons_pfakt5[nJet_pfakt5] = -999.;
+	    phiMuons_pfakt5[nJet_pfakt5] = -999.;
+	  }
 	  
 	  nPhotons_pfakt5[nJet_pfakt5] =  nPhotons;
 	  p = &p4Photons;
 	  ePhotons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){	  
+	    ptPhotons_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaPhotons_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiPhotons_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{
+	    ptPhotons_pfakt5[nJet_pfakt5] = 0.;
+	    etaPhotons_pfakt5[nJet_pfakt5] = -999.;
+	    phiPhotons_pfakt5[nJet_pfakt5] = -999.;
+	  }
 	  
 	  nNeutralHadrons_pfakt5[nJet_pfakt5] =  nNeutralHadrons;
 	  p = &p4NeutralHadrons;
 	  eNeutralHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){	  
+	    ptNeutralHadrons_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaNeutralHadrons_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiNeutralHadrons_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{
+	    ptNeutralHadrons_pfakt5[nJet_pfakt5] = 0.;
+	    etaNeutralHadrons_pfakt5[nJet_pfakt5] = -999.;
+	    phiNeutralHadrons_pfakt5[nJet_pfakt5] = -999.;
+	  }
 	  
 	  nHFHadrons_pfakt5[nJet_pfakt5] =  nHFHadrons;
 	  p = &p4HFHadrons;
 	  eHFHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){	  
+	    ptHFHadrons_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaHFHadrons_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiHFHadrons_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{
+	    ptHFHadrons_pfakt5[nJet_pfakt5] = 0.;
+	    etaHFHadrons_pfakt5[nJet_pfakt5] = -999.;
+	    phiHFHadrons_pfakt5[nJet_pfakt5] = -999.;
+	  }	    
 	  
 	  nHFEM_pfakt5[nJet_pfakt5] =  nHFEM;
 	  p = &p4HFEM;
 	  eHFEM_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-	  
+	  if(p->E()){	  
+	    ptHFEM_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaHFEM_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiHFEM_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{
+	    ptHFEM_pfakt5[nJet_pfakt5] = 0.;
+	    etaHFEM_pfakt5[nJet_pfakt5] = -999.;
+	    phiHFEM_pfakt5[nJet_pfakt5] = -999.;
+	  }	    	  
 	  
 	  int index = nJet_pfakt5;
 	  combinedSecondaryVertexBJetTags_pfakt5[index] = -999.;
@@ -3319,11 +3675,50 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 		    sumTrkPtBeta[ivtx] += (*i_trk)->pt();
 		  else
 		    sumTrkPtBetaStar[ivtx] += (*i_trk)->pt();
+		  if (ivtx == 0) {
+		    nChargedHadronsgoodvtx += 1;
+		    nChargedHadronsnoothervtx += 1;
+		    TLorentzVector p4((*i_trk)->px(), (*i_trk)->py(), (*i_trk)->pz(), (*i_trk)->p());
+		    p4ChargedHadronsgoodvtx += p4;
+		    p4ChargedHadronsnoothervtx += p4;
+		    sumptChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] += p4.Pt();
+		  }
 		}
-	      }
+	      } else {
+	      TLorentzVector p4((*i_trk)->px(), (*i_trk)->py(), (*i_trk)->pz(), (*i_trk)->p());
+	      nChargedHadronsnoothervtx += 1;
+	      p4ChargedHadronsnoothervtx += p4;
+	      sumptChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] += p4.Pt();
+	    }
+
 	  }
 	  
+	  nChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] =  nChargedHadronsgoodvtx;
+	  p = &p4ChargedHadronsgoodvtx;
+	  eChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){
+	    ptChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{	    
+	    ptChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = 0.;
+	    etaChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = -999.;
+	    phiChargedHadronsgoodvtx_pfakt5[nJet_pfakt5] = -999.;
+	  }	
 	  
+	  nChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] =  nChargedHadronsnoothervtx;
+	  p = &p4ChargedHadronsnoothervtx;
+	  eChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  if(p->E()){
+	    ptChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = p->Pt();
+	    etaChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = p->Eta();
+	    phiChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = p->Phi();
+	  }else{	    
+	    ptChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = 0.;
+	    etaChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = -999.;
+	    phiChargedHadronsnoothervtx_pfakt5[nJet_pfakt5] = -999.;
+	  }	
+	
 	  if (sumTrkPt > 0) {
 	    for(unsigned ivtx = 0; ivtx <  VertexHandle->size();ivtx++) {
 	      beta_pfakt5[index][ivtx]     = sumTrkPtBeta[ivtx]/sumTrkPt;
@@ -4075,9 +4470,73 @@ GammaJetAnalyzer::beginJob()
       m_tree->Branch("trackCountingHighPurBJetTags", &trackCountingHighPurBJetTags_pfakt5, "trackCountingHighPurBJetTags[nJet_pfakt5]/F");
       m_tree->Branch("trackCountingHighEffBJetTags", &trackCountingHighEffBJetTags_pfakt5, "trackCountingHighEffBJetTags[nJet_pfakt5]/F");
       
+      m_tree->Branch("npfcand_all",&npfcand_all,"npfcand_all/I");
+      m_tree->Branch("nChargedHadrons_uncl",&nChargedHadrons_uncl,"nChargedHadrons_uncl/I");
+      m_tree->Branch("nChargedHadronsgoodvtx_uncl",&nChargedHadronsgoodvtx_uncl,"nChargedHadronsgoodvtx_uncl/I");
+      m_tree->Branch("nChargedHadronsnoothervtx_uncl",&nChargedHadronsnoothervtx_uncl,"nChargedHadronsothervtx_uncl/I");
+      m_tree->Branch("nPhotons_uncl",       &nPhotons_uncl,       "nPhotons_uncl/I");
+      m_tree->Branch("nMuons_uncl",         &nMuons_uncl,         "nMuons_uncl/I");
+      m_tree->Branch("nElectrons_uncl",     &nElectrons_uncl,     "nElectrons_uncl/I");
+      m_tree->Branch("nNeutralHadrons_uncl",&nNeutralHadrons_uncl,"nNeutralHadrons_uncl/I");
+      m_tree->Branch("nHFHadrons_uncl",     &nHFHadrons_uncl,     "nHFHadrons_uncl/I");
+      m_tree->Branch("nHFEM_uncl",     &nHFEM_uncl,     "nHFEM_uncl/I");
+      
+      m_tree->Branch("epfcand_all",&epfcand_all,"epfcand_all/F");
+      m_tree->Branch("eChargedHadrons_uncl",&eChargedHadrons_uncl,"eChargedHadrons_uncl/F");
+      m_tree->Branch("eChargedHadronsgoodvtx_uncl",&eChargedHadronsgoodvtx_uncl,"eChargedHadronsgoodvtx_uncl/F");
+      m_tree->Branch("eChargedHadronsnoothervtx_uncl",&eChargedHadronsnoothervtx_uncl,"eChargedHadronsnoothervtx_uncl/F");
+      m_tree->Branch("ePhotons_uncl",&ePhotons_uncl,"ePhotons_uncl/F");
+      m_tree->Branch("eMuons_uncl",&eMuons_uncl,"eMuons_uncl/F");
+      m_tree->Branch("eElectrons_uncl",&eElectrons_uncl,"eElectrons_uncl/F");
+      m_tree->Branch("eNeutralHadrons_uncl",&eNeutralHadrons_uncl,"eNeutralHadrons_uncl/F");
+      m_tree->Branch("eHFHadrons_uncl",&eHFHadrons_uncl,"eHFHadrons_uncl/F");
+      m_tree->Branch("eHFEM_uncl",&eHFEM_uncl,"eHFEM_uncl/F");
+      m_tree->Branch("ptpfcand_all",&ptpfcand_all,"ptpfcand_all/F");
+      m_tree->Branch("ptChargedHadrons_uncl",&ptChargedHadrons_uncl,"ptChargedHadrons_uncl/F");
+      m_tree->Branch("ptChargedHadronsgoodvtx_uncl",&ptChargedHadronsgoodvtx_uncl,"ptChargedHadronsgoodvtx_uncl/F");
+      m_tree->Branch("ptChargedHadronsnoothervtx_uncl",&ptChargedHadronsnoothervtx_uncl,"ptChargedHadronsnoothervtx_uncl/F");
+      m_tree->Branch("ptPhotons_uncl",&ptPhotons_uncl,"ptPhotons_uncl/F");
+      m_tree->Branch("ptMuons_uncl",&ptMuons_uncl,"ptMuons_uncl/F");
+      m_tree->Branch("ptElectrons_uncl",&ptElectrons_uncl,"ptElectrons_uncl/F");
+      m_tree->Branch("ptNeutralHadrons_uncl",&ptNeutralHadrons_uncl,"ptNeutralHadrons_uncl/F");
+      m_tree->Branch("ptHFHadrons_uncl",&ptHFHadrons_uncl,"ptHFHadrons_uncl/F");
+      m_tree->Branch("ptHFEM_uncl",&ptHFEM_uncl,"ptHFEM_uncl/F");
+      m_tree->Branch("ptpfcand_all",&ptpfcand_all,"ptpfcand_all/F");
+      m_tree->Branch("etaChargedHadrons_uncl",&etaChargedHadrons_uncl,"etaChargedHadrons_uncl/F");
+      m_tree->Branch("etaChargedHadronsgoodvtx_uncl",&etaChargedHadronsgoodvtx_uncl,"etaChargedHadronsgoodvtx_uncl/F");
+      m_tree->Branch("etaChargedHadronsnoothervtx_uncl",&etaChargedHadronsnoothervtx_uncl,"etaChargedHadronsnoothervtx_uncl/F");
+      m_tree->Branch("etaPhotons_uncl",&etaPhotons_uncl,"etaPhotons_uncl/F");
+      m_tree->Branch("etaMuons_uncl",&etaMuons_uncl,"etaMuons_uncl/F");
+      m_tree->Branch("etaElectrons_uncl",&etaElectrons_uncl,"etaElectrons_uncl/F");
+      m_tree->Branch("etaNeutralHadrons_uncl",&etaNeutralHadrons_uncl,"etaNeutralHadrons_uncl/F");
+      m_tree->Branch("etaHFHadrons_uncl",&etaHFHadrons_uncl,"etaHFHadrons_uncl/F");
+      m_tree->Branch("etaHFEM_uncl",&etaHFEM_uncl,"etaHFEM_uncl/F");
+      m_tree->Branch("ptpfcand_all",&ptpfcand_all,"ptpfcand_all/F");
+      m_tree->Branch("phiChargedHadrons_uncl",&phiChargedHadrons_uncl,"phiChargedHadrons_uncl/F");
+      m_tree->Branch("phiChargedHadronsgoodvtx_uncl",&phiChargedHadronsgoodvtx_uncl,"phiChargedHadronsgoodvtx_uncl/F");
+      m_tree->Branch("phiChargedHadronsnoothervtx_uncl",&phiChargedHadronsnoothervtx_uncl,"phiChargedHadronsnoothervtx_uncl/F");
+      m_tree->Branch("phiPhotons_uncl",&phiPhotons_uncl,"phiPhotons_uncl/F");
+      m_tree->Branch("phiMuons_uncl",&phiMuons_uncl,"phiMuons_uncl/F");
+      m_tree->Branch("phiElectrons_uncl",&phiElectrons_uncl,"phiElectrons_uncl/F");
+      m_tree->Branch("phiNeutralHadrons_uncl",&phiNeutralHadrons_uncl,"phiNeutralHadrons_uncl/F");
+      m_tree->Branch("phiHFHadrons_uncl",&phiHFHadrons_uncl,"phiHFHadrons_uncl/F");
+      m_tree->Branch("phiHFEM_uncl",&phiHFEM_uncl,"phiHFEM_uncl/F");
+      m_tree->Branch("sumptpfcand_all",&sumptpfcand_all,"sumptpfcand_all/F");
+      m_tree->Branch("sumptChargedHadrons_uncl",&sumptChargedHadrons_uncl,"sumptChargedHadrons_uncl/F");
+      m_tree->Branch("sumptChargedHadronsgoodvtx_uncl",&sumptChargedHadronsgoodvtx_uncl,"sumptChargedHadronsgoodvtx_uncl/F");
+      m_tree->Branch("sumptChargedHadronsnoothervtx_uncl",&sumptChargedHadronsnoothervtx_uncl,"sumptChargedHadronsnoothervtx_uncl/F");
+      m_tree->Branch("sumptPhotons_uncl",&sumptPhotons_uncl,"sumptPhotons_uncl/F");
+      m_tree->Branch("sumptMuons_uncl",&sumptMuons_uncl,"sumptMuons_uncl/F");
+      m_tree->Branch("sumptElectrons_uncl",&sumptElectrons_uncl,"sumptElectrons_uncl/F");
+      m_tree->Branch("sumptNeutralHadrons_uncl",&sumptNeutralHadrons_uncl,"sumptNeutralHadrons_uncl/F");
+      m_tree->Branch("sumptHFHadrons_uncl",&sumptHFHadrons_uncl,"sumptHFHadrons_uncl/F");
+      m_tree->Branch("sumptHFEM_uncl",&sumptHFEM_uncl,"sumptHFEM_uncl/F");
+      m_tree->Branch("sumptpfcand_all",&sumptpfcand_all,"sumptpfcand_all/F");
 
       //   // Extra variables for PFlow studies
       m_tree->Branch("nChargedHadrons_pfakt5",nChargedHadrons_pfakt5,"nChargedHadrons_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nChargedHadronsgoodvtx_pfakt5",nChargedHadronsgoodvtx_pfakt5,"nChargedHadronsgoodvtx_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nChargedHadronsnoothervtx_pfakt5",nChargedHadronsnoothervtx_pfakt5,"nChargedHadronsnoothervtx_pfakt5[nJet_pfakt5]/I");
       m_tree->Branch("nPhotons_pfakt5",       nPhotons_pfakt5,       "nPhotons_pfakt5[nJet_pfakt5]/I");
       m_tree->Branch("nMuons_pfakt5",         nMuons_pfakt5,         "nMuons_pfakt5[nJet_pfakt5]/I");
       m_tree->Branch("nElectrons_pfakt5",     nElectrons_pfakt5,     "nElectrons_pfakt5[nJet_pfakt5]/I");
@@ -4086,12 +4545,50 @@ GammaJetAnalyzer::beginJob()
       m_tree->Branch("nHFEM_pfakt5",     nHFEM_pfakt5,     "nHFEM_pfakt5[nJet_pfakt5]/I");
       
       m_tree->Branch("eChargedHadrons_pfakt5",eChargedHadrons_pfakt5,"eChargedHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eChargedHadronsgoodvtx_pfakt5",eChargedHadronsgoodvtx_pfakt5,"eChargedHadronsgoodvtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eChargedHadronsnoothervtx_pfakt5",eChargedHadronsnoothervtx_pfakt5,"eChargedHadronsnoothervtx_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("ePhotons_pfakt5",ePhotons_pfakt5,"ePhotons_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("eMuons_pfakt5",eMuons_pfakt5,"eMuons_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("eElectrons_pfakt5",eElectrons_pfakt5,"eElectrons_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("eNeutralHadrons_pfakt5",eNeutralHadrons_pfakt5,"eNeutralHadrons_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("eHFHadrons_pfakt5",eHFHadrons_pfakt5,"eHFHadrons_pfakt5[nJet_pfakt5]/F");
       m_tree->Branch("eHFEM_pfakt5",eHFEM_pfakt5,"eHFEM_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptChargedHadrons_pfakt5",ptChargedHadrons_pfakt5,"ptChargedHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptChargedHadronsgoodvtx_pfakt5",ptChargedHadronsgoodvtx_pfakt5,"ptChargedHadronsgoodvtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptChargedHadronsnoothervtx_pfakt5",ptChargedHadronsnoothervtx_pfakt5,"ptChargedHadronsnoothervtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptPhotons_pfakt5",ptPhotons_pfakt5,"ptPhotons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptMuons_pfakt5",ptMuons_pfakt5,"ptMuons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptElectrons_pfakt5",ptElectrons_pfakt5,"ptElectrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptNeutralHadrons_pfakt5",ptNeutralHadrons_pfakt5,"ptNeutralHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptHFHadrons_pfakt5",ptHFHadrons_pfakt5,"ptHFHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptHFEM_pfakt5",ptHFEM_pfakt5,"ptHFEM_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaChargedHadrons_pfakt5",etaChargedHadrons_pfakt5,"etaChargedHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaChargedHadronsgoodvtx_pfakt5",etaChargedHadronsgoodvtx_pfakt5,"etaChargedHadronsgoodvtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaChargedHadronsnoothervtx_pfakt5",etaChargedHadronsnoothervtx_pfakt5,"etaChargedHadronsnoothervtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaPhotons_pfakt5",etaPhotons_pfakt5,"etaPhotons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaMuons_pfakt5",etaMuons_pfakt5,"etaMuons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaElectrons_pfakt5",etaElectrons_pfakt5,"etaElectrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaNeutralHadrons_pfakt5",etaNeutralHadrons_pfakt5,"etaNeutralHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaHFHadrons_pfakt5",etaHFHadrons_pfakt5,"etaHFHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaHFEM_pfakt5",etaHFEM_pfakt5,"etaHFEM_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiChargedHadrons_pfakt5",phiChargedHadrons_pfakt5,"phiChargedHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiChargedHadronsgoodvtx_pfakt5",phiChargedHadronsgoodvtx_pfakt5,"phiChargedHadronsgoodvtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiChargedHadronsnoothervtx_pfakt5",phiChargedHadronsnoothervtx_pfakt5,"phiChargedHadronsnoothervtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiPhotons_pfakt5",phiPhotons_pfakt5,"phiPhotons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiMuons_pfakt5",phiMuons_pfakt5,"phiMuons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiElectrons_pfakt5",phiElectrons_pfakt5,"phiElectrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiNeutralHadrons_pfakt5",phiNeutralHadrons_pfakt5,"phiNeutralHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiHFHadrons_pfakt5",phiHFHadrons_pfakt5,"phiHFHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiHFEM_pfakt5",phiHFEM_pfakt5,"phiHFEM_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptChargedHadrons_pfakt5",sumptChargedHadrons_pfakt5,"sumptChargedHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptChargedHadronsgoodvtx_pfakt5",sumptChargedHadronsgoodvtx_pfakt5,"sumptChargedHadronsgoodvtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptChargedHadronsnoothervtx_pfakt5",sumptChargedHadronsnoothervtx_pfakt5,"sumptChargedHadronsnoothervtx_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptPhotons_pfakt5",sumptPhotons_pfakt5,"sumptPhotons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptMuons_pfakt5",sumptMuons_pfakt5,"sumptMuons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptElectrons_pfakt5",sumptElectrons_pfakt5,"sumptElectrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptNeutralHadrons_pfakt5",sumptNeutralHadrons_pfakt5,"sumptNeutralHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptHFHadrons_pfakt5",sumptHFHadrons_pfakt5,"sumptHFHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("sumptHFEM_pfakt5",sumptHFEM_pfakt5,"sumptHFEM_pfakt5[nJet_pfakt5]/F");
     }
 
   if (dumpPFAKT7Jets_)

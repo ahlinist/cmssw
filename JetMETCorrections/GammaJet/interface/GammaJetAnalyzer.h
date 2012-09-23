@@ -542,10 +542,76 @@ TH2D* h2_n_vs_eta;
               trackCountingHighEffBJetTags_pfakt5[100];
 
 
+      Int_t npfcand_all;
+      Int_t nChargedHadrons_uncl;
+      Int_t nChargedHadronsgoodvtx_uncl;
+      Int_t nChargedHadronsnoothervtx_uncl;
+      Int_t nPhotons_uncl;
+      Int_t nElectrons_uncl;
+      Int_t nMuons_uncl;
+      Int_t nNeutralHadrons_uncl;
+      Int_t nHFHadrons_uncl;
+      Int_t nHFEM_uncl;
 
+      Float_t epfcand_all;
+      Float_t eChargedHadrons_uncl;
+      Float_t eChargedHadronsgoodvtx_uncl;
+      Float_t eChargedHadronsnoothervtx_uncl;
+      Float_t ePhotons_uncl;
+      Float_t eElectrons_uncl;
+      Float_t eMuons_uncl;
+      Float_t eNeutralHadrons_uncl;
+      Float_t eHFHadrons_uncl;
+      Float_t eHFEM_uncl;
+
+      Float_t ptpfcand_all;
+      Float_t ptChargedHadrons_uncl;
+      Float_t ptChargedHadronsgoodvtx_uncl;
+      Float_t ptChargedHadronsnoothervtx_uncl;
+      Float_t ptPhotons_uncl;
+      Float_t ptElectrons_uncl;
+      Float_t ptMuons_uncl;
+      Float_t ptNeutralHadrons_uncl;
+      Float_t ptHFHadrons_uncl;
+      Float_t ptHFEM_uncl;
+
+      Float_t etapfcand_all;
+      Float_t etaChargedHadrons_uncl;
+      Float_t etaChargedHadronsgoodvtx_uncl;
+      Float_t etaChargedHadronsnoothervtx_uncl;
+      Float_t etaPhotons_uncl;
+      Float_t etaElectrons_uncl;
+      Float_t etaMuons_uncl;
+      Float_t etaNeutralHadrons_uncl;
+      Float_t etaHFHadrons_uncl;
+      Float_t etaHFEM_uncl;
+
+      Float_t phipfcand_all;
+      Float_t phiChargedHadrons_uncl;
+      Float_t phiChargedHadronsgoodvtx_uncl;
+      Float_t phiChargedHadronsnoothervtx_uncl;
+      Float_t phiPhotons_uncl;
+      Float_t phiElectrons_uncl;
+      Float_t phiMuons_uncl;
+      Float_t phiNeutralHadrons_uncl;
+      Float_t phiHFHadrons_uncl;
+      Float_t phiHFEM_uncl;
+
+      Float_t sumptpfcand_all;
+      Float_t sumptChargedHadrons_uncl;
+      Float_t sumptChargedHadronsgoodvtx_uncl;
+      Float_t sumptChargedHadronsnoothervtx_uncl;
+      Float_t sumptPhotons_uncl;
+      Float_t sumptElectrons_uncl;
+      Float_t sumptMuons_uncl;
+      Float_t sumptNeutralHadrons_uncl;
+      Float_t sumptHFHadrons_uncl;
+      Float_t sumptHFEM_uncl;
 
       // Extra variables for PFlow studies
       Int_t nChargedHadrons_pfakt5[100];
+      Int_t nChargedHadronsgoodvtx_pfakt5[100];
+      Int_t nChargedHadronsnoothervtx_pfakt5[100];
       Int_t nPhotons_pfakt5[100];
       Int_t nElectrons_pfakt5[100];
       Int_t nMuons_pfakt5[100];
@@ -554,12 +620,54 @@ TH2D* h2_n_vs_eta;
       Int_t nHFEM_pfakt5[100];
 
       Float_t eChargedHadrons_pfakt5[100];
+      Float_t eChargedHadronsgoodvtx_pfakt5[100];
+      Float_t eChargedHadronsnoothervtx_pfakt5[100];
       Float_t ePhotons_pfakt5[100];
       Float_t eElectrons_pfakt5[100];
       Float_t eMuons_pfakt5[100];
       Float_t eNeutralHadrons_pfakt5[100];
       Float_t eHFHadrons_pfakt5[100];
       Float_t eHFEM_pfakt5[100];
+
+       Float_t ptChargedHadrons_pfakt5[100];
+      Float_t ptChargedHadronsgoodvtx_pfakt5[100];
+      Float_t ptChargedHadronsnoothervtx_pfakt5[100];
+      Float_t ptPhotons_pfakt5[100];
+      Float_t ptElectrons_pfakt5[100];
+      Float_t ptMuons_pfakt5[100];
+      Float_t ptNeutralHadrons_pfakt5[100];
+      Float_t ptHFHadrons_pfakt5[100];
+      Float_t ptHFEM_pfakt5[100];
+
+      Float_t etaChargedHadrons_pfakt5[100];
+      Float_t etaChargedHadronsgoodvtx_pfakt5[100];
+      Float_t etaChargedHadronsnoothervtx_pfakt5[100];
+      Float_t etaPhotons_pfakt5[100];
+      Float_t etaElectrons_pfakt5[100];
+      Float_t etaMuons_pfakt5[100];
+      Float_t etaNeutralHadrons_pfakt5[100];
+      Float_t etaHFHadrons_pfakt5[100];
+      Float_t etaHFEM_pfakt5[100];
+
+      Float_t phiChargedHadrons_pfakt5[100];
+      Float_t phiChargedHadronsgoodvtx_pfakt5[100];
+      Float_t phiChargedHadronsnoothervtx_pfakt5[100];
+      Float_t phiPhotons_pfakt5[100];
+      Float_t phiElectrons_pfakt5[100];
+      Float_t phiMuons_pfakt5[100];
+      Float_t phiNeutralHadrons_pfakt5[100];
+      Float_t phiHFHadrons_pfakt5[100];
+      Float_t phiHFEM_pfakt5[100];
+
+      Float_t sumptChargedHadrons_pfakt5[100];
+      Float_t sumptChargedHadronsgoodvtx_pfakt5[100];
+      Float_t sumptChargedHadronsnoothervtx_pfakt5[100];
+      Float_t sumptPhotons_pfakt5[100];
+      Float_t sumptElectrons_pfakt5[100];
+      Float_t sumptMuons_pfakt5[100];
+      Float_t sumptNeutralHadrons_pfakt5[100];
+      Float_t sumptHFHadrons_pfakt5[100];
+      Float_t sumptHFEM_pfakt5[100];
 
       Int_t nJet_pfakt7;
       Float_t ptJet_pfakt7[100];
