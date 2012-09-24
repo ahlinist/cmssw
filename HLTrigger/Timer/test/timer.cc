@@ -5,17 +5,28 @@
 #include <algorithm>
 #include <cmath>
 #include <boost/foreach.hpp>
+
 // for timespec and clock_gettime
 #include <time.h>
+
 // for timeval and gettimeofday
 #include <sys/time.h>
+
 // for timeval and getrusage
 #include <sys/resource.h>
+
 // for omp_get_wtime
 #include <omp.h>
+
 // for times and tms, and sysconf
 #include <sys/times.h>
 #include <unistd.h>
+
+#if defined(__APPLE__) || defined(__MACH__)
+// Darwin system headers
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif // defined(__APPLE__) || defined(__MACH__)
 
 #define SIZE 1000000
 
@@ -129,6 +140,17 @@ double TimerBase<timespec>::delta(const timespec & start, const timespec & stop)
     return (double) (stop.tv_sec - start.tv_sec) - (double) (start.tv_nsec - stop.tv_nsec) / (double) 1e9;
 }
 
+#if defined(__APPLE__) || defined (__MACH__)
+// mach_timespec_t has a ns resolution
+template <>
+double TimerBase<mach_timespec_t>::delta(const mach_timespec_t & start, const mach_timespec_t & stop) {
+  if (stop.tv_nsec > start.tv_nsec)
+    return (double) (stop.tv_sec - start.tv_sec) + (double) (stop.tv_nsec - start.tv_nsec) / (double) 1e9;
+  else
+    return (double) (stop.tv_sec - start.tv_sec) - (double) (start.tv_nsec - stop.tv_nsec) / (double) 1e9;
+}
+#endif // defined(__APPLE__) || defined (__MACH__)
+
 // timeval has a us resolution
 template <>
 double TimerBase<timeval>::delta(const timeval & start, const timeval & stop) {
@@ -220,6 +242,61 @@ public:
 };
 #endif // __linux
 
+
+#if defined(__APPLE__) || defined (__MACH__)
+// clock_get_time <-- REALTIME_CLOCK
+class TimerClockGetTimrRealtimeClock : public TimerBase<mach_timespec_t> {
+public:
+  TimerClockGetTimrRealtimeClock() {
+    description = "clock_get_time() with REALTIME_CLOCK";
+
+    host_get_clock_service(mach_host_self(), REALTIME_CLOCK, &clock_port);
+    int value;
+    unsigned int size = 1;
+    clock_get_attributes( clock_port, CLOCK_GET_TIME_RES, & value, & size);
+    granularity = value * 1.e-9;
+  }
+
+  ~TimerClockGetTimrRealtimeClock() {
+    mach_port_deallocate(mach_task_self(), clock_port);
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      clock_get_time(clock_port, values+i);
+  }
+
+private:
+  clock_serv_t clock_port;
+};
+
+// clock_get_time <-- CALENDAR_CLOCK
+class TimerClockGetTimrCalendarClock : public TimerBase<mach_timespec_t> {
+public:
+  TimerClockGetTimrCalendarClock() {
+    description = "clock_get_time() with CALENDAR_CLOCK";
+
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &clock_port);
+    int value;
+    unsigned int size = 1;
+    clock_get_attributes( clock_port, CLOCK_GET_TIME_RES, & value, & size);
+    granularity = value * 1.e-9;
+  }
+
+  ~TimerClockGetTimrCalendarClock() {
+    mach_port_deallocate(mach_task_self(), clock_port);
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      clock_get_time(clock_port, values+i);
+  }
+
+private:
+  clock_serv_t clock_port;
+};
+#endif // defined(__APPLE__) || defined (__MACH__)
+
 // gettimeofday()
 class TimerGettimeofday : public TimerBase<timeval> {
 public:
@@ -259,7 +336,7 @@ class TimerOMPGetWtime : public TimerBase<double> {
 public:
   TimerOMPGetWtime() {
     description = "omp_get_wtime()";
-    granularity = 1e-9;
+    granularity = omp_get_wtick();
   }
 
   void measure() {
@@ -313,6 +390,10 @@ int main(void) {
   timers.push_back(new TimerClockGettimeRealtime());
   timers.push_back(new TimerClockGettimeMonotonic());
 #endif // __linux
+#if defined(__APPLE__) || defined (__MACH__)
+  timers.push_back(new TimerClockGetTimrRealtimeClock());
+  timers.push_back(new TimerClockGetTimrCalendarClock());
+#endif // defined(__APPLE__) || defined (__MACH__)
   timers.push_back(new TimerGettimeofday());
   timers.push_back(new TimerGetrusageSelf());
   timers.push_back(new TimerOMPGetWtime());
@@ -324,6 +405,8 @@ int main(void) {
     timer->compute();
     timer->report();
   }
+
+  std::cout << "Note: for each timer the resolution reported is the MEDIAN (MEAN +/- its STDDEV) of the increments measured during the test." << std::endl; 
 
   return 0;
 }
