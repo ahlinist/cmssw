@@ -20,8 +20,12 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = 'GR_R_42_V20::All'
 #process.GlobalTag.globaltag = 'GR_R_52_V7::All'
 #process.GlobalTag.globaltag = 'GR_R_52_V7::All'
-process.GlobalTag.globaltag = 'GR_P_V32::All'
-
+#process.GlobalTag.globaltag = 'GR_P_V32::All'
+#process.GlobalTag.globaltag = 'GR_P_V33::All'
+#process.GlobalTag.globaltag = 'GR_P_V37::All'
+#process.GlobalTag.globaltag = 'GR_P_V40::All'
+#process.GlobalTag.globaltag = 'FT_R_53_V6::All'
+process.GlobalTag.globaltag = 'GR_P_V40::All'
 
 # Trigger
 process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerScalesConfig_cff")
