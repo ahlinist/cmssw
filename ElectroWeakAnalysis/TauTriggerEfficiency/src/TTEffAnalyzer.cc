@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.69 2012/05/15 17:51:22 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.70 2012/05/16 07:50:39 slehti Exp $
 //
 //
 
@@ -40,6 +40,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
   pileupSummaryInfoSrc_(iConfig.getParameter<edm::InputTag>("PileupSummaryInfoSource")),
+  offlinePrimaryVertexSrc_(iConfig.getParameter<edm::InputTag>("offlineVertexSrc")),
+  hltPrimaryVertexSrc_(iConfig.getParameter<edm::InputTag>("hltVertexSrc")),
   PFTauIso_(iConfig.getParameter<std::string>("PFTauIsoDiscriminator")),
   PFTauMuonRej_(iConfig.getParameter<std::string>("PFTauMuonRejectionDiscriminator")),
   PFTauElectronRej_(iConfig.getParameter<std::string>("PFTauElectronRejectionDiscriminator")),
@@ -184,7 +186,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    b_run = iEvent.run();
    b_lumi = iEvent.luminosityBlock();
 
-   nPU = 0;
+//   nPU = 0;
    edm::Handle<std::vector<PileupSummaryInfo> > hpileup;
    iEvent.getByLabel(pileupSummaryInfoSrc_, hpileup);
    if(hpileup.isValid()) {
@@ -195,25 +197,37 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      nPU = npv/3.;
    }
 
+   nGoodOfflinePV_ = 0;
+   edm::Handle<edm::View<reco::Vertex> > hoffvertex;
+   if(iEvent.getByLabel(offlinePrimaryVertexSrc_, hoffvertex)){
+     nGoodOfflinePV_ = hoffvertex->size();
+   }
 
    // See https://twiki.cern.ch/twiki/bin/view/CMS/PileupMCReweightingUtilities
    edm::Handle<std::vector<PileupSummaryInfo> >  hpu;
    iEvent.getByLabel(pileupSummaryInfoSrc_, hpu);
    if(hpu.isValid()) {
    	int n0 = -1;
-   	int nm1 = -1;
-   	int np1 = -1;
+   	//int nm1 = -1;
+   	//int np1 = -1;
    	for(std::vector<PileupSummaryInfo>::const_iterator iPV = hpu->begin(); iPV != hpu->end(); ++iPV) {
-   	   if(iPV->getBunchCrossing() == -1)
-   	     nm1 = iPV->getTrueNumInteractions();
-   	   else if(iPV->getBunchCrossing() == 0)
+   	   //if(iPV->getBunchCrossing() == -1)
+   	   //  nm1 = iPV->getTrueNumInteractions();
+   	   //else 
+	   if(iPV->getBunchCrossing() == 0)
    	     n0 = iPV->getTrueNumInteractions();
-   	   else if(iPV->getBunchCrossing() == 1)
-   	     np1 = iPV->getTrueNumInteractions();
+   	   //else if(iPV->getBunchCrossing() == 1)
+   	     //np1 = iPV->getTrueNumInteractions();
    	}
    	if(n0 < 0) throw cms::Exception("Assert") << "VertexWeight: Didn't find the number of interactions for BX 0" << std::endl;;
 
    	nPU = n0;
+   }
+
+   primaryVertexIsValid_ = false;
+   edm::Handle<edm::View<reco::Vertex> > hvertices; 
+   if(iEvent.getByLabel(hltPrimaryVertexSrc_, hvertices)){
+     primaryVertexIsValid_ = hvertices->size() > 0;
    }
 
    edm::Handle<edm::View<reco::Candidate> > genericTaus;

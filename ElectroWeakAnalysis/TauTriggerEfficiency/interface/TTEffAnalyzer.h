@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.49 2011/09/20 10:14:05 mkortela Exp $
+// $Id: TTEffAnalyzer.h,v 1.50 2011/09/23 14:14:25 mkortela Exp $
 //
 //
 
@@ -92,6 +92,8 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::InputTag HLTResultsSource;
       edm::InputTag  PFTaus_,MCTaus_,MCParticles_;
       edm::InputTag pileupSummaryInfoSrc_;
+      edm::InputTag offlinePrimaryVertexSrc_;
+      edm::InputTag hltPrimaryVertexSrc_;
       std::string PFTauIso_, PFTauMuonRej_, PFTauElectronRej_;
       std::string rootFile_;
       std::vector<std::string> PFTauDiscriminators_;
@@ -119,7 +121,11 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       float pfJetChargedEmEnergy, pfJetChargedEmEnergyFraction, pfJetChargedHadronEnergy, pfJetChargedHadronEnergyFraction;
       float pfJetNeutralEmEnergy, pfJetNeutralEmEnergyFraction, pfJetNeutralHadronEnergy, pfJetNeutralHadronEnergyFraction;
       float PFSignalSumPt,PFIsoNTrks,PFIsoTrkNHits,PFIsoTrkChi2,PFIsoTrkPt;
-  float nPU;
+
+      float nPU;
+      bool primaryVertexIsValid_;
+      unsigned nGoodOfflinePV_;
+
       double MCMatchingCone;
       std::vector<float> discriminators;
       L1TauEfficiencyAnalyzer* _L1analyzer;
