@@ -26,6 +26,7 @@
 // Darwin system headers
 #include <mach/clock.h>
 #include <mach/mach.h>
+#include <mach/mach_time.h>
 #endif // defined(__APPLE__) || defined(__MACH__)
 
 #define SIZE 1000000
@@ -148,6 +149,12 @@ double TimerBase<mach_timespec_t>::delta(const mach_timespec_t & start, const ma
     return (double) (stop.tv_sec - start.tv_sec) + (double) (stop.tv_nsec - start.tv_nsec) / (double) 1e9;
   else
     return (double) (stop.tv_sec - start.tv_sec) - (double) (start.tv_nsec - stop.tv_nsec) / (double) 1e9;
+}
+
+// used by mach_absolute_time()
+template<>
+double TimerBase<uint64_t>::delta(const uint64_t & start, const uint64_t & stop) {
+  return (double) (stop - start) / (double) ticks_per_second;
 }
 #endif // defined(__APPLE__) || defined (__MACH__)
 
@@ -295,6 +302,25 @@ public:
 private:
   clock_serv_t clock_port;
 };
+
+class TimerMachAbsoluteTime : public TimerBase<uint64_t> {
+public:
+  TimerMachAbsoluteTime() {
+    description = "mach_absolute_time()";
+
+    mach_timebase_info(& timebase_info);
+    ticks_per_second = 1.e9 / timebase_info.numer * timebase_info.denom;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      values[i] = mach_absolute_time();
+  }
+
+private:
+  mach_timebase_info_data_t timebase_info;
+};
+
 #endif // defined(__APPLE__) || defined (__MACH__)
 
 // gettimeofday()
@@ -393,6 +419,7 @@ int main(void) {
 #if defined(__APPLE__) || defined (__MACH__)
   timers.push_back(new TimerClockGetTimrRealtimeClock());
   timers.push_back(new TimerClockGetTimrCalendarClock());
+  timers.push_back(new TimerMachAbsoluteTime());
 #endif // defined(__APPLE__) || defined (__MACH__)
   timers.push_back(new TimerGettimeofday());
   timers.push_back(new TimerGetrusageSelf());
