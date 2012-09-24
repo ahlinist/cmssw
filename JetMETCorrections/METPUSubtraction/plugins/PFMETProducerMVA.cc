@@ -4,7 +4,7 @@
 
 #include "RecoMET/METAlgorithms/interface/METAlgo.h" 
 #include "RecoMET/METAlgorithms/interface/PFSpecificAlgo.h"
-//#include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
@@ -330,15 +330,17 @@ double PFMETProducerMVA::chargedFrac(const reco::Candidate *iCand) {
       lPtCharged += (lPFTau->signalPFCands())[i0]->pt(); 
     }
   } 
-  //else { 
-  //  const pat::Tau *lPatPFTau = 0; 
-  //  lPatPFTau = dynamic_cast<const pat::Tau*>(iCand);//} 
-  //  for (UInt_t i0 = 0; i0 < lPatPFTau->signalPFCands().size(); i0++) { 
-  //    lPtTot += (lPatPFTau->signalPFCands())[i0]->pt(); 
-  //    if((lPatPFTau->signalPFCands())[i0]->charge() == 0) continue;
-  //    lPtCharged += (lPatPFTau->signalPFCands())[i0]->pt(); 
-  //  }
-  //}
+  else { 
+    const pat::Tau *lPatPFTau = 0; 
+    lPatPFTau = dynamic_cast<const pat::Tau*>(iCand);//} 
+    if(lPatPFTau != 0) { 
+      for (UInt_t i0 = 0; i0 < lPatPFTau->signalPFCands().size(); i0++) { 
+	lPtTot += (lPatPFTau->signalPFCands())[i0]->pt(); 
+	if((lPatPFTau->signalPFCands())[i0]->charge() == 0) continue;
+	lPtCharged += (lPatPFTau->signalPFCands())[i0]->pt(); 
+      }
+    }
+  }
   if(lPtTot == 0) lPtTot = 1.;
   return lPtCharged/lPtTot;
 }
