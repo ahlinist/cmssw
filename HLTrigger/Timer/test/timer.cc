@@ -96,7 +96,7 @@ public:
         double sum2 = 0.;
         for (size_t i = 0; i < steps.size(); ++i)
           sum2 += (steps[i] - resolution_mean) * (steps[i] - resolution_mean);
-        resolution_sigma = std::sqrt( sum2 / n );
+        resolution_sigma = std::sqrt( sum2 ) / n;
       }
     }
   }
