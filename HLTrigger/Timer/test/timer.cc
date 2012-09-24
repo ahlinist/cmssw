@@ -176,7 +176,7 @@ double TimerBase<clock_t>::delta(const clock_t & start, const clock_t & stop) {
   return (double) (stop-start) / (double) ticks_per_second;
 }
 
-#ifdef __linux
+#if defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
 // clock_gettime(CLOCK_THREAD_CPUTIME_ID)
 class TimerClockGettimeThread : public TimerBase<timespec> {
 public:
@@ -193,9 +193,7 @@ public:
       clock_gettime(CLOCK_THREAD_CPUTIME_ID, values+i);
   }
 };
-#endif // __linux
 
-#ifdef __linux
 // clock_gettime(CLOCK_PROCESS_CPUTIME_ID)
 class TimerClockGettimeProcess : public TimerBase<timespec> {
 public:
@@ -212,9 +210,7 @@ public:
       clock_gettime(CLOCK_PROCESS_CPUTIME_ID, values+i);
   }
 };
-#endif // __linux
 
-#ifdef __linux
 // clock_gettime(CLOCK_REALTIME)
 class TimerClockGettimeRealtime : public TimerBase<timespec> {
 public:
@@ -231,9 +227,7 @@ public:
       clock_gettime(CLOCK_REALTIME, values+i);
   }
 };
-#endif // __linux
 
-#ifdef __linux
 // clock_gettime(CLOCK_MONOTONIC)
 class TimerClockGettimeMonotonic : public TimerBase<timespec> {
 public:
@@ -250,8 +244,7 @@ public:
       clock_gettime(CLOCK_MONOTONIC, values+i);
   }
 };
-#endif // __linux
-
+#endif // defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
 
 #if defined(__APPLE__) || defined (__MACH__)
 // clock_get_time <-- REALTIME_CLOCK
@@ -324,7 +317,6 @@ public:
 private:
   mach_timebase_info_data_t timebase_info;
 };
-
 #endif // defined(__APPLE__) || defined (__MACH__)
 
 // gettimeofday()
@@ -414,12 +406,12 @@ public:
 
 int main(void) {
   std::vector<TimerInterface *> timers;
-#ifdef __linux
+#if defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
   timers.push_back(new TimerClockGettimeThread());
   timers.push_back(new TimerClockGettimeProcess());
   timers.push_back(new TimerClockGettimeRealtime());
   timers.push_back(new TimerClockGettimeMonotonic());
-#endif // __linux
+#endif // defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
 #if defined(__APPLE__) || defined (__MACH__)
   timers.push_back(new TimerClockGetTimrRealtimeClock());
   timers.push_back(new TimerClockGetTimrCalendarClock());
