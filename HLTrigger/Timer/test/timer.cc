@@ -98,6 +98,9 @@ public:
         for (size_t i = 0; i < steps.size(); ++i)
           sum2 += (steps[i] - resolution_mean) * (steps[i] - resolution_mean);
         resolution_sigma = std::sqrt( sum2 ) / n;
+        // take into account limited accuracy
+        if (resolution_sigma > 0 and resolution_sigma < 1.e-9)
+          resolution_sigma = 1.e-9;
       }
     }
   }
@@ -303,6 +306,7 @@ private:
   clock_serv_t clock_port;
 };
 
+// this function returns a Mach absolute time value for the current wall clock time in units of uint64_t
 class TimerMachAbsoluteTime : public TimerBase<uint64_t> {
 public:
   TimerMachAbsoluteTime() {
