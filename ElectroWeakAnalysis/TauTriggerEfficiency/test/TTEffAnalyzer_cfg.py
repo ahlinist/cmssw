@@ -161,6 +161,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 	goodPVminNdof 		 		= cms.int32(4),
 	goodPVmaxAbsZ 		 		= cms.double(24.0),
 	goodPVmaxRho  		 		= cms.double(2.0),
+	offlineVertexSrc                        = cms.InputTag("goodPrimaryVertices"),
+	hltVertexSrc                            = cms.InputTag("hltPixelVertices"),
 		# To be implemented: cut = cms.string("!isFake && ndof > 4 && abs(z) < 24.0 && position.rho < 2.0"),
 
         L1CaloRegionSource      		= cms.InputTag("hltGctDigis"), # "", "TTEff"),                               
