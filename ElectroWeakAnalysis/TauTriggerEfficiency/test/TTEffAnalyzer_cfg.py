@@ -161,7 +161,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 	goodPVminNdof 		 		= cms.int32(4),
 	goodPVmaxAbsZ 		 		= cms.double(24.0),
 	goodPVmaxRho  		 		= cms.double(2.0),
-	offlineVertexSrc                        = cms.InputTag("goodPrimaryVertices"),
+        offlineVertexSrc                        = cms.InputTag("goodPrimaryVertices"),
 	hltVertexSrc                            = cms.InputTag("hltPixelVertices"),
 		# To be implemented: cut = cms.string("!isFake && ndof > 4 && abs(z) < 24.0 && position.rho < 2.0"),
 
@@ -181,6 +181,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
         ),
         HltResults              		= cms.InputTag("TriggerResults","",hltType),
         HltPaths = cms.vstring(
+            "HLT_IsoMu15_v14", "HLT_IsoMu15_v15", "HLT_IsoMu15_v16", "HLT_IsoMu15_v17", "HLT_IsoMu15_v18",
             "HLT_IsoMu17_v5", "HLT_IsoMu17_v6", "HLT_IsoMu17_v8", "HLT_IsoMu17_v9", "HLT_IsoMu17_v10", "HLT_IsoMu17_v11", "HLT_IsoMu17_v13", "HLT_IsoMu17_v14",
             "HLT_IsoMu17_eta2p1_v1",
             "HLT_IsoMu20_v8", "HLT_IsoMu20_v9", "HLT_IsoMu20_v12", "HLT_IsoMu20_v13",
@@ -191,8 +192,10 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
             "HLT_IsoMu30_eta2p1_v3", "HLT_IsoMu30_eta2p1_v6", "HLT_IsoMu30_eta2p1_v7",
             "HLT_IsoMu34_eta2p1_v1",
 
-	    "HLT_IsoMu15_L1ETM20_v3", "HLT_Mu15_L1ETM20_v4",
+	    "HLT_Mu15_L1ETM20_v4", "HLT_Mu15_L1ETM20_v5",
 
+	    "HLT_IsoMu15_L1ETM20_v1", "HLT_IsoMu15_L1ETM20_v2", "HLT_IsoMu15_L1ETM20_v3", "HLT_IsoMu15_L1ETM20_v4",
+                
             "HLT_IsoPFTau35_Trk20_MET45_v1", "HLT_IsoPFTau35_Trk20_MET45_v2", "HLT_IsoPFTau35_Trk20_MET45_v4", "HLT_IsoPFTau35_Trk20_MET45_v6",
             "HLT_IsoPFTau35_Trk20_v2", "HLT_IsoPFTau35_Trk20_v3", "HLT_IsoPFTau35_Trk20_v4", "HLT_IsoPFTau35_Trk20_v6",
             "HLT_IsoPFTau35_Trk20_MET60_v2", "HLT_IsoPFTau35_Trk20_MET60_v3", "HLT_IsoPFTau35_Trk20_MET60_v4", "HLT_IsoPFTau35_Trk20_MET60_v6",
