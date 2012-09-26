@@ -18,4 +18,5 @@ cvs up -r CMSSW_5_3_3 RecoJets/JetProducers/src/JetSpecific.cc
 cvs co -r V03-03-18            DataFormats/METReco
 cvs co -r V05-00-16            DataFormats/JetReco
 cvs co -r V01-05-06            RecoTauTag/RecoTau 
+cvs co -r V03-04-07            RecoMET/METAlgorithms
 cd -
