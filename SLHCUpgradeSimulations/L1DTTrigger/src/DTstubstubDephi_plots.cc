@@ -3,31 +3,31 @@
 
 
  void  DTL1slhcPlots::
- make_StubStubDephi_plots(Handle<DTStubMatchesCollection>& dtStaubMatchesHandle, 
+ make_StubStubDephi_plots(Handle<DTMatchesCollection>& dtMatchesHandle, 
 			  int iDT) 
 {
   double MuGenPt = 
-    dtStaubMatchesHandle->dtmatch(iDT)->gunFiredSingleMuPt();
+    dtMatchesHandle->dtmatch(iDT)->gunFiredSingleMuPt();
   double invMuGenPt = NAN;
   if(MuGenPt == 0.)
     return;
   invMuGenPt = 1./MuGenPt;
   for(int L1=0; L1<StackedLayersInUseTotal; L1++) {
     for(int L2=(L1+1); L2<StackedLayersInUseTotal; L2++) {
-      if( !dtStaubMatchesHandle->dtmatch(iDT)->isMatched(L1) 
-	  || !dtStaubMatchesHandle->dtmatch(iDT)->isMatched(L2) )
+      if( !dtMatchesHandle->dtmatch(iDT)->isMatched(L1) 
+	  || !dtMatchesHandle->dtmatch(iDT)->isMatched(L2) )
 	continue;
       float stubstub_dePhi = 
-	fabs(dtStaubMatchesHandle->dtmatch(iDT)->stubstub_dephi(L1, L2));
+	fabs(dtMatchesHandle->dtmatch(iDT)->stubstub_dephi(L1, L2));
       if(L1==0 && L2==2) {
 	if(optimize_plot) { 
 	  update_histo(dephiL0L2, tmp_dephiL0L2, stubstub_dePhi);
 	  update_histo(Pt_dephiL0L2, tmp_Pt_dephiL0L2, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L0"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L0"));
 	}
 	else {
 	  dephiL0L2->Fill(stubstub_dePhi);
-	  Pt_dephiL0L2->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L0"));
+	  Pt_dephiL0L2->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L0"));
 	}
 	profile_dephiL0L2_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -35,11 +35,11 @@
 	if(optimize_plot) { 
 	  update_histo(dephiL0L3, tmp_dephiL0L3, stubstub_dePhi);
 	  update_histo(Pt_dephiL0L3, tmp_Pt_dephiL0L3, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L0"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L0"));
 	}
 	else {
 	  dephiL0L3->Fill(stubstub_dePhi);
-	  Pt_dephiL0L3->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L0"));
+	  Pt_dephiL0L3->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L0"));
 	}
 	profile_dephiL0L3_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -47,11 +47,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL1L2, tmp_dephiL1L2, stubstub_dePhi);
 	  update_histo(Pt_dephiL1L2, tmp_Pt_dephiL1L2,
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L1"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L1"));
 	}
 	else {
 	  dephiL1L2->Fill(stubstub_dePhi);
-	  Pt_dephiL1L2->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L1"));
+	  Pt_dephiL1L2->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL2L1"));
 	}
 	profile_dephiL1L2_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -59,11 +59,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL1L3, tmp_dephiL1L3, stubstub_dePhi);
 	  update_histo(Pt_dephiL1L3, tmp_Pt_dephiL1L3, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L1"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L1"));
 	}
 	else {
 	  dephiL1L3->Fill(stubstub_dePhi);
-	  Pt_dephiL1L3->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L1"));
+	  Pt_dephiL1L3->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL3L1"));
 	}
 	profile_dephiL1L3_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -71,11 +71,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL0L8, tmp_dephiL0L8, stubstub_dePhi);
 	  update_histo(Pt_dephiL0L8, tmp_Pt_dephiL0L8,
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L0"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L0"));
 	}
 	else {
 	  dephiL0L8->Fill(stubstub_dePhi);
-	  Pt_dephiL0L8->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L0"));
+	  Pt_dephiL0L8->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L0"));
 	}
 	profile_dephiL0L8_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -83,11 +83,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL0L9, tmp_dephiL0L9, stubstub_dePhi);
 	  update_histo(Pt_dephiL0L9, tmp_Pt_dephiL0L9, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L0"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L0"));
 	}
 	else {
 	  dephiL0L9->Fill(stubstub_dePhi);
-	  Pt_dephiL0L9->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L0"));
+	  Pt_dephiL0L9->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L0"));
 	}
 	profile_dephiL0L9_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -95,11 +95,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL1L8, tmp_dephiL1L8, stubstub_dePhi);
 	  update_histo(Pt_dephiL1L8, tmp_Pt_dephiL1L8, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L1"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L1"));
 	}
 	else {
 	  dephiL1L8->Fill(stubstub_dePhi);
-	  Pt_dephiL1L8->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L1"));
+	  Pt_dephiL1L8->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L1"));
 	}
 	profile_dephiL1L8_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -107,11 +107,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL1L9, tmp_dephiL1L9, stubstub_dePhi);
 	  update_histo(Pt_dephiL1L9, tmp_Pt_dephiL1L9, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L1"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L1"));
 	}
 	else {
 	  dephiL1L9->Fill(stubstub_dePhi);
-	  Pt_dephiL1L9->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L1")); 
+	  Pt_dephiL1L9->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L1")); 
 	}
 	profile_dephiL1L9_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -119,11 +119,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL2L8, tmp_dephiL2L8, stubstub_dePhi);
 	  update_histo(Pt_dephiL2L8, tmp_Pt_dephiL2L8, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L2"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L2"));
 	}
 	else {
 	  dephiL2L8->Fill(stubstub_dePhi);
-	  Pt_dephiL2L8->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L2"));
+	  Pt_dephiL2L8->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L2"));
 	}
 	profile_dephiL2L8_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -131,11 +131,11 @@
 	if(optimize_plot) {
 	  update_histo(dephiL2L9, tmp_dephiL2L9, stubstub_dePhi);
 	  update_histo(Pt_dephiL2L9, tmp_Pt_dephiL2L9, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L2"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L2"));
 	}
 	else {
 	  dephiL2L9->Fill(stubstub_dePhi);
-	  Pt_dephiL2L9->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L2"));
+	  Pt_dephiL2L9->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L2"));
 	}
 	profile_dephiL2L9_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
@@ -143,27 +143,27 @@
 	if(optimize_plot) {
 	  update_histo(dephiL3L8, tmp_dephiL3L8, stubstub_dePhi);
 	  update_histo(Pt_dephiL3L8, tmp_Pt_dephiL3L8, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L3"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L3"));
 	}
 	else {
 	  dephiL3L8->Fill(stubstub_dePhi);
-	  Pt_dephiL3L8->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L3"));
+	  Pt_dephiL3L8->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L3"));
 	}
 	profile_dephiL3L8_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
 	/*
 	cout << stubstub_dePhi << " --> " << invMuGenPt << " --> " 
-	     << dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L3") << endl;
+	     << dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL8L3") << endl;
 	*/
       }
       else if(L1==3 && L2==5) {
 	if(optimize_plot) {
 	  update_histo(dephiL3L9, tmp_dephiL3L9, stubstub_dePhi);
 	  update_histo(Pt_dephiL3L9, tmp_Pt_dephiL3L9, 
-		       dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L3"));
+		       dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L3"));
 	}
 	else {
 	  dephiL3L9->Fill(stubstub_dePhi);
-	  Pt_dephiL3L9->Fill(dtStaubMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L3"));
+	  Pt_dephiL3L9->Fill(dtMatchesHandle->dtmatch(iDT)->Pt("LinFitL9L3"));
 	}
 	profile_dephiL3L9_vs_invGenPt->Fill(invMuGenPt, stubstub_dePhi);
       }
