@@ -37,8 +37,7 @@ process.options = cms.untracked.PSet(
 )
 
 #Mike needs Calo Geometry
-process.load('Configuration/StandardSequences/GeometryPilot2_cff')
-
+process.load('Configuration.Geometry.GeometryPilot2_cff')
 
 if(isData):
     process.source = cms.Source("PoolSource",
@@ -67,7 +66,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
 #    process.GlobalTag.globaltag = 'GR_H_V29::All'
 #    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
-    process.GlobalTag.globaltag = 'GR_R_52_V9D::All'
+    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START52_V9::All'
@@ -80,7 +79,13 @@ print process.GlobalTag.globaltag
 #MET cleaning flag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 process.runMETCleaning = cms.Path(process.HBHENoiseFilterResultProducer)
-
+# MET type1 corr
+# Produce the rho for L1FastJet
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+process.kt6PFJets.doRhoFastjet = True
+process.ak5PFJets.doAreaFastjet = True
+#process.ak5PFJetSequence = cms.Sequence(process.kt6PFJets*process.ak5PFJets)
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
 
 #Physics bit ON
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
@@ -170,6 +175,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
 
         METs = cms.PSet(
             PFMET = cms.InputTag("pfMet"),
+	    PFMETtype1 = cms.InputTag("pfType1CorrectedMet"),
             HLTMET = cms.InputTag("hltMet"),
             HLTMHT = cms.InputTag("hltPFMHTProducer"),
             CaloMET = cms.InputTag("met")
@@ -339,7 +345,11 @@ if not metLeg:
     process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
     process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
 else:
+    process.runTTEffAna += process.kt6PFJets
+    process.runTTEffAna += process.producePFMETCorrections
     process.runTTEffAna += process.TTEffAnalysisMETLeg
+    if isData:
+	process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
 
 # The high purity selection (mainly for H+)
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
@@ -413,7 +423,7 @@ process.o1 = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring("keep *"),
     fileName = cms.untracked.string('cmssw.root')
 )
-#process.outpath = cms.EndPath(process.o1)
+process.outpath = cms.EndPath(process.o1)
 
 process.HLTPFTauSequence+= process.hltPFTausTightIso
 process.DoMiscHLT = cms.Path(process.hltPFMHTProducer)
@@ -422,11 +432,13 @@ process.schedule = cms.Schedule(
     process.runMETCleaning,
     process.runTTEffAna,
     process.runTTEffAnaHighPurity
+#    ,process.outpath
 )
 if metLeg:
     process.schedule = cms.Schedule(
         process.runMETCleaning,
         process.runTTEffAna
+#	,process.outpath
     )
 if runOpenHLT:
     process.schedule = cms.Schedule(process.DoHLTJets,
@@ -435,12 +447,12 @@ if runOpenHLT:
 				process.DoHLTElectron,
 				process.DoHLTTau,
 				process.DoHLTMinBiasPixelTracks,
-                               process.DoMiscHLT,
+                                process.DoMiscHLT,
 				process.runMETCleaning,
                                 process.L1simulation_step,
 				process.runTTEffAna,
 #                                process.runTTEffAnaHighPurity
-#				,process.outpath
+#				process.outpath
 )
 
 if isData:  # replace all instances of "rawDataCollector" with "source" in In$
