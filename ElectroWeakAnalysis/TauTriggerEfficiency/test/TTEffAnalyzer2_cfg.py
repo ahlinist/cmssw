@@ -424,7 +424,7 @@ process.o1 = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring("keep *"),
     fileName = cms.untracked.string('cmssw.root')
 )
-process.outpath = cms.EndPath(process.o1)
+#process.outpath = cms.EndPath(process.o1)
 
 process.HLTPFTauSequence+= process.hltPFTausTightIso
 process.DoMiscHLT = cms.Path(process.hltPFMHTProducer)
