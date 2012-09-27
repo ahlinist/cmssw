@@ -32,7 +32,6 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/GenericHandle.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -74,8 +73,10 @@
 #include <TBranchElement.h>
 #include <TMath.h>
 
-#include "SimDataFormats/SLHC/interface/DTStubMatchesCollection.h"
-#include "SimDataFormats/SLHC/interface/DTSeededTracklet.h"
+#include "SimDataFormats/SLHC/interface/DTMatchesCollection.h"
+#include "SimDataFormats/SLHC/interface/DTSeededStubTrack.h"
+
+#include "MagneticField/Engine/interface/MagneticField.h"
 
 
 using namespace std;
@@ -93,13 +94,13 @@ public:
   explicit DTL1slhcPlots(const edm::ParameterSet&);
   ~DTL1slhcPlots();
   
-  void make_StubStubDephi_plots(Handle<DTStubMatchesCollection> &, int);
-  void make_MuStubStub_plots(Handle<DTStubMatchesCollection> &, int);
-  void make_StubStubStub_plots(Handle<DTStubMatchesCollection> &, int);
+  void make_StubStubDephi_plots(Handle<DTMatchesCollection> &, int);
+  void make_MuStubStub_plots(Handle<DTMatchesCollection> &, int);
+  void make_StubStubStub_plots(Handle<DTMatchesCollection> &, int);
   void make_test_plots(const edm::Event& event,
-		       Handle<DTStubMatchesCollection> &, int i);
+		       Handle<DTMatchesCollection> &, int i);
   void make_LinStubs_plots(const edm::Event& event,
-			   Handle<DTStubMatchesCollection> &, int i);
+			   Handle<DTMatchesCollection> &, int i);
   void make_StubStubDephi_canvases();
   void make_MuStubStub_canvases();
   void make_StubStubStub_canvases();
@@ -129,11 +130,11 @@ private:
   int breath;
   double desert;
 
-  std::vector<DTSeededTracklet*> DTSeededTrackletVector;
+  std::vector<DTSeededStubTrack*> DTSeededStubTrackVector;
 
   // Counters
   size_t EvNo;
-  size_t AtLeastOneDTStaubMatchingMuonEvNo;
+  size_t AtLeastOnedtMatchingMuonEvNo;
   
   // ----------member data ---------------------------
 
