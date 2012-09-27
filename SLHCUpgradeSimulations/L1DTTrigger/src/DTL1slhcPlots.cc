@@ -50,13 +50,13 @@ DTL1slhcPlots::DTL1slhcPlots(const edm::ParameterSet& pset):
   RootFileNamePlots = pset.getUntrackedParameter<string>("rootFileNamePlots"); 
   optimize_plot = pset.getUntrackedParameter<bool>("optimize_plot", false);
   RangeCalibrationSampleSize = 
-    pset.getUntrackedParameter<size_t>("RangeCalibrationSampleSize", 1000);
+    pset.getUntrackedParameter<unsigned int>("RangeCalibrationSampleSize", 1000);
   breath = pset.getUntrackedParameter<int>("breath");
   desert = pset.getUntrackedParameter<double>("desert");
   if(RangeCalibrationSampleSize > 3000) RangeCalibrationSampleSize = 3000;
 
   EvNo = 0;
-  AtLeastOneDTStaubMatchingMuonEvNo = 0;
+  AtLeastOnedtMatchingMuonEvNo = 0;
 }
 
 
@@ -264,24 +264,24 @@ void DTL1slhcPlots::analyze(const edm::Event& event,
 
   ++EvNo;
 
-  Handle<DTStubMatchesCollection> dtStaubMatchesHandle;
+  Handle<DTMatchesCollection> dtMatchesHandle;
   try {
-    event.getByLabel("DTL1slhcProd", dtStaubMatchesHandle);
+    event.getByLabel("DTL1slhcProd", dtMatchesHandle);
   }
   catch(...) {
-    cout << "\nException from event.getByLabel(\"DTL1slhcPlots\", dtStaubMatchesHandle)"
+    cout << "\nException from event.getByLabel(\"DTL1slhcPlots\", dtMatchesHandle)"
 	 << endl;
     return;
   }
-  if(!dtStaubMatchesHandle.isValid()) return;
-  if(dtStaubMatchesHandle->numDt()) 
-    ++AtLeastOneDTStaubMatchingMuonEvNo;
-  for(int i=0; i<dtStaubMatchesHandle->numDt(); i++) {
-    make_StubStubDephi_plots(dtStaubMatchesHandle, i); 
-    make_MuStubStub_plots(dtStaubMatchesHandle, i); 
-    make_StubStubStub_plots(dtStaubMatchesHandle, i);
-    make_LinStubs_plots(event, dtStaubMatchesHandle, i); 
-    make_test_plots(event, dtStaubMatchesHandle, i); 
+  if(!dtMatchesHandle.isValid()) return;
+  if(dtMatchesHandle->numDt()) 
+    ++AtLeastOnedtMatchingMuonEvNo;
+  for(int i=0; i<dtMatchesHandle->numDt(); i++) {
+    make_StubStubDephi_plots(dtMatchesHandle, i); 
+    make_MuStubStub_plots(dtMatchesHandle, i); 
+    make_StubStubStub_plots(dtMatchesHandle, i);
+    make_LinStubs_plots(event, dtMatchesHandle, i); 
+    make_test_plots(event, dtMatchesHandle, i); 
   }
   /* 
      #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
@@ -296,7 +296,7 @@ void DTL1slhcPlots::analyze(const edm::Event& event,
 
 // ------------ method called once each job just after ending the event loop  ------------
 void DTL1slhcPlots::endJob() {
-  cout << "AtLeastOneDTStaubMatchingMuonEvNo " << AtLeastOneDTStaubMatchingMuonEvNo << endl;
+  cout << "AtLeastOnedtMatchingMuonEvNo " << AtLeastOnedtMatchingMuonEvNo << endl;
   cout << "Event total " << EvNo << "\n" << endl;
 
   OutTFilePlots->cd();

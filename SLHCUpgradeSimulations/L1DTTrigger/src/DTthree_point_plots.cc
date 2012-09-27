@@ -3,7 +3,7 @@
 
 
  void  DTL1slhcPlots::
- make_MuStubStub_plots(Handle<DTStubMatchesCollection>& dtStaubMatchesHandle,  
+ make_MuStubStub_plots(Handle<DTMatchesCollection>& dtMatchesHandle,  
 		       int iDT)
 {
 
@@ -11,7 +11,7 @@
   double invMuPt = NAN;
 
   // Pt IMu_3_V
-  MuPt = dtStaubMatchesHandle->dtmatch(iDT)->Pt(string("IMu_3_V"));
+  MuPt = dtMatchesHandle->dtmatch(iDT)->Pt(string("IMu_3_V"));
   if(optimize_plot) {
     update_histo(h_Pt_IMu_3_V, Pt_IMu_3_V, MuPt);
     if( !isnan(MuPt) && MuPt != 0. ) {
@@ -28,12 +28,12 @@
   }
 
   // Pt IMu_3_0
-  MuPt = dtStaubMatchesHandle->dtmatch(iDT)->Pt(string("IMu_3_0"));
+  MuPt = dtMatchesHandle->dtmatch(iDT)->Pt(string("IMu_3_0"));
   if(optimize_plot) {
     update_histo(h_Pt_IMu_3_0, Pt_IMu_3_0, MuPt);
-    if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 1)
+    if(dtMatchesHandle->dtmatch(iDT)->station() == 1)
       update_histo(h_Pt_IMu_3_0_St1, Pt_IMu_3_0_St1, MuPt);
-    else if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 2) 
+    else if(dtMatchesHandle->dtmatch(iDT)->station() == 2) 
       update_histo(h_Pt_IMu_3_0_St2, Pt_IMu_3_0_St2, MuPt); 
     if( !isnan(MuPt) && MuPt != 0. ) {
       invMuPt = 1/MuPt;
@@ -42,9 +42,9 @@
   }
   else {
     h_Pt_IMu_3_0->Fill(MuPt);
-    if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 1)
+    if(dtMatchesHandle->dtmatch(iDT)->station() == 1)
       h_Pt_IMu_3_0_St1->Fill(MuPt);
-    else if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 2) 
+    else if(dtMatchesHandle->dtmatch(iDT)->station() == 2) 
       h_Pt_IMu_3_0_St2->Fill(MuPt);
     if( !isnan(MuPt) && MuPt != 0. ) {
       invMuPt = 1/MuPt;
@@ -53,12 +53,12 @@
   }
 
   // Pt Mu_3_0
-  MuPt = dtStaubMatchesHandle->dtmatch(iDT)->Pt(string("Mu_3_0"));
+  MuPt = dtMatchesHandle->dtmatch(iDT)->Pt(string("Mu_3_0"));
   if(optimize_plot) {
     update_histo(h_Pt_Mu_3_0, Pt_Mu_3_0, MuPt);
-    if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 1)
+    if(dtMatchesHandle->dtmatch(iDT)->station() == 1)
       update_histo(h_Pt_Mu_3_0_St1, Pt_Mu_3_0_St1, MuPt);
-    else if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 2) 
+    else if(dtMatchesHandle->dtmatch(iDT)->station() == 2) 
       update_histo(h_Pt_Mu_3_0_St2, Pt_Mu_3_0_St2, MuPt); 
     if( !isnan(MuPt) && MuPt != 0. ) {
       invMuPt = 1/MuPt;
@@ -67,9 +67,9 @@
   }
   else {
     h_Pt_Mu_3_0->Fill(MuPt);
-    if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 1)
+    if(dtMatchesHandle->dtmatch(iDT)->station() == 1)
       h_Pt_Mu_3_0_St1->Fill(MuPt);
-    else if(dtStaubMatchesHandle->dtmatch(iDT)->station() == 2) 
+    else if(dtMatchesHandle->dtmatch(iDT)->station() == 2) 
       h_Pt_Mu_3_0_St2->Fill(MuPt); 
     if( !isnan(MuPt) && MuPt != 0. ) {
       invMuPt = 1/MuPt;
@@ -83,7 +83,7 @@
 
 //----------------------------------------------------------------------------
  void  DTL1slhcPlots::
- make_StubStubStub_plots(Handle<DTStubMatchesCollection>& dtStaubMatchesHandle,  
+ make_StubStubStub_plots(Handle<DTMatchesCollection>& dtMatchesHandle,  
 			 int iDT) 
 {
 
@@ -91,7 +91,7 @@
   double invMuPt = NAN;
 
   // Pt Stubs_9_3_0
-  MuPt = dtStaubMatchesHandle->dtmatch(iDT)->Pt(string("Stubs_9_3_0"));
+  MuPt = dtMatchesHandle->dtmatch(iDT)->Pt(string("Stubs_9_3_0"));
   if(optimize_plot) {
     update_histo(h_Pt_Stubs_9_3_0, Pt_Stubs_9_3_0, MuPt);
     if( !isnan(MuPt) && MuPt != 0. ) {
@@ -108,7 +108,7 @@
   }
 
   // Pt Stubs_9_3_V
-  MuPt = dtStaubMatchesHandle->dtmatch(iDT)->Pt(string("Stubs_9_3_V"));
+  MuPt = dtMatchesHandle->dtmatch(iDT)->Pt(string("Stubs_9_3_V"));
   if(optimize_plot) {
     update_histo(h_Pt_Stubs_9_3_V, Pt_Stubs_9_3_V, MuPt);
     if( !isnan(MuPt) && MuPt != 0. ) {
@@ -125,17 +125,17 @@
   }
 
   double MuGenPt = 
-    dtStaubMatchesHandle->dtmatch(iDT)->gunFiredSingleMuPt();
+    dtMatchesHandle->dtmatch(iDT)->gunFiredSingleMuPt();
   if(MuGenPt == 0.)
     return;
   for(int lay=0; lay<6; lay++) {
-    float StubDePhi = dtStaubMatchesHandle->dtmatch(iDT)->stubDePhi(lay);
-    int station = dtStaubMatchesHandle->dtmatch(iDT)->station();
-    float rhoDT = dtStaubMatchesHandle->dtmatch(iDT)->rho();
-    float bendingDT = dtStaubMatchesHandle->dtmatch(iDT)->bendingDT();
+    float StubDePhi = dtMatchesHandle->dtmatch(iDT)->stubDePhi(lay);
+    int station = dtMatchesHandle->dtmatch(iDT)->station();
+    float rhoDT = dtMatchesHandle->dtmatch(iDT)->rho();
+    float bendingDT = dtMatchesHandle->dtmatch(iDT)->bendingDT();
     double RtildeCheck = NAN;
-    if(dtStaubMatchesHandle->dtmatch(iDT)->isMatched(lay) 
-       && !dtStaubMatchesHandle->dtmatch(iDT)->flagReject() ) {
+    if(dtMatchesHandle->dtmatch(iDT)->isMatched(lay) 
+       && !dtMatchesHandle->dtmatch(iDT)->flagReject() ) {
       // double discr = 
       // 1. - TrackerLayerR[lay]/rhoDT - (2*fabs(StubDePhi)*MuGenPt)/(0.003*3.8*rhoDT);
       // RtildeCheck = rhoDT * (1. - sqrt(discr));

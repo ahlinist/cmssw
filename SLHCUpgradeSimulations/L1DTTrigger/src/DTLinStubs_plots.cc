@@ -11,7 +11,7 @@ using namespace reco;
 
  void  DTL1slhcPlots::
  make_LinStubs_plots(const edm::Event& event,
-		     Handle<DTStubMatchesCollection>& dtStaubMatchesHandle,
+		     Handle<DTMatchesCollection>& dtMatchesHandle,
 		     int iDTmatch) 
 {
 
@@ -19,7 +19,7 @@ using namespace reco;
   float invpt = NAN;
   bool optimize_plot = false;
   // LinStubs_9_3_0
-  pt = dtStaubMatchesHandle->dtmatch(iDTmatch)->Pt("LinStubs_9_3_0");
+  pt = dtMatchesHandle->dtmatch(iDTmatch)->Pt("LinStubs_9_3_0");
   if(optimize_plot) {
     update_histo(h_Pt_LinStubs_9_3_0, Pt_LinStubs_9_3_0, pt);
     if(!isnan(pt) && (pt != 0.)) {
@@ -36,7 +36,7 @@ using namespace reco;
     }
   }
   // LinStubs_9_1_0
-  pt = dtStaubMatchesHandle->dtmatch(iDTmatch)->Pt("LinStubs_9_1_0");
+  pt = dtMatchesHandle->dtmatch(iDTmatch)->Pt("LinStubs_9_1_0");
   if(optimize_plot) {
     update_histo(h_Pt_LinStubs_9_1_0, Pt_LinStubs_9_1_0, pt);
     if(!isnan(pt) && (pt != 0.)) {

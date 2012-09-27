@@ -26,75 +26,330 @@
 #include "SLHCUpgradeSimulations/L1DTTrigger/interface/DTL1SimOperations.h"
 #include "SimDataFormats/SLHC/src/DTUtils.h"
 
+//PLZ begin
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "SimDataFormats/Vertex/interface/SimVertex.h"
+#include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
+#include "SimDataFormats/Track/interface/SimTrackContainer.h"
+#include "L1Trigger/GlobalMuonTrigger/test/L1MuGMTDump.h"
+//PLZ end
+
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+using namespace std;
+using namespace edm;
+using namespace reco;
+
+/*
+edm::Ref<reco::GenParticleCollection> 
+PATGenCandsFromSimTracksProducer::generatorRef_(const SimTrack &st, 
+						const GlobalContext &g) const {
+  assert(st.genpartIndex() != -1);        
+  // Note that st.genpartIndex() is the barcode, not the index within 
+  // GenParticleCollection, so I have to search the particle
+  std::vector<int>::const_iterator it;
+  if (g.barcodesAreSorted) {
+    it = std::lower_bound(g.genBarcodes->begin(), 
+			  g.genBarcodes->end(), 
+			  st.genpartIndex());
+  } else {
+    it = std::find(g.genBarcodes->begin(), 
+		   g.genBarcodes->end(), 
+		   st.genpartIndex());
+  }
+ 
+  // Check that I found something
+  // I need to check '*it == st.genpartIndex()' because lower_bound just finds 
+  // the right spot for an item in a sorted list, not the item
+  if ((it != g.genBarcodes->end()) && (*it == st.genpartIndex())) {
+    return reco::GenParticleRef(g.gens, it - g.genBarcodes->begin());
+  } else {
+    return reco::GenParticleRef();
+  }
+}
+*/ 
+
+
+
+
 
 void DTL1SimOperations::getDTSimTrigger(edm::Event& event, 
 					const edm::EventSetup& eventSetup)
-{
-	
-   if(debug_tsphi || debug_bti || debug_tstheta)	
-	outAscii << "\nTrigger block\n-------------" << endl;
+{	
+  // PLZ begin xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  float etagen = NAN;
   
-  // L1 Local Trigger Block ----------------------------------------------------
+  // Ignazio begin --------------------------------------------------------------
+  Handle<GenParticleCollection> genParticles;
+  try { event.getByLabel("genParticles", genParticles); }
+  catch(...) {
+    cout << "\nException from event.getByLabel(\"genParticles\", genParticles)"
+	 << endl;
+    exit(1); 
+  }
+
+  Handle<std::vector<int> > genBarcodes;
+  try { event.getByLabel("genParticles", genBarcodes); }
+  catch(...) {
+    cout << "\nException from event.getByLabel(\"DTL1slhcPlots\", genBarcodes)"
+	 << endl;
+    exit(1); 
+  }
+  if (genParticles->size() != genBarcodes->size()) 
+    throw cms::Exception("Corrupt data") 
+      << "Barcodes not of the same size as GenParticles!\n";
+
+  // The following is for debug purposes
+  for(size_t i = 0; i < genParticles->size(); ++ i) {
+    const GenParticle& p = (*genParticles)[i];
+    int id = p.pdgId();
+    // int st = p.status();
+    if(debug)
+      cout << id << " ---> barcode: " << (*genBarcodes)[i] << endl;
+    if(p.numberOfMothers()) {
+      const Candidate* mom = p.mother(); //p.mother(i);
+      if(debug)
+	cout << "\nnumberOfMothers " << p.numberOfMothers()
+	     << "; first mom pdgId " << mom->pdgId() << endl;
+    }
+  }
+  // Ignazio end ----------------------------------------------------------------
+
+  // Get simtracks
+  edm::Handle<edm::SimTrackContainer> simtracks_handle;
+  try { event.getByLabel("g4SimHits",simtracks_handle); }
+  catch(...) {
+    cout << "\nException from event.getByLabel(\"g4SimHits\", simtracks_handle)"
+	 << endl;
+    exit(1); 
+  }
+  edm::SimTrackContainer const* simtracks = simtracks_handle.product();
+
+  edm::SimTrackContainer *simtracksSorted = new SimTrackContainer(*simtracks);
+  std::sort(simtracksSorted->begin(), simtracksSorted->end(), LessById());
+
+  // Get the associated vertices
+  Handle<SimVertexContainer> simVertices;
+  try { event.getByLabel("g4SimHits", simVertices); }
+  catch(...) {
+    cout << "\nException from event.getByLabel(\"g4SimHits\", simVertices)"
+	 << endl;
+    exit(1); 
+  }
+
+  edm::SimTrackContainer::const_iterator isimtrk;
+  int igen = 0;
+  for(isimtrk=simtracks->begin(); isimtrk!=simtracks->end(); isimtrk++) {
+    if(abs((*isimtrk).type())==13) { // muon!
+      /*
+	pxgen[igen]=(*isimtr).momentum().px();
+	pygen[igen]=(*isimtr).momentum().py();
+	pzgen[igen]=(*isimtr).momentum().pz();
+	ptgen[igen]=(*isimtr).momentum().pt();
+      */
+      etagen=(*isimtrk).momentum().eta();
+      /*
+	phigen[igen]=(*isimtr).momentum().phi()>0 ? 
+	(*isimtr).momentum().phi() : (*isimtr).momentum().phi()+2*3.14159265359;
+	chagen[igen]=(*isimtr).type()>0 ? -1 : 1 ;
+	vxgen[igen]=(*simvertices)[(*isimtr).vertIndex()].position().x();
+	vygen[igen]=(*simvertices)[(*isimtr).vertIndex()].position().y();
+	vzgen[igen]=(*simvertices)[(*isimtr).vertIndex()].position().z();
+	pargen[igen]=-1;
+      */
+      igen++;
+
+      /// Ignazio begin ---------------------------------------------------------
+      /// SimTrack::genpartIndex() is the index of the corresponding Generator 
+      /// particle in the Event container (-1 if no Genpart) 
+      if(isimtrk->genpartIndex() == -1) 
+	continue;
+      std::vector<int>::const_iterator barcode;
+      barcode = std::find(genBarcodes->begin(), 
+			  genBarcodes->end(), 
+			  isimtrk->genpartIndex());
+      // Check that I found the right thing before getting a GenParticleRef
+      edm::Ref<reco::GenParticleCollection> muRef;
+      edm::Ref<reco::GenParticleCollection> mumumRef;
+      if((barcode != genBarcodes->end()) && (*barcode == isimtrk->genpartIndex())) 
+	muRef = reco::GenParticleRef(genParticles, barcode - genBarcodes->begin());
+      else
+	muRef = reco::GenParticleRef();
+      // I want to identify the muon mum:
+      if(isimtrk->noVertex() && debug) 
+	cout << "isimtrk->noVertex()" << endl;
+      if(!isimtrk->noVertex()) {	
+	// Pick the vertex (NB: isimtrk.vertIndex() is really an index)
+	const SimVertex &vtx = (*simVertices)[isimtrk->vertIndex()];
+        if(debug)
+	  cout << "simtrk for this muon has vertexId " << vtx.vertexId() << endl; 
+	// Check if the vertex has a parent track (otherwise, we're lost)
+	if (vtx.noParent() && debug) 
+	  cout << "no parent!" << endl;
+	if (!vtx.noParent()) {
+	  // Now note that vtx.parentIndex() is NOT an index, it's a track id, 
+	  // so I have to search for it 
+	  unsigned int mumSimTkId = vtx.parentIndex();
+	  if(debug)
+	    cout << "vtx.parentIndex() " << mumSimTkId << endl;
+	  SimTrackContainer::const_iterator 
+	    mumSimTk = std::lower_bound(simtracksSorted->begin(), 
+					simtracksSorted->end(), 
+					mumSimTkId, 
+					LessById());
+	  if((mumSimTk != simtracksSorted->end()) && 
+	     (mumSimTk->trackId() == mumSimTkId)) { 
+	    // "mumSimTk" points indeed to the parent SimTrack we were searching for!
+	    if (mumSimTk->genpartIndex() != -1) {
+	      std::vector<int>::const_iterator mum_barcode;
+	      mum_barcode = std::find(genBarcodes->begin(), 
+				      genBarcodes->end(), 
+				      mumSimTk->genpartIndex());
+	      // Check that I found something
+	      // I need to check '*mum_barcode == mumSimTk->genpartIndex()' because 
+	      // lower_bound just finds the right spot for an item in a sorted list, 
+	      // not the item.
+	      if ((mum_barcode != genBarcodes->end()) && 
+		  (*mum_barcode == mumSimTk->genpartIndex())) {
+		// Ok, we have the mum barcode.
+		unsigned int mumidx = mum_barcode - genBarcodes->begin();
+		if(debug)
+		  cout << "mumidx " << mumidx << endl;
+		mumumRef = reco::GenParticleRef(genParticles, mumidx);
+	      }
+	      else
+		mumumRef = reco::GenParticleRef();
+	    } // if it->genpartIndex() != -1
+	  } // end if found trackId() is first parent one indeed
+	} // end if vertex has (track) parent
+      } // end if track has associated vertex
+    } // end if track belongs to muon
+   /// Ignazio end --------------------------------------------------------------      
+  } 
+  
+  /// Ignazio: per ricordare di  generalizzare al caso di eventi con piu` muoni
+  if(igen > 1) cout << "muons from SimTrackContainer " << igen << endl;
+  /// end Ignazio ***************************************************************
+
+  if(fabs(etagen) > 1) 
+    return;
+
+  float thetagen = 2.*atan(exp(-etagen));	
+  // PLZ end xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+  if((debug_bti || debug_tsphi || debug_tstheta) && theAsciiFileName != "") 
+    outAscii << "\nTrigger block\n-------------" << endl;
+  
+  // L1 Local Trigger Block -----------------------------------------------------
   bool BTI_done     = false;
   bool TSTHETA_done = false;
-
+  
   // BTI
   vector<DTBtiTrigData> btitrigs = theDTTrigger->BtiTrigs();
   vector<DTBtiTrigData>::const_iterator pbti;
   int ibti = 0;
-  if(debug_bti) 
+  if(debug_bti && theAsciiFileName != "") 
     outAscii << "\n[DTTrigger]: " << btitrigs.size() << " BTI triggers found" 
 	     << endl;
   DTBtiTrigger* aDTBti;
-  for ( pbti = btitrigs.begin(); pbti != btitrigs.end(); pbti++ ) 
+  for( pbti = btitrigs.begin(); pbti != btitrigs.end(); pbti++ ) 
     {
       Global3DPoint pos = theDTTrigger->CMSPosition(&(*pbti));
       Global3DVector dir = theDTTrigger->CMSDirection(&(*pbti));
       aDTBti = new DTBtiTrigger(*pbti, pos, dir);
       BtiTrigs->push_back(*aDTBti);
       ++ibti;
-      if(debug_bti && ( ibti < 100 ) ) {
+      if(debug_bti && ( ibti < 100 ) && (theAsciiFileName != "")) {
 	outAscii << ibti << ")" << endl; 
 	outAscii << aDTBti->sprint();
       }
       delete aDTBti;
     }
-  BTI_done = true;   
-		
+  BTI_done = true;
+ 
+  if(theRootFileNameHis != "") { // Ignazio
+    // PLZ begin	
+    int nbti=0;
+    float th1 = -1;
+    float th2 = -1;
+    for ( pbti = btitrigs.begin(); pbti != btitrigs.end(); pbti++ ) {
+      int bstat = pbti->station();
+      int bwh = pbti->wheel();
+      int bsect = pbti->sector();
+      int bnum = pbti->btiNumber();
+      int bbx = pbti->step();
+      int bsl = pbti->btiSL();
+      GlobalPoint pos = theDTTrigger->CMSPosition(&(*pbti));
+      float thetatrig = 
+	atan( sqrt(pos.x()*pos.x() + pos.y()*pos.y())/pos.z() );
+      if(pos.z() < 0) thetatrig += TMath::Pi();
+      if(bstat == 1 && bbx == 16 && bsl == 2) {th1 = thetatrig;}
+      if(bstat == 2 && bbx == 16 && bsl == 2) {th2 = thetatrig;}           
+      if(bstat == 1 && bbx == 16 && bsl == 2) {
+	nbti++;	
+	DTBtiId id = DTBtiId(bwh, bstat, bsect, 2, bnum);
+	DTChamberId chaid = DTChamberId(bwh, bstat, bsect);
+	const DTChamber* chamb = muonGeom->chamber(chaid);
+	DTTrigGeom* _geom = new DTTrigGeom(const_cast<DTChamber*>(chamb), false);
+	GlobalPoint  gpbti = _geom->CMSPosition(DTBtiId(chaid, 2, bnum)); 
+	float thposx = gpbti.x();
+	float thposy = gpbti.y();
+	float thposz = gpbti.z(); 
+	float thetabti = atan(sqrt( thposx*thposx + thposy*thposy)/thposz );
+	if(thposz<0) thetabti += TMath::Pi();
+	float dth = thetatrig-thetagen;
+	dtheta_trig_vx -> Fill(dth);
+	dth = thetabti-thetagen;
+	dtheta_bti_vx -> Fill(dth);	
+      }
+    } 
+    if (nbti >0) nbti_trig->Fill(nbti);
+    if(th2 > 0 && th1 > 0) {
+      float dth = th2-th1;
+      dtheta_trig_st -> Fill(dth);
+    }
+    //PLZ end  
+  }
+
   // TSTheta
   vector<DTChambThSegm> theTSThTrigs = theDTTrigger->TSThTrigs();
   vector<DTChambThSegm>::const_iterator tsTheta;
-  if(debug_tstheta)
-    outAscii << "\n[DTTrigger]: " << theTSThTrigs.size() << " TSTheta triggers found" 
+  if(debug_tstheta && theAsciiFileName != "")
+    outAscii << "\n[DTTrigger]: " << theTSThTrigs.size() 
+	     << " TSTheta triggers found" 
 	     << endl;
   int itstheta = 0;
   for (tsTheta = theTSThTrigs.begin(); tsTheta != theTSThTrigs.end(); tsTheta++) {
     TSThetaTrigs->push_back(*tsTheta);
-    if(debug_tstheta && tsTheta->ChamberId().station() < 3)
+    if(debug_tstheta && tsTheta->ChamberId().station() < 3 && theAsciiFileName != "")
       outAscii << " Trigger # " << (++itstheta) 
 	       << " on Station " << tsTheta->ChamberId().station() 
 	       << " bx " << tsTheta->step() << endl;
   } 
   TSTHETA_done = true;  
   
-  // TSPhi
+  // TSPhi and  TSphi-TStheta matching ------------------------------------------
   vector<DTChambPhSegm> theTSPhTrigs = theDTTrigger->TSPhTrigs();
   vector<DTChambPhSegm>::const_iterator tsphi;
   DTTSPhiTrigger* aTSphiTrig;
-  if(debug_tsphi)
-    outAscii << "\n[DTTrigger]: " << theTSPhTrigs.size() << " TSPhi triggers found" 
+  if(debug_tsphi && theAsciiFileName != "")
+    outAscii << "\n[DTTrigger]: " << theTSPhTrigs.size() 
+	     << " TSPhi triggers found" 
 	     << endl;
-    int itsphi = 0;
+  int itsphi = 0;
   for (tsphi = theTSPhTrigs.begin(); tsphi != theTSPhTrigs.end(); tsphi++) {
     Global3DPoint pos = theDTTrigger->CMSPosition(&(*tsphi)); 
-    Global3DVector dir = theDTTrigger->CMSDirection(&(*tsphi));
+    Global3DVector dir = theDTTrigger->CMSDirection(&(*tsphi));  
+    // float rho = sqrt(pos.x()*pos.x()+pos.y()*pos.y());
+    // cout << tsphi-> station()<< " " << tsphi->code() << " " 
+    //      << tsphi->phi() << " " << rho << endl;    
     aTSphiTrig = new DTTSPhiTrigger(*tsphi, pos, dir);
     TSPhiTrigs->push_back(*aTSphiTrig);
-    if(debug_tsphi && tsphi->ChamberId().station() < 3) {
+    if(debug_tsphi && tsphi->ChamberId().station() < 3 && theAsciiFileName != "") {
       outAscii << " Trigger # " <<(++itsphi) << endl;
       outAscii << aTSphiTrig->sprint();
-    }
-
+    }    
     // *********************************
     // *** match TSphi-BTItheta (SV) *** 
     // *********************************
@@ -104,12 +359,12 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
       for(BtiTrigsCollection::iterator bti = BtiTrigs->begin();
 	  bti != BtiTrigs->end(); bti++) {
 	if( match(*bti, *tsphi) ) {
-	  // Add DTMatch to DTStubMatchesCollection
+	  // Add DTMatch to DTMatchesCollection.
 	  // To use "position" as given by a BTI, that is the station center:
-          // DTStubMatches->addDT(*bti, *tsphi, debug_dttrackmatch_extrapolation);
+          // DTMatches->addDT(*bti, *tsphi, debug_dttrackmatch_extrapolation);
 	  // To use "position" as given instead by Phi server:
-	  DTStubMatches->addDT(*bti, *aTSphiTrig, debug_dttrackmatch);
-	  bti_match_found =true;
+	  DTMatches->addDT(*bti, *aTSphiTrig, debug_dttrackmatch);
+	  bti_match_found = true;
 	}
       }
     }
@@ -119,7 +374,8 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
     // *** match TSphi-TStheta (PLZ) *** 
     // *********************************
     bool theta_match_found = false;
-    if( use_TSTheta && TSTHETA_done && (tsphi->station()==1 || tsphi->station()==2) ) {
+    if( use_TSTheta && TSTHETA_done && 
+	(tsphi->station()==1 || tsphi->station()==2) ) {
       for(TSThetaTrigsCollection::iterator tstheta = TSThetaTrigs->begin();
 	  tstheta != TSThetaTrigs->end(); tstheta++) {
 	if( match(*tstheta, *tsphi) ) {
@@ -133,7 +389,8 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
 	      DTBtiId id = DTBtiId(thwh, thstat, thsect, 2, bti_id);
 	      DTChamberId chaid = DTChamberId(thwh, thstat, thsect);
 	      const DTChamber* chamb = muonGeom->chamber(chaid);
-	      DTTrigGeom* _geom = new DTTrigGeom(const_cast<DTChamber*>(chamb), false);
+	      DTTrigGeom* _geom = 
+		new DTTrigGeom(const_cast<DTChamber*>(chamb), false);
 	      GlobalPoint  gpbti = _geom->CMSPosition(DTBtiId(chaid, 2, bti_id)); 
 	      GlobalVector gdbti = GlobalVector(); // ?????????????????????
 	      float thposx = gpbti.x();
@@ -143,7 +400,8 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
 	      int st   = tsphi->station();
 	      int se   = tsphi->sector();
 	      int bx   = tsphi->step();
-	      int code = tsphi->code()*4 + thqual; // code 0,1=L, 2,3=H, 4=LL, 5=HL, 6=HH 
+	      int code = tsphi->code()*4 + thqual; 
+	      // code 0,1=L, 2,3=H, 4=LL, 5=HL, 6=HH 
 	      if(tsphi->station() == 1) code = code + 2;
 	      int phi  = tsphi->phi(); 
 	      int phib = tsphi->phiB();
@@ -151,19 +409,20 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
 	      if(thposz<0) theta += TMath::Pi();
 	      bool flagBxOK = false;
 	      if(bx == 16) flagBxOK = true;
-	      DTStubMatch* aDTStubMatch = 
-		new DTStubMatch(wh, st, se, bx, code, phi, phib, theta, 
-				gpbti, gdbti, flagBxOK);
-	      DTStubMatches->addDT(aDTStubMatch); 
+	      GlobalPoint pos_match(pos.x(),pos.y(),gpbti.z());
+	      DTMatch* aDTMatch = 
+		new DTMatch(wh, st, se, bx, code, phi, phib, theta, 
+				pos_match, dir, flagBxOK);
+	      DTMatches->addDT(aDTMatch); 
 	      theta_match_found =true;	      
 	    } // end if tstheta->code(i) > 0
 	  } // end loop over i to get bti_id = (i+1)*8 - 3	  
-	  int n0 = DTStubMatches->numDt();
-	  int n1 = DTStubMatches->numDt(1);
-	  int n2 = DTStubMatches->numDt(2);
-      if(debug_tstheta) 
-	  outAscii << " DTStubMatches all, station 1, station 2: " 
-		   << n0 << " " << n1 << " " << n2 <<endl;
+	  int n0 = DTMatches->numDt();
+	  int n1 = DTMatches->numDt(1);
+	  int n2 = DTMatches->numDt(2);
+	  if(debug_tstheta && theAsciiFileName != "") 
+	    outAscii << " DTMatches all, station 1, station 2: " 
+		     << n0 << " " << n1 << " " << n2 <<endl;
 	} // end if match *tstheta, *tsphi
       } // loop over TS theta's
     } // end if use_TSTheta
@@ -171,7 +430,7 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
     
     /*
       Case where no Theta Trigger was found: 
-      this method is allowed only for phi trigger code >=2 !!
+      this method is allowed only for phi trigger code >= 2 !!
     */
     // Get chamber center and allow error on whole chamber width 
     bool match_found = false;
@@ -179,7 +438,7 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
     if( !match_found 
 	&& (tsphi->station()==1 || tsphi->station()==2) 
 	&& tsphi->code() >= 2 ) {
-      if(debug_tstheta) 
+      if(debug_tstheta && theAsciiFileName != "") 
 	outAscii << " theta match not found for this phi trigger " << endl;
       int wh   = tsphi->wheel();
       int st   = tsphi->station();
@@ -187,15 +446,15 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
       int bx   = tsphi->step();
       int code = tsphi->code()*4 ; 
       // code 0,1=L, 2,3=H, 4=LL, 5=HL, 6=HH : theta quality set to 0
-      //      if(tsphi->station() == 1) code = code + 2; 
+            if(tsphi->station() == 1) code = code + 2; 
       // force lower rank assuming it is like station 2  
       if( use_roughTheta ) {
 	int phi  = tsphi->phi(); 
 	int phib = tsphi->phiB();
-	//      Theta is set at station center with half a chamber window
-	//      DTChamberId chaid = DTChamberId(wh, st, se);
-	//      const DTChamber* chamb = muonGeom->chamber(chaid);
-	//      DTTrigGeom* _geom = new DTTrigGeom(const_cast<DTChamber*>(chamb), false);
+	// Theta is set at station center with half a chamber window
+	// DTChamberId chaid = DTChamberId(wh, st, se);
+	// const DTChamber* chamb = muonGeom->chamber(chaid);
+	// DTTrigGeom* _geom = new DTTrigGeom(const_cast<DTChamber*>(chamb), false);
 	DTWireId wireId = DTWireId(wh,st,se,2,1,1);
 	const DTLayer* layer = muonGeom->layer(wireId.layerId()); 
 	const DTTopology& tp=layer->specificTopology();
@@ -213,50 +472,61 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
 	GlobalVector gdbti = GlobalVector(); // ????????????????????? Dummy direction
 	bool flagBxOK = false;
 	if(bx == 16) flagBxOK = true;
-	DTStubMatch* aDTStubMatch = 
-	  new DTStubMatch(wh, st, se, bx, code, phi, phib, theta, 
-			  pos_center, gdbti, flagBxOK);
-	DTStubMatches->addDT(aDTStubMatch); 
+	      GlobalPoint pos_match(pos.x(),pos.y(),pos_center.z());
+	DTMatch* aDTMatch = 
+	  new DTMatch(wh, st, se, bx, code, phi, phib, theta, 
+			  pos_match, gdbti, flagBxOK);
+	DTMatches->addDT(aDTMatch); 
 	// set needed data for correct extrapolation search and flag for missing theta
 	float delta_theta = fabs((pos_first.theta()-pos_last.theta())/2.);
-	aDTStubMatch ->setTheta(delta_theta); 
+	aDTMatch ->setTheta(delta_theta); 
       } // end if use_roughTheta
     } // end if not match_found ... 
    
-    delete aTSphiTrig; 
-
+    delete aTSphiTrig;  
   }
-	
-  if(debug_dtmatch) {
+  if(theRootFileNameHis != "") {
+    //PLZ begin 
+    int numDTOK = 0;
+    ndt_match1 -> Fill(DTMatches->numDt(1));
+    ndt_match2 -> Fill(DTMatches->numDt(2));
+    ndt_match -> Fill(DTMatches->numDt());
+    for (int idtmatch = 0; idtmatch < DTMatches->numDt(); idtmatch++){
+      if(DTMatches->dtmatch(idtmatch)->bx() == 16) numDTOK++;
+    }
+    if (numDTOK > 0) ndt_match_BXok -> Fill(numDTOK);
+    //PLZ end
+  }
+  if(debug_dtmatch && theAsciiFileName != "") {
     outAscii 
       << "\n=========================================================="
-      << "\nNumber of DTMatches: " <<  DTStubMatches->numDt()
-      << "; in station 1: " << DTStubMatches->numDt(1)
-      << "; in station 2: " << DTStubMatches->numDt(2)
+      << "\nNumber of DTMatches: " <<  DTMatches->numDt()
+      << "; in station 1: " << DTMatches->numDt(1)
+      << "; in station 2: " << DTMatches->numDt(2)
       << endl;
-    for (int idtmatch = 0; idtmatch < DTStubMatches->numDt(); idtmatch++)
+    for (int idtmatch = 0; idtmatch < DTMatches->numDt(); idtmatch++){
+      GlobalPoint pos = DTMatches->dtmatch(idtmatch)->CMS_Position();
+      float rho = sqrt(pos.x()*pos.x()+pos.y()*pos.y());
       outAscii 
 	<< " " << idtmatch << ")"
-	<< " bx " << DTStubMatches->dtmatch(idtmatch)->bx()
-	<< " st " << DTStubMatches->dtmatch(idtmatch)->station()
-	<< " wh " << DTStubMatches->dtmatch(idtmatch)->wheel()
-	<< " se " << DTStubMatches->dtmatch(idtmatch)->sector()
-	<< " code " << DTStubMatches->dtmatch(idtmatch)->code()
-	<< "\n    phi_glo " <<  DTStubMatches->dtmatch(idtmatch)->phi_glo()
-	<< " phi_ts " <<  DTStubMatches->dtmatch(idtmatch)->phi_ts()
-	<< " phib " <<  DTStubMatches->dtmatch(idtmatch)->phib_ts()
-	<< " theta " << DTStubMatches->dtmatch(idtmatch)->theta_ts()
+	<< " bx " << DTMatches->dtmatch(idtmatch)->bx()
+	<< " st " << DTMatches->dtmatch(idtmatch)->station()
+	<< " wh " << DTMatches->dtmatch(idtmatch)->wheel()
+	<< " se " << DTMatches->dtmatch(idtmatch)->sector()
+	<< " code " << DTMatches->dtmatch(idtmatch)->code()
+	<< "\n    phi_glo " <<  DTMatches->dtmatch(idtmatch)->phi_glo()
+	<< " phi_ts " <<  DTMatches->dtmatch(idtmatch)->phi_ts()
+	<< " phib " <<  DTMatches->dtmatch(idtmatch)->phib_ts()
+	<< " theta " << DTMatches->dtmatch(idtmatch)->theta_ts()
+	<< " rho " << rho
 	<< endl;
-    outAscii 
-      << "==========================================================" 
-      << endl;
+      outAscii 
+	<< "==========================================================" 
+	<< endl;
+    }
   }
-
-  
   return;  
-
-
-
+  
   //----------------------------------------------------------------------------
   // Track Finder 
   //----------------------------------------------------------------------------
@@ -267,7 +537,7 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
   event.getByLabel( "simDttfDigis", "DTTF", DTTFTracks_handle);
   if (! DTTFTracks_handle.isValid()) {
     cout << "Invalid L1DTTracksCollection at event " << EvtCounter << endl;
-    if(debug_dttf) 
+    if(debug_dttf && theAsciiFileName != "") 
       outAscii 
 	<< "Invalid L1DTTracksCollection at event " << EvtCounter << endl;
   }
@@ -297,9 +567,9 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
 	//
 	L1MuDTTracks->push_back(anL1MuDTTrack);
 	delete anL1MuDTTrack;
-	if(debug_dttf) {
+	if(debug_dttf && theAsciiFileName != "") {
 	  outAscii 
-	    << "\n********** DT SegmentedTracks print **********************************" 
+	    << "\n********** DT SegmentedTracks print ********************************" 
 	    << endl; 
 	  if( (*track)->ptValue()  == -10. ||
 	      (*track)->etaValue() == -10. ||
@@ -310,7 +580,7 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
 	  vector<L1MuDTTrackSegPhi> vp = (*track)->getTSphi();    
 	  outAscii << "L1MuDTTrackSegPhi vector size " << vp.size() << endl;
 	  for(size_t i=0; i<vp.size(); i++)                    
-	    outAscii << vp[i] << endl;                                                         
+	    outAscii << vp[i] << endl;                                                  
 	  vector<L1MuDTTrackSegEta> ve = (*track)->getTSeta(); 
 	  outAscii << "L1MuDTTrackSegEta vector size " << ve.size() << endl;
 	  for(size_t i=0; i<ve.size(); i++)                      
@@ -321,12 +591,11 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
     } // end loop over vector<const L1MuDTTrack*>
   } // if DTTFSorterTracks_handle.isValid()
   
-
   //----------------------------------------------------------------------------
   // To get muon regional candidates as delivered to L1MuGMT
-  if(debug_dttf) 
+  if(debug_dttf && theAsciiFileName != "") 
     outAscii 
-      << "\n********** L1MuDTTracks: *********************************************" 
+      << "\n********** L1MuDTTracks: ********************************" 
       << endl;
   edm::Handle< L1MuDTTrackContainer > L1MuDttfDigis_handle;
   event.getByLabel("simDttfDigis", "DTTF", L1MuDttfDigis_handle);
@@ -334,7 +603,7 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
     // edm::LogInfo("DataNotFound") << "can't find L1MuDTTrackContainer with label "
     //				    << dttpgSource_.label() ;
     cout << "Invalid L1MuDTTrackContainer at event " << EvtCounter << endl;
-    if(debug_dttf) 
+    if(debug_dttf && theAsciiFileName != "") 
       outAscii << "Invalid L1MuDTTrackContainer at event " << EvtCounter << endl;
   }
   else {
@@ -356,7 +625,7 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
       track->setEtaValue(theDTTriggerScales->getRegionalEtaScale(track->type_idx())->
 			 getCenter(track->eta_packed()));
       track->setPtValue(theDTTriggerPtScale->getPtScale()->getLowEdge(track->pt_packed()));
-      if(debug_dttf)
+      if(debug_dttf && theAsciiFileName != "")
 	outAscii 
 	  << setiosflags(ios::showpoint | ios::fixed | ios::right | ios::adjustfield)
 	  << "  bx = " << setw(3) << track->bx() 
@@ -374,7 +643,7 @@ void DTL1SimOperations::getDTSimTrigger(edm::Event& event,
 	  << std::endl;
     }      
   }
-  if(debug_dttf) 
+  if(debug_dttf && theAsciiFileName != "") 
     outAscii << "\n" << endl;  
 
 
