@@ -28,7 +28,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+//#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/EDProducer.h"
@@ -58,7 +58,9 @@ public:
   
 private:
   
-  virtual void beginJob(const edm::EventSetup&);
+//  virtual void beginJob(const edm::EventSetup&);
+  virtual void beginJob();
+  virtual void beginRun(edm::Run&, const edm::EventSetup&);
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob();
 	
