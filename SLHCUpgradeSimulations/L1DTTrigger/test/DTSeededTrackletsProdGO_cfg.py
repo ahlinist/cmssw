@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
 ################################################################################
-maxEvNr = 25000
+maxEvNr = 10000
 
-#'PT' = '7.5'
-PU = 'PU0'
+# PT = '40'
+# PU = 'PU200'
 
 #Stubs = "fromSimHits"
 Stubs = "fromPixelDigis"
@@ -22,32 +22,39 @@ if USE_TSTHETA == True:
 if USE_roughTHETA == True:
         use_theta_label = "_roughTheta"
 
-# inputDir = '/data/SLHCprod/3_3_6/'
-# outputDir = "../../../../outputs/"
-
-inputDir = "/raid4/zotto/SLHCprod/prod336/"
-outputDir = "/raid4/zotto/SLHCprod/prod336/"
+#inputDir = "/lustre/cmswork/zotto/SLHCdata/"
+outputDir = "/lustre/cmswork/zotto/SLHCdata/"
+inputDir = "/lustre/cmsdata/zotto/SLHCdata/"
+#outputDir = "/lustre/cmsdata/zotto/SLHCdata/"
 #outpuDir ="."
 
+#singleMuonPt = PT
+
+
 rootFileNamesIn = cms.untracked.vstring(
-      'file:' + inputDir + 
-         'PT_GeVPtMuons_StackedTrackerlongbarrel_fromPixelDigis.root'
-)
+      'file:' 
+      +   inputDir + 
+     'FullSim_Pt'+ 'PTMU' + '_' + 'PU' + '.root')
+     
 rootFileNameOut = cms.untracked.string(
-     'file:' + outputDir  +
-     'out_mu_PT_GeV_' + PU + '.root') 
+    'file:' 
+ + outputDir  +
+     'out_mu_'+ 'PTMU' + 'GeV_' + 'PU' + '.root')
+#     'out_mu_PT_GeV_' + PU + '.root') 
 	 
 rootFileNameHis = cms.untracked.string(
-     'h_out_mu_PT_GeV_' + PU + '.root') 
+     'h_out_mu_'+ 'PTMU' + 'GeV_' + 'PU' + '.root')
+#     'h_out_mu_PT_GeV_' + PU + '.root') 
 
 asciiFileName = cms.untracked.string(
      'file:' + outputDir  +
-			'out_mu_PT_GeV_' + PU + '.txt')
-#     outputDir + 'PT' + 'out_mu_PU200.txt')
-
+     'out_mu_'+ 'PTMU' + 'GeV_' + 'PU' + '.txt')
+#			'out_mu_PT_GeV_' + PU + '.txt')
+#
 msgFileNames = cms.untracked.vstring(
      'file:' + outputDir  +
-			'out_mu_PT_GeV_' + PU + '.msg')
+     'out_mu_'+ 'PTMU' + 'GeV_' + 'PU' + '.msg')
+#			'out_mu_PT_GeV_' + PU + '.msg')
 
     
 # rootFileNameOut = cms.untracked.string(
@@ -56,11 +63,13 @@ msgFileNames = cms.untracked.vstring(
 # ) 
 	 
 rootFileNamePlots = cms.untracked.string(
-     outputDir + 'Plots_' + 'PT' + 'GeVMuons' + use_tstheta_label + '.root'
+     'file:' + outputDir + 
+     'Plots_' + 'PTMU' + 'GeVMuons' + use_tstheta_label + '.root'
 ) 
 
 patternFileName = cms.untracked.string(
-     rtsDir + 'PT' + 'GeV_Pt_Muons_ascii' + '.pat')
+     'file:' + outputDir + 
+     'PTMU' + 'GeV_Pt_Muons_ascii' + '.pat')
 
 # asciiFileName = cms.untracked.string(
 #      outputDir + 'PT' + 'GeVPtMuons_DTSeededTracklets_fromPixelDigis'
@@ -76,9 +85,14 @@ patternFileName = cms.untracked.string(
 
 process = cms.Process("MuonsUpgrade")
 
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+# Other statements --------------------------------------------------------------
+#process.GlobalTag.globaltag = 'MC_42_V12::All'
+#process.GlobalTag.globaltag = "DESIGN42_V11::All"
+
 process.load("SLHCUpgradeSimulations.L1DTTrigger.DTstackedTracker_specific_cff")
 process.load("SLHCUpgradeSimulations.L1DTTrigger.DTSeededTrackletsProd_cff")
-process.load("SLHCUpgradeSimulations.L1DTTrigger.DTSeededTrackletsPlots_cfi")
+# process.load("SLHCUpgradeSimulations.L1DTTrigger.DTSeededTrackletsPlots_cfi")
 process.load("SLHCUpgradeSimulations.L1DTTrigger.DTSeededTrackletsOutMod_cff")
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(maxEvNr))
@@ -86,15 +100,20 @@ process.MessageLogger.destinations = msgFileNames
 process.source.fileNames = rootFileNamesIn
 
 # to produce, in case, collection of L1MuDTTrack objects:    
-process.dttfDigis = cms.Path(process.simDttfDigis)
+#process.dttfDigis = cms.Path(process.simDttfDigis)
 
-if Stubs == "fromSimHits":
-    process.stubs = cms.Path(process.stubs_fromSimHits)
-elif Stubs == "fromPixelDigis":
-    process.stubs = cms.Path(process.stubs_fromPixelDigis)
-else:
-    process.stubs = cms.Path(process.stubs_fromTrackTriggerHits)
-
+# muon specific ----------------------------------------------------------------
+process.load("Geometry.DTGeometry.dtGeometry_cfi")
+process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi")
+process.load("SimMuon/DTDigitizer/muonDTDigis_cfi")
+#process.load("L1TriggerConfig.DTTPGConfigProducers.L1DTTPGConfig_cff")
+## # tracker specific -------------------------------------------------------------
+process.load('SLHCUpgradeSimulations.Geometry.Longbarrel_cmsSimIdealGeometryXML_cff')
+process.load("SLHCUpgradeSimulations.Utilities.StackedTrackerGeometry_cfi")
+process.load('SLHCUpgradeSimulations.Geometry.fakeConditions_Longbarrel_cff')
+process.load("SLHCUpgradeSimulations.Geometry.recoFromSimDigis_Longbarrel_cff")
+process.load("SLHCUpgradeSimulations.Geometry.upgradeTracking_longbarrel_cff")
+process.load("SimTracker.Configuration.SimTracker_cff") # era commentato!!!!!!!!!!!!!!!!
 
 if USE_TSTHETA == True:
 	process.DTL1slhcProd.use_TSTheta = cms.untracked.bool(True)
@@ -105,7 +124,7 @@ process.DTL1slhcProd.asciiFileName   = asciiFileName
 process.DTL1slhcProd.rootFileNameHis = rootFileNameHis
 process.DTL1slhcProd.patternAsciiFileName = patternFileName 
 #-----------------------------------------------
-process.DTL1slhcProd.singleMuonPt = singleMuonPt
+process.DTL1slhcProd.singleMuonPt = cms.untracked.double(140)
 #-----------------------------------------------
 process.DTL1slhcProd.min_invRb = cms.untracked.double(0.00000045)
 process.DTL1slhcProd.max_invRb = cms.untracked.double(1.)
@@ -116,16 +135,17 @@ process.DTL1slhcProd.station2_correction = cms.untracked.double(1.23)
 process.DTL1slhcProd.third_method_accurate = cms.untracked.bool(False) 
 # To apply PT cut to stubs
 process.DTL1slhcProd.magneticFieldStrength = cms.untracked.double(4.0112)
-process.DTL1slhcProd.ptThreshold           = cms.untracked.double(5.0)
+process.DTL1slhcProd.ptThreshold           = cms.untracked.double(2.0)
 
 process.scms = cms.Path(process.DTL1slhcProd)
 
 
-process.DTL1slhcPlots.rootFileNamePlots = rootFileNamePlots
-process.DTL1slhcPlots.desert = cms.untracked.double(0.005)
-process.DTL1slhcPlots.singleMuonPt = singleMuonPt
-process.DTL1slhcPlots.optimize_plot = True
-process.plots = cms.Path(process.DTL1slhcPlots)
+#process.DTL1slhcPlots.rootFileNamePlots = rootFileNamePlots
+#process.DTL1slhcPlots.desert = cms.untracked.double(0.005)
+#process.DTL1slhcPlots.singleMuonPt = singleMuonPt
+#process.DTL1slhcPlots.singleMuonPt = cms.untracked.double(140)
+#process.DTL1slhcPlots.optimize_plot = True
+#process.plots = cms.Path(process.DTL1slhcPlots)
 
 # Make the job crash in case of missing product
 process.options = cms.untracked.PSet( 
