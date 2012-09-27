@@ -13,7 +13,7 @@
 //
 // Original Author:  Seth Cooper,27 1-024,+41227672342,
 //         Created:  Mon Sep 26 17:38:06 CEST 2011
-// $Id: EcalAdjustFETimingDQM.cc,v 1.10 2011/11/14 22:22:23 franzoni Exp $
+// $Id: EcalAdjustFETimingDQM.cc,v 1.11 2012/01/26 11:00:04 franzoni Exp $
 //
 //
 // ***************************************************************************************
@@ -187,9 +187,9 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       // which TT/SC?
       int iTT = Numbers::iSC(iSM,EcalBarrel,det.ietaSM(),det.iphiSM());
 
-      if(ttMapEB->GetBinContent(xphi,yeta) != 0)
+      if(ttMapEB->GetBinEntries(ttMapEB->GetBin(xphi,yeta)) > 0)
       {
-        ttAvgTimesEB[iSM-1][iTT-1]+= ttMapEB->GetBinContent(xphi,yeta)-50;
+        ttAvgTimesEB[iSM-1][iTT-1]+= ttMapEB->GetBinContent(xphi,yeta);
         ttNumEntriesEB[iSM-1][iTT-1]++;
       }
 
@@ -238,7 +238,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   {
     for(int y=1; y < 20; ++y)
     {
-      if(ttMapEEM->GetBinContent(x,y) != 0)
+      if(ttMapEEM->GetBinEntries(ttMapEEM->GetBin(x,y)) > 0)
       {
         int centerCryIx = x*5 - 1;
         int centerCryIy = y*5 - 1;
@@ -271,7 +271,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         int iSMminus = Numbers::iSM(detMinus);
         // which TT/SC?
         int iSCminus = Numbers::iSC(iSMminus,EcalEndcap,detMinus.ix(),detMinus.iy());
-        ttAvgTimesEE[iSMminus-1][iSCminus-1]+= ttMapEEM->GetBinContent(x,y)-50;
+        ttAvgTimesEE[iSMminus-1][iSCminus-1]+= ttMapEEM->GetBinContent(x,y);
         ttNumEntriesEE[iSMminus-1][iSCminus-1]++;
         ////debug
         //if(iSMminus==8)
@@ -285,7 +285,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       }
 
 
-      if(ttMapEEP->GetBinContent(x,y) != 0)
+      if(ttMapEEP->GetBinEntries(ttMapEEP->GetBin(x,y)) > 0)
       {
         int centerCryIx = x*5 - 1;
         int centerCryIy = y*5 - 1;
@@ -317,7 +317,7 @@ EcalAdjustFETimingDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         int iSMplus = Numbers::iSM(detPlus);
         // which TT/SC?
         int iSCplus = Numbers::iSC(iSMplus,EcalEndcap,detPlus.ix(),detPlus.iy());
-        ttAvgTimesEE[iSMplus-1][iSCplus-1]+= ttMapEEP->GetBinContent(x,y)-50;
+        ttAvgTimesEE[iSMplus-1][iSCplus-1]+= ttMapEEP->GetBinContent(x,y);
         ttNumEntriesEE[iSMplus-1][iSCplus-1]++;
         ////debug
         //if(iSMplus==11)
