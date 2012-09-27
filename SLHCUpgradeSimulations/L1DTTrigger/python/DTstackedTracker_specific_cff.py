@@ -22,8 +22,8 @@ from Configuration.StandardSequences.Geometry_cff import *
 # magnetic field ---------------------------------------------------------------
 #process.load("Configuration.StandardSequences.MagneticField_cff")
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
-#process.load("Configuration.StandardSequences.MagneticField_40T_cff")
-from Configuration.StandardSequences.MagneticField_38T_cff import *
+from Configuration.StandardSequences.MagneticField_40T_cff import *
+#from Configuration.StandardSequences.MagneticField_38T_cff import *
 # NB: Mag Field can be set to 0
 #process.load("Configuration.StandardSequences.UseZeroBField_cff")
 
@@ -32,8 +32,9 @@ from Configuration.StandardSequences.MagneticField_38T_cff import *
 # 2.2.6: from Configuration.StandardSequences.FakeConditions_cff import *
 ### I commented out the next to run without access to the internet (Ignazio):
 ### I can't catch any effective implication over he output.
-#from Configuration.StandardSequences.FrontierConditions_GlobalTag_cff import *
+from Configuration.StandardSequences.FrontierConditions_GlobalTag_cff import *
 #GlobalTag.globaltag = 'MC_31X_V8::All'
+GlobalTag.globaltag = "DESIGN42_V11::All"
 #from Configuration.StandardSequences.GeometryPilot2_cff import *
 
 # sim tracker digis ------------------------------------------------------------
@@ -56,7 +57,7 @@ siStripClusters.DigiProducersList[0].DigiProducer= 'simSiStripDigis'
 TrackerDigiGeometryESModule.applyAlignment = False
 
 # Stacked Tracker Geometry -----------------------------------------------------
-from SLHCUpgradeSimulations.Geometry.longbarrel_cmsIdealGeometryXML_cff import *
+from SLHCUpgradeSimulations.Geometry.LongBarrel_cmsSimIdealGeometryXML_cff import *
 from SLHCUpgradeSimulations.Utilities.StackedTrackerGeometry_cfi import *
 StackedTrackerGeometryESModule.make_debug_file = cms.bool(True)
 
@@ -91,27 +92,33 @@ HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer("HitMatchingAlgorithm_" +
                                                HitStubsFromDigis[3] +
                                                "_PixelDigi_")
 
-from SLHCUpgradeSimulations.L1TrackTrigger.LocalStub_cfi import *
-LocalStubsFromSimHits.rawHits =\
-                        cms.VInputTag(cms.InputTag("g4SimHits","TrackerHits"))
-from SLHCUpgradeSimulations.L1TrackTrigger.GlobalStub_cfi import *
+#from SLHCUpgradeSimulations.L1TrackTrigger.LocalStub_cfi import *
+#LocalStubsFromSimHits.rawHits =\
+#                        cms.VInputTag(cms.InputTag("g4SimHits","TrackerHits"))
+#from SLHCUpgradeSimulations.L1TrackTrigger.GlobalStub_cfi import *
+L1TkClustersFromPixelDigis = cms.EDProducer("L1TkClusterBuilder_PixelDigi_",
+    rawHits = cms.VInputTag(cms.InputTag("simSiPixelDigis")),
+    ADCThreshold = cms.uint32(30),
+)
+from SLHCUpgradeSimulations.L1TrackTrigger.Cluster_cfi import *
+from SLHCUpgradeSimulations.L1TrackTrigger.Stub_cfi import *
 from SLHCUpgradeSimulations.L1TrackTrigger.Tracklet_cfi import *
-from SLHCUpgradeSimulations.L1TrackTrigger.TrackletChain_cfi import *
+from SLHCUpgradeSimulations.L1TrackTrigger.Track_cfi import *
 
 #-------------------------------------------------------------------------------
-from SLHCUpgradeSimulations.L1TrackTrigger.TrackTriggerHitsFromPixelDigis_cfi import *
+#from SLHCUpgradeSimulations.L1TrackTrigger.TrackTriggerHitsFromPixelDigis_cfi import *
 
 
-stubs_fromSimHits = cms.Sequence(LocalStubsFromSimHits *
-                                 GlobalStubsFromSimHits*
-                                 TrackletsFromSimHits)
+#stubs_fromSimHits = cms.Sequence(LocalStubsFromSimHits *
+#                                 GlobalStubsFromSimHits*
+#                                 TrackletsFromSimHits)
 
-stubs_fromPixelDigis = cms.Sequence(LocalStubsFromPixelDigis *
-                                    GlobalStubsFromPixelDigis*
-                                    TrackletsFromPixelDigis  *
-                                    TrackletChainsFromPixelDigis) 
+#stubs_fromPixelDigis = cms.Sequence(LocalStubsFromPixelDigis *
+#                                    GlobalStubsFromPixelDigis*
+#                                    TrackletsFromPixelDigis  *
+#                                    TrackletChainsFromPixelDigis) 
 
-stubs_fromTrackTriggerHits = cms.Sequence(TrackTriggerHitsFromPixelDigis *
-                                          LocalStubsFromTrackTriggerHits *
-                                          GlobalStubsFromTrackTriggerHits*
-                                          TrackletsFromTrackTriggerHits)
+#stubs_fromTrackTriggerHits = cms.Sequence(TrackTriggerHitsFromPixelDigis *
+#                                          LocalStubsFromTrackTriggerHits *
+#                                          GlobalStubsFromTrackTriggerHits*
+#                                          TrackletsFromTrackTriggerHits)
