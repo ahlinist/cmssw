@@ -115,6 +115,21 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       static const int kElectron = 11;
 
 
+      bool PhotonMITPreSelection( int photon_index, bool electronVeto);
+      int PhotonCategory(int photonindex) { 
+	return PhotonR9Category(photonindex) + 2*PhotonEtaCategory(photonindex);
+      }
+      Int_t PhotonR9Category(int photonindex) { 
+	if(photonindex < 0) return -1;
+	int r9cat = (Int_t)(E9Phot[photonindex]/escRawPhot[photonindex]<0.94);// 0, 1(high r9 --> low r9)
+	return r9cat;
+      }
+      int PhotonEtaCategory(int photonindex) {
+	if(photonindex < 0) return -1;
+	//int etacat = (Int_t)(!isEBPhot[photonindex]);   // 0, 1 (barrel --> endcap)
+	int etacat = (Int_t)(TMath::Abs(etascPhot[photonindex])>1.479);   // 0, 1 (barrel --> endcap)
+	return  etacat;
+      }
       // ----------member data ---------------------------
       bool _debug;
       
