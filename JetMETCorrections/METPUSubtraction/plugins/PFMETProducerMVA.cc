@@ -154,7 +154,6 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
 	if(pMatch) break;
       }
       if(pMatch) continue;
-      //if(chargedFrac(&(*lepton1)) == 0) continue;
       mvaMEtUtilities::leptonInfo pLeptonInfo;
       pLeptonInfo.p4_          = lepton1->p4();
       pLeptonInfo.chargedFrac_ = chargedFrac(&(*lepton1));
@@ -173,8 +172,8 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
     &(vertices->front()) : 0;
 
   // get average energy density in the event
-  edm::Handle<double> rho;
-  evt.getByLabel(srcRho_, rho);
+  //edm::Handle<double> rho;
+  //evt.getByLabel(srcRho_, rho);
 
   // reconstruct "standard" particle-flow missing Et
   CommonMETData pfMEt_data;
@@ -184,16 +183,14 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   
   // compute objects specific to MVA based MET reconstruction
   std::vector<mvaMEtUtilities::pfCandInfo> pfCandidateInfo = computePFCandidateInfo(*pfCandidates, hardScatterVertex);
-  std::vector<mvaMEtUtilities::JetInfo>    jetInfo         = computeJetInfo(*uncorrJets, *corrJets, *vertices, hardScatterVertex, *rho,*corrector,evt,es,leptonInfo,pfCandidateInfo);
+  std::vector<mvaMEtUtilities::JetInfo>    jetInfo         = computeJetInfo(*uncorrJets, *corrJets, *vertices, hardScatterVertex, *corrector,evt,es,leptonInfo,pfCandidateInfo);
   std::vector<reco::Vertex::Point>         vertexInfo      = computeVertexInfo(*vertices);
-  
+
   // compute MVA based MET and estimate of its uncertainty
   mvaMEtAlgo_.setInput(leptonInfo, jetInfo, pfCandidateInfo, vertexInfo);
   mvaMEtAlgo_.evaluateMVA();
-  
   pfMEt.setP4(mvaMEtAlgo_.getMEt());
   pfMEt.setSignificanceMatrix(mvaMEtAlgo_.getMEtCov());
-
   if ( verbosity_ ) {
     std::cout << "<PFMETProducerMVA::produce>:" << std::endl;
     std::cout << " PFMET: Pt = " << pfMEtP4_original.pt() << ", phi = " << pfMEtP4_original.phi() << " "
@@ -212,7 +209,6 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   // add PFMET object to the event
   std::auto_ptr<reco::PFMETCollection> pfMEtCollection(new reco::PFMETCollection());
   pfMEtCollection->push_back(pfMEt);
-
   evt.put(pfMEtCollection);
 }
 
@@ -220,7 +216,7 @@ std::vector<mvaMEtUtilities::JetInfo> PFMETProducerMVA::computeJetInfo(const rec
 								       const reco::PFJetCollection& corrJets, 
 								       const reco::VertexCollection& vertices,
 								       const reco::Vertex* hardScatterVertex,
-								       double rho,const JetCorrector &iCorrector,edm::Event &iEvent,const edm::EventSetup &iSetup,
+								       const JetCorrector &iCorrector,edm::Event &iEvent,const edm::EventSetup &iSetup,
 								       std::vector<mvaMEtUtilities::leptonInfo> &iLeptons,std::vector<mvaMEtUtilities::pfCandInfo> &iCands)
 {
   const L1FastjetCorrector* lCorrector = dynamic_cast<const L1FastjetCorrector*>(&iCorrector);
@@ -249,7 +245,7 @@ std::vector<mvaMEtUtilities::JetInfo> PFMETProducerMVA::computeJetInfo(const rec
       jetInfo.p4_ = corrJet->p4();
       double lType1Corr = 0;
       if(useType1_) { //Compute the type 1 correction ===> This code is crap 
-	double pCorr = lCorrector->correction(*uncorrJet,iEvent,iSetup);
+	double pCorr = 1;//Does not work in 42X lCorrector->correction(*uncorrJet,iEvent,iSetup);
 	lType1Corr = (corrJet->pt()-pCorr*uncorrJet->pt());
 	TLorentzVector pVec; pVec.SetPtEtaPhiM(lType1Corr,0,corrJet->phi(),0); 
 	reco::Candidate::LorentzVector pType1Corr; pType1Corr.SetCoordinates(pVec.Px(),pVec.Py(),pVec.Pz(),pVec.E());

@@ -8,9 +8,9 @@
  * \authors Phil Harris, CERN
  *          Christian Veelken, LLR
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PFMETProducerMVA.h,v 1.7 2012/08/09 14:16:18 pharris Exp $
+ * $Id: PFMETProducerMVA.h,v 1.1 2012/09/18 02:08:50 pharris Exp $
  *
  */
 
@@ -50,7 +50,7 @@ namespace reco
     void produce(edm::Event&, const edm::EventSetup&);
 
     // auxiliary functions
-    std::vector<mvaMEtUtilities::JetInfo> computeJetInfo(const reco::PFJetCollection&, const reco::PFJetCollection&, const reco::VertexCollection&, const reco::Vertex*, double,
+    std::vector<mvaMEtUtilities::JetInfo> computeJetInfo(const reco::PFJetCollection&, const reco::PFJetCollection&, const reco::VertexCollection&, const reco::Vertex*, 
 							 const JetCorrector &iCorr,edm::Event & iEvent,const edm::EventSetup &iSetup,
 							 std::vector<mvaMEtUtilities::leptonInfo> &iLeptons,std::vector<mvaMEtUtilities::pfCandInfo> &iCands);
     
