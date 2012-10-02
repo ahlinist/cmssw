@@ -11,7 +11,7 @@ SAMPLES_TO_ANALYZE = [
     'Data_runs190456to193621',
     'Data_runs193834to196531',
     'Data_runs190782to190949_recover',
-    'Data_runs197770to198913',
+    'Data_runs198022to198523',
     'Data_runs198934to202016',
     'ZplusJets_madgraph',
     'TTplusJets_madgraph',
@@ -25,7 +25,7 @@ _millibarns = 1.0e+9
 _picobarns =  1.0
 _femtobarns = 1.0e-3
 
-TARGET_LUMI = 0.1/_femtobarns # CV: estimated luminosity of first 2012 data
+TARGET_LUMI = 10./_femtobarns # CV: estimated luminosity of 2012 run A+B+C data
 
 RECO_SAMPLES = {
     'Data_runs190456to193621' : {
@@ -55,12 +55,12 @@ RECO_SAMPLES = {
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
-    'Data_runs197770to198913' : {
-        'datasetpath'      : '/DoubleMu/Run2012C-PromptReco-v1/AOD',
+    'Data_runs198022to198523' : {
+        'datasetpath'      : '/DoubleMu/Run2012C-24Aug2012-v1/AOD',
         'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",        
-        'events_processed' : 2141512, # 2012/09/12
-        'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-202016_8TeV_PromptReco_Collisions12_JSON.txt",
-        'runselection'     : "197770-198913",
+        'events_processed' : 2181586, # 2012/09/28
+        'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt",
+        'runselection'     : "198022-198523",
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
