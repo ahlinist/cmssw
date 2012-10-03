@@ -4,7 +4,7 @@ import copy
 isData = True
 runL1Emulator = False
 runOpenHLT = False
-metLeg = True
+metLeg = False
 hltType = "HLT"
 #hltType = "TEST"
 
@@ -212,6 +212,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "L1_ETM30",
 	    "L1_ETM36",
 	    "L1_ETM40",
+	    "L1_ETM50",
 	    "L1_Mu12er_ETM20"
         ),
         HltResults      = cms.InputTag("TriggerResults","",hltType),
@@ -234,6 +235,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "HLT_IsoMu15_eta2p1_L1ETM20_v4",
             "HLT_IsoMu15_eta2p1_L1ETM20_v5",
             "HLT_IsoMu15_eta2p1_L1ETM20_v6",
+            "HLT_IsoMu15_eta2p1_L1ETM20_v7",
 
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v1",
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v2",
@@ -242,6 +244,9 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v5",
             "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v6",
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v7",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v8",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v9",
+	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L1ETM20_v10",
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_Prong1_L2PixelIsoTrk2_L1ETM20_v2",
 	    "HLT_IsoMu15_eta2p1_LooseIsoPFTau35_Trk20_L1ETM20_v2",
 
