@@ -53,9 +53,9 @@ setenv result $$status
 echo Job finished with exit code: $$result
 if ( "$$result" == 0 ) then
     echo "Removing existing file"
-    rfrm $outputFile
+    $rfrm $outputFile
     echo "Copying output"
-    rfcp $outputFileName $outputFile
+    $rfcp $outputFileName $outputFile
 $rfcp_add_output_files
 endif
 exit 0
@@ -89,21 +89,48 @@ def make_bsub_script(output_file, input_jobs_and_files,
 
     arch = os.environ['SCRAM_ARCH']
     dir = os.environ['CMSSW_BASE']
-    input_files = [file for job, file in input_jobs_and_files]
+    input_files = [ file for job, file in input_jobs_and_files ]
 
     # Build log file name
     log_file = log_file_maker(job_name)
 
     # Copy all the files locally
-    #print input_files
-    copy_command = '\n'.join('prfcp.py %s .' % file for file in input_files)
-    #copy_command += "\n wait\n"
+    copy_command = ""
+    for input_file in input_files:
+        if input_file.find("/castor") != -1:
+            copy_command += 'prfcp.py %s .\n' % input_file
+            #copy_command += "wait\n"
+        elif input_file.find("/store") != -1:
+            copy_command += 'cmsStage %s .\n' % input_file
+        else:
+            inputFileName = None
+            if input_file.find(":") != -1:
+                inputFileName = os.path.basename(input_file[input_file.find(":") + 1:])
+            else:
+                inputFileName = os.path.basename(input_file)
+            copy_command += 'cp %s .\n' % inputFileName
 
     exit_command = ""
     if abort_on_rfcp_error:
         exit_command = "exit 100"
 
-    outputFileName = os.path.basename(output_file)
+    rfrm_command = ""
+    rfcp_command = None
+    outputFileName = None
+    if output_file.find("/castor") != -1:
+        rfrm_command = "rfrm"
+        rfcp_command = "rfcp"
+        outputFileName = os.path.basename(output_file)
+    elif output_file.find("/store") != -1:
+        rfrm_command = "cmsRm"
+        rfcp_command = "cmsStage"
+        outputFileName = os.path.basename(output_file)
+    else:
+        rfcp_command = "scp"
+        if output_file.find(":") != -1:
+            outputFileName = os.path.basename(output_file[output_file.find(":") + 1:])
+        else:
+            outputFileName = os.path.basename(output_file)
 
     inputFileCommand = " ".join(map(os.path.basename, input_files))
     inputFileList = inputFileCommand # just a list of the files
@@ -118,8 +145,18 @@ def make_bsub_script(output_file, input_jobs_and_files,
     # Copy additional output files
     rfcp_add_output_files = ""
     for add_output_file in add_output_files:
-        rfcp_add_output_files += "    rfrm %s\n" % os.path.join(os.path.dirname(output_file), add_output_file)
-        rfcp_add_output_files += "    rfcp %s %s\n" % (add_output_file, os.path.join(os.path.dirname(output_file), add_output_file))
+        if output_file.find("/castor") != -1:
+            rfcp_add_output_files += "    %s %s\n" % (rfrm_command, os.path.join(os.path.dirname(output_file), add_output_file))
+            rfcp_add_output_files += "    %s %s %s\n" % (rfcp_command, (add_output_file, os.path.join(os.path.dirname(output_file), add_output_file)))
+        elif output_file.find("/store") != -1:
+            rfcp_add_output_files += "    %s %s\n" % (rfrm_command, os.path.join(os.path.dirname(output_file), add_output_file))
+            rfcp_add_output_files += "    %s %s %s\n" % (rfcp_command, (add_output_file, os.path.join(os.path.dirname(output_file), add_output_file)))
+        else:
+            if output_file.find(":") != -1:
+                output_host = output_file[:output_file.find(":")]
+                rfcp_add_output_files += "    %s %s %s:%s\n" % (rfcp_command, add_output_file, output_host, os.path.join(os.path.dirname(output_file[output_file.find(":") + 1:]), add_output_file))
+            else:
+                raise ValueError("Machine hosting output file path = %s must be specified !!" % os.path.dirname(output_file))
 
     # Return a tuple containing the output job name and the text of the script
     # file
@@ -128,11 +165,13 @@ def make_bsub_script(output_file, input_jobs_and_files,
         jobName=job_name,
         dependencies=dependencies,
         logFile = log_file,
+        rfrm = rfrm_command,
         outputFile = output_file,
         inputFileCommand = inputFileCommand,
         inputFileList = inputFileList,
         outputFileCommand = outputFileCommand,
         outputFileName = outputFileName,
+        rfcp = rfcp_command,
         rfcp_add_output_files = rfcp_add_output_files,
         copy_command = copy_command,
         exit_command = exit_command,
