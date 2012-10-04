@@ -269,19 +269,27 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
     if metOptionName == "pfMEt" or metOptionName == "pfMEtTypeIcorrected" or metOptionName == "pfMEtTypeIcorrectedSmeared":
         if runPeriod == "2012RunABC":
             if processType == 'Data':
-                shiftedMEtCorrX_string = "+1.68804e-01 + 3.37139e-01*y" # CV: x = sumEt, y = numVertices
-                shiftedMEtCorrY_string = "-1.72555e-01 - 1.79594e-01*y"
+                shiftedMEtCorrX_string = "+2.87340e-01 + 3.29813e-01*y" # CV: x = sumEt, y = numVertices
+                shiftedMEtCorrY_string = "-2.27938e-01 - 1.71272e-01*y"
             else:
-                shiftedMEtCorrX_string = "+2.22335e-02 - 6.59183e-02*y"
-                shiftedMEtCorrY_string = "+1.52720e-01 - 1.28052e-01*y"
+                shiftedMEtCorrX_string = "+8.72683e-02 - 1.66671e-02*y"
+                shiftedMEtCorrY_string = "+1.86650e-01 - 1.21946e-01*y"
     elif metOptionName == "pfMEtNoPileUp" or metOptionName == "pfMEtNoPileUpSmeared":
         if runPeriod == "2012RunABC":
             if processType == 'Data':
-                shiftedMEtCorrX_string = "+2.054e-01 + 1.301e-01*y"
-                shiftedMEtCorrY_string = "-2.658e-01 - 8.730e-02*y"
+                shiftedMEtCorrX_string = "+1.99498e-01 + 1.34810e-01*y"
+                shiftedMEtCorrY_string = "-2.62760e-01 - 9.28175e-02*y"
             else:
-                shiftedMEtCorrX_string = "+9.895e-02 - 2.787e-02*y"
-                shiftedMEtCorrY_string = "-1.733e-01 - 7.646e-02*y"
+                shiftedMEtCorrX_string = "+1.51399e-01 + 1.17751e-04*y"
+                shiftedMEtCorrY_string = "-1.64406e-01 - 8.10296e-02*y"
+    elif metOptionName == "pfMEtMVA" or metOptionName == "pfMEtMVASmeared":
+        if runPeriod == "2012RunABC":
+            if processType == 'Data':
+                shiftedMEtCorrX_string = "+3.16250e-01 + 5.70539e-02*y"
+                shiftedMEtCorrY_string = "-1.36936e-01 - 2.22518e-02*y"
+            else:
+                shiftedMEtCorrX_string = "-3.52902e-01 - 2.25602e-02*y"
+                shiftedMEtCorrY_string = "+2.10645e-01 - 2.59502e-02*y"            
     shiftedMEtCorr_string = ""
     if shiftedMEtCorrX_string and shiftedMEtCorrY_string:
         shiftedMEtCorr_string  = "cms.PSet(\n"
