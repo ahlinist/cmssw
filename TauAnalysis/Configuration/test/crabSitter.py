@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.dpm as dpm
 import TauAnalysis.Configuration.tools.eos as eos
 
 import json
@@ -25,12 +26,11 @@ import time
 
 print("<crabSitter>:")
 
-crabFilePath = '/afs/cern.ch/work/v/veelken/CMSSW_5_3_x/crab/TauAnalysis_Skimming'
+crabFilePath = '/grid_mnt/vol__vol1__u/llr/cms/veelken/ChristianAnalysis/CMSSW_5_3_4/src/Bianchi/TauTauStudies/test/prod/'
 
 statusFileName = 'crabSitter.json'
-#jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
-#jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012Sep12'
-jobName_regex = r'crabdir_skimGoldenZmumu_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012Sep12'
+jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)_skim'
+
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
@@ -70,47 +70,58 @@ def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.c
     subprocess.call('rm %s' % tmpOutputFileName, shell = True)
     return retVal
 
-def checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit):
-    outputFileInfos_matched = []
-    for outputFileInfo in outputFileInfos:
-        outputFileName_match = outputFileName_matcher.match(outputFileInfo['file'])
-        if outputFileName_match:
-            outputFileJobId = outputFileName_match.group('jobId')
-            if outputFileJobId == jobId_string:
-                outputFileInfos_matched.append(outputFileInfo)
-    if len(outputFileInfos_matched) == 0:
-        print("Info: jobId = %i produced no output file --> resubmitting it" % jobId)
-        jobIds_force_resubmit.append(jobId)
-    elif len(outputFileInfos_matched) > 1:
-        print("Warning: jobId = %i produced multiple output files = %s !!" \
-                % (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfos_matched ]))
-        # keep file with maximum size;
-        # in case multiple files have the same size, keep the newest one
-        outputFileName_keep = None
-        fileSize_keep = None
-        date_and_time_keep = None
-        outputFiles_to_delete = []
-        for outputFileInfo in outputFileInfos_matched:
-            outputFileName = outputFileInfo['file']
-            fileSize = outputFileInfo['size']
-            date_and_time = outputFileInfo['time']
-            if not outputFileName_keep or fileSize > fileSize_keep or \
-                   (fileSize == fileSize_keep and date_and_time > date_and_time_keep):
-                outputFileName_keep = outputFileName
-                fileSize_keep = fileSize
-                date_and_time_keep = date_and_time
-                for outputFileInfo in outputFileInfos_matched:                                    
-                    if outputFileInfo['file'] != outputFileName_keep:
-                        outputFiles_to_delete.append(outputFileInfo['path'])
-        for outputFileName in outputFiles_to_delete:
-            if outputFileName.find("/castor") != -1:
-                commandLine = 'rfrm %s' % outputFileName
-            elif outputFileName.find("/store") != -1:
-                commandLine = 'eos rm %s' % outputFileName
-            else:
-                commandLine = 'rm %s' % outputFileName
-            shellScriptCommands.append(commandLine)          
+def checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit):
 
+    resubmit_job = False
+
+    for outputFileName in outputFileNames:
+        outputFileName_regex = outputFileName.replace('.', '_(?P<jobId>\d+)_(?P<try>\d+)_(?P<hash>[a-zA-Z0-9]+).')
+        outputFileName_matcher = re.compile(outputFileName_regex)
+
+        outputFileInfos_matched = []
+        for outputFileInfo in outputFileInfos:
+            outputFileName_match = outputFileName_matcher.match(outputFileInfo['file'])
+            if outputFileName_match:
+                outputFileJobId = outputFileName_match.group('jobId')
+                if outputFileJobId == jobId_string:
+                    outputFileInfos_matched.append(outputFileInfo)
+        if len(outputFileInfos_matched) == 0:
+            resubmit_job = True
+        elif len(outputFileInfos_matched) > 1:
+            print("Warning: jobId = %i produced multiple output files = %s !!" \
+                    % (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfos_matched ]))
+            # keep file with maximum size;
+            # in case multiple files have the same size, keep the newest one
+            outputFileName_keep = None
+            fileSize_keep = None
+            date_and_time_keep = None
+            outputFiles_to_delete = []
+            for outputFileInfo in outputFileInfos_matched:
+                outputFileName = outputFileInfo['file']
+                fileSize = outputFileInfo['size']
+                date_and_time = outputFileInfo['time']
+                if not outputFileName_keep or fileSize > fileSize_keep or \
+                       (fileSize == fileSize_keep and date_and_time > date_and_time_keep):
+                    outputFileName_keep = outputFileName
+                    fileSize_keep = fileSize
+                    date_and_time_keep = date_and_time
+                    for outputFileInfo in outputFileInfos_matched:                                    
+                        if outputFileInfo['file'] != outputFileName_keep:
+                            outputFiles_to_delete.append(outputFileInfo['path'])
+            for outputFileName in outputFiles_to_delete:
+                if outputFileName.find("/castor/") != -1 or \
+                   outputFileName.find("/dpm/")    != -1:
+                    commandLine = 'rfrm %s' % outputFileName
+                elif outputFileName.find("/store/") != -1:
+                    commandLine = 'eos rm %s' % outputFileName
+                else:
+                    commandLine = 'rm %s' % outputFileName
+                shellScriptCommands.append(commandLine)         
+
+    if resubmit_job:
+        print("Info: jobId = %i produced no output file(s) --> resubmitting it" % jobId)
+        jobIds_force_resubmit.append(jobId)
+    
 jobStatus_dict = {}
 if os.path.exists(statusFileName):
     if os.path.isfile(statusFileName):
@@ -157,9 +168,13 @@ shellScriptCommands = []
 
 crabJobs = runCommand('%s %s' % (executable_ls, crabFilePath))
 for crabJob in crabJobs:
-    print("crabJob = %s" % crabJob.replace('\n', ''))
+    crabJob = crabJob.replace('\n', '')
     crabJob_match = jobName_matcher.match(crabJob)
     if crabJob_match:
+        print("checking directory/file = %s" % crabJob)
+        if not os.path.isdir(os.path.join(crabFilePath, crabJob)):
+            print(" not a crab directory --> skipping")
+            continue
         
         crabJob = crabJob.replace('\n', '')
         print(" matched.")
@@ -168,7 +183,9 @@ for crabJob in crabJobs:
             
         sample = crabJob_match.group('sample')
         #print("sample = %s" % sample)
-        channel = crabJob_match.group('channel')
+        channel = ""
+        if jobName_regex.find("<channel>") != -1:
+            channel = crabJob_match.group('channel')
         #print("channel = %s" % channel)
         
         jobIds_force_resubmit = []
@@ -179,9 +196,10 @@ for crabJob in crabJobs:
         crabConfigFileName = os.path.join(crabFilePath, crabJob, 'share/crab.cfg')
         crabConfigFile = open(crabConfigFileName, "r")
         crabConfig_lines = crabConfigFile.readlines()
-        outputFileName        = None
-        outputFilePath_prefix = None
-        outputFilePath_suffix = None
+        outputFileName_pattern = None
+        outputFilePath_prefix  = None
+        outputFilePath_suffix  = None
+        storage_element        = None
         for crabConfig_line in crabConfig_lines:
             key_value_pair_match = key_value_pair_matcher.match(crabConfig_line)
             if key_value_pair_match:
@@ -190,7 +208,7 @@ for crabJob in crabJobs:
                 value = key_value_pair_match.group('value')
                 #print("value = %s" % value)
                 if key == 'output_file':
-                    outputFileName = value
+                    outputFileName_pattern = value
                 elif key == 'user_remote_dir':
                     outputFilePath_suffix = value
                 elif key == 'storage_path':    
@@ -198,19 +216,26 @@ for crabJob in crabJobs:
                     if storage_path_match:
                         # output files stored on castor
                         outputFilePath_prefix = storage_path_match.group('storage_path')
+                elif key == 'storage_element':
+                    storage_element = value
         crabConfigFile.close()
         if not outputFilePath_prefix:
-            # output files stored on EOS
-            outputFilePath_prefix = '/store/user/%s/' % userName
-        if not (outputFileName and outputFilePath_prefix and outputFilePath_suffix):
-            raise ValueError("Failed to read 'output_file' and 'user_remote_dir' from config file %s !!" \
-                             % crabConfigFileName)
-        # CV: multiple output files not supported yet
-        print("outputFileName = %s" % outputFileName)
-        if outputFileName.find(',') != -1:
-            raise ValueError("Multiple output files not yet supported !!")
-        outputFileName_regex = outputFileName.replace('.', '_(?P<jobId>\d+)_(?P<try>\d+)_(?P<hash>[a-zA-Z0-9]+).')
-        outputFileName_matcher = re.compile(outputFileName_regex)
+            if storage_element in [ "T2_FR_GRIF_LLR" ]:
+                # output files stored on DPM file-system @ LLR
+                outputFilePath_prefix = '/dpm/in2p3.fr/home/cms/trivcat/store/user/%s/' % userName
+            else:
+                # output files stored on EOSfile-system @ CERN
+                outputFilePath_prefix = '/store/user/%s/' % userName
+        if not outputFileName_pattern:
+            raise ValueError("Failed to read 'output_file' from config file %s !!" % crabConfigFileName)
+        if not outputFilePath_prefix and (outputFilePath_suffix or storage_element in [ "T2_FR_GRIF_LLR" ]):
+            raise ValueError("Failed to read 'storage_path' and 'user_remote_dir' from config file %s !!" % crabConfigFileName)
+        outputFileNames = None
+        if outputFileName_pattern.find(',') != -1:
+            outputFileNames = outputFileName_pattern.split(',')
+        else:
+            outputFileNames = [ outputFileName_pattern ]
+        print("outputFileNames = %s" % outputFileNames)    
 
         # read number of jobs from crab log file
         crabLogFileName = os.path.join(crabFilePath, crabJob, 'log/crab.log')
@@ -223,21 +248,23 @@ for crabJob in crabJobs:
                 numJobs = int(numJobs_match.group('numJobs'))
         crabLogFile.close()
         if not numJobs:            
-            raise ValueError("Failed to read number of jobs from log file %s !!" \
-                             % crabLogFileName)
+            raise ValueError("Failed to read number of jobs from log file %s !!" % crabLogFileName)
         print "numJobs = %i" % numJobs
 
         # read list of files existing in output file path
         outputFilePath = outputFilePath_prefix
-        if not (outputFilePath.endswith('/') or outputFilePath_suffix.startswith('/')):
-            outputFilePath += '/'
-        outputFilePath += outputFilePath_suffix
+        if outputFilePath_suffix:
+            if not (outputFilePath.endswith('/') or outputFilePath_suffix.startswith('/')):
+                outputFilePath += '/'
+                outputFilePath += outputFilePath_suffix
         if not outputFilePath.endswith('/'):
             outputFilePath += '/'
         print("outputFilePath = %s" % outputFilePath)
-        if outputFilePath.find("/castor") != -1:
+        if outputFilePath.find("/castor/") != -1:
             outputFileInfos = [ outputFileInfo for outputFileInfo in castor.nslsl(outputFilePath) ]
-        elif outputFilePath.find("/store") != -1:
+        elif outputFilePath.find("/dpm/") != -1:
+            outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
+        elif outputFilePath.find("/store/") != -1:
             outputFileInfos = [ outputFileInfo for outputFileInfo in eos.lsl(outputFilePath) ]
         else:
             raise ValueError("Failed to identify file-system for path = %s !!" % castor_output_directory)
@@ -254,37 +281,37 @@ for crabJob in crabJobs:
                 print("Failed to execute 'crab -status' command --> checking output files:")
                 for jobId in range(1, numJobs):
                     jobId_string = "%i" % jobId
-                    checkOutputFiles(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit)                            
-                isCrabFailure = True
-            crabStatus_match = crabStatus_matcher.match(crabStatus_line)
-            if crabStatus_match:
-                #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
-                jobStatus = crabStatus_match.group('jobStatus')
-                #print("jobStatus = '%s'" % jobStatus)
-                isMatched_status = True
-            elif isMatched_status:
-                jobIdList_match = jobIdList_matcher.match(crabStatus_line)
-                if jobIdList_match:
-                    #print("line '%s' matches <jobIdList> pattern" % crabStatus_line)
-                    jobIdList = jobIdList_match.group('jobIdList')
-                    #print("jobIdList = %s" % jobIdList)
-                    jobId_items = jobIdList.split(',')
-                    jobIds = []
-                    for jobId_item in jobId_items:
-                        #print("jobId_item = '%s'" % jobId_item)
-                        multipleJobs_match = multipleJobs_matcher.match(jobId_item)
-                        singleJob_match = singleJob_matcher.match(jobId_item)
-                        if multipleJobs_match:
-                            jobId_first = int(multipleJobs_match.group('jobId_first'))
-                            jobId_last = int(multipleJobs_match.group('jobId_last'))
-                            #print("jobId: first = %i, last = %i" % (jobId_first, jobId_last))
-                            jobIds.extend(range(jobId_first, jobId_last + 1))
-                        elif singleJob_match:
-                            jobId = int(singleJob_match.group('jobId'))
-                            #print("jobId = '%i'" % jobId)
-                            jobIds.append(jobId)
-                        else:
-                            raise ValueError("Failed to match jobId item '%s' !!" % jobId_item)
+                    checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit)                            
+                    isCrabFailure = True
+                crabStatus_match = crabStatus_matcher.match(crabStatus_line)
+                if crabStatus_match:
+                    #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
+                    jobStatus = crabStatus_match.group('jobStatus')
+                    #print("jobStatus = '%s'" % jobStatus)
+                    isMatched_status = True
+                elif isMatched_status:
+                    jobIdList_match = jobIdList_matcher.match(crabStatus_line)
+                    if jobIdList_match:
+                        #print("line '%s' matches <jobIdList> pattern" % crabStatus_line)
+                        jobIdList = jobIdList_match.group('jobIdList')
+                        #print("jobIdList = %s" % jobIdList)
+                        jobId_items = jobIdList.split(',')
+                        jobIds = []
+                        for jobId_item in jobId_items:
+                            #print("jobId_item = '%s'" % jobId_item)
+                            multipleJobs_match = multipleJobs_matcher.match(jobId_item)
+                            singleJob_match = singleJob_matcher.match(jobId_item)
+                            if multipleJobs_match:
+                                jobId_first = int(multipleJobs_match.group('jobId_first'))
+                                jobId_last = int(multipleJobs_match.group('jobId_last'))
+                                #print("jobId: first = %i, last = %i" % (jobId_first, jobId_last))
+                                jobIds.extend(range(jobId_first, jobId_last + 1))
+                            elif singleJob_match:
+                                jobId = int(singleJob_match.group('jobId'))
+                                #print("jobId = '%i'" % jobId)
+                                jobIds.append(jobId)
+                            else:
+                                raise ValueError("Failed to match jobId item '%s' !!" % jobId_item)
                     #print("jobIds = %s" % jobIds)
                     for jobId in jobIds:
                         jobId_string = "%i" % jobId
@@ -319,7 +346,7 @@ for crabJob in crabJobs:
 
         # sort jobIds in ascending order
         jobIds_force_resubmit.sort()
-                    
+
         # resubmit crab jobs which got aborted or stayed in 'Submitted', 'Ready' or 'Scheduled' state
         # for more than one day
         print("jobIds_force_resubmit = %s" % jobIds_force_resubmit)
