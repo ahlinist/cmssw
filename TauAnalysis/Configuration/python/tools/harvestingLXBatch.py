@@ -59,7 +59,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
     if input_files_info is None:
         # Get all files with nonzero size in the input castor directory
         print "Getting files to harvest from input, input_source = %s" % input_source
-        input_files_info = [x for x in input_source if x['size']]
+        input_files_info = [ x for x in input_source if x['size'] ]
     #print "input_files_info = %s" % input_files_info
 
     print "Getting files from destination"
@@ -69,7 +69,21 @@ def make_harvest_scripts(plot_regex, skim_regex,
     elif castor_output_directory.find("/store") != -1:
         tmp_files_info = [ x for x in eos_source(castor_output_directory) if x['size'] ]
     else:
-        raise ValueError("Failed to identify file-system for path = %s !!" % castor_output_directory)
+        local_output_directory = None
+        if castor_output_directory.find(":") != -1:
+            local_output_directory = castor_output_directory[castor_output_directory.find(":") + 1:]
+        else:
+            local_output_directory = castor_output_directory
+        tmp_files_info = []
+        for x in os.listdir(local_output_directory):
+            file_info = {
+                'path'        : os.path.join(local_output_directory, os.path.basename(x)),
+                'size'        : 1,           # dummy
+                'time'        : time.localtime(),
+                'file'        : os.path.basename(x),
+                'permissions' : 'mrw-r--r--' # "ordinary" file access permissions
+            }
+            tmp_files_info.append(file_info)
     tmp_files = set(x['file'] for x in tmp_files_info)
     #print "tmp_files_info = %s" % tmp_files_info
 
@@ -141,7 +155,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 split = 4
             merge_jobs = jobtools.make_merge_dependency_tree(
                 "_".join([channel, sample, job_id]), plot_file_map[sample],
-                castor_output_directory, split = split)
+                local_output_directory, split = split)
             #print "merge_jobs = %s" % merge_jobs
             # Only do work that hasn't been done before.  We can check and see
             # if the output of a given merge layer is already in the temp
