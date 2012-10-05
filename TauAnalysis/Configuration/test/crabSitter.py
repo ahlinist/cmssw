@@ -29,8 +29,8 @@ print("<crabSitter>:")
 crabFilePath = '/grid_mnt/vol__vol1__u/llr/cms/ivo/HTauTauAnalysis/CMSSW_5_3_4_Oct12/src/Bianchi/TauTauStudies/test/prod/'
 
 statusFileName = 'crabSitter.json'
-#jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)_skim'
-jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)GGH110-ElecTau-pythia-tauola_skim'
+jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)_skim'
+#jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)GGH110-ElecTau-pythia-tauola_skim'
 
 jobName_matcher = re.compile(jobName_regex)
 
