@@ -166,8 +166,8 @@ time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed
 ##forceResubmitAllScheduledJobs = False
 forceResubmitAllScheduledJobs = True
 
-checkJobOutputFiles = True
-#checkJobOutputFiles = False
+#checkJobOutputFiles = True
+checkJobOutputFiles = False
 
 shellScriptCommands = []
 
