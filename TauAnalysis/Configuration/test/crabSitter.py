@@ -145,6 +145,8 @@ singleJob_regex        = r'(?P<jobId>[0-9]+)'
 singleJob_matcher      = re.compile(singleJob_regex)
 numJobs_regex          = r'[a-zA-Z0-9\:\-,\.\[\]\s]*Total of (?P<numJobs>[0-9]+) jobs created.'
 numJobs_matcher        = re.compile(numJobs_regex)
+publishDirHash_regex   = r'[a-z0-9]{32}' # CV: crab appends hash string of 32 characters to outputFilePath in case jobs are to be published
+publishDirHash_matcher = re.compile(publishDirHash_regex)
 
 key_value_pair_regex   = r'(?P<key>[a-zA-Z0-9_]+)\s*=\s*(?P<value>.+)\s*'
 key_value_pair_matcher = re.compile(key_value_pair_regex)
@@ -204,7 +206,7 @@ for crabJob in crabJobs:
         outputFilePath_suffix  = None
         storage_element        = None
         datasetpath            = None
-        publish_data           = None
+        publish_data           = False
         for crabConfig_line in crabConfig_lines:
             key_value_pair_match = key_value_pair_matcher.match(crabConfig_line)
             if key_value_pair_match:
@@ -228,8 +230,6 @@ for crabJob in crabJobs:
                 elif key == 'publish_data':
                     if value.find("1") != -1:
                         publish_data = True
-                    else:
-                        publish_data = False
         crabConfigFile.close()
         if not outputFilePath_prefix:
             if storage_element in [ "T2_FR_GRIF_LLR" ]:
@@ -280,11 +280,16 @@ for crabJob in crabJobs:
                 for idx in range(len(datasetpath_items)):
                     if len(datasetpath_items[idx]) > 0:
                         outputFilePath += datasetpath_items[idx]
+                        if not outputFilePath.endswith('/'):
+                            outputFilePath += '/'
                         break
                 outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
                 for outputFileInfo in outputFileInfos:
-                    if outputFileInfo['size'] == 0:
-                        outputFileInfos.extend(dpm.lsl(outputFileInfo['path']))
+                    if outputFileInfo['size'] == 0 and publishDirHash_matcher.match(outputFileInfo['file']):
+                        subDirectory = outputFileInfo['path']
+                        if not subDirectory.endswith('/'):
+                            subDirectory += '/'
+                        outputFileInfos.extend(dpm.lsl(subDirectory))
             else:
                 outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
         elif outputFilePath.find("/store/") != -1:
