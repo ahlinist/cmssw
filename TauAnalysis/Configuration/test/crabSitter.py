@@ -164,6 +164,9 @@ time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed
 ##forceResubmitAllScheduledJobs = False
 forceResubmitAllScheduledJobs = True
 
+checkJobOutputFiles = True
+#checkJobOutputFiles = False
+
 shellScriptCommands = []
 
 crabJobs = runCommand('%s %s' % (executable_ls, crabFilePath))
@@ -200,6 +203,8 @@ for crabJob in crabJobs:
         outputFilePath_prefix  = None
         outputFilePath_suffix  = None
         storage_element        = None
+        datasetpath            = None
+        publish_data           = None
         for crabConfig_line in crabConfig_lines:
             key_value_pair_match = key_value_pair_matcher.match(crabConfig_line)
             if key_value_pair_match:
@@ -218,6 +223,13 @@ for crabJob in crabJobs:
                         outputFilePath_prefix = storage_path_match.group('storage_path')
                 elif key == 'storage_element':
                     storage_element = value
+                elif key == 'datasetpath':
+                    datasetpath = value
+                elif key == 'publish_data':
+                    if value.find("1") != -1:
+                        publish_data = True
+                    else:
+                        publish_data = False
         crabConfigFile.close()
         if not outputFilePath_prefix:
             if storage_element in [ "T2_FR_GRIF_LLR" ]:
@@ -263,7 +275,18 @@ for crabJob in crabJobs:
         if outputFilePath.find("/castor/") != -1:
             outputFileInfos = [ outputFileInfo for outputFileInfo in castor.nslsl(outputFilePath) ]
         elif outputFilePath.find("/dpm/") != -1:
-            outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
+            if publish_data:
+                datasetpath_items = datasetpath.split('/')
+                for idx in range(len(datasetpath_items)):
+                    if len(datasetpath_items[idx]) > 0:
+                        outputFilePath += datasetpath_items[idx]
+                        break
+                outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
+                for outputFileInfo in outputFileInfos:
+                    if outputFileInfo['size'] == 0:
+                        outputFileInfos.extend(dpm.lsl(outputFileInfo['path']))
+            else:
+                outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
         elif outputFilePath.find("/store/") != -1:
             outputFileInfos = [ outputFileInfo for outputFileInfo in eos.lsl(outputFilePath) ]
         else:
@@ -277,7 +300,7 @@ for crabJob in crabJobs:
             #     due to crab internal error
             if isCrabFailure:
                 continue    
-            if crabStatus_line.find("Traceback (most recent call last):"):
+            if crabStatus_line.find("Traceback (most recent call last):") != -1:
                 print("Failed to execute 'crab -status' command --> checking output files:")
                 for jobId in range(1, numJobs):
                     jobId_string = "%i" % jobId
@@ -331,7 +354,8 @@ for crabJob in crabJobs:
                                 print("Info: jobId = %i is in state 'Scheduled' --> resubmitting it" % jobId)
                                 jobIds_force_resubmit.append(jobId)
                         elif jobStatus in [ 'Done' ]:
-                            checkOutputFiless(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit)
+                            if checkJobOutputFiles:
+                                checkOutputFiless(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit)
 
                         # update job status dictionary
                         if jobStatus_dict[crabJob].has_key(jobId_string):
