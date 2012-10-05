@@ -26,10 +26,11 @@ import time
 
 print("<crabSitter>:")
 
-crabFilePath = '/grid_mnt/vol__vol1__u/llr/cms/veelken/ChristianAnalysis/CMSSW_5_3_4/src/Bianchi/TauTauStudies/test/prod/'
+crabFilePath = '/grid_mnt/vol__vol1__u/llr/cms/ivo/HTauTauAnalysis/CMSSW_5_3_4_Oct12/src/Bianchi/TauTauStudies/test/prod/'
 
 statusFileName = 'crabSitter.json'
-jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)_skim'
+#jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)_skim'
+jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)GGH110-ElecTau-pythia-tauola_skim'
 
 jobName_matcher = re.compile(jobName_regex)
 
@@ -48,6 +49,7 @@ whoami = runCommand('whoami')
 if len(whoami) != 1:
     raise ValueError("Failed to identify userName !!")
 userName = whoami[0].strip()
+#userName = 'inaranjo'
 print("userName = %s" % userName)
 
 # delete crabSitter.json file to reset all time-stamps
@@ -163,8 +165,8 @@ jobStatus_dict['lastUpdate_time'] = current_time
 time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed to stay
                       # in 'Submitted', 'Ready' or 'Scheduled' state before they get automatically resubmitted 
 ##time_limit = 1 # force immediate resubmission of all crab jobs stuck in 'Scheduled' state
-##forceResubmitAllScheduledJobs = False
-forceResubmitAllScheduledJobs = True
+forceResubmitAllScheduledJobs = False
+##forceResubmitAllScheduledJobs = True
 
 #checkJobOutputFiles = True
 checkJobOutputFiles = False
@@ -207,6 +209,7 @@ for crabJob in crabJobs:
         storage_element        = None
         datasetpath            = None
         publish_data           = False
+        publish_data_name      = None
         for crabConfig_line in crabConfig_lines:
             key_value_pair_match = key_value_pair_matcher.match(crabConfig_line)
             if key_value_pair_match:
@@ -230,6 +233,8 @@ for crabJob in crabJobs:
                 elif key == 'publish_data':
                     if value.find("1") != -1:
                         publish_data = True
+                elif key == 'publish_data_name':
+                    publish_data_name = value
         crabConfigFile.close()
         if not outputFilePath_prefix:
             if storage_element in [ "T2_FR_GRIF_LLR" ]:
@@ -264,38 +269,49 @@ for crabJob in crabJobs:
         print "numJobs = %i" % numJobs
 
         # read list of files existing in output file path
-        outputFilePath = outputFilePath_prefix
-        if outputFilePath_suffix:
-            if not (outputFilePath.endswith('/') or outputFilePath_suffix.startswith('/')):
-                outputFilePath += '/'
-                outputFilePath += outputFilePath_suffix
-        if not outputFilePath.endswith('/'):
-            outputFilePath += '/'
-        print("outputFilePath = %s" % outputFilePath)
-        if outputFilePath.find("/castor/") != -1:
-            outputFileInfos = [ outputFileInfo for outputFileInfo in castor.nslsl(outputFilePath) ]
-        elif outputFilePath.find("/dpm/") != -1:
-            if publish_data:
-                datasetpath_items = datasetpath.split('/')
-                for idx in range(len(datasetpath_items)):
-                    if len(datasetpath_items[idx]) > 0:
-                        outputFilePath += datasetpath_items[idx]
-                        if not outputFilePath.endswith('/'):
-                            outputFilePath += '/'
-                        break
-                outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
-                for outputFileInfo in outputFileInfos:
-                    if outputFileInfo['size'] == 0 and publishDirHash_matcher.match(outputFileInfo['file']):
-                        subDirectory = outputFileInfo['path']
-                        if not subDirectory.endswith('/'):
-                            subDirectory += '/'
-                        outputFileInfos.extend(dpm.lsl(subDirectory))
+        if checkJobOutputFiles:
+            outputFilePath = outputFilePath_prefix
+            if outputFilePath_suffix:
+                if not (outputFilePath.endswith('/') or outputFilePath_suffix.startswith('/')):
+                    outputFilePath += '/'
+                    outputFilePath += outputFilePath_suffix
+            if not outputFilePath.endswith('/'):
+                outputFilePath += '/'            
+            if outputFilePath.find("/castor/") != -1:
+                print("checking castor files in outputFilePath = %s" % outputFilePath)
+                outputFileInfos = [ outputFileInfo for outputFileInfo in castor.nslsl(outputFilePath) ]
+            elif outputFilePath.find("/dpm/") != -1:
+                if publish_data:
+                    datasetpath_items = datasetpath.split('/')
+                    for idx in range(len(datasetpath_items)):
+                        if len(datasetpath_items[idx]) > 0:
+                            outputFilePath += datasetpath_items[idx]
+                            if not outputFilePath.endswith('/'):
+                                outputFilePath += '/'
+                            break
+                    if not publish_data_name:
+                        raise ValueError("Invalid 'publish_data_name' = %s !!" % publish_data_name)
+                    outputFilePath += publish_data_name
+                    if not outputFilePath.endswith('/'):
+                        outputFilePath += '/'
+                    print("checking DPM files in outputFilePath = %s" % outputFilePath)
+                    outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
+                    print outputFileInfos
+                    for outputFileInfo in outputFileInfos:
+                        if outputFileInfo['size'] == 0 and publishDirHash_matcher.match(outputFileInfo['file']):
+                            subDirectory = outputFileInfo['path']
+                            if not subDirectory.endswith('/'):
+                                subDirectory += '/'
+                            print("checking DPM files in subDirectory = %s" % subDirectory)    
+                            outputFileInfos.extend(dpm.lsl(subDirectory))
+                else:
+                    print("checking DPM files in outputFilePath = %s" % outputFilePath)
+                    outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
+            elif outputFilePath.find("/store/") != -1:
+                print("checking EOS files in outputFilePath = %s" % outputFilePath)
+                outputFileInfos = [ outputFileInfo for outputFileInfo in eos.lsl(outputFilePath) ]
             else:
-                outputFileInfos = [ outputFileInfo for outputFileInfo in dpm.lsl(outputFilePath) ]
-        elif outputFilePath.find("/store/") != -1:
-            outputFileInfos = [ outputFileInfo for outputFileInfo in eos.lsl(outputFilePath) ]
-        else:
-            raise ValueError("Failed to identify file-system for path = %s !!" % castor_output_directory)
+                raise ValueError("Failed to identify file-system for path = %s !!" % castor_output_directory)
             
         # check if job got aborted or stuck in state 'Submitted', 'Ready' or 'Scheduled' for more than one day
         isMatched_status = False
@@ -311,36 +327,36 @@ for crabJob in crabJobs:
                     jobId_string = "%i" % jobId
                     checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit)                            
                     isCrabFailure = True
-                crabStatus_match = crabStatus_matcher.match(crabStatus_line)
-                if crabStatus_match:
-                    #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
-                    jobStatus = crabStatus_match.group('jobStatus')
-                    #print("jobStatus = '%s'" % jobStatus)
-                    isMatched_status = True
-                elif isMatched_status:
-                    jobIdList_match = jobIdList_matcher.match(crabStatus_line)
-                    if jobIdList_match:
-                        #print("line '%s' matches <jobIdList> pattern" % crabStatus_line)
-                        jobIdList = jobIdList_match.group('jobIdList')
-                        #print("jobIdList = %s" % jobIdList)
-                        jobId_items = jobIdList.split(',')
-                        jobIds = []
-                        for jobId_item in jobId_items:
-                            #print("jobId_item = '%s'" % jobId_item)
-                            multipleJobs_match = multipleJobs_matcher.match(jobId_item)
-                            singleJob_match = singleJob_matcher.match(jobId_item)
-                            if multipleJobs_match:
-                                jobId_first = int(multipleJobs_match.group('jobId_first'))
-                                jobId_last = int(multipleJobs_match.group('jobId_last'))
-                                #print("jobId: first = %i, last = %i" % (jobId_first, jobId_last))
-                                jobIds.extend(range(jobId_first, jobId_last + 1))
-                            elif singleJob_match:
-                                jobId = int(singleJob_match.group('jobId'))
-                                #print("jobId = '%i'" % jobId)
-                                jobIds.append(jobId)
-                            else:
-                                raise ValueError("Failed to match jobId item '%s' !!" % jobId_item)
-                    #print("jobIds = %s" % jobIds)
+            crabStatus_match = crabStatus_matcher.match(crabStatus_line)
+            if crabStatus_match:
+                #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
+                jobStatus = crabStatus_match.group('jobStatus')
+                #print("jobStatus = '%s'" % jobStatus)
+                isMatched_status = True
+            elif isMatched_status:
+                jobIdList_match = jobIdList_matcher.match(crabStatus_line)
+                if jobIdList_match:
+                    #print("line '%s' matches <jobIdList> pattern" % crabStatus_line)
+                    jobIdList = jobIdList_match.group('jobIdList')
+                    #print("jobIdList = %s" % jobIdList)
+                    jobId_items = jobIdList.split(',')
+                    jobIds = []
+                    for jobId_item in jobId_items:
+                        #print("jobId_item = '%s'" % jobId_item)
+                        multipleJobs_match = multipleJobs_matcher.match(jobId_item)
+                        singleJob_match = singleJob_matcher.match(jobId_item)
+                        if multipleJobs_match:
+                            jobId_first = int(multipleJobs_match.group('jobId_first'))
+                            jobId_last = int(multipleJobs_match.group('jobId_last'))
+                            #print("jobId: first = %i, last = %i" % (jobId_first, jobId_last))
+                            jobIds.extend(range(jobId_first, jobId_last + 1))
+                        elif singleJob_match:
+                            jobId = int(singleJob_match.group('jobId'))
+                            #print("jobId = '%i'" % jobId)
+                            jobIds.append(jobId)
+                        else:
+                            raise ValueError("Failed to match jobId item '%s' !!" % jobId_item)
+                    print("jobIds = %s" % jobIds)
                     for jobId in jobIds:
                         jobId_string = "%i" % jobId
                         if jobStatus in [ 'Aborted' ]:
@@ -376,18 +392,24 @@ for crabJob in crabJobs:
         # sort jobIds in ascending order
         jobIds_force_resubmit.sort()
 
+        # make sure each jobId is contained in list at most once
+        jobIds_force_resubmit_unique = []
+        for jobId in jobIds_force_resubmit:
+            if not jobId in jobIds_force_resubmit_unique:
+                jobIds_force_resubmit_unique.append(jobId)
+        
         # resubmit crab jobs which got aborted or stayed in 'Submitted', 'Ready' or 'Scheduled' state
         # for more than one day
-        print("jobIds_force_resubmit = %s" % jobIds_force_resubmit)
-        print("(%i jobs)" % len(jobIds_force_resubmit))
-        if len(jobIds_force_resubmit) > 0:
+        print("jobIds_force_resubmit = %s" % jobIds_force_resubmit_unique)
+        print("(%i jobs)" % len(jobIds_force_resubmit_unique))
+        if len(jobIds_force_resubmit_unique) > 0:
             # resubmit crab jobs in groups of 500 jobs
             # (500 = maximum number of jobs crab can handle in case jobs are submitted without using crab server)
             numJobsPerResubmit = 500
-            for jobIndex in range(len(jobIds_force_resubmit)/numJobsPerResubmit + 1):
+            for jobIndex in range(len(jobIds_force_resubmit_unique)/numJobsPerResubmit + 1):
                 firstJob = jobIndex*numJobsPerResubmit
                 lastJob = (jobIndex + 1)*numJobsPerResubmit - 1
-                jobIds_force_resubmit_string = ",".join([ "%i" % jobId for jobId in jobIds_force_resubmit[firstJob:lastJob] ])
+                jobIds_force_resubmit_string = ",".join([ "%i" % jobId for jobId in jobIds_force_resubmit_unique[firstJob:lastJob] ])
                 commandLine = '%s -forceResubmit %s -c %s' % \
                   (executable_crab, jobIds_force_resubmit_string, os.path.join(crabFilePath, crabJob))
                 shellScriptCommands.append(commandLine)
