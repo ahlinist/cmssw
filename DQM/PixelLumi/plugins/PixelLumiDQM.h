@@ -27,6 +27,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <fstream>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -35,6 +36,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Provenance/interface/RunID.h"
+
+#include "L1TOMDSHelper.h"
+
 #include "TObject.h"
 
 class TTree;
@@ -130,6 +134,7 @@ private:
 
   edm::InputTag fVtxLabel;
   edm::InputTag fPixelClusterLabel;
+  edm::InputTag fGtEvmLabel;
 
   TTree* fTree;
 
@@ -153,6 +158,9 @@ private:
   bool fIncludePixelQualCheckHistos;
   int  fResetIntervalInLumiSections;
 
+  MonitorElement *fIntActiveCrossingsFromDB;
+  MonitorElement *fIntLhcFillNumber;
+  MonitorElement *fStringLhcBeamMode;
   std::map<std::string, MonitorElement*> fHistContainerThisRun;
   std::vector<MonitorElement*> fHistnBClusVsLS;
   std::vector<MonitorElement*> fHistnFPClusVsLS;
@@ -178,6 +186,7 @@ private:
   MonitorElement *fHistHFToPxRecordedRatioByLS;
   MonitorElement *fHistHFToPxDeliveredRatioByLS;
 
+
   // This is a list of modules to be ignored, either because they were
   // dead or are dead in part of the data-taking period.
   std::vector<uint32_t> fDeadModules;
@@ -202,8 +211,21 @@ private:
   unsigned int filledAndUnmaskedBunches;
   std::vector<bool> bunchFillMask;
   unsigned int activeCrossingsFromHF;
+  unsigned int activeCrossingsFromDB;
   bool useInnerBarrelLayer;
+
+  std::string fOracleDB_;
+  std::string fPathCondDB_;
+
+  unsigned int fFillNumber;
+  std::string  fBeamMode;
+  
+  std::string  fLogFileName_;
+  std::ofstream logFile_;
   bool interactive;
+  bool newLS;
+  int lastGoodRetrievedLumiFromHF;
+
 };
 
 #endif
