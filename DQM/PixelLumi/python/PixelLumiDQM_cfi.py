@@ -10,6 +10,10 @@ pixel_lumi_dqm  = cms.EDAnalyzer('PixelLumiDQM',
                                  includeStripClusterInfo = cms.untracked.bool(False),
                                  includePixelClusterInfo = cms.untracked.bool(True),
                                  includePixelQualCheckHistos = cms.untracked.bool(True),
+                                 #parameters to connect to db (from L1TMonitor)
+                                 oracleDB   = cms.string("oracle://CMS_OMDS_LB/CMS_TRG_R"),
+                                 pathCondDB = cms.string("/nfshome0/centraltspro/secure/"),
+#                                 pathCondDB = cms.string("/nfshome0/popcondev/conddb"),        
                                  # This is the correct list of modules to be ignored for 2012.
                                  deadModules = cms.untracked.vuint32(302059800,
                                                                      302121992,
