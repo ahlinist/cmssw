@@ -47,6 +47,15 @@
 #include "RecoLuminosity/LumiProducer/interface/DIPLuminosityRcd.h"
 #include "TBrowser.h"
 
+//Filling scheme stuff
+
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerEvmReadoutRecord.h"
+
+//Timestamp stuff
+
+#include <time.h>
+#include <sys/time.h>
+
 // Constants, enums and typedefs.
 // None
 
@@ -59,6 +68,9 @@ PixelLumiDQM::PixelLumiDQM(const edm::ParameterSet& iConfig) :
                                                          edm::InputTag("offlinePrimaryVertices"))),
   fPixelClusterLabel(iConfig.getUntrackedParameter<edm::InputTag>("pixelClusterLabel",
                                                                   edm::InputTag("siPixelClusters"))),
+  fGtEvmLabel(iConfig.getUntrackedParameter<edm::InputTag>("gtEvmLabel",
+                                                                  edm::InputTag("gtEvmDigis"))),
+
   fIncludeVertexInfo(iConfig.getUntrackedParameter<bool>("includeVertexInfo", true)),
   fIncludePixelClusterInfo(iConfig.getUntrackedParameter<bool>("includePixelClusterInfo", true)),
   fIncludePixelQualCheckHistos(iConfig.getUntrackedParameter<bool>("includePixelQualCheckHistos", true)),
@@ -66,6 +78,9 @@ PixelLumiDQM::PixelLumiDQM(const edm::ParameterSet& iConfig) :
   fDeadModules(iConfig.getUntrackedParameter<std::vector<uint32_t> >("deadModules", std::vector<uint32_t>())),
   fMinPixelsPerCluster(iConfig.getUntrackedParameter<int>("minNumPixelsPerCluster", 0)),
   fMinClusterCharge(iConfig.getUntrackedParameter<double>("minChargePerCluster", 0)),
+  fIntActiveCrossingsFromDB((MonitorElement*)0),
+  fIntLhcFillNumber((MonitorElement*)0),
+  fStringLhcBeamMode((MonitorElement*)0),
   fHistnBClusVsLS(3,(MonitorElement*)0),
   fHistnFPClusVsLS(2,(MonitorElement*)0),
   fHistnFMClusVsLS(2,(MonitorElement*)0),
@@ -88,8 +103,15 @@ PixelLumiDQM::PixelLumiDQM(const edm::ParameterSet& iConfig) :
   filledAndUnmaskedBunches(0),
   bunchFillMask(lastBunchCrossing+1,false),
   activeCrossingsFromHF(0),
+  activeCrossingsFromDB(0),
   useInnerBarrelLayer(iConfig.getUntrackedParameter<bool>("useInnerBarrelLayer", false)),
-  interactive(iConfig.getUntrackedParameter<bool>("interactive", true))
+  fOracleDB_(iConfig.getParameter<std::string>("oracleDB")),
+  fPathCondDB_(iConfig.getParameter<std::string>("pathCondDB")),
+  fFillNumber(0),
+  fLogFileName_(iConfig.getUntrackedParameter<std::string>("logFileName","/tmp/pixel_lumi.txt")),
+  interactive(iConfig.getUntrackedParameter<bool>("interactive", true)),
+  newLS(true),
+  lastGoodRetrievedLumiFromHF(0)
 {
   edm::LogInfo("Configuration")
     << "PixelLumiDQM looking for pixel clusters in '"
@@ -163,6 +185,61 @@ PixelLumiDQM::analyze(const edm::Event& iEvent,
   // This serves as event counter to compute luminosity from cluster counts.
   std::map<int, PixelClusterCount>::iterator it = fNumPixelClusters.find(fBXNo);
   if(it==fNumPixelClusters.end()) fNumPixelClusters[fBXNo] = PixelClusterCount();
+
+  // get the fill number and beam mode from gtfe-- only check every new LS
+  if(newLS){
+    std::cout << "retrieving beam mode and fill number from GT " << std::endl;
+//     edm::Handle<L1GlobalTriggerEvmReadoutRecord> gtEvmReadoutRecord;
+//     iEvent.getByLabel(fGtEvmLabel,gtEvmReadoutRecord);
+//     if(gtEvmReadoutRecord.isValid()){
+//       std::cout << "gt evm record found valid " << std::endl;
+//       const L1GtfeExtWord& gtfeEvmWord = gtEvmReadoutRecord->gtfeWord();
+//       fBeamMode = gtfeEvmWord.beamMode();
+//       if(fFillNumber == 0){
+// 	fFillNumber = gtfeEvmWord.lhcFillNumber();
+// 	fIntLhcFillNumber->Fill(fFillNumber);
+// 	fStringLhcBeamMode->Fill(fBeamMode);
+//       }
+    if(activeCrossingsFromDB == 0){
+
+      int conError;
+      L1TOMDSHelper myOMDSHelper;
+      myOMDSHelper.connect(fOracleDB_,fPathCondDB_,conError);
+      if(conError != L1TOMDSHelper::NO_ERROR){
+	std::string eName = myOMDSHelper.enumToStringError(conError);
+	edm::LogError("DBConnection failure") << eName;
+      }
+	
+      int retrieveError;
+      fFillNumber = myOMDSHelper.getFillNumber(fRunNo,fLSNo,retrieveError);
+      if(retrieveError != L1TOMDSHelper::NO_ERROR){
+      std::string eName = myOMDSHelper.enumToStringError(retrieveError);
+      std::cout << "fill:: Error in retrieving fill number " 
+		<< eName << std::endl;
+      }
+      fIntLhcFillNumber->Fill(fFillNumber);
+      // 	fStringLhcBeamMode->Fill(fBeamMode);
+
+      activeCrossingsFromDB = 
+	myOMDSHelper.getNumberCollidingBunches(fFillNumber,retrieveError);
+      if(retrieveError != L1TOMDSHelper::NO_ERROR){
+	std::string eName = myOMDSHelper.enumToStringError(retrieveError);
+	std::cout << "nbxs:: Error in retrieving active crossings " 
+		  << eName << std::endl;
+      }
+      fIntActiveCrossingsFromDB->Fill(activeCrossingsFromDB);
+    }
+  //     }
+//     else 
+//       std::cout << "gt evm record NOT valid " << std::endl;
+    std::cout << "fill number " << fFillNumber << " beam mode " << fBeamMode 
+	      << "active crossings " << activeCrossingsFromDB << std::endl; 
+    newLS=false;
+  }
+
+
+
+  
   // ----------
 
   // Add the vertex info if requested (otherwise use recognizable  defaults).
@@ -443,7 +520,11 @@ PixelLumiDQM::endJob()
 void
 PixelLumiDQM::beginRun(edm::Run const& run, edm::EventSetup const&)
 {
+
+
   edm::LogInfo("Status") << "Starting processing of run #" << run.id().run();
+
+
   DQMStore *dbe_ = edm::Service<DQMStore>().operator->();
   
   // Top folder containing high-level information about pixel and HF lumi.  
@@ -452,6 +533,9 @@ PixelLumiDQM::beginRun(edm::Run const& run, edm::EventSetup const&)
   dbe_->setCurrentFolder(folder);
   
   // Set binning and limits to reflect the actual bunch crossings
+  fIntActiveCrossingsFromDB = dbe_->bookInt("activeCrossingsFromDB");
+  fIntLhcFillNumber = dbe_->bookInt("lhcFillNumber");
+  fStringLhcBeamMode = dbe_->bookString("lhcBeamMode", "LHC Beam Mode");
   fHistTotalRecordedLumiByLS = dbe_->book1D("totalPixelLumiByLS","Pixel Lumi in nb vs LS",8000,0.5,8000.5);
   fHistRecordedByBxCumulative = dbe_->book1D("PXLumiByBXsum","Pixel Lumi in nb by BX Cumulative vs LS",lastBunchCrossing,
 					     0.5,float(lastBunchCrossing)+0.5);
@@ -679,6 +763,7 @@ void
 PixelLumiDQM::beginLuminosityBlock(edm::LuminosityBlock const&lumiBlock,
 				   edm::EventSetup const&)
 {
+  newLS = true;
   // Only reset and fill every fResetIntervalInLumiSections (default is 1 LS)
   // Return unless the PREVIOUS LS was at the right modulo value 
   // (e.g. is resetinterval = 5 the rest will only be executed at LS=6
@@ -704,6 +789,45 @@ PixelLumiDQM::endLuminosityBlock(edm::LuminosityBlock const& lumiBlock,
 {
   
   unsigned int ls = lumiBlock.luminosityBlockAuxiliary().luminosityBlock();
+
+  // retrieve HF luminosity for the latest available lumi section
+  // this may not be the same as the currently ending ls so we fill the histograms here and will
+  // calculate the ratios up to the ls for which valid HF values could be retrieved
+  // lastGoodRetrievedLumiFromHF holds the information of the highest LS for which a query succeeded
+  float intHFLumiDelivered = 0.;
+  float intHFLumiRecorded = 0.;
+  int retrievedLumi = ls; // note that after query to DB the retrievedLumi value will be replaced by the latest available LS value
+                          // smaller or equal to ls
+  int conError;
+  L1TOMDSHelper myOMDSHelper;
+  myOMDSHelper.connect(fOracleDB_,fPathCondDB_,conError);
+  if(conError != L1TOMDSHelper::NO_ERROR){
+    std::string eName = myOMDSHelper.enumToStringError(conError);
+    edm::LogError("DBConnection failure") << eName;
+  }
+  
+  int retrieveError = L1TOMDSHelper::NO_ERROR;
+  intHFLumiDelivered = myOMDSHelper.getHFDeliveredLumi(fRunNo,retrievedLumi,retrieveError);
+  if(retrieveError != L1TOMDSHelper::NO_ERROR){
+    std::string eName = myOMDSHelper.enumToStringError(retrieveError);
+    std::cout << "HFdelivered:: Error in retrieving  number " 
+	      << eName << std::endl;
+  }
+  intHFLumiRecorded = myOMDSHelper.getHFRecordedLumi(fRunNo,retrievedLumi,retrieveError);
+  if(retrieveError != L1TOMDSHelper::NO_ERROR){
+    std::string eName = myOMDSHelper.enumToStringError(retrieveError);
+    std::cout << "HFrecorded:: Error in retrieving  number " 
+	      << eName << std::endl;
+  }
+  fHistHFRecordedByLS->setBinContent(retrievedLumi,intHFLumiRecorded);
+  fHistHFDeliveredByLS->setBinContent(retrievedLumi,intHFLumiDelivered);          
+  std::cout << "retrieved HF delivered lumi = " <<  intHFLumiDelivered
+	    << " recorded lumi =" <<  intHFLumiRecorded 
+	    << " for Lumi Section " << retrievedLumi 
+	    << std::endl;
+  //       if(intHFLumiDelivered != 0.)
+  // 	fHistHFRecordedToDeliveredRatioByLS->setBinContent(ls,intHFLumiRecorded/intHFLumiDelivered);  
+  
   
   // Only fill every fResetIntervalInLumiSections (default is 1 LS)
   if(ls%fResetIntervalInLumiSections!=0) return;
@@ -840,12 +964,13 @@ PixelLumiDQM::endLuminosityBlock(edm::LuminosityBlock const& lumiBlock,
     // AR: not using the active crossings; being done by hand for the moment since 
     // the filling scheme info is not in the event, also rate too low to count filled bunch scheme and HF commented out.
 
-    total_recorded *= (/*double(activeCrossingsFromHF)*/1368.d);///double(filledAndUnmaskedBunches));
+    total_recorded *= double(activeCrossingsFromDB);///double(filledAndUnmaskedBunches));
     //total_recorded *= (/*double(activeCrossingsFromHF)*/1.d/double(filledAndUnmaskedBunches));
     //how to rescale the uncertainty ? here I simply assume it to scale as a sum of squares with the number of bunches 
-    total_recorded_unc_square *= (/*double(activeCrossingsFromHF)*/ 1368.d/double(filledAndUnmaskedBunches));
+
+    total_recorded_unc_square *= (double(activeCrossingsFromDB)/double(filledAndUnmaskedBunches));
     //total_recorded_unc_square *= (/*double(activeCrossingsFromHF)*/ 1.d/double(filledAndUnmaskedBunches));
-    
+    std::cout << " Total recorded " << total_recorded  << std::endl;
     fHistTotalRecordedLumiByLS->setBinContent(ls,total_recorded);
     fHistTotalRecordedLumiByLS->setBinError(ls,
 					    sqrt(total_recorded_unc_square));
@@ -877,29 +1002,51 @@ PixelLumiDQM::endLuminosityBlock(edm::LuminosityBlock const& lumiBlock,
 				       float(nFMClus[i])/float(all_detectors_counts));
   }
   
-  // Fill ratio of HFRecorded and HFDelivered with PX total.
-  if(fHistTotalRecordedLumiByLS->getBinContent(ls)!=0.){ // Avoid a divide-by-0 
-    fHistHFToPxRecordedRatioByLS->setBinContent(ls,
-						fHistHFRecordedByLS->getBinContent(ls)/
-						fHistTotalRecordedLumiByLS->getBinContent(ls)/
-						0.98); // This is the Afterglow correction 
-    fHistHFToPxDeliveredRatioByLS->setBinContent(ls,
-						 fHistHFDeliveredByLS->getBinContent(ls)/
-						 fHistTotalRecordedLumiByLS->getBinContent(ls)/
-						 0.98); // This is the Afterglow correction 
-    std::cout << "LUMISECTION::"<< ls  << " " << mylabel << " over "<< fResetIntervalInLumiSections << " LS HF_Rec to PX ratio " 
-	      << fHistHFRecordedByLS->getBinContent(ls)/fHistTotalRecordedLumiByLS->getBinContent(ls) 
-	      << " HF Recorded Lumi = " << fHistHFRecordedByLS->getBinContent(ls)
-	      << " PX Lumi = " << fHistTotalRecordedLumiByLS->getBinContent(ls) << " unc = " 
-	      << fHistTotalRecordedLumiByLS->getBinError(ls)
-	      << std::endl;
+  // Fill ratio of HFRecorded and HFDelivered with PX total (if a new value of HF lumi became available).
+  if(retrievedLumi!=0){
+
+    for(int rls = lastGoodRetrievedLumiFromHF+1; rls <= retrievedLumi; rls++){
+      if(fHistTotalRecordedLumiByLS->getBinContent(rls)!=0.){ // Avoid a divide-by-0 
+	fHistHFToPxRecordedRatioByLS->setBinContent(rls,
+						    fHistHFRecordedByLS->getBinContent(rls)/
+						    fHistTotalRecordedLumiByLS->getBinContent(rls)/
+						    0.98); // This is the Afterglow correction 
+	fHistHFToPxDeliveredRatioByLS->setBinContent(rls,
+						     fHistHFDeliveredByLS->getBinContent(rls)/
+						     fHistTotalRecordedLumiByLS->getBinContent(rls)/
+						     0.98); // This is the Afterglow correction 
+	std::cout << "LUMISECTION::"<< rls  << " " << mylabel 
+		  << " over "<< fResetIntervalInLumiSections << " LS HF_Rec to PX ratio " 
+		  << fHistHFRecordedByLS->getBinContent(rls)/fHistTotalRecordedLumiByLS->getBinContent(rls)/0.98 
+		  << " HF Recorded Lumi = " << fHistHFRecordedByLS->getBinContent(rls)
+		  << " PX Lumi = " << fHistTotalRecordedLumiByLS->getBinContent(rls) << " unc = " 
+		  << fHistTotalRecordedLumiByLS->getBinError(rls)
+		  << std::endl;
+      }
+      else{
+	fHistHFToPxRecordedRatioByLS->setBinContent(rls,-1.); // but mark situation clearly by giving ratio a value of -1.
+	fHistHFToPxDeliveredRatioByLS->setBinContent(rls,-1.); // but mark situation clearly by giving ratio a value of -1.
+      }
+    }
+
+    lastGoodRetrievedLumiFromHF = retrievedLumi; // now save the new value of last good retrieved LS
   }
-  else{
-    fHistHFToPxRecordedRatioByLS->setBinContent(ls,-1.); // but mark situation clearly by giving ratio a value of -1.
-    fHistHFToPxDeliveredRatioByLS->setBinContent(ls,-1.); // but mark situation clearly by giving ratio a value of -1.
-  }
-  
-  
+  logFile_.open(fLogFileName_.c_str(),std::ios_base::trunc);		
+
+  timeval tv;
+  gettimeofday(&tv,0);
+  tm *ts = gmtime(&tv.tv_sec);
+  char datestring[256];
+  strftime(datestring, sizeof(datestring),"%Y.%m.%d %T GMT %s",ts);
+  logFile_ << "RunNumber "<< fRunNo << std::endl;
+  logFile_ << "EndTimeOfFit " << datestring << std::endl;
+  logFile_ << "LumiRange "<< lastGoodRetrievedLumiFromHF << "-" << lastGoodRetrievedLumiFromHF << std::endl;
+  logFile_ << "Fill "<< fFillNumber << std::endl;
+  logFile_ << "ActiveBunchCrossings "<< activeCrossingsFromDB << std::endl;
+  logFile_ << "PixelLumi "<< fHistTotalRecordedLumiByLS->getBinContent(lastGoodRetrievedLumiFromHF) * 0.98 << std::endl;
+  logFile_ << "HFLumi "<< fHistHFDeliveredByLS->getBinContent(lastGoodRetrievedLumiFromHF) << std::endl;
+  logFile_ << "Ratio " << fHistHFToPxDeliveredRatioByLS->getBinContent(lastGoodRetrievedLumiFromHF) << std::endl;
+  logFile_.close();
 }
 
 unsigned int PixelLumiDQM::calculateBunchMask(MonitorElement *e, std::vector<bool> &mask){
