@@ -29,7 +29,11 @@
 #include <mach/mach_time.h>
 #endif // defined(__APPLE__) || defined(__MACH__)
 
-#define SIZE 1000000
+// for rdtsc
+#include <x86intrin.h>
+
+
+static constexpr unsigned int SIZE = 1000000;
 
 
 class TimerInterface {
@@ -403,6 +407,23 @@ public:
 };
 
 
+// rdtsc()
+class TimerRDTSC : public TimerBase<unsigned long long> {
+public:
+  TimerRDTSC() {
+    description = "rdtsc() (this is in arbitrary units, not in ns!)";
+    ticks_per_second = 1.e9;;
+    granularity = 1. / ticks_per_second;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+      values[i] = __rdtsc();
+    }
+  }
+};
+
+
 
 int main(void) {
   std::vector<TimerInterface *> timers;
@@ -422,6 +443,7 @@ int main(void) {
   timers.push_back(new TimerOMPGetWtime());
   timers.push_back(new TimerClock());
   timers.push_back(new TimerTimes());
+  timers.push_back(new TimerRDTSC());
 
   BOOST_FOREACH(TimerInterface * timer, timers) {
     timer->measure();
