@@ -134,7 +134,7 @@ public:
 protected:
   time_type *   values;
   double        granularity;            // the reported resolution, in seconds
-  double        resolution;      // the measured resolution, in seconds (median of the steps)
+  double        resolution;             // the measured resolution, in seconds (median of the steps)
   double        resolution_mean;        // the measured resolution, in seconds (mean of the steps)
   double        resolution_sigma;       // the measured resolution, in seconds (sigma of the mean)
   double        overhead;               // the measured per-call overhead, in seconds
@@ -383,6 +383,8 @@ public:
     description = "clock()";
     ticks_per_second = CLOCKS_PER_SEC;
     granularity = 1. / ticks_per_second;
+    if (granularity < 1.e-9)
+      granularity = 1.e-9;
   }
 
   void measure() {
@@ -399,6 +401,8 @@ public:
     description = "times()";
     ticks_per_second = sysconf(_SC_CLK_TCK);
     granularity = 1. / ticks_per_second;
+    if (granularity < 1.e-9)
+      granularity = 1.e-9;
   }
 
   void measure() {
@@ -428,12 +432,14 @@ public:
     usleep(1000000);    // sleep 1 second
     ticks += __rdtsc();
     ticks_per_second = (double) ticks;
+    granularity = 1. / ticks_per_second;
+    if (granularity < 1.e-9)
+      granularity = 1.e-9;
 
     char * desc;
-    asprintf(& desc, "rdtsc() [estimated at %.3g GHz]", ticks_per_second / 1.e9);
+    asprintf(& desc, "rdtsc() [estimated at %#5.4g GHz]", ticks_per_second / 1.e9);
     description = std::string(desc);
     free(desc);
-    granularity = 1.e-9;        // arbitrary value [1 ns]
   }
 
   void measure() {
