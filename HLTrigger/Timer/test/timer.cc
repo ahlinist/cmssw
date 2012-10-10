@@ -18,7 +18,7 @@
 // for omp_get_wtime
 #include <omp.h>
 
-// for times and tms, and sysconf
+// for times and tms, sysconf, usleep
 #include <sys/times.h>
 #include <unistd.h>
 
@@ -30,6 +30,10 @@
 #endif // defined(__APPLE__) || defined(__MACH__)
 
 // for rdtsc
+#if defined(__linux__)
+#include <linux/version.h>
+#include <sys/prctl.h>
+#endif // defined(__linux__)
 #include <x86intrin.h>
 
 
@@ -411,9 +415,25 @@ public:
 class TimerRDTSC : public TimerBase<unsigned long long> {
 public:
   TimerRDTSC() {
-    description = "rdtsc() (this is in arbitrary units, not in ns!)";
-    ticks_per_second = 1.e9;;
-    granularity = 1. / ticks_per_second;
+#if defined(__linux__) and LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+    if (tsc_val != PR_TSC_ENABLE)
+      prctl(PR_SET_TSC, PR_TSC_ENABLE);
+    prctl(PR_GET_TSC, &tsc_val);
+    if (tsc_val != PR_TSC_ENABLE)
+      throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
+#endif // defined(__linux__) and LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+
+    unsigned long long ticks = 0;
+    ticks -= __rdtsc();
+    usleep(1000000);    // sleep 1 second
+    ticks += __rdtsc();
+    ticks_per_second = (double) ticks;
+
+    char * desc;
+    asprintf(& desc, "rdtsc() [estimated at %.3g GHz]", ticks_per_second / 1.e9);
+    description = std::string(desc);
+    free(desc);
+    granularity = 1.e-9;        // arbitrary value [1 ns]
   }
 
   void measure() {
