@@ -12,6 +12,8 @@
 #include "FWCore/Sources/interface/VectorInputSource.h"
 #include "IORawData/DaqSource/interface/DaqBaseReader.h"
 
+#include <string>
+
 namespace evf {
 
   class SecondaryProducer: public DaqBaseReader
@@ -51,6 +53,11 @@ namespace evf {
 
     boost::shared_ptr<edm::VectorInputSource> secInput_;
 
+    std::string moduleLabel_;
+    std::string instance_;
+    std::string process_;
+    size_t cachedOffset_;
+    int fillCount_;
   };
 
 } // evf
