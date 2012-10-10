@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 #include <boost/foreach.hpp>
 
 // for timespec and clock_gettime
@@ -420,6 +421,8 @@ class TimerRDTSC : public TimerBase<unsigned long long> {
 public:
   TimerRDTSC() {
 #if defined(__linux__) and LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+    int tsc_val;
+    prctl(PR_GET_TSC, &tsc_val);
     if (tsc_val != PR_TSC_ENABLE)
       prctl(PR_SET_TSC, PR_TSC_ENABLE);
     prctl(PR_GET_TSC, &tsc_val);
