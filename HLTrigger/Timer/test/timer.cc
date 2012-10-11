@@ -419,7 +419,8 @@ public:
 class TimerRDTSC : public TimerBase<unsigned long long> {
 public:
   TimerRDTSC() {
-#if defined(__linux__) and LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+#if defined(__linux__)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
     int tsc_val;
     prctl(PR_GET_TSC, &tsc_val);
     if (tsc_val != PR_TSC_ENABLE)
@@ -427,7 +428,8 @@ public:
     prctl(PR_GET_TSC, &tsc_val);
     if (tsc_val != PR_TSC_ENABLE)
       throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
-#endif // defined(__linux__) and LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+#endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+#endif // defined(__linux__) 
 
     unsigned long long ticks = 0;
     ticks -= __rdtsc();
