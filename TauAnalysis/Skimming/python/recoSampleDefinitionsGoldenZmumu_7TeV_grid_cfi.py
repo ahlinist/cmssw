@@ -8,17 +8,19 @@ from TauAnalysis.Configuration.recoSampleDefaults_cfi import SAMPLE_DEFAULTS
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'Data_runs190456to193621',
-    'Data_runs193834to196531',
-    'Data_runs190782to190949_recover',
-    'Data_runs198022to198523',
-    'Data_runs198934to202016',
-    'ZplusJets_madgraph',
-    'TTplusJets_madgraph',
-    'PPmuXptGt20Mu15',
-    'WW',
-    'WZ',
-    'ZZ'
+    #'Data_runs190456to193621',
+    #'Data_runs193834to196531',
+    #'Data_runs190782to190949_recover',
+    #'Data_runs198022to198523',
+    'Data_runs198934to202016v2',
+    'Data_runs202044to203002v2',
+    #'ZplusJets_madgraph',
+    #'TTplusJets_madgraph',
+    #'PPmuXptGt20Mu15',
+    #'WW',
+    #'WZ',
+    #'ZZ',
+    ##'WplusJets_madgraph'
 ]
 
 _millibarns = 1.0e+9
@@ -34,6 +36,7 @@ RECO_SAMPLES = {
         'events_processed' : 4913546, # 2012/09/12
         'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt",
         'runselection'     : "190456-193621",
+        'conditions'       : 'FT_53_V6_AN2::All', # tag for anomalous ECAL laser correction filter, taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20MissingETOptionalFilters
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
@@ -43,6 +46,7 @@ RECO_SAMPLES = {
         'events_processed' : 22786354, # 2012/09/12
         'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt",
         'runselection'     : "193834-196531",
+        'conditions'       : 'FT_53_V6_AN2::All', # tag for anomalous ECAL laser correction filter, taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20MissingETOptionalFilters
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
@@ -52,6 +56,7 @@ RECO_SAMPLES = {
         'events_processed' : 722728, # 2012/09/12
         'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt",
         'runselection'     : "190782-190949",
+        'conditions'       : 'FT_53_V6C_AN2::All', # tag for anomalous ECAL laser correction filter, taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20MissingETOptionalFilters
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
@@ -61,15 +66,27 @@ RECO_SAMPLES = {
         'events_processed' : 2181586, # 2012/09/28
         'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt",
         'runselection'     : "198022-198523",
+        'conditions'       : 'FT_53_V10_AN2::All', # tag for anomalous ECAL laser correction filter, taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20MissingETOptionalFilters
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
-    'Data_runs198934to202016' : {
+    'Data_runs198934to202016v2' : {
         'datasetpath'      : '/DoubleMu/Run2012C-PromptReco-v2/AOD',
         'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",        
         'events_processed' : 24775919, # 2012/09/12
-        'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-202016_8TeV_PromptReco_Collisions12_JSON.txt",
+        'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203853_8TeV_PromptReco_Collisions12_JSON_v2.txt",
         'runselection'     : "198934-202016",
+        'conditions'       : 'GR_P_V40::All', # tag for anomalous ECAL laser correction filter, taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20MissingETOptionalFilters
+        'lumis_per_job'    : "25",
+        'type'             : 'Data'
+    },
+    'Data_runs202044to203002v2' : {
+        'datasetpath'      : '/DoubleMu/Run2012C-PromptReco-v2/AOD',
+        'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",        
+        'events_processed' : 24775919, # 2012/09/12
+        'lumi_mask'        : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203853_8TeV_PromptReco_Collisions12_JSON_v2.txt",
+        'runselection'     : "202044-203002",
+        'conditions'       : 'GR_P_V40::All', # tag for anomalous ECAL laser correction filter, taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20MissingETOptionalFilters
         'lumis_per_job'    : "25",
         'type'             : 'Data'
     },
@@ -117,6 +134,14 @@ RECO_SAMPLES = {
         'events_processed' : 9799908,
         'x_sec'            : 8.26*_picobarns, # NLO cross-section @ 8 TeV,
                                               # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
+        'type'             : 'smMC'
+    },
+    'WplusJets_madgraph' : {
+        'datasetpath'      : "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM",
+        'dbs_url'          : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 57709905,
+        'x_sec'            : 36257.2*_picobarns, # NLO cross-section @ 8 TeV,
+                                                 # taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
         'type'             : 'smMC'
     }
 }
