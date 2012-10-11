@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
-#include <boost/foreach.hpp>
 
 // for timespec and clock_gettime
 #include <time.h>
@@ -474,7 +473,7 @@ int main(void) {
   timers.push_back(new TimerTimes());
   timers.push_back(new TimerRDTSC());
 
-  BOOST_FOREACH(TimerInterface * timer, timers) {
+  for (TimerInterface * timer: timers) {
     timer->measure();
     timer->compute();
     timer->report();
