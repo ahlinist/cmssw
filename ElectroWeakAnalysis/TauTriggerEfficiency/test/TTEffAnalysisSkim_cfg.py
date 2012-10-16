@@ -1,11 +1,30 @@
 import FWCore.ParameterSet.Config as cms
 import copy
+import sys
+import re
 
 isData = True
 ## doRECO = False will still reconstruct Taus, use False if running AOD(SIM)
 doRECO = False
 doMETleg = True
 
+globalTag = ""
+cmsswVer = ""
+if len(sys.argv) > 1:
+    print sys.argv
+    mc_re = re.compile("dataVersion=(?P<cmssw>(\S+))(?P<mc>(mc|data))\S+")
+    gt_re = re.compile("globalTag=(?P<gt>(\S+)):")
+    for arg in sys.argv:
+        mcmatch = mc_re.search(arg)
+	if mcmatch:
+	    if mcmatch.group("mc") == "mc":
+		isData = False
+	    if mcmatch.group("mc") == "data":
+		isData = True
+	    cmsswVer = mcmatch.group("cmssw")
+	gtmatch = gt_re.search(arg)
+	if gtmatch:
+	    globalTag = gtmatch.group("gt")
 
 process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
@@ -25,8 +44,11 @@ process.load('Configuration/StandardSequences/GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if isData:
-  process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
-  process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
+    process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
+    if cmsswVer == "44X":
+        process.load('Configuration.StandardSequences.Reconstruction_cff')
+    else:
+	process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
 else:
   process.load('Configuration.StandardSequences.RawToDigi_cff')
   process.load('Configuration.StandardSequences.Reconstruction_cff')
@@ -37,6 +59,9 @@ if (isData):
     process.GlobalTag.globaltag = 'GR_R_53_V2::All'
 else:
     process.GlobalTag.globaltag = 'START52_V9::All'
+if len(globalTag) > 0:
+    process.GlobalTag.globaltag = globalTag+'::All'
+
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
@@ -54,9 +79,9 @@ if(isData):
 else:
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-	'/store/mc/Summer12/DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola/AODSIM/PU_S8_START52_V9-v1/0000/F2275F6B-D490-E111-8912-001A92971BBE.root'
+#	'/store/mc/Summer12/DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola/AODSIM/PU_S8_START52_V9-v1/0000/F2275F6B-D490-E111-8912-001A92971BBE.root'
 #        'file:/tmp/slehti/Fall11_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-RAW_PU_S6_START42_V14B-v1_0000_86738BE8-EBF0-E011-8E03-003048C693E6.root'
-#          "file:/tmp/mkortela/FCA4CF79-A5A6-E011-AA99-E0CB4E55366A.root"
+          "file:/tmp/slehti/Fall11_TTToHplusBWB_M-90_7TeV-pythia6-tauola_B2AD85E1-D520-E111-B5AC-001A928116EA.root"
     )
   )
 
@@ -75,6 +100,9 @@ process.scrapping = cms.EDFilter("FilterOutScraping",
     thresh = cms.untracked.double(0.25)
 )
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
+
+# Type1 MET
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
 
 # Produce PAT
 import ElectroWeakAnalysis.TauTriggerEfficiency.Pat as pat
@@ -180,10 +208,11 @@ process.reconstruction_step = cms.Path(process.reconstruction)
 process.endjob_step = cms.Path(process.endOfProcess)
 process.out_step = cms.EndPath(process.output)
 process.PFTau_step = cms.Path(process.PFTau)
+process.MET_step = cms.Path(process.producePFMETCorrections)
 
 if(doRECO):
-    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
+    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.MET_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
 #    process.recoPFJets.replace(process.ak5PFJets, process.ak5PFJetSequence)
 else:
-    process.schedule = cms.Schedule(process.PFTau_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
+    process.schedule = cms.Schedule(process.PFTau_step,process.MET_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
 #    process.TTEffSkimFilter += process.ak5PFJetSequence
