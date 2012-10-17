@@ -30,17 +30,17 @@ def adapt(process):
     process.lowPtTripletStepClusters.oldClusterRemovalInfo = cms.InputTag('loopersMask')
     process.initialStepTrajectoryBuilder.clustersToSkip = cms.InputTag('loopersMask')
 
-    if False:
-        from RecoTracker.TrackProducer.TrackRefitter_cfi import TrackRefitter
-        process.looperTracks = TrackRefitter.clone(            src = cms.InputTag('loopersMask')            )
+    if True:
+        ##adapt a PV finding to the loopers track only
+        process.loopersVertex = process.offlinePrimaryVertices.clone(TrackLabel='loopersMask')
         process.reconstruction_step.replace( process.loopersMask,
-                                             process.loopersMask+process.looperTracks)
+                                             process.loopersMask+process.loopersVertex)
         
-    
     for o in process.outputModules_():
         om=process.outputModules_()[o]
         om.outputCommands.append('keep *_loopersMask_*_*')
-        om.outputCommands.append('keep *_looperTracks_*_*')
+        om.outputCommands.append('keep *_loopersTracks_*_*')
+        om.outputCommands.append('keep *_loopersVertex_*_*')
     return (process)
 
 def looperTracks(process):
@@ -50,12 +50,32 @@ def looperTracks(process):
     #usually cmsDriver.py looper -s RECO --customise RecoTracker/Loopers/Adapter.<any>
     if not hasattr(process,'loopersMask'):
         adapt(process)
+
+    ##attempt using primarily a track refitter. The TrackCandidateOption initially used does not function
+    # it should be noted that the track refitting does not function so well either (does it really matter ?)
+    from RecoTracker.TrackProducer.TrackRefitter_cfi import TrackRefitter
+    process.loopersTracks = TrackRefitter.clone(
+        src = cms.InputTag('loopersMask')
+        )
+    ## augment the looping capability of RK prop
+    process.RungeKuttaTrackerPropagator.MaxDPhi = 100.0
+    ## replace the RK propagator with something elst just to see how further it goes
+    ### SHP does not help enough
+    #process.RungeKuttaTrackerPropagator = process.SteppingHelixPropagatorAlong.clone( ComponentName = 'RungeKuttaTrackerPropagator')
+    ### analytical propagator ...
+    ##process.RungeKuttaTrackerPropagator = process.AnalyticalPropagator.clone( ComponentName = 'RungeKuttaTrackerPropagator',MaxDPhi = 1000.0)
+
     process.reconstruction_step.replace(process.loopersMask,
                                         process.loopersMask+process.loopersTracks)
 
+    ## now try to put those tracks (or the initial ones inside the generalTrack collection)
+    process.generalTracks.TrackProducers.append( cms.InputTag('loopersMask') )
+    process.generalTracks.hasSelector.append( 0 )
+    process.generalTracks.setsToMerge[0].tLists.append(7)
+
     for o in process.outputModules_():
         om=process.outputModules_()[o]
-        om.outputCommands.append('keep *_loopersMask_*_*')
+        om.outputCommands.append('keep *_loopersTracks_*_*')
     return (process)
                                         
     
