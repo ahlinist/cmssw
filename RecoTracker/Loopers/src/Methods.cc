@@ -533,7 +533,9 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
       math::XYZVector mom(peak->px_,
 			  peak->py_,
 			  peak->pz_ );
-      CurvilinearTrajectoryError error; 
+      AlgebraicSymMatrix55 errorMatrix= AlgebraicMatrixID();
+      errorMatrix/=100;
+      CurvilinearTrajectoryError error(errorMatrix); 
       
       prod_.tOut->push_back(reco::Track(0, /*chi2*/
 					int(peak->elements_.size()), /* # of degree of freedom */
@@ -544,7 +546,38 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 					reco::TrackBase::iter10 /* dummy */
 					));
       reco::TrackExtraRef teref= reco::TrackExtraRef ( rTrackExtras, prod_.teOut->size());
-      prod_.teOut->push_back(reco::TrackExtra());
+      //get the proper quantities to build the extra
+      GlobalPoint o = peak->elements_.back()->hit_->globalPosition();
+      GlobalPoint i = peak->elements_.front()->hit_->globalPosition();
+
+      math::XYZPoint  outpos(o.x(),o.y(),o.z());
+      math::XYZPoint  inpos(i.x(),i.y(),i.z());
+
+      float rot,cr,sr,rotPx,rotPy;
+      rot=(peak->inCercle_.back().phi - peak->phi_ );
+      cr=-cos(rot);
+      sr=-sin(rot);
+      rotPx = peak->px_ * cr - peak->py_ * sr;
+      rotPy = peak->px_ * sr + peak->py_ * cr;
+      math::XYZVector outmom(rotPx,rotPy,peak->pz_);
+      rot=(peak->inCercle_.front().phi - peak->phi_);
+      cr=-cos(rot);
+      sr=-sin(rot);
+      rotPx = peak->px_ * cr - peak->py_ * sr;
+      rotPy = peak->px_ * sr + peak->py_ * cr;
+      math::XYZVector inmom(rotPx,rotPy,peak->pz_);
+
+      CurvilinearTrajectoryError innerError(errorMatrix),outerError(errorMatrix);
+
+      int outerId=peak->elements_.back()->id_;
+      int innerId=peak->elements_.front()->id_;
+
+      prod_.teOut->push_back(reco::TrackExtra(outpos, outmom, true,
+					      inpos, inmom, true,
+					      outerError,outerId,
+					      innerError,innerId,					      
+					      alongMomentum
+					      ));
       prod_.tOut->back().setExtra( teref );
 
       for (uint iH=0;iH!=peak->count();++iH){
