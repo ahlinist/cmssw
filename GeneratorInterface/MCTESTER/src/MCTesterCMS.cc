@@ -14,9 +14,9 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
 //MC-TESTER header files
-#include "/build/inugent/ext/CMSSW_6_0_0_pre7/20120804_2206/CMSDIST/slc5_amd64_gcc462/external/mctester/1.25.0/include/Generate.h"
-#include "/build/inugent/ext/CMSSW_6_0_0_pre7/20120804_2206/CMSDIST/slc5_amd64_gcc462/external/mctester/1.25.0/include/HepMCEvent.H"
-#include "/build/inugent/ext/CMSSW_6_0_0_pre7/20120804_2206/CMSDIST/slc5_amd64_gcc462/external/mctester/1.25.0/include/Setup.H"
+#include "Generate.h"
+#include "HepMCEvent.H"
+#include "Setup.H"
 
 class MCTesterCMS : public edm::EDAnalyzer
 {
