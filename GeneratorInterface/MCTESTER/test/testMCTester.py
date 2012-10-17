@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+process = process = cms.Process("AOD")
+
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration/StandardSequences/EndOfProcess_cff')
