@@ -12,8 +12,8 @@ globalTag = ""
 cmsswVer = ""
 if len(sys.argv) > 1:
     print sys.argv
-    mc_re = re.compile("dataVersion=(?P<cmssw>(\S+))(?P<mc>(mc|data))\S+")
-    gt_re = re.compile("globalTag=(?P<gt>(\S+)):")
+    mc_re = re.compile("dataVersion=(?P<cmssw>(\S+))(?P<mc>(mc|data))\S+?(:|$)")
+    gt_re = re.compile("globalTag=(?P<gt>(\S+?))(:|$)")
     for arg in sys.argv:
         mcmatch = mc_re.search(arg)
 	if mcmatch:
@@ -61,7 +61,6 @@ else:
     process.GlobalTag.globaltag = 'START52_V9::All'
 if len(globalTag) > 0:
     process.GlobalTag.globaltag = globalTag+'::All'
-
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
