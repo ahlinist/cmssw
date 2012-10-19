@@ -148,7 +148,7 @@ patMETValidation = cms.EDAnalyzer("PATValidation_MET",
 
 #     recoMET     = cms.InputTag('met'),
 #      recoMET     = cms.InputTag('corMetType1Icone5Muons'), #PhysicsTools/ PatAlgos/ python/ cleaningLayer0/caloMetCleaner_cfi.py
-       recoMET     = cms.InputTag('metJESCorAK5CaloJetMuons'), # CMSSW_3_3_0_pre4
+       recoMET     = cms.InputTag('caloType1CorrectedMet'), # CMSSW_3_3_0_pre4
        patMET      = cms.InputTag('patMETs'),
 #        patMET      =cms.InputTag('selectedPatMETs'), 
       #
@@ -175,7 +175,7 @@ patCaloMETValidation = cms.EDAnalyzer("PATValidation_CaloMET",
 
 #     recoMET     = cms.InputTag('met'),
 #      recoCaloMET     = cms.InputTag('corMetType1Icone5Muons'), #PhysicsTools/ PatAlgos/ python/ cleaningLayer0/caloMetCleaner_cfi.py
-       recoCaloMET     = cms.InputTag('metJESCorAK5CaloJetMuons'), # CMSSW_3_3_0_pre4
+       recoCaloMET     = cms.InputTag('caloType1CorrectedMet'), # CMSSW_3_3_0_pre4
 #      patMET      = cms.InputTag('patMETs'),
        patCaloMET      = cms.InputTag('patMETs'),
 #        patMET      =cms.InputTag('selectedPatMETs'),
