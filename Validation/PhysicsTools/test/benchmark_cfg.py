@@ -10,22 +10,20 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 ## Source
+from PhysicsTools.PatAlgos.patInputFiles_cff import *
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/0840E1E4-B5D2-DF11-8F73-002618943870.root',
-'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/16B7DF72-22D2-DF11-9901-002618943943.root',
-'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/1A487D44-23D2-DF11-9DB4-003048678B0C.root',
-'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/3667674E-EAD1-DF11-8507-002618943933.root'
-    )
+    fileNames = filesRelValProdTTbarGENSIMRECO
 )
+
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(8000) )
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
-process.load("Configuration.StandardSequences.Geometry_cff")
+#process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.Geometry.GeometryIdeal_cff");
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = cms.string('MC_38Y_V13::All')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+from Configuration.AlCa.autoCond import autoCond
+process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 ## Standard PAT Configuration File
