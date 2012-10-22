@@ -60,7 +60,7 @@ private:
   string moduleLabel_;
   edm::InputTag streamTag_;
   string refIdentifier_;
-  bool fit_;
+  bool fit_, useBinomialErrors_;
   double scaleFactor_,maxChi2Prob_;
   bool fill1D_,fill2D_;
   int fitsPerformed_,goodFits_;
@@ -84,6 +84,7 @@ DQMEfficiencyFromFitProducer<FittingAlgo>::DQMEfficiencyFromFitProducer(const ed
 {
   streamTag_ = iConfig.exists("streamTag") ? iConfig.getParameter<edm::InputTag>("streamTag") : edm::InputTag("");
   scaleFactor_ = iConfig.exists("scaleFactor") ? iConfig.getParameter<double>("scaleFactor") : -1.;
+  useBinomialErrors_  = iConfig.exists("useBinomialErrors") ? iConfig.getParameter<bool>("useBinomialErrors") : false;
 }
 
 template<typename FittingAlgo>
@@ -194,7 +195,9 @@ void DQMEfficiencyFromFitProducer<FittingAlgo>::fitSlices(const pair<MonitorElem
 	double thisErr = (thisFitIsGood) ? fitresult.err : 0;
 	prj->Delete();
 	double ratio = (thisFitIsGood && refVal != 0) ? thisVal/refVal : -1;
-	double err   = (thisFitIsGood && ratio  >  0) ? TMath::Sqrt( TMath::Abs( ( (1.-2.*ratio)*thisErr*thisErr + ratio*ratio*refErr*refErr )/(refVal*refVal) ) ) : 0.; //Used binomial error formula as in previous version (1./ratio)*TMath::Sqrt(TMath::Power(refErr/refVal,2) + TMath::Power(thisErr/thisVal,2)) : 0.;
+	double err   = (thisFitIsGood && ratio  >  0) ? (1./ratio)*TMath::Sqrt(TMath::Power(refErr/refVal,2) + TMath::Power(thisErr/thisVal,2)) : 0.;
+	if(useBinomialErrors_)
+	  err   = (thisFitIsGood && ratio  >  0) ? TMath::Sqrt( TMath::Abs( ( (1.-2.*ratio)*thisErr*thisErr + ratio*ratio*refErr*refErr )/(refVal*refVal) ) ) : 0.;  //Used binomial error formula as in previous version
 	Measurement1D binVal(ratio,err);
 	outputs[i-1][mePos] = binVal;
       }//if(refFitIsGood){
