@@ -47,60 +47,61 @@ namespace edm {
       parentToChildPhID_(),
       historyAppender_(new HistoryAppender),
       esInfo_(0),
-      subProcess_() {
+      subProcess_(),
+      processParameterSet_() {
 
     std::string const maxEvents("maxEvents");
     std::string const maxLumis("maxLuminosityBlocks");
 
-    std::auto_ptr<ParameterSet> processParameterSet = parameterSet.popParameterSet(std::string("process")); 
+    processParameterSet_.reset(parameterSet.popParameterSet(std::string("process")).release()); 
 
     // if this process has a maxEvents or maxLuminosityBlocks parameter set, remove them.
-    if(processParameterSet->exists(maxEvents)) {
-      processParameterSet->popParameterSet(maxEvents);
+    if(processParameterSet_->exists(maxEvents)) {
+      processParameterSet_->popParameterSet(maxEvents);
     }
-    if(processParameterSet->exists(maxLumis)) {
-      processParameterSet->popParameterSet(maxLumis);
+    if(processParameterSet_->exists(maxLumis)) {
+      processParameterSet_->popParameterSet(maxLumis);
     }
 
     // if the top level process has a maxEvents or maxLuminosityBlocks parameter set, add them to this process.
     if(topLevelParameterSet.exists(maxEvents)) {
-      processParameterSet->addUntrackedParameter<ParameterSet>(maxEvents, topLevelParameterSet.getUntrackedParameterSet(maxEvents));
+      processParameterSet_->addUntrackedParameter<ParameterSet>(maxEvents, topLevelParameterSet.getUntrackedParameterSet(maxEvents));
     }
     if(topLevelParameterSet.exists(maxLumis)) {
-      processParameterSet->addUntrackedParameter<ParameterSet>(maxLumis, topLevelParameterSet.getUntrackedParameterSet(maxLumis));
+      processParameterSet_->addUntrackedParameter<ParameterSet>(maxLumis, topLevelParameterSet.getUntrackedParameterSet(maxLumis));
     }
 
     // If this process has a subprocess, pop the subprocess parameter set out of the process parameter set
 
-    boost::shared_ptr<ParameterSet> subProcessParameterSet(popSubProcessParameterSet(*processParameterSet).release());
+    boost::shared_ptr<ParameterSet> subProcessParameterSet(popSubProcessParameterSet(*processParameterSet_).release());
   
     ScheduleItems items(*parentProductRegistry);
 
-    ParameterSet const& optionsPset(processParameterSet->getUntrackedParameterSet("options", ParameterSet()));
+    ParameterSet const& optionsPset(processParameterSet_->getUntrackedParameterSet("options", ParameterSet()));
     IllegalParameters::setThrowAnException(optionsPset.getUntrackedParameter<bool>("throwIfIllegalParameter", true));
 
     //initialize the services
     ServiceToken iToken;
 
     // get any configured services.
-    std::auto_ptr<std::vector<ParameterSet> > serviceSets = processParameterSet->popVParameterSet(std::string("services")); 
+    std::auto_ptr<std::vector<ParameterSet> > serviceSets = processParameterSet_->popVParameterSet(std::string("services")); 
 
-    ServiceToken newToken = items.initServices(*serviceSets, *processParameterSet, token, iLegacy, false);
+    ServiceToken newToken = items.initServices(*serviceSets, *processParameterSet_, token, iLegacy, false);
     parentActReg.connectToSubProcess(*items.actReg_);
-    serviceToken_ = items.addCPRandTNS(*processParameterSet, newToken);
+    serviceToken_ = items.addCPRandTNS(*processParameterSet_, newToken);
 
 
     //make the services available
     ServiceRegistry::Operate operate(serviceToken_);
 
     // intialize miscellaneous items
-    boost::shared_ptr<CommonParams> common(items.initMisc(*processParameterSet));
+    boost::shared_ptr<CommonParams> common(items.initMisc(*processParameterSet_));
 
     // intialize the event setup provider
-    esp_ = esController.makeProvider(*processParameterSet, *common);
+    esp_ = esController.makeProvider(*processParameterSet_, *common);
 
     // intialize the Schedule
-    schedule_ = items.initSchedule(*processParameterSet,subProcessParameterSet.get());
+    schedule_ = items.initSchedule(*processParameterSet_,subProcessParameterSet.get());
 
     // set the items
     act_table_ = items.act_table_;
@@ -327,13 +328,24 @@ namespace edm {
     for(Selections::const_iterator it = keptVector.begin(), itEnd = keptVector.end(); it != itEnd; ++it) {
       Group const* parentGroup = parentPrincipal.getGroup((*it)->branchID(), false, false);
       if(parentGroup != 0) {
-        // Make copy of parent group data
-        ProductData parentData = parentGroup->productData();
+        ProductData const& parentData = parentGroup->productData();
         Group const* group = principal.getGroup((*it)->branchID(), false, false);
         if(group != 0) {
-          // Swap copy with this group data
           ProductData& thisData = const_cast<ProductData&>(group->productData());
-          thisData.swap(parentData);
+          //Propagate the per event(run)(lumi) data for this product to the subprocess.
+          //First, the product itself.
+          thisData.wrapper_ = parentData.wrapper_;
+          // Then the product ID and the ProcessHistory
+          thisData.prov_.setProductID(parentData.prov_.productID());
+          thisData.prov_.setProcessHistoryID(parentData.prov_.processHistoryID());
+          // Then the store, in case the product needs reading in a subprocess.
+          thisData.prov_.setStore(parentData.prov_.store());
+          // And last, the other per event provenance.
+          if(parentData.prov_.productProvenanceValid()) {
+            thisData.prov_.setProductProvenance(*parentData.prov_.productProvenance());
+          } else {
+            thisData.prov_.resetProductProvenance();
+          }
           // Sets unavailable flag, if known that product is not available
           (void)group->productUnavailable();
         }

@@ -225,6 +225,7 @@ namespace edm {
     boost::scoped_ptr<HistoryAppender>            historyAppender_;
     std::auto_ptr<ESInfo>                         esInfo_;
     std::auto_ptr<SubProcess>                     subProcess_;
+    std::unique_ptr<ParameterSet>                 processParameterSet_;
   };
 
   // free function
