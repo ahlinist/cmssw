@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.70 2012/05/16 07:50:39 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.71 2012/09/24 10:50:33 slehti Exp $
 //
 //
 
@@ -187,6 +187,8 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    b_lumi = iEvent.luminosityBlock();
 
 //   nPU = 0;
+   /*
+     // Old, for Summer11 MC
    edm::Handle<std::vector<PileupSummaryInfo> > hpileup;
    iEvent.getByLabel(pileupSummaryInfoSrc_, hpileup);
    if(hpileup.isValid()) {
@@ -196,6 +198,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      }
      nPU = npv/3.;
    }
+   */
 
    nGoodOfflinePV_ = 0;
    edm::Handle<edm::View<reco::Vertex> > hoffvertex;
@@ -207,9 +210,9 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<std::vector<PileupSummaryInfo> >  hpu;
    iEvent.getByLabel(pileupSummaryInfoSrc_, hpu);
    if(hpu.isValid()) {
-   	int n0 = -1;
-   	//int nm1 = -1;
-   	//int np1 = -1;
+   	float n0 = -1;
+   	//float nm1 = -1;
+   	//float np1 = -1;
    	for(std::vector<PileupSummaryInfo>::const_iterator iPV = hpu->begin(); iPV != hpu->end(); ++iPV) {
    	   //if(iPV->getBunchCrossing() == -1)
    	   //  nm1 = iPV->getTrueNumInteractions();

@@ -466,11 +466,12 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::Handle<std::vector<PileupSummaryInfo> > hpileup;
   iEvent.getByLabel(pileupSummaryInfoSrc_, hpileup);
   if(hpileup.isValid()) { // protection for data
-    int npv = 0;
     for(std::vector<PileupSummaryInfo>::const_iterator iPV = hpileup->begin(); iPV != hpileup->end(); ++iPV) {
-      npv += iPV->getPU_NumInteractions();
+      if(iPV->getBunchCrossing() == 0) {
+        nPU_ = iPV->getTrueNumInteractions();
+        break;
+      }
     }
-    nPU_ = npv/3.;
   }
 
   nGoodOfflinePV_ = 0;
