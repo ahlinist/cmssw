@@ -11,30 +11,79 @@ from array import array
 
 #information about the MC prediction
 mc_info = {'sigma'     :5.45, #in pb
-           'theory_err':0.22  #in pb
+           'theory_err':0.27  #in pb
            }
+
+#mc_info = {'sigma'     :31.81, #in pb
+#           'theory_err':1.8    #in pb
+#           }
 
 flavor_text = "E^{#gamma}_{T} > 15 GeV, #DeltaR > 0.7,\\M_{ll} > 50 GeV"
 luminosity = "#intL dt = %.1f fb^{-1}"%(5.0)
 
+
+
 #arrays are (all values in pb):
 #[central value, stat, total syst, correlated syst12, corr. syst13, ...]
 #[central value, stat, total syst, correlated syst21, corr. syst23, ...]
+# standard combination
+#W\gamma 2011AB summary
+#data_channels = {
+#    'W(e#nu)#gamma'         :{
+#                            '2011A+B':[36.6,1.2,4.4,3.7]
+#                            },
+#    'W(#mu#nu)#gamma'     :{
+#                            '2011A+B':[37.5,0.9,4.4,3.80]
+#                            }    
+#    }
+
+#Z\gamma 2011AB summary
 data_channels = {
-    'Z(ee)#gamma'         :{'2011A'  :[5.70,0.20,0.31,0.16],
-                            '2011B'  :[4.92,0.20,0.30,0.16],
-                            '2011A+B':[5.20,0.13,0.31,0.15]
+    'Z(ee)#gamma'         :{
+                            '2011A+B':[5.20,0.130,0.30,0.14]
                             },
-    'Z(#mu#mu)#gamma'     :{'2011A'  :[5.51,0.14,0.28,0.25],
-                            '2011B'  :[5.40,0.13,0.28,0.25],
-                            '2011A+B':[5.43,0.10,0.29,0.26]
+    'Z(#mu#mu)#gamma'     :{
+                            '2011A+B':[5.43,0.099,0.29,0.26]
                             }    
     }
+
+#Z\gamma as a function of pT cut
+#data_channels = {
+#    'Z(ee)#gamma'         :{'> 15':[5.200,0.130,0.27,0.0],
+#                            '> 60':[0.142,0.019,0.007,0.000],
+#                            '> 90':[0.047,0.013,0.002,0.000]},
+#    'Z(#mu#mu)#gamma'       :{'> 15':[5.428,0.099,0.129,0.0],
+#                              '> 60':[0.139,0.013,0.003,0.000],
+#                              '> 90':[0.046,0.008,0.001,0.0000]}    
+#    }
+
+#Z\gamma final results (as a function of pt cut)
+#data_channels = {
+#    'Z(ee)#gamma'         :{'> 15':[5.200,0.130,0.304,0.140],
+#                            '> 60':[0.142,0.019,0.011,0.009],
+#                            '> 90':[0.047,0.013,0.0072,0.007]},
+#    'Z(#mu#mu)#gamma'       :{'> 15':[5.428,0.099,0.288,0.257],
+#                              '> 60':[0.139,0.013,0.0152,0.0150],
+#                              '> 90':[0.046,0.008,0.0100,0.0100]}    
+#    }
+
+#W\gamma final results (as a function of pt cut)
+#data_channels = {
+#    'W(e#nu)#gamma'         :{'> 15':[36.6,1.2,4.4,3.7],
+#                              '> 60':[0.77,0.07,0.13,0.087],
+#                              '> 90':[0.173,0.034,0.037,0.027]},
+#    'W(#mu#nu)#gamma'       :{'> 15':[37.5,0.9,4.4,3.80],
+#                              '> 60':[0.76,0.06,0.08,0.071],
+#                              '> 90':[0.248,0.035,0.048,0.045]}    
+#    }
+
+
 
 #the list of channels you want to combine
 #you must have defined N_correlated_syst >= (N_channels choose 2) :-)
 #zero is an allowed value for correlated systematics
 combined = ['Z(ee)#gamma','Z(#mu#mu)#gamma']
+#combined = ['W(e#nu)#gamma','W(#mu#nu)#gamma']
 
 #the luminosity error in %, since we don't use it in combinations
 lumi_err = 2.2
@@ -172,7 +221,7 @@ def crossSectionValuePlot(group,groups,keys_no_comb,
     
     canv = TCanvas(group+'val','',500,500)
     canv.cd()
-    frame = canv.DrawFrame(1,0,1.30*mc_info['sigma'],2*(len(sigmas_lcl)+1))
+    frame = canv.DrawFrame(1,0,1.35*mc_info['sigma'],2*(len(sigmas_lcl)+1))
     frame.GetXaxis().SetTitle("Cross Section (pb)")
     unshitify(frame)
     gTotes.SetMarkerColor(2)
@@ -234,12 +283,12 @@ def crossSectionValuePlot(group,groups,keys_no_comb,
     #flavor text
     tex1.DrawLatex(0.85*xpad,yvals[-1] + 0.95*ypad,
                    "#font[132]{%s}"%luminosity)
-    i = 0
-    for flav in flavor_text.split('\\'):
-        tex1.DrawLatex(2.5*xpad,
+    
+    for i,flav in enumerate(flavor_text.split('\\')):
+        tex1.DrawLatex(3.7*xpad,
                        yvals[-1] + (1.20-0.50*i)*ypad,
                        "#font[132]{%s}"%flav)
-        i = i + 1
+       
     tex1.DrawLatex(xmin,ymax+0.08,
                    "#font[132]{CMS Preliminary 2011}")
     tex1.DrawLatex(xmin+0.78*xscale,
@@ -343,7 +392,7 @@ def crossSectionRatioPlot(group,groups,keys_no_comb,
                                "#font[132]{%s: %s}"%(group,
                                                      keys_no_comb[i]))
                 
-        tex2.DrawLatex(4.25*xpad,yvals[i]-0.009*yscale,
+        tex2.DrawLatex(4.60*xpad,yvals[i]-0.009*yscale,
                        "#font[132]{%.2f #pm "%sigmas_lcl[i]+
                        "%.2f_{exp} #pm "%tots_lcl[i]+
                        "%.2f_{theo}}"%(mc_info['theory_err']/mc_info['sigma']))
@@ -351,12 +400,12 @@ def crossSectionRatioPlot(group,groups,keys_no_comb,
     #flavor text
     tex1.DrawLatex(0.85*xpad,yvals[-1] + 0.95*ypad,
                    "#font[132]{%s}"%luminosity)
-    i = 0
-    for flav in flavor_text.split('\\'):
+    
+    for i,flav in enumerate(flavor_text.split('\\')):
         tex1.DrawLatex(3.7*xpad,
                        yvals[-1] + (1.40-0.50*i)*ypad,
                        "#font[132]{%s}"%flav)
-        i = i + 1
+        
 
     tex1.DrawLatex(xmin,ymax+0.08,
                    "#font[132]{CMS Preliminary 2011}")
@@ -389,7 +438,7 @@ def unshitify(frame):
     frame.SetTitleSize(0.06, "XYZ")
     frame.SetTitleOffset(1., "X")
     frame.SetTitleOffset(1.4, "Y")
-    frame.SetNdivisions(505, "XY")
+    frame.SetNdivisions(505, "X")
     frame.SetTickLength(0, "Y")
 
 #make a nice latex table, grouping all combined channels
