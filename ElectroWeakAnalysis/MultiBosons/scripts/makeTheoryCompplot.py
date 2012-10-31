@@ -12,29 +12,49 @@ ROOT.gROOT.LoadMacro("%s/%s"%(os.environ["CMSSW_BASE"],script_path))
 ROOT.CMSStyle()
 
 # this script makes the figure 3 plot from ATLAS V\gamma paper @ 1/fb
-y_axis_title = "#sigma(pp #rightarrow l#nu#gamma) (pb)"
-year = 2011
+y_axis_title = "#sigma(pp #rightarrow ll#gamma) (pb)"
+year = 2012
 sqrts = "7 TeV"
-luminosity = "#intL dt = %.1f fb^{-1}"%(5.0)
+luminosity = "L = %.1f fb^{-1}"%(5.0)
 prediction_name = "MCFM"
 
 #tuples are (central value, stat, syst including lumi)
 # 'PREDICTION' is a keyword for processing, prediction_name is subbed in
 # organization is { measurement_type: {cut: {values} } }
+
+#Z\gamma results
+#plot_categories = {
+#    'Inclusive':[
+#    {'> 15':{'Z(ee)#gamma'      :(5.20,0.130,0.30),
+#             'Z(#mu#mu)#gamma'  :(5.43,0.099,0.29),
+#             'Combined'         :(5.329,0.08,0.25),
+#             'PREDICTION'       :(5.447,0.27)}},
+#    {'> 60':{'Z(ee)#gamma'       :(0.142,0.019,0.019),
+#             'Z(#mu#mu)#gamma'   :(0.139,0.013,0.015),
+#             'Combined'          :(0.140,0.011,0.013),
+#             'PREDICTION'        :(0.124,0.009)}},
+#    {'> 90':{'Z(ee)#gamma'     :(0.047,0.013,0.010),
+#             'Z(#mu#mu)#gamma' :(0.046,0.008,0.010),
+#             'Combined'        :(0.046,0.007,0.009),
+#             'PREDICTION'      :(0.040,0.004)}}
+#    ]    
+#    }
+
+#W\gamma results
 plot_categories = {
     'Inclusive':[
-    {'> 15':{'W(e#nu)#gamma'    :(36.6,1.2,4.4),
-             'W(#mu#nu)#gamma'  :(37.5,0.9,4.4),
-             'Combined'         :(37.0,0.8,4.0),
-             'PREDICTION'       :(31.8,1.6)}},
-    {'> 60':{'W(e#nu)#gamma'     :(0.79,0.07,0.19),
-             'W(#mu#nu)#gamma'   :(0.79,0.07,0.19),
-             'Combined'          :(0.79,0.07,0.19),
-             'PREDICTION'        :(0.58,0.03)}},
-    {'> 90':{'W(e#nu)#gamma'   :(0.168,0.034,0.050),
-             'W(#mu#nu)#gamma' :(0.168,0.034,0.050),
-             'Combined'        :(0.168,0.034,0.050),
-             'PREDICTION'      :(0.173,0.009)}}
+    {'> 15':{'W(e#nu)#gamma'      :(36.6,1.2,4.5),
+             'W(#mu#nu)#gamma'    :(37.5,0.9,4.5),
+             'Combined'           :(37.1,0.7,4.1),
+             'PREDICTION'         :(31.8,1.8)}},
+    {'> 60':{'W(e#nu)#gamma'    :(0.77,0.07,0.13),
+             'W(#mu#nu)#gamma'  :(0.76,0.06,0.08),
+             'Combined'         :(0.76,0.05,0.08),
+             'PREDICTION'       :(0.58,0.08)}},
+    {'> 90':{'W(e#nu)#gamma'      :(0.173,0.034,0.037),
+             'W(#mu#nu)#gamma'    :(0.248,0.035,0.048),
+             'Combined'           :(0.200,0.025,0.038),
+             'PREDICTION'         :(0.173,0.026)}}
     ]    
     }
 
@@ -74,7 +94,7 @@ def do_plot(categories):
     column_width = (0.945 - plot_start)/N_cuts    
     cut_labels.SetTextSize(0.04)
     cut_labels.DrawLatex(0.15,0.96,
-                         "CMS Preliminary %i, #sqrt{s} = %s"%(year,sqrts))
+                         "CMS %i, #sqrt{s} = %s"%(year,sqrts))
     cut_labels.DrawLatex(0.18,0.86,luminosity)
 
    
@@ -171,7 +191,7 @@ def do_plot(categories):
                                               cs/pcs)
                 cat_meas_rats[-1][k].SetPointError(gidx,
                                                    0,
-                                                   err/pcs)
+                                                   err/cs)
         main_pad.cd()
         cat_preds[-1].SetFillColor(fill_colors[j]-3)
         cat_preds[-1].Draw('2')
@@ -196,6 +216,7 @@ def do_plot(categories):
     canv.Print('vgamma_theory_comparison.pdf')
     canv.Print('vgamma_theory_comparison.eps')
     canv.Print('vgamma_theory_comparison.png')
+    #canv.Print('vgamma_theory_comparison.C')
 
 def get_max_cs(categories):
     max = -1.0
