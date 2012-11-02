@@ -24,16 +24,7 @@ switch fusion on      !nuclear effects due to high density
 
 MinDecayLength  1.0    !minimum c.Tau to define stable particles (cm)
 
-fqgsjet dat   /afs/cern.ch/user/c/cbaus/public/Externals/tabs/qgsjet.dat
-fqgsjet ncs   /afs/cern.ch/user/c/cbaus/public/Externals/tabs/qgsjet.ncs
-fqgsjetII dat /afs/cern.ch/user/c/cbaus/public/Externals/tabs/qgsdat-II-04.lzma
-fqgsjetII ncs /afs/cern.ch/user/c/cbaus/public/Externals/tabs/sectnu-II-04
 fname check  none
-fname initl  /afs/cern.ch/user/c/cbaus/public/Externals/tabs/epos.initl
-fname iniev  /afs/cern.ch/user/c/cbaus/public/Externals/tabs/epos.iniev
-fname inirj  /afs/cern.ch/user/c/cbaus/public/Externals/tabs/epos.inirj
-fname inics  /afs/cern.ch/user/c/cbaus/public/Externals/tabs/epos.inics
-fname inihy  /afs/cern.ch/user/c/cbaus/public/Externals/tabs/epos.inihy
 
 !!ImpactParameter
 !set bminim 0 !works with epos
