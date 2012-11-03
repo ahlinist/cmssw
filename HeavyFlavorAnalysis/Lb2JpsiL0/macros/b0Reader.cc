@@ -292,6 +292,7 @@ void b0Reader::doGenLevelStuff()
 		    fgvybc = tv3B0V.y();
 		    fgvzbc = tv3B0V.z();
 		    fgvrbc = tv3B0V.XYvector().Mod();
+		    fgvrbcPV = (tv3B0V-tv3PV).XYvector().Mod();
 		    // ct. Observe that Lb is in gcCur
 		    fgpbc = fpbctruth = gcCur->fP.Vect().Mag();
 		    fgptbc = fptbctruth = gcCur->fP.Vect().Perp();
@@ -301,6 +302,10 @@ void b0Reader::doGenLevelStuff()
 		    fdxybctruth = (tv3B0V-tv3PV).Perp();
 		    unsigned int mucounter(0);
 		    tlvGenJp=gcDau->fP;
+		    fgptjp=tlvGenJp.Pt();
+		    fgpjp=tlvGenJp.P();
+		    fgetajp=tlvGenJp.Eta();
+		    fgyjp=tlvGenJp.Rapidity();
 		    for(int gcGrDauit=gcDau->fDau1; gcGrDauit<=gcDau->fDau2; gcGrDauit++)
 		    {
 			TGenCand* gcGrDau=fpEvt->getGenCand(gcGrDauit);
@@ -340,6 +345,7 @@ void b0Reader::doGenLevelStuff()
 			    if (!pi1Found)
 			    {
 				pi1Found = true;
+				fgqha1 = gcGrDau->fQ;
 				tlvGenPi1=gcGrDau->fP;
 				// fill in data for the Ks decay vertex
 				tv3KsV = gcGrDau->fV;
@@ -347,12 +353,16 @@ void b0Reader::doGenLevelStuff()
 				fgvyrs = tv3KsV.y();
 				fgvzrs = tv3KsV.z();
 				fgvrrs = tv3KsV.XYvector().Mod();
+				fgvrrsPV = (tv3KsV-tv3PV).XYvector().Mod();
 				// ct. Observe that Ks is in gcDauDau
-				fgctrs = (tv3KsV-tv3PV).Mag() / gcDauDau->fP.Vect().Mag() * MKSHORT / TMath::Ccgs();
+				fgd3drs = (tv3KsV-tv3PV).Mag();
+				fgd2drs = (tv3KsV-tv3PV).XYvector().Mod();
+				fgctrs = fgd3drs / gcDauDau->fP.Vect().Mag() * MKSHORT / TMath::Ccgs();
 			    }
 			    else
 			    {
 				pi2Found = true;
+				fgqha2 = gcGrDau->fQ;
 				tlvGenPi2=gcGrDau->fP;
 			    }
 
@@ -369,6 +379,9 @@ void b0Reader::doGenLevelStuff()
 			fgpha2 = tlvGenPi2.P();
 			fgetaha2 = tlvGenPi2.Eta();
 			fgphiha2 = tlvGenPi2.Phi();
+
+			fgphap = ( fgqha1 > 0 ? fgpha1 : fgpha2);
+			fgpham = ( fgqha1 < 0 ? fgpha1 : fgpha2);
 
 			fgdRhaha = tlvGenPi1.DeltaR(tlvGenPi2);
 			fganhaha = tlvGenPi1.Angle(tlvGenPi2.Vect());

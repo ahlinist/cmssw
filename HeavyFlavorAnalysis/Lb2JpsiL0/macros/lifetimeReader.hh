@@ -166,6 +166,7 @@ public:
     double fptgenbc, fmgenbc, fphigenbc, fetagenbc, fygenbc;
 
     double frptmu1, frptmu2, frptha1, frptha2; // kinematic variables of granddaughters
+    double frpmu1, frpmu2, frphap, frpham; // hap: positive charged hadron, ham: minus
     double fretamu1, fretamu2, fretaha1, fretaha2;
     double frphimu1, frphimu2, frphiha1, frphiha2;
     int    frqmu1, frqmu2, frqha1, frqha2;
@@ -193,8 +194,8 @@ public:
     double fctxybc, fctxybcE, fctxyrs, fctxyrsE; // ctxyau
     double fbtbcx, fbtbcy, fbtbcz; // beta vector
     double fbtrsx, fbtrsy, fbtrsz;
-    double fvxrs, fvyrs, fvzrs, fvrrs;
-    double fvxbc, fvybc, fvzbc, fvrbc;
+    double fvxrs, fvyrs, fvzrs, fvrrs, fvrrsPV;
+    double fvxbc, fvybc, fvzbc, fvrbc, fvrbcPV;
 
     double fdxybc, fdxyrs, fdxyjp; // 2d distance
     double fdxyEbc, fdxyErs, fdxyEjp;
@@ -207,6 +208,8 @@ public:
     double fprobmu1, fprobmu2, fprobha1, fprobha2;
     int    fndofmu1, fndofmu2, fndofha1, fndofha2;
     int    fqualmu1, fqualmu2, fqualha1, fqualha2;
+    int    falgomu1, falgomu2, falgoha1, falgoha2;
+    int    fnpixmu1, fnpixmu2, fnpixha1, fnpixha2;
 
     bool   fIsMuTight, fIsMuTight2, fIsMuSoft;
     bool   fIsCowboy;
@@ -230,13 +233,16 @@ public:
     TTree* fGenTree;
     double fgmbc, fgmbcsw; // mass of bc from pha2 and swapped mass hypotheses
     double fgmrs, fgmrssw;
+    int fgqha1, fgqha2;
     double fgptha1, fgptha2, fgptmu1, fgptmu2, fgptrs;
     double fgetaha1, fgetaha2, fgetamu1, fgetamu2;
     double fgphiha1, fgphiha2, fgphimu1, fgphimu2;
     double fgpmu1, fgpmu2, fgpha1, fgpha2, fgprs;
-    double fgvxrs, fgvyrs, fgvzrs, fgvrrs, fgctrs;
-    double fgvxbc, fgvybc, fgvzbc, fgvrbc, fgctbc, fgd3dbc;
+    double fgphap, fgpham;
+    double fgvxrs, fgvyrs, fgvzrs, fgvrrs, fgvrrsPV, fgctrs, fgd3drs, fgd2drs;
+    double fgvxbc, fgvybc, fgvzbc, fgvrbc, fgvrbcPV, fgctbc, fgd3dbc;
     double fgpbc, fgptbc, fgetabc, fgybc;
+    double fgpjp, fgptjp, fgetajp, fgyjp;
     double fgdRhaha, fgdRmumu, fgdRrsbc;
     double fganhaha, fganmumu, fganrsbc, fganrsjp;
     double fganrsmumin, fganrsmuPt;
