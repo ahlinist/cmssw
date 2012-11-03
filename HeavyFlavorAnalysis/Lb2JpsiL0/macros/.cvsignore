@@ -3,3 +3,6 @@
 *.out
 *.err
 *.root
+*.sql
+*.gz
+*.sql3

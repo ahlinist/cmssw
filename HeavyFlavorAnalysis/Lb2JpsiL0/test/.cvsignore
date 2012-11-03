@@ -1,1 +1,5 @@
 *.root
+*.out
+*.gz
+*.sql3
+*.db
