@@ -17,8 +17,6 @@
 #include "EventFilter/Utilities/interface/TimeProfilerService.h"
 #include "EventFilter/Utilities/interface/ModuleWebRegistry.h"
 #include "EventFilter/Utilities/interface/ModuleWeb.h"
-#include "EventFilter/Utilities/interface/ShmOutputModuleRegistry.h"
-#include "EventFilter/Modules/src/FUShmOutputModule.h"
 #include "EventFilter/Modules/interface/FUShmDQMOutputService.h"
 
 //edm
@@ -169,7 +167,6 @@ namespace dqmevf{
     }
     //evf
     addServiceMaybe(*pServiceSets,"MLlog4cplus");
-    addServiceMaybe(*pServiceSets,"ShmOutputModuleRegistry");
     if(cfg_.hasModuleWebRegistry) addServiceMaybe(*pServiceSets,"ModuleWebRegistry");
     else removeServiceMaybe(*pServiceSets,"ModuleWebRegistry");
     if(cfg_.hasServiceWebRegistry) addServiceMaybe(*pServiceSets,"ServiceWebRegistry");
@@ -258,19 +255,12 @@ namespace dqmevf{
     }
     catch(...) {LOG4CPLUS_INFO(log_, "exception when trying to get service ModuleWebRegistry");}
 
-    evf::ShmOutputModuleRegistry *sor = 0;
-    try{
-      if(edm::Service<evf::ShmOutputModuleRegistry>().isAvailable())
-	sor = edm::Service<evf::ShmOutputModuleRegistry>().operator->();
-	//if(sor) sor->clear(); //private for evf::FWEPWrapper
-    }
-    catch(...) {LOG4CPLUS_INFO(log_, "exception when trying to get service ShmOutputModuleRegistry (" << (sor>0 ? "1":"0") << ")");}
 
     try{
       if(edm::Service<dqmevf::InputControllerRegistry>().isAvailable())
 	inputControllerReg_ = edm::Service<dqmevf::InputControllerRegistry>().operator->();
     }
-    catch(...) {LOG4CPLUS_INFO(log_, "exception when trying to get service ShmOutputModuleRegistry");}
+    catch(...) {LOG4CPLUS_INFO(log_, "exception when trying to get service InputController");}
 
     try{
       if(edm::Service<dqmevf::MSService>().isAvailable())
@@ -460,19 +450,6 @@ namespace dqmevf{
     pthread_mutex_unlock(&readout_lock_);
    
     inputControllerReg_->untrapSource("HTTPInputSource");
-    
-    //todo:for multiprocessing
-    /*
-    ShmOutputModuleRegistry *sor = 0;
-    try{
-      if(edm::Service<ShmOutputModuleRegistry>().isAvailable())
-	sor = edm::Service<ShmOutputModuleRegistry>().operator->();
-    }
-    catch(...) { LOG4CPLUS_INFO(log_,"exception when trying to get service ShmOutputModuleRegistry");
-      return false;
-    }
-    trh_.packTriggerReport(tr,newLst.ls,sor);
-    */
     
     trh_.packTriggerReport(newLst.ls,tr,0);
     return true;
