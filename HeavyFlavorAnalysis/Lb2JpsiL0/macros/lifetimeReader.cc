@@ -245,6 +245,7 @@ bool lifetimeReader::doCandStuff(const CheckedCand &clc)
 
     // reco tracks
     frptmu1=tatRecMu1->fPlab.Perp();
+    frpmu1=tatRecMu1->fPlab.Mag();
     fretamu1=tatRecMu1->fPlab.Eta();
     frphimu1=tatRecMu1->fPlab.Phi();
     frqmu1=tatRecMu1->fQ;
@@ -254,8 +255,11 @@ bool lifetimeReader::doCandStuff(const CheckedCand &clc)
     fprobmu1=TMath::Prob(tatRecMu1->fChi2,tatRecMu1->fDof);
     fndofmu1=tatRecMu1->fDof;
     fqualmu1=tatRecMu1->fTrackQuality;
+    falgomu1=tatRecMu1->fAlgorithm;
+    fnpixmu1=numberOfPixLayers(tatRecMu1);
 
     frptmu2=tatRecMu2->fPlab.Perp();
+    frpmu2=tatRecMu2->fPlab.Mag();
     fretamu2=tatRecMu2->fPlab.Eta();
     frphimu2=tatRecMu2->fPlab.Phi();
     frqmu2=tatRecMu2->fQ;
@@ -265,6 +269,8 @@ bool lifetimeReader::doCandStuff(const CheckedCand &clc)
     fprobmu2=TMath::Prob(tatRecMu2->fChi2,tatRecMu2->fDof);
     fndofmu2=tatRecMu2->fDof;
     fqualmu2=tatRecMu2->fTrackQuality;
+    falgomu2=tatRecMu2->fAlgorithm;
+    fnpixmu2=numberOfPixLayers(tatRecMu2);
 
     frptha1=tatRecHa1->fPlab.Perp();
     fretaha1=tatRecHa1->fPlab.Eta();
@@ -274,6 +280,8 @@ bool lifetimeReader::doCandStuff(const CheckedCand &clc)
     fprobha1=TMath::Prob(tatRecHa1->fChi2,tatRecHa1->fDof);
     fndofha1=tatRecHa1->fDof;
     fqualha1=tatRecHa1->fTrackQuality;
+    falgoha1=tatRecHa1->fAlgorithm;
+    fnpixha1=numberOfPixLayers(tatRecHa1);
 
     frptha2=tatRecHa2->fPlab.Perp();
     fretaha2=tatRecHa2->fPlab.Eta();
@@ -283,6 +291,12 @@ bool lifetimeReader::doCandStuff(const CheckedCand &clc)
     fprobha2=TMath::Prob(tatRecHa2->fChi2,tatRecHa2->fDof);
     fndofha2=tatRecHa2->fDof;
     fqualha2=tatRecHa2->fTrackQuality;
+    falgoha2=tatRecHa2->fAlgorithm;
+    fnpixha2=numberOfPixLayers(tatRecHa2);
+
+    // momentum ordered by charge
+    frphap = ( frqha1 > 0 ? tatRecHa1->fPlab.Mag() : tatRecHa2->fPlab.Mag() );
+    frpham = ( frqha1 < 0 ? tatRecHa1->fPlab.Mag() : tatRecHa2->fPlab.Mag() );
 
     // muon quality selection
     fIsMuTight = isTightMuon(tatRecMu1) && isTightMuon(tatRecMu2);
@@ -419,10 +433,12 @@ bool lifetimeReader::doCandFitStuff(const CheckedCand &clc)
     fvybc = tacCur->fVtx.fPoint.y();
     fvzbc = tacCur->fVtx.fPoint.z();
     fvrbc = tacCur->fVtx.fPoint.XYvector().Mod();
+    fvrbcPV = (tacCur->fVtx.fPoint-vecPV).XYvector().Mod();
     fvxrs = tacRs->fVtx.fPoint.x();
     fvyrs = tacRs->fVtx.fPoint.y();
     fvzrs = tacRs->fVtx.fPoint.z();
     fvrrs = tacRs->fVtx.fPoint.XYvector().Mod();
+    fvrrsPV = (tacRs->fVtx.fPoint-vecPV).XYvector().Mod();
 
     // longitudinal I.P. w.r.t best and 2nd best PV
     fPvLip = tacCur->fPvLip;
@@ -936,6 +952,7 @@ void lifetimeReader::initVariables()
     fptgenbc = fmgenbc = fphigenbc = fetagenbc = fygenbc = 9999;
 
     frptmu1 = frptmu2 = frptha1 = frptha2 = 9999;
+    frpmu1 = frpmu2 = frphap = frpham = 9999;
     fretamu1 = fretamu2 = fretaha1 = fretaha2 = 9999;
     frphimu1 = frphimu2 = frphiha1 = frphiha2 = 9999;
 
@@ -963,8 +980,8 @@ void lifetimeReader::initVariables()
     fctxybc = fctxybcE = fctxyrs = fctxyrsE = 9999;
     fbtbcx = fbtbcy = fbtbcz = 9999;
     fbtrsx = fbtrsy = fbtrsz = 9999;
-    fvxrs = fvyrs = fvzrs = fvrrs = 9999;
-    fvxbc = fvybc = fvzbc = fvrbc = 9999;
+    fvxrs = fvyrs = fvzrs = fvrrs = fvrrsPV = 9999;
+    fvxbc = fvybc = fvzbc = fvrbc = fvrbcPV = 9999;
 
     fdxybc = fdxyrs = fdxyjp = 9999;
     fdxyEbc = fdxyErs = fdxyEjp = 9999;
@@ -977,6 +994,8 @@ void lifetimeReader::initVariables()
     fprobmu1 = fprobmu2 = fprobha1 = fprobha2 = 9999;
     fndofmu1 = fndofmu2 = fndofha1 = fndofha2 = 9999;
     fqualmu1 = fqualmu2 = fqualha1 = fqualha2 = 9999;
+    falgomu1 = falgomu2 = falgoha1 = falgoha2 = 9999;
+    fnpixmu1 = fnpixmu2 = fnpixha1 = fnpixha2 = 9999;
 
     fIsMuTight = fIsMuTight2 = fIsMuSoft = false;
     fIsCowboy = false;
@@ -1021,10 +1040,12 @@ void lifetimeReader::initVariables()
     fmapRef1Gen = fgmapRef1Gen = fmapRef2Gen = fgmapRef2Gen = -1;
     // reset tree variables
     fgmbc = fgmbcsw = fgmrs = fgmrssw = 9999;
+    fgqha1 = fgqha2 = 9999;
     fgptha1 = fgptha2 = fgptmu1 = fgptmu2 = 9999;
     fgetaha1 = fgetaha2 = fgetamu1 = fgetamu2 = 9999;
     fgphiha1 = fgphiha2 = fgphimu1 = fgphimu2 = 9999;
     fgpmu1 = fgpmu2 = fgpha1 = fgpha2 = 9999;
+    fgphap = fgpham = 9999;
     fgptrs = fgprs = 9999;
     fgdRhaha = fgdRmumu = fgdRrsbc = 9999;
     fganhaha = fganmumu = fganrsjp = 9999;
@@ -1162,6 +1183,10 @@ void lifetimeReader::bookReducedTree()
     fTree->Branch("rptmu2",   &frptmu2,   "rptmu2/D");
     fTree->Branch("rptha1",   &frptha1,   "rptha1/D");
     fTree->Branch("rptha2",   &frptha2,   "rptha2/D");
+    fTree->Branch("rpmu1",    &frpmu1,    "rpmu1/D");
+    fTree->Branch("rpmu2",    &frpmu2,    "rpmu2/D");
+    fTree->Branch("rphap",    &frphap,    "rphap/D");
+    fTree->Branch("rpham",    &frpham,    "rpham/D");
     fTree->Branch("retamu1",  &fretamu1,  "retamu1/D");
     fTree->Branch("retamu2",  &fretamu2,  "retamu2/D");
     fTree->Branch("retaha1",  &fretaha1,  "retaha1/D");
@@ -1192,6 +1217,14 @@ void lifetimeReader::bookReducedTree()
     fTree->Branch("qualmu2",  &fqualmu2,  "qualmu2/I");
     fTree->Branch("qualha1",  &fqualha1,  "qualha1/I");
     fTree->Branch("qualha2",  &fqualha2,  "qualha2/I");
+    fTree->Branch("algomu1",  &falgomu1,  "algomu1/I");
+    fTree->Branch("algomu2",  &falgomu2,  "algomu2/I");
+    fTree->Branch("algoha1",  &falgoha1,  "algoha1/I");
+    fTree->Branch("algoha2",  &falgoha2,  "algoha2/I");
+    fTree->Branch("npixmu1",  &fnpixmu1,  "npixmu1/I");
+    fTree->Branch("npixmu2",  &fnpixmu2,  "npixmu2/I");
+    fTree->Branch("npixha1",  &fnpixha1,  "npixha1/I");
+    fTree->Branch("npixha2",  &fnpixha2,  "npixha2/I");
     // muon selection, AND for bth muons
     fTree->Branch("isMuTight",  &fIsMuTight,  "isMuTight/O");
     fTree->Branch("isMuTight2", &fIsMuTight2, "isMuTight2/O"); // case without ip cut
@@ -1265,10 +1298,12 @@ void lifetimeReader::bookReducedTree()
     fTree->Branch("vybc",    &fvybc,    "vybc/D");
     fTree->Branch("vzbc",    &fvzbc,    "vzbc/D");
     fTree->Branch("vrbc",    &fvrbc,    "vrbc/D");
+    fTree->Branch("vrbcPV",  &fvrbcPV,  "vrbcPV/D");
     fTree->Branch("vxrs",    &fvxrs,    "vxrs/D");
     fTree->Branch("vyrs",    &fvyrs,    "vyrs/D");
     fTree->Branch("vzrs",    &fvzrs,    "vzrs/D");
     fTree->Branch("vrrs",    &fvrrs,    "vrrs/D");
+    fTree->Branch("vrrsPV",  &fvrrsPV,  "vrrsPV/D");
 
     fTree->Branch("chi2bc",  &fchi2bc,  "chi2bc/D");
     fTree->Branch("chi2rs",  &fchi2rs,  "chi2rs/D");
@@ -1391,6 +1426,7 @@ void lifetimeReader::bookReducedTree()
     fGenTree->Branch("vybc",    &fgvybc,   "vybc/D");
     fGenTree->Branch("vzbc",    &fgvzbc,   "vzbc/D");
     fGenTree->Branch("vrbc",    &fgvrbc,   "vrbc/D");
+    fGenTree->Branch("vrbcPV",  &fgvrbcPV, "vrbcPV/D");
     fGenTree->Branch("ctbc",    &fgctbc,   "ctbc/D");
     fGenTree->Branch("d3dbc",   &fgd3dbc,  "d3dbc/D");
 
@@ -1403,7 +1439,10 @@ void lifetimeReader::bookReducedTree()
     fGenTree->Branch("vyrs",    &fgvyrs,   "vyrs/D");
     fGenTree->Branch("vzrs",    &fgvzrs,   "vzrs/D");
     fGenTree->Branch("vrrs",    &fgvrrs,   "vrrs/D");
+    fGenTree->Branch("vrrsPV",  &fgvrrsPV, "vrrsPV/D");
     fGenTree->Branch("ctrs",    &fgctrs,   "ctrs/D");
+    fGenTree->Branch("d3drs",   &fgd3drs,  "d3drs/D");
+    fGenTree->Branch("d2drs",   &fgd2drs,  "d2drs/D");
 
     // Signal tracks
     fGenTree->Branch("ptmu1",   &fgptmu1,  "ptmu1/D");
@@ -1416,19 +1455,29 @@ void lifetimeReader::bookReducedTree()
     fGenTree->Branch("etamu2",  &fgetamu2, "etamu2/D");
     fGenTree->Branch("phimu2",  &fgphimu2, "phimu2/D");
 
+    fGenTree->Branch("qha1",     &fgqha1,    "qha1/I");
     fGenTree->Branch("ptha1",    &fgptha1,   "ptha1/D");
     fGenTree->Branch("pha1",     &fgpha1,    "pha1/D");
     fGenTree->Branch("etaha1",   &fgetaha1,  "etaha1/D");
     fGenTree->Branch("phiha1",   &fgphiha1,  "phiha1/D");
 
+    fGenTree->Branch("qha2",     &fgqha2,    "qha2/I");
     fGenTree->Branch("ptha2",    &fgptha2,   "ptha2/D");
     fGenTree->Branch("pha2",     &fgpha2,    "pha2/D");
     fGenTree->Branch("etaha2",   &fgetaha2,  "etaha2/D");
     fGenTree->Branch("phiha2",   &fgphiha2,  "phiha2/D");
 
+    fGenTree->Branch("phap",     &fgphap,    "phap/D");
+    fGenTree->Branch("pham",     &fgpham,    "pham/D");
+
     // Lambda_b direct daughters
     fGenTree->Branch("ptrs",    &fgptrs,   "ptrs/D");
     fGenTree->Branch("prs",     &fgprs,    "prs/D");
+
+    fGenTree->Branch("ptjp",    &fgptjp,   "ptjp/D");
+    fGenTree->Branch("pjp",     &fgpjp,    "pjp/D");
+    fGenTree->Branch("etajp",   &fgetajp,  "etajp/D");
+    fGenTree->Branch("yjp",     &fgyjp,    "yjp/D");
 
     fGenTree->Branch("dRhaha",  &fgdRhaha, "dRhaha/D");
     fGenTree->Branch("dRmumu",  &fgdRmumu, "dRmumu/D");

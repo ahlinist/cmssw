@@ -263,6 +263,7 @@ void lambdaReader::doGenLevelStuff()
 		    fgvybc = tv3LbV.y();
 		    fgvzbc = tv3LbV.z();
 		    fgvrbc = tv3LbV.XYvector().Mod();
+		    fgvrbcPV = (tv3LbV-tv3PV).XYvector().Mod();
 		    // ct. Observe that Lb is in gcCur
 		    fgpbc = fpbctruth = gcCur->fP.Vect().Mag();
 		    fgptbc = fptbctruth = gcCur->fP.Vect().Perp();
@@ -271,6 +272,10 @@ void lambdaReader::doGenLevelStuff()
 		    fdxybctruth = (tv3LbV-tv3PV).Perp();
 		    unsigned int mucounter(0);
 		    tlvGenJp=gcDau->fP;
+		    fgptjp=tlvGenJp.Pt();
+		    fgpjp=tlvGenJp.P();
+		    fgetajp=tlvGenJp.Eta();
+		    fgyjp=tlvGenJp.Rapidity();
 		    for(int gcGrDauit=gcDau->fDau1; gcGrDauit<=gcDau->fDau2; gcGrDauit++)
 		    {
 			TGenCand* gcGrDau=fpEvt->getGenCand(gcGrDauit);
@@ -306,6 +311,7 @@ void lambdaReader::doGenLevelStuff()
 			if(!prFound&&2212==abs(gcGrDau->fID)&&gcGrDau->fMom1==gcDau->fNumber&&gcGrDau->fMom2==gcDau->fNumber)
 			{	// in case we have more than one ha1 we get the first
 			    tlvGenPr=gcGrDau->fP;
+			    fgqha1 = gcGrDau->fQ;
 			    prFound=true;
 
 			    // fill in data for the L0 decay vertex
@@ -314,12 +320,16 @@ void lambdaReader::doGenLevelStuff()
 			    fgvyrs = tv3L0V.y();
 			    fgvzrs = tv3L0V.z();
 			    fgvrrs = tv3L0V.XYvector().Mod();
+			    fgvrrsPV = (tv3L0V-tv3PV).XYvector().Mod();
 			    // ct. Observe that L0 is in gcDau
-			    fgctrs = (tv3L0V-tv3PV).Mag() / gcDau->fP.Vect().Mag() * MLAMBDA_0;
+			    fgd3drs = (tv3L0V-tv3PV).Mag();
+			    fgd2drs = (tv3L0V-tv3PV).XYvector().Mod();
+			    fgctrs = fgd3drs / gcDau->fP.Vect().Mag() * MLAMBDA_0;
 			}
 			if(!piFound&&211==abs(gcGrDau->fID)&&gcGrDau->fMom1==gcDau->fNumber&&gcGrDau->fMom2==gcDau->fNumber)
 			{	// in case we have more than one ha2 we get the first
 			    tlvGenPi=gcGrDau->fP;
+			    fgqha2 = gcGrDau->fQ;
 			    piFound=true;
 			}
 		    }
@@ -334,6 +344,9 @@ void lambdaReader::doGenLevelStuff()
 			fgpha2 = tlvGenPi.P();
 			fgetaha2 = tlvGenPi.Eta();
 			fgphiha2 = tlvGenPi.Phi();
+
+			fgphap = ( fgqha1 > 0 ? fgpha1 : fgpha2);
+			fgpham = ( fgqha1 < 0 ? fgpha1 : fgpha2);
 
 			fgdRhaha = tlvGenPr.DeltaR(tlvGenPi);
 			fganhaha = tlvGenPr.Angle(tlvGenPi.Vect());
