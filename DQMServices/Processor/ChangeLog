@@ -1,5 +1,11 @@
+2012-11-03 Srecko Morovic <srecko.morovic@cern.ch>
+
+	* tag V01-00-25
+	* removed obsolete dependency on ShmOutputModuleRegistry (compilation
+	fix) and FUShmOutputModule
+
 2011-04-08
-        V01-00-00 Srecko
+	V01-00-00 Srecko
 	Initial version committed to CVS (by Luis)
 2011-03-09
 	V00-00-02
