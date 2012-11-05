@@ -186,9 +186,9 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
 
     if ( !(jet->pt() > minJetPt_)  ) continue;
     
-    if ( !(*looseJetIdAlgo_)(*jet) ) {
+    bool passesLooseJetId = (*looseJetIdAlgo_)(*jet);
+    if ( !passesLooseJetId ) {
       setPFCandidateFlag(*jet, *pfCandidates, pfCandidateFlags, flag_isWithinFakeJet, numWarnings_, maxWarnings_);
-      continue;
     }
     setPFCandidateFlag(*jet, *pfCandidates, pfCandidateFlags, flag_isWithinSelectedJet, numWarnings_, maxWarnings_);
 
@@ -198,6 +198,7 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
     bool jetIdSelection_passed = PileupJetIdentifier::passJetId(jetId, jetIdSelection_);
     jetInfo.type_ = ( jetIdSelection_passed ) ?
       reco::MVAMEtJetInfo::kNoPileUp : reco::MVAMEtJetInfo::kPileUp;
+    jetInfo.passesLooseJetId_ = passesLooseJetId;
     double jetEnergy_uncorrected = 
        jet->chargedHadronEnergy() 
      + jet->neutralHadronEnergy()
@@ -217,9 +218,12 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
     jetInfo.neutralEnFrac_ = jetNeutralEnFrac;
     jetInfo.offsetEnCorr_ = rawJet.energy()*(1. - jetEnOffsetCorrector->correction(rawJet, evt, es));
     jetInfo.pfMEtSignObj_ = pfMEtSignInterface_->compResolution(&(*jet));
-    //std::cout << " jet: Pt = " << jet->pt() << ", eta = " << jet->eta() << ", phi = " << jet->phi() << ":" 
-    //	        << " sigma(En)/En = " << (jetInfo.pfMEtSignObj_.get_sigma_e()/jet->energy()) << std::endl;
-    //std::cout << "(offsetEnCorr = " << jetInfo.offsetEnCorr_ << ")" << std::endl;
+    if ( verbosity_ ) {
+      std::cout << " jet: Pt = " << jet->pt() << ", eta = " << jet->eta() << ", phi = " << jet->phi() << ":" 
+    	        << " sigma(En)/En = " << (jetInfo.pfMEtSignObj_.get_sigma_e()/jet->energy()) << std::endl;
+      std::cout << "(offsetEnCorr = " << jetInfo.offsetEnCorr_ << ")" << std::endl;
+      std::cout << "  id. flags: PU = " << jetIdSelection_passed << ", anti-noise = " << passesLooseJetId << std::endl;
+    }
 
     jetInfos->push_back(jetInfo);    
   }
@@ -238,9 +242,6 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
 
     int idx = pfCandidatePtr.key();
 
-    // CV: ignore neutral PFCandidates that are within jets failing the loose jetId
-    if ( fabs(pfCandidatePtr->charge()) < 0.5 && (pfCandidateFlags[idx] & flag_isWithinFakeJet) ) continue;
-
     // CV: ignore PFNeutralHadrons below Pt threshold
     if ( pfCandidatePtr->particleId() == reco::PFCandidate::h0 && pfCandidatePtr->pt() < minPFNeutralHadronPt_ ) continue;
 
@@ -258,6 +259,8 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
     else if ( isHardScatterVertex_associated       ) pfCandInfo.type_ = reco::MVAMEtPFCandInfo::kNoPileUpCharged;
     else                                             pfCandInfo.type_ = reco::MVAMEtPFCandInfo::kPileUpCharged;
     pfCandInfo.isWithinJet_ = (pfCandidateFlags[idx] & flag_isWithinSelectedJet);
+    if ( pfCandInfo.isWithinJet_ ) pfCandInfo.passesLooseJetId_ = (pfCandidateFlags[idx] & flag_isWithinFakeJet);
+    else pfCandInfo.passesLooseJetId_ = true;
     // CV: for PFCandidates that are within PFJets (of Pt between 'minJetPtForMEtCov' and 'minJetPt'),
     //     take contribution to PFMEt significance matrix from associated PFJet.
     //    (energy uncertainty scaled by ratio of PFCandidate/PFJet energy)
