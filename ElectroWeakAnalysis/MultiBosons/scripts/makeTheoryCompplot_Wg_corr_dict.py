@@ -24,8 +24,8 @@ prediction_name = "MCFM"
 #tuples are (central value, stat, syst including lumi)
 # 'PREDICTION' is a keyword for processing, prediction_name is subbed in
 # organization is { measurement_type: {cut: {values} } }
-plot_categories = [
-    ['Inclusive',[
+plot_categories = {
+    'Inclusive':[
 #    {'> 15':{'W(e#nu)#gamma'    :(36.6,1.2,4.4),
 #             'W(#mu#nu)#gamma'  :(37.5,0.9,4.4),
 #             'Combined'         :(37.0,0.8,4.0),
@@ -39,24 +39,20 @@ plot_categories = [
 #             'Combined'        :(0.200,0.025,0.038),
 #             'PREDICTION'      :(0.173,0.026)}}
 
-    [['> 15',[['W(e#nu)#gamma'      ,(36.6,1.2,4.4)],
-             ['W(#mu#nu)#gamma'    ,(37.5,0.9,4.5)],
-             ['Combined'           ,(37.0,0.8,4.1)],
-             ['PREDICTION'         ,(31.8,1.8)]]]],
-    [['> 60',[['W(e#nu)#gamma'    ,(0.77,0.07,0.13)],
-             ['W(#mu#nu)#gamma'  ,(0.76,0.06,0.08)],
-             ['Combined'         ,(0.76,0.05,0.08)],
-             ['PREDICTION'       ,(0.58,0.08)]]]],
-    [['> 90',[['W(e#nu)#gamma'      ,(0.173,0.034,0.037)],
-             ['W(#mu#nu)#gamma'    ,(0.248,0.035,0.048)],
-             ['Combined'           ,(0.200,0.025,0.038)],
-             ['PREDICTION'         ,(0.173,0.026)]]]]
-
+    {'> 15':OrderedDict([['W(e#nu)#gamma'      ,(36.6,1.2,4.4)],
+                         ['W(#mu#nu)#gamma'    ,(37.5,0.9,4.5)],
+                         ['Combined'           ,(37.0,0.8,4.1)],
+                         ['PREDICTION'         ,(31.8,1.8)]])},
+    {'> 60':OrderedDict([['W(e#nu)#gamma'    ,(0.77,0.07,0.13)],
+                         ['W(#mu#nu)#gamma'  ,(0.76,0.06,0.08)],
+                         ['Combined'         ,(0.76,0.05,0.08)],
+                         ['PREDICTION'       ,(0.58,0.08)]])},
+    {'> 90':OrderedDict([['W(e#nu)#gamma'      ,(0.173,0.034,0.037)],
+                         ['W(#mu#nu)#gamma'    ,(0.248,0.035,0.048)],
+                         ['Combined'           ,(0.200,0.025,0.038)],
+                         ['PREDICTION'         ,(0.173,0.026)]])}
     ]
-    ]
-    ]
-
-plot_categories = OrderedDict(plot_categories)
+    }
 
 fill_colors = [ROOT.kRed,ROOT.kGreen,ROOT.kBlue,ROOT.kYellow]
 
