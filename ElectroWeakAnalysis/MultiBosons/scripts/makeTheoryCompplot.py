@@ -191,7 +191,7 @@ def do_plot(categories):
                                               cs/pcs)
                 cat_meas_rats[-1][k].SetPointError(gidx,
                                                    0,
-                                                   err/cs)
+                                                   err/pcs)
         main_pad.cd()
         cat_preds[-1].SetFillColor(fill_colors[j]-3)
         cat_preds[-1].Draw('2')
