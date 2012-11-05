@@ -212,7 +212,7 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   edm::Handle<reco::MVAMEtPFCandInfoCollection> pfCandidates;
   evt.getByLabel(srcPFCandInfo_, pfCandidates);
 
-  reco::MVAMEtJetInfoCollection jets_leptons = cleanPFCandidates(*jets, leptons, 0.5, true);
+  reco::MVAMEtJetInfoCollection jets_leptons = cleanJets(*jets, leptons, 0.5, true);
   reco::MVAMEtPFCandInfoCollection pfCandidates_leptons = cleanPFCandidates(*pfCandidates, leptons, 0.3, true);
   if ( verbosity_ ) {
     int jetIdx = 0;
@@ -263,7 +263,7 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   int jetIdx = 0;
   for ( reco::MVAMEtJetInfoCollection::const_iterator jet = jets_cleaned.begin();
 	jet != jets_cleaned.end(); ++jet ) {
-    if ( verbosity_ ) printMVAMEtJetInfo("jet", jetIdx, jet->p4_);
+    if ( verbosity_ ) printMVAMEtJetInfo("jet", jetIdx, *jet);
     if ( jet->passesLooseJetId_ ) {
       if ( jet->type_ == reco::MVAMEtJetInfo::kNoPileUp ) {	
 	addToCommonMETData(*sumNoPUjets, jet->p4_);
