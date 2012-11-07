@@ -1,0 +1,9 @@
+<lcgdict>
+  <class name="std::pair<reco::Track,reco::Track>"/>
+  <class name="edm::Wrapper<std::pair<reco::Track,reco::Track> > "/>
+  <class name="std::pair<TrackCandidate,std::pair<reco::Track,reco::Track> >" />
+  <class name="edm::Wrapper<std::pair<TrackCandidate,std::pair<reco::Track,reco::Track> > >" />
+  <class name="std::vector<std::pair<TrackCandidate,std::pair<reco::Track,reco::Track> > >"/>
+  <class name="edm::Wrapper<std::vector<std::pair<TrackCandidate,std::pair<reco::Track,reco::Track> > > >"/>
+
+</lcgdict>
