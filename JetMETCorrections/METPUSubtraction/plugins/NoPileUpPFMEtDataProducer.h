@@ -8,9 +8,9 @@
  * \authors Phil Harris, CERN
  *          Christian Veelken, LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NoPileUpPFMEtDataProducer.h,v 1.2 2012/09/18 02:08:49 pharris Exp $
+ * $Id: NoPileUpPFMEtDataProducer.h,v 1.3 2012/09/20 14:30:16 veelken Exp $
  *
  */
 
@@ -50,8 +50,6 @@ class NoPileUpPFMEtDataProducer : public edm::EDProducer
   edm::InputTag srcHardScatterVertex_;
   double dZcut_;
   
-  double minPFNeutralHadronPt_;
-
   PFJetIDSelectionFunctor* looseJetIdAlgo_;
   
   PFMEtSignInterfaceBase* pfMEtSignInterface_;
