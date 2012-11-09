@@ -49,7 +49,6 @@ noPileUpPFMEtData = cms.EDProducer("NoPileUpPFMEtDataProducer",
     minJetPtForMEtCov = cms.double(10.), 
     srcHardScatterVertex = cms.InputTag('selectedPrimaryVertexHighestPtTrackSumForPFMEtCorrType0'),
     dZcut = cms.double(0.2), # cm
-    minPFNeutralHadronPt = cms.double(0.0),                               
     resolution = met_config.METSignificance_params
 )
 noPileUpPFMEtSequence += noPileUpPFMEtData
