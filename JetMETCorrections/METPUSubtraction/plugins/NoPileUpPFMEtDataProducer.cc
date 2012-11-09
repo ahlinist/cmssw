@@ -50,8 +50,6 @@ NoPileUpPFMEtDataProducer::NoPileUpPFMEtDataProducer(const edm::ParameterSet& cf
   srcHardScatterVertex_ = cfg.getParameter<edm::InputTag>("srcHardScatterVertex");
   dZcut_ = cfg.getParameter<double>("dZcut");
 
-  minPFNeutralHadronPt_ = cfg.getParameter<double>("minPFNeutralHadronPt");
-
   edm::ParameterSet cfgPFJetIdAlgo;
   cfgPFJetIdAlgo.addParameter<std::string>("version", "FIRSTDATA");
   cfgPFJetIdAlgo.addParameter<std::string>("quality", "LOOSE");
@@ -241,9 +239,6 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
     reco::PFCandidatePtr pfCandidatePtr = pfCandidates->ptrAt(iPFCandidate);
 
     int idx = pfCandidatePtr.key();
-
-    // CV: ignore PFNeutralHadrons below Pt threshold
-    if ( pfCandidatePtr->particleId() == reco::PFCandidate::h0 && pfCandidatePtr->pt() < minPFNeutralHadronPt_ ) continue;
 
     reco::MVAMEtPFCandInfo pfCandInfo;
     pfCandInfo.p4_ = pfCandidatePtr->p4();
