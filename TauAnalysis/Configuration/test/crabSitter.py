@@ -26,17 +26,26 @@ import time
 
 print("<crabSitter>:")
 
-crabFilePath = '/grid_mnt/vol__vol1__u/llr/cms/ivo/HTauTauAnalysis/CMSSW_5_3_4_Oct12/src/Bianchi/TauTauStudies/test/prod/'
+crabFilePath = '/afs/cern.ch/work/v/veelken/CMSSW_5_3_x/crab/TauAnalysis_Skimming'
 
 statusFileName = 'crabSitter.json'
-jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)_skim'
-#jobName_regex = r'(?P<sample>[a-zA-Z0-9_\-]+)GGH110-ElecTau-pythia-tauola_skim'
+
+#jobName_regex = r'crabdirProduceFakeRatePATtuple_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_patV2_2'
+#jobName_regex = r'crabdir_skimTauIdEffSample_customized_(?P<sample>[a-zA-Z0-9_]*)_(?P<channel>[a-zA-Z0-9]*)_2012Sep12'
+#jobName_regex = r'crabdir_skimGoldenZmumu_customized_(?P<sample>[a-zA-Z0-9_]*)_[a-zA-Z0-9]+_[a-zA-Z0-9]+_2012Oct09'
+jobName_regex = r'crabdir_skimGenZmumuWithinAcc_(?P<sample>[a-zA-Z0-9_]*)_2012Nov03v4'
+
+samples = [
+    # leave empty to check all samples
+    'ZplusJets_madgraph'
+]
 
 jobName_matcher = re.compile(jobName_regex)
 
 executable_ls = 'ls'
 executable_rm = 'rm'
 executable_crab = 'crab'
+executable_eos = eos.executable_eos
 
 def runCommand(commandLine):
     print(commandLine)
@@ -115,7 +124,7 @@ def checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_forc
                    outputFileName.find("/dpm/")    != -1:
                     commandLine = 'rfrm %s' % outputFileName
                 elif outputFileName.find("/store/") != -1:
-                    commandLine = 'eos rm %s' % outputFileName
+                    commandLine = '%s rm %s' % (executable_eos, outputFileName)
                 else:
                     commandLine = 'rm %s' % outputFileName
                 shellScriptCommands.append(commandLine)         
@@ -139,6 +148,8 @@ else:
 
 crabStatus_regex       = r'\s*>>>>>>>>>\s+[0-9]+ [J|j]obs\s+(?P<jobStatus>[a-zA-Z]+)\s*'
 crabStatus_matcher     = re.compile(crabStatus_regex)
+jobExitCode_regex      = r'\s*>>>>>>>>>\s+[0-9]+ [J|j]obs with Wrapper Exit Code\s*:\s*(?P<jobExitCode>[0-9]+)\s*'
+jobExitCode_matcher    = re.compile(jobExitCode_regex)
 jobIdList_regex        = r'\s*List of [J|j]obs(\s+[a-zA-Z]+)?\s*:\s*(?P<jobIdList>[0-9\-,]+)*\s*'
 jobIdList_matcher      = re.compile(jobIdList_regex)
 multipleJobs_regex     = r'(?P<jobId_first>[0-9]+)-(?P<jobId_last>[0-9]+)'
@@ -164,7 +175,7 @@ jobStatus_dict['lastUpdate_time'] = current_time
 
 time_limit = 60*60*24 # maximum time (= one day) for which crab jobs are allowed to stay
                       # in 'Submitted', 'Ready' or 'Scheduled' state before they get automatically resubmitted 
-##time_limit = 1 # force immediate resubmission of all crab jobs stuck in 'Scheduled' state
+time_limit = 1 # force immediate resubmission of all crab jobs stuck in 'Scheduled' state
 forceResubmitAllScheduledJobs = False
 ##forceResubmitAllScheduledJobs = True
 
@@ -189,6 +200,9 @@ for crabJob in crabJobs:
             jobStatus_dict[crabJob] = {}
             
         sample = crabJob_match.group('sample')
+        if len(samples) > 0 and not sample in samples:
+            print("sample = %s not in list of samples = %s --> skipping" % (sample, samples))
+            continue
         #print("sample = %s" % sample)
         channel = ""
         if jobName_regex.find("<channel>") != -1:
@@ -245,7 +259,7 @@ for crabJob in crabJobs:
                 outputFilePath_prefix = '/store/user/%s/' % userName
         if not outputFileName_pattern:
             raise ValueError("Failed to read 'output_file' from config file %s !!" % crabConfigFileName)
-        if not outputFilePath_prefix and (outputFilePath_suffix or storage_element in [ "T2_FR_GRIF_LLR" ]):
+        if not outputFilePath_prefix or not (outputFilePath_suffix or storage_element in [ "T2_FR_GRIF_LLR" ]):
             raise ValueError("Failed to read 'storage_path' and 'user_remote_dir' from config file %s !!" % crabConfigFileName)
         outputFileNames = None
         if outputFileName_pattern.find(',') != -1:
@@ -274,7 +288,7 @@ for crabJob in crabJobs:
             if outputFilePath_suffix:
                 if not (outputFilePath.endswith('/') or outputFilePath_suffix.startswith('/')):
                     outputFilePath += '/'
-                    outputFilePath += outputFilePath_suffix
+                outputFilePath += outputFilePath_suffix
             if not outputFilePath.endswith('/'):
                 outputFilePath += '/'            
             if outputFilePath.find("/castor/") != -1:
@@ -312,9 +326,14 @@ for crabJob in crabJobs:
                 outputFileInfos = [ outputFileInfo for outputFileInfo in eos.lsl(outputFilePath) ]
             else:
                 raise ValueError("Failed to identify file-system for path = %s !!" % castor_output_directory)
+        #print "outputFileInfos:"
+        #print [ outputFileInfo['file'] for outputFileInfo in outputFileInfos ]
             
         # check if job got aborted or stuck in state 'Submitted', 'Ready' or 'Scheduled' for more than one day
         isMatched_status = False
+        jobStatus = None
+        isMatched_exitCode = False
+        jobExitCode = None
         isCrabFailure = False
         for crabStatus_line in crabStatus_lines:
             # CV: check if job status cannot be determined,
@@ -328,12 +347,18 @@ for crabJob in crabJobs:
                     checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit)                            
                     isCrabFailure = True
             crabStatus_match = crabStatus_matcher.match(crabStatus_line)
-            if crabStatus_match:
+            jobExitCode_match = jobExitCode_matcher.match(crabStatus_line)            
+            if crabStatus_match and crabStatus_line.find("Exit Code") == -1:
                 #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
                 jobStatus = crabStatus_match.group('jobStatus')
                 #print("jobStatus = '%s'" % jobStatus)
                 isMatched_status = True
-            elif isMatched_status:
+            elif jobExitCode_match:
+                #print("line '%s' matches <jobExitCode> pattern" % crabStatus_line)
+                jobExitCode = int(jobExitCode_match.group('jobExitCode'))
+                #print("jobExitCode = '%s'" % jobExitCode)
+                isMatched_exitCode = True
+            elif isMatched_status or isMatched_exitCode:
                 jobIdList_match = jobIdList_matcher.match(crabStatus_line)
                 if jobIdList_match:
                     #print("line '%s' matches <jobIdList> pattern" % crabStatus_line)
@@ -356,12 +381,16 @@ for crabJob in crabJobs:
                             jobIds.append(jobId)
                         else:
                             raise ValueError("Failed to match jobId item '%s' !!" % jobId_item)
-                    print("jobIds = %s" % jobIds)
+                    #print("jobIds = %s" % jobIds)
                     for jobId in jobIds:
                         jobId_string = "%i" % jobId
                         if jobStatus in [ 'Aborted' ]:
                             # resubmit aborted jobs immediately
                             print("Info: jobId = %i got aborted --> resubmitting it" % jobId)
+                            jobIds_force_resubmit.append(jobId)
+                        elif isMatched_exitCode and jobExitCode != 0:
+                            # resubmit jobs which terminated with error codes immediately
+                            print("Info: jobId = %i terminated with error code = %i --> resubmitting it" % (jobId, jobExitCode))
                             jobIds_force_resubmit.append(jobId)
                         elif jobStatus in [ 'Submitted', 'Ready', 'Scheduled' ]:
                             # check if status has not changed for more than one day,
@@ -376,7 +405,7 @@ for crabJob in crabJobs:
                                 jobIds_force_resubmit.append(jobId)
                         elif jobStatus in [ 'Done' ]:
                             if checkJobOutputFiles:
-                                checkOutputFiless(outputFileInfos, outputFileName_matcher, jobId_string, jobIds_force_resubmit)
+                                checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit)
 
                         # update job status dictionary
                         if jobStatus_dict[crabJob].has_key(jobId_string):
@@ -388,6 +417,9 @@ for crabJob in crabJobs:
                             #print(" Job #%i: adding Status = %s" % (jobId, jobStatus))
                             jobStatus_dict[crabJob][jobId_string] = ( jobStatus, current_time )
                     isMatched_status = False
+                    jobStatus = None
+                    isMatched_exitCode = False
+                    jobExitCode = None
 
         # sort jobIds in ascending order
         jobIds_force_resubmit.sort()
