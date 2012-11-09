@@ -146,25 +146,23 @@ if os.path.exists(statusFileName):
 else:
     print("File %s does not yet exist...creating it." % statusFileName)
 
-crabStatus_regex       = r'\s*>>>>>>>>>\s+[0-9]+ [J|j]obs\s+(?P<jobStatus>[a-zA-Z]+)\s*'
-crabStatus_matcher     = re.compile(crabStatus_regex)
-jobExitCode_regex      = r'\s*>>>>>>>>>\s+[0-9]+ [J|j]obs with Wrapper Exit Code\s*:\s*(?P<jobExitCode>[0-9]+)\s*'
-jobExitCode_matcher    = re.compile(jobExitCode_regex)
-jobIdList_regex        = r'\s*List of [J|j]obs(\s+[a-zA-Z]+)?\s*:\s*(?P<jobIdList>[0-9\-,]+)*\s*'
-jobIdList_matcher      = re.compile(jobIdList_regex)
-multipleJobs_regex     = r'(?P<jobId_first>[0-9]+)-(?P<jobId_last>[0-9]+)'
-multipleJobs_matcher   = re.compile(multipleJobs_regex)
-singleJob_regex        = r'(?P<jobId>[0-9]+)'
-singleJob_matcher      = re.compile(singleJob_regex)
-numJobs_regex          = r'[a-zA-Z0-9\:\-,\.\[\]\s]*Total of (?P<numJobs>[0-9]+) jobs created.'
-numJobs_matcher        = re.compile(numJobs_regex)
-publishDirHash_regex   = r'[a-z0-9]{32}' # CV: crab appends hash string of 32 characters to outputFilePath in case jobs are to be published
-publishDirHash_matcher = re.compile(publishDirHash_regex)
+crabStatus_regex         = r'\s*crab:[a-zA-Z0-9\s]*'
+crabStatus_matcher       = re.compile(crabStatus_regex)
+jobStatusHeader_regex    = r'\s*ID\s+END\s+STATUS\s+ACTION\s+ExeExitCode\s+JobExitCode\s+E_HOST'
+jobStatusHeader_matcher  = re.compile(jobStatusHeader_regex)
+jobStatus_short_regex    = r'\s*(?P<jobId>[0-9]+)\s*[a-zA-Z]+\s*(?P<jobStatus>[a-zA-Z0-9]+)\s*(?P<jobAction>[a-zA-Z0-9]+)[a-zA-Z0-9_/\.\s]*'
+jobStatus_short_matcher  = re.compile(jobStatus_short_regex)
+jobStatus_long_regex     = r'\s*(?P<jobId>[0-9]+)\s*[a-zA-Z]+\s*(?P<jobStatus>[a-zA-Z0-9]+)\s*(?P<jobAction>[a-zA-Z0-9]+)\s*(?P<jobExitCode1>[0-9]+)\s*(?P<jobExitCode2>[0-9]+)\s*[a-zA-Z0-9_/\.]*\s*'
+jobStatus_long_matcher   = re.compile(jobStatus_long_regex)
+numJobs_regex            = r'[a-zA-Z0-9\:\-,\.\[\]\s]*Total of (?P<numJobs>[0-9]+) jobs created.'
+numJobs_matcher          = re.compile(numJobs_regex)
+publishDirHash_regex     = r'[a-z0-9]{32}' # CV: crab appends hash string of 32 characters to outputFilePath in case jobs are to be published
+publishDirHash_matcher   = re.compile(publishDirHash_regex)
 
-key_value_pair_regex   = r'(?P<key>[a-zA-Z0-9_]+)\s*=\s*(?P<value>.+)\s*'
-key_value_pair_matcher = re.compile(key_value_pair_regex)
-storage_path_regex     = r'[a-zA-Z0-9_/]*\?SFN=(?P<storage_path>[a-zA-Z0-9_/\.]+)\s*'
-storage_path_matcher   = re.compile(storage_path_regex)
+key_value_pair_regex     = r'(?P<key>[a-zA-Z0-9_]+)\s*=\s*(?P<value>.+)\s*'
+key_value_pair_matcher   = re.compile(key_value_pair_regex)
+storage_path_regex       = r'[a-zA-Z0-9_/]*\?SFN=(?P<storage_path>[a-zA-Z0-9_/\.]+)\s*'
+storage_path_matcher     = re.compile(storage_path_regex)
 
 current_time = time.time()
 print("current Time = %s" % time.asctime(time.gmtime(current_time)))
@@ -330,11 +328,9 @@ for crabJob in crabJobs:
         #print [ outputFileInfo['file'] for outputFileInfo in outputFileInfos ]
             
         # check if job got aborted or stuck in state 'Submitted', 'Ready' or 'Scheduled' for more than one day
-        isMatched_status = False
-        jobStatus = None
-        isMatched_exitCode = False
-        jobExitCode = None
         isCrabFailure = False
+        foundStart    = False
+        foundEnd      = False
         for crabStatus_line in crabStatus_lines:
             # CV: check if job status cannot be determined,
             #     due to crab internal error
@@ -345,81 +341,72 @@ for crabJob in crabJobs:
                 for jobId in range(1, numJobs):
                     jobId_string = "%i" % jobId
                     checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit)                            
-                    isCrabFailure = True
-            crabStatus_match = crabStatus_matcher.match(crabStatus_line)
-            jobExitCode_match = jobExitCode_matcher.match(crabStatus_line)            
-            if crabStatus_match and crabStatus_line.find("Exit Code") == -1:
-                #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
-                jobStatus = crabStatus_match.group('jobStatus')
-                #print("jobStatus = '%s'" % jobStatus)
-                isMatched_status = True
-            elif jobExitCode_match:
-                #print("line '%s' matches <jobExitCode> pattern" % crabStatus_line)
-                jobExitCode = int(jobExitCode_match.group('jobExitCode'))
-                #print("jobExitCode = '%s'" % jobExitCode)
-                isMatched_exitCode = True
-            elif isMatched_status or isMatched_exitCode:
-                jobIdList_match = jobIdList_matcher.match(crabStatus_line)
-                if jobIdList_match:
-                    #print("line '%s' matches <jobIdList> pattern" % crabStatus_line)
-                    jobIdList = jobIdList_match.group('jobIdList')
-                    #print("jobIdList = %s" % jobIdList)
-                    jobId_items = jobIdList.split(',')
-                    jobIds = []
-                    for jobId_item in jobId_items:
-                        #print("jobId_item = '%s'" % jobId_item)
-                        multipleJobs_match = multipleJobs_matcher.match(jobId_item)
-                        singleJob_match = singleJob_matcher.match(jobId_item)
-                        if multipleJobs_match:
-                            jobId_first = int(multipleJobs_match.group('jobId_first'))
-                            jobId_last = int(multipleJobs_match.group('jobId_last'))
-                            #print("jobId: first = %i, last = %i" % (jobId_first, jobId_last))
-                            jobIds.extend(range(jobId_first, jobId_last + 1))
-                        elif singleJob_match:
-                            jobId = int(singleJob_match.group('jobId'))
-                            #print("jobId = '%i'" % jobId)
-                            jobIds.append(jobId)
-                        else:
-                            raise ValueError("Failed to match jobId item '%s' !!" % jobId_item)
-                    #print("jobIds = %s" % jobIds)
-                    for jobId in jobIds:
-                        jobId_string = "%i" % jobId
-                        if jobStatus in [ 'Aborted' ]:
-                            # resubmit aborted jobs immediately
-                            print("Info: jobId = %i got aborted --> resubmitting it" % jobId)
+                    isCrabFailure = True            
+            jobStatusHeader_match = jobStatusHeader_matcher.match(crabStatus_line)
+            if jobStatusHeader_match:
+                foundStart = True
+            if foundStart:
+                crabStatus_match = crabStatus_matcher.match(crabStatus_line)
+                if crabStatus_match:
+                    foundEnd = True
+            if foundStart and not foundEnd:
+                jobStatus_short_match = jobStatus_short_matcher.match(crabStatus_line)
+                if jobStatus_short_match:
+                    #print("line '%s' matches <jobStatus> pattern" % crabStatus_line)
+                    jobId_string = jobStatus_short_match.group('jobId')
+                    jobId = int(jobId_string)
+                    #print("jobId = %i" % jobId)
+                    jobStatus = jobStatus_short_match.group('jobStatus')
+                    #print("jobStatus = '%s'" % jobStatus)
+                    jobAction = jobStatus_short_match.group('jobAction')
+                    #print("jobAction = '%s'" % jobAction)
+                    jobExitCode1 = None
+                    jobExitCode2 = None
+                    jobStatus_long_match = jobStatus_long_matcher.match(crabStatus_line)
+                    if jobStatus_long_match:
+                        jobExitCode1 = int(jobStatus_long_match.group('jobExitCode1'))
+                        #print("jobExitCode1 = %i" % jobExitCode1)
+                        jobExitCode2 = int(jobStatus_long_match.group('jobExitCode2'))
+                        #print("jobExitCode2 = %i" % jobExitCode2)                        
+                    if jobStatus in [ 'Aborted' ]:
+                        # resubmit aborted jobs immediately
+                        print("Info: jobId = %i got aborted --> resubmitting it" % jobId)
+                        jobIds_force_resubmit.append(jobId)
+                    elif jobStatus in [ 'Done' ] and jobAction in [ 'Terminated' ]:
+                        if jobExitCode1 is None or jobExitCode2 is None:
+                            raise ValueError("Failed to read job exit codes !!")
+                        # resubmit jobs which terminated with error codes immediately
+                        if jobExitCode1 != 0 or jobExitCode2 != 0:
+                            print("Info: jobId = %i terminated with error code = %i:%i --> resubmitting it" % (jobId, jobExitCode1, jobExitCode2))
                             jobIds_force_resubmit.append(jobId)
-                        elif isMatched_exitCode and jobExitCode != 0:
-                            # resubmit jobs which terminated with error codes immediately
-                            print("Info: jobId = %i terminated with error code = %i --> resubmitting it" % (jobId, jobExitCode))
-                            jobIds_force_resubmit.append(jobId)
-                        elif jobStatus in [ 'Submitted', 'Ready', 'Scheduled' ]:
-                            # check if status has not changed for more than one day,
-                            # in which case assume that crab job got "stuck" and resubmit it
-                            if jobStatus_dict[crabJob].has_key(jobId_string):
-                                lastJobStatus, lastJobStatusChange_time = jobStatus_dict[crabJob][jobId_string]
-                                if (current_time - lastJobStatusChange_time) > time_limit:
-                                    print("Info: jobId = %i got stuck in state '%s' --> resubmitting it" % (jobId, jobStatus))
-                                    jobIds_force_resubmit.append(jobId)
-                            if jobStatus == 'Scheduled' and forceResubmitAllScheduledJobs:
-                                print("Info: jobId = %i is in state 'Scheduled' --> resubmitting it" % jobId)
-                                jobIds_force_resubmit.append(jobId)
-                        elif jobStatus in [ 'Done' ]:
-                            if checkJobOutputFiles:
-                                checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit)
-
-                        # update job status dictionary
+                    elif jobStatus in [ 'Created' ] and jobAction in [ 'SubFailed' ]:
+                        # try resubmitting jobs which failed to submit
+                        print("Info: jobId = %i failed to submit --> trying to resubmit it" % jobId)
+                        jobIds_force_resubmit.append(jobId)
+                    elif jobStatus in [ 'Submitted', 'Ready', 'Scheduled' ]:
+                        # check if status has not changed for more than one day,
+                        # in which case assume that crab job got "stuck" and resubmit it
                         if jobStatus_dict[crabJob].has_key(jobId_string):
                             lastJobStatus, lastJobStatusChange_time = jobStatus_dict[crabJob][jobId_string]
-                            if jobStatus != lastJobStatus:
-                                #print(" Job #%i: updating Status %s --> %s" % (jobId, lastJobStatus, jobStatus))
-                                jobStatus_dict[crabJob][jobId_string] = ( jobStatus, current_time )
-                        else:
-                            #print(" Job #%i: adding Status = %s" % (jobId, jobStatus))
+                            if (current_time - lastJobStatusChange_time) > time_limit:
+                                print("Info: jobId = %i got stuck in state '%s' --> resubmitting it" % (jobId, jobStatus))
+                                jobIds_force_resubmit.append(jobId)
+                        if jobStatus == 'Scheduled' and forceResubmitAllScheduledJobs:
+                            print("Info: jobId = %i is in state 'Scheduled' --> resubmitting it" % jobId)
+                            jobIds_force_resubmit.append(jobId)
+                    elif jobStatus in [ 'Done' ]:
+                        if checkJobOutputFiles:
+                            checkOutputFiles(outputFileInfos, outputFileNames, jobId_string, jobIds_force_resubmit)
+
+                    # update job status dictionary
+                    if jobStatus_dict[crabJob].has_key(jobId_string):
+                        lastJobStatus, lastJobStatusChange_time = jobStatus_dict[crabJob][jobId_string]
+                        if jobStatus != lastJobStatus:
+                            #print(" Job #%i: updating Status %s --> %s" % (jobId, lastJobStatus, jobStatus))
                             jobStatus_dict[crabJob][jobId_string] = ( jobStatus, current_time )
-                    isMatched_status = False
-                    jobStatus = None
-                    isMatched_exitCode = False
-                    jobExitCode = None
+                    else:
+                        #print(" Job #%i: adding Status = %s" % (jobId, jobStatus))
+                        jobStatus_dict[crabJob][jobId_string] = ( jobStatus, current_time )
 
         # sort jobIds in ascending order
         jobIds_force_resubmit.sort()
