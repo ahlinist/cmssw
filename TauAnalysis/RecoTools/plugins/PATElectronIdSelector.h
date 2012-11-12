@@ -41,6 +41,9 @@ class PATElectronIdSelectorImp
     edm::InputTag srcVertex_;
     
     EGammaMvaEleEstimator* fMVA_;
+   
+    enum { kLoose, kTight };
+    int cut_;
 
     int verbosity_;
 };

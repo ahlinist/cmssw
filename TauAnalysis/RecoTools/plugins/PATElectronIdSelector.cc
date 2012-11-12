@@ -47,6 +47,12 @@ PATElectronIdSelectorImp<T>::PATElectronIdSelectorImp(const edm::ParameterSet& c
 		    true, 
 		    mvaWeightFiles_full);
 
+  std::string cut_string = cfg.getParameter<std::string>("cut");
+  if      ( cut_string == "loose" ) cut_ = kLoose;
+  else if ( cut_string == "tight" ) cut_ = kTight;
+  else throw cms::Exception("PATElectronIdSelector::PATElectronIdSelector")
+    << " Invalid Configuration parameter 'cut' = " << cut_string << " !!\n";
+
   verbosity_ = ( cfg.exists("verbosity") ) ?
     cfg.getParameter<int>("verbosity") : 0;
 }
@@ -85,14 +91,24 @@ void PATElectronIdSelectorImp<T>::select(const edm::Handle<collection>& patLepto
     double absEta = TMath::Abs(patLepton->superCluster()->eta());
 
     double mvaCut = 1.e+3;
-    if ( pt < 20 ) { // loose cut values used for e+mu channel of Htautau analysis (cf. https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#Object_ID)
+    if ( pt < 20 ) { 
+      // loose cut values used for e+mu channel of Htautau analysis (cf. https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#Object_ID)
+      // (e+tau channel does not select electrons of Pt < 20 GeV)
       if      ( absEta < 0.8   ) mvaCut = 0.925;
       else if ( absEta < 1.479 ) mvaCut = 0.915;
       else                       mvaCut = 0.965;
-    } else {         // loose cut values used for e+mu channel of Htautau analysis (cf. https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#Object_ID)
-      if      ( absEta < 0.8   ) mvaCut = 0.905;
-      else if ( absEta < 1.479 ) mvaCut = 0.955;
-      else                       mvaCut = 0.975;
+    } else {   
+      if ( cut_ == kLoose ) { 
+	// loose cut values used for e+mu channel of Htautau analysis (cf. https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#Object_ID)
+	if      ( absEta < 0.8   ) mvaCut = 0.905;
+	else if ( absEta < 1.479 ) mvaCut = 0.955;
+	else                       mvaCut = 0.975;
+      } else if ( cut == kTight ) { 
+	// tight cut values used for e+tau channel of Htautau analysis (cf. https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#Object_ID)
+	if      ( absEta < 0.8   ) mvaCut = 0.925;
+	else if ( absEta < 1.479 ) mvaCut = 0.975;
+	else                       mvaCut = 0.985;
+      } else assert(0);
     }
 
     if ( mva > mvaCut ) selected_.push_back(&(*patLepton));
