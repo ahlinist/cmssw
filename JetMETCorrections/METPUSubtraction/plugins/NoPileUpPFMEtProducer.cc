@@ -212,41 +212,8 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   edm::Handle<reco::MVAMEtPFCandInfoCollection> pfCandidates;
   evt.getByLabel(srcPFCandInfo_, pfCandidates);
 
-  reco::MVAMEtJetInfoCollection jets_leptons = cleanJets(*jets, leptons, 0.5, true);
   reco::MVAMEtPFCandInfoCollection pfCandidates_leptons = cleanPFCandidates(*pfCandidates, leptons, 0.3, true);
-  if ( verbosity_ ) {
-    int jetIdx = 0;
-    for ( reco::MVAMEtJetInfoCollection::const_iterator jet = jets_leptons.begin();
-	  jet != jets_leptons.end(); ++jet ) {
-      printMVAMEtJetInfo("jet (lepton)", jetIdx, *jet);
-      ++jetIdx;
-    }
-    int pfCandIdx = 0;
-    for ( reco::MVAMEtPFCandInfoCollection::const_iterator pfCandidate = pfCandidates_leptons.begin();
-	  pfCandidate != pfCandidates_leptons.end(); ++pfCandidate ) {
-      printMVAMEtPFCandInfo("pfCand (lepton)", pfCandIdx, *pfCandidate);
-      ++pfCandIdx;
-    }
-  }
-  CommonMETData jetSum_leptons = computeJetSum(jets_leptons);
-  CommonMETData pfCandidateSum_leptons;
-  pfCandidateSum_leptons.mex   = 0.;
-  pfCandidateSum_leptons.mey   = 0.;
-  pfCandidateSum_leptons.sumet = 0.;
-  for ( reco::MVAMEtPFCandInfoCollection::const_iterator pfCandidate = pfCandidates_leptons.begin();
-	pfCandidate != pfCandidates_leptons.end(); ++pfCandidate ) {
-    if ( !pfCandidate->isWithinJet_ ) {
-      pfCandidateSum_leptons.mex   += pfCandidate->p4_.px();
-      pfCandidateSum_leptons.mey   += pfCandidate->p4_.py();
-      pfCandidateSum_leptons.sumet += pfCandidate->p4_.pt();
-    }
-  }
-  finalizeMEtData(pfCandidateSum_leptons);
   std::auto_ptr<CommonMETData> sumLeptons(new CommonMETData(computePFCandidateSum(pfCandidates_leptons)));
-  sumLeptons->mex   = pfCandidateSum_leptons.mex   + jetSum_leptons.mex;
-  sumLeptons->mey   = pfCandidateSum_leptons.mey   + jetSum_leptons.mey;
-  sumLeptons->sumet = pfCandidateSum_leptons.sumet + jetSum_leptons.sumet;
-  finalizeMEtData(*sumLeptons);
 
   reco::MVAMEtJetInfoCollection jets_cleaned = cleanJets(*jets, leptons, 0.5, false);
   reco::MVAMEtPFCandInfoCollection pfCandidates_cleaned = cleanPFCandidates(*pfCandidates, leptons, 0.3, false);
