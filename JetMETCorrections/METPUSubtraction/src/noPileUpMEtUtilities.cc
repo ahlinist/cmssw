@@ -29,7 +29,10 @@ namespace noPileUpMEtUtilities
       bool isOverlap = false;
       for ( std::vector<reco::Candidate::LorentzVector>::const_iterator lepton = leptons.begin();
 	    lepton != leptons.end(); ++lepton ) {
-	if ( deltaR(jet->p4_, *lepton) < dRoverlap ) isOverlap = true;
+	if ( deltaR(jet->p4_, *lepton) < dRoverlap ) {
+	  isOverlap = true;
+	  break;
+	}
       }
       if ( (!isOverlap && !invert) || (isOverlap && invert) ) retVal.push_back(*jet);
     }
