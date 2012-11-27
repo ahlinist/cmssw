@@ -7,7 +7,7 @@
 # 2011 Gena Kukartsev
 #
 # Usage:
-#        source cmslpc_standalone_setup.sh
+#        source cmslpc_root_5.34.03_standalone.sh
 #
 
 
