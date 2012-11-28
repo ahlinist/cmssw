@@ -132,15 +132,6 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
     60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 160., 170., 180., 200., 220., 240., 260., 300.
   };
 
-  histogramMEtPullParlZvsQt_    = book3D(dir, "metPullParlZvsQt",       
-					 "E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss} vs. q_{T}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);      
-  histogramMEtPullPerpZvsQt_    = book3D(dir, "metPullPerpZvsQt",       
-					 "E_{#perp}^{miss} / #sigmaE_{#perp}^{miss} vs. q_{T}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);          
-  histogramMEtPullParlZvsUparl_ = book3D(dir, "metPullParlZvsUparl",       
-					 "E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss} vs. u_{#parallel}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);      
-  histogramMEtPullPerpZvsUparl_ = book3D(dir, "metPullPerpZvsUparl",       
-					 "E_{#perp}^{miss} / #sigmaE_{#perp}^{miss} vs. u_{#parallel}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);    
-
   histogramUparlDivQtVsQt_ = book2D(dir, "uParlDivQtVsQt", "u_{#parallel}/q_{T} vs q_{T}",                           
 				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
   histogramUparlVsQt_      = book2D(dir, "uParlVsQt",      "u_{#parallel} vs q_{T}",                           
@@ -428,14 +419,10 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
       histogramMEtSigmaParlZ_->Fill(metSigmaParl, evtWeight);
       if ( metSigmaParl > 0. ) {
 	histogramMEtPullParlZ_->Fill(metParl/metSigmaParl, evtWeight);
-	histogramMEtPullParlZvsQt_->Fill(qT, metParl/metSigmaParl, metSigmaParl, evtWeight);
-	histogramMEtPullParlZvsUparl_->Fill(uParl, metParl/metSigmaParl, metSigmaParl, evtWeight);
       }
       histogramMEtSigmaPerpZ_->Fill(metSigmaPerp, evtWeight);      
       if ( metSigmaPerp > 0. ) {
 	histogramMEtPullPerpZ_->Fill(metPerp/metSigmaPerp, evtWeight);
-	histogramMEtPullPerpZvsQt_->Fill(qT, metPerp/metSigmaPerp, metSigmaPerp, evtWeight);
-	histogramMEtPullPerpZvsUparl_->Fill(uParl, metPerp/metSigmaPerp, metSigmaPerp, evtWeight);
       }
 
       for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumVtxBinned_.begin();

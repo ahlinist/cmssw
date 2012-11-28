@@ -1428,48 +1428,6 @@ void fitAndCompare(std::vector<plotUvsQtNumObjType*>& plotUvsQtNumObjs, const st
   delete dummyHistogram_sumEt;
 }
 
-TH1* makePullHistogram_corrected(TH3* histogram, const std::string& process, TGraph* graphUparlResponse)
-{
-  std::cout << "<makePullHistogram_corrected>:" << std::endl;
-  std::cout << " histogram = " << histogram->GetName() << ": integral = " << histogram->Integral() << std::endl;
-  std::cout << " process = " << process << std::endl;
-  double histogram_integral = histogram->Integral();
-  std::string histogramName_corrected = std::string(histogram->GetName()).append("_").append(process).append("_corrected");
-  TH1* histogram_corrected = new TH1D(histogramName_corrected.data(), histogramName_corrected.data(), 200, -10., +10.);  
-  TAxis* xAxis = histogram->GetXaxis();
-  TAxis* yAxis = histogram->GetYaxis();
-  TAxis* zAxis = histogram->GetZaxis();
-  for ( int iBinX = 1; iBinX <= xAxis->GetNbins(); ++iBinX ) {
-    double qT_or_uParl = xAxis->GetBinCenter(iBinX);
-    std::cout << "qT/uParl = " << qT_or_uParl << std::endl; 
-    double response = graphUparlResponse->Eval(qT_or_uParl);
-    std::cout << " response = " << response << std::endl;
-    for ( int iBinY = 1; iBinY <= yAxis->GetNbins(); ++iBinY ) {
-      double pull = yAxis->GetBinCenter(iBinY);
-      bool isFirst_printout = true;
-      for ( int iBinZ = 1; iBinZ <= zAxis->GetNbins(); ++iBinZ ) {
-	double sigma = zAxis->GetBinCenter(iBinZ);
-	
-	if ( sigma > 0. ) {
-	  double pull_corrected = pull + ((1.0 - response)*qT_or_uParl)/sigma;
-	  double sumEvtWeights = histogram->GetBinContent(iBinX, iBinY, iBinZ);
-
-	  if ( sumEvtWeights > (1.e-3*histogram_integral) ) {
-	    if ( isFirst_printout ) std::cout << " pull = " << pull << std::endl;
-	    std::cout << " sigma = " << sigma << std::endl;
-	    std::cout << " pull(corrected) = " << pull_corrected << std::endl;
-	    std::cout << " sumEvtWeights = " << sumEvtWeights << std::endl;
-	    isFirst_printout = false;
-	  }
-
-	  histogram_corrected->Fill(pull_corrected, sumEvtWeights);
-	}
-      }
-    }
-  }
-  return histogram_corrected;
-}
-
 std::string getOutputFileName_plot(const std::string& outputFileName, const std::string& plotLabel)
 {
   size_t idx = outputFileName.find_last_of('.');
@@ -1573,38 +1531,6 @@ int main(int argc, const char* argv[])
 			    isCaloMEt);
   std::cout << "running fits for inclusive event sample..." << std::endl;
   fitAndMakeControlPlots(plotUvsQt, outputFileName);
-
-//--- make control plots of pulls 
-//     o (uParl - qT*response(qT))/sigma(uParl)
-//     o (uParl - qT*response(uParl))/sigma(uParl)
-  std::vector<variableEntryType> variables_pull;
-  variables_pull.push_back(variableEntryType("metPullParlZvsQt", "-(u_{#parallel} + q_{T}*response(q_{T})) / #sigmaE_{#parallel}^{miss}"));
-  variables_pull.push_back(variableEntryType("metPullParlZvsUparl", "-(u_{#parallel} + q_{T}*response(u_{#parallel})) / #sigmaE_{#parallel}^{miss}"));
-  for ( std::vector<variableEntryType>::const_iterator variable = variables_pull.begin();
-	variable != variables_pull.end(); ++variable ) {
-    TH3* meData = dynamic_cast<TH3*>(loadHistogram(inputFile, directoryData, mcScaleFactors, variable->meName_));
-    TH1* meData_corrected = makePullHistogram_corrected(meData, "Data", plotUvsQt->graphUparlResponseData_);
-
-    TH3* meMC_signal = dynamic_cast<TH3*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, variable->meName_));
-    TH1* meMC_signal_corrected = makePullHistogram_corrected(meMC_signal, "MC_signal", plotUvsQt->graphUparlResponseMC_signal_);
-
-    TH3* meMC_bgrSum = dynamic_cast<TH3*>(loadAndSumHistograms(inputFile, directoryMCs_background, mcScaleFactors, variable->meName_));
-    TH1* meMC_bgrSum_corrected = makePullHistogram_corrected(meMC_bgrSum, "MC_bgrSum", plotUvsQt->graphUparlResponseMC_signal_);
-
-    // CV: computation of systematic uncertainties not implemented for pull control plots yet
-    std::vector<double> errUp2MC_smSum(meData_corrected->GetNbinsX());
-    std::vector<double> errDown2MC_smSum(meData_corrected->GetNbinsX());
-
-    drawHistogram1d(*variable, meData_corrected, meMC_signal_corrected, meMC_bgrSum_corrected, runPeriod,
-		    errUp2MC_smSum, errDown2MC_smSum,
-		    false, true,  true,  true,  outputFileName);
-    drawHistogram1d(*variable, meData_corrected, meMC_signal_corrected, meMC_bgrSum_corrected, runPeriod,
-		    errUp2MC_smSum, errDown2MC_smSum,
-		    true,  true,  true,  true,  outputFileName);
-    drawHistogram1d(*variable, meData_corrected, meMC_signal_corrected, meMC_bgrSum_corrected, runPeriod,
-		    errUp2MC_smSum, errDown2MC_smSum,
-		    true,  false, false, false, outputFileName);
-  }
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
 //    in different bins of reconstructed jet multiplicity
