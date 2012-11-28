@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.15 $
+ * \version $Revision: 1.16 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.15 2012/08/28 15:01:37 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.16 2012/11/28 12:31:47 veelken Exp $
  *
  */
 
@@ -118,11 +118,6 @@ class ZllRecoilCorrectionHistManager
   TH2* histogramMEtYvsSumEtExclMuons_;
   TH2* histogramMEtYvsNumVertices_;
   TH1* histogramMEtPhi_;
-
-  TH3* histogramMEtPullParlZvsQt_;
-  TH3* histogramMEtPullPerpZvsQt_;
-  TH3* histogramMEtPullParlZvsUparl_;
-  TH3* histogramMEtPullPerpZvsUparl_;
 
   TH1* histogramMEtCovSqrtEigenVal1_;
   TH1* histogramMEtCovSqrtEigenVal2_;
