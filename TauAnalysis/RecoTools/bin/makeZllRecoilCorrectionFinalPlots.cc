@@ -18,6 +18,7 @@
 #include <TDirectory.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <TH3.h>
 #include <THStack.h>
 #include <TGraph.h>
 #include <TGraphErrors.h>
@@ -41,6 +42,10 @@ struct variableEntryType
   variableEntryType(const edm::ParameterSet& cfg)
     : meName_(cfg.getParameter<std::string>("meName")),
       xAxisTitle_(cfg.getParameter<std::string>("xAxisTitle"))
+  {}
+  variableEntryType(const std::string& meName, const std::string& xAxisTitle)
+    : meName_(meName),
+      xAxisTitle_(xAxisTitle)
   {}
   ~variableEntryType() {}
   std::string meName_;
@@ -99,7 +104,12 @@ TH1* loadHistogram(TFile* inputFile, const std::string& directory,
     
     bool isScaleFactorDefined = false;
     double scaleFactor = getScaleFactor(mcScaleFactors, directory, isScaleFactorDefined);
-    if ( isScaleFactorDefined ) me->Scale(scaleFactor);
+    if ( isScaleFactorDefined ) {
+      me->Scale(scaleFactor);
+      //std::cout << key << ": scale-factor = " << scaleFactor << std::endl;
+    } else {
+      //std::cout << key << ": no scale-factor defined." << std::endl;
+    }
     
     histograms[key] = me;
   }
@@ -174,10 +184,8 @@ void addSysErr(TFile* inputFile, const variableEntryType& variable, const std::s
   }
 }
 
-void drawHistogram1d(TFile* inputFile, const variableEntryType& variable, 
-		     const std::string& directoryData, const std::string& directoryMC_signal, const vstring& directoryMCs_background, 
-		     const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
-		     const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
+void drawHistogram1d(const variableEntryType& variable, TH1* meData, TH1* meMC_signal, TH1* meMC_bgrSum, const std::string& runPeriod,
+		     const std::vector<double>& errUp2MC_smSum, const std::vector<double>& errDown2MC_smSum,
 		     bool scaleMCtoData, bool drawDataToMCratio, bool useLogScaleY, bool drawSysUncertainty,
 		     const std::string& outputFileName)
 {
@@ -189,13 +197,11 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   canvas->SetLeftMargin(0.12);
   canvas->SetBottomMargin(0.12);
 
-  TH1* meData = loadHistogram(inputFile, directoryData, mcScaleFactors, variable.meName_);
   if ( !meData->GetSumw2N() ) meData->Sumw2();
   meData->SetLineColor(1);
   meData->SetMarkerColor(1);
   meData->SetMarkerStyle(20);
 
-  TH1* meMC_signal = loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, variable.meName_);
   TH1* meMC_signal_cloned = ( scaleMCtoData ) ?
     (TH1*)meMC_signal->Clone(std::string(meMC_signal->GetName()).append("_cloned").data()) : meMC_signal;
   if ( !meMC_signal_cloned->GetSumw2N() ) meMC_signal_cloned->Sumw2();
@@ -203,7 +209,6 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   meMC_signal_cloned->SetLineWidth(2);
   meMC_signal_cloned->SetFillColor(10);
 
-  TH1* meMC_bgrSum = loadAndSumHistograms(inputFile, directoryMCs_background, mcScaleFactors, variable.meName_);
   if ( meMC_bgrSum ) meMC_bgrSum->SetFillColor(46);
 
   TH1* meMC_smSum = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smSum").data());
@@ -219,28 +224,10 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
     meMC_smSum->Scale(mcToDataScaleFactor);
   }
 
-  std::vector<double> errUp2MC_smSum(meData->GetNbinsX());
-  std::vector<double> errDown2MC_smSum(meData->GetNbinsX());
-  std::cout << "adding systematic uncertainties for signal..." << std::endl;
-  addSysErr(inputFile, variable, directoryMC_signal, mcScaleFactors,
-	    meMC_signal_cloned, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
-  for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
-	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
-    std::cout << "adding systematic uncertainties for " << (*directoryMC_bgr) << " background..." << std::endl;
-    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, mcScaleFactors, variable.meName_);
-    TH1* meMC_bgr_cloned = ( scaleMCtoData ) ?
-      (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data()) : meMC_bgr;
-    if ( !meMC_bgr_cloned->GetSumw2N() ) meMC_bgr_cloned->Sumw2();
-    meMC_bgr_cloned->Scale(mcToDataScaleFactor);
-    addSysErr(inputFile, variable, *directoryMC_bgr, mcScaleFactors,
-	      meMC_bgr_cloned, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
-    if ( meMC_bgr_cloned != meMC_bgr ) delete meMC_bgr_cloned;
-  }
-
   TH1* meMC_smErr = 0;
   TH1* meMC_smErrUp = 0;
   TH1* meMC_smErrDown = 0;
-  if ( sysShiftsUp.size() > 0 ) {
+  if ( drawSysUncertainty ) {
     meMC_smErr = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErr").data());
     meMC_smErrUp = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErrUp").data());
     meMC_smErrDown = (TH1*)meMC_signal_cloned->Clone(std::string(meMC_signal_cloned->GetName()).append("_smErrDown").data());
@@ -298,7 +285,7 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   }
 
   if ( useLogScaleY ) {
-    stack_smSum.SetMaximum(7.5e1*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
+    stack_smSum.SetMaximum(1.e+2*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
     stack_smSum.SetMinimum(5.e-1);
   } else {
     stack_smSum.SetMaximum(1.55*TMath::Max(meData->GetMaximum(), stack_smSum.GetMaximum()));
@@ -484,13 +471,64 @@ void drawHistogram1d(TFile* inputFile, const variableEntryType& variable,
   if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+  canvas->Print(std::string(outputFileName_plot).append(".root").data());
   
   if ( meMC_signal_cloned != meMC_signal ) delete meMC_signal_cloned;
+  //delete meMC_bgrSum;
+  //delete meMC_smSum;
   delete graphDataToMCdiff;
   delete topPad;
   delete dummyHistogram_bottom;
   delete bottomPad;
   delete canvas;
+}	     
+
+void drawHistogram1d(TFile* inputFile, const variableEntryType& variable, 
+		     const std::string& directoryData, const std::string& directoryMC_signal, const vstring& directoryMCs_background, 
+		     const std::map<std::string, double>& mcScaleFactors, const std::string& runPeriod,
+		     const vstring& sysShiftsUp, const vstring& sysShiftsDown, 
+		     bool scaleMCtoData, bool drawDataToMCratio, bool useLogScaleY, bool drawSysUncertainty,
+		     const std::string& outputFileName)
+{
+  TH1* meData = loadHistogram(inputFile, directoryData, mcScaleFactors, variable.meName_);
+
+  TH1* meMC_signal = loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, variable.meName_);
+  TH1* meMC_signal_cloned = ( scaleMCtoData ) ?
+    (TH1*)meMC_signal->Clone(std::string(meMC_signal->GetName()).append("_cloned").data()) : meMC_signal;
+  if ( !meMC_signal_cloned->GetSumw2N() ) meMC_signal_cloned->Sumw2();
+
+  TH1* meMC_bgrSum = loadAndSumHistograms(inputFile, directoryMCs_background, mcScaleFactors, variable.meName_);
+  
+  double mcToDataScaleFactor = 1.;
+  if ( scaleMCtoData ) {
+    mcToDataScaleFactor = meData->Integral()/(meMC_signal->Integral() + meMC_bgrSum->Integral());
+    meMC_signal_cloned->Scale(mcToDataScaleFactor);
+    meMC_bgrSum->Scale(mcToDataScaleFactor);
+  }
+
+  std::vector<double> errUp2MC_smSum(meData->GetNbinsX());
+  std::vector<double> errDown2MC_smSum(meData->GetNbinsX());
+  std::cout << "adding systematic uncertainties for signal..." << std::endl;
+  addSysErr(inputFile, variable, directoryMC_signal, mcScaleFactors,
+	    meMC_signal_cloned, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+  for ( vstring::const_iterator directoryMC_bgr = directoryMCs_background.begin();
+	directoryMC_bgr != directoryMCs_background.end(); ++directoryMC_bgr ) {
+    std::cout << "adding systematic uncertainties for " << (*directoryMC_bgr) << " background..." << std::endl;
+    TH1* meMC_bgr = loadHistogram(inputFile, *directoryMC_bgr, mcScaleFactors, variable.meName_);
+    TH1* meMC_bgr_cloned = ( scaleMCtoData ) ?
+      (TH1*)meMC_bgr->Clone(std::string(meMC_bgr->GetName()).append("_cloned").data()) : meMC_bgr;
+    if ( !meMC_bgr_cloned->GetSumw2N() ) meMC_bgr_cloned->Sumw2();
+    meMC_bgr_cloned->Scale(mcToDataScaleFactor);
+    addSysErr(inputFile, variable, *directoryMC_bgr, mcScaleFactors,
+	      meMC_bgr_cloned, sysShiftsUp, sysShiftsDown, mcToDataScaleFactor, errUp2MC_smSum, errDown2MC_smSum);
+    if ( meMC_bgr_cloned != meMC_bgr ) delete meMC_bgr_cloned;
+  }
+
+  drawHistogram1d(variable, meData, meMC_signal, meMC_bgrSum, runPeriod, errUp2MC_smSum, errDown2MC_smSum,
+		  scaleMCtoData, drawDataToMCratio, useLogScaleY, drawSysUncertainty, outputFileName);
+
+  if ( meMC_signal_cloned != meMC_signal ) delete meMC_signal_cloned;
+  //delete meMC_bgrSum;
 }	     
 
 struct plotUvsQtNumObjType
@@ -553,6 +591,18 @@ struct plotUvsQtNumObjType
       loadHistogram(inputFile, directoryData, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
     meQtData_ = dynamic_cast<TH1*>(
       loadHistogram(inputFile, directoryData, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+    meMEtXvsSumEtData_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("metXvsSumEt").Append(meLabel_).Data()));
+    meMEtYvsSumEtData_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("metYvsSumEt").Append(meLabel_).Data()));
+    meSumEtData_ = dynamic_cast<TH1*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("sumEt").Append(meLabel_).Data()));
+    meMEtXvsSumEtExclMuonsData_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("metXvsSumEtExclMuons").Append(meLabel_).Data()));
+    meMEtYvsSumEtExclMuonsData_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("metYvsSumEtExclMuons").Append(meLabel_).Data()));
+    meSumEtExclMuonsData_ = dynamic_cast<TH1*>(
+      loadHistogram(inputFile, directoryData, mcScaleFactors, TString("sumEtExclMuons").Append(meLabel_).Data()));
 
     graphUparlResponseData_ = makeGraph_uParl_div_qT(
       "graph_uParl_div_qT_mean_data", "<-u_{#parallel} >/q_{T} as function of q_{T}",
@@ -563,6 +613,18 @@ struct plotUvsQtNumObjType
     graphUperpResolutionData_ = makeGraph_rms(
       "graph_uPerp_rms_data", "RMS(u_{#perp}  ) as function of q_{T}", 
       meUperpVsQtData_, meQtData_);
+    graphMEtXvsSumEtData_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtXvsSumEt_data", "E_{X}^{miss} as function of #Sigma E_{T}",
+      meMEtXvsSumEtData_, meSumEtData_);
+    graphMEtYvsSumEtData_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtYvsSumEt_data", "E_{Y}^{miss} as function of #Sigma E_{T}",
+      meMEtYvsSumEtData_, meSumEtData_);
+    graphMEtXvsSumEtExclMuonsData_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtXvsSumEtExclMuons_data", "E_{X}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+      meMEtXvsSumEtExclMuonsData_, meSumEtExclMuonsData_);
+    graphMEtYvsSumEtExclMuonsData_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtYvsSumEtExclMuons_data", "E_{Y}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+      meMEtYvsSumEtExclMuonsData_, meSumEtExclMuonsData_);
 
     meUparlDivQtVsQtMC_signal_ = dynamic_cast<TH2*>(
       loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
@@ -572,16 +634,40 @@ struct plotUvsQtNumObjType
       loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
     meQtMC_signal_ = dynamic_cast<TH1*>(
       loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+    meMEtXvsSumEtMC_signal_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("metXvsSumEt").Append(meLabel_).Data()));
+    meMEtYvsSumEtMC_signal_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("metYvsSumEt").Append(meLabel_).Data()));
+    meSumEtMC_signal_ = dynamic_cast<TH1*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("sumEt").Append(meLabel_).Data()));
+    meMEtXvsSumEtExclMuonsMC_signal_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("metXvsSumEtExclMuons").Append(meLabel_).Data()));
+    meMEtYvsSumEtExclMuonsMC_signal_ = dynamic_cast<TH2*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("metYvsSumEtExclMuons").Append(meLabel_).Data()));
+    meSumEtExclMuonsMC_signal_ = dynamic_cast<TH1*>(
+      loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, TString("sumEtExclMuons").Append(meLabel_).Data()));
 
     graphUparlResponseMC_signal_ = makeGraph_uParl_div_qT(
-      "graph_uParl_div_qT_mean_mc", "<-u_{#parallel} >/q_{T} as function of q_{T}",
+      "graph_uParl_div_qT_mean_mc_signal", "<-u_{#parallel} >/q_{T} as function of q_{T}",
       meUparlVsQtMC_signal_, meQtMC_signal_, isCaloMEt);
     graphUparlResolutionMC_signal_ = makeGraph_rms(
-      "graph_uParl_rms_mc", "RMS(u_{#parallel} ) as function of q_{T}", 
+      "graph_uParl_rms_mc_signal", "RMS(u_{#parallel} ) as function of q_{T}", 
       meUparlVsQtMC_signal_, meQtMC_signal_);
     graphUperpResolutionMC_signal_ = makeGraph_rms(
-      "graph_uPerp_rms_mc", "RMS(u_{#perp}  ) as function of q_{T}", 
+      "graph_uPerp_rms_mc_signal", "RMS(u_{#perp}  ) as function of q_{T}", 
       meUperpVsQtMC_signal_, meQtMC_signal_);
+    graphMEtXvsSumEtMC_signal_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtXvsSumEt_mc_signal", "E_{X}^{miss} as function of #Sigma E_{T}",
+      meMEtXvsSumEtMC_signal_, meSumEtMC_signal_);
+    graphMEtYvsSumEtMC_signal_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtYvsSumEt_mc_signal", "E_{Y}^{miss} as function of #Sigma E_{T}",
+      meMEtYvsSumEtMC_signal_, meSumEtMC_signal_);
+    graphMEtXvsSumEtExclMuonsMC_signal_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtXvsSumEtExclMuonsMC_mc_signal", "E_{X}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+      meMEtXvsSumEtExclMuonsMC_signal_, meSumEtExclMuonsMC_signal_);
+    graphMEtYvsSumEtExclMuonsMC_signal_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtYvsSumEtExclMuonsMC_mc_signal", "E_{Y}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+      meMEtYvsSumEtExclMuonsMC_signal_, meSumEtExclMuonsMC_signal_);
 
     vstring directoryMCs;
     directoryMCs.push_back(directoryMC_signal);
@@ -598,6 +684,18 @@ struct plotUvsQtNumObjType
       loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
     meQtMC_ = dynamic_cast<TH1*>(
       loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
+    meMEtXvsSumEtMC_ = dynamic_cast<TH2*>(
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("metXvsSumEt").Append(meLabel_).Data()));
+    meMEtYvsSumEtMC_ = dynamic_cast<TH2*>(
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("metYvsSumEt").Append(meLabel_).Data()));
+    meSumEtMC_ = dynamic_cast<TH1*>(
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("sumEt").Append(meLabel_).Data()));
+    meMEtXvsSumEtExclMuonsMC_ = dynamic_cast<TH2*>(
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("metXvsSumEtExclMuons").Append(meLabel_).Data()));
+    meMEtYvsSumEtExclMuonsMC_ = dynamic_cast<TH2*>(
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("metYvsSumEtExclMuons").Append(meLabel_).Data()));
+    meSumEtExclMuonsMC_ = dynamic_cast<TH1*>(
+      loadAndSumHistograms(inputFile, directoryMCs, mcScaleFactors, TString("sumEtExclMuons").Append(meLabel_).Data()));
 
     graphUparlResponseMC_ = makeGraph_uParl_div_qT(
       "graph_uParl_div_qT_mean_mc", "<-u_{#parallel} >/q_{T} as function of q_{T}",
@@ -608,6 +706,18 @@ struct plotUvsQtNumObjType
     graphUperpResolutionMC_ = makeGraph_rms(
       "graph_uPerp_rms_mc", "RMS(u_{#perp}  ) as function of q_{T}", 
       meUperpVsQtMC_, meQtMC_);
+    graphMEtXvsSumEtMC_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtXvsSumEt_mc", "E_{X}^{miss} as function of #Sigma E_{T}",
+      meMEtXvsSumEtMC_, meSumEtMC_);
+    graphMEtYvsSumEtMC_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtYvsSumEt_mc", "E_{Y}^{miss} as function of #Sigma E_{T}",
+      meMEtYvsSumEtMC_, meSumEtMC_);
+    graphMEtXvsSumEtExclMuonsMC_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtXvsSumEtExclMuons_mc", "E_{X}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+      meMEtXvsSumEtExclMuonsMC_, meSumEtExclMuonsMC_);
+    graphMEtYvsSumEtExclMuonsMC_ = makeGraph_metXorY_vs_sumEt(
+      "graphMEtYvsSumEtExclMuons_mc", "E_{Y}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+      meMEtYvsSumEtExclMuonsMC_, meSumEtExclMuonsMC_);
     
     assert(sysShiftsUp.size() == sysShiftsDown.size());
     int numSysShifts = sysShiftsUp.size();
@@ -620,28 +730,58 @@ struct plotUvsQtNumObjType
 	  sysUncertainty != sysUncertainties_.end(); ++sysUncertainty ) {
       std::string directoryMCsysUncertainty_signal = getDirectorySysErr(directoryMC_signal, *sysUncertainty);
 
-      TH2* meUparlDivQtVsQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH2*>(
+      TH2* meUparlDivQtVsQtMCsysUncertainty_signal = dynamic_cast<TH2*>(
 	loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
-      meUparlDivQtVsQtMCsysUncertainty_signal_.push_back(meUparlDivQtVsQtMCsysUncertainty_sysUncertainty_signal);
-      TH2* meUparlVsQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH2*>(
+      meUparlDivQtVsQtMCsysUncertainty_signal_.push_back(meUparlDivQtVsQtMCsysUncertainty_signal);
+      TH2* meUparlVsQtMCsysUncertainty_signal = dynamic_cast<TH2*>(
         loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
-      meUparlVsQtMCsysUncertainty_signal_.push_back(meUparlVsQtMCsysUncertainty_sysUncertainty_signal);
-      TH2* meUperpVsQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH2*>(
+      meUparlVsQtMCsysUncertainty_signal_.push_back(meUparlVsQtMCsysUncertainty_signal);
+      TH2* meUperpVsQtMCsysUncertainty_signal = dynamic_cast<TH2*>(
         loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
-      meUperpVsQtMCsysUncertainty_signal_.push_back(meUperpVsQtMCsysUncertainty_sysUncertainty_signal);
-      TH1* meQtMCsysUncertainty_sysUncertainty_signal = dynamic_cast<TH1*>(
+      meUperpVsQtMCsysUncertainty_signal_.push_back(meUperpVsQtMCsysUncertainty_signal);
+      TH1* meQtMCsysUncertainty_signal = dynamic_cast<TH1*>(
         loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
-      meQtMCsysUncertainty_signal_.push_back(meQtMCsysUncertainty_sysUncertainty_signal);
+      meQtMCsysUncertainty_signal_.push_back(meQtMCsysUncertainty_signal);
+      TH2* meMEtXvsSumEtMCsysUncertainty_signal = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("metXvsSumEt").Append(meLabel_).Data()));
+      meMEtXvsSumEtMCsysUncertainty_signal_.push_back(meMEtXvsSumEtMCsysUncertainty_signal);
+      TH2* meMEtYvsSumEtMCsysUncertainty_signal = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("metYvsSumEt").Append(meLabel_).Data()));
+      meMEtYvsSumEtMCsysUncertainty_signal_.push_back(meMEtYvsSumEtMCsysUncertainty_signal);
+      TH1* meSumEtMCsysUncertainty_signal = dynamic_cast<TH1*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("sumEt").Append(meLabel_).Data()));
+      meSumEtMCsysUncertainty_signal_.push_back(meSumEtMCsysUncertainty_signal);
+      TH2* meMEtXvsSumEtExclMuonsMCsysUncertainty_signal = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("metXvsSumEtExclMuons").Append(meLabel_).Data()));
+      meMEtXvsSumEtExclMuonsMCsysUncertainty_signal_.push_back(meMEtXvsSumEtExclMuonsMCsysUncertainty_signal);
+      TH2* meMEtYvsSumEtExclMuonsMCsysUncertainty_signal = dynamic_cast<TH2*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("metYvsSumEtExclMuons").Append(meLabel_).Data()));
+      meMEtYvsSumEtExclMuonsMCsysUncertainty_signal_.push_back(meMEtYvsSumEtExclMuonsMCsysUncertainty_signal);
+      TH1* meSumEtExclMuonsMCsysUncertainty_signal = dynamic_cast<TH1*>(
+        loadHistogram(inputFile, directoryMCsysUncertainty_signal, mcScaleFactors, TString("sumEtExclMuons").Append(meLabel_).Data()));
+      meSumEtExclMuonsMCsysUncertainty_signal_.push_back(meSumEtExclMuonsMCsysUncertainty_signal);
 
       graphUparlResponseMCsysUncertainty_signal_.push_back(makeGraph_uParl_div_qT(
-	Form("graph_uParl_div_qT_mean_mc_%s", sysUncertainty->data()), "<-u_{#parallel} >/q_{T} as function of q_{T}",
-        meUparlVsQtMCsysUncertainty_sysUncertainty_signal, meQtMCsysUncertainty_sysUncertainty_signal, isCaloMEt));
+	Form("graph_uParl_div_qT_mean_mc_signal_%s", sysUncertainty->data()), "<-u_{#parallel} >/q_{T} as function of q_{T}",
+        meUparlVsQtMCsysUncertainty_signal, meQtMCsysUncertainty_signal, isCaloMEt));
       graphUparlResolutionMCsysUncertainty_signal_.push_back(makeGraph_rms(
-        Form("graph_uParl_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#parallel} ) as function of q_{T}", 
-        meUparlVsQtMCsysUncertainty_sysUncertainty_signal, meQtMCsysUncertainty_sysUncertainty_signal));
+        Form("graph_uParl_rms_mc_signal_%s", sysUncertainty->data()), "RMS(u_{#parallel} ) as function of q_{T}", 
+        meUparlVsQtMCsysUncertainty_signal, meQtMCsysUncertainty_signal));
       graphUperpResolutionMCsysUncertainty_signal_.push_back(makeGraph_rms(
-        Form("graph_uPerp_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#perp}  ) as function of q_{T}", 
-        meUperpVsQtMCsysUncertainty_sysUncertainty_signal, meQtMCsysUncertainty_sysUncertainty_signal));
+        Form("graph_uPerp_rms_mc_signal_%s", sysUncertainty->data()), "RMS(u_{#perp}  ) as function of q_{T}", 
+        meUperpVsQtMCsysUncertainty_signal, meQtMCsysUncertainty_signal));
+      graphMEtXvsSumEtMCsysUncertainty_signal_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtXvsSumEt_mc_signal_%s", sysUncertainty->data()), "E_{X}^{miss} as function of #Sigma E_{T}",
+        meMEtXvsSumEtMCsysUncertainty_signal, meSumEtMCsysUncertainty_signal));
+      graphMEtYvsSumEtMCsysUncertainty_signal_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtYvsSumEt_mc_signal_%s", sysUncertainty->data()), "E_{Y}^{miss} as function of #Sigma E_{T}",
+        meMEtYvsSumEtMCsysUncertainty_signal, meSumEtMCsysUncertainty_signal));
+      graphMEtXvsSumEtExclMuonsMCsysUncertainty_signal_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtXvsSumEtExclMuons_mc_signal_%s", sysUncertainty->data()), "E_{X}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+        meMEtXvsSumEtExclMuonsMCsysUncertainty_signal, meSumEtExclMuonsMCsysUncertainty_signal));
+      graphMEtYvsSumEtExclMuonsMCsysUncertainty_signal_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtYvsSumEtExclMuons_mc_signal_%s", sysUncertainty->data()), "E_{Y}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+        meMEtYvsSumEtExclMuonsMCsysUncertainty_signal, meSumEtExclMuonsMCsysUncertainty_signal));
 
       vstring directoryMCsSysUncertainty;
       for ( vstring::const_iterator directoryMC = directoryMCs.begin();
@@ -649,28 +789,58 @@ struct plotUvsQtNumObjType
 	directoryMCsSysUncertainty.push_back(getDirectorySysErr(*directoryMC, *sysUncertainty));
       }
       
-      TH2* meUparlDivQtVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
+      TH2* meUparlDivQtVsQtMCsysUncertainty = dynamic_cast<TH2*>(
 	loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("uParlDivQtVsQt").Append(meLabel_).Data()));
-      meUparlDivQtVsQtMCsysUncertainty_.push_back(meUparlDivQtVsQtMCsysUncertainty_sysUncertainty);
-      TH2* meUparlVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
+      meUparlDivQtVsQtMCsysUncertainty_.push_back(meUparlDivQtVsQtMCsysUncertainty);
+      TH2* meUparlVsQtMCsysUncertainty = dynamic_cast<TH2*>(
         loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("uParlVsQt").Append(meLabel_).Data()));
-      meUparlVsQtMCsysUncertainty_.push_back(meUparlVsQtMCsysUncertainty_sysUncertainty);
-      TH2* meUperpVsQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH2*>(
+      meUparlVsQtMCsysUncertainty_.push_back(meUparlVsQtMCsysUncertainty);
+      TH2* meUperpVsQtMCsysUncertainty = dynamic_cast<TH2*>(
         loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("uPerpVsQt").Append(meLabel_).Data()));
-      meUperpVsQtMCsysUncertainty_.push_back(meUperpVsQtMCsysUncertainty_sysUncertainty);
-      TH1* meQtMCsysUncertainty_sysUncertainty = dynamic_cast<TH1*>(
+      meUperpVsQtMCsysUncertainty_.push_back(meUperpVsQtMCsysUncertainty);
+      TH1* meQtMCsysUncertainty = dynamic_cast<TH1*>(
         loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("qT").Append(meLabel_).Data()));
-      meQtMCsysUncertainty_.push_back(meQtMCsysUncertainty_sysUncertainty);
+      meQtMCsysUncertainty_.push_back(meQtMCsysUncertainty);
+      TH2* meMEtXvsSumEtMCsysUncertainty = dynamic_cast<TH2*>(
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("metXvsSumEt").Append(meLabel_).Data()));
+      meMEtXvsSumEtMCsysUncertainty_.push_back(meMEtXvsSumEtMCsysUncertainty);
+      TH2* meMEtYvsSumEtMCsysUncertainty = dynamic_cast<TH2*>(
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("metYvsSumEt").Append(meLabel_).Data()));
+      meMEtYvsSumEtMCsysUncertainty_.push_back(meMEtYvsSumEtMCsysUncertainty);
+      TH1* meSumEtMCsysUncertainty = dynamic_cast<TH1*>(
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("sumEt").Append(meLabel_).Data()));
+      meSumEtMCsysUncertainty_.push_back(meSumEtMCsysUncertainty);
+      TH2* meMEtXvsSumEtExclMuonsMCsysUncertainty = dynamic_cast<TH2*>(
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("metXvsSumEtExclMuons").Append(meLabel_).Data()));
+      meMEtXvsSumEtExclMuonsMCsysUncertainty_.push_back(meMEtXvsSumEtExclMuonsMCsysUncertainty);
+      TH2* meMEtYvsSumEtExclMuonsMCsysUncertainty = dynamic_cast<TH2*>(
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("metYvsSumEtExclMuons").Append(meLabel_).Data()));
+      meMEtYvsSumEtExclMuonsMCsysUncertainty_.push_back(meMEtYvsSumEtExclMuonsMCsysUncertainty);
+      TH1* meSumEtExclMuonsMCsysUncertainty = dynamic_cast<TH1*>(
+        loadAndSumHistograms(inputFile, directoryMCsSysUncertainty, mcScaleFactors, TString("sumEtExclMuons").Append(meLabel_).Data()));
+      meSumEtExclMuonsMCsysUncertainty_.push_back(meSumEtExclMuonsMCsysUncertainty);
 
       graphUparlResponseMCsysUncertainty_.push_back(makeGraph_uParl_div_qT(
 	Form("graph_uParl_div_qT_mean_mc_%s", sysUncertainty->data()), "<-u_{#parallel} >/q_{T} as function of q_{T}",
-        meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty, isCaloMEt));
+        meUparlVsQtMCsysUncertainty, meQtMCsysUncertainty, isCaloMEt));
       graphUparlResolutionMCsysUncertainty_.push_back(makeGraph_rms(
         Form("graph_uParl_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#parallel} ) as function of q_{T}", 
-        meUparlVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
+        meUparlVsQtMCsysUncertainty, meQtMCsysUncertainty));
       graphUperpResolutionMCsysUncertainty_.push_back(makeGraph_rms(
         Form("graph_uPerp_rms_mc_%s", sysUncertainty->data()), "RMS(u_{#perp}  ) as function of q_{T}", 
-        meUperpVsQtMCsysUncertainty_sysUncertainty, meQtMCsysUncertainty_sysUncertainty));
+        meUperpVsQtMCsysUncertainty, meQtMCsysUncertainty));
+      graphMEtXvsSumEtMCsysUncertainty_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtXvsSumEt_mc_%s", sysUncertainty->data()), "E_{X}^{miss} as function of #Sigma E_{T}",
+        meMEtXvsSumEtMCsysUncertainty, meSumEtMCsysUncertainty));
+      graphMEtYvsSumEtMCsysUncertainty_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtYvsSumEt_mc_%s", sysUncertainty->data()), "E_{Y}^{miss} as function of #Sigma E_{T}",
+        meMEtYvsSumEtMCsysUncertainty, meSumEtMCsysUncertainty));
+      graphMEtXvsSumEtExclMuonsMCsysUncertainty_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtXvsSumEtExclMuons_mc_%s", sysUncertainty->data()), "E_{X}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+        meMEtXvsSumEtExclMuonsMCsysUncertainty, meSumEtExclMuonsMCsysUncertainty));
+      graphMEtYvsSumEtExclMuonsMCsysUncertainty_.push_back(makeGraph_metXorY_vs_sumEt(
+        Form("graphMEtYvsSumEtExclMuons_mc_%s", sysUncertainty->data()), "E_{Y}^{miss} as function of #Sigma E_{T} (excl. Muons)",
+        meMEtYvsSumEtExclMuonsMCsysUncertainty, meSumEtExclMuonsMCsysUncertainty));
     }
 
     legendEntryData_ = std::string(runPeriod).append(" Data");
@@ -687,28 +857,58 @@ struct plotUvsQtNumObjType
   TH2* meUparlVsQtData_;
   TH2* meUperpVsQtData_;
   TH1* meQtData_;
+  TH2* meMEtXvsSumEtData_;
+  TH2* meMEtYvsSumEtData_;
+  TH1* meSumEtData_;
+  TH2* meMEtXvsSumEtExclMuonsData_;
+  TH2* meMEtYvsSumEtExclMuonsData_;
+  TH1* meSumEtExclMuonsData_;
 
   TGraphAsymmErrors* graphUparlResponseData_;
   TGraphAsymmErrors* graphUparlResolutionData_;
   TGraphAsymmErrors* graphUperpResolutionData_;
+  TGraphAsymmErrors* graphMEtXvsSumEtData_;
+  TGraphAsymmErrors* graphMEtYvsSumEtData_;
+  TGraphAsymmErrors* graphMEtXvsSumEtExclMuonsData_;
+  TGraphAsymmErrors* graphMEtYvsSumEtExclMuonsData_;
 
   TH2* meUparlDivQtVsQtMC_signal_;
   TH2* meUparlVsQtMC_signal_;
   TH2* meUperpVsQtMC_signal_;
   TH1* meQtMC_signal_;
+  TH2* meMEtXvsSumEtMC_signal_;
+  TH2* meMEtYvsSumEtMC_signal_;
+  TH1* meSumEtMC_signal_;
+  TH2* meMEtXvsSumEtExclMuonsMC_signal_;
+  TH2* meMEtYvsSumEtExclMuonsMC_signal_;
+  TH1* meSumEtExclMuonsMC_signal_;
 
   TGraphAsymmErrors* graphUparlResponseMC_signal_;
   TGraphAsymmErrors* graphUparlResolutionMC_signal_;
   TGraphAsymmErrors* graphUperpResolutionMC_signal_;
-
+  TGraphAsymmErrors* graphMEtXvsSumEtMC_signal_;
+  TGraphAsymmErrors* graphMEtYvsSumEtMC_signal_;
+  TGraphAsymmErrors* graphMEtXvsSumEtExclMuonsMC_signal_;
+  TGraphAsymmErrors* graphMEtYvsSumEtExclMuonsMC_signal_;
+  
   TH2* meUparlDivQtVsQtMC_;
   TH2* meUparlVsQtMC_;
   TH2* meUperpVsQtMC_;
   TH1* meQtMC_;
+  TH2* meMEtXvsSumEtMC_;
+  TH2* meMEtYvsSumEtMC_;
+  TH1* meSumEtMC_;
+  TH2* meMEtXvsSumEtExclMuonsMC_;
+  TH2* meMEtYvsSumEtExclMuonsMC_;
+  TH1* meSumEtExclMuonsMC_;
 
   TGraphAsymmErrors* graphUparlResponseMC_;
   TGraphAsymmErrors* graphUparlResolutionMC_;
   TGraphAsymmErrors* graphUperpResolutionMC_;
+  TGraphAsymmErrors* graphMEtXvsSumEtMC_;
+  TGraphAsymmErrors* graphMEtYvsSumEtMC_;
+  TGraphAsymmErrors* graphMEtXvsSumEtExclMuonsMC_;
+  TGraphAsymmErrors* graphMEtYvsSumEtExclMuonsMC_;
 
   vstring sysUncertainties_;
 
@@ -716,19 +916,39 @@ struct plotUvsQtNumObjType
   std::vector<TH2*> meUparlVsQtMCsysUncertainty_signal_;
   std::vector<TH2*> meUperpVsQtMCsysUncertainty_signal_;
   std::vector<TH1*> meQtMCsysUncertainty_signal_;
+  std::vector<TH2*> meMEtXvsSumEtMCsysUncertainty_signal_;
+  std::vector<TH2*> meMEtYvsSumEtMCsysUncertainty_signal_;
+  std::vector<TH1*> meSumEtMCsysUncertainty_signal_;
+  std::vector<TH2*> meMEtXvsSumEtExclMuonsMCsysUncertainty_signal_;
+  std::vector<TH2*> meMEtYvsSumEtExclMuonsMCsysUncertainty_signal_;
+  std::vector<TH1*> meSumEtExclMuonsMCsysUncertainty_signal_;
 
   std::vector<TGraphAsymmErrors*> graphUparlResponseMCsysUncertainty_signal_;
   std::vector<TGraphAsymmErrors*> graphUparlResolutionMCsysUncertainty_signal_;
   std::vector<TGraphAsymmErrors*> graphUperpResolutionMCsysUncertainty_signal_;
+  std::vector<TGraphAsymmErrors*> graphMEtXvsSumEtMCsysUncertainty_signal_;
+  std::vector<TGraphAsymmErrors*> graphMEtYvsSumEtMCsysUncertainty_signal_;
+  std::vector<TGraphAsymmErrors*> graphMEtXvsSumEtExclMuonsMCsysUncertainty_signal_;
+  std::vector<TGraphAsymmErrors*> graphMEtYvsSumEtExclMuonsMCsysUncertainty_signal_;
 
   std::vector<TH2*> meUparlDivQtVsQtMCsysUncertainty_; 
   std::vector<TH2*> meUparlVsQtMCsysUncertainty_;
   std::vector<TH2*> meUperpVsQtMCsysUncertainty_;
   std::vector<TH1*> meQtMCsysUncertainty_;
+  std::vector<TH2*> meMEtXvsSumEtMCsysUncertainty_;
+  std::vector<TH2*> meMEtYvsSumEtMCsysUncertainty_;
+  std::vector<TH1*> meSumEtMCsysUncertainty_;
+  std::vector<TH2*> meMEtXvsSumEtExclMuonsMCsysUncertainty_;
+  std::vector<TH2*> meMEtYvsSumEtExclMuonsMCsysUncertainty_;
+  std::vector<TH1*> meSumEtExclMuonsMCsysUncertainty_;
 
   std::vector<TGraphAsymmErrors*> graphUparlResponseMCsysUncertainty_;
   std::vector<TGraphAsymmErrors*> graphUparlResolutionMCsysUncertainty_;
   std::vector<TGraphAsymmErrors*> graphUperpResolutionMCsysUncertainty_;
+  std::vector<TGraphAsymmErrors*> graphMEtXvsSumEtMCsysUncertainty_;
+  std::vector<TGraphAsymmErrors*> graphMEtYvsSumEtMCsysUncertainty_;
+  std::vector<TGraphAsymmErrors*> graphMEtXvsSumEtExclMuonsMCsysUncertainty_;
+  std::vector<TGraphAsymmErrors*> graphMEtYvsSumEtExclMuonsMCsysUncertainty_;
 
   std::string plotLabel_;
 
@@ -738,51 +958,98 @@ struct plotUvsQtNumObjType
 
 void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::string& outputFileName)
 {
-  const double xMin = 0.;
-  const double xMax = 300.;
+  const double xMin_qT    =    0.;
+  const double xMax_qT    =  300.;
+
+  const double xMin_sumEt =    0.;
+  const double xMax_sumEt = 3000.;
 
   int numSysUncertainties = plotUvsQtNumObj->sysUncertainties_.size();
 
-  TF1* f_uParl_div_qT_mean_data = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_data", plotUvsQtNumObj->graphUparlResponseData_, xMin, xMax);
-  TF1* f_uParl_rms_data = fitGraph_uParl_rms("f_uParl_rms_data", plotUvsQtNumObj->graphUparlResolutionData_, xMin, xMax);
-  TF1* f_uPerp_rms_data = fitGraph_uPerp_rms("f_uPerp_rms_data", plotUvsQtNumObj->graphUperpResolutionData_, xMin, xMax);
+  TF1* f_uParl_div_qT_mean_data = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_data", plotUvsQtNumObj->graphUparlResponseData_, xMin_qT, xMax_qT);
+  TF1* f_uParl_rms_data = fitGraph_uParl_rms("f_uParl_rms_data", plotUvsQtNumObj->graphUparlResolutionData_, xMin_qT, xMax_qT);
+  TF1* f_uPerp_rms_data = fitGraph_uPerp_rms("f_uPerp_rms_data", plotUvsQtNumObj->graphUperpResolutionData_, xMin_qT, xMax_qT);
+  TF1* f_metX_vs_sumEt_data = fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEt_data", plotUvsQtNumObj->graphMEtXvsSumEtData_, xMin_sumEt, xMax_sumEt);
+  TF1* f_metY_vs_sumEt_data = fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEt_data", plotUvsQtNumObj->graphMEtYvsSumEtData_, xMin_sumEt, xMax_sumEt);  
+  TF1* f_metX_vs_sumEtExclMuons_data = fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEtExclMuons_data", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsData_, xMin_sumEt, xMax_sumEt);
+  TF1* f_metY_vs_sumEtExclMuons_data = fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEtExclMuons_data", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsData_, xMin_sumEt, xMax_sumEt);  
 
-  TF1* f_uParl_div_qT_mean_mc_signal = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc_signal", plotUvsQtNumObj->graphUparlResponseMC_signal_, xMin, xMax);
-  TF1* f_uParl_rms_mc_signal = fitGraph_uParl_rms("f_uParl_rms_mc_signal", plotUvsQtNumObj->graphUparlResolutionMC_signal_, xMin, xMax);
-  TF1* f_uPerp_rms_mc_signal = fitGraph_uPerp_rms("f_uPerp_rms_mc_signal", plotUvsQtNumObj->graphUperpResolutionMC_signal_, xMin, xMax);
+  TF1* f_uParl_div_qT_mean_mc_signal = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc_signal", plotUvsQtNumObj->graphUparlResponseMC_signal_, xMin_qT, xMax_qT);
+  TF1* f_uParl_rms_mc_signal = fitGraph_uParl_rms("f_uParl_rms_mc_signal", plotUvsQtNumObj->graphUparlResolutionMC_signal_, xMin_qT, xMax_qT);
+  TF1* f_uPerp_rms_mc_signal = fitGraph_uPerp_rms("f_uPerp_rms_mc_signal", plotUvsQtNumObj->graphUperpResolutionMC_signal_, xMin_qT, xMax_qT);
+  TF1* f_metX_vs_sumEt_mc_signal = fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEt_mc_signal", plotUvsQtNumObj->graphMEtXvsSumEtMC_signal_, xMin_sumEt, xMax_sumEt);
+  TF1* f_metY_vs_sumEt_mc_signal = fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEt_mc_signal", plotUvsQtNumObj->graphMEtYvsSumEtMC_signal_, xMin_sumEt, xMax_sumEt);  
+  TF1* f_metX_vs_sumEtExclMuons_mc_signal = fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEtExclMuons_mc_signal", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_signal_, xMin_sumEt, xMax_sumEt);
+  TF1* f_metY_vs_sumEtExclMuons_mc_signal = fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEtExclMuons_mc_signal", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_signal_, xMin_sumEt, xMax_sumEt);  
   std::vector<TF1*> f_uParl_div_qT_mean_mcSysUncertainties_signal;
   std::vector<TF1*> f_uParl_rms_mcSysUncertainties_signal;
   std::vector<TF1*> f_uPerp_rms_mcSysUncertainties_signal;
+  std::vector<TF1*> f_metX_vs_sumEt_mcSysUncertainties_signal;
+  std::vector<TF1*> f_metY_vs_sumEt_mcSysUncertainties_signal;
+  std::vector<TF1*> f_metX_vs_sumEtExclMuons_mcSysUncertainties_signal;
+  std::vector<TF1*> f_metY_vs_sumEtExclMuons_mcSysUncertainties_signal;
   for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
     const std::string& sysUncertainty = plotUvsQtNumObj->sysUncertainties_[iSysUncertainty];
     f_uParl_div_qT_mean_mcSysUncertainties_signal.push_back(fitGraph_uParl_div_qT(
-      std::string("f_uParl_div_qT_mean_mc").append("_").append(sysUncertainty), 
-      plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_signal_[iSysUncertainty], xMin, xMax));
+      std::string("f_uParl_div_qT_mean_mc_signal").append("_").append(sysUncertainty), 
+      plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_signal_[iSysUncertainty], xMin_qT, xMax_qT));
     f_uParl_rms_mcSysUncertainties_signal.push_back(fitGraph_uParl_rms(
-      std::string("f_uParl_rms_mc").append("_").append(sysUncertainty),
-      plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_signal_[iSysUncertainty], xMin, xMax));
+      std::string("f_uParl_rms_mc_signal").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_signal_[iSysUncertainty], xMin_qT, xMax_qT));
     f_uPerp_rms_mcSysUncertainties_signal.push_back(fitGraph_uPerp_rms(
-      std::string("f_uPerp_rms_mc").append("_").append(sysUncertainty),
-      plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_signal_[iSysUncertainty], xMin, xMax));
+      std::string("f_uPerp_rms_mc_signal").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_signal_[iSysUncertainty], xMin_qT, xMax_qT));
+    f_metX_vs_sumEt_mcSysUncertainties_signal.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metX_vs_sumEt_mc_signal").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtXvsSumEtMCsysUncertainty_signal_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
+    f_metY_vs_sumEt_mcSysUncertainties_signal.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metY_vs_sumEt_mc_signal").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtYvsSumEtMCsysUncertainty_signal_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
+    f_metX_vs_sumEtExclMuons_mcSysUncertainties_signal.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metX_vs_sumEtExclMuons_mc_signal").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMCsysUncertainty_signal_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
+    f_metY_vs_sumEtExclMuons_mcSysUncertainties_signal.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metY_vs_sumEtExclMuons_mc_signal").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMCsysUncertainty_signal_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
   }
 
-  TF1* f_uParl_div_qT_mean_mc = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc", plotUvsQtNumObj->graphUparlResponseMC_, xMin, xMax);
-  TF1* f_uParl_rms_mc = fitGraph_uParl_rms("f_uParl_rms_mc", plotUvsQtNumObj->graphUparlResolutionMC_, xMin, xMax);
-  TF1* f_uPerp_rms_mc = fitGraph_uPerp_rms("f_uPerp_rms_mc", plotUvsQtNumObj->graphUperpResolutionMC_, xMin, xMax);
+  TF1* f_uParl_div_qT_mean_mc = fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc", plotUvsQtNumObj->graphUparlResponseMC_, xMin_qT, xMax_qT);
+  TF1* f_uParl_rms_mc = fitGraph_uParl_rms("f_uParl_rms_mc", plotUvsQtNumObj->graphUparlResolutionMC_, xMin_qT, xMax_qT);
+  TF1* f_uPerp_rms_mc = fitGraph_uPerp_rms("f_uPerp_rms_mc", plotUvsQtNumObj->graphUperpResolutionMC_, xMin_qT, xMax_qT);
+  TF1* f_metX_vs_sumEt_mc = fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEt_mc", plotUvsQtNumObj->graphMEtXvsSumEtMC_, xMin_sumEt, xMax_sumEt);
+  TF1* f_metY_vs_sumEt_mc = fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEt_mc", plotUvsQtNumObj->graphMEtYvsSumEtMC_, xMin_sumEt, xMax_sumEt);
+  TF1* f_metX_vs_sumEtExclMuons_mc = fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEtExclMuons_mc", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_, xMin_sumEt, xMax_sumEt);
+  TF1* f_metY_vs_sumEtExclMuons_mc = fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEtExclMuons_mc", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_, xMin_sumEt, xMax_sumEt);
   std::vector<TF1*> f_uParl_div_qT_mean_mcSysUncertainties;
   std::vector<TF1*> f_uParl_rms_mcSysUncertainties;
   std::vector<TF1*> f_uPerp_rms_mcSysUncertainties;
+  std::vector<TF1*> f_metX_vs_sumEt_mcSysUncertainties;
+  std::vector<TF1*> f_metY_vs_sumEt_mcSysUncertainties;
+  std::vector<TF1*> f_metX_vs_sumEtExclMuons_mcSysUncertainties;
+  std::vector<TF1*> f_metY_vs_sumEtExclMuons_mcSysUncertainties;
   for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {
     const std::string& sysUncertainty = plotUvsQtNumObj->sysUncertainties_[iSysUncertainty];
     f_uParl_div_qT_mean_mcSysUncertainties.push_back(fitGraph_uParl_div_qT(
       std::string("f_uParl_div_qT_mean_mc").append("_").append(sysUncertainty), 
-      plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_[iSysUncertainty], xMin, xMax));
+      plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_[iSysUncertainty], xMin_qT, xMax_qT));
     f_uParl_rms_mcSysUncertainties.push_back(fitGraph_uParl_rms(
       std::string("f_uParl_rms_mc").append("_").append(sysUncertainty),
-      plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_[iSysUncertainty], xMin, xMax));
+      plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_[iSysUncertainty], xMin_qT, xMax_qT));
     f_uPerp_rms_mcSysUncertainties.push_back(fitGraph_uPerp_rms(
       std::string("f_uPerp_rms_mc").append("_").append(sysUncertainty),
-      plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_[iSysUncertainty], xMin, xMax));
+      plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_[iSysUncertainty], xMin_qT, xMax_qT));
+    f_metX_vs_sumEt_mcSysUncertainties.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metX_vs_sumEt_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtXvsSumEtMCsysUncertainty_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
+    f_metY_vs_sumEt_mcSysUncertainties.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metY_vs_sumEt_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtYvsSumEtMCsysUncertainty_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
+    f_metX_vs_sumEtExclMuons_mcSysUncertainties.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metX_vs_sumEtExclMuons_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMCsysUncertainty_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
+    f_metY_vs_sumEtExclMuons_mcSysUncertainties.push_back(fitGraph_metXorY_vs_sumEt(
+      std::string("f_metY_vs_sumEtExclMuons_mc").append("_").append(sysUncertainty),
+      plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMCsysUncertainty_[iSysUncertainty], xMin_sumEt, xMax_sumEt));
   }
 
   TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 900);
@@ -792,94 +1059,203 @@ void fitAndMakeControlPlots(plotUvsQtNumObjType* plotUvsQtNumObj, const std::str
   canvas->SetLeftMargin(0.12);
   canvas->SetBottomMargin(0.12);
 
-  TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", (xMax - xMin)/10., xMin, xMax);
+  TH1* dummyHistogram_qT = new TH1D("dummyHistogram_qT", "dummyHistogram_qT", (xMax_qT - xMin_qT)/10., xMin_qT, xMax_qT);
+  TH1* dummyHistogram_sumEt = new TH1D("dummyHistogram_sumEt", "dummyHistogram_sumEt", (xMax_sumEt - xMin_sumEt)/10., xMin_sumEt, xMax_sumEt);  
 
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseData_, f_uParl_div_qT_mean_data,
 			  "Data", 0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitData");
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseMC_signal_, f_uParl_div_qT_mean_mc_signal,
 			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitMC",
 			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_signal_, &f_uParl_div_qT_mean_mcSysUncertainties_signal);  
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResponseMC_, f_uParl_div_qT_mean_mc,
 			 "Simulation", 0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.10,
 			 outputFileName, "uParlResponseFitMC",
 			 &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_, &f_uParl_div_qT_mean_mcSysUncertainties); 
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
-			 plotUvsQtNumObj->graphUparlResolutionData_, f_uParl_rms_data,
-			 "Data",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
-			 outputFileName, "uParlResolutionFitData");
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
-			 plotUvsQtNumObj->graphUparlResolutionMC_signal_, f_uParl_rms_mc_signal,
-			 "Sim. Z #rightarrow #mu^{+} #mu^{-}",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
-			 outputFileName, "uParlResolutionFitMC",
-			 &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_signal_, &f_uParl_rms_mcSysUncertainties_signal);
 
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUparlResolutionMC_, f_uParl_rms_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
+			 outputFileName, "uParlResolutionFitMCsignal",
+			 &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_signal_, &f_uParl_rms_mcSysUncertainties);
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUparlResolutionMC_, f_uParl_rms_mc,
 			 "Simulation",  0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
 			 outputFileName, "uParlResolutionFitMC",
 			 &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_, &f_uParl_rms_mcSysUncertainties);
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUperpResolutionData_, f_uPerp_rms_data,
 			 "Data", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
 			 outputFileName, "uPerpResolutionFitData");
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUperpResolutionMC_signal_, f_uPerp_rms_mc_signal,
 			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
-			 outputFileName, "uPerpResolutionFitMC",
+			 outputFileName, "uPerpResolutionFitMCsignal",
 			 &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_signal_, &f_uPerp_rms_mcSysUncertainties_signal);
-  drawZllRecoilFitResult(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			 plotUvsQtNumObj->graphUperpResolutionMC_, f_uPerp_rms_mc,
-			 "Simulation", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
+			 "Simulation",  0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
 			 outputFileName, "uPerpResolutionFitMC",
 			 &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_, &f_uPerp_rms_mcSysUncertainties);
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphUperpResolutionData_, f_uPerp_rms_data,
+			 "Data", 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
+			 outputFileName, "uPerpResolutionFitData",
+			 &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_, &f_uPerp_rms_mcSysUncertainties);
+  
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtXvsSumEtMC_signal_, f_metX_vs_sumEt_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metXvsSumEtFitMCsignal",
+			 &plotUvsQtNumObj->graphMEtXvsSumEtMCsysUncertainty_signal_, &f_metX_vs_sumEt_mcSysUncertainties_signal);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtXvsSumEtMC_, f_metX_vs_sumEt_mc,
+			 "Simulation", 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metXvsSumEtFitMC",
+			 &plotUvsQtNumObj->graphMEtXvsSumEtMCsysUncertainty_, &f_metX_vs_sumEt_mcSysUncertainties);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtXvsSumEtData_, f_metX_vs_sumEt_data,
+			 "Data", 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metXvsSumEtFitData");
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtYvsSumEtMC_signal_, f_metY_vs_sumEt_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metYvsSumEtFitMCsignal",
+			 &plotUvsQtNumObj->graphMEtYvsSumEtMCsysUncertainty_signal_, &f_metY_vs_sumEt_mcSysUncertainties_signal);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtYvsSumEtMC_, f_metY_vs_sumEt_mc,
+			 "Simulation", 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metYvsSumEtFitMC",
+			 &plotUvsQtNumObj->graphMEtYvsSumEtMCsysUncertainty_, &f_metY_vs_sumEt_mcSysUncertainties);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtYvsSumEtData_, f_metY_vs_sumEt_data,
+			 "Data", 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metYvsSumEtFitData");
 
-  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_signal_, f_metX_vs_sumEtExclMuons_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metXvsSumEtExclMuonsFitMCsignal",
+			 &plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMCsysUncertainty_signal_, &f_metX_vs_sumEtExclMuons_mcSysUncertainties_signal);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_, f_metX_vs_sumEtExclMuons_mc,
+			 "Simulation", 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metXvsSumEtExclMuonsFitMC",
+			 &plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMCsysUncertainty_, &f_metX_vs_sumEtExclMuons_mcSysUncertainties);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsData_, f_metX_vs_sumEtExclMuons_data,
+			 "Data", 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metXvsSumEtExclMuonsFitData");
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_signal_, f_metY_vs_sumEtExclMuons_mc_signal,
+			 "Sim. Z #rightarrow #mu^{+} #mu^{-}", 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metYvsSumEtFitExclMuonsMCsignal",
+			 &plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMCsysUncertainty_signal_, &f_metY_vs_sumEtExclMuons_mcSysUncertainties_signal);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_, f_metY_vs_sumEtExclMuons_mc,
+			 "Simulation", 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metYvsSumEtExclMuonsFitMC",
+			 &plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMCsysUncertainty_, &f_metY_vs_sumEtExclMuons_mcSysUncertainties);
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 
+			 plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsData_, f_metY_vs_sumEtExclMuons_data,
+			 "Data", 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 75., true, 0.50,
+			 outputFileName, "metYvsSumEtExclMuonsFitData");
+
+  drawData_vs_MCcomparison(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 
 			   "Data", plotUvsQtNumObj->graphUparlResponseData_, 
 			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphUparlResponseMC_signal_,
 			   "Simulation", plotUvsQtNumObj->graphUparlResponseMC_, 
 			   0.62, 0.165, false, true, "<-u_{#parallel} /q_{T}>", 0.4, 1.2, true, 0.20,
 			   outputFileName, "uParlResponseData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResponseMCsysUncertainty_);
-  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 			   
+  drawData_vs_MCcomparison(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 			   
 			   "Data", plotUvsQtNumObj->graphUparlResolutionData_, 
 			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphUparlResolutionMC_signal_, 
 			   "Simulation", plotUvsQtNumObj->graphUparlResolutionMC_, 
 			   0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., true, 0.50, 
 			   outputFileName, "uParlResolutionData_vs_MC",
 			   &plotUvsQtNumObj->graphUparlResolutionMCsysUncertainty_);
-  drawData_vs_MCcomparison(canvas, dummyHistogram, plotUvsQtNumObj->plotLabel_, 			   
+  drawData_vs_MCcomparison(canvas, dummyHistogram_qT, plotUvsQtNumObj->plotLabel_, 			   
 			   "Data", plotUvsQtNumObj->graphUperpResolutionData_, 
 			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphUperpResolutionMC_signal_, 
 			   "Simulation", plotUvsQtNumObj->graphUperpResolutionMC_, 
 			   0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50., true, 0.50,
 			   outputFileName, "uPerpResolutionData_vs_MC",
 			   &plotUvsQtNumObj->graphUperpResolutionMCsysUncertainty_);
-
+  drawData_vs_MCcomparison(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 			   
+			   "Data", plotUvsQtNumObj->graphMEtXvsSumEtData_, 
+			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphMEtXvsSumEtMC_signal_, 
+			   "Simulation", plotUvsQtNumObj->graphMEtXvsSumEtMC_, 
+			   0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 50., true, 0.50,
+			   outputFileName, "metXvsSumEtData_vs_MC",
+			   &plotUvsQtNumObj->graphMEtXvsSumEtMCsysUncertainty_);
+  drawData_vs_MCcomparison(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 			   
+			   "Data", plotUvsQtNumObj->graphMEtYvsSumEtData_, 
+			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphMEtYvsSumEtMC_signal_, 
+			   "Simulation", plotUvsQtNumObj->graphMEtYvsSumEtMC_, 
+			   0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 50., true, 0.50,
+			   outputFileName, "metYvsSumEtData_vs_MC",
+			   &plotUvsQtNumObj->graphMEtYvsSumEtMCsysUncertainty_);
+  drawData_vs_MCcomparison(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 			   
+			   "Data", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsData_, 
+			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_signal_, 
+			   "Simulation", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_, 
+			   0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 50., true, 0.50,
+			   outputFileName, "metXvsSumEtExclMuonsData_vs_MC",
+			   &plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMCsysUncertainty_);
+  drawData_vs_MCcomparison(canvas, dummyHistogram_sumEt, plotUvsQtNumObj->plotLabel_, 			   
+			   "Data", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsData_, 
+			   "Sim. Z #rightarrow #mu^{+} #mu^{-}", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_signal_, 
+			   "Simulation", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_, 
+			   0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 50., true, 0.50,
+			   outputFileName, "metYvsSumEtExclMuonsData_vs_MC",
+			   &plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMCsysUncertainty_);
+  
   delete f_uParl_div_qT_mean_data;
   delete f_uParl_rms_data;
   delete f_uPerp_rms_data;
+  delete f_metX_vs_sumEt_data;
+  delete f_metY_vs_sumEt_data;
+  delete f_metX_vs_sumEtExclMuons_data;
+  delete f_metY_vs_sumEtExclMuons_data;
   delete f_uParl_div_qT_mean_mc_signal;
   delete f_uParl_rms_mc_signal;
   delete f_uPerp_rms_mc_signal;
+  delete f_metX_vs_sumEt_mc_signal;
+  delete f_metY_vs_sumEt_mc_signal;
+  delete f_metX_vs_sumEtExclMuons_mc_signal;
+  delete f_metY_vs_sumEtExclMuons_mc_signal;  
   delete f_uParl_div_qT_mean_mc;
   delete f_uParl_rms_mc;
   delete f_uPerp_rms_mc;
+  delete f_metX_vs_sumEt_mc;
+  delete f_metY_vs_sumEt_mc;
+  delete f_metX_vs_sumEtExclMuons_mc;
+  delete f_metY_vs_sumEtExclMuons_mc;
   for ( int iSysUncertainty = 0; iSysUncertainty < numSysUncertainties; ++iSysUncertainty ) {    
     delete f_uParl_div_qT_mean_mcSysUncertainties_signal[iSysUncertainty];
     delete f_uParl_rms_mcSysUncertainties_signal[iSysUncertainty];
     delete f_uPerp_rms_mcSysUncertainties_signal[iSysUncertainty];
+    delete f_metX_vs_sumEt_mcSysUncertainties_signal[iSysUncertainty];
+    delete f_metY_vs_sumEt_mcSysUncertainties_signal[iSysUncertainty];
+    delete f_metX_vs_sumEtExclMuons_mcSysUncertainties_signal[iSysUncertainty];
+    delete f_metY_vs_sumEtExclMuons_mcSysUncertainties_signal[iSysUncertainty];
     delete f_uParl_div_qT_mean_mcSysUncertainties[iSysUncertainty];
     delete f_uParl_rms_mcSysUncertainties[iSysUncertainty];
     delete f_uPerp_rms_mcSysUncertainties[iSysUncertainty];
+    delete f_metX_vs_sumEt_mcSysUncertainties[iSysUncertainty];
+    delete f_metY_vs_sumEt_mcSysUncertainties[iSysUncertainty];
+    delete f_metX_vs_sumEtExclMuons_mcSysUncertainties[iSysUncertainty];
+    delete f_metY_vs_sumEtExclMuons_mcSysUncertainties[iSysUncertainty];
   }
 
   delete canvas;
-  delete dummyHistogram;
+  delete dummyHistogram_qT;
+  delete dummyHistogram_sumEt;
 }
  
 template<typename T>
@@ -897,8 +1273,11 @@ void fitAndCompare(std::vector<plotUvsQtNumObjType*>& plotUvsQtNumObjs, const st
 {
   assert(plotUvsQtNumObjs.size() == legendEntries.size());
 
-  const double xMin = 0.;
-  const double xMax = 200.;
+  const double xMin_qT    =    0.;
+  const double xMax_qT    =  200.;
+
+  const double xMin_sumEt =    0.;
+  const double xMax_sumEt = 2500.;
 
   std::vector<TGraphAsymmErrors*> graphs_uParl_div_qT_mean_data;
   std::vector<TF1*> fitFunctions_uParl_div_qT_mean_data;
@@ -906,37 +1285,78 @@ void fitAndCompare(std::vector<plotUvsQtNumObjType*>& plotUvsQtNumObjs, const st
   std::vector<TF1*> fitFunctions_uParl_rms_data;
   std::vector<TGraphAsymmErrors*> graphs_uPerp_rms_data;
   std::vector<TF1*> fitFunctions_uPerp_rms_data;
-  
+  std::vector<TGraphAsymmErrors*> graphs_metX_vs_sumEt_data;
+  std::vector<TF1*> fitFunctions_metX_vs_sumEt_data;
+  std::vector<TGraphAsymmErrors*> graphs_metY_vs_sumEt_data;
+  std::vector<TF1*> fitFunctions_metY_vs_sumEt_data;
+  std::vector<TGraphAsymmErrors*> graphs_metX_vs_sumEtExclMuons_data;
+  std::vector<TF1*> fitFunctions_metX_vs_sumEtExclMuons_data;
+  std::vector<TGraphAsymmErrors*> graphs_metY_vs_sumEtExclMuons_data;
+  std::vector<TF1*> fitFunctions_metY_vs_sumEtExclMuons_data;
+
   std::vector<TGraphAsymmErrors*> graphs_uParl_div_qT_mean_mc;
   std::vector<TF1*> fitFunctions_uParl_div_qT_mean_mc;
   std::vector<TGraphAsymmErrors*> graphs_uParl_rms_mc;
   std::vector<TF1*> fitFunctions_uParl_rms_mc;
   std::vector<TGraphAsymmErrors*> graphs_uPerp_rms_mc;
   std::vector<TF1*> fitFunctions_uPerp_rms_mc;
+  std::vector<TGraphAsymmErrors*> graphs_metX_vs_sumEt_mc;
+  std::vector<TF1*> fitFunctions_metX_vs_sumEt_mc;
+  std::vector<TGraphAsymmErrors*> graphs_metY_vs_sumEt_mc;
+  std::vector<TF1*> fitFunctions_metY_vs_sumEt_mc;
+  std::vector<TGraphAsymmErrors*> graphs_metX_vs_sumEtExclMuons_mc;
+  std::vector<TF1*> fitFunctions_metX_vs_sumEtExclMuons_mc;
+  std::vector<TGraphAsymmErrors*> graphs_metY_vs_sumEtExclMuons_mc;
+  std::vector<TF1*> fitFunctions_metY_vs_sumEtExclMuons_mc;
 
   size_t numObjs = plotUvsQtNumObjs.size();
   for ( size_t iObj = 0; iObj < numObjs; ++iObj ) {
     plotUvsQtNumObjType* plotUvsQtNumObj = plotUvsQtNumObjs[iObj];
+    std::cout << " processing bin #" << iObj << ": " << plotUvsQtNumObj->meLabel_ << std::endl;
 
     graphs_uParl_div_qT_mean_data.push_back(plotUvsQtNumObj->graphUparlResponseData_);
     fitFunctions_uParl_div_qT_mean_data.push_back(
-      fitGraph_uParl_div_qT("f_uParl_div_qT_mean_data", plotUvsQtNumObj->graphUparlResponseData_, xMin, xMax));
+      fitGraph_uParl_div_qT("f_uParl_div_qT_mean_data", plotUvsQtNumObj->graphUparlResponseData_, xMin_qT, xMax_qT));
     graphs_uParl_rms_data.push_back(plotUvsQtNumObj->graphUparlResolutionData_);
     fitFunctions_uParl_rms_data.push_back(
-      fitGraph_uParl_rms("f_uParl_rms_data", plotUvsQtNumObj->graphUparlResolutionData_, xMin, xMax));
+      fitGraph_uParl_rms("f_uParl_rms_data", plotUvsQtNumObj->graphUparlResolutionData_, xMin_qT, xMax_qT));
     graphs_uPerp_rms_data.push_back(plotUvsQtNumObj->graphUperpResolutionData_);
     fitFunctions_uPerp_rms_data.push_back(
-      fitGraph_uPerp_rms("f_uPerp_rms_data", plotUvsQtNumObj->graphUperpResolutionData_, xMin, xMax));
+      fitGraph_uPerp_rms("f_uPerp_rms_data", plotUvsQtNumObj->graphUperpResolutionData_, xMin_qT, xMax_qT));
+    graphs_metX_vs_sumEt_data.push_back(plotUvsQtNumObj->graphMEtXvsSumEtData_);
+    fitFunctions_metX_vs_sumEt_data.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEt_data", plotUvsQtNumObj->graphMEtXvsSumEtData_, xMin_sumEt, xMax_sumEt));
+    graphs_metY_vs_sumEt_data.push_back(plotUvsQtNumObj->graphMEtYvsSumEtData_);
+    fitFunctions_metY_vs_sumEt_data.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEt_data", plotUvsQtNumObj->graphMEtYvsSumEtData_, xMin_sumEt, xMax_sumEt));
+    graphs_metX_vs_sumEtExclMuons_data.push_back(plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsData_);
+    fitFunctions_metX_vs_sumEtExclMuons_data.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEtExclMuons_data", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsData_, xMin_sumEt, xMax_sumEt));
+    graphs_metY_vs_sumEtExclMuons_data.push_back(plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsData_);
+    fitFunctions_metY_vs_sumEtExclMuons_data.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEtExclMuons_data", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsData_, xMin_sumEt, xMax_sumEt));
 
     graphs_uParl_div_qT_mean_mc.push_back(plotUvsQtNumObj->graphUparlResponseMC_);
     fitFunctions_uParl_div_qT_mean_mc.push_back(
-      fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc", plotUvsQtNumObj->graphUparlResponseMC_, xMin, xMax));
+      fitGraph_uParl_div_qT("f_uParl_div_qT_mean_mc", plotUvsQtNumObj->graphUparlResponseMC_, xMin_qT, xMax_qT));
     graphs_uParl_rms_mc.push_back(plotUvsQtNumObj->graphUparlResolutionMC_);
     fitFunctions_uParl_rms_mc.push_back(
-      fitGraph_uParl_rms("f_uParl_rms_mc", plotUvsQtNumObj->graphUparlResolutionMC_, xMin, xMax));
+      fitGraph_uParl_rms("f_uParl_rms_mc", plotUvsQtNumObj->graphUparlResolutionMC_, xMin_qT, xMax_qT));
     graphs_uPerp_rms_mc.push_back(plotUvsQtNumObj->graphUperpResolutionMC_);
     fitFunctions_uPerp_rms_mc.push_back(
-      fitGraph_uPerp_rms("f_uPerp_rms_mc", plotUvsQtNumObj->graphUperpResolutionMC_, xMin, xMax));
+      fitGraph_uPerp_rms("f_uPerp_rms_mc", plotUvsQtNumObj->graphUperpResolutionMC_, xMin_qT, xMax_qT));
+    graphs_metX_vs_sumEt_mc.push_back(plotUvsQtNumObj->graphMEtXvsSumEtMC_);
+    fitFunctions_metX_vs_sumEt_mc.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEt_mc", plotUvsQtNumObj->graphMEtXvsSumEtMC_, xMin_sumEt, xMax_sumEt));
+    graphs_metY_vs_sumEt_mc.push_back(plotUvsQtNumObj->graphMEtYvsSumEtMC_);
+    fitFunctions_metY_vs_sumEt_mc.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEt_mc", plotUvsQtNumObj->graphMEtYvsSumEtMC_, xMin_sumEt, xMax_sumEt));
+    graphs_metX_vs_sumEtExclMuons_mc.push_back(plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_);
+    fitFunctions_metX_vs_sumEtExclMuons_mc.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metX_vs_sumEtExclMuons_mc", plotUvsQtNumObj->graphMEtXvsSumEtExclMuonsMC_, xMin_sumEt, xMax_sumEt));
+    graphs_metY_vs_sumEtExclMuons_mc.push_back(plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_);
+    fitFunctions_metY_vs_sumEtExclMuons_mc.push_back(
+      fitGraph_metXorY_vs_sumEt("f_metY_vs_sumEtExclMuons_mc", plotUvsQtNumObj->graphMEtYvsSumEtExclMuonsMC_, xMin_sumEt, xMax_sumEt));
   }
 
   TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
@@ -946,34 +1366,108 @@ void fitAndCompare(std::vector<plotUvsQtNumObjType*>& plotUvsQtNumObjs, const st
   canvas->SetLeftMargin(0.12);
   canvas->SetBottomMargin(0.12);
 
-  TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", (xMax - xMin)/10., xMin, xMax);
+  TH1* dummyHistogram_qT = new TH1D("dummyHistogram_qT", "dummyHistogram_qT", (xMax_qT - xMin_qT)/10., xMin_qT, xMax_qT);
+  TH1* dummyHistogram_sumEt = new TH1D("dummyHistogram_sumEt", "dummyHistogram_sumEt", (xMax_sumEt - xMin_sumEt)/10., xMin_sumEt, xMax_sumEt); 
 
-  drawZllRecoilFitResult(canvas, dummyHistogram, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, 
 			 graphs_uParl_div_qT_mean_mc, fitFunctions_uParl_div_qT_mean_mc, drawGraphs && showMC, drawFits && showMC,
 			 graphs_uParl_div_qT_mean_data, fitFunctions_uParl_div_qT_mean_data, drawGraphs && showData, drawFits && showData,
 			 legendEntries, 0.61, 0.165, false, true, "-u_{#parallel} /q_{T}", 0.4, 1.2,
 			 outputFileName, "uParlResponseFit");
-  drawZllRecoilFitResult(canvas, dummyHistogram, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, 
 			 graphs_uParl_rms_mc, fitFunctions_uParl_rms_mc, drawGraphs && showMC, drawFits && showMC,
 			 graphs_uParl_rms_data, fitFunctions_uParl_rms_data, drawGraphs && showData, drawFits && showData,
 			 legendEntries, 0.19, 0.62, false, false, "RMS(u_{#parallel} ) / GeV", 0., 50., 
 			 outputFileName, "uParlResolutionFit");
-  drawZllRecoilFitResult(canvas, dummyHistogram, 
+  drawZllRecoilFitResult(canvas, dummyHistogram_qT, 
 			 graphs_uPerp_rms_mc, fitFunctions_uPerp_rms_mc, drawGraphs && showMC, drawFits && showMC,
 			 graphs_uPerp_rms_data, fitFunctions_uPerp_rms_data, drawGraphs && showData, drawFits && showData,
 			 legendEntries, 0.19, 0.62, false, false, "RMS(u_{#perp}  ) / GeV", 0., 50.,
 			 outputFileName, "uPerpResolutionFit");
+
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, 
+			 graphs_metX_vs_sumEt_mc, fitFunctions_metX_vs_sumEt_mc, drawGraphs && showMC, drawFits && showMC,
+			 graphs_metX_vs_sumEt_data, fitFunctions_metX_vs_sumEt_data, drawGraphs && showData, drawFits && showData,
+			 legendEntries, 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 50.,
+			 outputFileName, "metX_vs_sumEtFit");
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, 
+			 graphs_metY_vs_sumEt_mc, fitFunctions_metY_vs_sumEt_mc, drawGraphs && showMC, drawFits && showMC,
+			 graphs_metY_vs_sumEt_data, fitFunctions_metY_vs_sumEt_data, drawGraphs && showData, drawFits && showData,
+			 legendEntries, 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 50.,
+			 outputFileName, "metY_vs_sumEtFit");
+
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, 
+			 graphs_metX_vs_sumEtExclMuons_mc, fitFunctions_metX_vs_sumEtExclMuons_mc, drawGraphs && showMC, drawFits && showMC,
+			 graphs_metX_vs_sumEtExclMuons_data, fitFunctions_metX_vs_sumEtExclMuons_data, drawGraphs && showData, drawFits && showData,
+			 legendEntries, 0.19, 0.62, false, false, "RMS(E_{X}^{miss} ) / GeV", 0., 50.,
+			 outputFileName, "metX_vs_sumEtExclMuonsFit");
+  drawZllRecoilFitResult(canvas, dummyHistogram_sumEt, 
+			 graphs_metY_vs_sumEtExclMuons_mc, fitFunctions_metY_vs_sumEtExclMuons_mc, drawGraphs && showMC, drawFits && showMC,
+			 graphs_metY_vs_sumEtExclMuons_data, fitFunctions_metY_vs_sumEtExclMuons_data, drawGraphs && showData, drawFits && showData,
+			 legendEntries, 0.19, 0.62, false, false, "RMS(E_{Y}^{miss} ) / GeV", 0., 50.,
+			 outputFileName, "metY_vs_sumEtExclMuonsFit");
   
   deleteAll(fitFunctions_uParl_div_qT_mean_data);
   deleteAll(fitFunctions_uParl_rms_data);
   deleteAll(fitFunctions_uPerp_rms_data);
+  deleteAll(fitFunctions_metX_vs_sumEt_data);
+  deleteAll(fitFunctions_metY_vs_sumEt_data);
+  deleteAll(fitFunctions_metX_vs_sumEtExclMuons_data);
+  deleteAll(fitFunctions_metY_vs_sumEtExclMuons_data);
 
   deleteAll(fitFunctions_uParl_div_qT_mean_mc);
   deleteAll(fitFunctions_uParl_rms_mc);
   deleteAll(fitFunctions_uPerp_rms_mc);
-
+  deleteAll(fitFunctions_metX_vs_sumEt_mc);
+  deleteAll(fitFunctions_metY_vs_sumEt_mc);
+  deleteAll(fitFunctions_metX_vs_sumEtExclMuons_mc);
+  deleteAll(fitFunctions_metY_vs_sumEtExclMuons_mc);
+  
   delete canvas;
-  delete dummyHistogram;
+  delete dummyHistogram_qT;
+  delete dummyHistogram_sumEt;
+}
+
+TH1* makePullHistogram_corrected(TH3* histogram, const std::string& process, TGraph* graphUparlResponse)
+{
+  std::cout << "<makePullHistogram_corrected>:" << std::endl;
+  std::cout << " histogram = " << histogram->GetName() << ": integral = " << histogram->Integral() << std::endl;
+  std::cout << " process = " << process << std::endl;
+  double histogram_integral = histogram->Integral();
+  std::string histogramName_corrected = std::string(histogram->GetName()).append("_").append(process).append("_corrected");
+  TH1* histogram_corrected = new TH1D(histogramName_corrected.data(), histogramName_corrected.data(), 200, -10., +10.);  
+  TAxis* xAxis = histogram->GetXaxis();
+  TAxis* yAxis = histogram->GetYaxis();
+  TAxis* zAxis = histogram->GetZaxis();
+  for ( int iBinX = 1; iBinX <= xAxis->GetNbins(); ++iBinX ) {
+    double qT_or_uParl = xAxis->GetBinCenter(iBinX);
+    std::cout << "qT/uParl = " << qT_or_uParl << std::endl; 
+    double response = graphUparlResponse->Eval(qT_or_uParl);
+    std::cout << " response = " << response << std::endl;
+    for ( int iBinY = 1; iBinY <= yAxis->GetNbins(); ++iBinY ) {
+      double pull = yAxis->GetBinCenter(iBinY);
+      bool isFirst_printout = true;
+      for ( int iBinZ = 1; iBinZ <= zAxis->GetNbins(); ++iBinZ ) {
+	double sigma = zAxis->GetBinCenter(iBinZ);
+	
+	if ( sigma > 0. ) {
+	  double pull_corrected = pull + ((1.0 - response)*qT_or_uParl)/sigma;
+	  double sumEvtWeights = histogram->GetBinContent(iBinX, iBinY, iBinZ);
+
+	  if ( sumEvtWeights > (1.e-3*histogram_integral) ) {
+	    if ( isFirst_printout ) std::cout << " pull = " << pull << std::endl;
+	    std::cout << " sigma = " << sigma << std::endl;
+	    std::cout << " pull(corrected) = " << pull_corrected << std::endl;
+	    std::cout << " sumEvtWeights = " << sumEvtWeights << std::endl;
+	    isFirst_printout = false;
+	  }
+
+	  histogram_corrected->Fill(pull_corrected, sumEvtWeights);
+	}
+      }
+    }
+  }
+  return histogram_corrected;
 }
 
 std::string getOutputFileName_plot(const std::string& outputFileName, const std::string& plotLabel)
@@ -1028,6 +1522,7 @@ int main(int argc, const char* argv[])
 	sampleName != sampleNames.end(); ++sampleName ) {
     double scaleFactor = cfgScaleFactors.getParameter<double>(*sampleName);
     mcScaleFactors[*sampleName] = scaleFactor;
+    std::cout << "setting scale-factor for " << (*sampleName) << " = " << scaleFactor << std::endl;
   }
 
   vstring sysShiftsUp   = cfgMakeZllRecoilCorrectionPlots.getParameter<vstring>("sysShiftsUp");
@@ -1076,7 +1571,40 @@ int main(int argc, const char* argv[])
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for inclusive event sample..." << std::endl;
   fitAndMakeControlPlots(plotUvsQt, outputFileName);
+
+//--- make control plots of pulls 
+//     o (uParl - qT*response(qT))/sigma(uParl)
+//     o (uParl - qT*response(uParl))/sigma(uParl)
+  std::vector<variableEntryType> variables_pull;
+  variables_pull.push_back(variableEntryType("metPullParlZvsQt", "-(u_{#parallel} + q_{T}*response(q_{T})) / #sigmaE_{#parallel}^{miss}"));
+  variables_pull.push_back(variableEntryType("metPullParlZvsUparl", "-(u_{#parallel} + q_{T}*response(u_{#parallel})) / #sigmaE_{#parallel}^{miss}"));
+  for ( std::vector<variableEntryType>::const_iterator variable = variables_pull.begin();
+	variable != variables_pull.end(); ++variable ) {
+    TH3* meData = dynamic_cast<TH3*>(loadHistogram(inputFile, directoryData, mcScaleFactors, variable->meName_));
+    TH1* meData_corrected = makePullHistogram_corrected(meData, "Data", plotUvsQt->graphUparlResponseData_);
+
+    TH3* meMC_signal = dynamic_cast<TH3*>(loadHistogram(inputFile, directoryMC_signal, mcScaleFactors, variable->meName_));
+    TH1* meMC_signal_corrected = makePullHistogram_corrected(meMC_signal, "MC_signal", plotUvsQt->graphUparlResponseMC_signal_);
+
+    TH3* meMC_bgrSum = dynamic_cast<TH3*>(loadAndSumHistograms(inputFile, directoryMCs_background, mcScaleFactors, variable->meName_));
+    TH1* meMC_bgrSum_corrected = makePullHistogram_corrected(meMC_bgrSum, "MC_bgrSum", plotUvsQt->graphUparlResponseMC_signal_);
+
+    // CV: computation of systematic uncertainties not implemented for pull control plots yet
+    std::vector<double> errUp2MC_smSum(meData_corrected->GetNbinsX());
+    std::vector<double> errDown2MC_smSum(meData_corrected->GetNbinsX());
+
+    drawHistogram1d(*variable, meData_corrected, meMC_signal_corrected, meMC_bgrSum_corrected, runPeriod,
+		    errUp2MC_smSum, errDown2MC_smSum,
+		    false, true,  true,  true,  outputFileName);
+    drawHistogram1d(*variable, meData_corrected, meMC_signal_corrected, meMC_bgrSum_corrected, runPeriod,
+		    errUp2MC_smSum, errDown2MC_smSum,
+		    true,  true,  true,  true,  outputFileName);
+    drawHistogram1d(*variable, meData_corrected, meMC_signal_corrected, meMC_bgrSum_corrected, runPeriod,
+		    errUp2MC_smSum, errDown2MC_smSum,
+		    true,  false, false, false, outputFileName);
+  }
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT, rms(uPerp)/qT
 //    in different bins of reconstructed jet multiplicity
@@ -1085,24 +1613,28 @@ int main(int argc, const char* argv[])
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 10 GeV) = 0..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Eq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Eq0->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt10Eq1 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt10", 1,  1, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 10 GeV) = 1..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Eq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Eq1->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt10Eq2 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt10", 2,  2, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 10 GeV) = 2..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Eq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Eq2->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt10Ge3 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt10", 3, -1, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 10 GeV) >= 3..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt10Ge3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt10Ge3->meLabel_));
 
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Eq0 = 
@@ -1110,24 +1642,28 @@ int main(int argc, const char* argv[])
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 20 GeV) = 0..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Eq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Eq0->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Eq1 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt20", 1,  1, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background,
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 20 GeV) = 1..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Eq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Eq1->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Eq2 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt20", 2,  2, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 20 GeV) = 2..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Eq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Eq2->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt20Ge3 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt20", 3, -1, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 20 GeV) >= 3..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt20Ge3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt20Ge3->meLabel_));
 
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Eq0 = 
@@ -1135,24 +1671,28 @@ int main(int argc, const char* argv[])
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 30 GeV) = 0..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Eq0, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Eq0->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Eq1 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt30", 1,  1, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 30 GeV) = 1..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Eq1, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Eq1->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Eq2 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt30", 2,  2, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 30 GeV) = 2..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Eq2, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Eq2->meLabel_));
   plotUvsQtNumObjType* plotUvsQtNumJetsPtGt30Ge3 = 
     new plotUvsQtNumObjType(inputFile, "NumJetsPtGt30", 3, -1, "jet", 
 			    directoryData, directoryMC_signal, directoryMCs_background, 
 			    mcScaleFactors, runPeriod, sysShiftsUp, sysShiftsDown,
 			    isCaloMEt);
+  std::cout << "running fits for events with #jets(Pt > 30 GeV) >= 3..." << std::endl;
   fitAndMakeControlPlots(plotUvsQtNumJetsPtGt30Ge3, getOutputFileName_plot(outputFileName, plotUvsQtNumJetsPtGt30Ge3->meLabel_));
 
 //--- make plots of mean(uParl)/qT, rms(uParl)/qT and rms(uPerp)/qT
@@ -1187,6 +1727,7 @@ int main(int argc, const char* argv[])
   legendEntriesNvtx.push_back("12 Vertices");
   legendEntriesNvtx.push_back("20 Vertices");
   legendEntriesNvtx.push_back("28 Vertices");
+  std::cout << "running fits for different Nvtx..." << std::endl;
   fitAndCompare(plotUvsQtNumObjsNvtx, legendEntriesNvtx, true, false, true, false, 
 		getOutputFileName_plot(outputFileName, "puDependenceMC"));
   fitAndCompare(plotUvsQtNumObjsNvtx, legendEntriesNvtx, true, false, false, true, 
@@ -1217,6 +1758,7 @@ int main(int argc, const char* argv[])
   legendEntriesLeadJetEta.push_back("Lead. Jet Barrel");
   legendEntriesLeadJetEta.push_back("Lead. Jet Endcap");
   legendEntriesLeadJetEta.push_back("Lead. Jet Forward");
+  std::cout << "running fits for different lead. jet eta regions..." << std::endl;
   fitAndCompare(plotUvsQtNumObjsLeadJetEta, legendEntriesLeadJetEta, true, false, true, false, 
 		getOutputFileName_plot(outputFileName, "leadJetEtaDependenceMC"));
   fitAndCompare(plotUvsQtNumObjsLeadJetEta, legendEntriesLeadJetEta, true, false, false, true, 

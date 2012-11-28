@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: ZllRecoilCorrectionHistManager.h,v 1.14 2012/05/04 15:57:38 veelken Exp $
+ * $Id: ZllRecoilCorrectionHistManager.h,v 1.15 2012/08/28 15:01:37 veelken Exp $
  *
  */
 
@@ -26,6 +26,7 @@
 
 #include <TH1.h>
 #include <TH2.h>
+#include <TH3.h>
 #include <TMath.h>
 #include <TMatrixD.h>
 
@@ -56,6 +57,7 @@ class ZllRecoilCorrectionHistManager
   TH1* book1D(TFileDirectory&, const std::string&, const std::string&, int, double, double);
   TH2* book2D(TFileDirectory&, const std::string&, const std::string&, int, double, double, int, double, double);
   TH2* book2D(TFileDirectory&, const std::string&, const std::string&, int, double*, int, double, double);
+  TH3* book3D(TFileDirectory&, const std::string&, const std::string&, int, double*, int, double, double, int, double, double);
 
  private:
 
@@ -102,17 +104,25 @@ class ZllRecoilCorrectionHistManager
   
   TH1* histogramMEtS_;
   TH1* histogramMEtL_;
+  TH1* histogramMEtXL_;
   TH1* histogramMEtProjParlZ_;
   TH1* histogramMEtProjParlZxl_;
   TH1* histogramMEtProjPerpZ_;
   TH1* histogramMEtProjPerpZxl_;
   TH1* histogramMEtX_;
   TH2* histogramMEtXvsSumEt_;
+  TH2* histogramMEtXvsSumEtExclMuons_;
   TH2* histogramMEtXvsNumVertices_;
   TH1* histogramMEtY_;
   TH2* histogramMEtYvsSumEt_;
+  TH2* histogramMEtYvsSumEtExclMuons_;
   TH2* histogramMEtYvsNumVertices_;
   TH1* histogramMEtPhi_;
+
+  TH3* histogramMEtPullParlZvsQt_;
+  TH3* histogramMEtPullPerpZvsQt_;
+  TH3* histogramMEtPullParlZvsUparl_;
+  TH3* histogramMEtPullPerpZvsUparl_;
 
   TH1* histogramMEtCovSqrtEigenVal1_;
   TH1* histogramMEtCovSqrtEigenVal2_;
@@ -130,6 +140,8 @@ class ZllRecoilCorrectionHistManager
   TH2* histogramUperpDivQtVsQt_;
   TH2* histogramUperpVsQt_;
   TH1* histogramQt_;
+  TH1* histogramSumEt_;
+  TH1* histogramSumEtExclMuons_;
 
   struct histogramsUvsQtNumObjType
   {
@@ -175,13 +187,22 @@ class ZllRecoilCorrectionHistManager
       histogramQt_ = histManager->book1D(
         dir, TString("qT").Append(label).Data(),                "q_{T}",  
 	600, 0., 300.);
+      histogramSumEt_ = histManager->book1D(
+        dir, TString("sumEt").Append(label).Data(),             "#Sigma E_{T}",  
+	600, 0., 3000.);
+      histogramSumEtExclMuons_ = histManager->book1D(
+        dir, TString("sumEtExclMuons").Append(label).Data(),    "#Sigma E_{T} (excl. Muons)",  
+	600, 0., 3000.);
 
       histogramMEtX_ = histManager->book1D(
         dir, TString("metX").Append(label).Data(),              "E_{X}^{miss}", 
 	75, -75.0, +75.0);
       histogramMEtXvsSumEt_ = histManager->book2D(
         dir, TString("metXvsSumEt").Append(label).Data(),       "E_{X}^{miss} vs. #Sigma E_{T}",           
-	100, 0., 1000., 150, -75.0, +75.0);
+	60, 0., 3000., 150, -75.0, +75.0);
+      histogramMEtXvsSumEtExclMuons_ = histManager->book2D(
+        dir, TString("metXvsSumEtExclMuons").Append(label).Data(), "E_{X}^{miss} vs. #Sigma E_{T} (excl. Muons)",           
+	60, 0., 3000., 150, -75.0, +75.0);
       histogramMEtXvsNumVertices_ = histManager->book2D(
 	dir, TString("metXvsNumVertices").Append(label).Data(), "E_{X}^{miss} vs. Num. Vertices",           
 	35, -0.5, 34.5, 150, -75.0, +75.0);
@@ -190,7 +211,10 @@ class ZllRecoilCorrectionHistManager
 	75, -75.0, +75.0);      
       histogramMEtYvsSumEt_ = histManager->book2D(
         dir, TString("metYvsSumEt").Append(label).Data(),       "E_{Y}^{miss} vs. #Sigma E_{T}",           
-	100, 0., 1000., 150, -75.0, +75.0);
+	60, 0., 3000., 150, -75.0, +75.0);
+      histogramMEtYvsSumEtExclMuons_ = histManager->book2D(
+        dir, TString("metYvsSumEtExclMuons").Append(label).Data(), "E_{Y}^{miss} vs. #Sigma E_{T} (excl. Muons)",           
+	60, 0., 3000., 150, -75.0, +75.0);
       histogramMEtYvsNumVertices_ = histManager->book2D(
 	dir, TString("metYvsNumVertices").Append(label).Data(), "E_{Y}^{miss} vs. Num. Vertices",           
 	35, -0.5, 34.5, 150, -75.0, +75.0);
@@ -204,19 +228,23 @@ class ZllRecoilCorrectionHistManager
     }
     void fillHistograms(double qT, double uParl, double uPerp, double metPx, double metPy, 
 			double metParl, double metSigmaParl, double metPerp, double metSigmaPerp, 
-			double sumEt, int vtxMultiplicity, double evtWeight)
+			double sumEt, double sumEt_exclMuons, int vtxMultiplicity, double evtWeight)
     {
       if ( qT > 0. ) histogramUparlDivQtVsQt_->Fill(qT, uParl/qT, evtWeight);
       histogramUparlVsQt_->Fill(qT, uParl, evtWeight);
       if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
       histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
       histogramQt_->Fill(qT, evtWeight);
+      histogramSumEt_->Fill(sumEt, evtWeight);
+      histogramSumEtExclMuons_->Fill(sumEt_exclMuons, evtWeight);
 
       histogramMEtX_->Fill(metPx, evtWeight);
       histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
+      histogramMEtXvsSumEtExclMuons_->Fill(sumEt_exclMuons, metPx, evtWeight);
       histogramMEtXvsNumVertices_->Fill(vtxMultiplicity, metPx, evtWeight);
       histogramMEtY_->Fill(metPy, evtWeight);
       histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
+      histogramMEtYvsSumEtExclMuons_->Fill(sumEt_exclMuons, metPy, evtWeight);
       histogramMEtYvsNumVertices_->Fill(vtxMultiplicity, metPy, evtWeight);
 
       if ( metSigmaParl > 0. ) histogramMEtPullParlZ_->Fill(metParl/metSigmaParl, evtWeight);
@@ -231,12 +259,16 @@ class ZllRecoilCorrectionHistManager
     TH2* histogramUperpDivQtVsQt_;
     TH2* histogramUperpVsQt_;
     TH1* histogramQt_;
+    TH1* histogramSumEt_;
+    TH1* histogramSumEtExclMuons_;
 
     TH1* histogramMEtX_;
     TH2* histogramMEtXvsSumEt_;
+    TH2* histogramMEtXvsSumEtExclMuons_;
     TH2* histogramMEtXvsNumVertices_;
     TH1* histogramMEtY_;
     TH2* histogramMEtYvsSumEt_;
+    TH2* histogramMEtYvsSumEtExclMuons_;
     TH2* histogramMEtYvsNumVertices_;
 
     TH1* histogramMEtPullParlZ_;

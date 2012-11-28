@@ -84,7 +84,8 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
   histogramNumBTagJetsCorrPtGt40_ = book1D(dir, "numBTagJetsCorrPtGt40", "Num. Jets (P_{T}^{corr} > 40 GeV && b-tag)", 10, -0.5, 9.5);
 
   histogramMEtS_               = book1D(dir, "metS",               "E_{T}^{miss}",                            30,          0.0,         60.0);
-  histogramMEtL_               = book1D(dir, "metL",               "E_{T}^{miss}",                            75,          0.0,        150.0);
+  histogramMEtL_               = book1D(dir, "metL",               "E_{T}^{miss}",                           100,          0.0,        200.0);
+  histogramMEtXL_              = book1D(dir, "metXL",              "E_{T}^{miss}",                          1000,          0.0,       1000.0);
   histogramMEtProjParlZ_       = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",           75,        -75.0,        +75.0);
   histogramMEtProjParlZxl_     = book1D(dir, "metProjParlZxl",     "E_{T}^{miss} Proj. parallel Z",          300,       -150.0,       +150.0);
   histogramMEtProjPerpZ_       = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",              50,        -50.0,        +50.0);
@@ -103,6 +104,7 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 					 "#sigmaE_{#parallel}^{miss}",                                       100,          0.,         100.);           
   histogramMEtPullParlZ_        = book1D(dir, "metPullParlZ",       
 					"E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss}",                 200,        -10.,         +10.);          
+
   histogramMEtSigmaPerpZ_       = book1D(dir, "metSigmaPerpZ",
 					 "#sigmaE_{#perp}^{miss}",                                           100,          0.,         100.);  
   histogramMEtPullPerpZ_        = book1D(dir, "metPullPerpZ",       
@@ -110,21 +112,35 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 
   histogramUparl_              = book1D(dir, "uParl",              "u_{#parallel}",                          140,       -275.0,        +75.0);
   histogramUperp_              = book1D(dir, "uPerp",              "u_{#perp}",                               50,        -50.0,        +50.0);
-
-  histogramMEtXvsSumEt_       = book2D(dir, "metXvsSumEt", "E_{X}^{miss} vs. #Sigma E_{T}",           
-				       100, 0., 1000., 150, -75.0, +75.0);
-  histogramMEtXvsNumVertices_ = book2D(dir, "metXvsNumVertices", "E_{X}^{miss} vs. Num. Vertices",           
-				       35, -0.5, 34.5, 150, -75.0, +75.0);
-  histogramMEtYvsSumEt_       = book2D(dir, "metYvsSumEt", "E_{Y}^{miss} vs. #Sigma E_{T}",           
-				       100, 0., 1000., 150, -75.0, +75.0);
-  histogramMEtYvsNumVertices_ = book2D(dir, "metYvsNumVertices", "E_{Y}^{miss} vs. Num. Vertices",           
-				       35, -0.5, 34.5, 150, -75.0, +75.0);
+  
+  histogramMEtXvsSumEt_          = book2D(dir, "metXvsSumEt", "E_{X}^{miss} vs. #Sigma E_{T}",           
+					  60, 0., 3000., 150, -75.0, +75.0);
+  histogramMEtXvsSumEtExclMuons_ = book2D(dir, "metXvsSumEtExclMuons", "E_{X}^{miss} vs. #Sigma E_{T} (excl. Muons)",           
+					  60, 0., 3000., 150, -75.0, +75.0);
+  histogramMEtXvsNumVertices_    = book2D(dir, "metXvsNumVertices", "E_{X}^{miss} vs. Num. Vertices",           
+					  35, -0.5, 34.5, 150, -75.0, +75.0);
+  histogramMEtYvsSumEt_          = book2D(dir, "metYvsSumEt", "E_{Y}^{miss} vs. #Sigma E_{T}",           
+					  60, 0., 3000., 150, -75.0, +75.0);
+  histogramMEtYvsSumEtExclMuons_ = book2D(dir, "metYvsSumEtExclMuons", "E_{Y}^{miss} vs. #Sigma E_{T} (excl. Muons)",           
+					  60, 0., 3000., 150, -75.0, +75.0);
+  histogramMEtYvsNumVertices_    = book2D(dir, "metYvsNumVertices", "E_{Y}^{miss} vs. Num. Vertices",           
+					  35, -0.5, 34.5, 150, -75.0, +75.0);
   
   const int qTnumBins = 34;
   double qTbinning[qTnumBins + 1] = { 
     0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5, 20., 22.5, 25., 27.5, 30., 35., 40., 45., 50., 
     60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 160., 170., 180., 200., 220., 240., 260., 300.
   };
+
+  histogramMEtPullParlZvsQt_    = book3D(dir, "metPullParlZvsQt",       
+					 "E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss} vs. q_{T}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);      
+  histogramMEtPullPerpZvsQt_    = book3D(dir, "metPullPerpZvsQt",       
+					 "E_{#perp}^{miss} / #sigmaE_{#perp}^{miss} vs. q_{T}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);          
+  histogramMEtPullParlZvsUparl_ = book3D(dir, "metPullParlZvsUparl",       
+					 "E_{#parallel}^{miss} / #sigmaE_{#parallel}^{miss} vs. u_{#parallel}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);      
+  histogramMEtPullPerpZvsUparl_ = book3D(dir, "metPullPerpZvsUparl",       
+					 "E_{#perp}^{miss} / #sigmaE_{#perp}^{miss} vs. u_{#parallel}", qTnumBins, qTbinning, 200, -10., +10., 100, 0., 50.);    
+
   histogramUparlDivQtVsQt_ = book2D(dir, "uParlDivQtVsQt", "u_{#parallel}/q_{T} vs q_{T}",                           
 				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
   histogramUparlVsQt_      = book2D(dir, "uParlVsQt",      "u_{#parallel} vs q_{T}",                           
@@ -135,6 +151,10 @@ void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 				    qTnumBins, qTbinning,  60, -75.0,  +75.0);
   histogramQt_             = book1D(dir, "qT",             "q_{T}",  
 				    600, 0., 300.);
+  histogramSumEt_          = book1D(dir, "sumEt",          "#Sigma E_{T}",  
+				    600, 0., 3000.);
+  histogramSumEtExclMuons_ = book1D(dir, "sumEtExclMuons", "#Sigma E_{T} (excl. Muons)",  
+				    600, 0., 3000.);
   
   histogramsUvsQtNumVtxBinned_.push_back(
     new histogramsUvsQtNumObjType(this, dir, qTnumBins, qTbinning, "NumVertices", -1,  2));
@@ -338,6 +358,7 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 
   histogramMEtS_->Fill(met.pt(), evtWeight);
   histogramMEtL_->Fill(met.pt(), evtWeight);
+  histogramMEtXL_->Fill(met.pt(), evtWeight);
 
   if ( ZllCand.mass() > 76. && ZllCand.mass() < 106. && numBTagJetsCorrPtGt30 == 0 ) { // cuts to suppress TTbar background
     
@@ -348,6 +369,8 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     double metPx = met.px();
     double metPy = met.py();
     double sumEt = met.sumEt();
+    double sumEt_exclMuons = sumEt - (p4LepPlus.pt() + p4LepMinus.pt()); // CV: compute sumEt for reconstructed hadrons only 
+                                                                         //    (neglecting the contribution to muon Pt uncertainties to reconstructed MEt)
     
     double metProjParlZ = (qX*metPx + qX*metPy)/qT;
     double metProjPerpZ = (qX*metPy - qY*metPx)/qT;
@@ -359,9 +382,11 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     
     histogramMEtX_->Fill(metPx, evtWeight);
     histogramMEtXvsSumEt_->Fill(sumEt, metPx, evtWeight);
+    histogramMEtXvsSumEtExclMuons_->Fill(sumEt_exclMuons, metPx, evtWeight);
     histogramMEtXvsNumVertices_->Fill(vtxMultiplicity, metPx, evtWeight);
     histogramMEtY_->Fill(metPy, evtWeight);
     histogramMEtYvsSumEt_->Fill(sumEt, metPy, evtWeight);
+    histogramMEtYvsSumEtExclMuons_->Fill(sumEt_exclMuons, metPy, evtWeight);
     histogramMEtYvsNumVertices_->Fill(vtxMultiplicity, metPy, evtWeight);
     histogramMEtPhi_->Fill(met.phi(), evtWeight);
 
@@ -391,6 +416,8 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
       if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT, evtWeight);
       histogramUperpVsQt_->Fill(qT, uPerp, evtWeight);
       histogramQt_->Fill(qT, evtWeight);
+      histogramSumEt_->Fill(sumEt, evtWeight);
+      histogramSumEtExclMuons_->Fill(sumEt_exclMuons, evtWeight);
                  
       reco::Candidate::LorentzVector met_rotated = compP4inZetaFrame(met.p4(), ZllCand.phi());
       double metParl = met_rotated.px();
@@ -399,9 +426,17 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
       double metSigmaParl = TMath::Sqrt(TMath::Abs(metCov_rotated(0, 0)));
       double metSigmaPerp = TMath::Sqrt(TMath::Abs(metCov_rotated(1, 1)));
       histogramMEtSigmaParlZ_->Fill(metSigmaParl, evtWeight);
-      if ( metSigmaParl > 0. ) histogramMEtPullParlZ_->Fill(metParl/metSigmaParl, evtWeight);
+      if ( metSigmaParl > 0. ) {
+	histogramMEtPullParlZ_->Fill(metParl/metSigmaParl, evtWeight);
+	histogramMEtPullParlZvsQt_->Fill(qT, metParl/metSigmaParl, metSigmaParl, evtWeight);
+	histogramMEtPullParlZvsUparl_->Fill(uParl, metParl/metSigmaParl, metSigmaParl, evtWeight);
+      }
       histogramMEtSigmaPerpZ_->Fill(metSigmaPerp, evtWeight);      
-      if ( metSigmaPerp > 0. ) histogramMEtPullPerpZ_->Fill(metPerp/metSigmaPerp, evtWeight);
+      if ( metSigmaPerp > 0. ) {
+	histogramMEtPullPerpZ_->Fill(metPerp/metSigmaPerp, evtWeight);
+	histogramMEtPullPerpZvsQt_->Fill(qT, metPerp/metSigmaPerp, metSigmaPerp, evtWeight);
+	histogramMEtPullPerpZvsUparl_->Fill(uParl, metPerp/metSigmaPerp, metSigmaPerp, evtWeight);
+      }
 
       for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumVtxBinned_.begin();
 	    it != histogramsUvsQtNumVtxBinned_.end(); ++it ) {
@@ -409,7 +444,7 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	     ((*it)->numObjMax_ == -1 || vtxMultiplicity <= (*it)->numObjMax_) ) {
 	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
 				metParl, metSigmaParl, metPerp, metSigmaPerp,
-				sumEt, vtxMultiplicity, evtWeight);
+				sumEt, sumEt_exclMuons, vtxMultiplicity, evtWeight);
 	}
       }
 
@@ -419,7 +454,7 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	     ((*it)->numObjMax_ == -1 || numJetsCorrPtGt10 <= (*it)->numObjMax_) ) {
 	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
 				metParl, metSigmaParl, metPerp, metSigmaPerp,
-				sumEt, vtxMultiplicity, evtWeight);
+				sumEt, sumEt_exclMuons, vtxMultiplicity, evtWeight);
 	}
       }
       for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt20Binned_.begin();
@@ -428,7 +463,7 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	     ((*it)->numObjMax_ == -1 || numJetsCorrPtGt20 <= (*it)->numObjMax_) ) {
 	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
 				metParl, metSigmaParl, metPerp, metSigmaPerp,
-				sumEt, vtxMultiplicity, evtWeight);
+				sumEt, sumEt_exclMuons, vtxMultiplicity, evtWeight);
 	}
       }
       for ( std::vector<histogramsUvsQtNumObjType*>::iterator it = histogramsUvsQtNumJetsPtGt30Binned_.begin();
@@ -437,7 +472,7 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	     ((*it)->numObjMax_ == -1 || numJetsCorrPtGt30 <= (*it)->numObjMax_) ) {
 	  (*it)->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
 				metParl, metSigmaParl, metPerp, metSigmaPerp,
-				sumEt, vtxMultiplicity, evtWeight);
+				sumEt, sumEt_exclMuons, vtxMultiplicity, evtWeight);
 	}
       }
 
@@ -456,15 +491,15 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
 	if      ( TMath::Abs(leadJetEta) < 1.5 ) 
 	  histogramsUvsQtLeadJetBarrel_->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
 							metParl, metSigmaParl, metPerp, metSigmaPerp,
-							sumEt, vtxMultiplicity, evtWeight);
+							sumEt, sumEt_exclMuons, vtxMultiplicity, evtWeight);
 	else if ( TMath::Abs(leadJetEta) < 3.0 ) 
 	  histogramsUvsQtLeadJetEndcap_->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
 							metParl, metSigmaParl, metPerp, metSigmaPerp,
-							sumEt, vtxMultiplicity, evtWeight);
+							sumEt, sumEt_exclMuons, vtxMultiplicity, evtWeight);
 	else if ( TMath::Abs(leadJetEta) < 5.0 ) 
 	  histogramsUvsQtLeadJetForward_->fillHistograms(qT, uParl, uPerp, metPx, metPy, 
 							 metParl, metSigmaParl, metPerp, metSigmaPerp,
-							 sumEt, vtxMultiplicity, evtWeight);
+							 sumEt, sumEt_exclMuons, vtxMultiplicity, evtWeight);
       }
     }
 
@@ -527,6 +562,25 @@ TH2* ZllRecoilCorrectionHistManager::book2D(
        int numBinsX, double* xBinning, int numBinsY, double yMin, double yMax)				 
 {
   TH2* retVal = dir.make<TH2D>(distribution.data(), title.data(), numBinsX, xBinning, numBinsY, yMin, yMax);
+  histograms_.push_back(retVal);
+  return retVal;
+}
+
+TH3* ZllRecoilCorrectionHistManager::book3D(
+       TFileDirectory& dir, const std::string& distribution, const std::string& title, 
+       int numBinsX, double* xBinning, int numBinsY, double yMin, double yMax, int numBinsZ, double zMin, double zMax)				 
+{
+  TArrayD yBinning(numBinsY + 1);
+  double dY = (yMax - yMin)/numBinsY;
+  for ( int iBinY = 0; iBinY <= numBinsY; ++iBinY ) {
+    yBinning[iBinY] = yMin + iBinY*dY;
+  }
+  TArrayD zBinning(numBinsZ + 1);
+  double dZ = (zMax - zMin)/numBinsZ;
+  for ( int iBinZ = 0; iBinZ <= numBinsZ; ++iBinZ ) {
+    zBinning[iBinZ] = zMin + iBinZ*dZ;
+  }
+  TH3* retVal = dir.make<TH3D>(distribution.data(), title.data(), numBinsX, xBinning, numBinsY, yBinning.GetArray(), numBinsZ, zBinning.GetArray());
   histograms_.push_back(retVal);
   return retVal;
 }
