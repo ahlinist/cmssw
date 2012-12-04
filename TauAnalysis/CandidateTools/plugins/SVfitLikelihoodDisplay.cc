@@ -1152,18 +1152,19 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
   reco::Candidate::LorentzVector diTauP4 = matchedTau1->genTauP4_ + matchedTau2->genTauP4_;
   std::cout << " diTau: Mass = " << diTauP4.mass() << " "
 	    << "(visMass = " << (matchedTau1->genVisP4_ + matchedTau2->genVisP4_).mass() << ")," 
-	    << " Pt = " << diTauP4.pt() << std::endl;
+	    << " Pt = " << diTauP4.pt() << ", eta = " << diTauP4.eta() << ", phi = " << diTauP4.phi() << std::endl;
 
   reco::Candidate::LorentzVector genMEtP4 = matchedTau1->genInvisP4_ + matchedTau2->genInvisP4_;
   std::cout << " MEt(gen): Pt = " << genMEtP4.pt() << ", phi = " << genMEtP4.phi() << " "
 	    << "(Px = " << genMEtP4.px() << ", Py = " << genMEtP4.py() << ")" << std::endl;
   
-  edm::Handle<reco::PFMETCollection> recMETs;
+  typedef edm::View<reco::MET> METView;
+  edm::Handle<METView> recMETs;
   evt.getByLabel(srcMEt_, recMETs);
   if ( !(recMETs->size() == 1) )
     throw cms::Exception("SVfitLikelihoodDisplay::analyze") 
       << "Failed to find unique MET object !!\n";
-  const reco::PFMET& recMEt = recMETs->front();
+  const reco::MET& recMEt = recMETs->front();
   std::cout << " MEt(rec): Pt = " << recMEt.pt() << ", phi = " << recMEt.phi() << " "
 	    << "(Px = " << recMEt.px() << ", Py = " << recMEt.py() << ")" << std::endl;
 
@@ -1173,7 +1174,11 @@ void SVfitLikelihoodDisplay::analyze(const edm::Event& evt, const edm::EventSetu
     evt.getByLabel(srcMEtCov_, recMEtCovHandle);
     recMEtCov = (*recMEtCovHandle);
   } else {
-    recMEtCov = recMEt.getSignificanceMatrix();
+    const reco::PFMET* recPFMEt = dynamic_cast<const reco::PFMET*>(&recMEt);
+    if ( !recPFMEt ) 
+      throw cms::Exception("SVfitLikelihoodDisplay::analyze") 
+	<< "MET object must be of type reco::PFMET if Configuration Parameter 'srcMEtCov' is not specified !!\n";
+    recMEtCov = recPFMEt->getSignificanceMatrix();
   }
   std::cout << " covMEt(rec):" << std::endl;
   recMEtCov.Print();
