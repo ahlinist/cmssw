@@ -67,6 +67,34 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
   MonitorElement* genMass_;
   MonitorElement* genVisMass_;
 
+  MonitorElement* genDiTauPt_;
+  MonitorElement* genDiTauEta_;
+  MonitorElement* genDiTauPhi_;
+
+  MonitorElement* recDiTauPt_;
+  MonitorElement* recDiTauEta_;
+  MonitorElement* recDiTauPhi_;
+
+  MonitorElement* recLeg12MEtPt_;
+  MonitorElement* recLeg12MEtPhi_;
+
+  MonitorElement* deltaDiTauPt_;
+  MonitorElement* deltaDiTauPx_;
+  MonitorElement* deltaDiTauPy_;
+  MonitorElement* deltaDiTauEta_;
+  MonitorElement* deltaDiTauPhi_;
+  MonitorElement* deltaDiTauMass_;
+
+  MonitorElement* deltaLeg12MEtPt_;
+  MonitorElement* deltaLeg12MEtPx_;
+  MonitorElement* deltaLeg12MEtPy_;
+  MonitorElement* deltaLeg12MEtPhi_;
+
+  MonitorElement* deltaMEtPt_;
+  MonitorElement* deltaMEtPx_;
+  MonitorElement* deltaMEtPy_;
+  MonitorElement* deltaMEtPhi_;
+
   MonitorElement* svFitIsValidSolution_;
   
   MonitorElement* svFitMassVsSigmaDownXL_;
