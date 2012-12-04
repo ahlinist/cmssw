@@ -24,6 +24,12 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
     ),
+    dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
+    inputCommands=cms.untracked.vstring(
+        'keep *',
+        'drop LHERunInfoProduct_*_*_*',                        
+        'drop LHEEventProduct_*_*_*'
+    ),
     ##eventsToProcess = cms.untracked.VEventRange(
     ##    '1:2399:719456',
     ##    '1:2418:725094',
