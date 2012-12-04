@@ -22,20 +22,13 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
+        'file:/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/user/v/veelken/CMSSW_5_2_x/skims/genTauLeptonsPairAccSkim_ggHiggs125_mutau_5_1_sZL.root'
     ),
     eventsToProcess = cms.untracked.VEventRange(
-        #'1:2399:719456',
-        #'1:2399:719393'                        
-        #'1:2418:725094',
-        #'1:2418:725139',
-        #'1:2418:725278'
-        '1:2367:709922',
-        '1:2398:719150',
-        '1:2398:719242',
-        '1:2449:734448',
-        '1:2449:734537',
-        '1:2450:734750'                               
+        '1:1673:501590',
+        '1:1673:501684',
+        '1:1673:501726',
+        '1:1681:504011'
     )
 )
 
@@ -44,6 +37,11 @@ process.source = cms.Source("PoolSource",
 
 #sample_type = 'Z'
 sample_type = 'Higgs'
+#channel = 'etau'
+channel = 'mutau'
+#channel = 'emu'
+massPoint = '125'
+#massPoint = '300'
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -51,14 +49,16 @@ sample_type = 'Higgs'
 # in case running jobs on the CERN batch system/grid
 #
 #__sample_type = '#sample_type#'
+#__channel = '#channel#'
+#__massPoint = '#massPoint#'
 #
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # set input files
-inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/user/v/veelken/CMSSW_5_2_x/skims/'
+inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/user/v/veelken/CMSSW_5_2_x/skims/'
 inputFile_regex = \
-  r"[a-zA-Z0-9_/:.]*genTauLeptonsPairAccSkim_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root"
+  r"[a-zA-Z0-9_/:.]*genTauLeptonsPairAccSkim_(ggHiggs|ggPhi|vbfHiggs)%s_%s_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (massPoint, channel)
 
 # check if inputFile is PAT-tuple and
 # matches sampleToAnalyze, jobId
@@ -199,6 +199,19 @@ process.displaySVfitLikelihoodSequence += process.tauFilter
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# produce genMET
+process.load("RecoMET.Configuration.GenMETParticles_cff")
+process.displaySVfitLikelihoodSequence += process.genParticlesForMETAllVisible
+
+process.load("RecoMET.METProducers.genMetTrue_cfi")
+process.genMetFromGenParticles = process.genMetTrue.clone(
+    src = cms.InputTag('genParticlesForMETAllVisible'),
+    alias = cms.string('genMetFromGenParticles')
+)
+process.displaySVfitLikelihoodSequence += process.genMetFromGenParticles
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # reconstructed Type 1 corrected PFMET and its uncertainty 
 
 process.load("JetMETCorrections/Type1MET/pfMETCorrectionType0_cfi")
@@ -282,6 +295,16 @@ process.displaySVfitLikelihoodSequence += process.recEventVertexFilter
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# print list of generator level particles in the event
+##
+##process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
+##    src = cms.InputTag('genParticles'),
+##    maxEventsToPrint = cms.untracked.int32(100)
+##)
+##process.displaySVfitLikelihoodSequence += process.printGenParticleList
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # fill histograms
 
 process.displaySVfitLikelihood = cms.EDAnalyzer("SVfitLikelihoodDisplay",
@@ -290,6 +313,7 @@ process.displaySVfitLikelihood = cms.EDAnalyzer("SVfitLikelihoodDisplay",
     srcMuons = cms.InputTag('genMatchedMuons'),
     srcTaus = cms.InputTag('genMatchedTaus'),
     srcMEt = cms.InputTag('pfType1CorrectedMet'),
+    ##srcMEt = cms.InputTag('genMetFromGenParticles'),                                            
     srcMEtCov = cms.InputTag('pfMEtSignCovMatrix'),                                            
     srcVertices = cms.InputTag('selectedPrimaryVertexByLeptonMatch'),
     srcBeamSpot = cms.InputTag('offlineBeamSpot'),

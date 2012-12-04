@@ -17,15 +17,23 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(2000)
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
     ),
+    dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
+    inputCommands=cms.untracked.vstring(
+        'keep *',
+        'drop LHERunInfoProduct_*_*_*',                        
+        'drop LHEEventProduct_*_*_*'
+    ),
     ##eventsToProcess = cms.untracked.VEventRange(
-    ##    '1:3086:925614'
+    ##    '1:1673:501726',
+    ##    '1:1673:501684',
+    ##    '1:1673:501676'                                
     ##)
 )
 
@@ -37,8 +45,8 @@ sample_type = 'Higgs'
 #channel = 'etau'
 channel = 'mutau'
 #channel = 'emu'
-#massPoint = '125'
-massPoint = '300'
+massPoint = '125'
+#massPoint = '300'
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -384,32 +392,31 @@ process.nSVfitTauToElecBuilder.fixToGenVisEnFracX = cms.bool(False)
 process.nSVfitTauToElecBuilder.fixToGenPhiLab = cms.bool(False)
 process.nSVfitTauToElecBuilder.fixToGenNuInvMass = cms.bool(False)
 process.nSVfitTauToElecBuilder.fixToGenDeltaR = cms.bool(False)
-process.nSVfitTauToElecBuilder.fixToGenVisP4 = cms.bool(True)
-process.nSVfitTauToElecBuilder.initializeToGen = cms.bool(True)
-process.nSVfitTauToElecBuilder.srcGenTaus = cms.InputTag('genParticles')
+process.nSVfitTauToElecBuilder.fixToGenVisP4 = cms.bool(False)
+process.nSVfitTauToElecBuilder.initializeToGen = cms.bool(False)
+#process.nSVfitTauToElecBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToElecBuilder.dRmatch = cms.double(0.3)
 
 process.nSVfitTauToMuBuilder.fixToGenVisEnFracX = cms.bool(False)
 process.nSVfitTauToMuBuilder.fixToGenPhiLab = cms.bool(False)
 process.nSVfitTauToMuBuilder.fixToGenNuInvMass = cms.bool(False)
 process.nSVfitTauToMuBuilder.fixToGenDeltaR = cms.bool(False)
-process.nSVfitTauToMuBuilder.fixToGenVisP4 = cms.bool(True)
-process.nSVfitTauToMuBuilder.initializeToGen = cms.bool(True)
-process.nSVfitTauToMuBuilder.srcGenTaus = cms.InputTag('genParticles')
+process.nSVfitTauToMuBuilder.fixToGenVisP4 = cms.bool(False)
+process.nSVfitTauToMuBuilder.initializeToGen = cms.bool(False)
+#process.nSVfitTauToMuBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToMuBuilder.dRmatch = cms.double(0.3)
 
 process.nSVfitTauToHadBuilder.fixToGenVisEnFracX = cms.bool(False)
 process.nSVfitTauToHadBuilder.fixToGenPhiLab = cms.bool(False)
 process.nSVfitTauToHadBuilder.fixToGenDeltaR = cms.bool(False)
-process.nSVfitTauToHadBuilder.fixToGenVisP4 = cms.bool(True)
-process.nSVfitTauToHadBuilder.initializeToGen = cms.bool(True)
-process.nSVfitTauToHadBuilder.srcGenTaus = cms.InputTag('genParticles')
+process.nSVfitTauToHadBuilder.fixToGenVisP4 = cms.bool(False)
+process.nSVfitTauToHadBuilder.initializeToGen = cms.bool(False)
+#process.nSVfitTauToHadBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToHadBuilder.dRmatch = cms.double(0.3)
 
 # CV: fix event vertex position to Monte Carlo truth value
-process.nSVfitEventBuilder.fixToGenVertex = cms.bool(True)
-#process.nSVfitEventBuilder.fixToGenVertex = cms.bool(False)
-process.nSVfitEventBuilder.srcGenVertex = cms.InputTag('genEventVertex')
+process.nSVfitEventBuilder.fixToGenVertex = cms.bool(False)
+#process.nSVfitEventBuilder.srcGenVertex = cms.InputTag('genEventVertex')
 
 process.nSVfitElectronLikelihoodTrackInfo = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodTrackInfo"),
@@ -997,7 +1004,7 @@ for option1_vs_2 in [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 5, 6 ], [ 5, 7 ], [ 5, 8 ]
 process.DQMStore = cms.Service("DQMStore")
 
 process.savePlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string("/data1/veelken/tmp/svFitStudies/testNSVfitTrackLikelihoods2_%s_%s_%s_2012Sep10_genVisP4_genEvtVertex.root" % (sample_type, channel, massPoint))
+    outputFileName = cms.string("/data1/veelken/tmp/svFitStudies/testNSVfitTrackLikelihoods2_%s_%s_%s_2012Dec03.root" % (sample_type, channel, massPoint))
 )
 
 process.q = cms.EndPath(process.savePlots)
