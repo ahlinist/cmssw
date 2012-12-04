@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NeuralMtautauNtupleProducer.h,v 1.2 2012/02/22 09:46:03 veelken Exp $
+ * $Id: NeuralMtautauNtupleProducer.h,v 1.3 2012/03/08 10:31:49 veelken Exp $
  *
  */
 
@@ -48,6 +48,7 @@ class NeuralMtautauNtupleProducer : public edm::EDProducer
  private:
 
   void addBranch(const std::string&);
+  void addBranch_long(const std::string&); 
   void addBranch_EnPxPyPz(const std::string&);
   void addBranch_PxPy(const std::string&);
   void addBranch_Cov(const std::string&); 
@@ -55,8 +56,12 @@ class NeuralMtautauNtupleProducer : public edm::EDProducer
   void printBranches(std::ostream&);
 
   void setValue(const std::string&, double);
+  void setValue_long(const std::string&, unsigned long);
+  void setValue_EnPxPyPz(const std::string&, const reco::Candidate::LorentzVector&);
   void setValue_EnPxPyPz(const std::string&, const reco::Candidate::LorentzVector&, double);
+  void setValue_PxPy(const std::string&, const reco::Candidate::LorentzVector&);
   void setValue_PxPy(const std::string&, const reco::Candidate::LorentzVector&, double);
+  void setValue_Cov(const std::string&, const TMatrixD&);
   void setValue_Cov(const std::string&, const TMatrixD&, double);
 
   std::string moduleLabel_;
@@ -74,7 +79,14 @@ class NeuralMtautauNtupleProducer : public edm::EDProducer
   
   edm::InputTag srcPFMEtCovMatrix_;
 
-  typedef std::map<std::string, Float_t> branchMap; // key = branch name
+  struct branchEntryType
+  {
+    std::string name_;
+    Float_t value_float_;
+    ULong64_t value_long_;
+  };
+
+  typedef std::map<std::string, branchEntryType> branchMap; // key = branch name
   branchMap branches_;
 
   TTree* ntuple_;
