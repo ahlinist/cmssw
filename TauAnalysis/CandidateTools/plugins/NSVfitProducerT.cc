@@ -172,6 +172,7 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
     if ( !(isCombinatorialDuplicate || isOverlap) ) {
       std::auto_ptr<T> hypothesis(dynamic_cast<T*>(algorithm_->fit(inputParticles, eventVertex)));      
       assert(hypothesis.get());
+      //hypothesis->print(std::cout);
       nSVfitEventHypothesisCollection->push_back(*hypothesis);
       ++numSVfitCalls_;
     }
