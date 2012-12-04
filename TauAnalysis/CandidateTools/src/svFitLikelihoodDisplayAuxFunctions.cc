@@ -233,28 +233,29 @@ matchedTauDecayType::matchedTauDecayType(const reco::GenParticle* genTau, const 
 
 void matchedTauDecayType::print(std::ostream& stream) const
 {
-  stream << "genTau: En = " << genTauP4_.E() << ", P = " << genTauP4_.P() << "," 
+  stream << "genTau: En = " << genTauP4_.E() << ", Pt = " << genTauP4_.pt() << "," 
 	 << " eta = " << genTauP4_.eta() << ", phi = " << genTauP4_.phi() << std::endl;
   stream << "production vertex(gen): x = " << genTauProdVertexPos_(0) << ", y = " << genTauProdVertexPos_(1) << ", z = " << genTauProdVertexPos_(2) << std::endl;
   unsigned idx_daughter = 0;
   for ( std::vector<const reco::GenParticle*>::const_iterator genTauDecayProduct = genTauDecayProducts_.begin();
 	genTauDecayProduct != genTauDecayProducts_.end(); ++genTauDecayProduct ) {
-    if ( TMath::Abs((*genTauDecayProduct)->charge()) > 0.5 && (*genTauDecayProduct)->status() == 1 ) {
+    //if ( TMath::Abs((*genTauDecayProduct)->charge()) > 0.5 && (*genTauDecayProduct)->status() == 1 ) {
+    if ( (*genTauDecayProduct)->status() == 1 ) {
       stream << "daughter #" << idx_daughter << ": En = " << (*genTauDecayProduct)->energy() << ", Pt = " << (*genTauDecayProduct)->pt() << "," 
 	     << " eta = " << (*genTauDecayProduct)->eta() << ", phi = " << (*genTauDecayProduct)->phi() 
-	     << " (charge = " << (*genTauDecayProduct)->charge() << ")" << std::endl;
+	     << " (pdgId = " << (*genTauDecayProduct)->pdgId() << ", charge = " << (*genTauDecayProduct)->charge() << ")" << std::endl;
       ++idx_daughter;
     }
   }
-  stream << " vis: En = " << genVisP4_.E() << ", P = " << genVisP4_.P() << "," 
+  stream << " vis: En = " << genVisP4_.E() << ", Pt = " << genVisP4_.pt() << "," 
 	 << " eta = " << genVisP4_.eta() << ", phi = " << genVisP4_.phi() 
-	 << " (mass = " << genVisP4_.mass() << ")" << std::endl;
+	 << " (Px = " << genVisP4_.px() << ", Py = " << genVisP4_.py() << ", mass = " << genVisP4_.mass() << ")" << std::endl;
   stream << " X = " << (genVisP4_.E()/genTauP4_.E()) << std::endl;
   stream << " vis(rf): P = " << boostToCOM(genTauP4_, genVisP4_).P() << std::endl;
   stream << " angle(vis,tau) = " << angle(genVisP4_, genTauP4_) << std::endl;
-  stream << " invis: En = " << genInvisP4_.E() << ", P = " << genInvisP4_.P() << "," 
+  stream << " invis: En = " << genInvisP4_.E() << ", Pt = " << genInvisP4_.pt() << "," 
 	 << " eta = " << genInvisP4_.eta() << ", phi = " << genInvisP4_.phi() 
-	 << " (mass = " << genInvisP4_.mass() << ")" << std::endl;
+	 << " (Px = " << genInvisP4_.px() << ", Py = " << genInvisP4_.py() << ", mass = " << genInvisP4_.mass() << ")" << std::endl;
   stream << " angle(vis,invis) = " << angle(genVisP4_, genInvisP4_) << std::endl;
   stream << "decay vertex(gen): x = " << genTauDecayVertexPos_(0) << ", y = " << genTauDecayVertexPos_(1) << ", z = " << genTauDecayVertexPos_(2) 
 	 << " (d = " << genTauDecayDistance_ << ")" << std::endl;
@@ -265,19 +266,19 @@ void matchedTauDecayType::print(std::ostream& stream) const
   std::pair<const reco::Candidate::LorentzVector, const reco::Candidate::LorentzVector> p4Invis_reconstructed = 
     reconstructTauNeutrino(genTauP4_.theta(), genTauP4_.phi(), tauLeptonMass, genVisP4_, genInvisP4_.mass(), errorFlag);
   if ( !errorFlag ) {
-    stream << " invis(rec+): En = " << p4Invis_reconstructed.first.E() << ", P = " << p4Invis_reconstructed.first.P() << "," 
+    stream << " invis(rec+): En = " << p4Invis_reconstructed.first.E() << ", Pt = " << p4Invis_reconstructed.first.pt() << "," 
 	   << " eta = " << p4Invis_reconstructed.first.eta() << ", phi = " << p4Invis_reconstructed.first.phi() << " "
 	   << "(qjAngle = " << gjAngleFromLabMomenta(genTauP4_, genTauP4_ - p4Invis_reconstructed.first) << "," 
 	   << " phi_lab = " << phiLabFromLabMomenta(genTauP4_, genVisP4_) << ")" << std::endl;
-    stream << " invis(rec-): En = " << p4Invis_reconstructed.second.E() << ", P = " << p4Invis_reconstructed.second.P() << "," 
+    stream << " invis(rec-): En = " << p4Invis_reconstructed.second.E() << ", Pt = " << p4Invis_reconstructed.second.pt() << "," 
 	   << " eta = " << p4Invis_reconstructed.second.eta() << ", phi = " << p4Invis_reconstructed.second.phi() << " "
 	   << "(qjAngle = " << gjAngleFromLabMomenta(genTauP4_, genTauP4_ - p4Invis_reconstructed.second) << "," 
 	   << " phi_lab = " << phiLabFromLabMomenta(genTauP4_, genVisP4_) << ")" << std::endl;
   }
   stream << "decay-mode = " << genTauDecayMode_ << std::endl;
-  stream << " vis(rec): En = " << recVisP4_.E() << ", P = " << recVisP4_.P() << "," 
+  stream << " vis(rec): En = " << recVisP4_.E() << ", Pt = " << recVisP4_.pt() << "," 
 	 << " eta = " << recVisP4_.eta() << ", phi = " << recVisP4_.phi() 
-	 << " (mass = " << recVisP4_.mass() << ")" << std::endl;
+	 << " (Px = " << recVisP4_.px() << ", Py = " << recVisP4_.py() << ", mass = " << recVisP4_.mass() << ")" << std::endl;
   unsigned idx_track = 0;
   for ( std::vector<const reco::Track*>::const_iterator recTrack = recSelTracks_.begin();
 	recTrack != recSelTracks_.end(); ++recTrack ) {
