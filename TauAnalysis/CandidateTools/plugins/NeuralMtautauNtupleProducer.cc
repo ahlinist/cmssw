@@ -64,10 +64,12 @@ void NeuralMtautauNtupleProducer::beginJob()
   addBranch_EnPxPyPz("genTau1");
   addBranch_EnPxPyPz("genVis1");
   addBranch_EnPxPyPz("genNu1");
+  addBranch("genX1");
 
   addBranch_EnPxPyPz("genTau2");
   addBranch_EnPxPyPz("genVis2");
   addBranch_EnPxPyPz("genNu2");
+  addBranch("genX2");
   
   addBranch_EnPxPyPz("recVis1");
 
@@ -84,9 +86,14 @@ void NeuralMtautauNtupleProducer::beginJob()
   addBranch("recSigmaSVfit");
 
   addBranch("recVisMass");
-
   addBranch_PxPy("genMEt");
+
+  addBranch_EnPxPyPz("genDiTau");
   addBranch("genMtautau");
+
+  addBranch_long("run");
+  addBranch_long("lumisection");
+  addBranch_long("event");  
 }
 
 namespace
@@ -115,11 +122,16 @@ namespace
 
 void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup& es) 
 {
+  if ( verbosity_ ) {
+    std::cout << "<NeuralMtautauNtupleProducer::produce>:" << std::endl;
+  }
+
   edm::Handle<CandidateView> genTauPair;
   evt.getByLabel(srcGenTauPair_, genTauPair);
   if ( !genTauPair->size() == 1 ) 
     throw cms::Exception("InvalidData") 
       << "Failed to find unique gen. Tau-pair object !!\n";
+  const reco::Candidate::LorentzVector& genDiTauP4 = genTauPair->front().p4();
   double genMtautau = genTauPair->front().mass();
   
   edm::Handle<MEtView> genMEt;
@@ -219,6 +231,8 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
   setValue_Cov("recMEt", *pfMEtSignCovMatrix, zetaPhi);
   
   setValue_PxPy("genMEt", genMEtP4, zetaPhi);
+
+  setValue_EnPxPyPz("genDiTau", genDiTauP4);
   setValue("genMtautau", genMtautau);
 
   // determine generator level momenta of tau leptons, visible decay products and neutrinos produced in tau decays
@@ -278,10 +292,12 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
   setValue_EnPxPyPz("genTau1", genTau1P4, zetaPhi);
   setValue_EnPxPyPz("genVis1", genVis1P4, zetaPhi);
   setValue_EnPxPyPz("genNu1",  genNu1P4,  zetaPhi);
+  setValue("genX1", genVis1P4.E()/genTau1P4.E());
 
   setValue_EnPxPyPz("genTau2", genTau2P4, zetaPhi);
   setValue_EnPxPyPz("genVis2", genVis2P4, zetaPhi);
   setValue_EnPxPyPz("genNu2",  genNu2P4,  zetaPhi);
+  setValue("genX2", genVis2P4.E()/genTau2P4.E());
 
   // reconstruct mTauTau using SVfit for comparisson
   //
@@ -305,6 +321,10 @@ void NeuralMtautauNtupleProducer::produce(edm::Event& evt, const edm::EventSetup
   double visMass = (recVis1P4 + recVis2P4).mass();
   setValue("recVisMass", visMass);
 
+  setValue_long("run", evt.id().run());
+  setValue_long("lumisection", evt.luminosityBlock());
+  setValue_long("event", evt.id().event());  
+
 //--- finally, fill all computed quantities into TTree
   assert(ntuple_);
   ntuple_->Fill();
@@ -314,7 +334,14 @@ void NeuralMtautauNtupleProducer::addBranch(const std::string& name)
 {
   assert(branches_.count(name) == 0);
   std::string name_and_format = name + "/F";
-  ntuple_->Branch(name.c_str(), &branches_[name], name_and_format.c_str());
+  ntuple_->Branch(name.c_str(), &branches_[name].value_float_, name_and_format.c_str());
+}
+
+void NeuralMtautauNtupleProducer::addBranch_long(const std::string& name) 
+{
+  assert(branches_.count(name) == 0);
+  std::string name_and_format = name + "/l";
+  ntuple_->Branch(name.c_str(), &branches_[name].value_long_, name_and_format.c_str());
 }
 
 void NeuralMtautauNtupleProducer::printBranches(std::ostream& stream)
@@ -333,7 +360,19 @@ void NeuralMtautauNtupleProducer::setValue(const std::string& name, double value
   if ( verbosity_ ) std::cout << "branch = " << name << ": value = " << value << std::endl;
   branchMap::iterator branch = branches_.find(name);
   if ( branch != branches_.end() ) {
-    branch->second = value;
+    branch->second.value_float_ = value;
+  } else {
+    throw cms::Exception("InvalidParameter") 
+      << "No branch with name = " << name << " defined !!\n";
+  }
+}
+
+void NeuralMtautauNtupleProducer::setValue_long(const std::string& name, unsigned long value) 
+{
+  if ( verbosity_ ) std::cout << "branch = " << name << ": value = " << value << std::endl;
+  branchMap::iterator branch = branches_.find(name);
+  if ( branch != branches_.end() ) {
+    branch->second.value_long_ = value;
   } else {
     throw cms::Exception("InvalidParameter") 
       << "No branch with name = " << name << " defined !!\n";
@@ -350,6 +389,9 @@ void NeuralMtautauNtupleProducer::addBranch_EnPxPyPz(const std::string& name)
   addBranch(std::string(name).append("Px"));
   addBranch(std::string(name).append("Py"));
   addBranch(std::string(name).append("Pz"));
+  addBranch(std::string(name).append("Pt"));
+  addBranch(std::string(name).append("Eta"));
+  addBranch(std::string(name).append("Phi"));
   addBranch(std::string(name).append("M"));
 }
 
@@ -357,6 +399,8 @@ void NeuralMtautauNtupleProducer::addBranch_PxPy(const std::string& name)
 {
   addBranch(std::string(name).append("Px"));
   addBranch(std::string(name).append("Py"));
+  addBranch(std::string(name).append("Pt"));
+  addBranch(std::string(name).append("Phi"));
 }
 
 void NeuralMtautauNtupleProducer::addBranch_Cov(const std::string& name) 
@@ -373,21 +417,53 @@ void NeuralMtautauNtupleProducer::addBranch_Cov(const std::string& name)
 //-------------------------------------------------------------------------------
 //
 
+void NeuralMtautauNtupleProducer::setValue_EnPxPyPz(const std::string& name, const reco::Candidate::LorentzVector& p4)
+{
+  setValue(std::string(name).append("En"), p4.E());
+  setValue(std::string(name).append("Px"), p4.px());
+  setValue(std::string(name).append("Py"), p4.py());
+  setValue(std::string(name).append("Pz"), p4.pz());
+  setValue(std::string(name).append("Pt"), p4.pt());
+  setValue(std::string(name).append("Eta"), p4.eta());
+  setValue(std::string(name).append("Phi"), p4.phi());
+  setValue(std::string(name).append("M"), p4.M());
+}
+
 void NeuralMtautauNtupleProducer::setValue_EnPxPyPz(const std::string& name, const reco::Candidate::LorentzVector& p4, double zetaPhi)
 {
   reco::Candidate::LorentzVector p4inZetaFrame = compP4inZetaFrame(p4, zetaPhi);
-  setValue(std::string(name).append("En"), p4inZetaFrame.E());
-  setValue(std::string(name).append("Px"), p4inZetaFrame.px());
-  setValue(std::string(name).append("Py"), p4inZetaFrame.py());
-  setValue(std::string(name).append("Pz"), p4inZetaFrame.pz());
-  setValue(std::string(name).append("M"), p4inZetaFrame.M());
+  setValue_EnPxPyPz(name, p4inZetaFrame);
+}
+
+void NeuralMtautauNtupleProducer::setValue_PxPy(const std::string& name, const reco::Candidate::LorentzVector& p4)
+{
+  setValue(std::string(name).append("Px"), p4.px());
+  setValue(std::string(name).append("Py"), p4.py());
+  setValue(std::string(name).append("Pt"), p4.pt());
+  setValue(std::string(name).append("Phi"), p4.phi());
 }
 
 void NeuralMtautauNtupleProducer::setValue_PxPy(const std::string& name, const reco::Candidate::LorentzVector& p4, double zetaPhi)
 {
   reco::Candidate::LorentzVector p4inZetaFrame = compP4inZetaFrame(p4, zetaPhi);
-  setValue(std::string(name).append("Px"), p4inZetaFrame.px());
-  setValue(std::string(name).append("Py"), p4inZetaFrame.py());
+  setValue_PxPy(name, p4inZetaFrame);
+}
+
+void NeuralMtautauNtupleProducer::setValue_Cov(const std::string& name, const TMatrixD& cov)
+{
+  assert(cov.GetNrows() == 2);
+  assert(cov.GetNcols() == 2);
+  setValue(std::string(name).append("Vxx"), cov(0,0));
+  setValue(std::string(name).append("Vxy"), cov(0,1));
+  setValue(std::string(name).append("Vyy"), cov(1,1));
+  double sigmaX = TMath::Sqrt(TMath::Abs(cov(0,0)));
+  double sigmaY = TMath::Sqrt(TMath::Abs(cov(1,1)));
+  const double epsilon = 1.e-9;
+  double corrXY = ( (sigmaX*sigmaY) > epsilon ) ?
+    cov(0,1)/(sigmaX*sigmaY) : 0.;
+  setValue(std::string(name).append("SigmaX"), sigmaX);
+  setValue(std::string(name).append("SigmaY"), sigmaY);
+  setValue(std::string(name).append("CorrXY"), corrXY);
 }
 
 void NeuralMtautauNtupleProducer::setValue_Cov(const std::string& name, const TMatrixD& cov, double zetaPhi)
@@ -395,17 +471,7 @@ void NeuralMtautauNtupleProducer::setValue_Cov(const std::string& name, const TM
   assert(cov.GetNrows() == 2);
   assert(cov.GetNcols() == 2);
   TMatrixD covInZetaFrame = compCovMatrixInZetaFrame(cov, zetaPhi);
-  setValue(std::string(name).append("Vxx"), covInZetaFrame(0,0));
-  setValue(std::string(name).append("Vxy"), covInZetaFrame(0,1));
-  setValue(std::string(name).append("Vyy"), covInZetaFrame(1,1));
-  double sigmaXinZetaFrame = TMath::Sqrt(TMath::Abs(covInZetaFrame(0,0)));
-  double sigmaYinZetaFrame = TMath::Sqrt(TMath::Abs(covInZetaFrame(1,1)));
-  const double epsilon = 1.e-9;
-  double corrXYinZetaFrame = ( (sigmaXinZetaFrame*sigmaYinZetaFrame) > epsilon ) ?
-    covInZetaFrame(0,1)/(sigmaXinZetaFrame*sigmaYinZetaFrame) : 0.;
-  setValue(std::string(name).append("SigmaX"), sigmaXinZetaFrame);
-  setValue(std::string(name).append("SigmaY"), sigmaYinZetaFrame);
-  setValue(std::string(name).append("CorrXY"), corrXYinZetaFrame);
+  setValue_Cov(name, covInZetaFrame);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
