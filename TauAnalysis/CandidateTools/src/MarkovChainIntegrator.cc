@@ -29,8 +29,7 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
     numMovesTotal_accepted_(0),
     numMovesTotal_rejected_(0),
     monitorFile_(0),
-    monitorTree_(0),
-    f_(0)
+    monitorTree_(0)
 {
   if ( cfg.exists("name") ) 
     name_ = cfg.getParameter<std::string>("name");
@@ -179,9 +178,9 @@ void MarkovChainIntegrator::registerCallBackFunction(const ROOT::Math::Functor& 
   callBackFunctions_.push_back(&function);
 }
 
-void MarkovChainIntegrator::setF(const ROOT::Math::Functor& f)
+void MarkovChainIntegrator::setF(const ROOT::Math::Functor& f, const std::string& branchName)
 {
-  f_ = &f;
+  extraMonitorBranches_.push_back(monitorElementType(&f, branchName));
 }
 
 void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std::vector<double>& xMax, 
@@ -699,7 +698,10 @@ void MarkovChainIntegrator::openMonitorFile(const std::string& monitorFileName)
     monitorTree_->Branch(branchName.data(), &branchValues_[iDimension], branchName_and_option.data());
   }
   
-  if ( f_ ) monitorTree_->Branch("f", &branchValues_[numDimensions_], "f/F");
+  for ( std::vector<monitorElementType>::iterator extraMonitorBranch = extraMonitorBranches_.begin();
+	extraMonitorBranch != extraMonitorBranches_.end(); ++extraMonitorBranch ) {
+    monitorTree_->Branch(extraMonitorBranch->branchName_.data(), &extraMonitorBranch->branchValue_, Form("%s/F", extraMonitorBranch->branchName_.data()));
+  }
 }
 
 void MarkovChainIntegrator::updateMonitorFile()
@@ -708,8 +710,11 @@ void MarkovChainIntegrator::updateMonitorFile()
     double x_i = x_[iDimension];
     branchValues_[iDimension] = x_i;
   }
-
-  if ( f_ ) branchValues_[numDimensions_] = (*f_)(x_);
+  
+  for ( std::vector<monitorElementType>::iterator extraMonitorBranch = extraMonitorBranches_.begin();
+	extraMonitorBranch != extraMonitorBranches_.end(); ++extraMonitorBranch ) {
+    extraMonitorBranch->branchValue_ = (*extraMonitorBranch->f_)(x_);
+  }
 
   monitorTree_->Fill();
 }
