@@ -92,13 +92,16 @@ namespace
     NSVfitAlgorithmByIntegration2* algorithm_;
   };
 
-  class AuxResonanceMassValue : public ROOT::Math::Functor
+  class AuxResonancePtEtaPhiMassValue : public ROOT::Math::Functor
   {
    public:
 
-    AuxResonanceMassValue(NSVfitAlgorithmByIntegration2* algorithm)
-      : algorithm_(algorithm)
+    AuxResonancePtEtaPhiMassValue(NSVfitAlgorithmByIntegration2* algorithm, int variable)
+      : algorithm_(algorithm),
+	variable_(variable)
     {}
+
+    enum { kPt, kEta, kPhi, kMass };
 
    private:
 
@@ -106,10 +109,16 @@ namespace
     {
       const NSVfitResonanceHypothesis* resonance = algorithm_->currentEventHypothesis()->resonance(0);
       assert(resonance);
-      return resonance->p4_fitted().mass();
+      if      ( variable_ == kPt   ) return resonance->p4_fitted().pt();
+      else if ( variable_ == kEta  ) return resonance->p4_fitted().eta();
+      else if ( variable_ == kPhi  ) return resonance->p4_fitted().phi();
+      else if ( variable_ == kMass ) return resonance->p4_fitted().mass();
+      else assert(0);
     } 
 
     NSVfitAlgorithmByIntegration2* algorithm_;
+
+    int variable_;
   };
 }
 
@@ -118,6 +127,9 @@ NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2(const edm::Paramete
     integrand_(0),
     integrator_(0),
     auxPhysicalSolutionFinder_(0),
+    auxResonancePtValue_(0),
+    auxResonanceEtaValue_(0),
+    auxResonancePhiValue_(0),
     auxResonanceMassValue_(0),
     fitParameterValues_(0),
     probHistEventMass_(0),        
@@ -130,6 +142,7 @@ NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2(const edm::Paramete
 
   monitorMarkovChain_ = ( cfg.exists("monitorMarkovChain") ) ?
     cfg.getParameter<bool>("monitorMarkovChain") : false;
+  if ( monitorMarkovChain_ ) monitorFilePath_ = cfg.getParameter<std::string>("monitorFilePath");
 
   std::string max_or_median_string = cfg.getParameter<std::string>("max_or_median");
   if      ( max_or_median_string == "max"    ) max_or_median_ = kMax;
@@ -170,7 +183,10 @@ NSVfitAlgorithmByIntegration2::~NSVfitAlgorithmByIntegration2()
   delete probHistEventMass_;
   delete auxFillProbHistograms_;
 
-  delete auxResonanceMassValue_;
+  delete auxResonancePtValue_;
+  delete auxResonanceEtaValue_;
+  delete auxResonancePhiValue_;
+  delete auxResonanceMassValue_;  
 }
 
 void NSVfitAlgorithmByIntegration2::beginJob()
@@ -245,8 +261,14 @@ void NSVfitAlgorithmByIntegration2::beginJob()
   integrator_->registerCallBackFunction(*auxFillProbHistograms_);
 
   if ( monitorMarkovChain_ ) {
-    auxResonanceMassValue_ = new AuxResonanceMassValue(this);
-    integrator_->setF(*auxResonanceMassValue_);
+    auxResonancePtValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kPt);
+    integrator_->setF(*auxResonancePtValue_, "diTauPt");
+    auxResonanceEtaValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kEta);
+    integrator_->setF(*auxResonanceEtaValue_, "diTauEta");
+    auxResonancePhiValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kPhi);
+    integrator_->setF(*auxResonancePhiValue_, "diTauPhi");
+    auxResonanceMassValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kMass);
+    integrator_->setF(*auxResonanceMassValue_, "diTauMass");
   }
 }
 
@@ -259,6 +281,18 @@ void NSVfitAlgorithmByIntegration2::beginEvent(const edm::Event& evt, const edm:
     (*histogram)->Reset();
   }
 
+  for ( std::map<std::string, TH1*>::iterator histogram = probHistResonancePt_.begin();
+	histogram != probHistResonancePt_.end(); ++histogram ) {
+    histogram->second->Reset();
+  }
+  for ( std::map<std::string, TH1*>::iterator histogram = probHistResonanceEta_.begin();
+	histogram != probHistResonanceEta_.end(); ++histogram ) {
+    histogram->second->Reset();
+  }
+  for ( std::map<std::string, TH1*>::iterator histogram = probHistResonancePhi_.begin();
+	histogram != probHistResonancePhi_.end(); ++histogram ) {
+    histogram->second->Reset();
+  }
   for ( std::map<std::string, TH1*>::iterator histogram = probHistResonanceMass_.begin();
 	histogram != probHistResonanceMass_.end(); ++histogram ) {
     histogram->second->Reset();
@@ -276,7 +310,7 @@ TH1* NSVfitAlgorithmByIntegration2::bookPtHistogram(const std::string& histogram
 {
   double xMin = 1.;
   double xMax = 1.e+3;
-  double logBinWidth = 1.01;
+  double logBinWidth = 1.025;
   int numBins = 1 + TMath::Log(xMax/xMin)/TMath::Log(logBinWidth);
   TArrayF binning(numBins + 1);
   binning[0] = 0.;
@@ -301,7 +335,7 @@ TH1* NSVfitAlgorithmByIntegration2::bookEtaHistogram(const std::string& histogra
 TH1* NSVfitAlgorithmByIntegration2::bookPhiHistogram(const std::string& histogramName)
 {
   std::string histogramName_full = std::string(pluginName_).append("_").append(histogramName);
-  TH1* histogram = new TH1D(histogramName_full.data(), histogramName_full.data(), 360, -TMath::Pi(), +TMath::Pi());
+  TH1* histogram = new TH1D(histogramName_full.data(), histogramName_full.data(), 180, -TMath::Pi(), +TMath::Pi());
   return histogram;
 }
 
@@ -362,13 +396,15 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
 
   double integral, integralErr;
   int errorFlag = 0;
-  std::string monitorFileName;
+  TString monitorFileName;
   if ( monitorMarkovChain_ ) {
-    monitorFileName = Form("%s_run%i_ls%i_ev%i_mc.root", pluginName_.data(), currentRunNumber_, currentLumiSectionNumber_, currentEventNumber_);
+    monitorFileName = monitorFilePath_.data();
+    if ( monitorFileName.Length() > 0 && !monitorFileName.EndsWith("/") ) monitorFileName.Append("/");
+    monitorFileName.Append(Form("%s_run%i_ls%i_ev%i_mc.root", pluginName_.data(), currentRunNumber_, currentLumiSectionNumber_, currentEventNumber_));
   } else {
     monitorFileName = "";
   }
-  integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr, errorFlag, monitorFileName);
+  integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr, errorFlag, monitorFileName.Data());
 
 //--- set central values and uncertainties on reconstructed masses
   for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
@@ -380,34 +416,6 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     assert(histogramMass != probHistResonanceMass_.end());
     if ( errorFlag == 0 ) {
       setMassResults(resonance, histogramMass->second);
-      std::map<std::string, TH1*>::const_iterator histogramPt = probHistResonancePt_.find(resonanceName);
-      assert(histogramPt != probHistResonancePt_.end());
-      TH1* histogramPt_density = compHistogramDensity(histogramPt->second);
-      std::map<std::string, TH1*>::const_iterator histogramEta = probHistResonanceEta_.find(resonanceName);
-      assert(histogramEta != probHistResonanceEta_.end());
-      TH1* histogramEta_density = compHistogramDensity(histogramEta->second);
-      std::map<std::string, TH1*>::const_iterator histogramPhi = probHistResonancePhi_.find(resonanceName);
-      assert(histogramPhi != probHistResonancePhi_.end());
-      TH1* histogramPhi_density = compHistogramDensity(histogramPhi->second);
-      if ( histogramPt_density->Integral()  > 0. &&
-	   histogramEta_density->Integral() > 0. &&
-	   histogramPhi_density->Integral() > 0. ) {
-	double ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084;
-        extractHistogramProperties(
-          histogramPt->second, histogramPt_density,
-          ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
-	double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
-        extractHistogramProperties(
-          histogramEta->second, histogramEta_density,
-          etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084);
-	double phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084;
-        extractHistogramProperties(
-          histogramPhi->second, histogramPhi_density,
-          phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084);
-	reco::Candidate::PolarLorentzVector resonanceP4_fitted(
-	  ptMaximum_interpol, etaMaximum_interpol, phiMaximum_interpol, resonance->mass_);
-	resonance->dp4_ = resonanceP4_fitted - resonance->p4_;
-      }
     } else {
       resonance->isValidSolution_ = false;
     }
@@ -444,6 +452,50 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
       fitParameterValues_[iDimension] = 0.;
     }
     fittedEventHypothesis_nll_ = -1.;
+  }
+
+//--- set four-vector information for di-tau system
+//   (NOTE: needs to be done **after** computing NLL,
+//          as NLL evaluation overwrites kinemtaics of NSVfitResonanceHypothesis objects)
+  for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
+	resonance != eventModel_->resonances_.end(); ++resonance ) {
+    const std::string& resonanceName = (*resonance)->resonanceName_;
+    NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance(resonanceName));
+    assert(resonance);
+    std::map<std::string, TH1*>::const_iterator histogramPt = probHistResonancePt_.find(resonanceName);
+    assert(histogramPt != probHistResonancePt_.end());
+    TH1* histogramPt_density = compHistogramDensity(histogramPt->second);
+    std::map<std::string, TH1*>::const_iterator histogramEta = probHistResonanceEta_.find(resonanceName);
+    assert(histogramEta != probHistResonanceEta_.end());
+    TH1* histogramEta_density = compHistogramDensity(histogramEta->second);
+    std::map<std::string, TH1*>::const_iterator histogramPhi = probHistResonancePhi_.find(resonanceName);
+    assert(histogramPhi != probHistResonancePhi_.end());
+    TH1* histogramPhi_density = compHistogramDensity(histogramPhi->second);
+    if ( histogramPt_density->Integral()  > 0. &&
+	 histogramEta_density->Integral() > 0. &&
+	 histogramPhi_density->Integral() > 0. ) {
+      double ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084;
+      extractHistogramProperties(
+        histogramPt->second, histogramPt_density,
+        ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
+      if ( verbosity_ >= 1 ) {	
+	std::cout << "--> Pt = " << ptMaximum << std::endl;
+	std::cout << " (mean = " << ptMean << ", median = " << ptQuantile050 << ", max = " << ptMaximum << ")" << std::endl;
+      }
+      double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
+      extractHistogramProperties(
+        histogramEta->second, histogramEta_density,
+	etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084);
+      double phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084;
+      extractHistogramProperties(
+        histogramPhi->second, histogramPhi_density,
+	phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084);
+      reco::Candidate::PolarLorentzVector resonanceP4_fitted_polar(
+        ptMaximum_interpol, etaMaximum_interpol, phiMaximum_interpol, resonance->mass_);
+      reco::Candidate::LorentzVector resonanceP4_fitted(
+        resonanceP4_fitted_polar.px(), resonanceP4_fitted_polar.py(), resonanceP4_fitted_polar.pz(), resonanceP4_fitted_polar.E());
+      resonance->dp4_ = resonanceP4_fitted - resonance->p4_;
+    }
   }
 }
 

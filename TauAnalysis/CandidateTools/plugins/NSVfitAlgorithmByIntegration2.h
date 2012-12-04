@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitAlgorithmByIntegration2.h,v 1.3 2012/09/01 08:45:44 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration2.h,v 1.4 2012/09/21 13:32:40 veelken Exp $
  *
  */
 
@@ -83,6 +83,10 @@ class NSVfitAlgorithmByIntegration2 : public NSVfitAlgorithmBase
   unsigned numDimensions_;
 
   bool monitorMarkovChain_;  
+  std::string monitorFilePath_;
+  ROOT::Math::Functor* auxResonancePtValue_;
+  ROOT::Math::Functor* auxResonanceEtaValue_;
+  ROOT::Math::Functor* auxResonancePhiValue_;
   ROOT::Math::Functor* auxResonanceMassValue_;
 
   double* fitParameterValues_;
