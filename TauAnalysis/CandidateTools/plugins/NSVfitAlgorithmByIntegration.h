@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.14 2012/09/01 08:45:44 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.15 2012/09/11 10:05:46 veelken Exp $
  *
  */
 
@@ -154,7 +154,6 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     }
     void beginEvent(double eventLowerLimit)
     {
-      std::cout << "<fitParameterReplacementType::beginEvent>:" << std::endl;
       std::vector<double> gridPoints_vector;
       double gridPoint = TMath::Max(iterLowerLimit_, eventLowerLimit);
       bool isGridComplete = false;
