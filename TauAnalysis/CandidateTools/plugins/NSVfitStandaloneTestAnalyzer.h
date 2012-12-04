@@ -74,6 +74,8 @@ class NSVfitStandaloneTestAnalyzer : public edm::EDAnalyzer {
 
   TStopwatch* timer_;
   long numSVfitCalls_;
+
+  int verbosity_;
 };
 
 #endif
