@@ -307,12 +307,12 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	reco::Candidate::LorentzVector genDiTauP4 = genTauPair->p4();
 	reco::Candidate::LorentzVector recDiTauP4 = (dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis))->p4_fitted(); 
 
-	std::cout << "genDiTau: Pt = " << genDiTauP4.pt() << ", eta = " << genDiTauP4.eta() << ", phi = " << genDiTauP4.phi() << std::endl;
+	//std::cout << "genDiTau: Pt = " << genDiTauP4.pt() << ", eta = " << genDiTauP4.eta() << ", phi = " << genDiTauP4.phi() << std::endl;
 	genDiTauPt_->Fill(genDiTauP4.pt(), evtWeight);
 	genDiTauEta_->Fill(genDiTauP4.eta(), evtWeight);
 	genDiTauPhi_->Fill(genDiTauP4.phi(), evtWeight);
 	
-	std::cout << "recDiTau: Pt = " << recDiTauP4.pt() << ", eta = " << recDiTauP4.eta() << ", phi = " << recDiTauP4.phi() << std::endl;
+	//std::cout << "recDiTau: Pt = " << recDiTauP4.pt() << ", eta = " << recDiTauP4.eta() << ", phi = " << recDiTauP4.phi() << std::endl;
 	recDiTauPt_->Fill(recDiTauP4.pt(), evtWeight);
 	recDiTauEta_->Fill(recDiTauP4.eta(), evtWeight);
 	recDiTauPhi_->Fill(recDiTauP4.phi(), evtWeight);
@@ -331,7 +331,7 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	}
 	     
 	reco::Candidate::LorentzVector recLeg12MEtP4 = svFitDaughter1P4 + svFitDaughter2P4 + recMEtP4;
-	std::cout << "recLeg12MEt: Pt = " << recLeg12MEtP4.pt() << ", eta = " << recLeg12MEtP4.eta() << ", phi = " << recLeg12MEtP4.phi() << std::endl;
+	//std::cout << "recLeg12MEt: Pt = " << recLeg12MEtP4.pt() << ", eta = " << recLeg12MEtP4.eta() << ", phi = " << recLeg12MEtP4.phi() << std::endl;
 	recLeg12MEtPt_->Fill(recLeg12MEtP4.pt(), evtWeight);
 	recLeg12MEtPhi_->Fill(recLeg12MEtP4.phi(), evtWeight);
   
