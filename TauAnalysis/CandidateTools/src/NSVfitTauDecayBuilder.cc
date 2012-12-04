@@ -122,7 +122,7 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
 
   // Add protection against zero mass.  
   // If lower than the electron mass, set it to the electron mass.
-  if (hypothesis->visMass_ < 5.1e-4) {
+  if ( hypothesis->visMass_ < 5.1e-4 ) {
     hypothesis->visMass_ = 5.1e-4;
   }
 
@@ -131,12 +131,12 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
 
   // If this is a leptonic tau decay, we need to setup the limits on the
   // neutrino system invariant mass parameter.
-  // In case reconstructed mass of visible decay products exceeds 1.5 GeV,
-  // assume measurement error and "truncate" @ 1.5 GeV.
+  // In case reconstructed mass of visible decay products exceeds 1.6 GeV,
+  // assume measurement error and "truncate" @ 1.6 GeV.
   if ( !nuSystemIsMassless() ) {
     NSVfitParameter* fitParameter = algorithm_->getFitParameter(idxFitParameter_nuInvMass_);
     assert(fitParameter);
-    fitParameter->setUpperLimit(SVfit_namespace::tauLeptonMass - TMath::Min(hypothesis->visMass_, 1.5));
+    fitParameter->setUpperLimit(SVfit_namespace::tauLeptonMass - TMath::Min(hypothesis->visMass_, 1.6));
   }
 
   // Extract the associated tracks, and fit a vertex if possible.
@@ -213,6 +213,8 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
 	    genPhiLab_ = phiLabFromLabMomenta(genTauP4, genVisP4);
 	    reco::Candidate::LorentzVector genInvisP4 = getInvisMomentum(genTauDecayProducts);
 	    genNuInvMass_ = genInvisP4.mass();
+	    // CV: Add protection against rounding errors
+	    if ( genNuInvMass_ < 0. ) genNuInvMass_ = 1.e-4;
 	    reco::Candidate::Point genTauProdVertex = genTau->vertex();
 	    reco::Candidate::Point genTauDecayVertex = getDecayVertex(genTau);
 	    genDeltaR_ = TMath::Sqrt((genTauDecayVertex - genTauProdVertex).mag2());
