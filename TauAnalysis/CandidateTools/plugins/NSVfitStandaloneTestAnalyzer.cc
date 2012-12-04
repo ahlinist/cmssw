@@ -35,6 +35,9 @@ NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer(const edm::ParameterS
 
   timer_ = new TStopwatch();
   timer_->Stop();
+
+  verbosity_ = cfg.exists("verbosity") ?
+    cfg.getParameter<int>("verbosity") : 0;
 }
 
 /// default destructor
@@ -121,11 +124,12 @@ NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& event, const edm::EventS
       ++numSVfitCalls_;
 
       // retrieve the results 
-      std::cout << "<NSVfitStandaloneTestAnalyzer::endJob>:" << std::endl;
-      std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
-      std::cout << "--> mass (standalone version) = " << algo.getMass() 
-		<< " + " << algo.massUncert() << " - " << algo.massUncert() << " [" << algo.fitStatus() << "]" << std::endl;
-
+      if ( verbosity_ ) {
+	std::cout << "<NSVfitStandaloneTestAnalyzer::endJob>:" << std::endl;
+	std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+	std::cout << "--> mass (standalone version) = " << algo.getMass() 
+		  << " + " << algo.massUncert() << " - " << algo.massUncert() << " [" << algo.fitStatus() << "]" << std::endl;
+      }
       if ( fillHistograms_ ) {
 	leg1Pt_->Fill(lep1->pt());
 	leg2Pt_->Fill(lep2->pt());
