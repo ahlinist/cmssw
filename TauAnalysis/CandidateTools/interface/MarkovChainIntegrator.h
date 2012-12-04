@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: MarkovChainIntegrator.h,v 1.6 2012/08/28 15:00:19 veelken Exp $
+ * $Id: MarkovChainIntegrator.h,v 1.7 2012/09/11 10:05:45 veelken Exp $
  *
  */
 
@@ -67,7 +67,7 @@ class MarkovChainIntegrator
 //--- set function to evaluate function values 
 //    in N-dimensional space in which the integration is performed
 //   (e.g. to monitor variation of resonance mass)
-  void setF(const ROOT::Math::Functor&);
+  void setF(const ROOT::Math::Functor&, const std::string&);
 
   void integrate(const std::vector<double>&, const std::vector<double>&, double&, double&, int&, const std::string& = "");
 
@@ -191,7 +191,18 @@ class MarkovChainIntegrator
   TFile* monitorFile_;
   TTree* monitorTree_;
   std::vector<Float_t> branchValues_;
-  const ROOT::Math::Functor* f_;
+  struct monitorElementType
+  {
+    monitorElementType(const ROOT::Math::Functor* f, const std::string& branchName)
+      : f_(f),
+	branchName_(branchName)
+    {}
+    ~monitorElementType() {}
+    const ROOT::Math::Functor* f_;
+    std::string branchName_;
+    Float_t branchValue_;
+  };
+  std::vector<monitorElementType> extraMonitorBranches_;
 
   int verbosity_; // flag to enable/disable debug output
 };
