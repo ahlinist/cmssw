@@ -103,7 +103,7 @@ void PATElectronIdSelectorImp<T>::select(const edm::Handle<collection>& patLepto
 	if      ( absEta < 0.8   ) mvaCut = 0.905;
 	else if ( absEta < 1.479 ) mvaCut = 0.955;
 	else                       mvaCut = 0.975;
-      } else if ( cut == kTight ) { 
+      } else if ( cut_ == kTight ) { 
 	// tight cut values used for e+tau channel of Htautau analysis (cf. https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#Object_ID)
 	if      ( absEta < 0.8   ) mvaCut = 0.925;
 	else if ( absEta < 1.479 ) mvaCut = 0.975;

@@ -15,6 +15,10 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         '/store/user/veelken/CMSSW_5_3_x/skims/simZplusJets_madgraph_AOD_1_1_txi.root'
+        #'file:/afs/cern.ch/user/m/mmarionn/public/forChristian/pickevents_1.root',
+        #'file:/afs/cern.ch/user/m/mmarionn/public/forChristian/pickevents_2.root',
+        #'file:/afs/cern.ch/user/m/mmarionn/public/forChristian/pickevents_3.root',
+        #'file:/afs/cern.ch/user/m/mmarionn/public/forChristian/pickevents_4.root'                                
     ),
     ##eventsToProcess = cms.untracked.VEventRange('1:41958:16769938'),
     skipEvents = cms.untracked.uint32(0)            
@@ -57,6 +61,41 @@ else:
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+#
+# configure Jet Energy Corrections
+#
+process.load("CondCore.DBCommon.CondDBCommon_cfi")
+process.jec = cms.ESSource("PoolDBESSource",
+   DBParameters = cms.PSet(
+       messageLevel = cms.untracked.int32(0)
+   ),
+   timetype = cms.string('runnumber'),
+   toGet = cms.VPSet(
+       cms.PSet(
+           record = cms.string('JetCorrectionsRecord'),
+           tag    = cms.string(''),
+           label  = cms.untracked.string('AK5PF')
+       ),
+       cms.PSet(
+           record = cms.string('JetCorrectionsRecord'),
+           tag    = cms.string(''),
+           label  = cms.untracked.string('AK5Calo')
+       )
+   ),
+   connect = cms.string('')
+)
+process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
+if isMC:
+   process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Fall12_V5Final_MC.db')
+   process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_MC_AK5PF')
+   process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_MC_AK5Calo')
+else:
+   process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Fall12_V5Final_DATA.db')
+   process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_DATA_AK5PF')
+   process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_DATA_AK5Calo')
+#-------------------------------------------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # print debug information whenever plugins get loaded dynamically from libraries
 # (for debugging problems with plugin related dynamic library loading)
 #process.add_(cms.Service("PrintLoadingPlugins"))
@@ -67,8 +106,34 @@ process.prePatProductionSequence = cms.Sequence()
 #--------------------------------------------------------------------------------
 # load definition of VBTF Z --> mu+ mu- event selection
 # (with no isolation cuts applied on one of the two muons)
+# load definitions of data-quality filters
+process.load("TauAnalysis.TauIdEfficiency.filterDataQuality_cfi")
+if isMC:
+    process.dataQualityFilters.remove(process.hltPhysicsDeclared)
+    process.dataQualityFilters.remove(process.dcsstatus)
+    ##process.dataQualityFilters.remove(process.HBHENoiseFilter)
+    process.dataQualityFilters.remove(process.hcalLaserEventFilter)
+    process.dataQualityFilters.remove(process.hcallasereventfilter2012)
+    process.dataQualityFilters.remove(process.ecalLaserCorrFilter)
+process.prePatProductionSequence += process.dataQualityFilters
+
 process.load("TauAnalysis.Skimming.goldenZmmSelectionVBTFnoMuonIsolation_cfi")
+##process.goodMuons.filter = cms.bool(False) # CV: only for testing !!!
+##process.goldenZmumuFilter.minNumber = cms.uint32(0) # CV: only for testing !!!
 process.prePatProductionSequence += process.goldenZmumuSelectionSequence
+
+process.uniqueGoodMuonPairFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("goodMuons"),
+    minNumber = cms.uint32(2),
+    maxNumber = cms.uint32(2)                          
+)
+process.prePatProductionSequence += process.uniqueGoodMuonPairFilter # CV: disable only for testing !!!
+process.uniqueGoodIsoMuonPairFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("goodIsoMuons"),
+    minNumber = cms.uint32(2),
+    maxNumber = cms.uint32(2)                          
+)
+process.prePatProductionSequence += process.uniqueGoodIsoMuonPairFilter # CV: disable only for testing !!!
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -129,15 +194,21 @@ process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
 process.prePatProductionSequence += process.selectPrimaryVertex
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
-process.vertexMultiplicityReweight3d2012RunABC = process.vertexMultiplicityReweight.clone(
+process.vertexMultiplicityReweight3d2012RunABCruns190456to202016 = process.vertexMultiplicityReweight.clone(
     inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to202016_Mu17_Mu8.root"),
     type = cms.string("gen3d"),
     mcPeriod = cms.string("Summer12_S10")
 )
-process.vertexMultiplicityReweight1d2012RunABC = process.vertexMultiplicityReweight.clone(
+process.vertexMultiplicityReweight1d2012RunABCruns190456to202016 = process.vertexMultiplicityReweight.clone(
     inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonDist_runs190456to202016_Mu17_Mu8.root"),
     type = cms.string("gen"),
     mcPeriod = cms.string("Summer12_S10")
+)
+process.vertexMultiplicityReweight3d2012RunABCruns190456to203002 = process.vertexMultiplicityReweight3d2012RunABCruns190456to202016.clone(
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to203002_Mu17_Mu8.root")
+)
+process.vertexMultiplicityReweight1d2012RunABCruns190456to203002 = process.vertexMultiplicityReweight1d2012RunABCruns190456to202016.clone(
+    inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonDist_runs190456to203002_Mu17_Mu8.root")
 )
 
 process.selectedPrimaryVerticesTrackPtSumGt10 = cms.EDFilter("VertexByTrackPtSumSelector",
@@ -152,8 +223,10 @@ process.prePatProductionSequence += process.selectedPrimaryVerticesTrackPtSumGt1
 
 # produce pile-up reweighting factors
 if isMC:
-    process.prePatProductionSequence += process.vertexMultiplicityReweight3d2012RunABC
-    process.prePatProductionSequence += process.vertexMultiplicityReweight1d2012RunABC
+    process.prePatProductionSequence += process.vertexMultiplicityReweight3d2012RunABCruns190456to202016
+    process.prePatProductionSequence += process.vertexMultiplicityReweight1d2012RunABCruns190456to202016
+    process.prePatProductionSequence += process.vertexMultiplicityReweight3d2012RunABCruns190456to203002
+    process.prePatProductionSequence += process.vertexMultiplicityReweight1d2012RunABCruns190456to203002
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -197,6 +270,22 @@ process.patTupleProductionSequence = cms.Sequence()
 # produce PAT objects
 
 process.load("PhysicsTools/PatAlgos/patSequences_cff")
+
+# CV: disable pat::Electron and pat::Photon sequences,
+#     in order to prevent run-time exception caused by dropping
+#     SuperCluster information from event content at skimming stage
+#    (in order to reduce size of skim files stored on EOS)
+process.patDefaultSequence.remove(process.makePatElectrons)
+process.selectedPatCandidates.remove(process.selectedPatElectrons)
+process.cleanPatCandidates.remove(process.cleanPatElectrons)
+process.patDefaultSequence.remove(process.makePatPhotons)
+process.selectedPatCandidates.remove(process.selectedPatPhotons)
+process.cleanPatCandidates.remove(process.cleanPatPhotons)
+# CV: disable sequences for selecting and cleaning of PAT objects
+#     in order to prevent run-time exception caused by missing electrons/photons
+process.patDefaultSequence.remove(process.selectedPatCandidates)
+process.patDefaultSequence.remove(process.cleanPatCandidates)
+process.patDefaultSequence.remove(process.countPatCandidates)
 
 process.patMuons.muonSource = cms.InputTag('goodMuons')
 
@@ -317,6 +406,11 @@ process.patType1CorrectedCaloMetNoHF = process.patType1CorrectedCaloMet.clone(
     metSource = cms.InputTag('caloType1CorrectedMetNoHF')
 )
 process.patTupleProductionSequence += process.patType1CorrectedCaloMetNoHF
+
+#process.patL1ETM = cms.EDProducer("L1ExtraMEtToPATMEtConverter",
+#    src = cms.InputTag('l1extraParticles', 'MET')                  
+#)
+#process.patTupleProductionSequence += process.patL1ETM
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
@@ -329,54 +423,56 @@ process.eventCounterPath = cms.Path(process.processedEventsPATtupleProduction)
 # save PAT-tuple
 
 process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
-    cms.PSet(
-        outputCommands = cms.untracked.vstring(
-            'drop *',
-            'keep EventAux_*_*_*',
-            'keep LumiSummary_*_*_*',                       
-            'keep edmMergeableCounter_*_*_*',
-            'keep *_gtDigis_*_*',
-            'keep *_hltL1GtObjectMap_*_*',
-            'keep *_TriggerResults_*_*',
-            'keep *_goodMuons_*_*',
-            'keep *_goodIsoMuons_*_*',
-            'keep *_patMuons_*_*',                                            
-            'keep *_goldenZmumuCandidatesGe0IsoMuons_*_*',
-            'keep *_goldenZmumuCandidatesGe1IsoMuons_*_*',
-            'keep *_goldenZmumuCandidatesGe2IsoMuons_*_*',                                                        
-            'keep *_offlinePrimaryVertices_*_*',
-            'keep *_offlinePrimaryVerticesWithBS_*_*',
-            'keep *_selectedPrimaryVertexPosition_*_*',                                         
-            'keep *_selectedPrimaryVertexHighestPtTrackSum_*_*',
-            'keep *_selectedPrimaryVerticesTrackPtSumGt5_*_*',
-            'keep *_selectedPrimaryVerticesTrackPtSumGt10_*_*',                                            
-            'keep *_patJets_*_*',
-            'keep *_smearedPatJets_*_*',
-            'keep *_shiftedPatJetsEnUp*_*_*',                                
-            'keep *_shiftedPatJetsEnDown*_*_*',
-            'keep *_smearedPatJetsResDown_*_*',
-            'keep *_smearedPatJetsResUp_*_*',
-            'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',
-            'keep *_pfCandsNotInJet_*_*',
-            'keep *_particleFlow_*_*',                      
-            'keep *_ak5PFJets_*_*',                             
-            'keep *_patPFMet*_*_*',
-            'keep *_patType1CorrectedPFMet*_*_*',
-            'keep *_patType1p2CorrectedPFMet*_*_*',
-            'keep *_pfMEtSignCovMatrix*_*_*',                      
-            'keep *_patPFMetMVA*_*_*',
-            'keep *_patPFMetMVA2*_*_*',
-            'keep *_patPFMetNoPileUp*_*_*',
-            'keep CommonMETData_noPileUpPFMEt*_*_*',
-            'keep *_patMinMEt*_*_*',                            
-            'keep *_patCaloMet*_*_*',
-            'keep *_patType1CorrectedCaloMet*_*_*',
-            'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
-            'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*',
-            'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*',
-            'keep *_kt6PFChargedHadronJetsForVtxMultReweighting_rho_*'                                            
-        )
+    outputCommands = cms.untracked.vstring(
+        'drop *',
+        'keep EventAux_*_*_*',
+        'keep LumiSummary_*_*_*',                       
+        'keep edmMergeableCounter_*_*_*',
+        'keep *_gtDigis_*_*',
+        'keep *_hltL1GtObjectMap_*_*',
+        'keep *_TriggerResults_*_*',
+        'keep *_goodMuons_*_*',
+        'keep *_goodIsoMuons_*_*',
+        'keep *_patMuons_*_*',                                            
+        'keep *_goldenZmumuCandidatesGe0IsoMuons_*_*',
+        'keep *_goldenZmumuCandidatesGe1IsoMuons_*_*',
+        'keep *_goldenZmumuCandidatesGe2IsoMuons_*_*',                                                        
+        ##'keep *_offlinePrimaryVertices_*_*',
+        ##'keep *_offlinePrimaryVerticesWithBS_*_*',
+        'keep *_selectedPrimaryVertexPosition_*_*',                                         
+        ##'keep *_selectedPrimaryVertexHighestPtTrackSum_*_*',
+        ##'keep *_selectedPrimaryVerticesTrackPtSumGt5_*_*',
+        ##'keep *_selectedPrimaryVerticesTrackPtSumGt10_*_*',                                            
+        'keep *_patJets_*_*',
+        'keep *_smearedPatJets_*_*',
+        'keep *_shiftedPatJetsEnUp*_*_*',                                
+        'keep *_shiftedPatJetsEnDown*_*_*',
+        'keep *_smearedPatJetsResDown_*_*',
+        'keep *_smearedPatJetsResUp_*_*',
+        'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',
+        'keep *_pfCandsNotInJet_*_*',
+        ##'keep *_particleFlow_*_*',                      
+        ##'keep *_ak5PFJets_*_*',                             
+        'keep *_patPFMet*_*_*',
+        'keep *_patType1CorrectedPFMet*_*_*',
+        'keep *_patType1p2CorrectedPFMet*_*_*',
+        'keep *_pfMEtSignCovMatrix*_*_*',                      
+        'keep *_patPFMetMVA*_*_*',
+        'keep *_patPFMetMVA2*_*_*',
+        'keep *_patPFMetNoPileUp*_*_*',
+        'keep CommonMETData_noPileUpPFMEt*_*_*',
+        'keep *_patMinMEt*_*_*',                            
+        'keep *_patCaloMet*_*_*',
+        'keep *_patType1CorrectedCaloMet*_*_*',
+        'keep *_patL1ETM*_*_*',                                       
+        'keep *_kt6PFNeutralJetsForVtxMultReweighting_rho_*',
+        'keep *_kt6PFChargedHadronNoPileUpJetsForVtxMultReweighting_rho_*',
+        'keep *_kt6PFChargedHadronPileUpJetsForVtxMultReweighting_rho_*',
+        'keep *_kt6PFChargedHadronJetsForVtxMultReweighting_rho_*'                                            
     ),
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('p')
+    ),                                            
     fileName = cms.untracked.string("/data1/veelken/tmp/ZllRecoilCorrectionPATtuple.root")
 )
 
@@ -444,16 +540,16 @@ process.produceAndSavePUreweightHistograms += process.pfNeutralHadronAnalyzer
 process.produceAndSavePUreweightHistograms += process.pfPhotonAnalyzer
                            
 if isMC:
-    process.producePUreweightHistogramsKt6PFNeutralJets2012RunABC = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
-        srcWeight = cms.InputTag('vertexMultiplicityReweight3d2012RunABC')
+    process.producePUreweightHistogramsKt6PFNeutralJets2012RunABCruns190456to203002 = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
+        srcWeight = cms.InputTag('vertexMultiplicityReweight3d2012RunABCruns190456to203002')
     )
-    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets2012RunABC
+    process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets2012RunABCruns190456to203002
 
-    process.rhoNeutralAnalyzer2012RunABC = process.rhoNeutralAnalyzer.clone(
+    process.rhoNeutralAnalyzer2012RunABCruns190456to203002 = process.rhoNeutralAnalyzer.clone(
         srcGenPileUp = cms.InputTag('addPileupInfo'),
-        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d2012RunABC')
+        srcWeights = cms.VInputTag('vertexMultiplicityReweight3d2012RunABCruns190456to203002')
     )
-    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer2012RunABC
+    process.produceAndSavePUreweightHistograms += process.rhoNeutralAnalyzer2012RunABCruns190456to203002
 
 process.savePUreweightHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('/data1/veelken/tmp/ZllRecoilCorrectionPUreweightHistograms.root')
@@ -470,7 +566,6 @@ process.produceAndSavePUreweightHistograms += process.savePUreweightHistograms
 ##)
 ##process.patTupleProductionSequence += process.debugMEtSystematics
 #--------------------------------------------------------------------------------
-
 
 # before starting to process 1st event, print event content
 process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")

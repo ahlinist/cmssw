@@ -294,8 +294,8 @@ double getJECcorrection(FactorizedJetCorrector* jesCorrection, int corrLevelInde
   jesCorrection->setJetEta(eta);
   jesCorrection->setJetPt(pt); 
   jesCorrection->setJetE(compJetEnergy(pt, eta));
-  jesCorrection->setNPV(6);   // typical value for Summer'11 data
-  jesCorrection->setRho(4.0); // typical value for Summer'11 data
+  jesCorrection->setNPV(15);  // typical value for Summer'12 data
+  jesCorrection->setRho(10.); // typical value for Summer'12 data
   jesCorrection->setJetA(TMath::Pi()*square(0.5));	   
   return jesCorrection->getSubCorrections()[corrLevelIndex];
 }
@@ -327,14 +327,14 @@ void JECfactorAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es
     FactorizedJetCorrector* jesCorrection = new FactorizedJetCorrector(jecParameters_correction);
 
     std::vector<JetCorrectionUncertainty*> jesUncertainty_total; // index = level
-    std::vector<JetCorrectionUncertainty*> jesUncertainty_time;  // index = level
+    //std::vector<JetCorrectionUncertainty*> jesUncertainty_time;  // index = level
     std::vector<JetCorrectorParameters> jecParameters_uncertainty;
     for ( vstring::const_iterator corrLevel = levels_.begin();
 	  corrLevel != levels_.end(); ++corrLevel ) {
       //jecParameters_uncertainty.push_back((*jecParameterSet)[*corrLevel]);
       //jesUncertainty.push_back(new JetCorrectionUncertainty(jecParameters_uncertainty));
       jesUncertainty_total.push_back(new JetCorrectionUncertainty((*jecParameterSet)["Uncertainty"]));
-      jesUncertainty_time.push_back(new JetCorrectionUncertainty((*jecParameterSet)["Time"]));
+      //jesUncertainty_time.push_back(new JetCorrectionUncertainty((*jecParameterSet)["Time"]));
     }
   
     std::cout << "making plots for payload = " << (*payload) << std::endl;
@@ -363,8 +363,9 @@ void JECfactorAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es
 
 	    // evaluate uncertainty on jet energy correction factor
 	    double jecUncertainty_total = getJECuncertainty(jesUncertainty_total[corrLevelIndex], pt, eta);
-	    double jecUncertainty_time = getJECuncertainty(jesUncertainty_time[corrLevelIndex], pt, eta);
-	    double jecUncertainty = TMath::Sqrt(square(jecUncertainty_total) - square(jecUncertainty_time));
+	    //double jecUncertainty_time = getJECuncertainty(jesUncertainty_time[corrLevelIndex], pt, eta);
+	    //double jecUncertainty = TMath::Sqrt(square(jecUncertainty_total) - square(jecUncertainty_time));
+	    double jecUncertainty = jecUncertainty_total;
 	    graph_uncertainty->SetPoint(iPoint, pt, jecFactor);
 	    graph_uncertainty->SetPointError(iPoint, pt, jecUncertainty);
 	  }
@@ -414,8 +415,9 @@ void JECfactorAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es
 
 	    // evaluate uncertainty on jet energy correction factor
 	    double jecUncertainty_total = getJECuncertainty(jesUncertainty_total[corrLevelIndex], pt, eta);
-	    double jecUncertainty_time = getJECuncertainty(jesUncertainty_time[corrLevelIndex], pt, eta);
-	    double jecUncertainty = TMath::Sqrt(square(jecUncertainty_total) - square(jecUncertainty_time));
+	    //double jecUncertainty_time = getJECuncertainty(jesUncertainty_time[corrLevelIndex], pt, eta);
+	    //double jecUncertainty = TMath::Sqrt(square(jecUncertainty_total) - square(jecUncertainty_time));
+	    double jecUncertainty = jecUncertainty_total;
 	    graph_uncertainty->SetPoint(iPoint, eta, jecFactor);
 	    graph_uncertainty->SetPointError(iPoint, eta, jecUncertainty);
 	  }
