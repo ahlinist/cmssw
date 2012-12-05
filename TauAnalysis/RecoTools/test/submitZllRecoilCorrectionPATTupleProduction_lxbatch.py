@@ -7,75 +7,100 @@ from TauAnalysis.Configuration.tools.harvestingLXBatch import make_harvest_scrip
 
 import os
 import re
+import socket
 import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v6_00'
+version = 'v7_05wHCALlaserFilter'
 
 samples = {
     'Data_runs190456to193621' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'Data_runs193834to196531' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
     'Data_runs190782to190949_recover' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
-    'Data_runs197770to198913' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+    'Data_runs198022to198523' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : False
     },
-    'Data_runs198934to202016' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+    'Data_runs198934to202016v2' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 3,
         'HLTprocessName' : 'HLT',
         'isMC' : False
-    },    
+    },
+    'Data_runs202044to203002v2' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
+        'numInputFilesPerJob' : 3,
+        'HLTprocessName' : 'HLT',
+        'isMC' : False
+    },
     'ZplusJets_madgraph' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 1,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'TTplusJets_madgraph' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 1,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
+    'Tbar_tW' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'T_tW' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },    
     'PPmuXptGt20Mu15' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'WW' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'WZ' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
     },
     'ZZ' : {
-        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Sep12/',
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
+        'numInputFilesPerJob' : 5,
+        'HLTprocessName' : 'HLT',
+        'isMC' : True
+    },
+    'WplusJets_madgraph' : {
+        'skimFilePath' : '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/',
         'numInputFilesPerJob' : 5,
         'HLTprocessName' : 'HLT',
         'isMC' : True
@@ -92,19 +117,32 @@ samplesToAnalyze = [
     'Data_runs190456to193621',
     'Data_runs193834to196531',
     'Data_runs190782to190949_recover',
-    'Data_runs197770to198913',
-    'Data_runs198934to202016',
+    'Data_runs198022to198523',
+    'Data_runs198934to202016v2',
+    'Data_runs202044to203002v2',
     'ZplusJets_madgraph',
     'TTplusJets_madgraph',
+    'Tbar_tW',
+    'T_tW',
     'PPmuXptGt20Mu15',
     'WW',
     'WZ',
-    'ZZ'
+    'ZZ',
+    'WplusJets_madgraph'
 ]
 
 skipExistingPATtuples = True
 
-outputFilePath = "/store/user/veelken/CMSSW_5_3_x/PATtuples/ZllRecoilCorrection/%s" % version
+#outputFileMachine_and_Path = "/store/user/veelken/CMSSW_5_3_x/PATtuples/ZllRecoilCorrection/%s" % version
+outputFileMachine_and_Path = "ucdavis:/data2/veelken/CMSSW_5_3_x/PATtuples/ZllRecoilCorrection/%s/" % version
+
+outputFileMachine = None
+outputFilePath = None
+if outputFileMachine_and_Path.find(":") != -1:
+    outputFileMachine = outputFileMachine_and_Path[:outputFileMachine_and_Path.find(":")]
+    outputFilePath = outputFileMachine_and_Path[outputFileMachine_and_Path.find(":") + 1:]
+else:
+    outputFilePath = outputFileMachine_and_Path
 
 executable_bsub = 'bsub'
 executable_waitForLXBatchJobs = 'python %s/src/TauAnalysis/Configuration/python/tools/waitForLXBatchJobs.py' % os.environ['CMSSW_BASE']
@@ -113,6 +151,16 @@ executable_hadd = 'hadd -f'
 executable_shell = '/bin/csh'
 
 # create outputFilePath in case it does not yet exist
+def createFilePath_recursively(filePath):
+    filePath_items = filePath.split('/')
+    currentFilePath = "/"
+    for filePath_item in filePath_items:
+        currentFilePath = os.path.join(currentFilePath, filePath_item)
+        if len(currentFilePath) <= 1:
+            continue
+        if not os.path.exists(currentFilePath):
+            os.mkdir(currentFilePath)
+
 if outputFilePath.find("/castor") != -1:
     try:
         castor.rfstat(outputFilePath)
@@ -127,9 +175,13 @@ elif outputFilePath.find("/store") != -1:
         print "outputFilePath does not yet exist, creating it."
         eos.mkdir(outputFilePath)
 else:
+    hostname = socket.gethostname()
+    numChars = min(len(hostname), len(outputFileMachine))
+    if outputFileMachine[:numChars] != hostname[:numChars]:
+        raise ValueError("Cannot create output file path = %s on machine %s !!" % (outputFilePath, outputFileMachine))
     if not os.path.isdir(outputFilePath):
         print "outputFilePath does not yet exist, creating it."
-        os.mkdir(outputFilePath)
+        createFilePath_recursively(outputFilePath)
 
 if not os.path.isdir("lxbatch"):
     os.mkdir('lxbatch')
@@ -251,7 +303,7 @@ for sampleToAnalyze in samplesToAnalyze:
         histogramFileName = 'ZllRecoilCorrectionPUreweightHistograms_%s_%s_%s.root' % (sampleToAnalyze, version, jobId)
 
         jobName, bsubScript = make_bsub_script(
-            os.path.join(outputFilePath, outputFileName),
+            os.path.join(outputFileMachine_and_Path, outputFileName),
             input_files_and_jobs,
             log_file_maker,
             "cmsRun %s" % os.path.join(configFilePath, configFileName),
@@ -288,14 +340,14 @@ for sampleToAnalyze in samplesToAnalyze:
         
     def local_copy_mapper(sample):
         return os.path.join(
-            outputFilePath,
+            outputFileMachine_and_Path,
             'ZllRecoilCorrectionPUreweightHistograms_%s_%s_%s.root' % (sampleToAnalyze, version, jobId))
     
     inputFileInfos = []
     for jobId in bsubScriptFileNames[sampleToAnalyze].keys():
         for inputFileName in bsubFileNames[sampleToAnalyze][jobId]:
             inputFileInfo = {
-                'path'        : os.path.join(outputFilePath, inputFileName),
+                'path'        : os.path.join(outputFileMachine_and_Path, inputFileName),
                 'size'        : 1,           # dummy
                 'time'        : time.localtime(),
                 'file'        : inputFileName,
@@ -313,7 +365,7 @@ for sampleToAnalyze in samplesToAnalyze:
         input_files_info = inputFileInfos,
         harvester_command = executable_hadd,
         abort_on_rfcp_error = False,
-        castor_output_directory = outputFilePath,
+        castor_output_directory = outputFileMachine_and_Path,
         script_directory = configFilePath,
         merge_script_name = \
         os.path.join(configFilePath, "_".join(['submit', sampleToAnalyze, 'merge']) + '.sh'),

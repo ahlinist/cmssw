@@ -31,6 +31,8 @@ def getPATtupleFileNames(sampleNames, inputFilePath):
             fwliteInput_fileNames += "process.fwliteInput.fileNames.append('%s')\n" % os.path.join(inputFilePath, inputFileName)
 
     print " found %i input files." % len(inputFileNames_matched)
+    if len(inputFileNames_matched) == 0:
+        raise ValueError("Sample = %s has no input files !!" % sampleNames)
 
     return (inputFileNames_matched, fwliteInput_fileNames) 
 #--------------------------------------------------------------------------------
@@ -269,27 +271,35 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(maxEvents,
     if metOptionName == "pfMEt" or metOptionName == "pfMEtTypeIcorrected" or metOptionName == "pfMEtTypeIcorrectedSmeared":
         if runPeriod == "2012RunABC":
             if processType == 'Data':
-                shiftedMEtCorrX_string = "+2.87340e-01 + 3.29813e-01*y" # CV: x = sumEt, y = numVertices
-                shiftedMEtCorrY_string = "-2.27938e-01 - 1.71272e-01*y"
+                shiftedMEtCorrX_string = "+2.66132e-01 + 3.21747e-01*y" # CV: x = sumEt, y = numVertices
+                shiftedMEtCorrY_string = "-2.25229e-01 - 1.74688e-01*y"
             else:
-                shiftedMEtCorrX_string = "+8.72683e-02 - 1.66671e-02*y"
-                shiftedMEtCorrY_string = "+1.86650e-01 - 1.21946e-01*y"
+                shiftedMEtCorrX_string = "+1.16618e-01 - 1.99574e-02*y"
+                shiftedMEtCorrY_string = "+2.76366e-01 - 1.28027e-01*y"
     elif metOptionName == "pfMEtNoPileUp" or metOptionName == "pfMEtNoPileUpSmeared":
         if runPeriod == "2012RunABC":
             if processType == 'Data':
-                shiftedMEtCorrX_string = "+1.99498e-01 + 1.34810e-01*y"
-                shiftedMEtCorrY_string = "-2.62760e-01 - 9.28175e-02*y"
+                shiftedMEtCorrX_string = "+1.55354e-01 + 1.36071e-01*y"
+                shiftedMEtCorrY_string = "-2.53883e-01 - 9.42985e-02*y"
             else:
-                shiftedMEtCorrX_string = "+1.51399e-01 + 1.17751e-04*y"
-                shiftedMEtCorrY_string = "-1.64406e-01 - 8.10296e-02*y"
+                shiftedMEtCorrX_string = "+1.89973e-01 - 3.00470e-03*y"
+                shiftedMEtCorrY_string = "-1.17163e-01 - 8.33039e-02*y"
     elif metOptionName == "pfMEtMVA" or metOptionName == "pfMEtMVASmeared":
         if runPeriod == "2012RunABC":
             if processType == 'Data':
-                shiftedMEtCorrX_string = "+3.16250e-01 + 5.70539e-02*y"
-                shiftedMEtCorrY_string = "-1.36936e-01 - 2.22518e-02*y"
+                shiftedMEtCorrX_string = "+2.79166e-01 + 5.29655e-02*y"
+                shiftedMEtCorrY_string = "-1.66117e-01 - 2.22564e-02*y"
             else:
-                shiftedMEtCorrX_string = "-3.52902e-01 - 2.25602e-02*y"
-                shiftedMEtCorrY_string = "+2.10645e-01 - 2.59502e-02*y"            
+                shiftedMEtCorrX_string = "-3.00898e-01 - 2.50814e-02*y"
+                shiftedMEtCorrY_string = "+2.12899e-01 - 2.61113e-02*y"
+    elif metOptionName == "caloMEtTypeIcorrected":
+        if runPeriod == "2012RunABC":
+            if processType == 'Data':
+                shiftedMEtCorrX_string = "-7.62178e-01 + 2.30814e-01*y"
+                shiftedMEtCorrY_string = "+3.36434e-01 - 1.22073e-01*y"
+            else:
+                shiftedMEtCorrX_string = "+3.12039e-01 - 2.75528e-01*y"
+                shiftedMEtCorrY_string = "+6.39895e-01 - 2.38409e-01*y"
     shiftedMEtCorr_string = ""
     if shiftedMEtCorrX_string and shiftedMEtCorrY_string:
         shiftedMEtCorr_string  = "cms.PSet(\n"

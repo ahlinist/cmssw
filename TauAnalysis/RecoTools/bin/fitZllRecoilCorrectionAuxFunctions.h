@@ -130,6 +130,12 @@ TGraphAsymmErrors* makeGraph_uParl_div_qT(const std::string& name, const std::st
   return graph;
 }
 
+TGraphAsymmErrors* makeGraph_metXorY_vs_sumEt(const std::string& name, const std::string& title, 
+					      const TH2* histogram_metXorY, const TH1* histogram_sumEt)
+{
+  return makeGraph_mean_or_rms(name, title, histogram_metXorY, histogram_sumEt, kRMS);
+}
+
 //
 //-------------------------------------------------------------------------------
 //
@@ -179,6 +185,27 @@ TF1* fitGraph_uPerp_rms(const std::string& name, TGraph* graph, double xMin = 0.
   f->SetParameter(2,  0.);
   TGraph* dummyGraph = (TGraph*)graph->Clone(); // CV: fit 'dummyGraph', to avoid TF1 getting attached to 'graph' object
   dummyGraph->Fit(f, "E");
+  return f;
+}
+
+TF1* fitGraph_metXorY_vs_sumEt(const std::string& name, TGraph* graph, double xMin = 0., double xMax = 2500.)
+{
+  TF1* f = new TF1(name.data(), "[0]*[0]*TMath::Power(x - [1]*[1], [2]*[2]) + [3]", xMin, xMax);
+  f->SetLineWidth(0);
+  f->SetParameter(0, TMath::Sqrt(0.50));
+  //f->SetParameter(1, 0.);
+  f->FixParameter(1, 0.);
+  f->SetParameter(2, TMath::Sqrt(0.5));
+  //f->SetParameter(3, 0.);
+  f->FixParameter(3, 0.);
+  TGraph* dummyGraph = (TGraph*)graph->Clone(); // CV: fit 'dummyGraph', to avoid TF1 getting attached to 'graph' object
+  dummyGraph->Fit(f, "E");
+  std::cout << "<fitGraph_metXorY_vs_sumEt>:" << std::endl;
+  std::cout << " name = " << name << std::endl;
+  std::cout << " p0 = " << square(f->GetParameter(0)) << " +/- " << square(f->GetParError(0)) << std::endl;
+  std::cout << " p1 = " << square(f->GetParameter(1)) << " +/- " << square(f->GetParError(1)) << std::endl;
+  std::cout << " p2 = " << square(f->GetParameter(2)) << " +/- " << square(f->GetParError(2)) << std::endl;
+  std::cout << " p3 = " << f->GetParameter(3) << " +/- " << f->GetParError(3) << std::endl;  
   return f;
 }
 
@@ -685,6 +712,7 @@ void drawZllRecoilFitResult(
   if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+  canvas->Print(std::string(outputFileName_plot).append(".root").data());
 
   delete dummyHistogram_top;
   delete graph_fit_central_value_top;
@@ -822,6 +850,7 @@ void drawZllRecoilFitResult(
   if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+  canvas->Print(std::string(outputFileName_plot).append(".root").data());
 }
 
 void drawData_vs_MCcomparison(
@@ -1005,6 +1034,7 @@ void drawData_vs_MCcomparison(
   if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+  canvas->Print(std::string(outputFileName_plot).append(".root").data());
 
   delete dummyHistogram_top;
   delete graph_mcErr_sysUncertainty_top;

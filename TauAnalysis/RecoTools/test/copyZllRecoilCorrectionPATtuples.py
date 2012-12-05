@@ -8,12 +8,12 @@ import subprocess
 import shlex
 import time
 
-version = 'v5_42'
+version = 'v6_00'
 
 # Get all the skim files from the castor directory
 sourceFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/" % version
 
-targetFilePath = "/data2/veelken/CMSSW_5_2_x/PATtuples/ZllRecoilCorrection/%s/" % version
+targetFilePath = "/data2/veelken/CMSSW_5_3_x/PATtuples/ZllRecoilCorrection/%s/" % version
 
 samplesToCopy = [
     # modify in case you want to submit jobs for some of the samples only...

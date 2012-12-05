@@ -27,19 +27,27 @@ process.jec = cms.ESSource("PoolDBESSource",
    toGet = cms.VPSet(
        cms.PSet(
            record = cms.string('JetCorrectionsRecord'),
-           tag    = cms.string('JetCorrectorParametersCollection_Jec11_V12_AK5PF'),
+           tag    = cms.string(''),
            label  = cms.untracked.string('AK5PF')
        ),
        cms.PSet(
            record = cms.string('JetCorrectionsRecord'),
-           tag    = cms.string('JetCorrectorParametersCollection_Jec11_V12_AK5Calo'),
+           tag    = cms.string(''),
            label  = cms.untracked.string('AK5Calo')
        )
    ),
-   connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11_V12_20111220.db')
+   connect = cms.string('')
 )
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
-#--------------------------------------------------------------------------------
+if isMC:
+   process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Fall12_V5Final_MC.db')
+   process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_MC_AK5PF')
+   process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_MC_AK5Calo')
+else:
+   process.jec.connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Fall12_V5Final_DATA.db')
+   process.jec.toGet[0].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_DATA_AK5PF')
+   process.jec.toGet[1].tag = cms.string('JetCorrectorParametersCollection_Fall12_V5_DATA_AK5Calo')
+#-------------------------------------------------------------------------------------------------------------------------
 
 # load tau-jet specific JEC parameters (from SQLlite file)
 #process.load("PhysicsTools.PatAlgos.recoLayer0.tauJetCorrections_cff")
@@ -82,18 +90,17 @@ process.makeJECfactorPlots = cms.EDAnalyzer('JECfactorAnalyzer',
 )                                            
 
 if isMC:
-    process.GlobalTag.globaltag = 'START42_V13::All'
+    process.GlobalTag.globaltag = 'START53_V11::All'
     process.source.fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simZplusJets_Summer11_AOD_90_0_BHV.root'
+        '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/goldenZmumuEvents_ZplusJets_madgraph_2012Oct09_AOD_100_1_wSO.root'
     )
-    #process.makeJECfactorPlots.outputFileName = cms.string('/data1/veelken/tmp/JECfactorPlots/START42_V13/makeJECfactorPlots.pdf')
-    process.makeJECfactorPlots.outputFileName = cms.string('/data1/veelken/tmp/JECfactorPlots/Jec11_V12/makeJECfactorPlots.pdf')
+    process.makeJECfactorPlots.outputFileName = cms.string('/data1/veelken/tmp/JECfactorPlots/Jec12_V5_MC/makeJECfactorPlots.pdf')
 else:    
-    process.GlobalTag.globaltag = 'GR_R_42_V20::All'
+    process.GlobalTag.globaltag = 'GR_R_53_V13::All'
     process.source.fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/skim_data_SingleMu_Run2011A_PromptReco_v4_chunk_93_5651.root'
+        '/store/user/veelken/CMSSW_5_3_x/skims/GoldenZmumu/2012Oct09/goldenZmumuEvents_Data_runs202044to203002v2_2012Oct09_AOD_100_1_jKM.root'
     )
-    process.makeJECfactorPlots.outputFileName = cms.string('/data1/veelken/tmp/JECfactorPlots/GR_R_42_V20/makeJECfactorPlots.pdf')
+    process.makeJECfactorPlots.outputFileName = cms.string('/data1/veelken/tmp/JECfactorPlots/Jec12_V5_DATA/makeJECfactorPlots.pdf')
 
 process.p = cms.Path(process.makeJECfactorPlots)
 
