@@ -22,7 +22,7 @@ cvs co -r V03-04-07           RecoMET/METAlgorithms
 cvs co -r V01-02-02           DataFormats/TauReco
 cvs co -r V01-02-03           RecoTauTag/TauTagTools
 cvs co -r V00-04-01           CondFormats/EgammaObjects
-cvs co -r V02-03-01           JetMETCorrections/Algorithms
+#cvs co -r V02-03-01           JetMETCorrections/Algorithms
 
 
 cvs update -r  V03-02-01-01  RecoMET/METAlgorithms/src/CSCHaloAlgo.cc 
