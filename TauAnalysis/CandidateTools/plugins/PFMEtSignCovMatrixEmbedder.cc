@@ -31,12 +31,15 @@ class PFMEtSignCovMatrixEmbedder : public edm::EDProducer {
   private:
     edm::InputTag src_;
     edm::InputTag srcCov_;
+    double sf_; 
 };
 
 template<class T>
 PFMEtSignCovMatrixEmbedder<T>::PFMEtSignCovMatrixEmbedder(const edm::ParameterSet& pset) {
   src_ = pset.getParameter<edm::InputTag>("src");
   srcCov_ = pset.getParameter<edm::InputTag>("srcCov");
+  sf_ = pset.exists("sf") ?
+    pset.getParameter<double>("sf") : 1.0;
   produces<Collection>();
 }
 
@@ -56,7 +59,17 @@ void PFMEtSignCovMatrixEmbedder<T>::produce(edm::Event& evt, const edm::EventSet
     // Make a local copy
     const T& theMET = met->at(i);
     T myMET = theMET;
-    myMET.setSignificanceMatrix(*cov);
+    if ( sf_ == 1.0 ) {
+      myMET.setSignificanceMatrix(*cov);
+    } else { 
+      PFMEtSignCovMatrix cov_scaled(*cov);
+      for ( int iRow = 0; iRow < cov->GetNrows(); ++iRow ) {
+	for ( int iColumn = 0; iColumn < cov->GetNcols(); ++iColumn ) {
+	  cov_scaled(iRow, iColumn) = sf_*(*cov)(iRow, iColumn);
+	}
+      }
+      myMET.setSignificanceMatrix(cov_scaled);
+    }
     output->push_back(myMET);
   }
 
