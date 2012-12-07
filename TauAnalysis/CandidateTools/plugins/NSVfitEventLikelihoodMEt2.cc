@@ -61,9 +61,31 @@ void NSVfitEventLikelihoodMEt2::beginJob(NSVfitAlgorithmBase* algorithm)
 void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
   if ( srcMEtCovMatrix_.label() != "" ) {
+    bool isValid = false;
     edm::Handle<PFMEtSignCovMatrix> metCovMatrix;
     evt.getByLabel(srcMEtCovMatrix_, metCovMatrix);
-    pfMEtCov_ = (*metCovMatrix);
+    if ( metCovMatrix.isValid() ) {
+      pfMEtCov_ = (*metCovMatrix);
+      isValid = true;
+    } 
+    if ( !isValid ) {
+      typedef edm::View<reco::MET> METView;
+      edm::Handle<METView> met;
+      evt.getByLabel(srcMEtCovMatrix_, met);
+      if ( met.isValid() ) {
+	if ( met->size() == 1 ) {
+	  pfMEtCov_ = met->front().getSignificanceMatrix();
+	  isValid = true;
+	} else {
+	  throw cms::Exception("InvalidData") 
+	    << "Failed to find unique MET object !!\n";
+	}
+      }
+    }
+    if ( !isValid ) {
+      throw cms::Exception("InvalidData") 
+	<< "Configuration parameter 'srcMEtCovMatrix' does not refer to valid collection of PFMEtSignCovMatrix or reco::MET objects !!\n";
+    }
   } else {
     pfMEtSign_->beginEvent(evt, es);
   }
