@@ -36,6 +36,8 @@ cvs update -r  V05-07-00     RecoJets/JetProducers/plugins/FastjetJetProducer.h
 cvs update -r  V05-08-07     RecoJets/JetProducers/plugins/VirtualJetProducer.*
 cvs update -r  V05-08-07     RecoJets/JetProducers/interface/PileUpSubtractor.h 
 cvs update -r  V05-08-07     RecoJets/JetProducers/src/PileUpSubtractor.cc 
+cvs co     -r  CMSSW_4_2_8_patch7 RecoMET/METAlgorithms/interface/SigInputObj.h
+cvs co     -r  CMSSW_4_2_8_patch7 RecoMET/METAlgorithms/interface/SigInputObj.cc
 
 rm RecoJets/JetProducers/plugins/FixedGridRhoProducer*
 rm JetMETCorrections/METPUSubtraction/plugins/NoPileUpPFMEtDataProducer.*
