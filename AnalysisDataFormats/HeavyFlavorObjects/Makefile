@@ -86,20 +86,28 @@ tnp/%Dict.cc : tnp/%.hh
 # TARGETS #
 ###########
 
-all:
-	@$(MAKE) ana00
-	@$(MAKE) util
-	@$(MAKE) anaclasses
-	@$(MAKE) links
+all: ana00 util anaclasses links
+	@true
 
+#short
+ana00: lib/libAna00.so
+	@true
 
-ana00: $(addprefix obj/, $(ANA00) $(ANA00_DICT))
+lib/libAna00.so: $(addprefix obj/, $(ANA00) $(ANA00_DICT))
 	$(CXX) $(SOFLAGS) $(GLIBS) $(addprefix obj/,$(ANA00) $(ANA00_DICT)) -o lib/libAna00.so
 
-util: $(addprefix obj/,$(UTIL) $(UTIL_DICT))
+#short
+util: lib/libUtil.so
+	@true
+
+lib/libUtil.so: $(addprefix obj/,$(UTIL) $(UTIL_DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(UTIL_DICT)) $(GLIBS) -o lib/libUtil.so
 
-anaclasses: $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT))
+#short
+anaclasses: lib/libAnaClasses.so
+	@true
+
+lib/libAnaClasses.so: $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so -lMinuit
 
 
