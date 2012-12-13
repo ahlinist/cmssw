@@ -527,10 +527,8 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   // L1 event level stuff
   edm::Handle<l1extra::L1EtMissParticleCollection> hl1met;
-  iEvent.getByLabel(l1MetSrc_, hl1met);
-  L1MET_ = hl1met->front().et();
-  iEvent.getByLabel(l1MhtSrc_, hl1met);
-  L1MHT_ = hl1met->front().et();
+  if(iEvent.getByLabel(l1MetSrc_, hl1met)) L1MET_ = hl1met->front().et();
+  if(iEvent.getByLabel(l1MhtSrc_, hl1met)) L1MHT_ = hl1met->front().et();
 
   if(!triggerBitsOnly) {
 
@@ -900,6 +898,7 @@ void TTEffAnalyzer2::endJob() {
 }
 
 void TTEffAnalyzer2::endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup) {
+/*
   // Counters
   edm::Handle<edm::MergeableCounter> count;
 
@@ -910,6 +909,7 @@ void TTEffAnalyzer2::endLuminosityBlock(const edm::LuminosityBlock & lumi, const
     h_counters_->SetBinContent(i+1,value);
     h_counters_->GetXaxis()->SetBinLabel(i+1,(counters_[i].label()).c_str());
   }
+*/
 }
 
 DEFINE_FWK_MODULE(TTEffAnalyzer2);
