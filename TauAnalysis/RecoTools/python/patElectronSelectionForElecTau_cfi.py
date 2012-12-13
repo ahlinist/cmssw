@@ -15,6 +15,7 @@ selectedPatElectronsForElecTauPreId = copy.deepcopy(selectedPatElectronsTightId)
 # require electron candidate to pass MVA-based ID
 selectedPatElectronsForElecTauId = cms.EDFilter("PATElectronIdSelector",
     srcVertex = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum"),
+    cut = cms.string("tight"),                                              
     filter = cms.bool(False)
 )                                                
 
