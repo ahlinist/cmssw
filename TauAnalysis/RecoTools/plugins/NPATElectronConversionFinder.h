@@ -57,32 +57,27 @@
 
 class NPATElectronConversionFinderImp
 {
-    public:
+ public:
+  typedef std::vector<pat::Electron> PATElectronCollection;
+  typedef std::vector<pat::Electron> collection;
 
-        typedef std::vector<pat::Electron> PATElectronCollection;
-        typedef std::vector<pat::Electron> collection;
+  NPATElectronConversionFinderImp(const edm::ParameterSet& iConfig);
+  ~NPATElectronConversionFinderImp();
 
-        NPATElectronConversionFinderImp(const edm::ParameterSet& iConfig);
-        ~NPATElectronConversionFinderImp();
+  std::vector<const pat::Electron*>::const_iterator begin() const { return selected_.begin(); }
+  std::vector<const pat::Electron*>::const_iterator end() const { return selected_.end(); }
 
-        std::vector<const pat::Electron*>::const_iterator begin() const { return selected_.begin(); }
-        std::vector<const pat::Electron*>::const_iterator end() const { return selected_.end();}
+  void select(const edm::Handle<PATElectronCollection>&, edm::Event&, const edm::EventSetup&);
 
-        void select(const edm::Handle<PATElectronCollection>&,edm::Event & iEvent, const edm::EventSetup & iSetup);
-
-    private:
-
-        std::vector<const pat::Electron*> selected_;
-
-        int maxMissingInnerHits_;
-        int minMissingInnerHits_;
-        double minRxy_;
-        double minFitProb_;
-        int maxHitsBeforeVertex_;
-        bool invertConversionVeto_;
-
-
-
+ private:
+  std::vector<const pat::Electron*> selected_;
+  
+  int maxMissingInnerHits_;
+  int minMissingInnerHits_;
+  double minRxy_;
+  double minFitProb_;
+  int maxHitsBeforeVertex_;
+  bool invertConversionVeto_;
 };
 
 #endif
