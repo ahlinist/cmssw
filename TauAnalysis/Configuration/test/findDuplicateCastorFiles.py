@@ -9,6 +9,7 @@ import time
 
 import TauAnalysis.Configuration.userRegistry as reg
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.eos as eos
 
 #--------------------------------------------------------------------------------
 # Find duplicate files resulting from failing crab jobs or
@@ -30,7 +31,13 @@ print("<findDuplicateCastorFiles>:")
 options = {
     'executable_ls' : {
         'castor' : 'nsls',
+        'eos'    : 'eos ls',
         'local'  : 'ls'
+    },
+    'executable_rm' : {
+        'castor' : 'rfrm',
+        'eos'    : 'cmsRm',
+        'local'  : 'rm'
     }
 }
 
@@ -43,24 +50,29 @@ if len(sys.argv) >= 4:
     jobId = sys.argv[2]
 outputFileName = sys.argv[len(sys.argv) - 1]
 
-castorFilePath = None
+inputFilePath = None
 if channel.find('/castor/') == 0:
     # 'channel' points to files on castor
-    castorFilePath = channel
+    inputFilePath = channel
+elif channel.find('/store/') == 0:
+    # 'channel' points to files on eos disk
+    inputFilePath = channel
 elif channel.find('/') == 0:
     # 'channel' points to files on local disk
-    castorFilePath = channel
+    inputFilePath = channel
 else:
     # 'channel' really corresponds to analysis channel,
     # get file path from TauAnalysis/Configuration/python/userRegistry.py
-    castorFilePath = '/castor/cern.ch/' + reg.getAnalysisFilePath(channel)
-    castorFilePath = castorFilePath.replace('//', '/')
-    castorFilePath = castorFilePath.replace('/castor/cern.ch/castor/cern.ch/', '/castor/cern.ch/')
-print(" castorFilePath = %s" % castorFilePath)
+    inputFilePath = '/castor/cern.ch/' + reg.getAnalysisFilePath(channel)
+    inputFilePath = inputFilePath.replace('//', '/')
+    inputFilePath = inputFilePath.replace('/castor/cern.ch/castor/cern.ch/', '/castor/cern.ch/')
+print(" inputFilePath = %s" % inputFilePath)
 
 mode = None
-if castorFilePath.find('/castor/') == 0: 
+if inputFilePath.find('/castor/') == 0: 
     mode = 'castor'
+if inputFilePath.find('/store/') == 0: 
+    mode = 'eos'    
 else:
     mode = 'local'
 
@@ -70,9 +82,11 @@ if jobId is None:
 print(" jobId = %s" % jobId)
 
 if mode == 'castor':
-    files = [ file_info for file_info in castor.nslsl(castorFilePath) ]
+    files = [ file_info for file_info in castor.nslsl(inputFilePath) ]
+elif mode == 'eos':
+    files = [ file_info for file_info in eos.lsl(inputFilePath) ]
 else:
-    commandLine = '%s %s' % (options['executable_ls'][mode], castorFilePath)
+    commandLine = '%s %s' % (options['executable_ls'][mode], inputFilePath)
     args = shlex.split(commandLine)
     retval = subprocess.Popen(args, stdout = subprocess.PIPE)
     #retval.wait()
@@ -92,6 +106,8 @@ for file in files:
     fileName = None
     if mode == 'castor':
         fileName = file['file']
+    elif mode == 'eos':
+        fileName = file['file']
     else:
         fileName = file
             
@@ -102,7 +118,7 @@ for file in files:
     if not fileName_matcher.match(fileName):
         continue
 
-    # skip entry referring to castorFilePath directory 
+    # skip entry referring to inputFilePath directory 
     if len(fileName) > 1:
 
         fileSize = None
@@ -111,8 +127,11 @@ for file in files:
         if mode == 'castor':
             fileSize = file['size']
             date_and_time = file['time']
+        elif mode == 'eos':
+            fileSize = file['size']
+            date_and_time = file['time']    
         else:
-            commandLine = '%s -l %s' % (options['executable_ls'][mode], os.path.join(castorFilePath, fileName))
+            commandLine = '%s -l %s' % (options['executable_ls'][mode], os.path.join(inputFilePath, fileName))
             args = shlex.split(commandLine)
             retval = subprocess.Popen(args, stdout = subprocess.PIPE)
 
@@ -134,7 +153,7 @@ for file in files:
         #print(" fileName_base = %s" %  fileName_base)
 
         fileNameAndProperties_entry = {
-            'fileName'      : os.path.join(castorFilePath, fileName),
+            'fileName'      : os.path.join(inputFilePath, fileName),
             'fileSize'      : fileSize,
             'date_and_time' : date_and_time
         }
@@ -145,7 +164,6 @@ for file in files:
             fileNamesAndProperties_dict[fileName_base].append(fileNameAndProperties_entry)
 
 outputFile = open(outputFileName, "w")
-
 for fileName_base, fileNameAndProperties_entry in fileNamesAndProperties_dict.items():
     if len(fileNameAndProperties_entry) > 1:
         indexToKeep = 0
@@ -160,7 +178,6 @@ for fileName_base, fileNameAndProperties_entry in fileNamesAndProperties_dict.it
                 print("--> found duplicate file to remove: %s" % fileNameAndProperties_entry[index]['fileName'])
                 print(" (keeping %s)" % fileNameAndProperties_entry[indexToKeep]['fileName'])
                 outputFile.write("%s\n" % fileNameAndProperties_entry[index]['fileName'])
-
 outputFile.close()
 
-print("execute 'cat %s | xargs -n 1 rfrm' to delete duplicated files." % outputFileName)
+print("execute 'cat %s | xargs -n 1 %s' to delete duplicated files." % (outputFileName, options['executable_rm'][mode]))

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.eos as eos
 
+import hashlib
 import math
 import os
 import random
@@ -29,11 +31,18 @@ if not len(sys.argv) == 3:
     raise ValueError("Usage: castor_hadd.py castor_directory sample")
 
 inputFilePath = sys.argv[1]
+if not inputFilePath.endswith("/"):
+    inputFilePath += "/"
 print "inputFilePath = %s" % inputFilePath
 sample = sys.argv[2]
 print "sample = %s" % sample
 
-tmpDir = '/data1/veelken/tmp/castor_hadd'
+tmpDir = '/data1/veelken/tmp/castor_hadd/'
+hash = hashlib.md5()
+hash.update("%s%s" % (inputFilePath, sample))
+tmpDir += hash.hexdigest()[:8]
+if not os.path.exists(tmpDir):
+    os.mkdir(tmpDir)
 
 inputFileName1_regex = \
   r'[a-zA-Z0-9_]*%s_(?P<gridJob>[0-9]+)_(?P<gridTry>[0-9]+)_(?P<hash>[a-zA-Z0-9]+).root' % sample
@@ -42,9 +51,10 @@ inputFileName2_regex = \
   r'[a-zA-Z0-9_]*%s[a-zA-Z0-9_]*_(?P<jobId>[a-zA-Z0-9_]+).root' % sample
 inputFile2_matcher = re.compile(inputFileName2_regex)
 
-executable_rfcp = 'rfcp'
-executable_hadd = 'hadd -k'
-executable_make = 'make'
+executable_rfcp   = 'rfcp'
+executable_hadd   = 'hadd -k'
+executable_make   = 'make'
+executable_eos_cp = 'cmsStage'
 
 def runCommand(commandLine):
     print(commandLine)
@@ -64,6 +74,8 @@ def format_vstring(list_of_strings):
 inputFileNames = []
 if inputFilePath.find('/castor/') != -1:
     inputFileNames = [ '%s' % file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
+elif inputFilePath.find("/store") != -1:
+    inputFileNames = [ file_info['path'] for file_info in eos.lsl(inputFilePath) ]
 else:
     inputFileNames = [ '%s' % os.path.join(inputFilePath, file_name) for file_name in os.listdir(inputFilePath) ]
 
@@ -107,7 +119,7 @@ runCommand(commandLine)
 
 # build Makefile for copyint input files
 # (use separate Makefile in order to avoid running more than one rfcp job at the same time)
-makeFileName_part1 = "Makefile_castor_hadd_part1"
+makeFileName_part1 = "Makefile_castor_hadd_part1_%s" % hash.hexdigest()[:8]
 makeFile_part1 = open(makeFileName_part1, "w")
 makeFile_part1.write("\n")
 tmpFileNames = []
@@ -122,6 +134,8 @@ for i, inputFileName_matched in enumerate(inputFileNames_matched):
     commandLine = None
     if inputFileName_matched.find('/castor/') != -1:
         commandLine = '%s %s %s' % (executable_rfcp, inputFileName_matched, tmpFileName)
+    elif inputFileName_matched.find('/store/') != -1:
+        commandLine = '%s %s %s' % (executable_eos_cp, inputFileName_matched, tmpFileName)    
     else:
         commandLine = 'cp %s %s' % (inputFileName_matched, tmpFileName)
     makeFile_part1.write("%s:\n" %
@@ -131,11 +145,12 @@ for i, inputFileName_matched in enumerate(inputFileNames_matched):
 makeFile_part1.write("\n")
 makeFile_part1.close()
 commandLine = '%s -j 1 -f %s' % (executable_make, makeFileName_part1)
+#raise ValueError("STOP.")
 runCommand(commandLine)
 
 # build Makefile for running hadd
 # (run hadd in two stages, in order to reduce number of files that need to be added simultaneously)
-makeFileName_part2 = "Makefile_castor_hadd_part2"
+makeFileName_part2 = "Makefile_castor_hadd_part2_%s" % hash.hexdigest()[:8]
 makeFile_part2 = open(makeFileName_part2, "w")
 makeFile_part2.write("\n")
 makeFile_part2.write("all: %s\n" %
@@ -170,17 +185,20 @@ makeFile_part2.write("\t%s %s %s\n" %
    format_vstring(outputFileNames_level1)))
 makeFile_part2.close()
 commandLine = '%s -j 4 -f %s' % (executable_make, makeFileName_part2)
+#raise ValueError("STOP.")
 runCommand(commandLine)
 
 commandLine = None
 if inputFilePath.find('/castor/') != -1:
     commandLine = '%s %s %s' % (executable_rfcp, outputFileName, os.path.join(inputFilePath, os.path.basename(outputFileName)))
+elif inputFilePath.find('/store/') != -1:
+    commandLine = '%s %s %s' % (executable_eos_cp, outputFileName, os.path.join(inputFilePath, os.path.basename(outputFileName)))    
 else:
     commandLine = 'cp %s %s' % (outputFileName, os.path.join(inputFilePath, os.path.basename(outputFileName)))
 runCommand(commandLine)
 
-for tmpFileName in tmpFileNames:
-    commandLine = 'rm %s' % tmpFileName
+#for tmpFileName in tmpFileNames:
+#    commandLine = 'rm %s' % tmpFileName
     
 print("Finished running 'castor_hadd.py'.")
 
