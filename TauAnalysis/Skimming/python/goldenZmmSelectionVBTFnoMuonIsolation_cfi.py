@@ -27,24 +27,43 @@ from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import patMuons
 
 # compute muon IsoDeposits and add muon isolation sums to pat::Muon objects
 from RecoMuon.MuonIsolation.muonPFIsolation_cff import *
-muPFIsoDepositCharged.src = cms.InputTag('muons')
-muPFIsoDepositNeutral.src = cms.InputTag('muons')
-muPFIsoDepositGamma.src = cms.InputTag('muons')
-muPFIsoDepositChargedAll.src = cms.InputTag('muons')
-muPFIsoDepositPU.src = cms.InputTag('muons')
+muPFIsoDepositChargedForPAT = muPFIsoDepositCharged.clone(
+    src = cms.InputTag('muons')
+)    
+muPFIsoDepositNeutralForPAT = muPFIsoDepositNeutral.clone(
+    src = cms.InputTag('muons')
+)    
+muPFIsoDepositGammaForPAT = muPFIsoDepositGamma.clone(
+    src = cms.InputTag('muons')
+)    
+muPFIsoDepositChargedAllForPAT = muPFIsoDepositChargedAll.clone(
+    src = cms.InputTag('muons')
+)    
+muPFIsoDepositPUforPAT = muPFIsoDepositPU.clone(
+    src = cms.InputTag('muons')
+)
+muonPFIsolationSequenceForPAT = cms.Sequence(
+    muPFIsoDepositChargedForPAT
+   * muPFIsoDepositNeutralForPAT
+   * muPFIsoDepositGammaForPAT
+   * muPFIsoDepositChargedAllForPAT
+   * muPFIsoDepositPUforPAT
+)
 patMuonsForGoldenZmmSelection = patMuons.clone(
     isoDeposits = cms.PSet(
         # CV: strings for IsoDeposits defined in PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc
-        pfChargedHadrons = cms.InputTag("muPFIsoDepositCharged"),
-        pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral"),
-        pfPhotons = cms.InputTag("muPFIsoDepositGamma"),
+        pfChargedHadrons = cms.InputTag("muPFIsoDepositChargedForPAT"),
+        pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutralForPAT"),
+        pfPhotons = cms.InputTag("muPFIsoDepositGammaForPAT"),
         user = cms.VInputTag(
-            cms.InputTag("muPFIsoDepositChargedAll"),
-            cms.InputTag("muPFIsoDepositPU")
+            cms.InputTag("muPFIsoDepositChargedAllForPAT"),
+            cms.InputTag("muPFIsoDepositPUforPAT")
        )
     ),
     addGenMatch = cms.bool(False),
     embedHighLevelSelection = cms.bool(True),
+    embedCaloMETMuonCorrs = cms.bool(False),
+    embedTcMETMuonCorrs = cms.bool(False),
     usePV = cms.bool(False) # compute transverse impact parameter wrt. beamspot (not event vertex)
 )
 
@@ -177,7 +196,7 @@ goldenZmumuSelectionSequence = cms.Sequence(
     * goodVertex
     * pfNoPileUpSequence
     * pfParticleSelectionSequence
-    * muonPFIsolationDepositsSequence
+    * muonPFIsolationSequenceForPAT
     * patMuonsForGoldenZmmSelection * goodMuons * goodIsoMuons
     * goldenZmumuCandidatesGe0IsoMuons * goldenZmumuCandidatesGe1IsoMuons * goldenZmumuCandidatesGe2IsoMuons
     * goodMuonFilter * goldenZmumuFilter
