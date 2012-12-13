@@ -21,31 +21,31 @@
 template <typename T>
 class PATElectronIdSelectorImp
 {
-  public:
+ public:
     
-    typedef std::vector<T> collection;
+  typedef std::vector<T> collection;
   
-    explicit PATElectronIdSelectorImp(const edm::ParameterSet&);
-    ~PATElectronIdSelectorImp();
+  explicit PATElectronIdSelectorImp(const edm::ParameterSet&);
+  ~PATElectronIdSelectorImp();
 
-    typename std::vector<const T*>::const_iterator begin() const { return selected_.begin(); }
-    typename std::vector<const T*>::const_iterator end() const { return selected_.end(); }
+  typename std::vector<const T*>::const_iterator begin() const { return selected_.begin(); }
+  typename std::vector<const T*>::const_iterator end() const { return selected_.end(); }
 
-    void select(const edm::Handle<collection>&, edm::Event&, const edm::EventSetup&);
+  void select(const edm::Handle<collection>&, edm::Event&, const edm::EventSetup&);
     
-    size_t size() const { return selected_.size(); }
+  size_t size() const { return selected_.size(); }
 
-  protected:
-    std::vector<const T*> selected_;
+ protected:
+  std::vector<const T*> selected_;
 
-    edm::InputTag srcVertex_;
+  edm::InputTag srcVertex_;
     
-    EGammaMvaEleEstimator* fMVA_;
+  EGammaMvaEleEstimator* fMVA_;
    
-    enum { kLoose, kTight };
-    int cut_;
+  enum { kLoose, kTight };
+  int cut_;
 
-    int verbosity_;
+  int verbosity_;
 };
 
 #endif
