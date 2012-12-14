@@ -49,9 +49,9 @@ const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& d
     } else {
       // The old one doesn't match the prefferred list if it is either
       // a better energy match or better pdgId match
-      if (higherEnergyThanBestMatch || matchesPdgId ) {
-          bestMatch = &(*genParticle);
-          if ( matchesPdgId ) bestMatchMatchesPdgId = true;
+      if ( higherEnergyThanBestMatch || matchesPdgId ) {
+	bestMatch = &(*genParticle);
+	if ( matchesPdgId ) bestMatchMatchesPdgId = true;
       }
     }
   }

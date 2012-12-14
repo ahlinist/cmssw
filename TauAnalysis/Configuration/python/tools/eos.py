@@ -73,3 +73,11 @@ def mkdir(path):
     if pathExists:
         raise RuntimeError("Path %s does already exist !!" % path)
     runCommand('%s mkdir %s' % (executable_eos, path))
+
+def cp(inputFileNames, outputFilePath):
+    """
+    Copy the inFiles into the outDir
+    """
+    for inputFileName in inputFileNames:
+        runCommand('% cp %s %s' % (executable_eos, inputFileName, os.path.join(outputFilePath, os.path.basename(inputFileName))))
+    return 1

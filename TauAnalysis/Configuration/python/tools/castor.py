@@ -45,7 +45,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -408,7 +408,6 @@ def rfcp( inFiles, outDir ):
     if allGood:
         return 0
     return 1
-
 
 def rfstat (pathname):
     """rfstat <file_path>
