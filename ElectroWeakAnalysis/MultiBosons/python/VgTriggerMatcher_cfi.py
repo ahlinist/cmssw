@@ -4,7 +4,84 @@ import FWCore.ParameterSet.Config as cms
 muonTriggerMatchHLTMu17Mu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu17_Mu8_v*", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_Mu17_Mu8_v*", 1, 0 ) || path( "HLT_Mu17_Mu8_v*", 0, 1 )' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_Mu17_TkMu8_v*
+muonTriggerMatchHLTMu17TkMu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'path( "HLT_Mu17_TkMu8_v*", 1, 0 ) || path( "HLT_Mu17_TkMu8_v*", 0, 1 )' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_Mu17_v*
+muonTriggerMatchHLTMu17forMu17Mu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'filter("hltL3fL1DoubleMu10MuOpenL1f0L2f10L3Filtered17") || filter("hltL3fL1DoubleMu10MuOpenOR3p5L1f0L2f10L3Filtered17")' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_Mu17_v*
+muonTriggerMatchHLTMu17forMu17TkMu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'filter("hltL3fL1sMu10MuOpenL1f0L2f10L3Filtered17") || filter("hltL3fL1sMu10MuOpenOR3p5L1f0L2f10L3Filtered17")' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_Mu8_v*
+muonTriggerMatchHLTMu8forMu17Mu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'filter("hltL3pfL1DoubleMu10MuOpenL1f0L2pf0L3PreFiltered8") || filter("hltL3pfL1DoubleMu10MuOpenOR3p5L1f0L2pf0L3PreFiltered8")' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_TkMu8_v*
+muonTriggerMatchHLTTkMu8forMu17TkMu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'filter("hltDiMuonGlb17Trk8DzFiltered0p2") || filter("hltDiMuonGlb17Trk8DzFiltered0p2")' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_IsoMu24_v*
+muonTriggerMatchHLTIsoMu24 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_v*", 1, 0 )' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_IsoMu30_v*
+muonTriggerMatchHLTIsoMu30 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -59,7 +136,6 @@ electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLT
 electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
 		                                           src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           #matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*", 1, 0 )' ),
                                                            matchedCuts = cms.string( 'filter("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoFilter") || filter("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsolFilter")' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
@@ -71,7 +147,6 @@ electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVL = cms.EDProducer( "P
 electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           #matchedCuts = cms.string( 'path( "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*", 1, 0 )' ),
                                                            matchedCuts = cms.string( 'filter("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoDoubleFilter") || filter("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsolDoubleFilter")' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
@@ -573,10 +648,17 @@ vgTriggerMatcherPhoton = cms.Sequence(
 	)
 
 vgTriggerMatcherMuon = cms.Sequence(
+    muonTriggerMatchHLTIsoMu24 +
+    muonTriggerMatchHLTIsoMu30 +
     muonTriggerMatchHLTIsoMu24eta2p1 +
     muonTriggerMatchHLTIsoMu30eta2p1 +
     muonTriggerMatchHLTIsoMu34eta2p1 +
-    muonTriggerMatchHLTMu17Mu8
+    muonTriggerMatchHLTMu17Mu8 +
+    muonTriggerMatchHLTMu17TkMu8 +
+    muonTriggerMatchHLTMu17forMu17Mu8 +
+    muonTriggerMatchHLTMu17forMu17TkMu8 +
+    muonTriggerMatchHLTMu8forMu17Mu8 +
+    muonTriggerMatchHLTTkMu8forMu17TkMu8
     )
 
 vgTriggerMatcherJet = cms.Sequence(

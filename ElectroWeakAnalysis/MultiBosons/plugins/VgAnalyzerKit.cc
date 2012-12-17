@@ -69,6 +69,11 @@
 // Electron ID in 2012
 #include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
 
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+
 using namespace std;
 using namespace pat;
 using namespace edm;
@@ -84,6 +89,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
   doStoreJets_    = ps.getParameter<bool>("doStoreJets");
   doJetHLTMatch_  = ps.getParameter<bool>("doJetHLTMatch");
+  doStoreSCs_    = ps.getParameter<bool>("doStoreSCs");
   doSkim_         = ps.getParameter<bool>("doSkim");
   gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
@@ -112,6 +118,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   inputTagIsoDepElectrons_ = ps.getParameter< std::vector<edm::InputTag> >("IsoDepElectron");
   inputTagIsoValElectronsPFId_  = ps.getParameter< std::vector<edm::InputTag> >("IsoValElectronPF");
 
+  // skimed HLT 
+  skimedHLTpath_  = ps.getParameter<std::vector<std::string > >("skimedHLTpath");
+
   if (saveHistograms_) helper_.bookHistos(this);
 
   // cout << "VgAnalyzerKit: making output tree" << endl;
@@ -129,7 +138,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[31]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[34]/I");
   tree_->Branch("HLTprescale", HLTprescale_, "HLTprescale[nHLT]/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
   tree_->Branch("vtx", vtx_, "vtx[nVtx][3]/F");
@@ -169,11 +178,13 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("mcIndex", mcIndex, "mcIndex[nMC]/I");
     tree_->Branch("mcDecayType", mcDecayType, "mcDecayType[nMC]/I"); //-999:non W or Z, 1:hardronic, 2:e, 3:mu, 4:tau
     tree_->Branch("mcIsoDR03", mcIsoDR03, "mcIsoDR03[nMC]/F");
-    tree_->Branch("mcCalIsoDR03", mcCalIsoDR03, "mcCalIsoDR03[nMC]/F");
-    tree_->Branch("mcTrkIsoDR03", mcTrkIsoDR03, "mcTrkIsoDR03[nMC]/F");
+    tree_->Branch("mcCHIsoDR03", mcCHIsoDR03, "mcCHIsoDR03[nMC]/F");
+    tree_->Branch("mcNHIsoDR03", mcNHIsoDR03, "mcNHIsoDR03[nMC]/F");
+    tree_->Branch("mcPhIsoDR03", mcPhIsoDR03, "mcPhIsoDR03[nMC]/F");
     tree_->Branch("mcIsoDR04", mcIsoDR04, "mcIsoDR04[nMC]/F");
-    tree_->Branch("mcCalIsoDR04", mcCalIsoDR04, "mcCalIsoDR04[nMC]/F");
-    tree_->Branch("mcTrkIsoDR04", mcTrkIsoDR04, "mcTrkIsoDR04[nMC]/F");
+    tree_->Branch("mcCHIsoDR04", mcCHIsoDR04, "mcCHIsoDR04[nMC]/F");
+    tree_->Branch("mcNHIsoDR04", mcNHIsoDR04, "mcNHIsoDR04[nMC]/F");
+    tree_->Branch("mcPhIsoDR04", mcPhIsoDR04, "mcPhIsoDR04[nMC]/F");
     // Gen MET
     tree_->Branch("genMET", &genMET_, "genMET/F");
     tree_->Branch("genMETx", &genMETx_, "genMETx/F");
@@ -227,38 +238,48 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("nEle", &nEle_, "nEle/I");
   tree_->Branch("eleEcalDriven", eleEcalDriven_, "eleEcalDriven[nEle]/O");
   tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][14]/I");
-  tree_->Branch("eleID2012", eleID2012_, "eleID2012[nEle][7]/O");
   tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
-  tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
+  tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
   tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/F");
-  tree_->Branch("eleSCRawEn", eleSCRawEn_, "eleSCRawEn[nEle]/F");
-  tree_->Branch("eleESEn", eleESEn_, "eleESEn[nEle]/F");
-  tree_->Branch("eleSCEn", eleSCEn_, "eleSCEn[nEle]/F");
+  tree_->Branch("eleEcalEn", eleEcalEn_, "eleEcalEn[nEle]/F");
+  tree_->Branch("eleGsfP", eleGsfP_, "eleGsfP[nEle]/F");
   tree_->Branch("elePt", elePt_, "elePt[nEle]/F");
   tree_->Branch("elePz", elePz_, "elePz[nEle]/F");
   tree_->Branch("eleEta", eleEta_, "eleEta[nEle]/F");
   tree_->Branch("elePhi", elePhi_, "elePhi[nEle]/F");
+  tree_->Branch("eleSCEn", eleSCEn_, "eleSCEn[nEle]/F");
+  tree_->Branch("eleSCRawEn", eleSCRawEn_, "eleSCRawEn[nEle]/F");
+  tree_->Branch("eleESEn", eleESEn_, "eleESEn[nEle]/F");
   tree_->Branch("eleSCEta", eleSCEta_, "eleSCEta[nEle]/F");
   tree_->Branch("eleSCPhi", eleSCPhi_, "eleSCPhi[nEle]/F");
   tree_->Branch("eleSCEtaWidth", eleSCEtaWidth_, "eleSCEtaWidth[nEle]/F");
   tree_->Branch("eleSCPhiWidth", eleSCPhiWidth_, "eleSCPhiWidth[nEle]/F");
-  tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
   tree_->Branch("eleHoverE", eleHoverE_, "eleHoverE[nEle]/F");
   tree_->Branch("eleHoverEbc", eleHoverEbc_, "eleHoverEbc[nEle]/F");
   tree_->Branch("eleEoverP", eleEoverP_, "eleEoverP[nEle]/F");
+  tree_->Branch("eleTrkPErr", eleTrkPErr_, "eleTrkPErr[nEle]/F");
   tree_->Branch("elePin", elePin_, "elePin[nEle]/F");
   tree_->Branch("elePout", elePout_, "elePout[nEle]/F");
   tree_->Branch("eleBrem", eleBrem_, "eleBrem[nEle]/F");
   tree_->Branch("elenBrem", elenBrem_, "elenBrem[nEle]/I");
   tree_->Branch("eledEtaAtVtx", eledEtaAtVtx_, "eledEtaAtVtx[nEle]/F");
   tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/F");
+  tree_->Branch("eledEtaAtCalo", eledEtaAtCalo_, "eledEtaAtCalo[nEle]/F");
+  tree_->Branch("eledPhiAtCalo", eledPhiAtCalo_, "eledPhiAtCalo[nEle]/F");
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIPhi", eleSigmaIEtaIPhi_, "eleSigmaIEtaIPhi[nEle]/F");
   tree_->Branch("eleSigmaIPhiIPhi", eleSigmaIPhiIPhi_, "eleSigmaIPhiIPhi[nEle]/F");
+  tree_->Branch("eleEmax", eleEmax_, "eleEmax[nEle]/F");
+  tree_->Branch("eleE1x5", eleE1x5_, "eleE1x5[nEle]/F");
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
+  tree_->Branch("eleE5x5", eleE5x5_, "eleE5x5[nEle]/F");
+  tree_->Branch("eleKfChi2", eleKfChi2_, "eleKfChi2[nEle]/F");
+  tree_->Branch("eleKfHits", eleKfHits_, "eleKfHits[nEle]/F");
+  tree_->Branch("eleKfHitsAll", eleKfHitsAll_, "eleKfHitsAll[nEle]/F");
+  tree_->Branch("eleGsfChi2", eleGsfChi2_, "eleGsfChi2[nEle]/F");
   tree_->Branch("eleSeedTime", eleSeedTime_, "eleSeedTime[nEle]/F");
   tree_->Branch("eleSeedEnergy", eleSeedEnergy_, "eleSeedEnergy[nEle]/F");
   if (doGenParticles_) {
@@ -281,10 +302,17 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleConversionveto", eleConversionveto_, "eleConversionveto[nEle]/O");
   tree_->Branch("elePVD0", elePVD0_, "elePVD0[nEle]/F");
   tree_->Branch("elePVDz", elePVDz_, "elePVDz[nEle]/F");
+  tree_->Branch("eleGVD0", eleGVD0_, "eleGVD0[nEle]/F");
+  tree_->Branch("eleGVDz", eleGVDz_, "eleGVDz[nEle]/F");
+  tree_->Branch("eleIP3D", eleIP3D_, "eleIP3D[nEle]/F");
+  tree_->Branch("eleIP3DErr", eleIP3DErr_, "eleIP3DErr[nEle]/F");
   tree_->Branch("eleIsPFID", eleIsPFID_, "eleIsPFID[nEle]/O");
-  tree_->Branch("elePfChargedHadron", elePfChargedHadron_, "elePfChargedHadron[nEle]/D");
-  tree_->Branch("elePfNeutralHadron", elePfNeutralHadron_, "elePfNeutralHadron[nEle]/D");
-  tree_->Branch("elePfPhoton", elePfPhoton_, "elePfPhoton[nEle]/D");
+  tree_->Branch("elePfChargedHadronDR03", elePfChargedHadronDR03_, "elePfChargedHadronDR03[nEle]/D");
+  tree_->Branch("elePfNeutralHadronDR03", elePfNeutralHadronDR03_, "elePfNeutralHadronDR03[nEle]/D");
+  tree_->Branch("elePfPhotonDR03", elePfPhotonDR03_, "elePfPhotonDR03[nEle]/D");
+  tree_->Branch("elePfChargedHadronDR04", elePfChargedHadronDR04_, "elePfChargedHadronDR04[nEle]/D");
+  tree_->Branch("elePfNeutralHadronDR04", elePfNeutralHadronDR04_, "elePfNeutralHadronDR04[nEle]/D");
+  tree_->Branch("elePfPhotonDR04", elePfPhotonDR04_, "elePfPhotonDR04[nEle]/D");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][23]/I");
@@ -312,6 +340,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIPhi", phoSigmaIEtaIPhi_, "phoSigmaIEtaIPhi[nPho]/F");
   tree_->Branch("phoSigmaIPhiIPhi", phoSigmaIPhiIPhi_, "phoSigmaIPhiIPhi[nPho]/F");
+  tree_->Branch("phoE1x5", phoE1x5_, "phoE1x5[nPho]/F");
+  tree_->Branch("phoE2x5", phoE2x5_, "phoE2x5[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
   tree_->Branch("phoE5x5", phoE5x5_, "phoE5x5[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
@@ -333,6 +363,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoOverlap", phoOverlap_, "phoOverlap[nPho]/I");
   tree_->Branch("phohasPixelSeed", phohasPixelSeed_, "phohasPixelSeed[nPho]/I");
   tree_->Branch("phoElectronveto", phoElectronveto_, "phoElectronveto[nPho]/I");
+  tree_->Branch("phoIsPFID", phoIsPFID_, "phoIsPFID[nPho]/O");
   tree_->Branch("phoPfChargedHadron", phoPfChargedHadron_, "phoPfChargedHadron[nPho]/F");
   tree_->Branch("phoPfNeutralHadron", phoPfNeutralHadron_, "phoPfNeutralHadron[nPho]/F");
   tree_->Branch("phoPfPhoton", phoPfPhoton_, "phoPfPhoton[nPho]/F");
@@ -341,7 +372,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muIsPFMu", muIsPFMu_, "muIsPFMu[nMu]/O");
   tree_->Branch("muIsGlobalMu", muIsGlobalMu_, "muIsGlobalMu[nMu]/O");
   tree_->Branch("muIsTrackerMu", muIsTrackerMu_, "muIsTrackerMu[nMu]/O");
-  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][4]/I");
+  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][11]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -363,6 +394,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // [0]: AllArbitrated, [1]: GlobalMuonPromptTight, [2]: TMLSLoose, [3]: TMLSTight, [4]: TM2DCompatLoose, [5]: TM2DCompatTight
   tree_->Branch("muPVD0", muPVD0_, "muPVD0[nMu]/F");
   tree_->Branch("muPVDz", muPVDz_, "muPVDz[nMu]/F");
+  tree_->Branch("muGVD0", muGVD0_, "muGVD0[nMu]/F");
+  tree_->Branch("muGVDz", muGVDz_, "muGVDz[nMu]/F");
   tree_->Branch("muTrkdPt", muTrkdPt_, "muTrkdPt[nMu]/F");
   tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
   tree_->Branch("muNumberOfValidPixelHits", muNumberOfValidPixelHits_, "muNumberOfValidPixelHits[nMu]/I");
@@ -412,6 +445,19 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
       tree_->Branch("jetGenPartonID", jetGenPartonID_, "jetGenPartonID[nJet]/I");
       tree_->Branch("jetGenPartonMomID", jetGenPartonMomID_, "jetGenPartonMomID[nJet]/I");
     }
+  }
+  // SC information
+  if (doStoreSCs_) {
+    tree_->Branch("nEBSC", &nEBSC_, "nEBSC/I");
+    tree_->Branch("scEBEn", scEBEn_, "scEBEn[nEBSC]/F");
+    tree_->Branch("scEBEt", scEBEt_, "scEBEt[nEBSC]/F");
+    tree_->Branch("scEBEta", scEBEta_, "scEBEta[nEBSC]/F");
+    tree_->Branch("scEBPhi", scEBPhi_, "scEBPhi[nEBSC]/F");
+    tree_->Branch("nEESC", &nEESC_, "nEESC/I");
+    tree_->Branch("scEEEn", scEEEn_, "scEEEn[nEESC]/F");
+    tree_->Branch("scEEEt", scEEEt_, "scEEEt[nEESC]/F");
+    tree_->Branch("scEEEta", scEEEta_, "scEEEta[nEESC]/F");
+    tree_->Branch("scEEPhi", scEEPhi_, "scEEPhi[nEESC]/F");
   }
 
 }
@@ -493,6 +539,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   }
 
   // vertex
+  Int_t firstGoodVtx = -1;
   nVtx_ = 0;
   nGoodVtx_ = 0;
   Handle<VertexCollection> recVtxs;
@@ -507,11 +554,20 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
 	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho();
 
-	if (vtxNDF_[nVtx_] >= 4 && fabs(vtx_[nVtx_][2]) <= 24 && fabs(vtxD0_[nVtx_]) <= 2) nGoodVtx_++;
+	if (vtxNDF_[nVtx_] >= 4 && fabs(vtx_[nVtx_][2]) <= 24 && fabs(vtxD0_[nVtx_]) <= 2) {
+	  nGoodVtx_++;
+
+	  if (nGoodVtx_ == 1) firstGoodVtx = i;
+	}
+
 	nVtx_++;
       }
     }
   }
+
+  // Set PV and first good vertex
+  if (nGoodVtx_ == 0) firstGoodVtx = 0; 
+  math::XYZPoint gv(vtx_[firstGoodVtx][0], vtx_[firstGoodVtx][1], vtx_[firstGoodVtx][2]);
 
   // track quality
   TrackBase::TrackQuality trkQuality_;
@@ -676,12 +732,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
 	  }
 	}
-        mcIsoDR03[nMC_]    = getGenIso(genParticlesHandle_, ip, 0.3, false, false);
-        mcCalIsoDR03[nMC_] = getGenCalIso(genParticlesHandle_, ip, 0.3, false, false);
-        mcTrkIsoDR03[nMC_] = getGenTrkIso(genParticlesHandle_, ip, 0.3);
-        mcIsoDR04[nMC_]    = getGenIso(genParticlesHandle_, ip, 0.4, false, false);
-        mcCalIsoDR04[nMC_] = getGenCalIso(genParticlesHandle_, ip, 0.4, false, false);
-        mcTrkIsoDR04[nMC_] = getGenTrkIso(genParticlesHandle_, ip, 0.4);
+	mcIsoDR03[nMC_]    = getGenIso(genParticlesHandle_, ip, 0.3, false, false);
+        mcCHIsoDR03[nMC_]  = getGenCHIso(genParticlesHandle_, ip, 0.3);
+        mcNHIsoDR03[nMC_]  = getGenNHIso(genParticlesHandle_, ip, 0.3);
+        mcPhIsoDR03[nMC_]  = getGenPhIso(genParticlesHandle_, ip, 0.3);
+	mcIsoDR04[nMC_]    = getGenIso(genParticlesHandle_, ip, 0.4, false, false);
+        mcCHIsoDR04[nMC_]  = getGenCHIso(genParticlesHandle_, ip, 0.4);
+        mcNHIsoDR04[nMC_]  = getGenNHIso(genParticlesHandle_, ip, 0.4);
+        mcPhIsoDR04[nMC_]  = getGenPhIso(genParticlesHandle_, ip, 0.4);
 
 	nMC_++;
       }
@@ -700,34 +758,39 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   HLTIndexPath[4]  = "HLT_PFJet260_v";
   HLTIndexPath[5]  = "HLT_PFJet320_v";
   HLTIndexPath[6]  = "HLT_PFJet400_v";
-  HLTIndexPath[7]  = "HLT_IsoMu24_eta2p1_v";
-  HLTIndexPath[8]  = "HLT_IsoMu30_eta2p1_v";
-  HLTIndexPath[9]  = "HLT_IsoMu34_eta2p1_v";
-  HLTIndexPath[10] = "HLT_Mu17_Mu8_v";
-  HLTIndexPath[11] = "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v";
-  HLTIndexPath[12] = "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v";
-  HLTIndexPath[13] = "HLT_Ele20_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC4_Mass50_v";
-  HLTIndexPath[14] = "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_Mass50_v";
-  HLTIndexPath[15] = "HLT_Ele27_WP80_PFMET_MT50_v";
-  HLTIndexPath[16] = "HLT_Ele27_WP80_v";
-  HLTIndexPath[17] = "HLT_Photon20_CaloIdVL_IsoL_v";
-  HLTIndexPath[18] = "HLT_Photon26_Photon18_v";
-  HLTIndexPath[19] = "HLT_Photon30_CaloIdVL_v";
-  HLTIndexPath[20] = "HLT_Photon30_CaloIdVL_IsoL_v";
-  HLTIndexPath[21] = "HLT_Photon36_Photon22_v";
-  HLTIndexPath[22] = "HLT_Photon36_CaloId10_Iso50_Photon22_CaloId10_Iso50_v";
-  HLTIndexPath[23] = "HLT_Photon50_CaloIdVL_v";
-  HLTIndexPath[24] = "HLT_Photon50_CaloIdVL_IsoL_v";
-  HLTIndexPath[25] = "HLT_Photon75_CaloIdVL_v";
-  HLTIndexPath[26] = "HLT_Photon75_CaloIdVL_IsoL_v";
-  HLTIndexPath[27] = "HLT_Photon90_CaloIdVL_v";
-  HLTIndexPath[28] = "HLT_Photon90_CaloIdVL_IsoL_v";
-  HLTIndexPath[29] = "HLT_Photon135_v";
-  HLTIndexPath[30] = "HLT_Photon150_v";
+  HLTIndexPath[7]  = "HLT_IsoMu24_v";
+  HLTIndexPath[8]  = "HLT_IsoMu30_v";
+  HLTIndexPath[9]  = "HLT_IsoMu24_eta2p1_v";
+  HLTIndexPath[10] = "HLT_IsoMu30_eta2p1_v";
+  HLTIndexPath[11] = "HLT_IsoMu34_eta2p1_v";
+  HLTIndexPath[12] = "HLT_Mu17_Mu8_v";
+  HLTIndexPath[13] = "HLT_Mu17_TkMu8_v";
+  HLTIndexPath[14] = "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v";
+  HLTIndexPath[15] = "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v";
+  HLTIndexPath[16] = "HLT_Ele20_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC4_Mass50_v";
+  HLTIndexPath[17] = "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_Mass50_v";
+  HLTIndexPath[18] = "HLT_Ele27_WP80_PFMET_MT50_v";
+  HLTIndexPath[19] = "HLT_Ele27_WP80_v";
+  HLTIndexPath[20] = "HLT_Photon20_CaloIdVL_IsoL_v";
+  HLTIndexPath[21] = "HLT_Photon26_Photon18_v";
+  HLTIndexPath[22] = "HLT_Photon30_CaloIdVL_v";
+  HLTIndexPath[23] = "HLT_Photon30_CaloIdVL_IsoL_v";
+  HLTIndexPath[24] = "HLT_Photon36_Photon22_v";
+  HLTIndexPath[25] = "HLT_Photon36_CaloId10_Iso50_Photon22_CaloId10_Iso50_v";
+  HLTIndexPath[26] = "HLT_Photon50_CaloIdVL_v";
+  HLTIndexPath[27] = "HLT_Photon50_CaloIdVL_IsoL_v";
+  HLTIndexPath[28] = "HLT_Photon75_CaloIdVL_v";
+  HLTIndexPath[29] = "HLT_Photon75_CaloIdVL_IsoL_v";
+  HLTIndexPath[30] = "HLT_Photon90_CaloIdVL_v";
+  HLTIndexPath[31] = "HLT_Photon90_CaloIdVL_IsoL_v";
+  HLTIndexPath[32] = "HLT_Photon135_v";
+  HLTIndexPath[33] = "HLT_Photon150_v";
 
-  for (int a=0; a<31; a++)
+  for (int a=0; a<34; a++)
     HLTIndex_[a] = -1;
  
+  bool skimed_HLT = false;
+
   nHLT_ = 0;
   Handle<TriggerResults> trgResultsHandle;
   e.getByLabel(trgResults_, trgResultsHandle);
@@ -740,6 +803,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
     for (size_t j=0; j<HLTIndexPath.size(); j++) {
       if(TString(hlNames[i]).Contains(TRegexp(HLTIndexPath[j])) == 1) HLTIndex_[j] = i;
+    }
+
+    for (size_t j = 0; j<skimedHLTpath_.size(); ++j) {
+      if(TString(hlNames[i]).Contains(TRegexp(skimedHLTpath_[j])) == 1 && HLT_[i] == 1) skimed_HLT = true;
     }
   }
 
@@ -849,12 +916,21 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     e.getByLabel(inputTagIsoDepElectrons_[j], electronIsoDep[j]);
   }
 
-  IsoDepositVals electronIsoValPFId(nTypes);
-  const IsoDepositVals * electronIsoVals = &electronIsoValPFId;
+  IsoDepositVals electronIsoValPFIdDR03(nTypes);
+  IsoDepositVals electronIsoValPFIdDR04(nTypes);
+  const IsoDepositVals * electronIsoValsDR03 = &electronIsoValPFIdDR03;
+  const IsoDepositVals * electronIsoValsDR04 = &electronIsoValPFIdDR04;
 
   for (size_t j = 0; j<inputTagIsoValElectronsPFId_.size(); ++j) {
-    e.getByLabel(inputTagIsoValElectronsPFId_[j], electronIsoValPFId[j]);
+    if (j<3)
+      e.getByLabel(inputTagIsoValElectronsPFId_[j], electronIsoValPFIdDR03[j]);
+    else
+      e.getByLabel(inputTagIsoValElectronsPFId_[j], electronIsoValPFIdDR04[j-3]);
   }
+
+  edm::ESHandle<TransientTrackBuilder> builder;
+  es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
+  TransientTrackBuilder transientTrackBuilder = *(builder.product());
 
   // Electron
   edm::Handle<reco::GsfElectronCollection> hElectrons;
@@ -876,14 +952,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC4Mass50"));
   const TriggerObjectMatch *eleTriggerMatch14(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC17Mass50"));
 
-  int nElePassCut = 0;
   nEle_ = 0;
   const Candidate *elemom = 0;
   if ( electronHandle_.isValid() )
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
-      if (iEle->pt() > leadingElePtCut_) nElePassCut++;
-      
       eleEcalDriven_[nEle_] = iEle->ecalDriven();
 
       edm::RefToBase<pat::Electron> eleRef = electronHandle_->refAt(nEle_);
@@ -977,11 +1050,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleID_[nEle_][28]= int (iEle->electronID("eidHyperTight3MC"));
       eleID_[nEle_][29]= int (iEle->electronID("eidHyperTight4MC"));
 
-      eleIDLH_[nEle_] = iEle->electronID("eidLikelihoodExt");
+      eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
+      eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
+      eleVtx_[nEle_][2] = iEle->trackPositionAtVtx().z();
 
       eleClass_[nEle_]   = iEle->classification();
       eleCharge_[nEle_]  = iEle->charge();
       eleEn_[nEle_]      = iEle->energy();
+      eleEcalEn_[nEle_]  = iEle->ecalEnergy();
+      eleGsfP_[nEle_]    = iEle->gsfTrack()->p();
       elePt_[nEle_]      = iEle->pt();
       elePz_[nEle_]      = iEle->pz();
       eleEta_[nEle_]     = iEle->eta();
@@ -990,6 +1067,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleHoverEbc_[nEle_]= iEle->hcalOverEcalBc();
       eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
 
+      eleTrkPErr_[nEle_] = iEle->trackMomentumError();
       elePin_[nEle_]   = iEle->trackMomentumAtVtx().R();
       elePout_[nEle_]  = iEle->trackMomentumOut().R();
       eleBrem_[nEle_]  = iEle->fbrem();
@@ -997,6 +1075,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       eledEtaAtVtx_[nEle_] = iEle->deltaEtaSuperClusterTrackAtVtx();
       eledPhiAtVtx_[nEle_] = iEle->deltaPhiSuperClusterTrackAtVtx();
+
+      eledEtaAtCalo_[nEle_] = iEle->deltaEtaSeedClusterTrackAtCalo();
+      eledPhiAtCalo_[nEle_] = iEle->deltaPhiSeedClusterTrackAtCalo();
 
       // Acess super cluster
       eleSCEta_[nEle_]   = iEle->superCluster()->eta();
@@ -1006,10 +1087,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleESEn_[nEle_]    = iEle->superCluster()->preshowerEnergy();
       eleSCEtaWidth_[nEle_] = iEle->superCluster()->etaWidth();
       eleSCPhiWidth_[nEle_] = iEle->superCluster()->phiWidth();
-
-      eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
-      eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
-      eleVtx_[nEle_][2] = iEle->trackPositionAtVtx().z();
 
       // Gen Particle
       eleGenMomPID_[nEle_]  = -999;
@@ -1053,24 +1130,34 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
       eleIsoHcalSolidDR04_[nEle_] = myHcalIsoDP1DR04.getTowerEtSum(eleSC) + myHcalIsoDP2DR04.getTowerEtSum(eleSC);
 
-      eleSigmaEtaEta_[nEle_] = iEle->sigmaEtaEta();
-      
-      eleConvDist_[nEle_]    = iEle->convDist();
-      eleConvDcot_[nEle_]    = iEle->convDcot();
-      const reco::Track *eleTrk = (const reco::Track*)(iEle->gsfTrack().get());  
-      const reco::HitPattern& p_inner = eleTrk->trackerExpectedHitsInner(); 
-      eleConvMissinghit_[nEle_] = p_inner.numberOfHits();
+      eleConvDist_[nEle_]       = iEle->convDist();
+      eleConvDcot_[nEle_]       = iEle->convDcot();
+      eleConvMissinghit_[nEle_] = iEle->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
 
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
       vector<float> eleCov;
       eleCov = lazyTool.localCovariances(*eleSeed);
+      eleSigmaEtaEta_[nEle_]   = iEle->sigmaEtaEta();
       eleSigmaIEtaIEta_[nEle_] = iEle->sigmaIetaIeta();
       eleSigmaIEtaIPhi_[nEle_] = sqrt(eleCov[1]);
       eleSigmaIPhiIPhi_[nEle_] = sqrt(eleCov[2]);
 
+      eleEmax_[nEle_] = lazyTool.eMax(*eleSeed);
+      eleE1x5_[nEle_] = iEle->e1x5();
       eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
+      eleE5x5_[nEle_] = iEle->e5x5();
 
+      bool validKF= false; 
+      reco::TrackRef myTrackRef = iEle->closestCtfTrackRef();
+      validKF = (myTrackRef.isAvailable());
+      validKF = (myTrackRef.isNonnull());  
+   
+      eleKfChi2_[nEle_]    = (validKF) ? myTrackRef->normalizedChi2() : 0 ;
+      eleKfHits_[nEle_]    = (validKF) ? myTrackRef->hitPattern().trackerLayersWithMeasurement() : -1. ; 
+      eleKfHitsAll_[nEle_] = (validKF) ? myTrackRef->numberOfValidHits() : -1. ;   //  save also this in your ntuple as possible alternative
+      eleGsfChi2_[nEle_]   = iEle->gsfTrack()->normalizedChi2();  
+   
       eleSeedTime_[nEle_] = -999.;
       eleSeedEnergy_[nEle_] = -999.;
 
@@ -1093,6 +1180,23 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       elePVD0_[nEle_] = iEle->gsfTrack()->dxy((*recVtxs)[0].position());
       elePVDz_[nEle_] = iEle->gsfTrack()->dz((*recVtxs)[0].position());
 
+      eleGVD0_[nEle_] = iEle->gsfTrack()->dxy(gv);
+      eleGVDz_[nEle_] = iEle->gsfTrack()->dz(gv);
+
+      //default values for IP3D
+      eleIP3D_[nEle_] = -999.;
+      eleIP3DErr_[nEle_] = -99.;
+      if (iEle->gsfTrack().isNonnull()) {
+	const double gsfsign = ((- iEle->gsfTrack()->dxy((*recVtxs)[0].position())) >= 0) ? 1. : -1.;
+
+	const reco::TransientTrack tt_ele = transientTrackBuilder.build(iEle->gsfTrack());
+	const std::pair<bool,Measurement1D> ip3dpv_ele = IPTools::absoluteImpactParameter3D(tt_ele, *recVtxs->begin());
+	if (ip3dpv_ele.first) {
+	  eleIP3D_[nEle_]    = gsfsign*ip3dpv_ele.second.value();
+	  eleIP3DErr_[nEle_] = ip3dpv_ele.second.error();
+	}
+      }
+
       eleIsPFID_[nEle_] = iEle->passingMvaPreselection();
 
       edm::Ptr<reco::Candidate> recoEleRef = iEle->originalObjectRef();                                                                                  
@@ -1100,17 +1204,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*recoElectron, hConversions, beamSpot.position(), true, 2.0, 1e-6, 0);
 
       // PF isolation
-      elePfChargedHadron_[nEle_] = (*(*electronIsoVals)[0])[recoEleRef];
-      elePfNeutralHadron_[nEle_] = (*(*electronIsoVals)[1])[recoEleRef];
-      elePfPhoton_[nEle_]        = (*(*electronIsoVals)[2])[recoEleRef];
+      elePfChargedHadronDR03_[nEle_] = (*(*electronIsoValsDR03)[0])[recoEleRef];
+      elePfNeutralHadronDR03_[nEle_] = (*(*electronIsoValsDR03)[1])[recoEleRef];
+      elePfPhotonDR03_[nEle_]        = (*(*electronIsoValsDR03)[2])[recoEleRef];
 
-      eleID2012_[nEle_][0] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-      eleID2012_[nEle_][1] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-      eleID2012_[nEle_][2] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-      eleID2012_[nEle_][3] = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT, *recoElectron, hConversions, beamSpot, recVtxs, elePfChargedHadron_[nEle_], elePfPhoton_[nEle_], elePfNeutralHadron_[nEle_], rho2011_);
-      eleID2012_[nEle_][4] = EgammaCutBasedEleId::PassEoverPCuts(*recoElectron);
-      eleID2012_[nEle_][5] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, *recoElectron);
-      eleID2012_[nEle_][6] = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERWP70, *recoElectron);
+      elePfChargedHadronDR04_[nEle_] = (*(*electronIsoValsDR04)[0])[recoEleRef];
+      elePfNeutralHadronDR04_[nEle_] = (*(*electronIsoValsDR04)[1])[recoEleRef];
+      elePfPhotonDR04_[nEle_]        = (*(*electronIsoValsDR04)[2])[recoEleRef];
 
       nEle_++;
     }
@@ -1127,7 +1227,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   VertexRef myVtxRef(recVtxs, 0);
 
   const Candidate *phomom = 0;
-  int nPhoPassCut = 0;
   nPho_ = 0;
   const TriggerObjectMatch *phoTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass50"));
   const TriggerObjectMatch *phoTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTEle20CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC4Mass50"));
@@ -1156,8 +1255,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
       
-      if (iPho->pt() > leadingPhoPtCut_) nPhoPassCut++;
-
       edm::RefToBase<pat::Photon> phoRef = photonHandle_->refAt(nPho_);
       reco::CandidateBaseRef phoBaseRef(phoRef);
       const TriggerObjectRef phoTrigRef1( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch1, e, *triggerEvent ) );
@@ -1263,6 +1360,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
       phoElectronveto_[nPho_] = (int) ConversionTools::hasMatchedPromptElectron(recoPhoton->superCluster(), hElectrons, hConversions, beamSpot.position());
       
+      phoIsPFID_[nPho_] = iPho->isPFlowPhoton();
+
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
@@ -1296,8 +1395,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	}
       }
       
-      phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
-      phoE5x5_[nPho_] = lazyTool.e5x5(*phoSeed);
+      phoE1x5_[nPho_] = iPho->e1x5();
+      phoE2x5_[nPho_] = iPho->e2x5();
+      phoE3x3_[nPho_] = iPho->e3x3();
+      phoE5x5_[nPho_] = iPho->e5x5();
  
       // Gen Particle
       // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " gen match ..." << endl;
@@ -1345,20 +1446,24 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     }
 
   // muon trigger matching
-  const TriggerObjectMatch * muTriggerMatch1( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24eta2p1" ) );
-  const TriggerObjectMatch * muTriggerMatch2( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30eta2p1" ) );
-  const TriggerObjectMatch * muTriggerMatch3( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu34eta2p1" ) );
-  const TriggerObjectMatch * muTriggerMatch4( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch1( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24" ) );
+  const TriggerObjectMatch * muTriggerMatch2( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30" ) );
+  const TriggerObjectMatch * muTriggerMatch3( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch4( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch5( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu34eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch6( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch7( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17TkMu8" ) );
+  const TriggerObjectMatch * muTriggerMatch8( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17forMu17Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch9( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17forMu17TkMu8" ) );
+  const TriggerObjectMatch * muTriggerMatch10( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu8forMu17Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch11( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTTkMu8forMu17TkMu8" ) );
 
   // Muon
-  int nMuPassCut = 0;
   nMu_ = 0;
   const Candidate *mumom = 0;
   if( muonHandle_.isValid() ) {
-    // cout << "VgAnalyzerKit: produce: number of muons: " << muonHandle_->size() << endl;
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
-      if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
       if (! (iMu->isPFMuon() || iMu->isGlobalMuon() || iMu->isTrackerMuon())) continue;
 
       muIsPFMu_[nMu_] = iMu->isPFMuon();
@@ -1371,16 +1476,25 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef muTrigRef2( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch2, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef3( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch3, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef4( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch4, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef5( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch5, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef6( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch6, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef7( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch7, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef8( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch8, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef9( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch9, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef10( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch10, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef11( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch11, e, *triggerEvent ) );
 
       muTrg_[nMu_][0] = (muTrigRef1.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][1] = (muTrigRef2.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][2] = (muTrigRef3.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][3] = (muTrigRef4.isAvailable()) ? 1 : -99;
-
-      //       if (!iMu->isGlobalMuon()) continue;
-      //       if (!iMu->isTrackerMuon()) continue;
-      //       if (iMu->globalTrack().isNull()) continue;
-      //       if (iMu->innerTrack().isNull()) continue;
+      muTrg_[nMu_][4] = (muTrigRef5.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][5] = (muTrigRef6.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][6] = (muTrigRef7.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][7] = (muTrigRef8.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][8] = (muTrigRef9.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][9] = (muTrigRef10.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][10]= (muTrigRef11.isAvailable()) ? 1 : -99;
 
       for (int i=0; i<6; ++i) muID_[nMu_][i] = 0;
       if (iMu->isGood("AllArbitrated")==1) muID_[nMu_][0] = 1;
@@ -1404,6 +1518,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       if (innertrkr.isNull()) {
         muPVD0_[nMu_] = - 99;
         muPVDz_[nMu_] = - 99;
+        muGVD0_[nMu_] = - 99;
+        muGVDz_[nMu_] = - 99;
 	muNumberOfValidPixelHits_[nMu_] = -99;
 	muNumberOfValidTrkHits_[nMu_] = -99;
 	muNumberOfTrackerLayers_[nMu_] = -99;
@@ -1411,6 +1527,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       else {
 	muPVD0_[nMu_] = innertrkr->dxy((*recVtxs)[0].position());
         muPVDz_[nMu_] = innertrkr->dz((*recVtxs)[0].position());
+	muGVD0_[nMu_] = innertrkr->dxy(gv);
+        muGVDz_[nMu_] = innertrkr->dz(gv);
         muNumberOfValidPixelHits_[nMu_] = innertrkr->hitPattern().numberOfValidPixelHits();
         muNumberOfValidTrkHits_[nMu_]   = innertrkr->hitPattern().numberOfValidTrackerHits();
 	muNumberOfTrackerLayers_[nMu_]  = innertrkr->hitPattern().trackerLayersWithMeasurement();
@@ -1585,12 +1703,42 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       }
   }
 
-  if (doSkim_ == true) {
-    if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
-      hEvents_->Fill(1.5);
-      tree_->Fill();
+  // SC information
+  if (doStoreSCs_ == true) {
+    nEBSC_ = 0;
+    nEESC_ = 0;
+    edm::Handle<reco::SuperClusterCollection> BarrelSuperClusters;
+    if (e.getByLabel("correctedHybridSuperClusters", BarrelSuperClusters)) {
+      for(reco::SuperClusterCollection::const_iterator aClus = BarrelSuperClusters->begin(); aClus != BarrelSuperClusters->end(); aClus++) {
+
+	if (aClus->energy()/cosh(aClus->position().eta()) < 5) continue;
+
+        scEBEn_[nEBSC_]  = aClus->energy();
+	scEBEt_[nEBSC_]  = aClus->energy()/cosh(aClus->position().eta());
+	scEBEta_[nEBSC_] = aClus->position().eta();
+	scEBPhi_[nEBSC_] = aClus->position().phi();
+        
+	nEBSC_ += 1;
+      }
     }
-    if (doStoreJets_ == true && nPhoPassCut > 0) {
+    edm::Handle<reco::SuperClusterCollection> EndcapSuperClusters;
+    if (e.getByLabel("correctedMulti5x5SuperClustersWithPreshower", EndcapSuperClusters)) {
+      for(reco::SuperClusterCollection::const_iterator aClus = EndcapSuperClusters->begin(); aClus != EndcapSuperClusters->end(); aClus++) {
+
+	if (aClus->energy()/cosh(aClus->position().eta()) < 5) continue;
+
+        scEEEn_[nEESC_]  = aClus->energy();
+	scEEEt_[nEESC_]  = aClus->energy()/cosh(aClus->position().eta());
+	scEEEta_[nEESC_] = aClus->position().eta();
+	scEEPhi_[nEESC_] = aClus->position().phi();
+
+        nEESC_ += 1;
+      }
+    }
+  }
+
+  if (doSkim_ == true) {
+    if (skimed_HLT == true) {
       hEvents_->Fill(1.5);
       tree_->Fill();
     }
@@ -1756,6 +1904,87 @@ float VgAnalyzerKit::getGenTrkIso(edm::Handle<reco::GenParticleCollection> handl
   }// end of loop over gen particles
 
   return genTrkIsoSum;
+}
+
+float VgAnalyzerKit::getGenCHIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax)
+{
+  const Float_t ptMin = 0.0;
+  Float_t genIsoSum = 0.0;
+  if(!doGenParticles_)return genIsoSum;
+  if(!handle.isValid())return genIsoSum;
+
+  for (reco::GenParticleCollection::const_iterator it_gen=handle->begin(); it_gen!=handle->end(); it_gen++){
+
+    if(it_gen == thisPho)continue;      // can't be the original photon
+    if(it_gen->status() != 1)continue;    // need to be a stable particle
+    if(thisPho->collisionId() != it_gen->collisionId()) continue; // has to come from the same collision
+    Int_t pdgCode = abs(it_gen->pdgId());
+    if(pdgCode != 211) continue;
+
+    Float_t pt = it_gen->pt();
+    if(pt < ptMin) continue; // pass a minimum pt threshold, default 0
+
+    Float_t dR = reco::deltaR(thisPho->momentum(), it_gen->momentum());
+    if(dR > dRMax) continue; // within deltaR cone
+    genIsoSum += pt;
+
+  }// end of loop over gen particles
+
+  return genIsoSum;
+}
+
+float VgAnalyzerKit::getGenNHIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax)
+{
+  const Float_t ptMin = 0.0;
+  Float_t genIsoSum = 0.0;
+  if(!doGenParticles_)return genIsoSum;
+  if(!handle.isValid())return genIsoSum;
+
+  for (reco::GenParticleCollection::const_iterator it_gen=handle->begin(); it_gen!=handle->end(); it_gen++){
+
+    if(it_gen == thisPho)continue;      // can't be the original photon
+    if(it_gen->status() != 1)continue;    // need to be a stable particle
+    if(thisPho->collisionId() != it_gen->collisionId()) continue; // has to come from the same collision
+    Int_t pdgCode = abs(it_gen->pdgId());
+    if(pdgCode != 130) continue;
+
+    Float_t pt = it_gen->pt();
+    if(pt < ptMin) continue; // pass a minimum pt threshold, default 0
+
+    Float_t dR = reco::deltaR(thisPho->momentum(), it_gen->momentum());
+    if(dR > dRMax) continue; // within deltaR cone
+    genIsoSum += pt;
+
+  }// end of loop over gen particles
+
+  return genIsoSum;
+}
+
+float VgAnalyzerKit::getGenPhIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax)
+{
+  const Float_t ptMin = 0.0;
+  Float_t genIsoSum = 0.0;
+  if(!doGenParticles_)return genIsoSum;
+  if(!handle.isValid())return genIsoSum;
+
+  for (reco::GenParticleCollection::const_iterator it_gen=handle->begin(); it_gen!=handle->end(); it_gen++){
+
+    if(it_gen == thisPho)continue;      // can't be the original photon
+    if(it_gen->status() != 1)continue;    // need to be a stable particle
+    if(thisPho->collisionId() != it_gen->collisionId()) continue; // has to come from the same collision
+    Int_t pdgCode = abs(it_gen->pdgId());
+    if(pdgCode != 22) continue;
+
+    Float_t pt = it_gen->pt();
+    if(pt < ptMin) continue; // pass a minimum pt threshold, default 0
+
+    Float_t dR = reco::deltaR(thisPho->momentum(), it_gen->momentum());
+    if(dR > dRMax) continue; // within deltaR cone
+    genIsoSum += pt;
+
+  }// end of loop over gen particles
+
+  return genIsoSum;
 }
 
 float VgAnalyzerKit::getTrkIso(edm::Handle<reco::TrackCollection> Tracks, 

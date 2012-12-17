@@ -49,8 +49,6 @@ protected:
   Double_t eT(Double_t pt1, Double_t pt2) const;
   Double_t massT(Double_t pt1, Double_t pt2, Double_t wpx, Double_t wpy) const;
   Double_t acop(Double_t phi1, Double_t phi2) const;
-  Float_t E2overE9(const DetId id, const EcalRecHitCollection &, Float_t recHitEtThreshold = 10.0 , 
-		 Float_t recHitEtThreshold2 = 1.0 , Bool_t avoidIeta85=false, Bool_t KillSecondHit=true);
   Float_t recHitApproxEt( const DetId id, const EcalRecHitCollection &recHits );
   Float_t recHitE( const DetId id, const EcalRecHitCollection &recHits );
   Float_t recHitE( const DetId id, const EcalRecHitCollection & recHits, Int_t di, Int_t dj );
@@ -59,6 +57,10 @@ protected:
   Float_t getGenCalIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, 
 		     const Float_t dRMax=0.4, Bool_t removeMu=true, Bool_t removeNu=false);
   Float_t getGenTrkIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
+  Float_t getGenCHIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
+  Float_t getGenNHIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
+  Float_t getGenPhIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
+
   Float_t getTrkIso(edm::Handle<reco::TrackCollection> Tracks, math::XYZPoint vtx, Double_t phoEta, Double_t phoPhi, Double_t phoVz, Double_t outerCone, Double_t innerCone, Double_t etaSlice, Double_t dzCut, Double_t d0Cut, Double_t ptCut, Int_t option);
 
   typedef std::vector< edm::Handle< edm::ValueMap<reco::IsoDeposit> > > IsoDepositMaps;
@@ -68,6 +70,7 @@ protected:
   Bool_t doGenParticles_;
   Bool_t doStoreJets_;
   Bool_t doJetHLTMatch_;
+  Bool_t doStoreSCs_;
   Bool_t doSkim_;
 
   InputTag vtxlabel_;
@@ -99,7 +102,7 @@ protected:
   Int_t leadingElePtCut_;
   Int_t leadingMuPtCut_;
   Int_t leadingPhoPtCut_;
-  string muonMatch_;
+  std::vector<string> skimedHLTpath_;
 
   pat::PatKitHelper helper_;
   TTree *tree_;
@@ -153,11 +156,13 @@ protected:
   Int_t    mcIndex[maxP];
   Int_t    mcDecayType[maxP];
   Float_t  mcIsoDR03[maxP];
-  Float_t  mcCalIsoDR03[maxP];
-  Float_t  mcTrkIsoDR03[maxP];
+  Float_t  mcCHIsoDR03[maxP];
+  Float_t  mcNHIsoDR03[maxP];
+  Float_t  mcPhIsoDR03[maxP];
   Float_t  mcIsoDR04[maxP];
-  Float_t  mcCalIsoDR04[maxP];
-  Float_t  mcTrkIsoDR04[maxP];
+  Float_t  mcCHIsoDR04[maxP];
+  Float_t  mcNHIsoDR04[maxP];
+  Float_t  mcPhIsoDR04[maxP];
   // Gen & Reco MET
   Float_t  genMET_;
   Float_t  genMETx_;
@@ -215,39 +220,49 @@ protected:
   Int_t    nEle_;
   Bool_t   eleEcalDriven_[maxP];
   Int_t    eleTrg_[maxP][14];
-  Bool_t   eleID2012_[maxP][7];
   Int_t    eleID_[maxP][30];
-  Float_t  eleIDLH_[maxP];
   Int_t    eleClass_[maxP];
   Int_t    eleCharge_[maxP];
-  Float_t  eleEn_[maxP];
-  Float_t  eleSCEn_[maxP];
-  Float_t  eleESEn_[maxP];
-  Float_t  eleSCEtaWidth_[maxP];
-  Float_t  eleSCPhiWidth_[maxP];
   Float_t  eleVtx_[maxP][3];
+  Float_t  eleEn_[maxP];
+  Float_t  eleGsfP_[maxP];
   Float_t  elePt_[maxP];
   Float_t  elePz_[maxP];
   Float_t  eleEta_[maxP];
   Float_t  elePhi_[maxP];
+  Float_t  eleEcalEn_[maxP];
+  Float_t  eleSCEn_[maxP];
+  Float_t  eleSCRawEn_[maxP];
+  Float_t  eleESEn_[maxP];
   Float_t  eleSCEta_[maxP];
   Float_t  eleSCPhi_[maxP];
-  Float_t  eleSCRawEn_[maxP];
+  Float_t  eleSCEtaWidth_[maxP];
+  Float_t  eleSCPhiWidth_[maxP];
   Float_t  eleHoverE_[maxP];
   Float_t  eleHoverEbc_[maxP];
   Float_t  eleEoverP_[maxP];
+  Float_t  eleTrkPErr_[maxP];
   Float_t  elePin_[maxP];
   Float_t  elePout_[maxP];
   Float_t  eleBrem_[maxP];
   Float_t  elenBrem_[maxP];
   Float_t  eledEtaAtVtx_[maxP];
   Float_t  eledPhiAtVtx_[maxP];
+  Float_t  eledEtaAtCalo_[maxP];
+  Float_t  eledPhiAtCalo_[maxP];
   Float_t  eleSigmaEtaEta_[maxP];
   Float_t  eleSigmaIEtaIEta_[maxP];
   Float_t  eleSigmaIEtaIPhi_[maxP];
   Float_t  eleSigmaIPhiIPhi_[maxP];
   Float_t  eleE2overE9_[maxP];
+  Float_t  eleEmax_[maxP];
+  Float_t  eleE1x5_[maxP];
   Float_t  eleE3x3_[maxP];
+  Float_t  eleE5x5_[maxP];
+  Float_t  eleKfChi2_[maxP];
+  Float_t  eleKfHits_[maxP];
+  Float_t  eleKfHitsAll_[maxP];
+  Float_t  eleGsfChi2_[maxP];
   Float_t  eleSeedTime_[maxP];
   Float_t  eleSeedEnergy_[maxP];
   Int_t    eleGenIndex_[maxP];
@@ -262,21 +277,23 @@ protected:
   Float_t  eleIsoEcalDR04_[maxP];
   Float_t  eleIsoHcalDR04_[maxP];
   Float_t  eleIsoHcalSolidDR04_[maxP];
-  Float_t  eleChi2NDF_[maxP];
-  Float_t  eleD0_[maxP];
-  Int_t    eleNumberOfValidHits_[maxP];
-  Int_t    eleValidHitInFirstPXB_[maxP];
-  Int_t    eleTrkExpectHitsInner_[maxP];
   Float_t  eleConvDist_[maxP];
   Float_t  eleConvDcot_[maxP];
   Int_t    eleConvMissinghit_[maxP];
   Bool_t   eleConversionveto_[maxP];
   Float_t  elePVD0_[maxP];
   Float_t  elePVDz_[maxP];
+  Float_t  eleGVD0_[maxP];
+  Float_t  eleGVDz_[maxP];
+  Float_t  eleIP3D_[maxP];
+  Float_t  eleIP3DErr_[maxP];
   Bool_t   eleIsPFID_[maxP];
-  Double_t elePfChargedHadron_[maxP];
-  Double_t elePfNeutralHadron_[maxP];
-  Double_t elePfPhoton_[maxP];
+  Double_t elePfChargedHadronDR03_[maxP];
+  Double_t elePfNeutralHadronDR03_[maxP];
+  Double_t elePfPhotonDR03_[maxP];
+  Double_t elePfChargedHadronDR04_[maxP];
+  Double_t elePfNeutralHadronDR04_[maxP];
+  Double_t elePfPhotonDR04_[maxP];
   // Photon
   Int_t    nPho_;
   Int_t    phoTrg_[maxP][23];
@@ -305,6 +322,8 @@ protected:
   Float_t  phoSigmaIEtaIPhi_[maxP];
   Float_t  phoSigmaIPhiIPhi_[maxP];
   Float_t  phoE2overE9_[maxP];
+  Float_t  phoE1x5_[maxP];
+  Float_t  phoE2x5_[maxP];
   Float_t  phoE3x3_[maxP];
   Float_t  phoE5x5_[maxP];
   Float_t  phoSeedTime_[maxP];
@@ -324,6 +343,7 @@ protected:
   Int_t    phoOverlap_[maxP];
   Int_t    phohasPixelSeed_[maxP];
   Int_t    phoElectronveto_[maxP];
+  Bool_t   phoIsPFID_[maxP];
   Float_t  phoPfChargedHadron_[maxP];
   Float_t  phoPfNeutralHadron_[maxP];
   Float_t  phoPfPhoton_[maxP];
@@ -333,7 +353,7 @@ protected:
   Bool_t   muIsPFMu_[maxP];
   Bool_t   muIsGlobalMu_[maxP];
   Bool_t   muIsTrackerMu_[maxP];
-  Int_t    muTrg_[maxP][4];
+  Int_t    muTrg_[maxP][11];
   Float_t  muEta_[maxP];
   Float_t  muPhi_[maxP];
   Int_t    muCharge_[maxP];
@@ -352,6 +372,8 @@ protected:
   Bool_t   muID_[maxP][6];
   Float_t  muPVD0_[maxP];
   Float_t  muPVDz_[maxP];
+  Float_t  muGVD0_[maxP];
+  Float_t  muGVDz_[maxP];
   Float_t  muTrkdPt_[maxP];
   Int_t    muNumberOfValidTrkHits_[maxP];
   Int_t    muNumberOfValidPixelHits_[maxP];
@@ -407,6 +429,19 @@ protected:
   Float_t  jetGenJetMass_[maxP];
   Int_t    jetGenPartonID_[maxP];
   Int_t    jetGenPartonMomID_[maxP];
+
+  // SC information
+  Int_t    nEBSC_;
+  Float_t  scEBEn_[maxP];
+  Float_t  scEBEt_[maxP];
+  Float_t  scEBEta_[maxP];
+  Float_t  scEBPhi_[maxP];
+
+  Int_t    nEESC_;
+  Float_t  scEEEn_[maxP];
+  Float_t  scEEEt_[maxP];
+  Float_t  scEEEta_[maxP];
+  Float_t  scEEPhi_[maxP];
 
   // Physics objects handles
   Handle<View<pat::Muon> >                  muonHandle_;
