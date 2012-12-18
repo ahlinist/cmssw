@@ -4,26 +4,24 @@ process = cms.Process("VgKit")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 #process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
-#process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load('Configuration.StandardSequences.Services_cff')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #2012A/2012B 13Jul rereco
-#process.GlobalTag.globaltag = cms.string('FT_53_V6_AN1::All')
+process.GlobalTag.globaltag = cms.string('FT_53_V6_AN3::All')
 #2012D prompt reco
-process.GlobalTag.globaltag = cms.string('GR_P_V43::All')
+#process.GlobalTag.globaltag = cms.string('GR_P_V43::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 
-
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20)
+    input = cms.untracked.int32(10)
     )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-    'file:/data2/poter/MC_CMSSW537_vgamma/testfiles/DoubleMu_AOD_Run2012A_13Jul2012-v1.root'),
+    'file:/data2/poter/MC_CMSSW537_vgamma/testfiles/DoubleElectron_AOD_Run2012B_13Jul2012-v1.root'),
     #'file:/data2/poter/MC_CMSSW537_vgamma/testfiles/DoubleMu_AOD_Run2012D_PromptReco2012-v1.root'),
                             noEventSort = cms.untracked.bool(True),
                             duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
@@ -47,22 +45,23 @@ process.noscraping = cms.EDFilter(
     )
 
 ## The iso-based HBHE noise filter ___________________________________________||
-process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
-
-## The CSC beam halo tight filter ____________________________________________||
-process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
+process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
 
 ## The HCAL laser filter _____________________________________________________||
 process.load("RecoMET.METFilters.hcalLaserEventFilter_cfi")
+process.hcalLaserEventFilter.taggingMode = cms.bool(True)
 
 ## The ECAL dead cell trigger primitive filter _______________________________||
 process.load('RecoMET.METFilters.EcalDeadCellTriggerPrimitiveFilter_cfi')
+process.EcalDeadCellTriggerPrimitiveFilter.taggingMode = cms.bool(True)
 
 ## The EE bad SuperCrystal filter ____________________________________________||
 process.load('RecoMET.METFilters.eeBadScFilter_cfi')
+process.eeBadScFilter.taggingMode = cms.bool(True)
 
-## The ECAL laser correction filter
+## The ECAL laser correction filter __________________________________________||
 process.load('RecoMET.METFilters.ecalLaserCorrFilter_cfi')
+process.ecalLaserCorrFilter.taggingMode = cms.bool(True)
 
 ## The Good vertices collection needed by the tracking failure filter ________||
 process.goodVertices = cms.EDFilter(
@@ -74,19 +73,16 @@ process.goodVertices = cms.EDFilter(
 
 ## The tracking failure filter _______________________________________________||
 process.load('RecoMET.METFilters.trackingFailureFilter_cfi')
+process.trackingFailureFilter.taggingMode = cms.bool(True)
 
 ## The tracking POG filters __________________________________________________||
 process.load('RecoMET.METFilters.trackingPOGFilters_cff')
-
-process.load('RecoJets.Configuration.RecoPFJets_cff')
-process.kt6PFJets25 = process.kt6PFJets.clone( doAreaFastjet=True, doRhoFastjet=True, rParam=0.6 )
-process.kt6PFJets25.Rho_EtaMax = cms.double(2.5)
-process.fjSequence = cms.Sequence( process.kt6PFJets25 )
-
-from RecoJets.JetProducers.kt4PFJets_cfi import *
-process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
-process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
-process.fjSequence += process.kt6PFJetsForIsolation
+process.manystripclus53X.taggedMode = cms.untracked.bool(True)
+process.manystripclus53X.forcedValue = cms.untracked.bool(False)
+process.toomanystripclus53X.taggedMode = cms.untracked.bool(True)
+process.toomanystripclus53X.forcedValue = cms.untracked.bool(False)
+process.logErrorTooManyClusters.taggedMode = cms.untracked.bool(True)
+process.logErrorTooManyClusters.forcedValue = cms.untracked.bool(False)
 
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
@@ -226,10 +222,19 @@ process.patElectrons.electronIDSources = cms.PSet(
     )
 
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+process.patJetCorrFactors.useRho = cms.bool(True)
 
-process.patJetCorrFactors.levels = ['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']
-process.patJetCorrFactors.rho = cms.InputTag('kt6PFJets','rho')
-process.patJetCorrFactors.useRho = True
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+process.kt6PFJets25 = process.kt6PFJets.clone( doAreaFastjet=True, doRhoFastjet=True, rParam=0.6 )
+process.kt6PFJets25.Rho_EtaMax = cms.double(2.5)
+process.fjSequence = cms.Sequence( process.kt6PFJets25 )
+
+from RecoJets.JetProducers.kt4PFJets_cfi import *
+process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
+process.fjSequence += process.kt6PFJetsForIsolation
+
+process.ak5PFJets.doAreaFastjet = True
 
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJetCollection(
@@ -293,17 +298,14 @@ process.VgAnalyzerKit.skimedHLTpath = cms.vstring('HLT_Mu17_Mu8_v', 'HLT_Mu17_Tk
 
 process.TFileService = cms.Service("TFileService", fileName = cms.string('vgtree.root'))
 
-process.p = cms.Path(#process.primaryVertexFilter*
-   		     #process.noscraping*
-		     #process.HBHENoiseFilter*
-		     #process.CSCTightHaloFilter*
-		     #process.hcalLaserEventFilter*
-		     #process.EcalDeadCellTriggerPrimitiveFilter*
-		     #process.goodVertices* 
-		     #process.trackingFailureFilter*
-		     #process.eeBadScFilter*
-		     #process.ecalLaserCorrFilter*
-		     #process.trkPOGFilters*
+process.p = cms.Path(process.HBHENoiseFilterResultProducer*
+		     process.hcalLaserEventFilter*
+		     process.EcalDeadCellTriggerPrimitiveFilter*
+		     process.eeBadScFilter*
+		     process.ecalLaserCorrFilter*
+		     process.goodVertices* 
+		     process.trackingFailureFilter*
+		     process.trkPOGFilters*
 	      	     process.pfParticleSelectionSequence*
 		     process.eleIsoSequence*
 		     process.phoIsoSequence*
