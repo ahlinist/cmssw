@@ -308,7 +308,8 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   fittedEventHypothesis_ = persistentEventHypothesis;
   //fittedEventHypothesis_nll_ = eventModel_->nll(currentEventHypothesis_);
   double prob = 0.;
-  if ( histResults->Integral() > 0. ) prob = histResults->GetBinContent(histResults->GetMaximumBin())/histResults->Integral();
+  //if ( histResults->Integral() > 0. ) prob = histResults->GetBinContent(histResults->GetMaximumBin())/histResults->Integral();
+  prob = histResults->Integral();
   double nll;
   if ( prob > 0. ) nll = -TMath::Log(prob);
   else nll = std::numeric_limits<float>::max();
