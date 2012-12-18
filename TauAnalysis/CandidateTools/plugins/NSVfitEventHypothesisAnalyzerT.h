@@ -141,6 +141,11 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
       deltaMEtPx_                   = dqmStore.book1D("deltaMEtPx",                   "deltaMEtPx",                                   350,         -175.,             +175.);
       deltaMEtPy_                   = dqmStore.book1D("deltaMEtPy",                   "deltaMEtPy",                                   350,         -175.,             +175.);
       deltaMEtPhi_                  = dqmStore.book1D("deltaMEtPhi",                  "deltaMEtPhi",                                  360,  -TMath::Pi(),      +TMath::Pi());
+
+      deltaMEtBySVfitPt_            = dqmStore.book1D("deltaMEtBySVfitPt",            "deltaMEtBySVfitPt",                            350,         -100.,             +250.);
+      deltaMEtBySVfitPx_            = dqmStore.book1D("deltaMEtBySVfitPx",            "deltaMEtBySVfitPx",                            350,         -175.,             +175.);
+      deltaMEtBySVfitPy_            = dqmStore.book1D("deltaMEtBySVfitPy",            "deltaMEtBySVfitPy",                            350,         -175.,             +175.);
+      deltaMEtBySVfitPhi_           = dqmStore.book1D("deltaMEtBySVfitPhi",           "deltaMEtBySVfitPhi",                           360,  -TMath::Pi(),      +TMath::Pi());
            
       svFitMass_                    = dqmStore.book1D("svFitMass",                    "svFitMass",                      numBinsSVfitMass_,            0.,     svFitMassMax_);
       svFitSigma_                   = dqmStore.book1D("svFitSigma",                   "svFitSigma",                    numBinsSVfitSigma_,            0.,    svFitSigmaMax_);
@@ -234,6 +239,12 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	    std::cerr << " svFitMass = " << svFitMass << std::endl;
 	    std::cerr << " recDiTauP4: E = " << recDiTauP4.E() << ", eta = " << recDiTauP4.eta() << ", phi = " << recDiTauP4.phi() << ", mass = " << recDiTauP4.mass() << std::endl;
 	  }
+
+	  reco::Candidate::LorentzVector recMEtBySVfitP4 = recDiTauP4 - (recLeg1P4 + recLeg2P4);
+	  deltaMEtBySVfitPt_->Fill(recMEtBySVfitP4.pt() - genMEtP4.pt(), evtWeight);
+	  deltaMEtBySVfitPx_->Fill(recMEtBySVfitP4.px() - genMEtP4.px(), evtWeight);
+	  deltaMEtBySVfitPy_->Fill(recMEtBySVfitP4.py() - genMEtP4.py(), evtWeight);
+	  deltaMEtBySVfitPhi_->Fill(normalizedPhi(recMEtBySVfitP4.phi() - genMEtP4.phi()), evtWeight);
 	}
 	
 	reco::Candidate::LorentzVector recLeg12MEtP4 = recLeg1P4 + recLeg2P4 + recMEtP4;
@@ -332,6 +343,11 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* deltaMEtPx_;
     MonitorElement* deltaMEtPy_;
     MonitorElement* deltaMEtPhi_;
+
+    MonitorElement* deltaMEtBySVfitPt_;
+    MonitorElement* deltaMEtBySVfitPx_;
+    MonitorElement* deltaMEtBySVfitPy_;
+    MonitorElement* deltaMEtBySVfitPhi_;
 
     MonitorElement* svFitMass_;
     MonitorElement* svFitSigma_;
