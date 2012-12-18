@@ -108,6 +108,7 @@ protected:
   TTree *tree_;
   TH1F  *hEvents_; 
 
+  Int_t    METFilter_[10];
   Int_t    run_;
   Long64_t event_;
   Int_t    orbit_;

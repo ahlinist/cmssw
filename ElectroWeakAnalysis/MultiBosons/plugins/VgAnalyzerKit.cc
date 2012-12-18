@@ -74,6 +74,9 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
 
+// BeamHalo information
+#include "DataFormats/METReco/interface/BeamHaloSummary.h"
+
 using namespace std;
 using namespace pat;
 using namespace edm;
@@ -119,7 +122,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   inputTagIsoValElectronsPFId_  = ps.getParameter< std::vector<edm::InputTag> >("IsoValElectronPF");
 
   // skimed HLT 
-  skimedHLTpath_  = ps.getParameter<std::vector<std::string > >("skimedHLTpath");
+  if (doSkim_ == true)
+     skimedHLTpath_  = ps.getParameter<std::vector<std::string > >("skimedHLTpath");
 
   if (saveHistograms_) helper_.bookHistos(this);
 
@@ -129,6 +133,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   hEvents_ = fs->make<TH1F>("hEvents", "total processed and skimmed events", 2, 0, 2);
   tree_ = fs->make<TTree>("EventTree", "Event data");
 
+  tree_->Branch("METFilter", METFilter_, "METFilter[10]/I");
   tree_->Branch("run", &run_, "run/I");
   tree_->Branch("event", &event_, "event/L");
   tree_->Branch("orbit", &orbit_, "orbit/I");
@@ -661,6 +666,58 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   e.getByLabel(rho2012Label_, rho2012Handle);
   rho2012_ = *(rho2012Handle.product());
 
+  for (int a=0; a<10; a++)
+    METFilter_[a] = -1;
+
+  // The iso-based HBHE noise filter
+  edm::Handle<bool> HBHENoiseFilterResultHandle;
+  e.getByLabel(edm::InputTag("HBHENoiseFilterResultProducer", "HBHENoiseFilterResult"), HBHENoiseFilterResultHandle);
+  METFilter_[0] = (int) (*HBHENoiseFilterResultHandle);
+
+  // The CSC beam halo tight filter
+  edm::Handle<BeamHaloSummary> TheBeamHaloSummary;
+  e.getByLabel("BeamHaloSummary", TheBeamHaloSummary);
+  const BeamHaloSummary TheSummary = (*TheBeamHaloSummary.product() );
+  METFilter_[1] = (int) (TheSummary.CSCTightHaloId());  
+
+  // The HCAL laser filter
+  edm::Handle<bool> HcalLaserFilter;
+  e.getByLabel("hcalLaserEventFilter", HcalLaserFilter);
+  METFilter_[2] = (int) (*HcalLaserFilter);
+
+  // The ECAL dead cell trigger primitive filter
+  edm::Handle<bool> EcalDeadCellFilter;
+  e.getByLabel("EcalDeadCellTriggerPrimitiveFilter", EcalDeadCellFilter);
+  METFilter_[3] = (int) (*EcalDeadCellFilter);
+
+  // The EE bad SuperCrystal filter
+  edm::Handle<bool> EEBadScFilter;
+  e.getByLabel("eeBadScFilter", EEBadScFilter);
+  METFilter_[4] = (int) (*EEBadScFilter);
+
+  // The ECAL laser correction filter
+  edm::Handle<bool> EcalLaserFilter;
+  e.getByLabel("ecalLaserCorrFilter", EcalLaserFilter);
+  METFilter_[5] = (int) (*EcalLaserFilter);
+
+  // The tracking failure filter
+  edm::Handle<bool> TrackingFailureFilter;
+  e.getByLabel("trackingFailureFilter", TrackingFailureFilter);
+  METFilter_[6] = (int) (*TrackingFailureFilter);
+
+  // The tracking POG filters
+  edm::Handle<bool> Manystripclus53X;
+  e.getByLabel("manystripclus53X", Manystripclus53X);
+  METFilter_[7] = (int) (*Manystripclus53X);
+
+  edm::Handle<bool> Toomanystripclus53X;
+  e.getByLabel("toomanystripclus53X", Toomanystripclus53X);
+  METFilter_[8] = (int) (*Toomanystripclus53X);
+
+  edm::Handle<bool> LogErrorTooManyClusters;
+  e.getByLabel("logErrorTooManyClusters", LogErrorTooManyClusters);
+  METFilter_[9] = (int) (*LogErrorTooManyClusters);
+
   // GenParticle
   // cout << "VgAnalyzerKit: produce: GenParticle... " << endl;
   edm::Handle<reco::GenParticleCollection> genParticles;
@@ -805,8 +862,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       if(TString(hlNames[i]).Contains(TRegexp(HLTIndexPath[j])) == 1) HLTIndex_[j] = i;
     }
 
-    for (size_t j = 0; j<skimedHLTpath_.size(); ++j) {
-      if(TString(hlNames[i]).Contains(TRegexp(skimedHLTpath_[j])) == 1 && HLT_[i] == 1) skimed_HLT = true;
+    if (doSkim_ == true) {
+      for (size_t j = 0; j<skimedHLTpath_.size(); ++j) {
+        if(TString(hlNames[i]).Contains(TRegexp(skimedHLTpath_[j])) == 1 && HLT_[i] == 1) skimed_HLT = true;
+      }
     }
   }
 
