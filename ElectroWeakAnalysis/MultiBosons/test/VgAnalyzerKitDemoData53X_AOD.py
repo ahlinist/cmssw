@@ -3,6 +3,9 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("VgKit")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
+#process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
+#process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
 process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load('Configuration.StandardSequences.Services_cff')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -13,17 +16,67 @@ process.GlobalTag.globaltag = cms.string('GR_P_V43::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 
+
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(20)
     )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-    #'file:/data2/poter/MC_CMSSW537_vgamma/testfiles/DoubleMu_AOD_Run2012A_13Jul2012-v1.root'),
-    'file:/data2/poter/MC_CMSSW537_vgamma/testfiles/DoubleMu_AOD_Run2012D_PromptReco2012-v1.root'),
+    'file:/data2/poter/MC_CMSSW537_vgamma/testfiles/DoubleMu_AOD_Run2012A_13Jul2012-v1.root'),
+    #'file:/data2/poter/MC_CMSSW537_vgamma/testfiles/DoubleMu_AOD_Run2012D_PromptReco2012-v1.root'),
                             noEventSort = cms.untracked.bool(True),
                             duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
                             )
+
+## The good primary vertex filter
+process.primaryVertexFilter = cms.EDFilter(
+    "VertexSelector",
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
+    filter = cms.bool(True)
+    )
+
+## The beam scraping filter
+process.noscraping = cms.EDFilter(
+    "FilterOutScraping",
+    applyfilter = cms.untracked.bool(True),
+    debugOn = cms.untracked.bool(False),
+    numtrack = cms.untracked.uint32(10),
+    thresh = cms.untracked.double(0.25)
+    )
+
+## The iso-based HBHE noise filter ___________________________________________||
+process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
+
+## The CSC beam halo tight filter ____________________________________________||
+process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
+
+## The HCAL laser filter _____________________________________________________||
+process.load("RecoMET.METFilters.hcalLaserEventFilter_cfi")
+
+## The ECAL dead cell trigger primitive filter _______________________________||
+process.load('RecoMET.METFilters.EcalDeadCellTriggerPrimitiveFilter_cfi')
+
+## The EE bad SuperCrystal filter ____________________________________________||
+process.load('RecoMET.METFilters.eeBadScFilter_cfi')
+
+## The ECAL laser correction filter
+process.load('RecoMET.METFilters.ecalLaserCorrFilter_cfi')
+
+## The Good vertices collection needed by the tracking failure filter ________||
+process.goodVertices = cms.EDFilter(
+  "VertexSelector",
+  filter = cms.bool(False),
+  src = cms.InputTag("offlinePrimaryVertices"),
+  cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.rho < 2")
+)
+
+## The tracking failure filter _______________________________________________||
+process.load('RecoMET.METFilters.trackingFailureFilter_cfi')
+
+## The tracking POG filters __________________________________________________||
+process.load('RecoMET.METFilters.trackingPOGFilters_cff')
 
 process.load('RecoJets.Configuration.RecoPFJets_cff')
 process.kt6PFJets25 = process.kt6PFJets.clone( doAreaFastjet=True, doRhoFastjet=True, rParam=0.6 )
@@ -34,12 +87,6 @@ from RecoJets.JetProducers.kt4PFJets_cfi import *
 process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 process.fjSequence += process.kt6PFJetsForIsolation
-
-process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
-process.load("JetMETCorrections.Type1MET.pfMETCorrectionType0_cfi")
-process.pfJetMETcorr.offsetCorrLabel = cms.string("ak5PFL1Fastjet")
-process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
-process.preProductionSequence = cms.Sequence( process.producePFMETCorrections )
 
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
@@ -197,6 +244,15 @@ switchJetCollection(
                  outputModules = []
                  )
 
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
+process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
+process.load("JetMETCorrections.Type1MET.pfMETCorrectionType0_cfi")
+process.pfType1CorrectedMet.applyType0Corrections = cms.bool(False)
+process.pfType1CorrectedMet.srcType1Corrections = cms.VInputTag(
+    cms.InputTag('pfMETcorrType0'),
+    cms.InputTag('pfJetMETcorr', 'type1')        
+)
+
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, names=['All'], outputModules=[])
 
@@ -237,11 +293,23 @@ process.VgAnalyzerKit.skimedHLTpath = cms.vstring('HLT_Mu17_Mu8_v', 'HLT_Mu17_Tk
 
 process.TFileService = cms.Service("TFileService", fileName = cms.string('vgtree.root'))
 
-process.p = cms.Path(process.pfParticleSelectionSequence*
+process.p = cms.Path(process.primaryVertexFilter*
+   		     process.noscraping*
+		     process.HBHENoiseFilter*
+		     process.CSCTightHaloFilter*
+		     process.hcalLaserEventFilter*
+		     process.EcalDeadCellTriggerPrimitiveFilter*
+		     process.goodVertices* 
+		     process.trackingFailureFilter*
+		     process.eeBadScFilter*
+		     process.ecalLaserCorrFilter*
+		     process.trkPOGFilters*
+	      	     process.pfParticleSelectionSequence*
 		     process.eleIsoSequence*
 		     process.phoIsoSequence*
 		     process.fjSequence*
-		     process.preProductionSequence*
+		     process.type0PFMEtCorrection*
+		     process.producePFMETCorrections*
                      process.patDefaultSequence*
 		     process.metAnalysisSequence*
                      process.vgTriggerSequence*
