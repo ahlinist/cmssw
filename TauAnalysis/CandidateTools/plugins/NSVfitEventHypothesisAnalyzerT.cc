@@ -132,8 +132,8 @@ namespace
 template <typename T>
 void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
-  std::cout << "<NSVfitEventHypothesisAnalyzer::analyze>:" << std::endl;
-  std::cout << " " << moduleLabel_ << ": src = " << srcEventHypotheses_.label() << std::endl;
+  //std::cout << "<NSVfitEventHypothesisAnalyzer::analyze>:" << std::endl;
+  //std::cout << " " << moduleLabel_ << ": src = " << srcEventHypotheses_.label() << std::endl;
 
   edm::Handle<NSVfitEventHypothesisCollection> svFitEventHypotheses;
   evt.getByLabel(srcEventHypotheses_, svFitEventHypotheses);
