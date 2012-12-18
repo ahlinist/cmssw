@@ -46,6 +46,25 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   reco::Candidate::LorentzVector p4_fitted() const { return (p4_ + dp4_); }
   reco::Candidate::LorentzVector dp4_fitted() const { return dp4_; }
 
+  /// mean and median plus -1 sigma and +1 sigma limits on 
+  /// reconstructed Pt, eta, phi
+  ///
+  /// NOTE: Pt, eta, phi will be valid only in case
+  ///       NSVfitAlgorithmByIntegration2 algorithm (Markov Chain integration) is used
+  ///  
+  double pt() const { return pt_; }
+  double ptErrUp() const { return ptErrUp_; }
+  double ptErrDown() const { return ptErrDown_; }
+  bool pt_isValid() const { return pt_isValid_; }
+  double eta() const { return eta_; }
+  double etaErrUp() const { return etaErrUp_; }
+  double etaErrDown() const { return etaErrDown_; }
+  bool eta_isValid() const { return eta_isValid_; }
+  double phi() const { return phi_; }
+  double phiErrUp() const { return phiErrUp_; }
+  double phiErrDown() const { return phiErrDown_; }
+  bool phi_isValid() const { return phi_isValid_; }
+
   double dPhiVis() const { return dPhiVis_; }
 
   double prod_angle_rf() const { return prod_angle_rf_; }
@@ -89,10 +108,29 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
   const NSVfitEventHypothesis* eventHyp_;
 
   /// momentum of particle before fit
-  reco::Candidate::LorentzVector p4_;
+  reco::Candidate::LorentzVector p4_;  
 
   /// difference in momentum (after - before) fit
   reco::Candidate::LorentzVector dp4_;
+
+  /// "best fit" reconstructed Pt, eta, phi 
+  /// plus -1 sigma and +1 sigma limits
+  ///
+  /// NOTE: uncertainties on Pt, eta, phi will be valid only in case
+  ///       NSVfitAlgorithmByIntegration2 algorithm (Markov Chain integration) is used
+  ///  
+  double pt_;
+  double ptErrUp_;
+  double ptErrDown_;
+  bool pt_isValid_;
+  double eta_;
+  double etaErrUp_;
+  double etaErrDown_;
+  bool eta_isValid_;
+  double phi_;
+  double phiErrUp_;
+  double phiErrDown_;
+  bool phi_isValid_;
 
   /// azimuthal angle between visible tau decay products
   double dPhiVis_;
