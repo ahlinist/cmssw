@@ -416,6 +416,48 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     assert(histogramMass != probHistResonanceMass_.end());
     if ( errorFlag == 0 ) {
       setMassResults(resonance, histogramMass->second);
+      std::map<std::string, TH1*>::const_iterator histogramPt = probHistResonancePt_.find(resonanceName);
+      assert(histogramPt != probHistResonancePt_.end());
+      TH1* histogramPt_density = compHistogramDensity(histogramPt->second);
+      std::map<std::string, TH1*>::const_iterator histogramEta = probHistResonanceEta_.find(resonanceName);
+      assert(histogramEta != probHistResonanceEta_.end());
+      TH1* histogramEta_density = compHistogramDensity(histogramEta->second);
+      std::map<std::string, TH1*>::const_iterator histogramPhi = probHistResonancePhi_.find(resonanceName);
+      assert(histogramPhi != probHistResonancePhi_.end());
+      TH1* histogramPhi_density = compHistogramDensity(histogramPhi->second);
+      if ( histogramPt_density->Integral()  > 0. &&
+	   histogramEta_density->Integral() > 0. &&
+	   histogramPhi_density->Integral() > 0. ) {
+	double ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084;
+        extractHistogramProperties(
+          histogramPt->second, histogramPt_density,
+          ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
+	double pt = ptMaximum_interpol;
+	double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
+        extractHistogramProperties(
+          histogramEta->second, histogramEta_density,
+          etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084);
+	double eta = etaMaximum_interpol;
+	double phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084;
+        extractHistogramProperties(
+          histogramPhi->second, histogramPhi_density,
+          phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084);
+	double phi = phiMaximum_interpol;
+	reco::Candidate::PolarLorentzVector resonanceP4_fitted(pt, eta, phi, resonance->mass_);
+	resonance->dp4_ = resonanceP4_fitted - resonance->p4_;
+	resonance->pt_ = pt;
+	resonance->ptErrUp_ = TMath::Abs(ptQuantile084 - pt);
+	resonance->ptErrDown_ = TMath::Abs(pt - ptQuantile016);
+        resonance->pt_isValid_ = true;
+	resonance->eta_ = eta;
+	resonance->etaErrUp_ = TMath::Abs(etaQuantile084 - eta);
+	resonance->etaErrDown_ = TMath::Abs(eta - etaQuantile016);
+	resonance->eta_isValid_ = true;
+	resonance->phi_ = phi;
+	resonance->phiErrUp_ = TMath::Abs(phiQuantile084 - phi);
+	resonance->phiErrDown_ = TMath::Abs(phi - phiQuantile016);
+	resonance->phi_isValid_ = true;
+      }
     } else {
       resonance->isValidSolution_ = false;
     }
