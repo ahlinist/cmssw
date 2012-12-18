@@ -293,17 +293,17 @@ process.VgAnalyzerKit.skimedHLTpath = cms.vstring('HLT_Mu17_Mu8_v', 'HLT_Mu17_Tk
 
 process.TFileService = cms.Service("TFileService", fileName = cms.string('vgtree.root'))
 
-process.p = cms.Path(process.primaryVertexFilter*
-   		     process.noscraping*
-		     process.HBHENoiseFilter*
-		     process.CSCTightHaloFilter*
-		     process.hcalLaserEventFilter*
-		     process.EcalDeadCellTriggerPrimitiveFilter*
-		     process.goodVertices* 
-		     process.trackingFailureFilter*
-		     process.eeBadScFilter*
-		     process.ecalLaserCorrFilter*
-		     process.trkPOGFilters*
+process.p = cms.Path(#process.primaryVertexFilter*
+   		     #process.noscraping*
+		     #process.HBHENoiseFilter*
+		     #process.CSCTightHaloFilter*
+		     #process.hcalLaserEventFilter*
+		     #process.EcalDeadCellTriggerPrimitiveFilter*
+		     #process.goodVertices* 
+		     #process.trackingFailureFilter*
+		     #process.eeBadScFilter*
+		     #process.ecalLaserCorrFilter*
+		     #process.trkPOGFilters*
 	      	     process.pfParticleSelectionSequence*
 		     process.eleIsoSequence*
 		     process.phoIsoSequence*

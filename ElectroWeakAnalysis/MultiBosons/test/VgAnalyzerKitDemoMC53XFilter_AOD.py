@@ -6,12 +6,12 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load('Configuration.StandardSequences.Services_cff')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('START53_V7A::All')
+process.GlobalTag.globaltag = cms.string('START53_V7G::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(500)
+    input = cms.untracked.int32(10)
     )
 
 process.source = cms.Source("PoolSource",
@@ -33,11 +33,6 @@ from RecoJets.JetProducers.kt4PFJets_cfi import *
 process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 process.fjSequence += process.kt6PFJetsForIsolation
-
-process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
-process.pfJetMETcorr.offsetCorrLabel = cms.string("ak5PFL1Fastjet")
-process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3")
-process.preProductionSequence = cms.Sequence( process.producePFMETCorrections)
 
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
@@ -196,6 +191,15 @@ switchJetCollection(process,cms.InputTag('ak5PFJets'),
                  outputModules = []
                  )
 
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
+process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3")
+process.load("JetMETCorrections.Type1MET.pfMETCorrectionType0_cfi")
+process.pfType1CorrectedMet.applyType0Corrections = cms.bool(False)
+process.pfType1CorrectedMet.srcType1Corrections = cms.VInputTag(
+    cms.InputTag('pfMETcorrType0'),
+    cms.InputTag('pfJetMETcorr', 'type1')        
+)
+
 # load the coreTools of PAT
 from PhysicsTools.PatAlgos.tools.metTools import *
 addTcMET(process, 'TC')
@@ -213,7 +217,7 @@ process.metAnalysisSequence = cms.Sequence( process.patPFMETsTypeIcorrected )
 # apply type I/type I + II PFMEt corrections to pat::MET object 
 # and estimate systematic uncertainties on MET
 from PhysicsTools.PatUtils.tools.metUncertaintyTools import runMEtUncertainties
-runMEtUncertainties(process, doSmearJets = True)
+runMEtUncertainties(process, doApplyType0corr = True, doSmearJets = True)
 
 process.smearedPFType1CorrectedMet = process.patMETs.clone(
     metSource = cms.InputTag('patType1CorrectedPFMet'),
@@ -250,7 +254,8 @@ process.p = cms.Path(process.totalKinematicsFilter*
 		     process.eleIsoSequence*
 		     process.phoIsoSequence*
 		     process.fjSequence*
-		     process.preProductionSequence*
+		     process.type0PFMEtCorrection*
+		     process.producePFMETCorrections*
                      process.patDefaultSequence*
                      process.metAnalysisSequence*
                      process.vgTriggerSequence*
