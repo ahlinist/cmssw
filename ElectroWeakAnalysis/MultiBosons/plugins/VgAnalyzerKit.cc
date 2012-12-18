@@ -559,7 +559,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
 	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho();
 
-	if (vtxNDF_[nVtx_] >= 4 && fabs(vtx_[nVtx_][2]) <= 24 && fabs(vtxD0_[nVtx_]) <= 2) {
+	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 24 && fabs(vtxD0_[nVtx_]) <= 2) {
 	  nGoodVtx_++;
 
 	  if (nGoodVtx_ == 1) firstGoodVtx = i;
