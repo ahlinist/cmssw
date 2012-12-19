@@ -10,8 +10,8 @@
 #include "DataFormats/Math/interface/Vector3D.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
-
-namespace NSVfitStandalone{
+namespace NSVfitStandalone
+{
   /**
      \typedef NSVfitStandalone::Vector
      \brief   spacial momentum vector (equivalent to reco::Candidate::Vector)

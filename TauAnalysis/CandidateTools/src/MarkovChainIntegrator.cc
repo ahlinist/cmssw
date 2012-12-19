@@ -110,12 +110,14 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
 
 MarkovChainIntegrator::~MarkovChainIntegrator()
 {
-  std::cout << "<MarkovChainIntegrator::~MarkovChainIntegrator>:" << std::endl;
-  std::cout << " name = " << name_ << std::endl;
-  std::cout << " integration calls = " << numIntegrationCalls_ << std::endl;
-  std::cout << " moves: accepted = " << numMovesTotal_accepted_ << ", rejected = " << numMovesTotal_rejected_ 
-	    << " (fraction = " << (double)numMovesTotal_accepted_/(numMovesTotal_accepted_ + numMovesTotal_rejected_)*100. 
-	    << "%)" << std::endl;
+  if ( verbosity_ >= 0 ) {
+    std::cout << "<MarkovChainIntegrator::~MarkovChainIntegrator>:" << std::endl;
+    std::cout << " name = " << name_ << std::endl;
+    std::cout << " integration calls = " << numIntegrationCalls_ << std::endl;
+    std::cout << " moves: accepted = " << numMovesTotal_accepted_ << ", rejected = " << numMovesTotal_rejected_ 
+	      << " (fraction = " << (double)numMovesTotal_accepted_/(numMovesTotal_accepted_ + numMovesTotal_rejected_)*100. 
+	      << "%)" << std::endl;
+  }
 
   delete [] x_;
 
@@ -312,10 +314,10 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 
   for ( unsigned idxBatch = 0; idxBatch < probSum_.size(); ++idxBatch ) {  
     integral_[idxBatch] = probSum_[idxBatch]/m;
-    //if ( verbosity_ ) std::cout << "integral[" << idxBatch << "] = " << integral_[idxBatch] << std::endl;
+    //if ( verbosity_ >= 1 ) std::cout << "integral[" << idxBatch << "] = " << integral_[idxBatch] << std::endl;
   }
 
-  //if ( verbosity_ ) print(std::cout);
+  //if ( verbosity_ >= 1 ) print(std::cout);
 
 //--- compute integral value and uncertainty
 //   (eqs. (6.39) and (6.40) in [1])   
@@ -332,7 +334,7 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
   if ( k >= 2 ) integralErr /= (k*(k - 1));
   integralErr = TMath::Sqrt(integralErr);
 
-  //if ( verbosity_ ) std::cout << "--> returning integral = " << integral << " +/- " << integralErr << std::endl;
+  //if ( verbosity_ >= 1 ) std::cout << "--> returning integral = " << integral << " +/- " << integralErr << std::endl;
 
   errorFlag = ( numChainsRun_ >= 0.5*numChains_ ) ?
     0 : 1;
@@ -412,7 +414,7 @@ void MarkovChainIntegrator::initializeStartPosition_and_Momentum()
     }
   }
 
-  //if ( verbosity_ ) {
+  //if ( verbosity_ >= 1 ) {
   //  std::cout << "<MarkovChainIntegrator::initializeStartPosition_and_Momentum>:" << std::endl;
   //  std::cout << " q = " << format_vdouble(q_) << std::endl;
   //}
@@ -536,18 +538,18 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
   else if ( probProposal > 0.               ) deltaE = -std::numeric_limits<double>::max();
   else if (                      prob_ > 0. ) deltaE = +std::numeric_limits<double>::max();
   else assert(0);
-  //if ( verbosity_ ) std::cout << " deltaE = " << deltaE << std::endl;
+  //if ( verbosity_ >= 1 ) std::cout << " deltaE = " << deltaE << std::endl;
 
   double deltaE_or_H = deltaE;
   if ( moveMode_ == kHybrid ) {
     double Ks = evalK(p_, 0, numDimensions_);
     double KsProposal = evalK(pProposal_, 0, numDimensions_);
     deltaE_or_H += (KsProposal - Ks);
-    //if ( verbosity_ ) std::cout << " deltaH = " << deltaE_or_H << std::endl;
+    //if ( verbosity_ >= 1 ) std::cout << " deltaH = " << deltaE_or_H << std::endl;
   }
   
   double Kd = evalK(p_, numDimensions_, 2*numDimensions_);
-  //if ( verbosity_ ) std::cout << " Kd = " << Kd << std::endl;
+  //if ( verbosity_ >= 1 ) std::cout << " Kd = " << Kd << std::endl;
   double base = 1. - deltaE_or_H/Kd;
   double rho = ( base > 0. ) ? 
     TMath::Power(base, 0.5*numDimensions_ - 1.) : 0.;
@@ -578,16 +580,16 @@ void MarkovChainIntegrator::makeDynamicMoves(const std::vector<double>& epsilon)
 //--- perform "dynamical move"
 //   (execute series of L "leap-frog" steps, eqs. 20-23 in [2])
   for ( unsigned iLeapFrogStep = 0; iLeapFrogStep < L_; ++iLeapFrogStep ) {
-    //if ( verbosity_ ) std::cout << "leap-frog step #" << iLeapFrogStep << ":" << std::endl;    
+    //if ( verbosity_ >= 1 ) std::cout << "leap-frog step #" << iLeapFrogStep << ":" << std::endl;    
     updateGradE(qProposal_);
-    //if ( verbosity_ ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
+    //if ( verbosity_ >= 1 ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
     double step_p = ( iLeapFrogStep == 0 ) ? 
       0.5 : 1.0;
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
       pProposal_[iDimension] -= step_p*epsilon[iDimension]*gradE_[iDimension];
       qProposal_[iDimension] += epsilon[iDimension]*pProposal_[iDimension];
     }
-    //if ( verbosity_ ) {
+    //if ( verbosity_ >= 1 ) {
     //  std::cout << " p(" << (iLeapFrogStep + 0.5) << ") = " << format_vdouble(pProposal_) << std::endl;
     //  std::cout << " q(" << (iLeapFrogStep + 1) << ") = " << format_vdouble(qProposal_) << std::endl;
     //  std::cout << "(prob = " << evalProb(qProposal_) << ", E = " << evalE(qProposal_) << "," 
@@ -596,11 +598,11 @@ void MarkovChainIntegrator::makeDynamicMoves(const std::vector<double>& epsilon)
     //}
   }
   updateGradE(qProposal_);
-  //if ( verbosity_ ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
+  //if ( verbosity_ >= 1 ) std::cout << " gradE = " << format_vdouble(gradE_) << std::endl;
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     pProposal_[iDimension] -= 0.5*epsilon[iDimension]*gradE_[iDimension];
   }
-  //if ( verbosity_ ) {  
+  //if ( verbosity_ >= 1 ) {  
   //  std::cout << " p(" << L_ << ") = " << format_vdouble(pProposal_) << std::endl;
   //  std::cout << "(prob = " << evalProb(qProposal_) << ", E = " << evalE(qProposal_) << "," 
   //	        << " Ks = " << evalK(pProposal_, 0, numDimensions_) << ","
@@ -652,13 +654,13 @@ double MarkovChainIntegrator::evalK(const std::vector<double>& p, unsigned idxFi
 void MarkovChainIntegrator::updateGradE(std::vector<double>& q)
 {
 //--- numerically compute gradient of "potential energy" E = -log(P(q)) at point q
-  //if ( verbosity_ ) {
+  //if ( verbosity_ >= 1 ) {
   //  std::cout << "<MarkovChainIntegrator::updateGradE>:" << std::endl;
   //  std::cout << " q(1) = " << format_vdouble(q) << std::endl;
   //}
 
   double prob_q = evalProb(q);  
-  //if ( verbosity_ ) std::cout << " prob(q) = " << prob_q << std::endl;
+  //if ( verbosity_ >= 1 ) std::cout << " prob(q) = " << prob_q << std::endl;
 
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     double q_i = q[iDimension];
@@ -673,7 +675,7 @@ void MarkovChainIntegrator::updateGradE(std::vector<double>& q)
     q[iDimension] = q_i;
   }
 
-  //if ( verbosity_ ) {
+  //if ( verbosity_ >= 1 ) {
   //  std::cout << " q(2) = " << format_vdouble(q) << std::endl;
   //  std::cout << "--> gradE = " << format_vdouble(gradE_) << std::endl;
   //}
