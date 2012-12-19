@@ -5,10 +5,15 @@
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
-NSVfitStandaloneAlgorithm::NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons, NSVfitStandalone::Vector measuredMET , const TMatrixD& covMET, unsigned int verbosity) : 
-  fitStatus_(-1), 
-  verbosity_(verbosity), 
-  maxObjFunctionCalls_(5000)
+NSVfitStandaloneAlgorithm::NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons, NSVfitStandalone::Vector measuredMET , const TMatrixD& covMET, unsigned int verbosity) 
+  : fitStatus_(-1), 
+    verbosity_(verbosity), 
+    maxObjFunctionCalls_(5000),
+    mcObjectiveFunctionAdapter_(0),
+    mcPtEtaPhiMassAdapter_(0),
+    integrator2_(0),
+    isInitialized2_(false),
+    maxObjFunctionCalls2_(100000)
 { 
   // instantiate minuit, the arguments might turn into configurables once
   minimizer_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
@@ -20,6 +25,9 @@ NSVfitStandaloneAlgorithm::~NSVfitStandaloneAlgorithm()
 {
   delete nll_;
   delete minimizer_;
+  delete mcObjectiveFunctionAdapter_;
+  delete mcPtEtaPhiMassAdapter_;
+  delete integrator2_;
 }
 
 void
@@ -206,7 +214,7 @@ NSVfitStandaloneAlgorithm::integrate()
     } else if(par == 3){
       p = ig2.Integral(xl3, xu3);
     } else{
-      std::cout << " >> ERROR : the nubmer of measured leptons must be 2" << std::endl;
+      std::cout << " >> ERROR : the number of measured leptons must be 2" << std::endl;
       assert(0);
     }
     if(verbosity_>1){
@@ -234,5 +242,111 @@ NSVfitStandaloneAlgorithm::integrate()
     std::cout << "--> mass  = " << mass_  << std::endl;
     std::cout << "--> pmax  = " << pMax   << std::endl;
     std::cout << "--> count = " << count  << std::endl;
+  }
+}
+
+void
+NSVfitStandaloneAlgorithm::integrate2()
+{
+  using namespace NSVfitStandalone;
+  
+  if(verbosity_>0){
+    std::cout << "<NSVfitStandaloneAlgorithm::integrate2()>:" << std::endl;
+  }
+
+  if ( isInitialized2_ ) {
+    mcPtEtaPhiMassAdapter_->Reset();
+  } else {    
+    edm::ParameterSet cfg;
+    cfg.addParameter<std::string>("mode", "Metropolis");
+    cfg.addParameter<std::string>("initMode", "none");
+    cfg.addParameter<unsigned>("numIterBurnin", TMath::Nint(0.10*maxObjFunctionCalls2_));
+    cfg.addParameter<unsigned>("numIterSampling", maxObjFunctionCalls2_);
+    cfg.addParameter<int>("numIterSimAnnealingPhase1", TMath::Nint(0.02*maxObjFunctionCalls2_));    
+    cfg.addParameter<int>("numIterSimAnnealingPhase2", TMath::Nint(0.06*maxObjFunctionCalls2_));
+    cfg.addParameter<double>("T0", 15.);
+    cfg.addParameter<double>("alpha", 1.0 - 1.e+2/maxObjFunctionCalls2_);
+    cfg.addParameter<unsigned>("numChains", 1);
+    cfg.addParameter<unsigned>("numBatches", 1);
+    cfg.addParameter<unsigned>("L", 1);
+    cfg.addParameter<double>("epsilon0", 1.e-2);
+    cfg.addParameter<double>("nu", 0.71);
+    cfg.addParameter<std::string>("name", "NSVfitStandaloneAlgorithm");
+    cfg.addParameter<int>("verbosity", 0);
+    integrator2_ = new MarkovChainIntegrator(cfg);
+    mcObjectiveFunctionAdapter_ = new MCObjectiveFunctionAdapter();
+    integrator2_->setIntegrand(*mcObjectiveFunctionAdapter_);
+    mcPtEtaPhiMassAdapter_ = new MCPtEtaPhiMassAdapter();
+    integrator2_->registerCallBackFunction(*mcPtEtaPhiMassAdapter_);
+    isInitialized2_= true;    
+  }
+  double pi = 3.14159265;
+  // number of hadronic decays
+  int khad = 0;
+  for(unsigned int idx=0; idx<nll_->measuredTauLeptons().size(); ++idx){
+    if(nll_->measuredTauLeptons()[idx].decayType() == kHadDecay){ 
+      khad++; 
+    }
+  }
+  // number of parameters for fit
+  int nDim = nll_->measuredTauLeptons().size()*NSVfitStandalone::kMaxFitParams - (khad + 1);  
+  mcObjectiveFunctionAdapter_->SetNDim(nDim);
+  /* --------------------------------------------------------------------------------------
+     lower and upper bounds for integration. Boundaries are deefined for each decay channel
+     separately. The order is: 
+     
+     - 3dim : fully hadronic {xFrax, phihad1, phihad2}
+     - 4dim : semi  leptonic {xFrac, nunuMass, philep, phihad}
+     - 5dim : fully leptonic {xFrac, nunuMass1, philep1, nunuMass2, philep2}
+     
+     xl* defineds the lower integation bound, xu* defines the upper integration bound. 
+     ATTENTION: order matters here! In the semi-leptonic decay the lepton must go first in 
+     the parametrization, as it is first in the definition of integral boundaries. This is
+     the reason why the measuredLeptons are eventually re-ordered in the constructor of 
+     this class before passing them on to NSVfitStandaloneLikelihood.
+  */
+  double x03[3] = { 0.5, 0.0, 0.0 };
+  double xl3[3] = { 0.0, -pi, -pi };
+  double xu3[3] = { 1.0,  pi,  pi };
+  double x04[4] = { 0.5, 0.8, 0.0, 0.0 };
+  double xl4[4] = { 0.0, 0.0, -pi, -pi };
+  double xu4[4] = { 1.0, SVfit_namespace::tauLeptonMass, pi, pi };
+  double x05[5] = { 0.5, 0.8, 0.0, 0.8, 0.0 };
+  double xl5[5] = { 0.0, 0.0, -pi, 0.0, -pi };
+  double xu5[5] = { 1.0, SVfit_namespace::tauLeptonMass, pi, SVfit_namespace::tauLeptonMass, pi };
+  std::vector<double> x0;
+  std::vector<double> xl;
+  std::vector<double> xu;
+  for ( int i = 0; i < nDim; ++i ) {
+    if      ( nDim == 3 ) {
+      x0[i] = x03[i];
+      xl[i] = xl3[i];
+      xu[i] = xu3[i];
+    } else if ( nDim == 4 ) {
+      x0[i] = x04[i];
+      xl[i] = xl4[i];
+      xu[i] = xu4[i];
+    } else if ( nDim == 5 ) {
+      x0[i] = x05[i];
+      xl[i] = xl5[i];
+      xu[i] = xu5[i];
+    } else {
+      std::cout << " >> ERROR : the number of measured leptons must be 2" << std::endl;
+      assert(0);
+    }
+  }
+  integrator2_->initializeStartPosition_and_Momentum(x0);
+  nll_->addDelta(false);
+  nll_->addSinTheta(false);
+  double integral = 0.;
+  double integralErr = 0.;
+  int errorFlag = 0;
+  integrator2_->integrate(xl, xu, integral, integralErr, errorFlag);
+  pt_ = mcPtEtaPhiMassAdapter_->getPt();
+  eta_ = mcPtEtaPhiMassAdapter_->getEta();
+  phi_ = mcPtEtaPhiMassAdapter_->getPhi();
+  mass_ = mcPtEtaPhiMassAdapter_->getMass();
+  if ( verbosity_ > 0 ) {
+    std::cout << "--> Pt = " << pt_ << ", eta = " << eta_ << ", phi = " << phi_ << ", mass  = " << mass_  << std::endl;
   }
 }

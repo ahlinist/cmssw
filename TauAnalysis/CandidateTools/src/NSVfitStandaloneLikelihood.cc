@@ -10,14 +10,14 @@ const NSVfitStandaloneLikelihood* NSVfitStandaloneLikelihood::gNSVfitStandaloneL
 /// indicate first iteration for integration or fit cycle for debugging
 static bool FIRST = true;
 
-NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, bool verbose) :  
-  metPower_(1.0), 
-  addLogM_(false), 
-  addDelta_(true),
-  addSinTheta_(false),
-  verbose_(verbose), 
-  idxObjFunctionCall_(0), 
-  invCovMET_(2,2)
+NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(const std::vector<MeasuredTauLepton>& measuredTauLeptons, const Vector& measuredMET, const TMatrixD& covMET, bool verbose) 
+  : metPower_(1.0), 
+    addLogM_(false), 
+    addDelta_(true),
+    addSinTheta_(false),
+    verbose_(verbose), 
+    idxObjFunctionCall_(0), 
+    invCovMET_(2,2)
 {
   if(verbose_){
     std::cout << "<NSVfitStandaloneLikelihood::constructor>" << std::endl;
