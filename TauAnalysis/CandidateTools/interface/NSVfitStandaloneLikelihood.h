@@ -129,7 +129,7 @@ namespace NSVfitStandalone{
   class NSVfitStandaloneLikelihood {
   public:
     /// constructor with a minimla set of configurables 
-    NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, bool verbose);
+    NSVfitStandaloneLikelihood(const std::vector<MeasuredTauLepton>& measuredTauLeptons, const Vector& measuredMET, const TMatrixD& covMET, bool verbose);
     /// default destructor
     ~NSVfitStandaloneLikelihood() {};
     /// static pointer to this (needed for the minuit function calls)
@@ -149,10 +149,10 @@ namespace NSVfitStandalone{
     /// return vector of measured MET
     Vector measuredMET() const { return measuredMET_; };
     /// return vector of measured tau leptons
-    std::vector<MeasuredTauLepton> measuredTauLeptons() const { return measuredTauLeptons_; };
+    const std::vector<MeasuredTauLepton>& measuredTauLeptons() const { return measuredTauLeptons_; };
     /// return vector of fitted tau leptons, which will be the actual fit result. This function is a subset of transform.
     /// It needs to be factored out though as transform has to be const to be usable by minuit and therefore is not allowed 
-    /// changfe the class memebers.  
+    /// change the class memebers.  
     void results(std::vector<LorentzVector>& fittedTauLeptons, const double* x) const;
     /// fit function to be called from outside (has to be const to be usable by minuit). This function will call the actual 
     /// functions transform and nll internally 
