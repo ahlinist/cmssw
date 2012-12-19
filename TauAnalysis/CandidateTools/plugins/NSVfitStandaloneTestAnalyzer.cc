@@ -7,12 +7,17 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/PFMEtSignInterface.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+
+typedef edm::View<reco::Candidate> CandidateView;
+typedef edm::View<reco::MET> METView;
 
 /// default constructor
 NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer(const edm::ParameterSet& cfg)
@@ -21,21 +26,42 @@ NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer(const edm::ParameterS
     timer_(0),
     numSVfitCalls_(0)
 {
-  met_   = cfg.getParameter<edm::InputTag>("met");
-  leps1_ = cfg.getParameter<edm::InputTag>("leps1");
-  leps2_ = cfg.getParameter<edm::InputTag>("leps2");
-  type1_ = cfg.getParameter<std::string>("type1");
-  type2_ = cfg.getParameter<std::string>("type2");
+  doGenPlots_ = cfg.getParameter<bool>("doGenPlots");
+  if ( doGenPlots_ ) {
+    srcGenTauPairs_ = cfg.getParameter<edm::InputTag>("srcGenTauPairs");
+    srcGenLeg1_     = cfg.getParameter<edm::InputTag>("srcGenLeg1");
+    srcGenLeg2_     = cfg.getParameter<edm::InputTag>("srcGenLeg2");
+    srcGenMEt_      = cfg.getParameter<edm::InputTag>("srcGenMEt");
+  }
 
-  // initialize MET significance calculation 
-  metSign_ = new PFMEtSignInterface(cfg.getParameter<edm::ParameterSet>("metSignificance"));
+  doRecPlots_ = cfg.getParameter<bool>("doRecPlots");
 
-  dqmDirectory_ = cfg.exists("dqmDirectory") ?
-    cfg.getParameter<std::string>("dqmDirectory") : "";
+  srcRecLeg1_       = cfg.getParameter<edm::InputTag>("srcRecLeg1");
+  srcRecLeg2_       = cfg.getParameter<edm::InputTag>("srcRecLeg2");
+  srcRecMEt_        = cfg.getParameter<edm::InputTag>("srcRecMEt");
+  srcRecMEtCov_     = ( cfg.exists("srcRecMEtCov") ) ? 
+    cfg.getParameter<edm::InputTag>("srcRecMEtCov") : edm::InputTag();
 
+  srcWeights_ = ( cfg.exists("srcWeights") ) ?
+    cfg.getParameter<vInputTag>("srcWeights") : vInputTag();
+
+  typeLeg1_ = cfg.getParameter<std::string>("typeLeg1");
+  typeLeg2_ = cfg.getParameter<std::string>("typeLeg2");
+  std::string mode_string = cfg.getParameter<std::string>("mode");
+  if      ( mode_string == "fit"  ) mode_ = kFit;
+  else if ( mode_string == "int"  ) mode_ = kInt;
+  else if ( mode_string == "int2" ) mode_ = kInt2;
+  else throw cms::Exception("InvalidParameter")
+    << "Invalid Configuration Parameter 'mode' = " << mode_string << " !!\n";
+
+  redoMEtCov_ = cfg.getParameter<bool>("redoMEtCov");
+  if ( redoMEtCov_ ) {
+    metSign_ = new PFMEtSignInterface(cfg.getParameter<edm::ParameterSet>("paramsMEtCov"));
+  }
+  
   timer_ = new TStopwatch();
   timer_->Stop();
-
+  
   verbosity_ = cfg.exists("verbosity") ?
     cfg.getParameter<int>("verbosity") : 0;
 }
@@ -62,80 +88,176 @@ NSVfitStandaloneTestAnalyzer::beginJob()
 
   dqmStore.setCurrentFolder(dqmDirectory_.data());
 
-  leg1Pt_     = dqmStore.book1D("leg1Pt",     "leg1Pt",      500, 0.,  500.);
-  leg2Pt_     = dqmStore.book1D("leg2Pt",     "leg2Pt",      500, 0.,  500.);
-  metPt_      = dqmStore.book1D("metPt",      "metPt",       500, 0.,  500.);
-  svFitMass_  = dqmStore.book1D("svFitMass",  "svFitMass",  1000, 0., 1000.);
-  visMass_    = dqmStore.book1D("visMass",    "visMass",    1000, 0., 1000.);
+  if ( doGenPlots_ ) {
+    genDiTauPt_     = dqmStore.book1D("genDiTauPt",     "genDiTauPt",      250,           0.,         250.);
+    genDiTauEta_    = dqmStore.book1D("genDiTauEta",    "genDiTauEta",     198,         -9.9,         +9.9);
+    genDiTauMass_   = dqmStore.book1D("genDiTauMass",   "genDiTauMass",   1000,           0.,        1000.);
+    genLeg1Pt_      = dqmStore.book1D("genLeg1Pt",      "genLeg1Pt",       250,           0.,         250.);
+    genLeg1Eta_     = dqmStore.book1D("genLeg1Eta",     "genLeg1Eta",      198,         -9.9,         +9.9);
+    genLeg2Pt_      = dqmStore.book1D("genLeg2Pt",      "genLeg2Pt",       250,           0.,         250.);
+    genLeg2Eta_     = dqmStore.book1D("genLeg2Eta",     "genLeg2Eta",      198,         -9.9,         +9.9);
+    genMEtPt_       = dqmStore.book1D("genMEtPt",       "genMEtPt",        500,           0.,         500.);
+  }
+
+  if ( doRecPlots_ ) {
+    recDiTauPt_     = dqmStore.book1D("recDiTauPt",     "recDiTauPt",      250,           0.,         250.);
+    recDiTauEta_    = dqmStore.book1D("recDiTauEta",    "recDiTauEta",     198,         -9.9,         +9.9);
+    svFitMass_      = dqmStore.book1D("svFitMass",      "svFitMass",      1000,           0.,        1000.);
+    visMass_        = dqmStore.book1D("visMass",        "visMass",        1000,           0.,        1000.);
+    recLeg1Pt_      = dqmStore.book1D("recLeg1Pt",      "recLeg1Pt",       250,           0.,         250.);
+    recLeg1Eta_     = dqmStore.book1D("recLeg1Eta",     "recLeg1Eta",      198,         -9.9,         +9.9);
+    recLeg2Pt_      = dqmStore.book1D("recLeg2Pt",      "recLeg2Pt",       250,           0.,         250.);
+    recLeg2Eta_     = dqmStore.book1D("recLeg2Eta",     "recLeg2Eta",      198,         -9.9,         +9.9);
+    recMEtPt_       = dqmStore.book1D("recMEtPt",       "recMEtPt",        500,           0.,         500.);
+  }
+
+  if ( doGenPlots_ && doRecPlots_ ) {
+    deltaDiTauPt_   = dqmStore.book1D("deltaDiTauPt",   "deltaDiTauPt",    350,        -100.,        +250.);
+    deltaDiTauEta_  = dqmStore.book1D("deltaDiTauEta",  "deltaDiTauEta",   198,         -9.9,         +9.9);
+    deltaDiTauPhi_  = dqmStore.book1D("deltaDiTauPhi",  "deltaDiTauPhi",   360, -TMath::Pi(), +TMath::Pi());
+    deltaDiTauMass_ = dqmStore.book1D("deltaDiTauMass", "deltaDiTauMass", 2000,       -1000.,       +1000.);
+  }
 
   fillHistograms_ = true;
 }
 
-/// everything that needs to be done during the event loop
-void 
-NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
+namespace
 {
-  // fetch MET
-  typedef edm::View<reco::MET> METView;
-  edm::Handle<METView> met;
-  event.getByLabel(met_, met);
-  // fetch selected muon
-  typedef edm::View<reco::Candidate> CandidateView;
-  edm::Handle<CandidateView> leps1;
-  event.getByLabel(leps1_, leps1);
-  // fetch selected electron
-  edm::Handle<CandidateView> leps2;
-  event.getByLabel(leps2_, leps2);
-  // ...
-  metSign_->beginEvent(event, eventSetup);
-  // list of reco::Candidates to be subtracted from the list
-  // of particle flow candidates, when calculating the MET
-  // significance 
-  std::list<const reco::Candidate*> candList;
-
-  // make sure to prevent ambiguities
-  if ( leps1->size() > 1 || leps2->size() > 1 ) {
-    std::cout << "Sorry got mixed up: too many e/mu/tau candidates --> skipping !!" << std::endl;
-    return;
+  const reco::Candidate* getObject(const edm::Event& evt, edm::InputTag& src, bool& errorFlag)
+  {
+    const reco::Candidate* object = 0;
+    edm::Handle<CandidateView> objects;
+    evt.getByLabel(src, objects);
+    if ( objects->size() >= 1 ) object = &objects->front(); 
+    else errorFlag = true;
+    return object;
   }
 
-  // loop leptons
-  for ( edm::View<reco::Candidate>::const_iterator lep1 = leps1->begin(); lep1 != leps1->end(); ++lep1 ) {
-    for ( edm::View<reco::Candidate>::const_iterator lep2 = leps2->begin(); lep2 != leps2->end(); ++lep2 ) {
-      // determine met significance
-      candList.push_back(&*lep1);
-      candList.push_back(&*lep2);
+  reco::Candidate::LorentzVector getObjectP4(const edm::Event& evt, edm::InputTag& src, bool& errorFlag)
+  {
+    reco::Candidate::LorentzVector objectP4;
+    const reco::Candidate* object = getObject(evt, src, errorFlag);
+    if ( object ) objectP4 = object->p4();
+    return objectP4;
+  }
+}
 
-      TMatrixD covMET(2,2);
-      covMET = (*metSign_)(candList);
+/// everything that needs to be done during the event loop
+void 
+NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
+{
+  reco::Candidate::LorentzVector genDiTauP4;
+  reco::Candidate::LorentzVector genLeg1P4;
+  reco::Candidate::LorentzVector genLeg2P4;
+  reco::Candidate::LorentzVector genMEtP4;
+  bool errorFlag_gen = false;
+  if ( doGenPlots_ ) {
+    genDiTauP4 = getObjectP4(evt, srcGenTauPairs_, errorFlag_gen);
+    genLeg1P4 = getObjectP4(evt, srcGenLeg1_, errorFlag_gen);
+    genLeg2P4 = getObjectP4(evt, srcGenLeg2_, errorFlag_gen);
+    genMEtP4 = getObjectP4(evt, srcGenMEt_, errorFlag_gen);
+    if ( errorFlag_gen ) return;
+  }
 
-      // setup measure tau lepton vectors 
-      std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-      measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(type1_==std::string("lep") ? NSVfitStandalone::kLepDecay : NSVfitStandalone::kHadDecay, lep1->p4()));
-      measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(type2_==std::string("lep") ? NSVfitStandalone::kLepDecay : NSVfitStandalone::kHadDecay, lep2->p4()));
+  bool errorFlag_rec = false;
+  const reco::Candidate* recLeg1 = getObject(evt, srcRecLeg1_, errorFlag_rec);
+  reco::Candidate::LorentzVector recLeg1P4 = getObjectP4(evt, srcRecLeg1_, errorFlag_rec);
+  const reco::Candidate* recLeg2 = getObject(evt, srcRecLeg2_, errorFlag_rec);
+  reco::Candidate::LorentzVector recLeg2P4 = getObjectP4(evt, srcRecLeg2_, errorFlag_rec);
+  reco::Candidate::LorentzVector recMEtP4;
+  TMatrixD recMEtCov(2,2);
+  edm::Handle<METView> recMETs;
+  evt.getByLabel(srcRecMEt_, recMETs);
+  if ( recMETs->size() >= 1 ) {
+    recMEtP4 = recMETs->front().p4();
+    if ( redoMEtCov_ ) {
+      metSign_->beginEvent(evt, es);
+      // list of reco::Candidates to be subtracted from the list
+      // of particle flow candidates, when calculating the MET uncertainty matrix
+      std::list<const reco::Candidate*> recTauDecayProducts;
+      if ( recLeg1 ) recTauDecayProducts.push_back(recLeg1);
+      if ( recLeg2 ) recTauDecayProducts.push_back(recLeg2);
+      recMEtCov = (*metSign_)(recTauDecayProducts);
+    } else if ( srcRecMEtCov_.label() != "" ) {
+      edm::Handle<PFMEtSignCovMatrix> recMEtCov_handle;
+      evt.getByLabel(srcRecMEtCov_, recMEtCov_handle);
+      recMEtCov = (*recMEtCov_handle);
+    } else {
+      recMEtCov = recMETs->front().getSignificanceMatrix();
+    }
+  }
+  if ( errorFlag_rec ) return;
+
+  double evtWeight = 1.0;
+  for ( vInputTag::const_iterator srcWeight = srcWeights_.begin();
+	srcWeight != srcWeights_.end(); ++srcWeight ) {
+    edm::Handle<double> weight;
+    evt.getByLabel(*srcWeight, weight);
+    evtWeight *= (*weight);
+  }
+  
+  if ( evtWeight < 1.e-3 || evtWeight > 1.e+3 || TMath::IsNaN(evtWeight) ) return;
+
+  // setup SVfit input
+  std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+  measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(typeLeg1_ == std::string("lep") ? NSVfitStandalone::kLepDecay : NSVfitStandalone::kHadDecay, recLeg1P4));
+  measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(typeLeg2_ == std::string("lep") ? NSVfitStandalone::kLepDecay : NSVfitStandalone::kHadDecay, recLeg2P4));
       
-      // construct the class object from the minimal necesarry information
-      NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met->front().momentum(), covMET, 0);
-      // apply customized configurations if wanted (examples are given below)
-      algo.addLogM(false);
-      timer_->Start(false);
-      algo.integrate();
-      timer_->Stop();
-      ++numSVfitCalls_;
+  NSVfitStandaloneAlgorithm algo(measuredTauLeptons, recMEtP4.Vect(), recMEtCov, 0); 
+  timer_->Start(false);
+  if ( mode_ == kFit ) {
+    algo.addLogM(true);
+    algo.fit();
+  } else if ( mode_ == kInt ) {
+    algo.addLogM(false);
+    algo.integrate();
+  } else if ( mode_ == kInt2 ) {
+    algo.addLogM(false);
+    algo.integrate2();
+  } else assert(0);
+  timer_->Stop();
+  ++numSVfitCalls_;
 
-      // retrieve the results 
-      if ( verbosity_ ) {
-	std::cout << "<NSVfitStandaloneTestAnalyzer::endJob>:" << std::endl;
-	std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
-	std::cout << "--> mass (standalone version) = " << algo.getMass() 
-		  << " + " << algo.massUncert() << " - " << algo.massUncert() << " [" << algo.fitStatus() << "]" << std::endl;
+  if ( verbosity_ ) {
+    std::cout << "<NSVfitStandaloneTestAnalyzer::analyze>:" << std::endl;
+    std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+    std::cout << "--> mass (standalone version) = " << algo.mass() 
+	      << " + " << algo.massUncert() << " - " << algo.massUncert() << " [" << algo.fitStatus() << "]" << std::endl;
+  }
+
+  // fill histograms
+  if ( fillHistograms_ ) {
+    if ( doGenPlots_ ) {
+      genDiTauPt_->Fill(genDiTauP4.pt(), evtWeight);
+      genDiTauEta_->Fill(genDiTauP4.eta(), evtWeight);
+      genDiTauMass_->Fill(genDiTauP4.mass(), evtWeight);
+      genLeg1Pt_->Fill(genLeg1P4.pt(), evtWeight);
+      genLeg1Eta_->Fill(genLeg1P4.eta(), evtWeight);
+      genLeg2Pt_->Fill(genLeg2P4.pt(), evtWeight);
+      genLeg2Eta_->Fill(genLeg2P4.eta(), evtWeight);
+      genMEtPt_->Fill(genMEtP4.pt(), evtWeight);
+    }
+
+    if ( doRecPlots_ ) {
+      if ( mode_ == kInt2 ) {
+	recDiTauPt_->Fill(algo.pt(), evtWeight);
+	recDiTauEta_->Fill(algo.eta(), evtWeight);
       }
-      if ( fillHistograms_ ) {
-	leg1Pt_->Fill(lep1->pt());
-	leg2Pt_->Fill(lep2->pt());
-	metPt_->Fill(met->front().pt()); 
-	svFitMass_->Fill(algo.getMass() );
-	visMass_->Fill((lep1->p4() + lep2->p4()).mass()); 
+      svFitMass_->Fill(algo.mass(), evtWeight);
+      visMass_->Fill((recLeg1P4 + recLeg2P4).mass(), evtWeight);
+      recLeg1Pt_->Fill(recLeg1P4.pt(), evtWeight);
+      recLeg1Eta_->Fill(recLeg1P4.eta(), evtWeight);
+      recLeg2Pt_->Fill(recLeg2P4.pt(), evtWeight);
+      recLeg2Eta_->Fill(recLeg2P4.eta(), evtWeight);
+      recMEtPt_->Fill(recMEtP4.pt(), evtWeight);
+    }
+    
+    if ( doGenPlots_ && doRecPlots_ ) { 
+      if ( mode_ == kInt2 ) {
+	deltaDiTauPt_->Fill(algo.pt() - genDiTauP4.pt(), evtWeight);
+	deltaDiTauEta_->Fill(algo.eta() - genDiTauP4.eta(), evtWeight);
+	deltaDiTauPhi_->Fill(algo.phi() - genDiTauP4.phi(), evtWeight);
+	deltaDiTauMass_->Fill(algo.mass() - genDiTauP4.mass(), evtWeight);
       }
     }
   }
