@@ -12,6 +12,7 @@ NSVfitStandaloneAlgorithm::NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalon
     mcObjectiveFunctionAdapter_(0),
     mcPtEtaPhiMassAdapter_(0),
     integrator2_(0),
+    integrator2_nDim_(0),
     isInitialized2_(false),
     maxObjFunctionCalls2_(100000)
 { 
@@ -263,8 +264,8 @@ NSVfitStandaloneAlgorithm::integrate2()
     cfg.addParameter<std::string>("initMode", "none");
     cfg.addParameter<unsigned>("numIterBurnin", TMath::Nint(0.10*maxObjFunctionCalls2_));
     cfg.addParameter<unsigned>("numIterSampling", maxObjFunctionCalls2_);
-    cfg.addParameter<int>("numIterSimAnnealingPhase1", TMath::Nint(0.02*maxObjFunctionCalls2_));    
-    cfg.addParameter<int>("numIterSimAnnealingPhase2", TMath::Nint(0.06*maxObjFunctionCalls2_));
+    cfg.addParameter<unsigned>("numIterSimAnnealingPhase1", TMath::Nint(0.02*maxObjFunctionCalls2_));    
+    cfg.addParameter<unsigned>("numIterSimAnnealingPhase2", TMath::Nint(0.06*maxObjFunctionCalls2_));
     cfg.addParameter<double>("T0", 15.);
     cfg.addParameter<double>("alpha", 1.0 - 1.e+2/maxObjFunctionCalls2_);
     cfg.addParameter<unsigned>("numChains", 1);
@@ -273,14 +274,16 @@ NSVfitStandaloneAlgorithm::integrate2()
     cfg.addParameter<double>("epsilon0", 1.e-2);
     cfg.addParameter<double>("nu", 0.71);
     cfg.addParameter<std::string>("name", "NSVfitStandaloneAlgorithm");
-    cfg.addParameter<int>("verbosity", 0);
+    cfg.addParameter<int>("verbosity", -1);
     integrator2_ = new MarkovChainIntegrator(cfg);
     mcObjectiveFunctionAdapter_ = new MCObjectiveFunctionAdapter();
     integrator2_->setIntegrand(*mcObjectiveFunctionAdapter_);
+    integrator2_nDim_ = 0;
     mcPtEtaPhiMassAdapter_ = new MCPtEtaPhiMassAdapter();
     integrator2_->registerCallBackFunction(*mcPtEtaPhiMassAdapter_);
     isInitialized2_= true;    
   }
+
   double pi = 3.14159265;
   // number of hadronic decays
   int khad = 0;
@@ -292,6 +295,10 @@ NSVfitStandaloneAlgorithm::integrate2()
   // number of parameters for fit
   int nDim = nll_->measuredTauLeptons().size()*NSVfitStandalone::kMaxFitParams - (khad + 1);  
   mcObjectiveFunctionAdapter_->SetNDim(nDim);
+  if ( nDim != integrator2_nDim_ ) {
+    integrator2_->setIntegrand(*mcObjectiveFunctionAdapter_);
+    integrator2_nDim_ = nDim;
+  }
   /* --------------------------------------------------------------------------------------
      lower and upper bounds for integration. Boundaries are deefined for each decay channel
      separately. The order is: 
@@ -315,11 +322,11 @@ NSVfitStandaloneAlgorithm::integrate2()
   double x05[5] = { 0.5, 0.8, 0.0, 0.8, 0.0 };
   double xl5[5] = { 0.0, 0.0, -pi, 0.0, -pi };
   double xu5[5] = { 1.0, SVfit_namespace::tauLeptonMass, pi, SVfit_namespace::tauLeptonMass, pi };
-  std::vector<double> x0;
-  std::vector<double> xl;
-  std::vector<double> xu;
+  std::vector<double> x0(nDim);
+  std::vector<double> xl(nDim);
+  std::vector<double> xu(nDim);
   for ( int i = 0; i < nDim; ++i ) {
-    if      ( nDim == 3 ) {
+    if ( nDim == 3 ) {
       x0[i] = x03[i];
       xl[i] = xl3[i];
       xu[i] = xu3[i];
@@ -335,6 +342,9 @@ NSVfitStandaloneAlgorithm::integrate2()
       std::cout << " >> ERROR : the number of measured leptons must be 2" << std::endl;
       assert(0);
     }
+    // CV: transform startPosition into interval ]-1..+1[
+    //     expected by MarkovChainIntegrator class
+    x0[i] = (x0[i] - xl[i])/(xu[i] - xl[i]);
   }
   integrator2_->initializeStartPosition_and_Momentum(x0);
   nll_->addDelta(false);

@@ -25,7 +25,8 @@ using NSVfitStandalone::MeasuredTauLepton;
    function.
 */
 
-namespace NSVfitStandalone{
+namespace NSVfitStandalone
+{
   class ObjectiveFunctionAdapter
   {
   public:
@@ -313,6 +314,7 @@ class NSVfitStandaloneAlgorithm
   NSVfitStandalone::MCObjectiveFunctionAdapter* mcObjectiveFunctionAdapter_;
   NSVfitStandalone::MCPtEtaPhiMassAdapter* mcPtEtaPhiMassAdapter_;
   MarkovChainIntegrator* integrator2_;
+  int integrator2_nDim_;
   bool isInitialized2_;
   unsigned maxObjFunctionCalls2_;
   double pt_;
