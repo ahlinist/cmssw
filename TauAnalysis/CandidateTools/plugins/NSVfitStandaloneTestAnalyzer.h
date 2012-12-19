@@ -50,27 +50,72 @@ class NSVfitStandaloneTestAnalyzer : public edm::EDAnalyzer {
 
   std::string moduleLabel_;
 
-  /// input tag for MET
-  edm::InputTag met_;
-  /// input tag for electrons
-  edm::InputTag leps1_;
-  /// input tag for muons
-  edm::InputTag leps2_;
-  /// lepton type1
-  std::string type1_;
-  /// lewpton type2
-  std::string type2_;
+  /// make generator level plots
+  bool doGenPlots_;
+  /// gen. tau lepton pairs
+  edm::InputTag srcGenTauPairs_;
+  /// gen. visible decay products
+  edm::InputTag srcGenLeg1_;
+  edm::InputTag srcGenLeg2_;
+  /// gen. MET
+  edm::InputTag srcGenMEt_;
 
-  /// MET significance interface
+  /// make reconstructed level plots
+  bool doRecPlots_;
+  /// rec. visible decay products
+  edm::InputTag srcRecLeg1_;
+  edm::InputTag srcRecLeg2_;
+  /// rec. MET
+  edm::InputTag srcRecMEt_;
+  /// rec. MET uncertainty
+  /// (in case this InputTag is left empty, 
+  ///  the MET uncertainty matrix will be taken from reco::MET->getSignificanceMatrix)
+  edm::InputTag srcRecMEtCov_;
+
+  typedef std::vector<edm::InputTag> vInputTag;
+  vInputTag srcWeights_;
+
+  /// SVfit configuration parameters:
+  /// type of tau decay likelihood to be used for visible decay products ("lep"/"had")
+  std::string typeLeg1_;
+  std::string typeLeg2_;
+  /// flag indicating how to compute SVfit solutions
+  ///  o "fit":  MINUIT fit (fast, but suboptimal resolution)
+  ///  o "int":  VEGAS integration (good resolution, but takes 1-2 seconds per event)
+  ///  o "int2": Markov Chain integration (best compromise between resolution and computing time)
+  enum { kFit, kInt, kInt2 };
+  int mode_;
+  /// flag to request recomputation of MET uncertainty matrix
+  bool redoMEtCov_;
   PFMEtSignInterface* metSign_;
 
-  std::string dqmDirectory_;
+  /// flag to enable/disable booking+filling of histograms
   bool fillHistograms_;
-  MonitorElement* leg1Pt_;
-  MonitorElement* leg2Pt_;
-  MonitorElement* metPt_;
+  std::string dqmDirectory_;
+
+  MonitorElement* genDiTauPt_;
+  MonitorElement* genDiTauEta_;
+  MonitorElement* genDiTauMass_;
+  MonitorElement* genLeg1Pt_;
+  MonitorElement* genLeg1Eta_;
+  MonitorElement* genLeg2Pt_;
+  MonitorElement* genLeg2Eta_;
+  MonitorElement* genMEtPt_;
+
+  MonitorElement* recDiTauPt_;
+  MonitorElement* recDiTauEta_;
   MonitorElement* svFitMass_;
   MonitorElement* visMass_;
+  MonitorElement* recLeg1Pt_;
+  MonitorElement* recLeg1Eta_;
+  MonitorElement* recLeg2Pt_;
+  MonitorElement* recLeg2Eta_;
+  MonitorElement* recMEtPt_;
+
+  MonitorElement* deltaDiTauPt_;   // delta = reconstructed - generated
+  MonitorElement* deltaDiTauEta_;
+  MonitorElement* deltaDiTauPhi_;
+  MonitorElement* deltaDiTauMass_;
 
   TStopwatch* timer_;
   long numSVfitCalls_;
