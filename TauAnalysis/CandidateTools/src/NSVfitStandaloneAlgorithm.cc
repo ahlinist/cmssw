@@ -123,8 +123,9 @@ NSVfitStandaloneAlgorithm::fit()
   double x1RelErr = minimizer_->Errors()[kXFrac]/minimizer_->X()[kXFrac];
   double x2RelErr = minimizer_->Errors()[kMaxFitParams + kXFrac]/minimizer_->X()[kMaxFitParams + kXFrac];
   // this gives a unified treatment for retrieving the result for integration mode and fit mode
-  mass_ = fittedDiTauSystem().mass();
-  massUncert_ = TMath::Sqrt(0.25*x1RelErr*x1RelErr + 0.25*x2RelErr*x2RelErr)*fittedDiTauSystem().mass();
+  fittedDiTauSystem_ = fittedTauLeptons_[0] + fittedTauLeptons_[1];
+  mass_ = fittedDiTauSystem_.mass();
+  massUncert_ = TMath::Sqrt(0.25*x1RelErr*x1RelErr + 0.25*x2RelErr*x2RelErr)*fittedDiTauSystem_.mass();
   if(verbosity_>1){
     std::cout << ">> -------------------------------------------------------------" << std::endl;
     std::cout << ">> Resonance Record: " << std::endl;
@@ -343,9 +344,14 @@ NSVfitStandaloneAlgorithm::integrate2()
   int errorFlag = 0;
   integrator2_->integrate(xl, xu, integral, integralErr, errorFlag);
   pt_ = mcPtEtaPhiMassAdapter_->getPt();
+  ptUncert_ = mcPtEtaPhiMassAdapter_->getPtUncert();
   eta_ = mcPtEtaPhiMassAdapter_->getEta();
+  etaUncert_ = mcPtEtaPhiMassAdapter_->getEtaUncert();
   phi_ = mcPtEtaPhiMassAdapter_->getPhi();
+  phiUncert_ = mcPtEtaPhiMassAdapter_->getPhiUncert();
   mass_ = mcPtEtaPhiMassAdapter_->getMass();
+  massUncert_ = mcPtEtaPhiMassAdapter_->getMassUncert();
+  fittedDiTauSystem_ = math::PtEtaPhiMLorentzVector(pt_, eta_, phi_, mass_);
   if ( verbosity_ > 0 ) {
     std::cout << "--> Pt = " << pt_ << ", eta = " << eta_ << ", phi = " << phi_ << ", mass  = " << mass_  << std::endl;
   }

@@ -94,9 +94,13 @@ namespace NSVfitStandalone{
       histogramMass_->Reset();
     }
     double getPt() const { return extractValue(histogramPt_, histogramPt_density_); }
+    double getPtUncert() const { return extractUncertainty(histogramPt_, histogramPt_density_); }
     double getEta() const { return extractValue(histogramEta_, histogramEta_density_); }
+    double getEtaUncert() const { return extractUncertainty(histogramEta_, histogramEta_density_); }
     double getPhi() const { return extractValue(histogramPhi_, histogramPhi_density_); }
+    double getPhiUncert() const { return extractUncertainty(histogramPhi_, histogramPhi_density_); }
     double getMass() const { return extractValue(histogramMass_, histogramMass_density_); }
+    double getMassUncert() const { return extractUncertainty(histogramMass_, histogramMass_density_); }
    private:
     TH1* makeHistogram(const std::string& histogramName, double xMin, double xMax, double logBinWidth)
     {
@@ -114,7 +118,7 @@ namespace NSVfitStandalone{
     virtual double DoEval(const double* x) const
     {
       NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->results(fittedTauLeptons_, x);
-      fittedDiTauSystem_ = fittedTauLeptons_[0] + fittedTauLeptons_[1]; 
+      fittedDiTauSystem_ = fittedTauLeptons_[0] + fittedTauLeptons_[1];
       histogramPt_->Fill(fittedDiTauSystem_.pt());
       histogramEta_->Fill(fittedDiTauSystem_.eta());
       histogramPhi_->Fill(fittedDiTauSystem_.phi());
@@ -137,7 +141,16 @@ namespace NSVfitStandalone{
       double maximum, maximum_interpol, mean, quantile016, quantile050, quantile084;
       compHistogramDensity(histogram, histogram_density);
       SVfit_namespace::extractHistogramProperties(histogram, histogram_density, maximum, maximum_interpol, mean, quantile016, quantile050, quantile084);
-      return maximum_interpol;
+      double value = maximum_interpol;
+      return value;
+    }
+    double extractUncertainty(const TH1* histogram, TH1* histogram_density) const
+    {
+      double maximum, maximum_interpol, mean, quantile016, quantile050, quantile084;
+      compHistogramDensity(histogram, histogram_density);
+      SVfit_namespace::extractHistogramProperties(histogram, histogram_density, maximum, maximum_interpol, mean, quantile016, quantile050, quantile084);
+      double uncertainty = TMath::Sqrt(0.5*(TMath::Power(quantile084 - maximum_interpol, 2.) + TMath::Power(maximum_interpol - quantile016, 2.)));
+      return uncertainty;
     }
     mutable std::vector<NSVfitStandalone::LorentzVector> fittedTauLeptons_;
     mutable LorentzVector fittedDiTauSystem_;
@@ -231,7 +244,7 @@ class NSVfitStandaloneAlgorithm
   void integrate2();
 
   /// return status of minuit fit
-  int fitStatus() { return fitStatus_; };
+  int fitStatus() { return fitStatus_; }
   /// return whether this is a valid solution or not
     /*    
 	  0: Valid solution
@@ -241,13 +254,21 @@ class NSVfitStandaloneAlgorithm
 	  4: Reached maximum number of function calls before reaching convergence
 	  5: Any other failure
     */
-  bool isValidSolution() { return fitStatus_ == 0; };
-  /// return mass of the fitted di-tau system 
-  double mass() const { return mass_; };
-  /// return uncertainty on the mass of the fitted di-tau system
-  double massUncert() const { return massUncert_; };
-    // mtt mass, svfit integration
-  double getMass() const {return mass();};
+  bool isValidSolution() { return fitStatus_ == 0; }
+  /// return mass value plus uncertainty of the fitted di-tau system 
+  double mass() const { return mass_; }
+  double massUncert() const { return massUncert_; }
+  /// return Pt, eta, phi values plus uncertainties
+  ///
+  /// NOTE: these values are computed only in case 
+  ///       the integrate2 method (Markov Chain integration) is used
+  ///
+  double pt() const { return pt_; }
+  double ptUncert() const { return ptUncert_; }
+  double eta() const { return eta_; }
+  double etaUncert() const { return etaUncert_; }
+  double phi() const { return phi_; }
+  double phiUncert() const { return phiUncert_; }
 
   /// return 4-vectors of the fitted tau leptons
   std::vector<LorentzVector> fittedTauLeptons() const { return fittedTauLeptons_; }
@@ -286,6 +307,7 @@ class NSVfitStandaloneAlgorithm
   double massUncert_;
   /// fit result for each of the decay branches 
   std::vector<NSVfitStandalone::LorentzVector> fittedTauLeptons_;
+  NSVfitStandalone::LorentzVector fittedDiTauSystem_;
 
   // data-members specific to Markov Chain integration
   NSVfitStandalone::MCObjectiveFunctionAdapter* mcObjectiveFunctionAdapter_;
@@ -294,8 +316,11 @@ class NSVfitStandaloneAlgorithm
   bool isInitialized2_;
   unsigned maxObjFunctionCalls2_;
   double pt_;
+  double ptUncert_;
   double eta_;
+  double etaUncert_;
   double phi_;
+  double phiUncert_;
 };
 
 inline
