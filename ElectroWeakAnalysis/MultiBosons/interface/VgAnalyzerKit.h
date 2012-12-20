@@ -221,7 +221,7 @@ protected:
   Int_t    nEle_;
   Bool_t   eleEcalDriven_[maxP];
   Int_t    eleTrg_[maxP][14];
-  Int_t    eleID_[maxP][30];
+  Int_t    eleID_[maxP][12];
   Int_t    eleClass_[maxP];
   Int_t    eleCharge_[maxP];
   Float_t  eleVtx_[maxP][3];

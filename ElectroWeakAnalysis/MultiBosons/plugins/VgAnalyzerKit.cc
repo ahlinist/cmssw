@@ -243,7 +243,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("nEle", &nEle_, "nEle/I");
   tree_->Branch("eleEcalDriven", eleEcalDriven_, "eleEcalDriven[nEle]/O");
   tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][14]/I");
-  tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
+  tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
@@ -1062,20 +1062,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       //	6: passes conversion rejection and Isolation
       //	7: passes the whole selection
       //
-      //        CIC
-      //        https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideCategoryBasedElectronID
-      //        The value map returns a double with the following meaning:
-      //        0 - no cut passed
-      //        1 - eID cuts passed
-      //        2 - iso cuts passed
-      //        4 - conversion rejection
-      //        8 - ip cut
-      //        To check eId results:
-      //        eID+Iso+ConversionRejection+IP -> ((eleID_[nEle_][] &15) == 15)
-      //        Iso only -> ((eleID_[nEle_][] & 2) == 2)
-      //        eID+ConversionRejection+IP -> ((eleID_[nEle_][] & 13) == 13)
 
-      for (int i=0; i<30; ++i) 
+      for (int i=0; i<12; ++i) 
 	eleID_[nEle_][i] = -1;
 
       eleID_[nEle_][0] = int (iEle->electronID("simpleEleId60cIso"));
@@ -1090,24 +1078,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleID_[nEle_][9] = int (iEle->electronID("simpleEleId85relIso"));
       eleID_[nEle_][10]= int (iEle->electronID("simpleEleId90relIso"));
       eleID_[nEle_][11]= int (iEle->electronID("simpleEleId95relIso"));
-      eleID_[nEle_][12]= int (iEle->electronID("eidVeryLoose"));
-      eleID_[nEle_][13]= int (iEle->electronID("eidLoose"));
-      eleID_[nEle_][14]= int (iEle->electronID("eidMedium"));
-      eleID_[nEle_][15]= int (iEle->electronID("eidTight"));
-      eleID_[nEle_][16]= int (iEle->electronID("eidSuperTight"));
-      eleID_[nEle_][17]= int (iEle->electronID("eidHyperTight1"));
-      eleID_[nEle_][18]= int (iEle->electronID("eidHyperTight2"));
-      eleID_[nEle_][19]= int (iEle->electronID("eidHyperTight3"));
-      eleID_[nEle_][20]= int (iEle->electronID("eidHyperTight4"));
-      eleID_[nEle_][21]= int (iEle->electronID("eidVeryLooseMC"));
-      eleID_[nEle_][22]= int (iEle->electronID("eidLooseMC"));
-      eleID_[nEle_][23]= int (iEle->electronID("eidMediumMC"));
-      eleID_[nEle_][24]= int (iEle->electronID("eidTightMC"));
-      eleID_[nEle_][25]= int (iEle->electronID("eidSuperTightMC"));
-      eleID_[nEle_][26]= int (iEle->electronID("eidHyperTight1MC"));
-      eleID_[nEle_][27]= int (iEle->electronID("eidHyperTight2MC"));
-      eleID_[nEle_][28]= int (iEle->electronID("eidHyperTight3MC"));
-      eleID_[nEle_][29]= int (iEle->electronID("eidHyperTight4MC"));
 
       eleVtx_[nEle_][0] = iEle->trackPositionAtVtx().x();
       eleVtx_[nEle_][1] = iEle->trackPositionAtVtx().y();
