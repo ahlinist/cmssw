@@ -67,7 +67,7 @@
 #include "EGamma/EGammaAnalysisTools/src/PFIsolationEstimator.cc"
 
 // Electron ID in 2012
-#include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
+//#include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
 
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
@@ -124,6 +124,20 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // skimed HLT 
   if (doSkim_ == true)
      skimedHLTpath_  = ps.getParameter<std::vector<std::string > >("skimedHLTpath");
+
+  // 2012 ele MVA
+  std::vector<string> eleMVAWeightFiles_ = ps.getParameter<std::vector<std::string> >("eleMVAWeightFiles");
+
+  eleTrgMVA_ = new EGammaMvaEleEstimator();
+  bool manualCat_ = true;
+  eleTrgMVA_->initialize("BDT", EGammaMvaEleEstimator::kTrigIDIsoCombined, manualCat_, eleMVAWeightFiles_);
+
+  // 2012 ele En regression
+  std::string regressionInputFile_ = ps.getParameter<std::string>("regressionInputFile");
+
+  regressionEvaluator = new ElectronEnergyRegressionEvaluate();
+  ElectronEnergyRegressionEvaluate::ElectronEnergyRegressionType type = ElectronEnergyRegressionEvaluate::kNoTrkVar;
+  regressionEvaluator->initialize(regressionInputFile_.c_str(), type);
 
   if (saveHistograms_) helper_.bookHistos(this);
 
@@ -244,9 +258,12 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleEcalDriven", eleEcalDriven_, "eleEcalDriven[nEle]/O");
   tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][14]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
+  tree_->Branch("eleIDTrgMVA", eleIDTrgMVA_, "eleIDTrgMVA[nEle]/D");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
+  tree_->Branch("eleRegEn", eleRegEn_, "eleRegEn[nEle]/D");
+  tree_->Branch("eleRegEnErr", eleRegEnErr_, "eleRegEnErr[nEle]/D");
   tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/F");
   tree_->Branch("eleEcalEn", eleEcalEn_, "eleEcalEn[nEle]/F");
   tree_->Branch("eleGsfP", eleGsfP_, "eleGsfP[nEle]/F");
@@ -464,7 +481,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("scEEEta", scEEEta_, "scEEEta[nEESC]/F");
     tree_->Branch("scEEPhi", scEEPhi_, "scEEPhi[nEESC]/F");
   }
-
 }
 
 VgAnalyzerKit::~VgAnalyzerKit() {
@@ -501,7 +517,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   e.getByLabel(ebReducedRecHitCollection_, EBReducedRecHits);
   Handle<EcalRecHitCollection> EEReducedRecHits;
   e.getByLabel(eeReducedRecHitCollection_, EEReducedRecHits);
-  EcalClusterLazyTools lazyTool(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
+  EcalClusterLazyTools* lazyTool = new EcalClusterLazyTools(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
 
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
@@ -987,9 +1003,24 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       e.getByLabel(inputTagIsoValElectronsPFId_[j], electronIsoValPFIdDR04[j-3]);
   }
 
+  Vertex dummy;
+  const Vertex *pv = &dummy;
+  if ( recVtxs->size() != 0) {
+    pv = &*recVtxs->begin();
+  } else { // create a dummy PV
+    Vertex::Error e;
+    e(0, 0) = 0.0015 * 0.0015;
+    e(1, 1) = 0.0015 * 0.0015;
+    e(2, 2) = 15. * 15.;
+    Vertex::Point p(0, 0, 0);
+    dummy = Vertex(p, e, 0, 0, 0);
+  }
+  
   edm::ESHandle<TransientTrackBuilder> builder;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
   TransientTrackBuilder transientTrackBuilder = *(builder.product());
+ 
+  assert(regressionEvaluator->isInitialized());
 
   // Electron
   edm::Handle<reco::GsfElectronCollection> hElectrons;
@@ -1166,15 +1197,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
       vector<float> eleCov;
-      eleCov = lazyTool.localCovariances(*eleSeed);
+      eleCov = lazyTool->localCovariances(*eleSeed);
       eleSigmaEtaEta_[nEle_]   = iEle->sigmaEtaEta();
       eleSigmaIEtaIEta_[nEle_] = iEle->sigmaIetaIeta();
       eleSigmaIEtaIPhi_[nEle_] = sqrt(eleCov[1]);
       eleSigmaIPhiIPhi_[nEle_] = sqrt(eleCov[2]);
 
-      eleEmax_[nEle_] = lazyTool.eMax(*eleSeed);
+      eleEmax_[nEle_] = lazyTool->eMax(*eleSeed);
       eleE1x5_[nEle_] = iEle->e1x5();
-      eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
+      eleE3x3_[nEle_] = lazyTool->e3x3(*eleSeed);
       eleE5x5_[nEle_] = iEle->e5x5();
 
       bool validKF= false; 
@@ -1190,7 +1221,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleSeedTime_[nEle_] = -999.;
       eleSeedEnergy_[nEle_] = -999.;
 
-      DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
+      DetId eleSeedDetId = lazyTool->getMaximum(*eleSeed).first;
 
       if ( iEle->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleebrhit = EBReducedRecHits->find(eleSeedDetId);
@@ -1231,6 +1262,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       edm::Ptr<reco::Candidate> recoEleRef = iEle->originalObjectRef();                                                                                  
       const reco::GsfElectron *recoElectron = dynamic_cast<const reco::GsfElectron *>(recoEleRef.get());        
       eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*recoElectron, hConversions, beamSpot.position(), true, 2.0, 1e-6, 0);
+
+      eleIDTrgMVA_[nEle_] = eleTrgMVA_->mvaValue(*recoElectron, *pv, transientTrackBuilder, *lazyTool, false);;
+
+      eleRegEn_[nEle_]    = regressionEvaluator->calculateRegressionEnergy(&(*recoElectron), *lazyTool, es, rho2012_, nGoodVtx_, false);
+      eleRegEnErr_[nEle_] = regressionEvaluator->calculateRegressionEnergyUncertainty(&(*recoElectron), *lazyTool, es, rho2012_, nGoodVtx_, false);
 
       // PF isolation
       elePfChargedHadronDR03_[nEle_] = (*(*electronIsoValsDR03)[0])[recoEleRef];
@@ -1402,10 +1438,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSeedTime_[nPho_] = -999.;
       phoSeedEnergy_[nPho_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
-      DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
+      DetId phoSeedDetId = lazyTool->getMaximum(*phoSeed).first;
 
       vector<float> phoCov;
-      phoCov = lazyTool.localCovariances(*phoSeed);
+      phoCov = lazyTool->localCovariances(*phoSeed);
       phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
       phoSigmaIEtaIPhi_[nPho_] = sqrt(phoCov[1]);
       phoSigmaIPhiIPhi_[nPho_] = sqrt(phoCov[2]);
