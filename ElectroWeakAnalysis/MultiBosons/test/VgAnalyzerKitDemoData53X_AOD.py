@@ -155,33 +155,9 @@ process.vgTriggerSequence = cms.Sequence(
 #================================================
 # ADD OFFICIAL ELECTRON ID FROM EG group!
 #================================================
-# Electron ID with CIC in 2011 
-process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
-process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi")
-# Electron ID with likelihood in 2011 
-process.load("RecoEgamma.ElectronIdentification.electronIdLikelihoodExt_cfi")
 # Simple cut based selection in 2010
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
-process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence +
-                                      process.eidVeryLoose +
-                                      process.eidLoose +
-                                      process.eidMedium +
-                                      process.eidTight +
-                                      process.eidSuperTight +
-                                      process.eidHyperTight1 +
-                                      process.eidHyperTight2 +
-                                      process.eidHyperTight3 +
-                                      process.eidHyperTight4 +
-                                      process.eidVeryLooseMC +
-                                      process.eidLooseMC +
-                                      process.eidMediumMC +
-                                      process.eidTightMC +
-                                      process.eidSuperTightMC +
-                                      process.eidHyperTight1MC +
-                                      process.eidHyperTight2MC +
-                                      process.eidHyperTight3MC +
-                                      process.eidHyperTight4MC +
-                                      process.eidLikelihoodExt)
+process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectronIsolation*process.electronMatch*process.patElectrons)
 process.patElectrons.addElectronID = cms.bool(True)
 process.patElectrons.electronIDSources = cms.PSet(
@@ -197,28 +173,6 @@ process.patElectrons.electronIDSources = cms.PSet(
     simpleEleId80cIso= cms.InputTag("simpleEleId80cIso"),
     simpleEleId70cIso= cms.InputTag("simpleEleId70cIso"),
     simpleEleId60cIso= cms.InputTag("simpleEleId60cIso"),
-    # For CIC
-    eidVeryLoose = cms.InputTag("eidVeryLoose"),
-    eidLoose = cms.InputTag("eidLoose"),
-    eidMedium = cms.InputTag("eidMedium"),
-    eidTight = cms.InputTag("eidTight"),
-    eidSuperTight = cms.InputTag("eidSuperTight"),
-    eidHyperTight1 = cms.InputTag("eidHyperTight1"),
-    eidHyperTight2 = cms.InputTag("eidHyperTight2"),
-    eidHyperTight3 = cms.InputTag("eidHyperTight3"),
-    eidHyperTight4 = cms.InputTag("eidHyperTight4"),
-    # For CIC with MC
-    eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
-    eidLooseMC = cms.InputTag("eidLooseMC"),
-    eidMediumMC = cms.InputTag("eidMediumMC"),
-    eidTightMC = cms.InputTag("eidTightMC"),
-    eidSuperTightMC = cms.InputTag("eidSuperTightMC"),
-    eidHyperTight1MC = cms.InputTag("eidHyperTight1MC"),
-    eidHyperTight2MC = cms.InputTag("eidHyperTight2MC"),
-    eidHyperTight3MC = cms.InputTag("eidHyperTight3MC"),
-    eidHyperTight4MC = cms.InputTag("eidHyperTight4MC"),
-    # likelihood
-    eidLikelihoodExt = cms.InputTag("eidLikelihoodExt")
     )
 
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
