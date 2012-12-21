@@ -26,7 +26,11 @@ NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer(const edm::ParameterS
     timer_(0),
     numSVfitCalls_(0)
 {
+  //std::cout << "<NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer>:" << std::endl;
+  //std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+
   doGenPlots_ = cfg.getParameter<bool>("doGenPlots");
+  //std::cout << " doGenPlots = " << doGenPlots_ << std::endl;
   if ( doGenPlots_ ) {
     srcGenTauPairs_ = cfg.getParameter<edm::InputTag>("srcGenTauPairs");
     srcGenLeg1_     = cfg.getParameter<edm::InputTag>("srcGenLeg1");
@@ -35,6 +39,11 @@ NSVfitStandaloneTestAnalyzer::NSVfitStandaloneTestAnalyzer(const edm::ParameterS
   }
 
   doRecPlots_ = cfg.getParameter<bool>("doRecPlots");
+  //std::cout << " doRecPlots = " << doRecPlots_ << std::endl;
+
+  if ( doGenPlots_ || doRecPlots_ ) {
+    dqmDirectory_ = cfg.getParameter<std::string>("dqmDirectory");
+  }
 
   srcRecLeg1_       = cfg.getParameter<edm::InputTag>("srcRecLeg1");
   srcRecLeg2_       = cfg.getParameter<edm::InputTag>("srcRecLeg2");
@@ -77,6 +86,9 @@ NSVfitStandaloneTestAnalyzer::~NSVfitStandaloneTestAnalyzer()
 void 
 NSVfitStandaloneTestAnalyzer::beginJob()
 {
+  //std::cout << "<NSVfitStandaloneTestAnalyzer::beginJob>:" << std::endl;
+  //std::cout << " dqmDirectory = " << dqmDirectory_ << std::endl;
+
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogWarning ("NSVfitStandaloneTestAnalyzer::beginJob")
       << " Failed to access dqmStore --> histograms will NEITHER be booked NOR filled !!\n";
@@ -103,6 +115,7 @@ NSVfitStandaloneTestAnalyzer::beginJob()
     recDiTauPt_     = dqmStore.book1D("recDiTauPt",     "recDiTauPt",      250,           0.,         250.);
     recDiTauEta_    = dqmStore.book1D("recDiTauEta",    "recDiTauEta",     198,         -9.9,         +9.9);
     svFitMass_      = dqmStore.book1D("svFitMass",      "svFitMass",      1000,           0.,        1000.);
+    svFitStatus_    = dqmStore.book1D("svFitStatus",    "svFitStatus",      11,         -1.5,         +9.5);
     visMass_        = dqmStore.book1D("visMass",        "visMass",        1000,           0.,        1000.);
     recLeg1Pt_      = dqmStore.book1D("recLeg1Pt",      "recLeg1Pt",       250,           0.,         250.);
     recLeg1Eta_     = dqmStore.book1D("recLeg1Eta",     "recLeg1Eta",      198,         -9.9,         +9.9);
@@ -146,6 +159,9 @@ namespace
 void 
 NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
+  //std::cout << "<NSVfitStandaloneTestAnalyzer::analyze>:" << std::endl;
+  //std::cout << " fillHistograms = " << fillHistograms_ << std::endl;
+
   reco::Candidate::LorentzVector genDiTauP4;
   reco::Candidate::LorentzVector genLeg1P4;
   reco::Candidate::LorentzVector genLeg2P4;
@@ -244,6 +260,7 @@ NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& evt, const edm::EventSet
 	recDiTauEta_->Fill(algo.eta(), evtWeight);
       }
       svFitMass_->Fill(algo.mass(), evtWeight);
+      svFitStatus_->Fill(algo.fitStatus(), evtWeight);
       visMass_->Fill((recLeg1P4 + recLeg2P4).mass(), evtWeight);
       recLeg1Pt_->Fill(recLeg1P4.pt(), evtWeight);
       recLeg1Eta_->Fill(recLeg1P4.eta(), evtWeight);
