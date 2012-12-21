@@ -9,7 +9,7 @@ import TauAnalysis.Configuration.tools.castor as castor
 from TauAnalysis.Skimming.EventContent_cff import *
 
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
@@ -31,18 +31,15 @@ process.source = cms.Source("PoolSource",
         'drop LHEEventProduct_*_*_*'
     ),
     ##eventsToProcess = cms.untracked.VEventRange(
-    ##    '1:1673:501590',
-    ##    '1:1673:501684',
-    ##    '1:1673:501726',
-    ##    '1:1681:504011'
+    ##    '1:150755:60253795'
     ##)
 )
 
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-sample_type = 'Z'
-#sample_type = 'Higgs'
+#sample_type = 'Z'
+sample_type = 'Higgs'
 #channel = 'etau'
 channel = 'mutau'
 #channel = 'emu'
@@ -551,22 +548,22 @@ metAlgorithms = {
         'srcMEt'    : 'pfType1CorrectedMet',
         'srcMEtCov' : 'pfMEtSignCovMatrix'
     },
-    'MVAMEtUnityResponse' : {
-        'srcMEt'    : 'pfMEtMVAunityResponse',
-        'srcMEtCov' : 'pfMEtMVAunityResponse'
-    },
-    'MVAMEtUnityResponsePFMEtCov' : {
-        'srcMEt'    : 'pfMEtMVAunityResponseWithPFMEtCov',
-        'srcMEtCov' : 'pfMEtMVAunityResponseWithPFMEtCov'
-    },
-    'MVAMEtNonUnityResponse' : {
-        'srcMEt'    : 'pfMEtMVA',
-        'srcMEtCov' : 'pfMEtMVA'
-    },
-    'MVAMEtNonUnityResponsePFMEtCov' : {
-        'srcMEt'    : 'pfMEtMVAwithPFMEtCov',
-        'srcMEtCov' : 'pfMEtMVAwithPFMEtCov'
-    }
+##     'MVAMEtUnityResponse' : {
+##         'srcMEt'    : 'pfMEtMVAunityResponse',
+##         'srcMEtCov' : 'pfMEtMVAunityResponse'
+##     },
+##     'MVAMEtUnityResponsePFMEtCov' : {
+##         'srcMEt'    : 'pfMEtMVAunityResponseWithPFMEtCov',
+##         'srcMEtCov' : 'pfMEtMVAunityResponseWithPFMEtCov'
+##     },
+##     'MVAMEtNonUnityResponse' : {
+##         'srcMEt'    : 'pfMEtMVA',
+##         'srcMEtCov' : 'pfMEtMVA'
+##     },
+##     'MVAMEtNonUnityResponsePFMEtCov' : {
+##         'srcMEt'    : 'pfMEtMVAwithPFMEtCov',
+##         'srcMEtCov' : 'pfMEtMVAwithPFMEtCov'
+##     }
 }
 
 ##for numCalls in [ 10, 20, 50, 100, 250, 500, 1000 ]:
@@ -637,7 +634,8 @@ process.nSVfitStandaloneAnalyzerFit = cms.EDAnalyzer("NSVfitStandaloneTestAnalyz
     paramsMEtCov = process.nSVfitEventLikelihoodMEt2,
     fillHistograms = cms.bool(True),                                                     
     dqmDirectory = cms.string("nSVfitStandaloneAnalyzerFit"),
-    verbosity = cms.int32(0)                                               
+    ##verbosity = cms.int32(1)
+    verbosity = cms.int32(0)                                                 
 )                                                  
 process.testSVfitTrackLikelihoodProductionSequence += process.nSVfitStandaloneAnalyzerFit
 process.nSVfitStandaloneAnalyzerInt = process.nSVfitStandaloneAnalyzerFit.clone(
