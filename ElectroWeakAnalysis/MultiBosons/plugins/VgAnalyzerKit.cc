@@ -66,9 +66,6 @@
 // PF isolation from alternate code
 #include "EGamma/EGammaAnalysisTools/src/PFIsolationEstimator.cc"
 
-// Electron ID in 2012
-//#include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
-
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
@@ -124,13 +121,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // skimed HLT 
   if (doSkim_ == true)
      skimedHLTpath_  = ps.getParameter<std::vector<std::string > >("skimedHLTpath");
-
-  // 2012 ele MVA
-  std::vector<string> eleMVAWeightFiles_ = ps.getParameter<std::vector<std::string> >("eleMVAWeightFiles");
-
-  eleTrgMVA_ = new EGammaMvaEleEstimator();
-  bool manualCat_ = true;
-  eleTrgMVA_->initialize("BDT", EGammaMvaEleEstimator::kTrigIDIsoCombined, manualCat_, eleMVAWeightFiles_);
 
   // 2012 ele En regression
   std::string regressionInputFile_ = ps.getParameter<std::string>("regressionInputFile");
@@ -258,7 +248,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleEcalDriven", eleEcalDriven_, "eleEcalDriven[nEle]/O");
   tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][14]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
-  tree_->Branch("eleIDTrgMVA", eleIDTrgMVA_, "eleIDTrgMVA[nEle]/D");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
@@ -1003,19 +992,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       e.getByLabel(inputTagIsoValElectronsPFId_[j], electronIsoValPFIdDR04[j-3]);
   }
 
-  Vertex dummy;
-  const Vertex *pv = &dummy;
-  if ( recVtxs->size() != 0) {
-    pv = &*recVtxs->begin();
-  } else { // create a dummy PV
-    Vertex::Error e;
-    e(0, 0) = 0.0015 * 0.0015;
-    e(1, 1) = 0.0015 * 0.0015;
-    e(2, 2) = 15. * 15.;
-    Vertex::Point p(0, 0, 0);
-    dummy = Vertex(p, e, 0, 0, 0);
-  }
-  
+  // PF Candidates
+  Handle<reco::PFCandidateCollection> pfCandidatesHandle;
+  e.getByLabel(PFCandLabel_, pfCandidatesHandle);
+  const PFCandidateCollection thePfColl = *(pfCandidatesHandle.product());
+
   edm::ESHandle<TransientTrackBuilder> builder;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
   TransientTrackBuilder transientTrackBuilder = *(builder.product());
@@ -1263,8 +1244,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const reco::GsfElectron *recoElectron = dynamic_cast<const reco::GsfElectron *>(recoEleRef.get());        
       eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*recoElectron, hConversions, beamSpot.position(), true, 2.0, 1e-6, 0);
 
-      eleIDTrgMVA_[nEle_] = eleTrgMVA_->mvaValue(*recoElectron, *pv, transientTrackBuilder, *lazyTool, false);;
-
       eleRegEn_[nEle_]    = regressionEvaluator->calculateRegressionEnergy(&(*recoElectron), *lazyTool, es, rho2012_, nGoodVtx_, false);
       eleRegEnErr_[nEle_] = regressionEvaluator->calculateRegressionEnergyUncertainty(&(*recoElectron), *lazyTool, es, rho2012_, nGoodVtx_, false);
 
@@ -1279,11 +1258,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       nEle_++;
     }
-
-  // PF Candidates
-  Handle<reco::PFCandidateCollection> pfCandidatesHandle;
-  e.getByLabel(PFCandLabel_, pfCandidatesHandle);
-  const PFCandidateCollection thePfColl = *(pfCandidatesHandle.product());
 
   // Photon
   PFIsolationEstimator isolator;
