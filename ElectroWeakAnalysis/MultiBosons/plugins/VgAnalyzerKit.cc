@@ -122,13 +122,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   if (doSkim_ == true)
      skimedHLTpath_  = ps.getParameter<std::vector<std::string > >("skimedHLTpath");
 
-  // 2012 ele En regression
-  std::string regressionInputFile_ = ps.getParameter<std::string>("regressionInputFile");
-
-  regressionEvaluator = new ElectronEnergyRegressionEvaluate();
-  ElectronEnergyRegressionEvaluate::ElectronEnergyRegressionType type = ElectronEnergyRegressionEvaluate::kNoTrkVar;
-  regressionEvaluator->initialize(regressionInputFile_.c_str(), type);
-
   if (saveHistograms_) helper_.bookHistos(this);
 
   // cout << "VgAnalyzerKit: making output tree" << endl;
@@ -251,8 +244,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleVtx", eleVtx_, "eleVtx[nEle][3]/F");
-  tree_->Branch("eleRegEn", eleRegEn_, "eleRegEn[nEle]/D");
-  tree_->Branch("eleRegEnErr", eleRegEnErr_, "eleRegEnErr[nEle]/D");
   tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/F");
   tree_->Branch("eleEcalEn", eleEcalEn_, "eleEcalEn[nEle]/F");
   tree_->Branch("eleGsfP", eleGsfP_, "eleGsfP[nEle]/F");
@@ -1001,8 +992,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
   TransientTrackBuilder transientTrackBuilder = *(builder.product());
  
-  assert(regressionEvaluator->isInitialized());
-
   // Electron
   edm::Handle<reco::GsfElectronCollection> hElectrons;
   e.getByLabel("gsfElectrons", hElectrons);
@@ -1243,9 +1232,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       edm::Ptr<reco::Candidate> recoEleRef = iEle->originalObjectRef();                                                                                  
       const reco::GsfElectron *recoElectron = dynamic_cast<const reco::GsfElectron *>(recoEleRef.get());        
       eleConversionveto_[nEle_] = ConversionTools::hasMatchedConversion(*recoElectron, hConversions, beamSpot.position(), true, 2.0, 1e-6, 0);
-
-      eleRegEn_[nEle_]    = regressionEvaluator->calculateRegressionEnergy(&(*recoElectron), *lazyTool, es, rho2012_, nGoodVtx_, false);
-      eleRegEnErr_[nEle_] = regressionEvaluator->calculateRegressionEnergyUncertainty(&(*recoElectron), *lazyTool, es, rho2012_, nGoodVtx_, false);
 
       // PF isolation
       elePfChargedHadronDR03_[nEle_] = (*(*electronIsoValsDR03)[0])[recoEleRef];

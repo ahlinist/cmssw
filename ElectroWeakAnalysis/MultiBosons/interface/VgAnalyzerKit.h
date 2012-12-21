@@ -20,8 +20,6 @@
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 // Prescale
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
-// Ele En regression in 2012
-#include "EGamma/EGammaAnalysisTools/interface/ElectronEnergyRegressionEvaluate.h"
 
 #include "TTree.h"
 #include "TH1F.h"
@@ -105,7 +103,6 @@ protected:
   Int_t leadingMuPtCut_;
   Int_t leadingPhoPtCut_;
   std::vector<string> skimedHLTpath_;
-  ElectronEnergyRegressionEvaluate *regressionEvaluator;
 
   pat::PatKitHelper helper_;
   TTree *tree_;
@@ -225,8 +222,6 @@ protected:
   Bool_t   eleEcalDriven_[maxP];
   Int_t    eleTrg_[maxP][14];
   Int_t    eleID_[maxP][12];
-  Double_t eleRegEn_[maxP];
-  Double_t eleRegEnErr_[maxP];
   Int_t    eleClass_[maxP];
   Int_t    eleCharge_[maxP];
   Float_t  eleVtx_[maxP][3];
