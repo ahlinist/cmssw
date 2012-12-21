@@ -105,6 +105,7 @@ class NSVfitStandaloneTestAnalyzer : public edm::EDAnalyzer {
   MonitorElement* recDiTauPt_;
   MonitorElement* recDiTauEta_;
   MonitorElement* svFitMass_;
+  MonitorElement* svFitStatus_;
   MonitorElement* visMass_;
   MonitorElement* recLeg1Pt_;
   MonitorElement* recLeg1Eta_;
