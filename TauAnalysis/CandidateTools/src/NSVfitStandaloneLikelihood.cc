@@ -15,6 +15,7 @@ NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(const std::vector<Measure
     addLogM_(false), 
     addDelta_(true),
     addSinTheta_(false),
+    addPhiPenalty_(true),
     verbose_(verbose), 
     idxObjFunctionCall_(0), 
     invCovMET_(2,2)
@@ -282,9 +283,11 @@ NSVfitStandaloneLikelihood::prob(const double* x) const
   // prevent kPhi in the fit parameters (kFitParams) from trespassing the 
   // +/-pi boundaries
   double phiPenalty=0.;
-  for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
-    if(TMath::Abs(idx*kMaxFitParams + x[kPhi])>TMath::Pi()){
-      phiPenalty += (TMath::Abs(x[kPhi]) - TMath::Pi())*(TMath::Abs(x[kPhi]) - TMath::Pi());
+  if ( addPhiPenalty_ ) {
+    for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
+      if(TMath::Abs(idx*kMaxFitParams + x[kPhi])>TMath::Pi()){
+	phiPenalty += (TMath::Abs(x[kPhi]) - TMath::Pi())*(TMath::Abs(x[kPhi]) - TMath::Pi());
+      }
     }
   }
   // xPrime are the transformed variables from which to construct the nll
@@ -381,3 +384,4 @@ tauLeptonMass);
   }
   return;
 }
+

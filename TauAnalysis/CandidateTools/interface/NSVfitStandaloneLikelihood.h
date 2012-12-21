@@ -143,6 +143,8 @@ namespace NSVfitStandalone
     /// add sin(theta) term to likelihood for tau lepton decays
     /// WARNING: to be used when SVfit is run in "fit" mode only
     void addSinTheta(bool value) { addSinTheta_ = value; }  
+    /// add a penalty term in case phi runs outside of interval [-pi,+pi]
+    void addPhiPenalty(bool value) { addPhiPenalty_ = value; }    
     /// modify the MET term in the nll by an additional power (default is 1.)
     void metPower(double value) { metPower_=value; };    
 
@@ -177,6 +179,8 @@ namespace NSVfitStandalone
     bool addDelta_;
     /// sin(theta) term in the nll
     bool addSinTheta_;
+    /// add a penalty term in case phi runs outside of interval [-pi,+pi]
+    bool addPhiPenalty_;
     /// verbosity level
     bool verbose_;
     /// monitor the number of function calls
