@@ -52,6 +52,7 @@ namespace NSVfitStandalone
     int par;      //final state type
     double mtest; //current mass hypothesis
   };
+  void map_x(const double*, int, double*);
   class MCObjectiveFunctionAdapter : public ROOT::Math::Functor
   {
    public:
@@ -60,10 +61,12 @@ namespace NSVfitStandalone
    private:
     virtual double DoEval(const double* x) const
     {
-      double prob = NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->prob(x);
+      map_x(x, nDim_, x_mapped_);
+      double prob = NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->prob(x_mapped_);
       if ( TMath::IsNaN(prob) ) prob = 0.;
       return prob;
     } 
+    mutable double x_mapped_[6];
     int nDim_;
   };
   class MCPtEtaPhiMassAdapter : public ROOT::Math::Functor
@@ -87,6 +90,8 @@ namespace NSVfitStandalone
       delete histogramPhi_;
       delete histogramMass_;
     }
+    void SetNDim(int nDim) { nDim_ = nDim; }
+    unsigned int NDim() const { return nDim_; }
     void Reset()
     {
       histogramPt_->Reset();
@@ -118,7 +123,8 @@ namespace NSVfitStandalone
     }    
     virtual double DoEval(const double* x) const
     {
-      NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->results(fittedTauLeptons_, x);
+      map_x(x, nDim_, x_mapped_);
+      NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->results(fittedTauLeptons_, x_mapped_);
       fittedDiTauSystem_ = fittedTauLeptons_[0] + fittedTauLeptons_[1];
       histogramPt_->Fill(fittedDiTauSystem_.pt());
       histogramEta_->Fill(fittedDiTauSystem_.eta());
@@ -163,6 +169,8 @@ namespace NSVfitStandalone
     mutable TH1* histogramPhi_density_;
     mutable TH1* histogramMass_;
     mutable TH1* histogramMass_density_;
+    mutable double x_mapped_[6];
+    int nDim_;
   };
 }
 

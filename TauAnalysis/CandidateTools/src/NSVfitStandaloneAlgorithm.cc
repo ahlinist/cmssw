@@ -5,6 +5,35 @@
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
+namespace NSVfitStandalone
+{
+  void map_x(const double* x, int nDim, double* x_mapped)
+  {
+    if ( nDim == 4 ) {
+      x_mapped[kXFrac]                 = x[0];
+      x_mapped[kMNuNu]                 = 0.;
+      x_mapped[kPhi]                   = x[1];
+      x_mapped[kMaxFitParams + kXFrac] = x[2];
+      x_mapped[kMaxFitParams + kMNuNu] = 0.;
+      x_mapped[kMaxFitParams + kPhi]   = x[3];
+    } else if ( nDim == 5 ) {
+      x_mapped[kXFrac]                 = x[0];
+      x_mapped[kMNuNu]                 = x[1];
+      x_mapped[kPhi]                   = x[2];
+      x_mapped[kMaxFitParams + kXFrac] = x[3];
+      x_mapped[kMaxFitParams + kMNuNu] = 0.;
+      x_mapped[kMaxFitParams + kPhi]   = x[4];
+    } else if ( nDim == 6 ) {
+      x_mapped[kXFrac]                 = x[0];
+      x_mapped[kMNuNu]                 = x[1];
+      x_mapped[kPhi]                   = x[2];
+      x_mapped[kMaxFitParams + kXFrac] = x[3];
+      x_mapped[kMaxFitParams + kMNuNu] = x[4];
+      x_mapped[kMaxFitParams + kPhi]   = x[5];
+    } else assert(0);
+  }
+}
+
 NSVfitStandaloneAlgorithm::NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons, NSVfitStandalone::Vector measuredMET , const TMatrixD& covMET, unsigned int verbosity) 
   : fitStatus_(-1), 
     verbosity_(verbosity), 
@@ -163,7 +192,7 @@ NSVfitStandaloneAlgorithm::integrate()
     std::cout << "<NSVfitStandaloneAlgorithm::integrate()>:" << std::endl;
   }
 
-  double pi = 3.14159265;
+  const double pi = 3.14159265;
   // number of hadrponic decays
   int khad = 0;
   for(unsigned int idx=0; idx<nll_->measuredTauLeptons().size(); ++idx){
@@ -202,6 +231,7 @@ NSVfitStandaloneAlgorithm::integrate()
   ig2.SetFunction(toIntegrate);
   nll_->addDelta(true);
   nll_->addSinTheta(false);
+  nll_->addPhiPenalty(false);
   int count = 0;
   double pMax = 0.;
   double mtest = measuredDiTauSystem().mass();
@@ -284,7 +314,7 @@ NSVfitStandaloneAlgorithm::integrate2()
     isInitialized2_= true;    
   }
 
-  double pi = 3.14159265;
+  const double pi = 3.14159265;
   // number of hadronic decays
   int khad = 0;
   for(unsigned int idx=0; idx<nll_->measuredTauLeptons().size(); ++idx){
@@ -293,19 +323,20 @@ NSVfitStandaloneAlgorithm::integrate2()
     }
   }
   // number of parameters for fit
-  int nDim = nll_->measuredTauLeptons().size()*NSVfitStandalone::kMaxFitParams - (khad + 1);  
-  mcObjectiveFunctionAdapter_->SetNDim(nDim);
+  int nDim = nll_->measuredTauLeptons().size()*NSVfitStandalone::kMaxFitParams - khad;  
   if ( nDim != integrator2_nDim_ ) {
+    mcObjectiveFunctionAdapter_->SetNDim(nDim);
     integrator2_->setIntegrand(*mcObjectiveFunctionAdapter_);
+    mcPtEtaPhiMassAdapter_->SetNDim(nDim);
     integrator2_nDim_ = nDim;
   }
   /* --------------------------------------------------------------------------------------
      lower and upper bounds for integration. Boundaries are deefined for each decay channel
      separately. The order is: 
      
-     - 3dim : fully hadronic {xFrax, phihad1, phihad2}
-     - 4dim : semi  leptonic {xFrac, nunuMass, philep, phihad}
-     - 5dim : fully leptonic {xFrac, nunuMass1, philep1, nunuMass2, philep2}
+     - 4dim : fully hadronic {xhad1, phihad1, xhad2, phihad2}
+     - 5dim : semi  leptonic {xlep, nunuMass, philep, xhad, phihad}
+     - 6dim : fully leptonic {xlep1, nunuMass1, philep1, xlep2, nunuMass2, philep2}
      
      xl* defineds the lower integation bound, xu* defines the upper integration bound. 
      ATTENTION: order matters here! In the semi-leptonic decay the lepton must go first in 
@@ -313,24 +344,20 @@ NSVfitStandaloneAlgorithm::integrate2()
      the reason why the measuredLeptons are eventually re-ordered in the constructor of 
      this class before passing them on to NSVfitStandaloneLikelihood.
   */
-  double x03[3] = { 0.5, 0.0, 0.0 };
-  double xl3[3] = { 0.0, -pi, -pi };
-  double xu3[3] = { 1.0,  pi,  pi };
-  double x04[4] = { 0.5, 0.8, 0.0, 0.0 };
-  double xl4[4] = { 0.0, 0.0, -pi, -pi };
-  double xu4[4] = { 1.0, SVfit_namespace::tauLeptonMass, pi, pi };
-  double x05[5] = { 0.5, 0.8, 0.0, 0.8, 0.0 };
+  double x04[4] = { 0.5, 0.0, 0.5, 0.0 };
+  double xl4[4] = { 0.0, -pi, 0.0, -pi };
+  double xu4[4] = { 1.0,  pi, 1.0,  pi };
+  double x05[5] = { 0.5, 0.8, 0.0, 0.5, 0.0 };
   double xl5[5] = { 0.0, 0.0, -pi, 0.0, -pi };
-  double xu5[5] = { 1.0, SVfit_namespace::tauLeptonMass, pi, SVfit_namespace::tauLeptonMass, pi };
+  double xu5[5] = { 1.0, SVfit_namespace::tauLeptonMass, pi, 1.0, pi };
+  double x06[6] = { 0.5, 0.8, 0.0, 0.5, 0.8, 0.0 };
+  double xl6[6] = { 0.0, 0.0, -pi, 0.0, 0.0, -pi };
+  double xu6[6] = { 1.0, SVfit_namespace::tauLeptonMass, pi, 1.0, SVfit_namespace::tauLeptonMass, pi };
   std::vector<double> x0(nDim);
   std::vector<double> xl(nDim);
   std::vector<double> xu(nDim);
   for ( int i = 0; i < nDim; ++i ) {
-    if ( nDim == 3 ) {
-      x0[i] = x03[i];
-      xl[i] = xl3[i];
-      xu[i] = xu3[i];
-    } else if ( nDim == 4 ) {
+    if ( nDim == 4 ) {
       x0[i] = x04[i];
       xl[i] = xl4[i];
       xu[i] = xu4[i];
@@ -338,21 +365,29 @@ NSVfitStandaloneAlgorithm::integrate2()
       x0[i] = x05[i];
       xl[i] = xl5[i];
       xu[i] = xu5[i];
+    } else if ( nDim == 6 ) {
+      x0[i] = x06[i];
+      xl[i] = xl6[i];
+      xu[i] = xu6[i];
     } else {
       std::cout << " >> ERROR : the number of measured leptons must be 2" << std::endl;
       assert(0);
     }
-    // CV: transform startPosition into interval ]-1..+1[
+    // CV: transform startPosition into interval ]0..1[
     //     expected by MarkovChainIntegrator class
     x0[i] = (x0[i] - xl[i])/(xu[i] - xl[i]);
+    //std::cout << "x0[" << i << "] = " << x0[i] << std::endl;
   }
   integrator2_->initializeStartPosition_and_Momentum(x0);
   nll_->addDelta(false);
   nll_->addSinTheta(false);
+  nll_->addPhiPenalty(false);
   double integral = 0.;
   double integralErr = 0.;
   int errorFlag = 0;
+  //integrator2_->integrate(xl, xu, integral, integralErr, errorFlag, "/data1/veelken/tmp/svFitStudies/svFitStandalone/debugMarkovChain.root");
   integrator2_->integrate(xl, xu, integral, integralErr, errorFlag);
+  fitStatus_ = errorFlag;
   pt_ = mcPtEtaPhiMassAdapter_->getPt();
   ptUncert_ = mcPtEtaPhiMassAdapter_->getPtUncert();
   eta_ = mcPtEtaPhiMassAdapter_->getEta();
