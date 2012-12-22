@@ -66,6 +66,9 @@
 // PF isolation from alternate code
 #include "EGamma/EGammaAnalysisTools/src/PFIsolationEstimator.cc"
 
+// Electron ID in 2012
+#include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
+
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
@@ -461,6 +464,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("scEEEta", scEEEta_, "scEEEta[nEESC]/F");
     tree_->Branch("scEEPhi", scEEPhi_, "scEEPhi[nEESC]/F");
   }
+
 }
 
 VgAnalyzerKit::~VgAnalyzerKit() {
@@ -497,7 +501,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   e.getByLabel(ebReducedRecHitCollection_, EBReducedRecHits);
   Handle<EcalRecHitCollection> EEReducedRecHits;
   e.getByLabel(eeReducedRecHitCollection_, EEReducedRecHits);
-  EcalClusterLazyTools* lazyTool = new EcalClusterLazyTools(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
+  EcalClusterLazyTools lazyTool(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
 
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
@@ -983,15 +987,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       e.getByLabel(inputTagIsoValElectronsPFId_[j], electronIsoValPFIdDR04[j-3]);
   }
 
-  // PF Candidates
-  Handle<reco::PFCandidateCollection> pfCandidatesHandle;
-  e.getByLabel(PFCandLabel_, pfCandidatesHandle);
-  const PFCandidateCollection thePfColl = *(pfCandidatesHandle.product());
-
   edm::ESHandle<TransientTrackBuilder> builder;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
   TransientTrackBuilder transientTrackBuilder = *(builder.product());
- 
+
   // Electron
   edm::Handle<reco::GsfElectronCollection> hElectrons;
   e.getByLabel("gsfElectrons", hElectrons);
@@ -1062,7 +1061,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       //	5: passes conversion rejection and ID
       //	6: passes conversion rejection and Isolation
       //	7: passes the whole selection
-      //
 
       for (int i=0; i<12; ++i) 
 	eleID_[nEle_][i] = -1;
@@ -1167,15 +1165,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
       vector<float> eleCov;
-      eleCov = lazyTool->localCovariances(*eleSeed);
+      eleCov = lazyTool.localCovariances(*eleSeed);
       eleSigmaEtaEta_[nEle_]   = iEle->sigmaEtaEta();
       eleSigmaIEtaIEta_[nEle_] = iEle->sigmaIetaIeta();
       eleSigmaIEtaIPhi_[nEle_] = sqrt(eleCov[1]);
       eleSigmaIPhiIPhi_[nEle_] = sqrt(eleCov[2]);
 
-      eleEmax_[nEle_] = lazyTool->eMax(*eleSeed);
+      eleEmax_[nEle_] = lazyTool.eMax(*eleSeed);
       eleE1x5_[nEle_] = iEle->e1x5();
-      eleE3x3_[nEle_] = lazyTool->e3x3(*eleSeed);
+      eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
       eleE5x5_[nEle_] = iEle->e5x5();
 
       bool validKF= false; 
@@ -1191,7 +1189,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleSeedTime_[nEle_] = -999.;
       eleSeedEnergy_[nEle_] = -999.;
 
-      DetId eleSeedDetId = lazyTool->getMaximum(*eleSeed).first;
+      DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
 
       if ( iEle->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleebrhit = EBReducedRecHits->find(eleSeedDetId);
@@ -1244,6 +1242,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       nEle_++;
     }
+
+  // PF Candidates
+  Handle<reco::PFCandidateCollection> pfCandidatesHandle;
+  e.getByLabel(PFCandLabel_, pfCandidatesHandle);
+  const PFCandidateCollection thePfColl = *(pfCandidatesHandle.product());
 
   // Photon
   PFIsolationEstimator isolator;
@@ -1398,10 +1401,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSeedTime_[nPho_] = -999.;
       phoSeedEnergy_[nPho_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
-      DetId phoSeedDetId = lazyTool->getMaximum(*phoSeed).first;
+      DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
 
       vector<float> phoCov;
-      phoCov = lazyTool->localCovariances(*phoSeed);
+      phoCov = lazyTool.localCovariances(*phoSeed);
       phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
       phoSigmaIEtaIPhi_[nPho_] = sqrt(phoCov[1]);
       phoSigmaIPhiIPhi_[nPho_] = sqrt(phoCov[2]);
