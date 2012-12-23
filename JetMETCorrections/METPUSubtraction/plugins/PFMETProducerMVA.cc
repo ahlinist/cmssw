@@ -246,7 +246,7 @@ std::vector<mvaMEtUtilities::JetInfo> PFMETProducerMVA::computeJetInfo(const rec
       jetInfo.p4_ = corrJet->p4();
       double lType1Corr = 0;
       if(useType1_) { //Compute the type 1 correction ===> This code is crap 
-	double pCorr = lCorrector->correction(*uncorrJet,iEvent,iSetup); //Does not work in 42X lCorrector->correction(*uncorrJet,iEvent,iSetup);
+	double pCorr = 1.;// lCorrector->correction(*uncorrJet,iEvent,iSetup); Does not work in 42X 
 	lType1Corr = (corrJet->pt()-pCorr*uncorrJet->pt());
 	TLorentzVector pVec; pVec.SetPtEtaPhiM(lType1Corr,0,corrJet->phi(),0); 
 	reco::Candidate::LorentzVector pType1Corr; pType1Corr.SetCoordinates(pVec.Px(),pVec.Py(),pVec.Pz(),pVec.E());
