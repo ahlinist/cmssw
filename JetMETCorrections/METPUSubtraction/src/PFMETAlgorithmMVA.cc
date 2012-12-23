@@ -43,7 +43,8 @@ PFMETAlgorithmMVA::PFMETAlgorithmMVA(const edm::ParameterSet& cfg)
 {
   mvaType_ = kBaseline;
 
-  dZcut_    = cfg.getParameter<double>("dZcut");
+  dZcut_      = cfg.getParameter<double>("dZcut");
+  isOld42_    = cfg.getParameter<bool>  ("useOld42");
   
   mvaNameU_      = "U1Correction";
   mvaNameDPhi_   = "PhiCorrection";
@@ -308,7 +309,7 @@ void PFMETAlgorithmMVA::evaluateCovU1()
   mvaInputCovU1_[24] = pfPhi_ + mvaOutputDPhi_;
   mvaInputCovU1_[25] = mvaOutputU_*pfU_;
   mvaOutputCovU1_    = mvaReaderCovU1_->GetResponse(mvaInputCovU1_)*mvaOutputU_*pfU_;
-  mvaOutputCovU1_   *= mvaOutputCovU1_; //Training is not on the square anymore
+  if(!isOld42_) mvaOutputCovU1_   *= mvaOutputCovU1_; //Training is not on the square anymore
 }
 
 void PFMETAlgorithmMVA::evaluateCovU2() 
@@ -340,7 +341,7 @@ void PFMETAlgorithmMVA::evaluateCovU2()
   mvaInputCovU2_[24] = pfPhi_ + mvaOutputDPhi_;
   mvaInputCovU2_[25] = mvaOutputU_*pfU_;
   mvaOutputCovU2_    = mvaReaderCovU2_->GetResponse(mvaInputCovU2_)*mvaOutputU_*pfU_;
-  mvaOutputCovU2_   *= mvaOutputCovU2_; //Training is not on the square anymore
+  if(!isOld42_) mvaOutputCovU2_   *= mvaOutputCovU2_; //Training is not on the square anymore
 }
 void PFMETAlgorithmMVA::print(std::ostream& stream) const
 {
