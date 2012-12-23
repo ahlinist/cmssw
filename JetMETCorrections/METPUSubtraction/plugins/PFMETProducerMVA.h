@@ -8,9 +8,9 @@
  * \authors Phil Harris, CERN
  *          Christian Veelken, LLR
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PFMETProducerMVA.h,v 1.1 2012/09/18 02:08:50 pharris Exp $
+ * $Id: PFMETProducerMVA.h,v 1.2 2012/10/01 14:05:26 pharris Exp $
  *
  */
 
@@ -56,9 +56,12 @@ namespace reco
     
     std::vector<mvaMEtUtilities::pfCandInfo> computePFCandidateInfo(const reco::PFCandidateCollection&, const reco::Vertex*);
     std::vector<reco::Vertex::Point> computeVertexInfo(const reco::VertexCollection&);
-    double chargedFrac(const reco::Candidate *iCand);
+    double chargedFrac(const reco::Candidate *iCand,const reco::PFCandidateCollection& pfCandidates,const reco::Vertex* hardScatterVertex);
+    
     bool   passPFLooseId(const reco::PFJet *iJet);
     bool   istau        (const reco::Candidate *iCand);
+    double chargedFracInCone(const reco::Candidate *iCand,const reco::PFCandidateCollection& pfCandidates,const reco::Vertex* hardScatterVertex,double iDRMax=0.2);
+
    // configuration parameter
     edm::InputTag srcCorrJets_;
     edm::InputTag srcUncorrJets_;
@@ -69,6 +72,7 @@ namespace reco
     edm::InputTag srcRho_;
 
     std::string  correctorLabel_;
+    bool         isOld42_ ;
     bool         useType1_;
     
     double globalThreshold_;
@@ -78,9 +82,8 @@ namespace reco
     METAlgo metAlgo_;
     PFSpecificAlgo pfMEtSpecificAlgo_;
     PFMETAlgorithmMVA mvaMEtAlgo_;
-
     PileupJetIdAlgo mvaJetIdAlgo_;
-    
+
     int verbosity_;
   };
 }

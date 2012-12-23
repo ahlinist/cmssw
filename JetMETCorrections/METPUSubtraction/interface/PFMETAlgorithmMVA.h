@@ -8,9 +8,9 @@
  * \authors Phil Harris, CERN
  *          Christian Veelken, LLR
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PFMETAlgorithmMVA.h,v 1.4 2012/07/20 22:38:32 pharris Exp $
+ * $Id: PFMETAlgorithmMVA.h,v 1.1 2012/09/18 02:08:49 pharris Exp $
  *
  */
 
@@ -79,6 +79,7 @@ class PFMETAlgorithmMVA
 
   int    mvaType_;
   bool   is42_;
+  bool   isOld42_;
   double dZcut_;
 
   Float_t pfSumEt_;
