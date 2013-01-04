@@ -23,14 +23,14 @@ CMSDAS_PileupStudy::CMSDAS_PileupStudy(edm::ParameterSet const& params) :
   edm::Service<TFileService> fs;
 
   // setup histograms
-  TNPUInTime_ = fs->make<TH1D>("TNPUInTime","No. in-time pileup interactions",40,0.,40.);
-  TNPUTrue_ = fs->make<TH1D>("TNPUTrue","True pileup interactions",40,0.,40.);
-  TNVTX_ = fs->make<TH1D>("TNVTX","No. reconstructed vertices",40,0.,40.);
+  TNPUInTime_ = fs->make<TH1D>("TNPUInTime","No. in-time pileup interactions",60,0.,60.);
+  TNPUTrue_ = fs->make<TH1D>("TNPUTrue","True pileup interactions",60,0.,60.);
+  TNVTX_ = fs->make<TH1D>("TNVTX","No. reconstructed vertices",60,0.,60.);
 }
 
 void CMSDAS_PileupStudy::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
-  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  /*  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
 
   std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -51,7 +51,7 @@ void CMSDAS_PileupStudy::analyze(const edm::Event & iEvent, const edm::EventSetu
   }
 
   TNPUTrue_->Fill(npT);
-  TNPUInTime_->Fill(npIT);  
+  TNPUInTime_->Fill(npIT);  */ 
 
   edm::Handle< std::vector<reco::Vertex> > vertices_h;
   iEvent.getByLabel(vertexSrc_, vertices_h);
