@@ -30,7 +30,7 @@ CMSDAS_PileupStudy::CMSDAS_PileupStudy(edm::ParameterSet const& params) :
 
 void CMSDAS_PileupStudy::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
-  /*  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
 
   std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -51,7 +51,7 @@ void CMSDAS_PileupStudy::analyze(const edm::Event & iEvent, const edm::EventSetu
   }
 
   TNPUTrue_->Fill(npT);
-  TNPUInTime_->Fill(npIT);  */ 
+  TNPUInTime_->Fill(npIT);   
 
   edm::Handle< std::vector<reco::Vertex> > vertices_h;
   iEvent.getByLabel(vertexSrc_, vertices_h);
