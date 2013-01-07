@@ -19,11 +19,11 @@ import TauAnalysis.Configuration.tools.eos as eos
 # 
 # Examples:
 # 
-# ./findDuplicateCastorFiles.py channel duplicatefiles.list
+# ./findDuplicateCastorFiles.py channel badfiles.list
 #
 #   after checking badfiles.list is okay,
 #
-# cat duplicatefiles.list | xargs -n 1 rfrm
+# cat badfiles.list | xargs -n 1 rfrm
 #--------------------------------------------------------------------------------
 
 print("<findDuplicateCastorFiles>:")
