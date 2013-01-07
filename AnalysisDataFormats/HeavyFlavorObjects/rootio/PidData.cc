@@ -270,7 +270,7 @@ Bool_t PidData::sameValue(PidData *cmp, double eps) {
 // ----------------------------------------------------------------------
 void PidData::print() {
   char line[200];
-  sprintf(line, "%6.3f %6.3f %5.2f %5.2f %5.2f %5.2f %9.6f %9.6f %11.0f %11.0f %11.0f %11.0f", 
+  sprintf(line, "%7.3f %7.3f %5.2f %5.2f %5.2f %5.2f %9.6f %9.6f %11.0f %11.0f %11.0f %11.0f", 
 	  getPmin(), getPmax(), 
 	  getTmin(), getTmax(), 
 	  getFmin(), getFmax(), 
@@ -285,7 +285,7 @@ void PidData::print() {
 // ===============================================================================
 ostream & operator << (ostream& o, const PidData& cmp) {
   char line[200];
-  sprintf(line, "%6.3f %6.3f %5.2f %5.2f %5.2f %5.2f %9.6f %9.6f %11.0f %11.0f %11.0f %11.0f", 
+  sprintf(line, "%7.3f %7.3f %5.2f %5.2f %5.2f %5.2f %9.6f %9.6f %11.0f %11.0f %11.0f %11.0f", 
 	  cmp.getPmin(), cmp.getPmax(), 
 	  cmp.getTmin(), cmp.getTmax(), 
 	  cmp.getFmin(), cmp.getFmax(), 
