@@ -1158,3 +1158,13 @@ void PidTable::shiftPmax(double oldMax, double newMax) {
   }
 
 }
+
+// ----------------------------------------------------------------------
+void PidTable::shiftTmax(double oldMax, double newMax) {
+
+  TIter next(fDataVector); PidData *iTable;
+  while ((iTable = (PidData*)next())) {
+    if (iTable->getTmax() > oldMax) iTable->setTmax(newMax); 
+  }
+
+}
