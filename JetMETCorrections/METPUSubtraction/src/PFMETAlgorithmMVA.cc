@@ -201,7 +201,13 @@ void PFMETAlgorithmMVA::evaluateMVA()
   evaluateCovU1();
   evaluateCovU2();
 
-  // compute MET
+  // compute MET(Photon check)
+  if(hasPhotons_) { 
+    //Fix events with unphysical properties
+    double sumLeptonPt = TMath::Max(sqrt(sumLeptonPx_*sumLeptonPx_+sumLeptonPy_*sumLeptonPy_),1.);
+    if(tkU_/sumLeptonPt < 0.1 || npuU_/sumLeptonPt <  0.1 ) mvaOutputU_      = 1.;
+    if(tkU_/sumLeptonPt < 0.1 || npuU_/sumLeptonPt <  0.1 ) mvaOutputDPhi_   = 1.;
+  }
   double U      = pfU_*mvaOutputU_;
   double Phi    = pfPhi_ + mvaOutputDPhi_;
   if ( U < 0. ) Phi += TMath::Pi();

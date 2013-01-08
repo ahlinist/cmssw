@@ -8,9 +8,9 @@
  * \authors Phil Harris, CERN
  *          Christian Veelken, LLR
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PFMETAlgorithmMVA.h,v 1.1 2012/09/18 02:08:49 pharris Exp $
+ * $Id: PFMETAlgorithmMVA.h,v 1.2 2012/12/23 11:10:25 pharris Exp $
  *
  */
 
@@ -35,6 +35,8 @@ class PFMETAlgorithmMVA
 
   PFMETAlgorithmMVA(const edm::ParameterSet& cfg);
   ~PFMETAlgorithmMVA();
+
+  void setHasPhotons(bool iHasPhotons) { hasPhotons_=iHasPhotons;}
 
   void setInput(const std::vector<mvaMEtUtilities::leptonInfo>&,
 		const std::vector<mvaMEtUtilities::JetInfo>&,
@@ -80,6 +82,7 @@ class PFMETAlgorithmMVA
   int    mvaType_;
   bool   is42_;
   bool   isOld42_;
+  bool   hasPhotons_;
   double dZcut_;
 
   Float_t pfSumEt_;
