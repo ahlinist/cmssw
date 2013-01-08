@@ -132,7 +132,8 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
 
   // get leptons
   // (excluded from sum over PFCandidates when computing hadronic recoil)
-  int lId  = 0;
+  int  lId         = 0;
+  bool lHasPhotons = false;
   std::vector<mvaMEtUtilities::leptonInfo> leptonInfo;
   for ( vInputTag::const_iterator srcLeptons_i = srcLeptons_.begin();
 	srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
@@ -167,6 +168,7 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
       pLeptonInfo.p4_          = lepton1->p4();
       pLeptonInfo.chargedFrac_ = chargedFrac(&(*lepton1),*pfCandidates,hardScatterVertex);
       leptonInfo.push_back(pLeptonInfo); 
+      if(lepton1->isPhoton()) lHasPhotons = true;
     }
     lId++;
   }
@@ -189,6 +191,7 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
 
   // compute MVA based MET and estimate of its uncertainty
   mvaMEtAlgo_.setInput(leptonInfo, jetInfo, pfCandidateInfo, vertexInfo);
+  mvaMEtAlgo_.setHasPhotons(lHasPhotons);
   mvaMEtAlgo_.evaluateMVA();
   pfMEt.setP4(mvaMEtAlgo_.getMEt());
   pfMEt.setSignificanceMatrix(mvaMEtAlgo_.getMEtCov());
