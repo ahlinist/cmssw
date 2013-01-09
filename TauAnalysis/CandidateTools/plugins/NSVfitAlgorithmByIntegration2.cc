@@ -38,7 +38,7 @@ namespace
     {
       double nll = algorithm_->nll(x, 0);
       double retVal = TMath::Exp(-nll);
-      //static long callCounter = 0;
+      static long callCounter = 0;
       //if ( (callCounter % 10000) == 0 ) {
       //  std::cout << "<Integrand> (call = " << callCounter << "):" << std::endl;
       //  unsigned numDimensions = NDim();
@@ -109,11 +109,19 @@ namespace
     {
       const NSVfitResonanceHypothesis* resonance = algorithm_->currentEventHypothesis()->resonance(0);
       assert(resonance);
-      if      ( variable_ == kPt   ) return resonance->p4_fitted().pt();
-      else if ( variable_ == kEta  ) return resonance->p4_fitted().eta();
-      else if ( variable_ == kPhi  ) return resonance->p4_fitted().phi();
-      else if ( variable_ == kMass ) return resonance->p4_fitted().mass();
+      double retVal = 0.;
+      if      ( variable_ == kPt   ) retVal = resonance->p4_fitted().pt();
+      else if ( variable_ == kEta  ) retVal = resonance->p4_fitted().eta();
+      else if ( variable_ == kPhi  ) retVal = resonance->p4_fitted().phi();
+      else if ( variable_ == kMass ) retVal = resonance->p4_fitted().mass();
       else assert(0);
+      static long callCounter = 0;
+      //std::cout << "<AuxResonancePtEtaPhiMassValue> (call = " << callCounter << "):" << std::endl;
+      //std::cout << " Pt = " << resonance->p4_fitted().pt() << "," 
+      //	  << " eta = " << resonance->p4_fitted().eta() << ","
+      //	  << " phi = " << resonance->p4_fitted().phi() << ","
+      //	  << " mass = " << resonance->p4_fitted().mass() << std::endl;
+      return retVal;
     } 
 
     NSVfitAlgorithmByIntegration2* algorithm_;
@@ -382,7 +390,7 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
   }
   if ( verbosity_ >= 2 ) std::cout << "startPosition = " << format_vdouble(startPosition_) << std::endl;
 
-  // CV: transform startPosition into interval ]-1..+1[
+  // CV: transform startPosition into interval ]0..1[
   //     expected by MarkovChainIntegrator class
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     double x_i = startPosition_[iDimension];
@@ -520,10 +528,10 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
       extractHistogramProperties(
         histogramPt->second, histogramPt_density,
         ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
-      if ( verbosity_ >= 1 ) {	
-	std::cout << "--> Pt = " << ptMaximum << std::endl;
-	std::cout << " (mean = " << ptMean << ", median = " << ptQuantile050 << ", max = " << ptMaximum << ")" << std::endl;
-      }
+      //if ( verbosity_ >= 1 ) {	
+      //  std::cout << "--> Pt = " << ptMaximum << std::endl;
+      //  std::cout << " (mean = " << ptMean << ", median = " << ptQuantile050 << ", max = " << ptMaximum << ")" << std::endl;
+      //}
       double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
       extractHistogramProperties(
         histogramEta->second, histogramEta_density,
@@ -543,6 +551,15 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
 
 void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase* resonance, const TH1* histMassResult) const
 {
+  //if ( verbosity_ ) {
+  //  std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
+  //  TAxis* xAxis = histMassResult->GetXaxis();
+  //  for ( int iBin = 1; iBin <= histMassResult->GetNbinsX(); ++iBin ) {
+  //    std::cout << "bin #" << iBin << " (x = " << xAxis->GetBinLowEdge(iBin) << ".." << xAxis->GetBinUpEdge(iBin) << ", width = " << histMassResult->GetBinWidth(iBin) << "):"
+  //		  << " " << histMassResult->GetBinContent(iBin) << " +/- " << histMassResult->GetBinError(iBin) << std::endl;
+  //  }
+  //}
+
   TH1* histMassResult_density = compHistogramDensity(histMassResult);
   if ( histMassResult_density->Integral() > 0. ) {
     double massMaximum, massMaximum_interpol, massMean, massQuantile016, massQuantile050, massQuantile084;
@@ -563,7 +580,7 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     if ( verbosity_ >= 1 ) {
       std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
       std::cout << " pluginName = " << pluginName_ << std::endl;
-      std::cout << "--> mass = " << resonance->mass_ << std::endl;
+      std::cout << "--> mass = " << resonance->mass_ << " + " << resonance->massErrUp_ << " - " << resonance->massErrDown_ << std::endl;
       std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
     }
   } else {
@@ -614,6 +631,8 @@ double NSVfitAlgorithmByIntegration2::nll(const double* x, const double* param) 
 
 void NSVfitAlgorithmByIntegration2::fillProbHistograms(const double* x)
 {
+  //std::cout << "<NSVfitAlgorithmByIntegration2::fillProbHistograms>:" << std::endl;
+
 //--- fill histograms of fitParameter distributions
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     probHistFitParameter_[iDimension]->Fill(x[iDimension]);
@@ -626,6 +645,10 @@ void NSVfitAlgorithmByIntegration2::fillProbHistograms(const double* x)
     const NSVfitResonanceHypothesis* resonance = currentEventHypothesis_->resonance(resonanceName);
     assert(resonance);
     reco::Candidate::LorentzVector resonanceP4_fitted = resonance->p4_fitted();
+    //std::cout << " Pt = " << resonanceP4_fitted.pt() << ","
+    //	        << " eta = " << resonanceP4_fitted.eta() << ","
+    //	        << " phi = " << resonanceP4_fitted.phi() << ","
+    //	        << " mass = " << resonanceP4_fitted.mass() << std::endl;
     TH1* histogramPt = probHistResonancePt_[resonanceName];
     assert(histogramPt);
     histogramPt->Fill(resonanceP4_fitted.pt());
