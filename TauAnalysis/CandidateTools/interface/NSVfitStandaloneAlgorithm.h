@@ -126,6 +126,11 @@ namespace NSVfitStandalone
       map_x(x, nDim_, x_mapped_);
       NSVfitStandaloneLikelihood::gNSVfitStandaloneLikelihood->results(fittedTauLeptons_, x_mapped_);
       fittedDiTauSystem_ = fittedTauLeptons_[0] + fittedTauLeptons_[1];
+      //std::cout << "<MCPtEtaPhiMassAdapter::DoEval>" << std::endl;
+      //std::cout << " Pt = " << fittedDiTauSystem_.pt() << "," 
+      //	  << " eta = " << fittedDiTauSystem_.eta() << "," 
+      //	  << " phi = " << fittedDiTauSystem_.phi() << ","
+      //	  << " mass = " << fittedDiTauSystem_.mass() << std::endl;
       histogramPt_->Fill(fittedDiTauSystem_.pt());
       histogramEta_->Fill(fittedDiTauSystem_.eta());
       histogramPhi_->Fill(fittedDiTauSystem_.phi());
@@ -138,6 +143,11 @@ namespace NSVfitStandalone
 	double binContent = histogram->GetBinContent(iBin);
 	double binError = histogram->GetBinError(iBin);
 	double binWidth = histogram->GetBinWidth(iBin);
+	//if ( histogram == histogramMass_ ) {
+	//  TAxis* xAxis = histogram->GetXaxis();
+	//  std::cout << "bin #" << iBin << " (x = " << xAxis->GetBinLowEdge(iBin) << ".." << xAxis->GetBinUpEdge(iBin) << ", width = " << binWidth << "):"
+	//	      << " " << binContent << " +/- " << binError << std::endl;
+	//}
 	assert(binWidth > 0.);
 	histogram_density->SetBinContent(iBin, binContent/binWidth);
 	histogram_density->SetBinError(iBin, binError/binWidth);

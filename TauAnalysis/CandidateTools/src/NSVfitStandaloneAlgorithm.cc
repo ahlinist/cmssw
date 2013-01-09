@@ -31,6 +31,10 @@ namespace NSVfitStandalone
       x_mapped[kMaxFitParams + kMNuNu] = x[4];
       x_mapped[kMaxFitParams + kPhi]   = x[5];
     } else assert(0);
+    //std::cout << "<map_x>:" << std::endl;
+    //for ( int i = 0; i < 6; ++i ) {
+    //  std::cout << " x_mapped[" << i << "] = " << x_mapped[i] << std::endl;
+    //}
   }
 }
 
@@ -44,6 +48,7 @@ NSVfitStandaloneAlgorithm::NSVfitStandaloneAlgorithm(std::vector<NSVfitStandalon
     integrator2_nDim_(0),
     isInitialized2_(false),
     maxObjFunctionCalls2_(100000)
+    //maxObjFunctionCalls2_(1000)
 { 
   // instantiate minuit, the arguments might turn into configurables once
   minimizer_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
@@ -305,6 +310,7 @@ NSVfitStandaloneAlgorithm::integrate2()
     cfg.addParameter<double>("nu", 0.71);
     cfg.addParameter<std::string>("name", "NSVfitStandaloneAlgorithm");
     cfg.addParameter<int>("verbosity", -1);
+    //cfg.addParameter<int>("verbosity", 2);
     integrator2_ = new MarkovChainIntegrator(cfg);
     mcObjectiveFunctionAdapter_ = new MCObjectiveFunctionAdapter();
     integrator2_->setIntegrand(*mcObjectiveFunctionAdapter_);
@@ -350,9 +356,12 @@ NSVfitStandaloneAlgorithm::integrate2()
   double x05[5] = { 0.5, 0.8, 0.0, 0.5, 0.0 };
   double xl5[5] = { 0.0, 0.0, -pi, 0.0, -pi };
   double xu5[5] = { 1.0, SVfit_namespace::tauLeptonMass, pi, 1.0, pi };
+  xu5[1] = SVfit_namespace::tauLeptonMass - TMath::Min(nll_->measuredTauLeptons()[0].mass(), 1.6);
   double x06[6] = { 0.5, 0.8, 0.0, 0.5, 0.8, 0.0 };
   double xl6[6] = { 0.0, 0.0, -pi, 0.0, 0.0, -pi };
   double xu6[6] = { 1.0, SVfit_namespace::tauLeptonMass, pi, 1.0, SVfit_namespace::tauLeptonMass, pi };
+  xu6[1] = SVfit_namespace::tauLeptonMass - TMath::Min(nll_->measuredTauLeptons()[0].mass(), 1.6);
+  xu6[4] = SVfit_namespace::tauLeptonMass - TMath::Min(nll_->measuredTauLeptons()[1].mass(), 1.6);
   std::vector<double> x0(nDim);
   std::vector<double> xl(nDim);
   std::vector<double> xu(nDim);
