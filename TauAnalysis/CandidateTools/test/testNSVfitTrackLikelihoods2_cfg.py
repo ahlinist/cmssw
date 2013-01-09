@@ -17,7 +17,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(2000)
+    input = cms.untracked.int32(1000)
 )
 
 process.source = cms.Source("PoolSource",
@@ -57,13 +57,24 @@ massPoint = '125'
 #__channel = '#channel#'
 #__massPoint = '#massPoint#'
 #
+if sample_type == 'Z':
+    massPoint = '90'
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # set input files
-inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/user/v/veelken/CMSSW_5_2_x/skims/'
-inputFile_regex = \
-  r"[a-zA-Z0-9_/:.]*genTauLeptonsPairAccSkim_(ggHiggs|ggPhi|vbfHiggs)%s_%s_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (massPoint, channel)
+inputFilePath = None
+inputFile_regex = None
+if sample_type == 'Z':
+    inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/user/veelken/CMSSW_5_2_x/skims/'
+    inputFile_regex = \
+      r"[a-zA-Z0-9_/:.]*genTauLeptonsPairAccSkim_ZplusJets_%s_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % channel
+elif sample_type == 'Higgs':
+    inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/user/v/veelken/CMSSW_5_2_x/skims/'
+    inputFile_regex = \
+      r"[a-zA-Z0-9_/:.]*genTauLeptonsPairAccSkim_(ggHiggs|ggPhi|vbfHiggs)%s_%s_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (massPoint, channel)
+else:
+    raise ValueError("Invalid sample type = %s !!" % sample_type)
 
 # check if name of inputFile matches regular expression
 inputFileNames = []
@@ -797,14 +808,26 @@ for option in [ 1, 2, 3, 4, 5, 6, 7, 8 ]:
 # CV: run "stand-alone" version of SVfit for comparison
 
 process.nSVfitStandaloneAnalyzer = cms.EDAnalyzer("NSVfitStandaloneTestAnalyzer",
-    met = cms.InputTag('pfType1CorrectedMet'),
-    leps1 = cms.InputTag(srcRecLeg1),
-    leps2 = cms.InputTag(srcRecLeg2),
-    type1 = cms.string(nSVfitStandAloneTypeLeg1),
-    type2 = cms.string(nSVfitStandAloneTypeLeg2),
-    metSignificance = process.nSVfitEventLikelihoodMEt2,                                      
-    dqmDirectory = cms.string("nSVfitStandaloneAnalyzer")
-)                                                  
+    doGenPlots = cms.bool(True),                                                     
+    srcGenTauPairs = cms.InputTag(genTauPairs),
+    srcGenLeg1 = cms.InputTag(srcGenLeg1),
+    srcGenLeg2 = cms.InputTag(srcGenLeg2),
+    srcGenMEt = cms.InputTag('genMetFromGenParticles'),
+    doRecPlots = cms.bool(True),                                                       
+    srcRecLeg1 = cms.InputTag(srcRecLeg1),
+    srcRecLeg2 = cms.InputTag(srcRecLeg2),                                              
+    srcRecMEt = cms.InputTag('pfType1CorrectedMet'),                                              
+    srcRecMEtCov = cms.InputTag('pfMEtSignCovMatrix'),
+    srcWeights = cms.VInputTag(),
+    typeLeg1 = cms.string(nSVfitStandAloneTypeLeg1),
+    typeLeg2 = cms.string(nSVfitStandAloneTypeLeg2),
+    mode = cms.string("fit"),                                                     
+    redoMEtCov = cms.bool(False),
+    paramsMEtCov = process.nSVfitEventLikelihoodMEt2,
+    fillHistograms = cms.bool(True),                                                     
+    dqmDirectory = cms.string("nSVfitStandaloneAnalyzer"),
+    verbosity = cms.int32(0)                                                 
+)                                          
 process.testSVfitTrackLikelihoodProductionSequence += process.nSVfitStandaloneAnalyzer
 #--------------------------------------------------------------------------------
 
@@ -1004,7 +1027,7 @@ for option1_vs_2 in [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 5, 6 ], [ 5, 7 ], [ 5, 8 ]
 process.DQMStore = cms.Service("DQMStore")
 
 process.savePlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string("/data1/veelken/tmp/svFitStudies/testNSVfitTrackLikelihoods2_%s_%s_%s_2012Dec03.root" % (sample_type, channel, massPoint))
+    outputFileName = cms.string("/data1/veelken/tmp/svFitStudies/testNSVfitTrackLikelihoods2_%s_%s_%s_2013Jan03.root" % (sample_type, channel, massPoint))
 )
 
 process.q = cms.EndPath(process.savePlots)
