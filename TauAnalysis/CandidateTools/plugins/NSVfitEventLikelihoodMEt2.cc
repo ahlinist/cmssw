@@ -171,9 +171,8 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
     nll = std::numeric_limits<float>::max();
   }
 
-  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
-
   double prob = TMath::Exp(-power_*nll);
+  if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
 
   return prob;
 }
