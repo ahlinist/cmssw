@@ -265,6 +265,11 @@ namespace SVfit_namespace
     return (p(0)*p(0) + p(1)*p(1));
   }
 
+  double phi(const AlgebraicVector3& p)
+  {
+    return TMath::ATan2(p(1), p(0));
+  }
+
   AlgebraicVector3 normalize(const AlgebraicVector3& p)
   {
     double p_mag2 = norm2(p);
