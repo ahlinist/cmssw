@@ -219,7 +219,7 @@ NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& evt, const edm::EventSet
   measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(typeLeg1_ == std::string("lep") ? NSVfitStandalone::kLepDecay : NSVfitStandalone::kHadDecay, recLeg1P4));
   measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(typeLeg2_ == std::string("lep") ? NSVfitStandalone::kLepDecay : NSVfitStandalone::kHadDecay, recLeg2P4));
       
-  NSVfitStandaloneAlgorithm algo(measuredTauLeptons, recMEtP4.Vect(), recMEtCov, 0); 
+  NSVfitStandaloneAlgorithm algo(measuredTauLeptons, recMEtP4.Vect(), recMEtCov, verbosity_); 
   timer_->Start(false);
   if ( mode_ == kFit ) {
     algo.addLogM(true);
