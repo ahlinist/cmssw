@@ -31,8 +31,11 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
     monitorFile_(0),
     monitorTree_(0)
 {
+  //std::cout << "<MarkovChainIntegrator::MarkovChainIntegrator>:" << std::endl;
+
   if ( cfg.exists("name") ) 
     name_ = cfg.getParameter<std::string>("name");
+  //std::cout << " name = " << name_ << std::endl;
 
   std::string moveMode_string = cfg.getParameter<std::string>("mode");
   if      ( moveMode_string == "Metropolis" ) moveMode_ = kMetropolis;
@@ -106,6 +109,7 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
 
   verbosity_ = ( cfg.exists("verbosity") ) ?
     cfg.getParameter<int>("verbosity") : 0;
+  //std::cout << " verbosity = " << verbosity_ << std::endl;
 }
 
 MarkovChainIntegrator::~MarkovChainIntegrator()
@@ -191,6 +195,7 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 {
   if ( verbosity_ >= 2 ) {
     std::cout << "<MarkovChainIntegrator::integrate>:" << std::endl;
+    std::cout << " name = " << name_ << std::endl;
     std::cout << " numDimensions = " << numDimensions_ << std::endl;
   }
 
@@ -414,10 +419,10 @@ void MarkovChainIntegrator::initializeStartPosition_and_Momentum()
     }
   }
 
-  //if ( verbosity_ >= 1 ) {
-  //  std::cout << "<MarkovChainIntegrator::initializeStartPosition_and_Momentum>:" << std::endl;
-  //  std::cout << " q = " << format_vdouble(q_) << std::endl;
-  //}
+  if ( verbosity_ >= 1 ) {
+    std::cout << "<MarkovChainIntegrator::initializeStartPosition_and_Momentum>:" << std::endl;
+    std::cout << " q = " << format_vdouble(q_) << std::endl;
+  }
 }
 
 void MarkovChainIntegrator::sampleSphericallyRandom()
@@ -619,7 +624,8 @@ void MarkovChainIntegrator::updateX(const std::vector<double>& q)
     x_[iDimension] = (1. - q_i)*xMin_[iDimension] + q_i*xMax_[iDimension];
     //std::cout << " x[" << iDimension << "] = " << x_[iDimension] << " ";
     //std::cout << "(xMin[" << iDimension << "] = " << xMin_[iDimension] << ","
-    //          << " xMax[" << iDimension << "] = " << xMax_[iDimension] << ")" << std::endl;
+    //          << " xMax[" << iDimension << "] = " << xMax_[iDimension] << ")";
+    //std::cout << std::endl;
   }
 }
 
