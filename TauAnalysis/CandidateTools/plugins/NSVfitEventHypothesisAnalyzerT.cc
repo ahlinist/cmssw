@@ -226,6 +226,7 @@ void NSVfitEventHypothesisAnalyzerT<T>::analyze(const edm::Event& evt, const edm
 	  svFitResonanceHypothesis, svFitEventHypothesis->nll(), 
 	  svFitDaughter1P4, daughter1DecayMode, svFitDaughter2P4, daughter2DecayMode, 
 	  recMEtP4,	  
+	  svFitEventHypothesis->eventVertexIsValid(), svFitEventHypothesis->reconstructedEventVertexPos(),
 	  evtWeight);
       }
     }
