@@ -9,7 +9,7 @@ import TauAnalysis.Configuration.tools.castor as castor
 from TauAnalysis.Skimming.EventContent_cff import *
 
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
@@ -17,7 +17,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(1000)
 )
 
 process.source = cms.Source("PoolSource",
@@ -437,6 +437,7 @@ process.nSVfitTauToElecBuilder.fixToGenVisP4 = cms.bool(False)
 process.nSVfitTauToElecBuilder.initializeToGen = cms.bool(False)
 #process.nSVfitTauToElecBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToElecBuilder.dRmatch = cms.double(0.3)
+process.nSVfitTauToElecBuilder.verbosity = cms.int32(0)
 
 process.nSVfitTauToMuBuilder.fixToGenVisEnFracX = cms.bool(False)
 process.nSVfitTauToMuBuilder.fixToGenPhiLab = cms.bool(False)
@@ -446,6 +447,7 @@ process.nSVfitTauToMuBuilder.fixToGenVisP4 = cms.bool(False)
 process.nSVfitTauToMuBuilder.initializeToGen = cms.bool(False)
 #process.nSVfitTauToMuBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToMuBuilder.dRmatch = cms.double(0.3)
+process.nSVfitTauToMuBuilder.verbosity = cms.int32(0)
 
 process.nSVfitTauToHadBuilder.fixToGenVisEnFracX = cms.bool(False)
 process.nSVfitTauToHadBuilder.fixToGenPhiLab = cms.bool(False)
@@ -454,6 +456,7 @@ process.nSVfitTauToHadBuilder.fixToGenVisP4 = cms.bool(False)
 process.nSVfitTauToHadBuilder.initializeToGen = cms.bool(False)
 #process.nSVfitTauToHadBuilder.srcGenTaus = cms.InputTag('genParticles')
 process.nSVfitTauToHadBuilder.dRmatch = cms.double(0.3)
+process.nSVfitTauToHadBuilder.verbosity = cms.int32(0)
 
 # CV: fix event vertex position to Monte Carlo truth value
 process.nSVfitEventBuilder.fixToGenVertex = cms.bool(False)
@@ -524,10 +527,12 @@ nSVfitProducerModule = process.nSVfitProducerByIntegration.clone()
 nSVfitProducerModule.config.event.resonances.A.daughters.leg1.src = cms.InputTag(srcRecLeg1)
 nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLikelihoodLeg1_kinematics)
 nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].verbosity = cms.int32(0)
 nSVfitProducerModule.config.event.resonances.A.daughters.leg1.builder = nSVfitBuilderLeg1
 nSVfitProducerModule.config.event.resonances.A.daughters.leg2.src = cms.InputTag(srcRecLeg2)
 nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLikelihoodLeg2_kinematics)
 nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].verbosity = cms.int32(0)
 nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = nSVfitBuilderLeg2
 nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
 nSVfitProducerModule.config.event.srcMEt = cms.InputTag('pfType1CorrectedMet')
@@ -584,6 +589,7 @@ for numCalls in [ 100 ]:
         nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
         nSVfitProducerModule.config.event.srcMEt = cms.InputTag(metAlgorithms[metAlgorithmName]['srcMEt'])
         nSVfitProducerModule.config.event.likelihoodFunctions[0].srcMEtCovMatrix = cms.InputTag(metAlgorithms[metAlgorithmName]['srcMEtCov'])
+        nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
         nSVfitProducerModule.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexByLeptonMatch')
         nSVfitProducerModule.config.event.builder = process.nSVfitEventBuilder
         nSVfitProducerModule.algorithm.markovChainOptions.initMode = cms.string("none")
@@ -600,8 +606,7 @@ for numCalls in [ 100 ]:
         nSVfitProducerModule.algorithm.monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/')
         nSVfitProducerModule.algorithm.max_or_median = cms.string("max")
         nSVfitProducerModule.algorithm.pluginName = cms.string("nSVfitProducerByIntegration2WOtracks%sMax%ikCalls" % (metAlgorithmName, numCalls))
-        ##nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
-        nSVfitProducerModule.algorithm.verbosity = cms.int32(0)
+        nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
         nSVfitProducerModuleName = "nSVfitProducerByIntegration2WOtracks%sMax%ikCalls" % (metAlgorithmName, numCalls)
         svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"
 
@@ -634,18 +639,19 @@ process.nSVfitStandaloneAnalyzerFit = cms.EDAnalyzer("NSVfitStandaloneTestAnalyz
     paramsMEtCov = process.nSVfitEventLikelihoodMEt2,
     fillHistograms = cms.bool(True),                                                     
     dqmDirectory = cms.string("nSVfitStandaloneAnalyzerFit"),
-    ##verbosity = cms.int32(1)
     verbosity = cms.int32(0)                                                 
 )                                                  
 process.testSVfitTrackLikelihoodProductionSequence += process.nSVfitStandaloneAnalyzerFit
 process.nSVfitStandaloneAnalyzerInt = process.nSVfitStandaloneAnalyzerFit.clone(
     mode = cms.string("int"),
-    dqmDirectory = cms.string("nSVfitStandaloneAnalyzerInt")
+    dqmDirectory = cms.string("nSVfitStandaloneAnalyzerInt"),
+    verbosity = cms.int32(0)
 )
 process.testSVfitTrackLikelihoodProductionSequence += process.nSVfitStandaloneAnalyzerInt
 process.nSVfitStandaloneAnalyzerInt2 = process.nSVfitStandaloneAnalyzerFit.clone(
     mode = cms.string("int2"),
-    dqmDirectory = cms.string("nSVfitStandaloneAnalyzerInt2")
+    dqmDirectory = cms.string("nSVfitStandaloneAnalyzerInt2"),
+    verbosity = cms.int32(1)
 )
 process.testSVfitTrackLikelihoodProductionSequence += process.nSVfitStandaloneAnalyzerInt2
 #--------------------------------------------------------------------------------
