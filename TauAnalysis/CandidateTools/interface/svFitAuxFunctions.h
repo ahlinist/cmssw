@@ -134,6 +134,7 @@ namespace SVfit_namespace
   AlgebraicVector3 compCrossProduct(const AlgebraicVector3&, const AlgebraicVector3&);
   double norm2(const AlgebraicVector3&);
   double norm2(const AlgebraicVector2&);
+  double phi(const AlgebraicVector3&);
   AlgebraicVector3 normalize(const AlgebraicVector3&);
   AlgebraicVector3 compDecayPosition_helix(const AlgebraicVector3&, double, const reco::Candidate::LorentzVector&, double);
   AlgebraicVector3 compDecayPosition_line(const AlgebraicVector3&, double, const AlgebraicVector3&);
