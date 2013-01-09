@@ -38,7 +38,7 @@ namespace
     {
       double nll = algorithm_->nll(x, 0);
       double retVal = TMath::Exp(-nll);
-      static long callCounter = 0;
+      //static long callCounter = 0;
       //if ( (callCounter % 10000) == 0 ) {
       //  std::cout << "<Integrand> (call = " << callCounter << "):" << std::endl;
       //  unsigned numDimensions = NDim();
