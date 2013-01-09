@@ -380,7 +380,8 @@ tauLeptonMass);
     double labframeTauMom      = motherMomentumLabFrame(visMass, restframeVisMom, restframeDecayAngle, labframeVisMom, tauLeptonMass);
     Vector labframeTauDir      = motherDirection(measuredTauLeptons_[idx].direction(), labframeDecayAngle, labframePhi).unit();
     // tau lepton four vector in labframe
-    fittedTauLeptons.push_back(motherP4(labframeTauDir, labframeTauMom, tauLeptonMass));
+    if ( idx < fittedTauLeptons.size() ) fittedTauLeptons[idx] = motherP4(labframeTauDir, labframeTauMom, tauLeptonMass);
+    else fittedTauLeptons.push_back(motherP4(labframeTauDir, labframeTauMom, tauLeptonMass));
   }
   return;
 }
