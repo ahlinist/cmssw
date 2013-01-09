@@ -10,6 +10,12 @@ using namespace SVfit_namespace;
 double 
 probMET(double dMETX, double dMETY, double covDet, const TMatrixD& covInv, double power, bool verbose)
 {
+  //std::cout << "<probMET>:" << std::endl;
+  //std::cout << " dMETX = " << dMETX << std::endl;
+  //std::cout << " dMETY = " << dMETY << std::endl;
+  //std::cout << " covDet = " << covDet << std::endl;
+  //std::cout << " covInv:" << std::endl;
+  //covInv.Print();
   double nll = 0.;
   if( covDet != 0. ){
     nll = TMath::Log(2*TMath::Pi()) + 0.5*TMath::Log(TMath::Abs(covDet)) 
@@ -18,6 +24,7 @@ probMET(double dMETX, double dMETY, double covDet, const TMatrixD& covInv, doubl
     nll = std::numeric_limits<float>::max();
   }
   double prob = TMath::Exp(-power*nll);
+  //std::cout << "--> prob = " << prob << std::endl;
   if ( verbose ) {
     std::cout << " >> [single likelihhod term probMET] prob = " << prob << " (power = " << power << ")" << std::endl;
   }
@@ -27,6 +34,12 @@ probMET(double dMETX, double dMETY, double covDet, const TMatrixD& covInv, doubl
 double 
 probTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass, double x, bool applySinTheta, bool verbose)
 {
+  //std::cout << "<probTauToLepPhaseSpace>:" << std::endl;
+  //std::cout << " decayAngle = " << decayAngle << std::endl;
+  //std::cout << " nunuMass = " << nunuMass << std::endl;
+  //std::cout << " visMass = " << visMass << std::endl;
+  //std::cout << " x = " << x << std::endl;
+  //std::cout << " applySinTheta = " << applySinTheta << std::endl;
   double nuMass2 = nunuMass*nunuMass;
   // protect against rounding errors that may lead to negative masses
   if ( nunuMass < 0. ) nunuMass = 0.; 
@@ -40,6 +53,7 @@ probTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass, doubl
     prob /= (1. + 1.e+6*TMath::Power(nunuMass - nuMass_limit, 2));
   }
   if ( applySinTheta ) prob *= (0.5*TMath::Sin(decayAngle));
+  //std::cout << "--> prob = " << prob << std::endl;
   if ( verbose ) {
     std::cout << " >> [single likelihood term probTauToLep] prob = " << prob << std::endl;
   }
@@ -49,6 +63,12 @@ probTauToLepPhaseSpace(double decayAngle, double nunuMass, double visMass, doubl
 double 
 probTauToHadPhaseSpace(double decayAngle, double nunuMass, double visMass, double x, bool applySinTheta, bool verbose)
 {
+  //std::cout << "<probTauToHadPhaseSpace>:" << std::endl;
+  //std::cout << " decayAngle = " << decayAngle << std::endl;
+  //std::cout << " nunuMass = " << nunuMass << std::endl;
+  //std::cout << " visMass = " << visMass << std::endl;
+  //std::cout << " x = " << x << std::endl;
+  //std::cout << " applySinTheta = " << applySinTheta << std::endl;
   double Pvis_rf = SVfit_namespace::pVisRestFrame(visMass, nunuMass, SVfit_namespace::tauLeptonMass);
   double visMass2 = visMass*visMass;
   double prob = tauLeptonMass/(2.*Pvis_rf);
@@ -60,6 +80,7 @@ probTauToHadPhaseSpace(double decayAngle, double nunuMass, double visMass, doubl
     prob /= (1. + 1.e+6*TMath::Power(x - visEnFracX_limit, 2));
   }
   if ( applySinTheta ) prob *= (0.5*TMath::Sin(decayAngle));
+  //std::cout << "--> prob = " << prob << std::endl;
   if ( verbose ) {
     std::cout << " >> [single likelihood term probTauToHad] prob = " << prob << std::endl;
   }
