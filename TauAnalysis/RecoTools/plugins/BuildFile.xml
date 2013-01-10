@@ -30,7 +30,7 @@
   <use   name="CommonTools/UtilAlgos"/>
   <use   name="CondFormats/JetMETObjects"/>
   <use   name="JetMETCorrections/Objects"/>
-  <use   name="JetMETCorrections/Type1MET"/>
+  <use   name="JetMETCorrections/METPUSubtraction"/>
   <use   name="SimGeneral/HepPDTRecord"/>
   <use   name="TrackingTools/TransientTrack"/>
   <use   name="TrackingTools/Records"/>
