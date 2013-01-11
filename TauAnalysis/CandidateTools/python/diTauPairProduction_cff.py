@@ -279,10 +279,11 @@ selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_int = cms.
 selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_int.config = \
   selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_fit.config
 selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_int.algorithm = cms.PSet(
-    pluginName = cms.string("nSVfitAlgorithmByIntegration"),
-    pluginType = cms.string("NSVfitAlgorithmByIntegration"),
-    parameters   = nSVfitProducerByIntegration.algorithm.parameters,
-    vegasOptions = nSVfitProducerByIntegration.algorithm.vegasOptions
+    pluginName    = cms.string("nSVfitAlgorithmByIntegration"),
+    pluginType    = cms.string("NSVfitAlgorithmByIntegration"),
+    parameters    = nSVfitProducerByIntegration.algorithm.parameters,
+    vegasOptions  = nSVfitProducerByIntegration.algorithm.vegasOptions,
+    max_or_median = cms.string("max")
 )
 #--------------------------------------------------------------------------------
 
