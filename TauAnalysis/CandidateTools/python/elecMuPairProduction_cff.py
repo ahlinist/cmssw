@@ -70,10 +70,11 @@ allElecMuPairs.nSVfit.psKine_MEt_int.config.event.resonances.A.daughters.leg2 = 
 )
 allElecMuPairs.nSVfit.psKine_MEt_int.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
 allElecMuPairs.nSVfit.psKine_MEt_int.algorithm = cms.PSet(
-    pluginName = cms.string("nSVfitAlgorithmByIntegration"),
-    pluginType = cms.string("NSVfitAlgorithmByIntegration"),
-    parameters   = nSVfitProducerByIntegration.algorithm.parameters,
-    vegasOptions = nSVfitProducerByIntegration.algorithm.vegasOptions
+    pluginName    = cms.string("nSVfitAlgorithmByIntegration"),
+    pluginType    = cms.string("NSVfitAlgorithmByIntegration"),
+    parameters    = nSVfitProducerByIntegration.algorithm.parameters,
+    vegasOptions  = nSVfitProducerByIntegration.algorithm.vegasOptions,
+    max_or_median = cms.string("max")
 )
 #--------------------------------------------------------------------------------
 
