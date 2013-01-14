@@ -2,6 +2,7 @@
 #define AnalysisDataFormats_TauAnalysis_NSVfitResonanceHypothesisSummary_h
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisSummary.h"
 
 #include <string>
 
@@ -59,12 +60,19 @@ class NSVfitResonanceHypothesisSummary
     if ( pt_isValid_   ) stream << " Pt   = " << pt_   << " + " << ptErrUp_   << " - " << ptErrDown_   << std::endl;
     if ( eta_isValid_  ) stream << " eta  = " << eta_  << " + " << etaErrUp_  << " - " << etaErrDown_  << std::endl;
     if ( phi_isValid_  ) stream << " phi  = " << phi_  << " + " << phiErrUp_  << " - " << phiErrDown_  << std::endl;
+    for ( edm::OwnVector<NSVfitSingleParticleHypothesisSummary>::const_iterator daughter = daughters_.begin();
+          daughter != daughters_.end(); ++daughter ) {
+      daughter->print(stream);
+    }
   }
 
  protected:
 
   /// "human-readable" label for print-out
   std::string name_;
+
+  /// fit hypotheses for daughter particles
+  edm::OwnVector<NSVfitSingleParticleHypothesisSummary> daughters_;
 
   /// "best fit" reconstructed mass,
   /// -1 sigma and +1 sigma limits on reconstructed mass

@@ -8,13 +8,13 @@ import re
 import TauAnalysis.Configuration.tools.castor as castor
 from TauAnalysis.Skimming.EventContent_cff import *
 
+process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
-process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load('Configuration/Geometry/GeometryIdeal_cff')
+process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START52_V11C::All')
+process.GlobalTag.globaltag = cms.string('START53_V15::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
+        'file:/afs/cern.ch/user/v/veelken/filtered.root'
     ),
     dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
     inputCommands=cms.untracked.vstring(
@@ -88,7 +88,7 @@ for file in files:
         inputFileNames.append(file)
 #print "inputFileNames = %s" % inputFileNames 
 
-process.source.fileNames = cms.untracked.vstring(inputFileNames)
+##process.source.fileNames = cms.untracked.vstring(inputFileNames)
 #--------------------------------------------------------------------------------
 
 process.testSVfitTrackLikelihoodProductionSequence = cms.Sequence()
@@ -98,7 +98,7 @@ process.testSVfitTrackLikelihoodProductionSequence = cms.Sequence()
 # matching genuine tau -> e, tau -> mu and tau -> hadronic decays on generator level
 
 process.load("RecoTauTag/Configuration/RecoPFTauTag_cff")
-process.testSVfitTrackLikelihoodProductionSequence += process.PFTau
+process.testSVfitTrackLikelihoodProductionSequence += process.recoTauClassicHPSSequence
 
 process.load("PhysicsTools/JetMCAlgos/TauGenJets_cfi")
 process.testSVfitTrackLikelihoodProductionSequence += process.tauGenJets

@@ -1,5 +1,13 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 
+NSVfitResonanceHypothesis::NSVfitResonanceHypothesis()
+  : eventHyp_(NULL),
+    prod_angle_rf_(0.)
+{
+  polHandedness_.push_back(kPolUndefined);
+  numPolStates_ = polHandedness_.size();
+}
+
 NSVfitResonanceHypothesis::NSVfitResonanceHypothesis(const NSVfitResonanceHypothesis& bluePrint)
   : NSVfitResonanceHypothesisBase(bluePrint),
     eventHyp_(bluePrint.eventHyp_),

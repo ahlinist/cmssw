@@ -4,6 +4,7 @@
 
 NSVfitResonanceHypothesisSummary::NSVfitResonanceHypothesisSummary(const NSVfitResonanceHypothesisSummary& bluePrint)
   : name_(bluePrint.name_),
+    daughters_(bluePrint.daughters_),
     mass_(bluePrint.mass_),
     massErrUp_(bluePrint.massErrUp_),
     massErrDown_(bluePrint.massErrDown_),
@@ -42,7 +43,10 @@ NSVfitResonanceHypothesisSummary::NSVfitResonanceHypothesisSummary(const NSVfitR
     phi_isValid_(false)
 {
   const NSVfitResonanceHypothesis* bluePrint_nonbase = dynamic_cast<const NSVfitResonanceHypothesis*>(&bluePrint);
-  if ( bluePrint_nonbase ) {
+  if ( bluePrint_nonbase ) {    
+    for ( size_t iDaughter = 0; iDaughter < bluePrint_nonbase->numDaughters(); ++iDaughter ) {
+      daughters_.push_back(NSVfitSingleParticleHypothesisSummary(*bluePrint_nonbase->daughter(iDaughter)));
+    }
     pt_ = bluePrint_nonbase->pt();
     ptErrUp_ = bluePrint_nonbase->ptErrUp();
     ptErrDown_ = bluePrint_nonbase->ptErrDown();
@@ -61,6 +65,7 @@ NSVfitResonanceHypothesisSummary::NSVfitResonanceHypothesisSummary(const NSVfitR
 NSVfitResonanceHypothesisSummary& NSVfitResonanceHypothesisSummary::operator=(const NSVfitResonanceHypothesisSummary& bluePrint)
 {   
   name_ = bluePrint.name_;
+  daughters_ = bluePrint.daughters_;
   mass_ = bluePrint.mass_;
   massErrUp_ = bluePrint.massErrUp_;
   massErrDown_ = bluePrint.massErrDown_;

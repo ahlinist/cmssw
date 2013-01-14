@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.15 $
+ * \version $Revision: 1.16 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.15 2012/09/11 10:05:46 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.16 2012/12/04 14:31:20 veelken Exp $
  *
  */
 
@@ -122,15 +122,21 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     fitParameterReplacementType()
       : gridPoints_(0),
 	resBinning_(0),
-	replaceBy_(0)
+	replaceBy_(0),
+	deltaFuncDerrivative_(0)
     {}
     ~fitParameterReplacementType() 
     {
       delete gridPoints_;
       delete resBinning_;
       delete replaceBy_;
+      delete deltaFuncDerrivative_;
       for ( std::vector<replaceParBase*>::iterator it = parForReplacements_.begin();
 	    it != parForReplacements_.end(); ++it ) {
+	delete (*it);
+      }
+      for ( std::vector<replaceParBase*>::iterator it = parForDeltaFuncDerrivative_.begin();
+	    it != parForDeltaFuncDerrivative_.end(); ++it ) {
 	delete (*it);
       }
     }
