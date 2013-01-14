@@ -136,19 +136,7 @@ NSVfitStandaloneLikelihood::transformint(double* xPrime, const double* x, const 
     xPrime[ idx == 0 ? kVisMass1    : kVisMass2    ] = visMass;
     xPrime[ idx == 0 ? kDecayAngle1 : kDecayAngle2 ] = restframeDecayAngle;
   }
-  /*
-    I believe that the following line contains a sign bug in the official version of SVfit:
-    http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h?revision=1.11&view=markup
-    reco::Candidate::LorentzVector dp4MEt_fitted() const { return (p4MEt_ - dp4_); } // should be +
-
-    Reasoning:
-    from 
-    reco::Candidate::LorentzVector p4_fitted() const { return (p4_ + dp4_); }
-    dp4_ should be the neutrino momentum --> the neutrino MET would by -dp4_ --> the residual of the measured MET and the fitted MET shyould be 
-    p4MEt - fittedMEt = p4MEt + dp4_
-  */
   // subtract the visible part from it. The remainder is the pure neutrino part. Minus the the remainder is the estimate of the fittedMET
-  //Vector fittedMET = -(fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p())); 
   Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p() + measuredTauLeptons_[1].p()); 
   // fill event-wise nll parameters
   xPrime[ kDMETx   ] = measuredMET_.x() - fittedMET.x(); 
@@ -233,7 +221,7 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
     xPrime[ idx==0 ? kMaxNLLParams : (kMaxNLLParams + 1) ] = labframeXFrac;
   }
  
-  Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p()); 
+  Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p() + measuredTauLeptons_[1].p()); 
   // fill event-wise nll parameters
   xPrime[ kDMETx   ] = measuredMET_.x() - fittedMET.x(); 
   xPrime[ kDMETy   ] = measuredMET_.y() - fittedMET.y();

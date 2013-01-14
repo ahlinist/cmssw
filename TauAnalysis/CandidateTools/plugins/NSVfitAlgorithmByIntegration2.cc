@@ -10,6 +10,7 @@
 #include <TH1D.h>
 #include <TMath.h>
 #include <TString.h>
+#include <TPRegexp.h>
 
 #include <algorithm>
 
@@ -95,19 +96,18 @@ namespace
   class AuxResonancePtEtaPhiMassValue : public ROOT::Math::Functor
   {
    public:
-
-    AuxResonancePtEtaPhiMassValue(NSVfitAlgorithmByIntegration2* algorithm, int variable)
-      : algorithm_(algorithm),
+    AuxResonancePtEtaPhiMassValue(const std::string& branchName, NSVfitAlgorithmByIntegration2* algorithm, size_t idx, int variable)
+      : branchName_(branchName),
+	algorithm_(algorithm),
+	idx_(idx),
 	variable_(variable)
     {}
 
     enum { kPt, kEta, kPhi, kMass };
-
    private:
-
     virtual double DoEval(const double* x) const
     {
-      const NSVfitResonanceHypothesis* resonance = algorithm_->currentEventHypothesis()->resonance(0);
+      const NSVfitResonanceHypothesis* resonance = algorithm_->currentEventHypothesis()->resonance(idx_);
       assert(resonance);
       double retVal = 0.;
       if      ( variable_ == kPt   ) retVal = resonance->p4_fitted().pt();
@@ -115,17 +115,46 @@ namespace
       else if ( variable_ == kPhi  ) retVal = resonance->p4_fitted().phi();
       else if ( variable_ == kMass ) retVal = resonance->p4_fitted().mass();
       else assert(0);
-      static long callCounter = 0;
-      //std::cout << "<AuxResonancePtEtaPhiMassValue> (call = " << callCounter << "):" << std::endl;
-      //std::cout << " Pt = " << resonance->p4_fitted().pt() << "," 
-      //	  << " eta = " << resonance->p4_fitted().eta() << ","
-      //	  << " phi = " << resonance->p4_fitted().phi() << ","
-      //	  << " mass = " << resonance->p4_fitted().mass() << std::endl;
       return retVal;
     } 
+    std::string branchName_;
+    NSVfitAlgorithmByIntegration2* algorithm_;    
+    size_t idx_;
+    int variable_;
+  };
 
+  class AuxDaughterPtEtaPhiMassValue : public ROOT::Math::Functor
+  {
+   public:
+
+    AuxDaughterPtEtaPhiMassValue(const std::string& branchName, NSVfitAlgorithmByIntegration2* algorithm, size_t idxResonance, int idxDaughter, int variable)
+      : branchName_(branchName),
+	algorithm_(algorithm),
+	idxResonance_(idxResonance),
+	idxDaughter_(idxDaughter),
+	variable_(variable)
+    {}
+
+    enum { kPt, kEta, kPhi, kMass };
+   private:
+    virtual double DoEval(const double* x) const
+    {
+      const NSVfitResonanceHypothesis* resonance = algorithm_->currentEventHypothesis()->resonance(idxResonance_);
+      assert(resonance);
+      const NSVfitSingleParticleHypothesis* daughter = resonance->daughter(idxDaughter_);
+      assert(daughter);
+      double retVal = 0.;
+      if      ( variable_ == kPt   ) retVal = daughter->p4_fitted().pt();
+      else if ( variable_ == kEta  ) retVal = daughter->p4_fitted().eta();
+      else if ( variable_ == kPhi  ) retVal = daughter->p4_fitted().phi();
+      else if ( variable_ == kMass ) retVal = daughter->p4_fitted().mass();
+      else assert(0);
+      return retVal;
+    } 
+    std::string branchName_;
     NSVfitAlgorithmByIntegration2* algorithm_;
-
+    size_t idxResonance_;
+    size_t idxDaughter_;
     int variable_;
   };
 }
@@ -135,14 +164,37 @@ NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2(const edm::Paramete
     integrand_(0),
     integrator_(0),
     auxPhysicalSolutionFinder_(0),
-    auxResonancePtValue_(0),
-    auxResonanceEtaValue_(0),
-    auxResonancePhiValue_(0),
-    auxResonanceMassValue_(0),
     fitParameterValues_(0),
     probHistEventMass_(0),        
     auxFillProbHistograms_(0)
 {
+  if ( cfg.exists("parameters") ) {
+    edm::ParameterSet cfgReplacements = cfg.getParameter<edm::ParameterSet>("parameters");
+    std::vector<std::string> replacementNames = cfgReplacements.getParameterNamesForType<edm::ParameterSet>();
+    for ( std::vector<std::string>::const_iterator replacementName = replacementNames.begin();
+	  replacementName != replacementNames.end(); ++replacementName ) {
+      edm::ParameterSet cfgReplacement = cfgReplacements.getParameter<edm::ParameterSet>(*replacementName);
+    
+      fitParameterReplacementType* replacement = new fitParameterReplacementType();
+      replacement->name_ = (*replacementName);
+
+      std::string toReplace_string = cfgReplacement.getParameter<std::string>("replace");
+      replacement->toReplace_ = toReplace_string;
+
+      std::string replaceBy_string = cfgReplacement.getParameter<std::string>("by");
+      replacement->replaceBy_ = 
+        makeReplacementFormula(replaceBy_string, *replacementName, 
+			       replacement->parForReplacements_, replacement->numParForReplacements_);
+    
+      std::string deltaFuncDerrivative_string = cfgReplacement.getParameter<std::string>("deltaFuncDerrivative");
+      replacement->deltaFuncDerrivative_ = 
+        makeReplacementFormula(deltaFuncDerrivative_string, *replacementName, 
+			       replacement->parForDeltaFuncDerrivative_, replacement->numParForDeltaFuncDerrivative_);
+
+      fitParameterReplacements_.push_back(replacement);
+    }
+  }
+
   edm::ParameterSet cfgMarkovChainOptions = cfg.getParameter<edm::ParameterSet>("markovChainOptions");
   cfgMarkovChainOptions.addParameter<std::string>("name", pluginName_);
   cfgMarkovChainOptions.addParameter<int>("verbosity", verbosity_);
@@ -165,41 +217,47 @@ NSVfitAlgorithmByIntegration2::~NSVfitAlgorithmByIntegration2()
   delete integrator_;
   delete auxPhysicalSolutionFinder_;
 
+  for( std::vector<fitParameterReplacementType*>::iterator it = fitParameterReplacements_.begin();
+       it != fitParameterReplacements_.end(); ++it ) {
+    delete (*it);
+  }
+
   delete [] fitParameterValues_;
 
   for ( std::vector<TH1*>::iterator it = probHistFitParameter_.begin();
 	it != probHistFitParameter_.end(); ++it ) {
     delete (*it);
   }
-
-  for ( std::map<std::string, TH1*>::iterator it = probHistResonancePt_.begin();
-	it != probHistResonancePt_.end(); ++it ) {
-    delete it->second;
-  }
-  for ( std::map<std::string, TH1*>::iterator it = probHistResonanceEta_.begin();
-	it != probHistResonanceEta_.end(); ++it ) {
-    delete it->second;
-  }
-  for ( std::map<std::string, TH1*>::iterator it = probHistResonancePhi_.begin();
-	it != probHistResonancePhi_.end(); ++it ) {
-    delete it->second;
-  }
-  for ( std::map<std::string, TH1*>::iterator it = probHistResonanceMass_.begin();
-	it != probHistResonanceMass_.end(); ++it ) {
-    delete it->second;
+  for ( std::vector<AuxProbHistogramsResonance*>::iterator it1 = probHistResonances_.begin();
+	it1 != probHistResonances_.end(); ++it1 ) {
+    delete (*it1)->probHistResonancePt_;
+    delete (*it1)->probHistResonanceEta_;
+    delete (*it1)->probHistResonancePhi_;
+    delete (*it1)->probHistResonanceMass_;
+    for ( std::vector<AuxProbHistogramsDaughter*>::iterator it2 = (*it1)->probHistDaughters_.begin();
+	  it2 != (*it1)->probHistDaughters_.end(); ++it2 ) {
+      delete (*it2)->probHistDaughterPt_;
+      delete (*it2)->probHistDaughterEta_;
+      delete (*it2)->probHistDaughterPhi_;      
+    }
   }
   delete probHistEventMass_;
   delete auxFillProbHistograms_;
 
-  delete auxResonancePtValue_;
-  delete auxResonanceEtaValue_;
-  delete auxResonancePhiValue_;
-  delete auxResonanceMassValue_;  
+  for ( std::vector<ROOT::Math::Functor*>::iterator it = auxResonance_or_DaughterValues_.begin();
+	it != auxResonance_or_DaughterValues_.end(); ++it ) {
+    delete (*it);
+  }
 }
 
 void NSVfitAlgorithmByIntegration2::beginJob()
 {
   NSVfitAlgorithmBase::beginJob();
+
+  for ( std::vector<fitParameterReplacementType*>::iterator fitParameterReplacement = fitParameterReplacements_.begin();
+	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
+    (*fitParameterReplacement)->beginJob(this);
+  } 
 
   numDimensions_ = 0;
   numConstParameters_ = 0;
@@ -207,19 +265,26 @@ void NSVfitAlgorithmByIntegration2::beginJob()
   for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
 	fitParameter != fitParameters_.end(); ++fitParameter ) {
     bool isFixed = fitParameter->IsFixed();
-    
-    if ( !isFixed ) {
-      NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
-      fitParameterMapping.idxByIntegration_ = numDimensions_;
-      fitParameterMappings_.push_back(fitParameterMapping);
-      ++numDimensions_;
+    bool isReplaced = false;
+    for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
+	  fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
+      if ( fitParameter->index() == (*fitParameterReplacement)->idxToReplace_ ) isReplaced = true;
     }
 
+    if ( isFixed && isReplaced )
+      throw cms::Exception("NSVfitAlgorithmByIntegration2")
+	<< " Fit Parameter = " << fitParameter->Name() << " cannot be replaced, because it is fixed !!\n";
+    
     if ( isFixed ) {
       NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
       fitParameterMapping.idxByIntegration_ = numConstParameters_;
       constParameterMappings_.push_back(fitParameterMapping);
       ++numConstParameters_;
+    } else if ( !isReplaced ) {
+      NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
+      fitParameterMapping.idxByIntegration_ = numDimensions_;
+      fitParameterMappings_.push_back(fitParameterMapping);
+      ++numDimensions_;
     }
   }
 
@@ -248,35 +313,76 @@ void NSVfitAlgorithmByIntegration2::beginJob()
     TH1* histogram = new TH1D(histogramName.data(), histogramName.data(), 1000, fitParameter_ref->LowerLimit(), fitParameter_ref->UpperLimit());
     probHistFitParameter_[iDimension] = histogram;
   }
+  size_t idxResonance = 0;
   for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
 	resonance != eventModel_->resonances_.end(); ++resonance ) {
     const std::string& resonanceName = (*resonance)->resonanceName_;
+    AuxProbHistogramsResonance* probHistResonance = new AuxProbHistogramsResonance();
+    probHistResonance->idxResonance_ = idxResonance;    
     std::string histogramPtName = std::string("probHistResonancePt").append("_").append(resonanceName);
-    TH1* histogramPt = bookPtHistogram(histogramPtName.data());
-    probHistResonancePt_.insert(std::pair<std::string, TH1*>(resonanceName, histogramPt));
+    probHistResonance->probHistResonancePt_ = bookPtHistogram(histogramPtName.data());
     std::string histogramEtaName = std::string("probHistResonanceEta").append("_").append(resonanceName);
-    TH1* histogramEta = bookEtaHistogram(histogramEtaName.data());
-    probHistResonanceEta_.insert(std::pair<std::string, TH1*>(resonanceName, histogramEta));
+    probHistResonance->probHistResonanceEta_ = bookEtaHistogram(histogramEtaName.data());
     std::string histogramPhiName = std::string("probHistResonancePhi").append("_").append(resonanceName);
-    TH1* histogramPhi = bookPhiHistogram(histogramPhiName.data());
-    probHistResonancePhi_.insert(std::pair<std::string, TH1*>(resonanceName, histogramPhi));
+    probHistResonance->probHistResonancePhi_ = bookPhiHistogram(histogramPhiName.data());
     std::string histogramMassName = std::string("probHistResonanceMass").append("_").append(resonanceName);
-    TH1* histogramMass = bookMassHistogram(histogramMassName.data());
-    probHistResonanceMass_.insert(std::pair<std::string, TH1*>(resonanceName, histogramMass));
+    probHistResonance->probHistResonanceMass_ = bookMassHistogram(histogramMassName.data());
+    size_t idxDaughter = 0;
+    for ( std::vector<daughterModelType*>::const_iterator daughter = (*resonance)->daughters_.begin();
+	  daughter != (*resonance)->daughters_.end(); ++daughter ) {
+      const std::string& daughterName = (*daughter)->daughterName_;
+      AuxProbHistogramsDaughter* probHistDaughter = new AuxProbHistogramsDaughter();
+      probHistDaughter->idxDaughter_ = idxDaughter;
+      std::string histogramPtName = std::string("probHistDaughterPt").append("_").append(resonanceName).append("_").append(daughterName);
+      probHistDaughter->probHistDaughterPt_ = bookPtHistogram(histogramPtName.data());
+      std::string histogramEtaName = std::string("probHistDaughterEta").append("_").append(resonanceName).append("_").append(daughterName);
+      probHistDaughter->probHistDaughterEta_ = bookEtaHistogram(histogramEtaName.data());
+      std::string histogramPhiName = std::string("probHistDaughterPhi").append("_").append(resonanceName).append("_").append(daughterName);
+      probHistDaughter->probHistDaughterPhi_ = bookPhiHistogram(histogramPhiName.data());
+      probHistResonance->probHistDaughters_.push_back(probHistDaughter);
+      ++idxDaughter;
+    }
+    probHistResonances_.push_back(probHistResonance);
+    ++idxResonance;
   }
   probHistEventMass_ = bookMassHistogram("probHistEventMass");
   auxFillProbHistograms_ = new AuxFillProbHistograms(this);
   integrator_->registerCallBackFunction(*auxFillProbHistograms_);
 
   if ( monitorMarkovChain_ ) {
-    auxResonancePtValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kPt);
-    integrator_->setF(*auxResonancePtValue_, "diTauPt");
-    auxResonanceEtaValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kEta);
-    integrator_->setF(*auxResonanceEtaValue_, "diTauEta");
-    auxResonancePhiValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kPhi);
-    integrator_->setF(*auxResonancePhiValue_, "diTauPhi");
-    auxResonanceMassValue_ = new AuxResonancePtEtaPhiMassValue(this, AuxResonancePtEtaPhiMassValue::kMass);
-    integrator_->setF(*auxResonanceMassValue_, "diTauMass");
+    size_t idxResonance = 0;
+    for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
+	  resonance != eventModel_->resonances_.end(); ++resonance ) {
+      const std::string& resonanceName = (*resonance)->resonanceName_;
+      for ( int variable = AuxResonancePtEtaPhiMassValue::kPt; variable <= AuxResonancePtEtaPhiMassValue::kMass; ++variable ) {
+	std::string branchName = resonanceName;
+	if      ( variable == AuxResonancePtEtaPhiMassValue::kPt   ) branchName.append("Pt");
+	else if ( variable == AuxResonancePtEtaPhiMassValue::kEta  ) branchName.append("Eta");
+	else if ( variable == AuxResonancePtEtaPhiMassValue::kPhi  ) branchName.append("Phi");
+	else if ( variable == AuxResonancePtEtaPhiMassValue::kMass ) branchName.append("Mass");
+	else assert(0);
+	AuxResonancePtEtaPhiMassValue* auxResonanceValue = new AuxResonancePtEtaPhiMassValue(branchName, this, idxResonance, variable);
+	auxResonance_or_DaughterValues_.push_back(auxResonanceValue);
+	integrator_->setF(*auxResonanceValue, branchName);
+      }
+      size_t idxDaughter = 0;
+      for ( std::vector<daughterModelType*>::const_iterator daughter = (*resonance)->daughters_.begin();
+	    daughter != (*resonance)->daughters_.end(); ++daughter ) {
+	const std::string& daughterName = (*daughter)->daughterName_;
+	for ( int variable = AuxDaughterPtEtaPhiMassValue::kPt; variable <= AuxDaughterPtEtaPhiMassValue::kMass; ++variable ) {
+	  std::string branchName = std::string(resonanceName).append("_").append(daughterName);
+	  if      ( variable == AuxDaughterPtEtaPhiMassValue::kPt   ) branchName.append("Pt");
+	  else if ( variable == AuxDaughterPtEtaPhiMassValue::kEta  ) branchName.append("Eta");
+	  else if ( variable == AuxDaughterPtEtaPhiMassValue::kPhi  ) branchName.append("Phi");
+	  else if ( variable == AuxDaughterPtEtaPhiMassValue::kMass ) branchName.append("Mass");
+	  else assert(0);
+	  AuxDaughterPtEtaPhiMassValue* auxDaughterValue = new AuxDaughterPtEtaPhiMassValue(branchName, this, idxResonance, idxDaughter, variable);
+	  auxResonance_or_DaughterValues_.push_back(auxDaughterValue);
+	  integrator_->setF(*auxDaughterValue, branchName);
+	}
+      }
+      ++idxResonance;
+    }
   }
 }
 
@@ -288,24 +394,19 @@ void NSVfitAlgorithmByIntegration2::beginEvent(const edm::Event& evt, const edm:
 	histogram != probHistFitParameter_.end(); ++histogram ) {
     (*histogram)->Reset();
   }
-
-  for ( std::map<std::string, TH1*>::iterator histogram = probHistResonancePt_.begin();
-	histogram != probHistResonancePt_.end(); ++histogram ) {
-    histogram->second->Reset();
+  for ( std::vector<AuxProbHistogramsResonance*>::iterator probHistResonance = probHistResonances_.begin();
+	probHistResonance != probHistResonances_.end(); ++probHistResonance ) {
+    (*probHistResonance)->probHistResonancePt_->Reset();
+    (*probHistResonance)->probHistResonanceEta_->Reset();
+    (*probHistResonance)->probHistResonancePhi_->Reset();
+    (*probHistResonance)->probHistResonanceMass_->Reset();
+    for ( std::vector<AuxProbHistogramsDaughter*>::iterator probHistDaughter = (*probHistResonance)->probHistDaughters_.begin();
+	  probHistDaughter != (*probHistResonance)->probHistDaughters_.end(); ++probHistDaughter ) {
+      (*probHistDaughter)->probHistDaughterPt_->Reset();
+      (*probHistDaughter)->probHistDaughterEta_->Reset();
+      (*probHistDaughter)->probHistDaughterPhi_->Reset();
+    }
   }
-  for ( std::map<std::string, TH1*>::iterator histogram = probHistResonanceEta_.begin();
-	histogram != probHistResonanceEta_.end(); ++histogram ) {
-    histogram->second->Reset();
-  }
-  for ( std::map<std::string, TH1*>::iterator histogram = probHistResonancePhi_.begin();
-	histogram != probHistResonancePhi_.end(); ++histogram ) {
-    histogram->second->Reset();
-  }
-  for ( std::map<std::string, TH1*>::iterator histogram = probHistResonanceMass_.begin();
-	histogram != probHistResonanceMass_.end(); ++histogram ) {
-    histogram->second->Reset();
-  }
-
   probHistEventMass_->Reset();
   probListEventMass_.clear();
 
@@ -415,44 +516,39 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
   integrator_->integrate(intBoundaryLower_, intBoundaryUpper_, integral, integralErr, errorFlag, monitorFileName.Data());
 
 //--- set central values and uncertainties on reconstructed masses
-  for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
-	resonance != eventModel_->resonances_.end(); ++resonance ) {
-    const std::string& resonanceName = (*resonance)->resonanceName_;
-    NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance(resonanceName));
-    assert(resonance);
-    std::map<std::string, TH1*>::const_iterator histogramMass = probHistResonanceMass_.find(resonanceName);
-    assert(histogramMass != probHistResonanceMass_.end());
-    if ( errorFlag == 0 ) {
-      setMassResults(resonance, histogramMass->second);
-      std::map<std::string, TH1*>::const_iterator histogramPt = probHistResonancePt_.find(resonanceName);
-      assert(histogramPt != probHistResonancePt_.end());
-      TH1* histogramPt_density = compHistogramDensity(histogramPt->second);
-      std::map<std::string, TH1*>::const_iterator histogramEta = probHistResonanceEta_.find(resonanceName);
-      assert(histogramEta != probHistResonanceEta_.end());
-      TH1* histogramEta_density = compHistogramDensity(histogramEta->second);
-      std::map<std::string, TH1*>::const_iterator histogramPhi = probHistResonancePhi_.find(resonanceName);
-      assert(histogramPhi != probHistResonancePhi_.end());
-      TH1* histogramPhi_density = compHistogramDensity(histogramPhi->second);
-      if ( histogramPt_density->Integral()  > 0. &&
-	   histogramEta_density->Integral() > 0. &&
-	   histogramPhi_density->Integral() > 0. ) {
+  if ( errorFlag == 0 ) {
+    for ( std::vector<AuxProbHistogramsResonance*>::const_iterator probHistResonance = probHistResonances_.begin();
+	  probHistResonance != probHistResonances_.end(); ++probHistResonance ) {
+      NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance((*probHistResonance)->idxResonance_));
+      assert(resonance);
+
+      const TH1* histogramMass = (*probHistResonance)->probHistResonanceMass_;
+      setMassResults(resonance, histogramMass);
+
+      const TH1* histogramPt_resonance = (*probHistResonance)->probHistResonancePt_;
+      TH1* histogramPt_resonance_density = compHistogramDensity(histogramPt_resonance);
+      const TH1* histogramEta_resonance = (*probHistResonance)->probHistResonanceEta_;
+      TH1* histogramEta_resonance_density = compHistogramDensity(histogramEta_resonance);
+      const TH1* histogramPhi_resonance = (*probHistResonance)->probHistResonancePhi_;
+      TH1* histogramPhi_resonance_density = compHistogramDensity(histogramPhi_resonance);
+      if ( histogramPt_resonance_density->Integral()  > 0. &&
+	   histogramEta_resonance_density->Integral() > 0. &&
+	   histogramPhi_resonance_density->Integral() > 0. ) {
 	double ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084;
         extractHistogramProperties(
-          histogramPt->second, histogramPt_density,
+          histogramPt_resonance, histogramPt_resonance_density,
           ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
 	double pt = ptMaximum_interpol;
 	double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
         extractHistogramProperties(
-          histogramEta->second, histogramEta_density,
+          histogramEta_resonance, histogramEta_resonance_density,
           etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084);
 	double eta = etaMaximum_interpol;
 	double phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084;
         extractHistogramProperties(
-          histogramPhi->second, histogramPhi_density,
+          histogramPhi_resonance, histogramPhi_resonance_density,
           phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084);
 	double phi = phiMaximum_interpol;
-	reco::Candidate::PolarLorentzVector resonanceP4_fitted(pt, eta, phi, resonance->mass_);
-	resonance->dp4_ = resonanceP4_fitted - resonance->p4_;
 	resonance->pt_ = pt;
 	resonance->ptErrUp_ = TMath::Abs(ptQuantile084 - pt);
 	resonance->ptErrDown_ = TMath::Abs(pt - ptQuantile016);
@@ -466,11 +562,71 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
 	resonance->phiErrDown_ = TMath::Abs(phi - phiQuantile016);
 	resonance->phi_isValid_ = true;
       }
-    } else {
+
+      for ( std::vector<AuxProbHistogramsDaughter*>::const_iterator probHistDaughter = (*probHistResonance)->probHistDaughters_.begin();
+	    probHistDaughter != (*probHistResonance)->probHistDaughters_.end(); ++probHistDaughter ) {
+	NSVfitSingleParticleHypothesis* daughter = const_cast<NSVfitSingleParticleHypothesis*>(resonance->daughter((*probHistDaughter)->idxDaughter_));
+	assert(daughter);
+	
+	const TH1* histogramPt_daughter = (*probHistDaughter)->probHistDaughterPt_;
+	TH1* histogramPt_daughter_density = compHistogramDensity(histogramPt_daughter);
+	const TH1* histogramEta_daughter = (*probHistDaughter)->probHistDaughterEta_;
+	TH1* histogramEta_daughter_density = compHistogramDensity(histogramEta_daughter);
+	const TH1* histogramPhi_daughter = (*probHistDaughter)->probHistDaughterPhi_;
+	TH1* histogramPhi_daughter_density = compHistogramDensity(histogramPhi_daughter);
+	if ( histogramPt_daughter_density->Integral()  > 0. &&
+	     histogramEta_daughter_density->Integral() > 0. &&
+	     histogramPhi_daughter_density->Integral() > 0. ) {
+	  double ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084;
+	  extractHistogramProperties(
+  	    histogramPt_daughter, histogramPt_daughter_density,
+	    ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
+	  double pt = ptMaximum_interpol;
+	  double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
+  	  extractHistogramProperties(
+            histogramEta_daughter, histogramEta_daughter_density,
+	    etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084);
+	  double eta = etaMaximum_interpol;
+	  double phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084;
+	  extractHistogramProperties(
+            histogramPhi_daughter, histogramPhi_daughter_density,
+	    phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084);
+	  double phi = phiMaximum_interpol;
+	  daughter->pt_ = pt;
+	  daughter->ptErrUp_ = TMath::Abs(ptQuantile084 - pt);
+	  daughter->ptErrDown_ = TMath::Abs(pt - ptQuantile016);
+	  daughter->pt_isValid_ = true;
+	  daughter->eta_ = eta;
+	  daughter->etaErrUp_ = TMath::Abs(etaQuantile084 - eta);
+	  daughter->etaErrDown_ = TMath::Abs(eta - etaQuantile016);
+	  daughter->eta_isValid_ = true;
+	  daughter->phi_ = phi;
+	  daughter->phiErrUp_ = TMath::Abs(phiQuantile084 - phi);
+	  daughter->phiErrDown_ = TMath::Abs(phi - phiQuantile016);
+	  daughter->phi_isValid_ = true;
+	}
+      }
+    }
+  } else {
+    for ( std::vector<AuxProbHistogramsResonance*>::const_iterator probHistResonance = probHistResonances_.begin();
+	  probHistResonance != probHistResonances_.end(); ++probHistResonance ) {
+      NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance((*probHistResonance)->idxResonance_));
+      assert(resonance);
+      
       resonance->isValidSolution_ = false;
+      
+      for ( std::vector<AuxProbHistogramsDaughter*>::const_iterator probHistDaughter = (*probHistResonance)->probHistDaughters_.begin();
+	    probHistDaughter != (*probHistResonance)->probHistDaughters_.end(); ++probHistDaughter ) {
+	NSVfitSingleParticleHypothesis* daughter = const_cast<NSVfitSingleParticleHypothesis*>(resonance->daughter((*probHistDaughter)->idxDaughter_));
+	assert(daughter);
+	
+	daughter->pt_isValid_  = false;
+	daughter->eta_isValid_ = false;
+	daughter->phi_isValid_ = false;
+      }
     }
   }
-
+  
   if ( verbosity_ >= 2 ) {
     currentEventHypothesis_->print(std::cout);
     std::vector<double> quantiles;
@@ -506,45 +662,21 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
 
 //--- set four-vector information for di-tau system
 //   (NOTE: needs to be done **after** computing NLL,
-//          as NLL evaluation overwrites kinemtaics of NSVfitResonanceHypothesis objects)
+//          as NLL evaluation overwrites kinematics of NSVfitResonanceHypothesis objects)  
   for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
 	resonance != eventModel_->resonances_.end(); ++resonance ) {
     const std::string& resonanceName = (*resonance)->resonanceName_;
     NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance(resonanceName));
     assert(resonance);
-    std::map<std::string, TH1*>::const_iterator histogramPt = probHistResonancePt_.find(resonanceName);
-    assert(histogramPt != probHistResonancePt_.end());
-    TH1* histogramPt_density = compHistogramDensity(histogramPt->second);
-    std::map<std::string, TH1*>::const_iterator histogramEta = probHistResonanceEta_.find(resonanceName);
-    assert(histogramEta != probHistResonanceEta_.end());
-    TH1* histogramEta_density = compHistogramDensity(histogramEta->second);
-    std::map<std::string, TH1*>::const_iterator histogramPhi = probHistResonancePhi_.find(resonanceName);
-    assert(histogramPhi != probHistResonancePhi_.end());
-    TH1* histogramPhi_density = compHistogramDensity(histogramPhi->second);
-    if ( histogramPt_density->Integral()  > 0. &&
-	 histogramEta_density->Integral() > 0. &&
-	 histogramPhi_density->Integral() > 0. ) {
-      double ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084;
-      extractHistogramProperties(
-        histogramPt->second, histogramPt_density,
-        ptMaximum, ptMaximum_interpol, ptMean, ptQuantile016, ptQuantile050, ptQuantile084);
-      //if ( verbosity_ >= 1 ) {	
-      //  std::cout << "--> Pt = " << ptMaximum << std::endl;
-      //  std::cout << " (mean = " << ptMean << ", median = " << ptQuantile050 << ", max = " << ptMaximum << ")" << std::endl;
-      //}
-      double etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084;
-      extractHistogramProperties(
-        histogramEta->second, histogramEta_density,
-	etaMaximum, etaMaximum_interpol, etaMean, etaQuantile016, etaQuantile050, etaQuantile084);
-      double phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084;
-      extractHistogramProperties(
-        histogramPhi->second, histogramPhi_density,
-	phiMaximum, phiMaximum_interpol, phiMean, phiQuantile016, phiQuantile050, phiQuantile084);
-      reco::Candidate::PolarLorentzVector resonanceP4_fitted_polar(
-        ptMaximum_interpol, etaMaximum_interpol, phiMaximum_interpol, resonance->mass_);
-      reco::Candidate::LorentzVector resonanceP4_fitted(
-        resonanceP4_fitted_polar.px(), resonanceP4_fitted_polar.py(), resonanceP4_fitted_polar.pz(), resonanceP4_fitted_polar.E());
-      resonance->dp4_ = resonanceP4_fitted - resonance->p4_;
+    reco::Candidate::PolarLorentzVector resonanceP4_fitted(resonance->pt_, resonance->eta_, resonance->phi_, resonance->mass_);
+    resonance->dp4_ = resonanceP4_fitted - resonance->p4_;
+    size_t numDaughters = resonance->numDaughters();
+    for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+      NSVfitSingleParticleHypothesis* daughter = resonance->daughter(iDaughter);
+      assert(daughter);
+      reco::Candidate::PolarLorentzVector daughterP4_fitted(daughter->pt_, daughter->eta_, daughter->phi_, daughter->p4_.mass());
+      daughter->p4_fitted_ = daughterP4_fitted;
+      daughter->dp4_ = daughterP4_fitted - daughter->p4_;
     }
   }
 }
@@ -592,6 +724,130 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
   delete histMassResult_density;
 }
 
+bool NSVfitAlgorithmByIntegration2::isDaughter(const std::string& daughterName)
+{
+  bool isDaughter = false;
+
+  for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
+	resonance != eventModel_->resonances_.end(); ++resonance ) {
+    for ( std::vector<daughterModelType*>::const_iterator daughter = (*resonance)->daughters_.begin();
+	  daughter != (*resonance)->daughters_.end(); ++daughter ) {
+      if ( (*daughter)->daughterName_ == daughterName ) isDaughter = true;
+    }
+  }
+
+  return isDaughter;
+}
+ 
+bool NSVfitAlgorithmByIntegration2::isResonance(const std::string& resonanceName)
+{
+  bool isResonance = false;
+
+  for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
+	resonance != eventModel_->resonances_.end(); ++resonance ) {
+    if ( (*resonance)->resonanceName_ == resonanceName ) isResonance = true;
+  }
+
+  return isResonance;
+}
+
+TFormula* NSVfitAlgorithmByIntegration2::makeReplacementFormula(
+            const std::string& expression, const std::string& replacementName,
+	    std::vector<replaceParBase*>& parForReplacements, int& numParForReplacements)
+{
+  size_t pos_token0 = -1;
+  size_t pos = 0;
+  std::set<std::string> tokens;
+  while ( pos < expression.length() ) {
+    bool isSymbol = (expression[pos] == '(' || expression[pos] == ')' ||
+		     expression[pos] == '*' || expression[pos] == '/' ||
+		     expression[pos] == '+' || expression[pos] == '-');      
+    if ( (isSymbol || pos == (expression.length() - 1)) && (pos - pos_token0) > 1 ) {
+      size_t num = ( pos != (expression.length() - 1) ) ? pos - (pos_token0 + 1) : pos - pos_token0;
+      std::string token = std::string(expression, pos_token0 + 1, num);	
+//--- skip tokens that are constant numbers     
+      std::string regexpParser_notNumber_string = std::string("[^0-9.]+");
+      TPRegexp regexpParser_notNumber(regexpParser_notNumber_string.data());
+      if ( regexpParser_notNumber.Match(token.data()) ) {
+	//std::cout << "adding token = " << token << std::endl;
+	tokens.insert(token);
+      } else {
+	//std::cout << "skipping token = " << token << std::endl;
+      }
+    }
+    if ( isSymbol ) pos_token0 = pos;
+    ++pos;
+  }
+
+  std::string formula_string = expression;
+  int errorFlag = 0;    
+  numParForReplacements = 0;
+  for ( std::set<std::string>::const_iterator token = tokens.begin();
+	token != tokens.end(); ++token ) {
+    if ( (*token) == replacementName ) {
+      formula_string = replace_string(formula_string, *token, "x", 0, 1000, errorFlag);
+    } else {
+      size_t posSeparator = token->find(".");
+      if ( posSeparator == std::string::npos ) {
+	throw cms::Exception("NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2")
+	  << " Parameter token = " << (*token) << " has invalid format;" 
+	  << " expected format is 'daughter.type' !!\n";
+      }
+	
+      std::string particleName = std::string(*token, 0, posSeparator);
+      std::string value_string = std::string(*token, posSeparator + 1);
+	
+      if ( isDaughter(particleName) ) {
+	replaceParByFitParameter* parForReplacement = new replaceParByFitParameter();	  
+	parForReplacement->fitParameterName_ = (*token);
+	parForReplacement->iPar_ = numParForReplacements;
+	std::ostringstream par_string;
+	par_string << "[" << parForReplacement->iPar_ << "]";
+	formula_string = replace_string(formula_string, *token, par_string.str(), 0, 1000, errorFlag);
+	parForReplacements.push_back(parForReplacement);
+	++numParForReplacements;
+      } else if ( isResonance(particleName) ) {
+	replaceParByResonanceHypothesis* parForReplacement = new replaceParByResonanceHypothesis();	  
+	parForReplacement->resonanceName_ = particleName;
+	parForReplacement->valueExtractor_ = new StringObjectFunction<NSVfitResonanceHypothesis>(value_string);
+	parForReplacement->iPar_ = numParForReplacements;
+	std::ostringstream par_string;
+	par_string << "[" << parForReplacement->iPar_ << "]";
+	formula_string = replace_string(formula_string, *token, par_string.str(), 0, 1000, errorFlag);
+	parForReplacements.push_back(parForReplacement);
+	++numParForReplacements;
+      } else {
+	throw cms::Exception("NSVfitAlgorithmByIntegration2::NSVfitAlgorithmByIntegration2")
+	  << " No resonance/daughter of name = " << particleName << " defined !!\n";
+      }
+    } 
+  }
+
+  std::string formulaName = std::string(replacementName).append("_formula");    
+  TFormula* formula = new TFormula(formulaName.data(), formula_string.data());
+
+  return formula;
+}
+
+NSVfitParameter* NSVfitAlgorithmByIntegration2::getFitParameter(const std::string& token)
+{
+  size_t posSeparator = token.find(".");
+  if ( posSeparator == std::string::npos || posSeparator == (token.length() - 1) ) {
+    throw cms::Exception("NSVfitAlgorithmByIntegration2::getFitParameter")
+      << " Parameter token = " << token << " passed as function argument has invalid format;" 
+      << " expected format is 'daughter.type' !!\n";
+  }
+
+  std::string name = std::string(token, 0, posSeparator);
+  std::string type_string = std::string(token, posSeparator + 1);
+  int type = -1;
+  if ( type_string == "x" ) type = nSVfit_namespace::kTau_visEnFracX;
+  else throw cms::Exception("NSVfitAlgorithmByIntegration2::getFitParameter")
+    << " Type = " << type << " not defined !!\n";
+
+  return NSVfitAlgorithmBase::getFitParameter(name, type);
+}
+
 bool NSVfitAlgorithmByIntegration2::update(const double* x, const double* param) const
 {
 //--- copy fitParameter
@@ -604,6 +860,29 @@ bool NSVfitAlgorithmByIntegration2::update(const double* x, const double* param)
   for ( unsigned iConstParameter = 0; iConstParameter < numConstParameters_; ++iConstParameter ) {
     const NSVfitParameter* fitParameter_ref = constParameterMappings_[iConstParameter].base_;
     fitParameterValues_[fitParameter_ref->index()] = fitParameter_ref->Value();    
+  }
+
+//--- set additional fitParameters according to mass parameter values
+  for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
+	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
+    TFormula* formula = (*fitParameterReplacement)->replaceBy_;
+    //std::cout << "formula = " << formula->GetTitle() << std::endl;
+
+    for ( int iPar = 0; iPar < (*fitParameterReplacement)->numParForReplacements_; ++iPar ) {
+      formula->SetParameter(iPar, (*(*fitParameterReplacement)->parForReplacements_[iPar])(fitParameterValues_));
+      //std::cout << "par #" << iPar << " = " << formula->GetParameter(iPar) << std::endl;
+    }
+
+//--- check if fitParameter is within limits;
+//    return probability zero if not
+    double fitParameterValue = formula->Eval(0.);
+    //std::cout << "value = " << fitParameterValue << std::endl;
+    if ( fitParameterValue >= fitParameters_[(*fitParameterReplacement)->idxToReplace_].LowerLimit() &&
+	 fitParameterValue <= fitParameters_[(*fitParameterReplacement)->idxToReplace_].UpperLimit() ) {
+      fitParameterValues_[(*fitParameterReplacement)->idxToReplace_] = fitParameterValue;
+    } else {
+      return std::numeric_limits<float>::max();
+    }
   }
 
 //--- build event, resonance and particle hypotheses
@@ -639,28 +918,24 @@ void NSVfitAlgorithmByIntegration2::fillProbHistograms(const double* x)
   }
 
 //--- fill mass distribution histograms
-  for ( std::vector<resonanceModelType*>::const_iterator resonance = eventModel_->resonances_.begin();
-	resonance != eventModel_->resonances_.end(); ++resonance ) {
-    const std::string& resonanceName = (*resonance)->resonanceName_;
-    const NSVfitResonanceHypothesis* resonance = currentEventHypothesis_->resonance(resonanceName);
+  for ( std::vector<AuxProbHistogramsResonance*>::iterator probHistResonance = probHistResonances_.begin();
+	probHistResonance != probHistResonances_.end(); ++probHistResonance ) {
+    const NSVfitResonanceHypothesis* resonance = currentEventHypothesis_->resonance((*probHistResonance)->idxResonance_);
     assert(resonance);
     reco::Candidate::LorentzVector resonanceP4_fitted = resonance->p4_fitted();
-    //std::cout << " Pt = " << resonanceP4_fitted.pt() << ","
-    //	        << " eta = " << resonanceP4_fitted.eta() << ","
-    //	        << " phi = " << resonanceP4_fitted.phi() << ","
-    //	        << " mass = " << resonanceP4_fitted.mass() << std::endl;
-    TH1* histogramPt = probHistResonancePt_[resonanceName];
-    assert(histogramPt);
-    histogramPt->Fill(resonanceP4_fitted.pt());
-    TH1* histogramEta = probHistResonanceEta_[resonanceName];
-    assert(histogramEta);
-    histogramEta->Fill(resonanceP4_fitted.eta());
-    TH1* histogramPhi  = probHistResonancePhi_[resonanceName];
-    assert(histogramPhi);
-    histogramPhi->Fill(resonanceP4_fitted.phi());
-    TH1* histogramMass = probHistResonanceMass_[resonanceName];
-    assert(histogramMass);
-    histogramMass->Fill(resonanceP4_fitted.mass());
+    (*probHistResonance)->probHistResonancePt_->Fill(resonanceP4_fitted.pt());
+    (*probHistResonance)->probHistResonanceEta_->Fill(resonanceP4_fitted.eta());
+    (*probHistResonance)->probHistResonancePhi_->Fill(resonanceP4_fitted.phi());
+    (*probHistResonance)->probHistResonanceMass_->Fill(resonanceP4_fitted.mass());
+    for ( std::vector<AuxProbHistogramsDaughter*>::iterator probHistDaughter = (*probHistResonance)->probHistDaughters_.begin();
+	  probHistDaughter != (*probHistResonance)->probHistDaughters_.end(); ++probHistDaughter ) {
+      const NSVfitSingleParticleHypothesis* daughter = resonance->daughter((*probHistDaughter)->idxDaughter_);
+      assert(daughter);
+      reco::Candidate::LorentzVector daughterP4_fitted = daughter->p4_fitted();
+      (*probHistDaughter)->probHistDaughterPt_->Fill(daughterP4_fitted.pt());
+      (*probHistDaughter)->probHistDaughterEta_->Fill(daughterP4_fitted.eta());
+      (*probHistDaughter)->probHistDaughterPhi_->Fill(daughterP4_fitted.phi());
+    }
   }
   probHistEventMass_->Fill(currentEventHypothesis_->p4_fitted().mass());  
   probListEventMass_.push_back(currentEventHypothesis_->p4_fitted().mass());  

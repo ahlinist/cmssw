@@ -151,6 +151,13 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
            
       deltaDecayVertexPhi_1prong_   = dqmStore.book1D("deltaDecayVertexPhi_1prong",   "deltaDecayVertexPhi_1prong",                   360,  -TMath::Pi(),      +TMath::Pi());      
       deltaDecayVertexPhi_3prong_   = dqmStore.book1D("deltaDecayVertexPhi_3prong",   "deltaDecayVertexPhi_3prong",                   360,  -TMath::Pi(),      +TMath::Pi());
+       
+      deltaLeg1Pt_                  = dqmStore.book1D("deltaLeg1Pt",                  "deltaLeg1Pt",                                  350,         -100.,             +250.);
+      deltaLeg1Eta_                 = dqmStore.book1D("deltaLeg1Eta",                 "deltaLeg1Eta",                                 198,          -9.9,              +9.9);
+      deltaLeg1Phi_                 = dqmStore.book1D("deltaLeg1Phi",                 "deltaLeg1Phi",                                 360,  -TMath::Pi(),      +TMath::Pi());
+      deltaLeg2Pt_                  = dqmStore.book1D("deltaLeg2Pt",                  "deltaLeg2Pt",                                  350,         -100.,             +250.);
+      deltaLeg2Eta_                 = dqmStore.book1D("deltaLeg2Eta",                 "deltaLeg2Eta",                                 198,          -9.9,              +9.9);
+      deltaLeg2Phi_                 = dqmStore.book1D("deltaLeg2Phi",                 "deltaLeg2Phi",                                 360,  -TMath::Pi(),      +TMath::Pi());
       
       svFitMass_                    = dqmStore.book1D("svFitMass",                    "svFitMass",                      numBinsSVfitMass_,            0.,     svFitMassMax_);
       svFitSigma_                   = dqmStore.book1D("svFitSigma",                   "svFitSigma",                    numBinsSVfitSigma_,            0.,    svFitSigmaMax_);
@@ -261,7 +268,6 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	    else if ( daughter1->leadTrackExtrapolationIsValid() ) deltaDecayVertexPhi = deltaDecayVertexPhi_1prong_;
 	    if ( deltaDecayVertexPhi ) deltaDecayVertexPhi->Fill(SVfit_namespace::phi(daughter1->reconstructedDecayVertexPos() - eventVertexPos) - genLeg1P4.phi(), evtWeight);
 	  }
-
 	  const NSVfitTauDecayHypothesis* daughter2 = dynamic_cast<const NSVfitTauDecayHypothesis*>(svFitResonanceHypothesis->daughter(1));
 	  if ( daughter2 ) {
 	    MonitorElement* deltaDecayVertexPhi = 0;
@@ -269,6 +275,19 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	    else if ( daughter2->leadTrackExtrapolationIsValid() ) deltaDecayVertexPhi = deltaDecayVertexPhi_1prong_;
 	    if ( deltaDecayVertexPhi ) deltaDecayVertexPhi->Fill(SVfit_namespace::phi(daughter2->reconstructedDecayVertexPos() - eventVertexPos) - genLeg2P4.phi(), evtWeight);
 	  }
+	}
+
+	const NSVfitTauDecayHypothesis* daughter1 = dynamic_cast<const NSVfitTauDecayHypothesis*>(svFitResonanceHypothesis->daughter(0));
+	if ( daughter1 ) {
+	  if ( daughter1->pt_isValid()  ) deltaLeg1Pt_->Fill(daughter1->pt() - genLeg1P4.pt(), evtWeight);
+	  if ( daughter1->eta_isValid() ) deltaLeg1Eta_->Fill(daughter1->eta() - genLeg1P4.eta(), evtWeight);
+	  if ( daughter1->phi_isValid() ) deltaLeg1Phi_->Fill(daughter1->phi() - genLeg1P4.phi(), evtWeight);
+	}
+	const NSVfitTauDecayHypothesis* daughter2 = dynamic_cast<const NSVfitTauDecayHypothesis*>(svFitResonanceHypothesis->daughter(1));
+	if ( daughter2 ) {
+	  if ( daughter2->pt_isValid()  ) deltaLeg2Pt_->Fill(daughter2->pt() - genLeg2P4.pt(), evtWeight);
+	  if ( daughter2->eta_isValid() ) deltaLeg2Eta_->Fill(daughter2->eta() - genLeg2P4.eta(), evtWeight);
+	  if ( daughter2->phi_isValid() ) deltaLeg2Phi_->Fill(daughter2->phi() - genLeg2P4.phi(), evtWeight);
 	}
 	
 	reco::Candidate::LorentzVector recLeg12MEtP4 = recLeg1P4 + recLeg2P4 + recMEtP4;
@@ -375,6 +394,13 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
            
     MonitorElement* deltaDecayVertexPhi_1prong_;
     MonitorElement* deltaDecayVertexPhi_3prong_; 
+
+    MonitorElement* deltaLeg1Pt_;
+    MonitorElement* deltaLeg1Eta_;
+    MonitorElement* deltaLeg1Phi_;
+    MonitorElement* deltaLeg2Pt_;
+    MonitorElement* deltaLeg2Eta_;
+    MonitorElement* deltaLeg2Phi_;
 
     MonitorElement* svFitMass_;
     MonitorElement* svFitSigma_;

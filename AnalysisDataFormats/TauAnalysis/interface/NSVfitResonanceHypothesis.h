@@ -14,13 +14,7 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
 {
  public:
 
-  NSVfitResonanceHypothesis()
-    : eventHyp_(NULL),
-      prod_angle_rf_(0.)
-  {
-    polHandedness_.push_back(kPolUndefined);
-    numPolStates_ = polHandedness_.size();
-  }
+  NSVfitResonanceHypothesis();
   NSVfitResonanceHypothesis(const NSVfitResonanceHypothesis&);
   virtual ~NSVfitResonanceHypothesis() {}
 

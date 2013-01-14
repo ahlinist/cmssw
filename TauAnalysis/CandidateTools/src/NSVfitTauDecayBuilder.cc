@@ -379,6 +379,20 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
 
 //--- compute relativistic beta and gamma factors
   double beta2 = 1. - square(visEnFracX*tauLeptonMass/enVis_lab);
+  if ( beta2 < 0. ) {
+    std::cout << "<NSVfitTauDecayBuilder::applyFitParameter>:" << std::endl;
+    std::cout << " leg: Pt = " << hypothesis_T->particle()->pt() << "," 
+	      << " eta = " << hypothesis_T->particle()->eta() << "," 
+	      << " phi = " << hypothesis_T->particle()->phi() << ","
+	      << " mass = " << hypothesis_T->particle()->mass() << std::endl;
+    std::cout << " visEnFracX = " << visEnFracX << std::endl;
+    std::cout << " tauLeptonMass = " << tauLeptonMass << std::endl;
+    std::cout << " enVis_lab = " << enVis_lab << std::endl;
+    std::cout << "(fixToGenVisEnFracX = " << fixToGenVisEnFracX_ << ")" << std::endl;
+    std::cout << "(fixToGenPhiLab = " << fixToGenPhiLab_ << ")" << std::endl;
+    std::cout << "(fixToGenNuInvMass = " << fixToGenNuInvMass_ << ")" << std::endl;
+    std::cout << " assert TRIGGERED !!!" << std::endl;
+  }
   assert(beta2 >= 0.);
   double beta = TMath::Sqrt(beta2);
   double gamma2 = 1./(1. - beta2);

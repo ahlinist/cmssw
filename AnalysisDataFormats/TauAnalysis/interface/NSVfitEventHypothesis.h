@@ -50,7 +50,7 @@ class NSVfitEventHypothesis : public NSVfitEventHypothesisBase
   /// missing transverse momentum before fit
   /// and fitted value of missing transverse momentum
   reco::Candidate::LorentzVector p4MEt() const { return p4MEt_; }
-  reco::Candidate::LorentzVector dp4MEt_fitted() const { return (p4MEt_ - dp4_); } 
+  reco::Candidate::LorentzVector dp4MEt_fitted() const { return (dp4_ - p4MEt_); } 
 
   unsigned numPolStates() const { return numPolStates_; }
   int polHandedness(unsigned idx) const { return polHandedness_[idx]; }
