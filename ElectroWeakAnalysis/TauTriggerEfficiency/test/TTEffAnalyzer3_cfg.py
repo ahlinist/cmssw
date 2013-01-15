@@ -1,12 +1,18 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = True
+dataVersion="44XmcS6"
+#dataVersion="44Xdata"
+#isData = False
 runL1Emulator = False
 runOpenHLT = False
 metLeg = True
 hltType = "HLT"
 #hltType = "TEST"
+
+from HiggsAnalysis.HeavyChHiggsToTauNu.HChOptions import getOptionsDataVersion
+options, dataVersion = getOptionsDataVersion(dataVersion)
+
 
 process = cms.Process("TTEff")
 
@@ -37,43 +43,62 @@ process.options = cms.untracked.PSet(
 )
 
 #Mike needs Calo Geometry
-process.load('Configuration.Geometry.GeometryPilot2_cff')
+####process.load('Configuration.Geometry.GeometryPilot2_cff')
 
-if(isData):
+if dataVersion.isMC():
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-#	"file:/tmp/slehti/hlt_100_1_yct.root"
-	"file:/afs/cern.ch/work/s/slehti/TriggerMETLeg_Tau_Run2012C_PromptReco_v2_AOD_202792_203742_analysis_metleg_v53_v1_pattuple_28_1_L19.root"
-#        "file:TTEffSkim.root"
-#	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
-#        "file:TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1.root"
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
-#	"/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1/TauPlusX/TauTriggerEff_TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1/be6ecd52f198917de1be5ff208a419ce/TTEffSkim_939_1_ceG.root"
-	)
+#       "file:TTEffSkim.root"
+        "file:/tmp/slehti/TTJets_TuneZ2_7TeV_Fall11_START44_V9B_v1_AODSIM_pattuple_244_1_vQB.root"
+        )
     )
 else:
     process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring(
-#	"file:/tmp/slehti/TauTriggerEff_DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola_Summer12_PU_S8_START52_V9_v1_AODSIM_TTEffSkim_v525_V00_10_04_v2_TTEffSkim_70_1_hQW.root"
-	"file:TTEffSkim.root"
-#        "file:/tmp/slehti/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_160_1_OZG.root"
-	)
+        fileNames = cms.untracked.vstring(   
+        "file:/afs/cern.ch/work/s/slehti/TriggerMETLeg_Tau_173236-173692_2011A_Nov08_pattuple_9_1_LSf.root"
+#        "file:TTEffSkim.root"
+        )
     )
 
+#if(isData):
+#    process.source = cms.Source("PoolSource",
+#        fileNames = cms.untracked.vstring(
+##	"file:/tmp/slehti/hlt_100_1_yct.root"
+##	"file:/afs/cern.ch/work/s/slehti/TriggerMETLeg_Tau_Run2012C_PromptReco_v2_AOD_202792_203742_analysis_metleg_v53_v1_pattuple_28_1_L19.root"
+#	"file:/afs/cern.ch/work/s/slehti/TriggerMETLeg_Tau_173236-173692_2011A_Nov08_pattuple_9_1_LSf.root"
+##        "file:TTEffSkim.root"
+##	"file:/afs/cern.ch/work/s/slehti/TTEffSkim_Run2012A_TauPlusX_801ev.root"
+##        "file:TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1.root"
+##	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
+##	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
+##	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
+##	"/store/group/pflow-tau/TauTriggerEfficiencyMeasurementData/TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1/TauPlusX/TauTriggerEff_TauPlusX_Run2012B_PromptReco_v1_AOD_TTEffSkim_v525_V00_10_06_v1/be6ecd52f198917de1be5ff208a419ce/TTEffSkim_939_1_ceG.root"
+#	)
+#    )
+#else:
+#    process.source = cms.Source("PoolSource",
+#	fileNames = cms.untracked.vstring(
+##	"file:/tmp/slehti/TauTriggerEff_DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola_Summer12_PU_S8_START52_V9_v1_AODSIM_TTEffSkim_v525_V00_10_04_v2_TTEffSkim_70_1_hQW.root"
+##	"file:TTEffSkim.root"
+#	"file:/tmp/slehti/TTJets_TuneZ2_7TeV_Fall11_START44_V9B_v1_AODSIM_pattuple_244_1_vQB.root"
+##        "file:/tmp/slehti/TTToHplusBWB_M_160_7TeV_pythia6_tauola_Fall11_E7TeV_Ave23_50ns_v2_RAW_RECO_TTEffSkim_160_1_OZG.root"
+#	)
+#    )
+
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-if (isData):
-#    process.GlobalTag.globaltag = 'GR_H_V29::All'
+process.GlobalTag.globaltag = cms.string(dataVersion.getGlobalTag())
+print "GlobalTag="+dataVersion.getGlobalTag()
+#if (isData):
+##    process.GlobalTag.globaltag = 'GR_H_V29::All'
 #    process.GlobalTag.globaltag = 'GR_R_44_V15::All'
-    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
-#    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
-else:
-    process.GlobalTag.globaltag = 'START52_V9::All'
-    #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
-process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
-process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
-print process.GlobalTag.globaltag
+##    process.GlobalTag.globaltag = 'GR_R_53_V2::All'
+##    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
+#else:
+#    #process.GlobalTag.globaltag = 'START52_V9::All'
+#    process.GlobalTag.globaltag = 'START44_V13::All'
+#process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
+#process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
+#print process.GlobalTag.globaltag
 
 
 #MET cleaning flag
@@ -85,14 +110,14 @@ process.load('RecoJets.Configuration.RecoPFJets_cff')
 process.kt6PFJets.doRhoFastjet = True
 process.ak5PFJets.doAreaFastjet = True
 #process.ak5PFJetSequence = cms.Sequence(process.kt6PFJets*process.ak5PFJets)
-process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
+####process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
 
 #Physics bit ON
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
 process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 
 process.commonSequence = cms.Sequence()
-if not isData:
+if dataVersion.isMC():
     process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
         GenParticles  = cms.untracked.InputTag("genParticles"),
         ptMinTau      = cms.untracked.double(3),
@@ -176,10 +201,10 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         METs = cms.PSet(
 	    PFMET = cms.InputTag("patPFMet"),
 	    PFMETtype1 = cms.InputTag("patType1CorrectedPFMet"),
-#            PFMET = cms.InputTag("pfMet"),
-#	    PFMETtype1 = cms.InputTag("pfType1CorrectedMet"),
-#            HLTMET = cms.InputTag("hltMet"),
-#            HLTMHT = cms.InputTag("hltPFMHTProducer"),
+##            PFMET = cms.InputTag("pfMet"),
+##	    PFMETtype1 = cms.InputTag("pfType1CorrectedMet"),
+##            HLTMET = cms.InputTag("hltMet"),
+##            HLTMHT = cms.InputTag("hltPFMHTProducer"),
             CaloMET = cms.InputTag("met")
         ),
 
@@ -196,9 +221,9 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
 	L1extraMETSource			= cms.InputTag("l1extraParticles", "MET"),
 	L1extraMHTSource			= cms.InputTag("l1extraParticles", "MHT"),
 
-#        L1GtReadoutRecord       		= cms.InputTag("gtDigis",""),
-#        L1GtObjectMapRecord     		= cms.InputTag("hltL1GtObjectMap","",hltType),
-	L1GtObjectMapRecord			= cms.InputTag("l1L1GtObjectMap"),
+        L1GtReadoutRecord       		= cms.InputTag("gtDigis",""),
+        L1GtObjectMapRecord     		= cms.InputTag("hltL1GtObjectMap","",hltType),
+#	L1GtObjectMapRecord			= cms.InputTag("l1L1GtObjectMap"),
         L1Paths = cms.vstring(
             "L1_SingleMu7",
             "L1_SingleMu10",
@@ -366,8 +391,8 @@ else:
 #    process.runTTEffAna += process.kt6PFJets
 #    process.runTTEffAna += process.producePFMETCorrections
     process.runTTEffAna += process.TTEffAnalysisMETLeg
-    if isData:
-	process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
+####    if isData:
+####	process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
 
 # The high purity selection (mainly for H+)
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
@@ -473,7 +498,8 @@ if runOpenHLT:
 #				process.outpath
 )
 
-if isData:  # replace all instances of "rawDataCollector" with "source" in In$
+if not dataVersion.isMC():
+#if isData:  # replace all instances of "rawDataCollector" with "source" in In$
     from FWCore.ParameterSet import Mixins
     for module in process.__dict__.itervalues():
         if isinstance(module, Mixins._Parameterizable):
