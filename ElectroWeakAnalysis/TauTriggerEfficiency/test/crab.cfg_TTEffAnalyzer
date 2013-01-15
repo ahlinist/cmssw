@@ -26,11 +26,11 @@ scheduler               = glite
 datasetpath		= /Tau/pflow-tau-TauTriggerEff_Tau_Run2012C_PromptReco_v2_AOD_TTEffSkim_v533_V00_11_02_v3-f52268a77ce902b75b9dbf7fcc33365f/USER
 
 
-pset                    = TTEffAnalyzer2_cfg.py
+pset                    = TTEffAnalyzer3_cfg.py
 #total_number_of_events  = -1
 #events_per_job          = 1000
 total_number_of_lumis   = -1
-lumis_per_job           = 1
+#lumis_per_job           = 1
 #output_file             = tteffAnalysis.root
 
 # Example for multiple output file retrieval, this probably doesn't
@@ -42,7 +42,8 @@ lumis_per_job           = 1
 #output_file		= tteffAnalysis-hltpftau-hpspftau.root,tteffAnalysis-hltpftaumedium-hpspftau.root,tteffAnalysis-hltpftaumediuml2global-hpspftau.root,tteffAnalysis-hltpftau-hpspftau-highpurity.root
 output_file		= tteffAnalysis-metleg.root
 
-dbs_url 		= https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
+dbs_url                 = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet
+#dbs_url 		= https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
 
 [USER]
 return_data             = 1
@@ -62,4 +63,4 @@ lfc_host                = lfc-cms-test.cern.ch
 lfc_home                = /grid/cms
 
 #CE_white_list = T2_IT_Pisa
-CE_white_list = jade-cms.hip.fi
+#CE_white_list = jade-cms.hip.fi
