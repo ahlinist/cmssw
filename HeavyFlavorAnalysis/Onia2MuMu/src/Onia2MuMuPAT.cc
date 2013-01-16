@@ -64,8 +64,8 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   typedef Candidate::LorentzVector LorentzVector;
 
   vector<double> muMasses;
-  muMasses.push_back( 0.1134289256 );
-  muMasses.push_back( 0.1134289256 );
+  muMasses.push_back( 0.1056583715 );
+  muMasses.push_back( 0.1056583715 );
 
   std::auto_ptr<pat::CompositeCandidateCollection> oniaOutput(new pat::CompositeCandidateCollection);
   
