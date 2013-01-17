@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-dataVersion="44XmcS6"
-#dataVersion="44Xdata"
+#dataVersion="44XmcS6"
+dataVersion="53XdataPromptCv2"
 #isData = False
 runL1Emulator = False
 runOpenHLT = False
@@ -55,8 +55,9 @@ if dataVersion.isMC():
 else:
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(   
-        "file:/afs/cern.ch/work/s/slehti/TriggerMETLeg_Tau_173236-173692_2011A_Nov08_pattuple_9_1_LSf.root"
+#        "file:/afs/cern.ch/work/s/slehti/TriggerMETLeg_Tau_173236-173692_2011A_Nov08_pattuple_9_1_LSf.root"
 #        "file:TTEffSkim.root"
+	"file:/tmp/slehti/TriggerMETLeg_Tau_Run2012C_PromptReco_v2_AOD_202792_203742_analysis_metleg_v53_v1_pattuple_28_1_L19.root"
         )
     )
 
@@ -244,6 +245,7 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         ),
         HltResults      = cms.InputTag("TriggerResults","",hltType),
 	TriggerEvent    = cms.InputTag("hltTriggerSummaryAOD","",hltType),
+	PatTriggerEvent = cms.InputTag("patTriggerEvent"),
         HltObjectFilter = cms.InputTag("hltPFTau35TrackPt20LooseIsoProng2","",hltType),
         HltPaths = cms.vstring(
             "HLT_IsoMu17_v5", "HLT_IsoMu17_v6", "HLT_IsoMu17_v8", "HLT_IsoMu17_v9", "HLT_IsoMu17_v10", "HLT_IsoMu17_v11", "HLT_IsoMu17_v13", "HLT_IsoMu17_v14",
