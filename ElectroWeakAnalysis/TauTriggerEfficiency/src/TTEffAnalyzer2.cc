@@ -39,6 +39,9 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMaps.h"
+#include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "DataFormats/PatCandidates/interface/TriggerObject.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "RecoTauTag/TauTagTools/interface/TauTagTools.h"
@@ -94,6 +97,8 @@ private:
   double l25FilterMaxChi2_;
   double l25FilterMaxDeltaZ_;
   double l25FilterMinGammaEt_;
+
+  edm::InputTag patTriggerEventSrc;
 
   std::string rootFile_;
   std::vector<edm::InputTag> counters_;
@@ -242,6 +247,7 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   primaryVertexSrc_(iConfig.getParameter<edm::InputTag>("hltVertexSrc")),
   l25TauSrc_(iConfig.getParameter<edm::InputTag>("L25TauSource")),
   l25TauMatchingCone_(iConfig.getParameter<double>("L25MatchingCone")),
+  patTriggerEventSrc(iConfig.getParameter<edm::InputTag>("PatTriggerEvent")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
   counters_(iConfig.getParameter<std::vector<edm::InputTag> >("Counters")),
   triggerBitsOnly(iConfig.getParameter<bool>("triggerBitsOnly"))
@@ -527,7 +533,36 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   // L1 event level stuff
   edm::Handle<l1extra::L1EtMissParticleCollection> hl1met;
-  if(iEvent.getByLabel(l1MetSrc_, hl1met)) L1MET_ = hl1met->front().et();
+  if(iEvent.getByLabel(l1MetSrc_, hl1met)) {
+    L1MET_ = hl1met->front().et();
+  }else{
+    edm::Handle<pat::TriggerEvent> htrigger;
+    iEvent.getByLabel(patTriggerEventSrc, htrigger);
+    pat::TriggerObjectRefVector l1mets = htrigger->objects(trigger::TriggerL1ETM);
+    if(!l1mets.empty()) {
+        if(l1mets.size() == 1) {
+            L1MET_ = l1mets[0]->et();
+        }else{
+            bool found = false; 
+            for(size_t i=0; i<l1mets.size(); ++i) {
+                if(l1mets[i]->coll("l1extraParticles:MET")) {
+                    L1MET_ = l1mets[i]->et();
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+              std::stringstream ss;
+              for(size_t i=0; i<l1mets.size(); ++i) {
+                ss << l1mets[i]->collection() << " " << l1mets[i]->et() << " ";
+              }
+              throw cms::Exception("Assert") << "No L1 MET from collection " << l1MetSrc_.label()
+                                             << ", have " << l1mets.size() << " L1 MET objects: " << ss.str()
+                                             << " at " << __FILE__ << ":" << __LINE__ << std::endl;
+            }
+        }
+    }
+  }
   if(iEvent.getByLabel(l1MhtSrc_, hl1met)) L1MHT_ = hl1met->front().et();
 
   if(!triggerBitsOnly) {
