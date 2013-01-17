@@ -10,8 +10,8 @@
 #include "DataFormats/Math/interface/Vector3D.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
-namespace NSVfitStandalone
-{
+
+namespace NSVfitStandalone{
   /**
      \typedef NSVfitStandalone::Vector
      \brief   spacial momentum vector (equivalent to reco::Candidate::Vector)
@@ -47,10 +47,10 @@ namespace NSVfitStandalone
   enum kNLLParams {
     kNuNuMass1,      /* < mass of the neutrino system for the first decay branch                           */
     kVisMass1,       /* < mass of the visible parts of the first tau decay branch                          */
-    kDecayAngle1,    /* < decay angle for the first decay branch (in restframe of the tau lepton decay)   */  
+    kDecayAngle1,    /* < decay angle for the first decay branch (in restframe of the tau lepton decay)    */  
     kNuNuMass2,      /* < mass of the neutrino system for the second decay branch                          */
     kVisMass2,       /* < mass of the visible parts of the second tau decay branch                         */
-    kDecayAngle2,    /* < decay angle for the second decay branch (in restframe of the tau lepton decay)  */  
+    kDecayAngle2,    /* < decay angle for the second decay branch (in restframe of the tau lepton decay)   */  
     kDMETx,          /* < difference between the sum of the fitted neutrino px and px of the MET           */ 
     kDMETy,          /* < difference between the sum of the fitted neutrino py and py of the MET           */
     kMTauTau,        /* < invariant mass of the fitted di-tau system (used for the logM penalty term)      */
@@ -105,31 +105,37 @@ namespace NSVfitStandalone
      \brief   Negative log likelihood for a resonance decay into two tau leptons that may themselves decay hadronically or leptonically
      
      Negative log likelihood for a resonance decay into two tau leptons that may themselves decay hadronically or leptonically 
-     Depending on the configuration during object creation it will be a combination of MET, TauToHad, TauToLep and an additional
-     penalty term to suppress tails in m(tau,tau) (logM). Configurables during creation time are:
+     Depending on the configuration during object creation it will be a combination of MET, TauToHad, TauToLep and additional
+     penalty terms, e.g. to suppress tails in m(tau,tau) (logM). Configurables during creation time are:
      
      \var measuredTauLeptons : the vector of the two reconstructed tau leptons
-     \var measuredMET : the spacial vector of the measured MET
-     \var covMET : the covariance matrix of the MET (as determined from the MEt significance for instance)
-     \verbose : indicating the verbosity level
+     \var measuredMET        : the spacial vector of the measured MET
+     \var covMET             : the covariance matrix of the MET (as determined from the MEt significance for instance)
+     \verbose                : indicating the verbosity level 
 
-     Additional optional values may be set before the actual fit is performed. During construction the class is initialized with 
-     default values as indicated in braces in the following:
+     In fit mode additional optional values may be set before the fit is performed. During construction the class is initialized with 
+     default values as indicated in braces (below):
 
      \var metPower : indicating an additional power to enhance the MET likelihood (default is 1.)
-     \var addLogM : specifying whether to use the LogM penalty term or not (default is true)     
+     \var addLogM  : specifying whether to use the LogM penalty term or not (default is true)     
 
      A typical way to obtain the covariance matrix of the MET is to follow the MET significance algorithm as provided by RecoMET.
-     The NSVfitStandaloneLikelihood class is for internal use only. It is interfaced from the NSVfitStandaloneAlgorithm class as 
-     defined in interface/NSVfitStandaloneAlgorithm.h in the same package. It keeps all necessary information to calculate the 
-     combined likelihood but does not perform any fit. It is interfaced to the ROOT minuit minimization package via the global
-     function pointer gNSVfitStandaloneLikelihood as defined in src/NSVfitStandaloneLikelihood.cc in the same package and 
-     initialized in the function NSVfitStandaloneLikelihood::fnc(const double*). Per default the LogM term is added.
+     The NSVfitStandaloneLikelihood class is for internal use only. The general use calse is to access it from the class 
+     NSVfitStandaloneAlgorithm as defined in interface/NSVfitStandaloneAlgorithm.h in the same package. The NSVfitLikelihood class 
+     keeps all necessary information to calculate the combined likelihood but does not perform any fit nor integration. It is 
+     interfaced to the ROOT minuit minimization package or to the VEGAS integration packages via the global function pointer 
+     gNSVfitStandaloneLikelihood as defined in src/NSVfitStandaloneLikelihood.cc in the same package. 
   */
   class NSVfitStandaloneLikelihood {
   public:
+    /// error codes that can be read out by NSVfitAlgorithm
+    enum ErrorCodes {
+      None            = 0x00000000,
+      MatrixInversion = 0x00000001,
+      LeptonNumber    = 0x00000010
+    };
     /// constructor with a minimla set of configurables 
-    NSVfitStandaloneLikelihood(const std::vector<MeasuredTauLepton>& measuredTauLeptons, const Vector& measuredMET, const TMatrixD& covMET, bool verbose);
+    NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, bool verbose);
     /// default destructor
     ~NSVfitStandaloneLikelihood() {};
     /// static pointer to this (needed for the minuit function calls)
@@ -141,33 +147,40 @@ namespace NSVfitStandalone
     /// WARNING: to be used when SVfit is run in "integration" mode only
     void addDelta(bool value) { addDelta_ = value; }
     /// add sin(theta) term to likelihood for tau lepton decays
+    void addPhiPenalty(bool value) { addPhiPenalty_ = value; }    
     /// WARNING: to be used when SVfit is run in "fit" mode only
     void addSinTheta(bool value) { addSinTheta_ = value; }  
-    /// add a penalty term in case phi runs outside of interval [-pi,+pi]
-    void addPhiPenalty(bool value) { addPhiPenalty_ = value; }    
+    /// add a penalty term in case phi runs outside of interval 
     /// modify the MET term in the nll by an additional power (default is 1.)
     void metPower(double value) { metPower_=value; };    
+
+    /// fit function to be called from outside. Has to be const to be usable by minuit. This function will call the actual 
+    /// functions transform and prob internally 
+    double prob(const double* x) const;
+    /// same as above but for integration mode.     
+    double probint(const double* x, const double mtt, const int par) const;	
+    /// read out potential likelihood errors
+    unsigned error() const { return errorCode_; };
 
     /// return vector of measured MET
     Vector measuredMET() const { return measuredMET_; };
     /// return vector of measured tau leptons
-    const std::vector<MeasuredTauLepton>& measuredTauLeptons() const { return measuredTauLeptons_; };
+    std::vector<MeasuredTauLepton> measuredTauLeptons() const { return measuredTauLeptons_; };
     /// return vector of fitted tau leptons, which will be the actual fit result. This function is a subset of transform.
     /// It needs to be factored out though as transform has to be const to be usable by minuit and therefore is not allowed 
-    /// change the class memebers.  
+    /// change the class members.  
     void results(std::vector<LorentzVector>& fittedTauLeptons, const double* x) const;
-    /// fit function to be called from outside (has to be const to be usable by minuit). This function will call the actual 
-    /// functions transform and nll internally 
-    double prob(const double* x) const;    
-    double probint(const double* x, const double mtt, const int par) const;	
 
   private:
     /// transformation from x to xPrime, x are the actual fit parameters, xPrime are the transformed parameters that go into 
-    /// the nll (has to be const to be usable by minuit)
+    /// the prob function. Has to be const to be usable by minuit.
     const double* transform(double* xPrime, const double* x) const;
+    /// same as above but for integration mode. This function provides the mapping of integration parameters.
     const double* transformint(double* xPrime, const double* x, const double mtt, const int par) const;
-    /// combined likelihood function (has to be const to be usable by minuit). The additional boolean phiPenalty is added to 
-    /// prevent singularities at the +/-pi boundaries of kPhi within the fit parameters (kFitParams) 
+    /// combined likelihood function. The same function os called for fit and integratino mode. Has to be const to be usable 
+    /// by minuit/VEGAS/MarkovChain. The additional boolean phiPenalty is added to prevent singularities at the +/-pi boundaries 
+    /// of kPhi within the fit parameters (kFitParams). It is only used in fit mode. In integration mode the passed on value 
+    /// is always 0. 
     double prob(const double* xPrime, double phiPenalty) const;
     
   private:
@@ -194,6 +207,8 @@ namespace NSVfitStandalone
     TMatrixD invCovMET_;
     /// determinant of the covariance matrix of MET
     double covDet_;
+    /// error code that can be passed on
+    unsigned int errorCode_;
   };
 }
 

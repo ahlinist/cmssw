@@ -10,15 +10,16 @@ const NSVfitStandaloneLikelihood* NSVfitStandaloneLikelihood::gNSVfitStandaloneL
 /// indicate first iteration for integration or fit cycle for debugging
 static bool FIRST = true;
 
-NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(const std::vector<MeasuredTauLepton>& measuredTauLeptons, const Vector& measuredMET, const TMatrixD& covMET, bool verbose) 
-  : metPower_(1.0), 
-    addLogM_(false), 
-    addDelta_(true),
-    addSinTheta_(false),
-    addPhiPenalty_(true),
-    verbose_(verbose), 
-    idxObjFunctionCall_(0), 
-    invCovMET_(2,2)
+NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(std::vector<MeasuredTauLepton> measuredTauLeptons, Vector measuredMET, const TMatrixD& covMET, bool verbose) :  
+  metPower_(1.0), 
+  addLogM_(false), 
+  addDelta_(true),
+  addSinTheta_(false),
+  addPhiPenalty_(true),
+  verbose_(verbose), 
+  idxObjFunctionCall_(0), 
+  invCovMET_(2,2),
+  errorCode_(0)
 {
   if(verbose_){
     std::cout << "<NSVfitStandaloneLikelihood::constructor>" << std::endl;
@@ -36,7 +37,7 @@ NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(const std::vector<Measure
   }
   if ( measuredTauLeptons_.size() != 2 ){
     std::cout << " >> ERROR : the numer of measured leptons must be 2 but is found to be: " << measuredTauLeptons_.size() << std::endl;
-    assert(0);
+    errorCode_ |= LeptonNumber;
   }
   // determine transfer matrix for MET
   invCovMET_= covMET;
@@ -46,7 +47,7 @@ NSVfitStandaloneLikelihood::NSVfitStandaloneLikelihood(const std::vector<Measure
   } 
   else{
     std::cout << " >> ERROR: cannot invert MET covariance Matrix (det=0)." << std::endl;
-    assert(0);
+    errorCode_ |= MatrixInversion;
   }
   // set global function pointer to this
   gNSVfitStandaloneLikelihood = this;
@@ -136,7 +137,19 @@ NSVfitStandaloneLikelihood::transformint(double* xPrime, const double* x, const 
     xPrime[ idx == 0 ? kVisMass1    : kVisMass2    ] = visMass;
     xPrime[ idx == 0 ? kDecayAngle1 : kDecayAngle2 ] = restframeDecayAngle;
   }
+  /*
+    I believe that the following line contains a sign bug in the official version of SVfit:
+    http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h?revision=1.11&view=markup
+    reco::Candidate::LorentzVector dp4MEt_fitted() const { return (p4MEt_ - dp4_); } // should be +
+
+    Reasoning:
+    from 
+    reco::Candidate::LorentzVector p4_fitted() const { return (p4_ + dp4_); }
+    dp4_ should be the neutrino momentum --> the neutrino MET would by -dp4_ --> the residual of the measured MET and the fitted MET shyould be 
+    p4MEt - fittedMEt = p4MEt + dp4_
+  */
   // subtract the visible part from it. The remainder is the pure neutrino part. Minus the the remainder is the estimate of the fittedMET
+  //Vector fittedMET = -(fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p())); 
   Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p() + measuredTauLeptons_[1].p()); 
   // fill event-wise nll parameters
   xPrime[ kDMETx   ] = measuredMET_.x() - fittedMET.x(); 
@@ -170,6 +183,8 @@ NSVfitStandaloneLikelihood::transformint(double* xPrime, const double* x, const 
 double
 NSVfitStandaloneLikelihood::probint(const double* x, const double mtest, const int par) const 
 {
+  // in case of initialization errors don't start to do anything
+  if(error()){ return 0.;}
   double phiPenalty = 0.;
   double xPrime[kMaxNLLParams+2];
   const double* xPrime_ptr = transformint(xPrime, x, mtest, par);
@@ -221,7 +236,7 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
     xPrime[ idx==0 ? kMaxNLLParams : (kMaxNLLParams + 1) ] = labframeXFrac;
   }
  
-  Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p() + measuredTauLeptons_[1].p()); 
+  Vector fittedMET = fittedDiTauSystem.Vect() - (measuredTauLeptons_[0].p()+measuredTauLeptons_[1].p()); 
   // fill event-wise nll parameters
   xPrime[ kDMETx   ] = measuredMET_.x() - fittedMET.x(); 
   xPrime[ kDMETy   ] = measuredMET_.y() - fittedMET.y();
@@ -254,6 +269,8 @@ NSVfitStandaloneLikelihood::transform(double* xPrime, const double* x) const
 double
 NSVfitStandaloneLikelihood::prob(const double* x) const 
 {
+  // in case of initialization errors don't start to do anything
+  if(error()){ return 0.;}
   if(verbose_){
     std::cout << "<NSVfitStandaloneLikelihood:prob(const double*)>" << std::endl;
   }
@@ -271,7 +288,7 @@ NSVfitStandaloneLikelihood::prob(const double* x) const
   // prevent kPhi in the fit parameters (kFitParams) from trespassing the 
   // +/-pi boundaries
   double phiPenalty=0.;
-  if ( addPhiPenalty_ ) {
+  if(addPhiPenalty_){
     for(unsigned int idx=0; idx<measuredTauLeptons_.size(); ++idx){
       if(TMath::Abs(idx*kMaxFitParams + x[kPhi])>TMath::Pi()){
 	phiPenalty += (TMath::Abs(x[kPhi]) - TMath::Pi())*(TMath::Abs(x[kPhi]) - TMath::Pi());
@@ -373,4 +390,3 @@ tauLeptonMass);
   }
   return;
 }
-
