@@ -43,6 +43,7 @@
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "DataFormats/PatCandidates/interface/TriggerObject.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 
 #include "RecoTauTag/TauTagTools/interface/TauTagTools.h"
 
@@ -73,6 +74,9 @@ private:
   edm::InputTag pfTauSrc_;
   edm::InputTag pileupSummaryInfoSrc_;
   edm::InputTag pfJetSrc_;
+
+  edm::InputTag lheSrc;
+
   edm::InputTag offlinePrimaryVertexSrc_;
 
   edm::InputTag l1TauSrc_;
@@ -158,6 +162,7 @@ private:
   // Branches
   uint32_t event_, run_, lumi_;
   float nPU_;
+  int NUP;
   bool primaryVertexIsValid_;
   unsigned nGoodOfflinePV_;
   std::vector<TriggerBit> l1Bits_;
@@ -234,6 +239,7 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   pfTauSrc_(iConfig.getParameter<edm::InputTag>("LoopingOver")),
   pileupSummaryInfoSrc_(iConfig.getParameter<edm::InputTag>("PileupSummaryInfoSource")),
   pfJetSrc_(iConfig.getParameter<edm::InputTag>("Jets")),
+  lheSrc(iConfig.getParameter<edm::InputTag>("lheSrc")),
   offlinePrimaryVertexSrc_(iConfig.getParameter<edm::InputTag>("offlineVertexSrc")),
   l1TauSrc_(iConfig.getParameter<edm::InputTag>("L1extraTauJetSource")),
   l1CenSrc_(iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource")),
@@ -315,6 +321,7 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   tree_->Branch("lumi", &lumi_);
 
   tree_->Branch("MCNPU", &nPU_);
+  tree_->Branch("MCNUP", &NUP);
   tree_->Branch("numGoodOfflinePV", &nGoodOfflinePV_);
   tree_->Branch("primaryVertexIsValid", &primaryVertexIsValid_);
 
@@ -398,6 +405,7 @@ void TTEffAnalyzer2::reset() {
   lumi_ = 0;
 
   nPU_ = 0;
+  NUP = 0;
   primaryVertexIsValid_ = false;
   nGoodOfflinePV_ = 0;
 
@@ -480,6 +488,13 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
 
+  // number of jets for combining WJets inclusive with exclusive
+  edm::Handle<LHEEventProduct> hlhe;
+  if(iEvent.getByLabel(lheSrc, hlhe)){
+    NUP = hlhe->hepeup().NUP;
+  }
+
+  // PV
   nGoodOfflinePV_ = 0;
   edm::Handle<edm::View<reco::Vertex> > hoffvertex;
   if(iEvent.getByLabel(offlinePrimaryVertexSrc_, hoffvertex)){

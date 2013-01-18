@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-#dataVersion="44XmcS6"
-dataVersion="53XdataPromptCv2"
+dataVersion="53XmcS10"
+#dataVersion="53XdataPromptCv2"
 #isData = False
 runL1Emulator = False
 runOpenHLT = False
@@ -49,7 +49,8 @@ if dataVersion.isMC():
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
 #       "file:TTEffSkim.root"
-        "file:/tmp/slehti/TTJets_TuneZ2_7TeV_Fall11_START44_V9B_v1_AODSIM_pattuple_244_1_vQB.root"
+	"root://madhatter.csc.fi:1094/pnfs/csc.fi/data/cms/store/group/local/HiggsChToTauNuFullyHadronic/TriggerMETLeg/CMSSW_5_3_X/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_analysis_metleg_v53_v1/638a70bdbf1f7414f9f442a75689ed2b/pattuple_486_2_ZHP.root"
+#        "file:/tmp/slehti/TTJets_TuneZ2_7TeV_Fall11_START44_V9B_v1_AODSIM_pattuple_244_1_vQB.root"
         )
     )
 else:
@@ -214,6 +215,9 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
 
 #        Jets = cms.InputTag("ak5PFJetsL1L2L3"),
 	Jets = cms.InputTag("selectedPatJets"),
+
+	lheSrc = cms.InputTag("source", "", "LHE"),
+
         offlineVertexSrc = cms.InputTag("goodPrimaryVertices"),
 
 	L1extraTauJetSource			= cms.InputTag("l1extraParticles", "Tau"),
