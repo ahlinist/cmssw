@@ -15,6 +15,10 @@ void TAnaMuon::clear() {
   fTimeInOut = fTimeInOutE = fTimeOutIn = fTimeOutInE = -999.;
   fTimeNdof = -999;
   
+  fNstTracks.clear();
+  
+  fMuonTrackPosAtM1.SetXYZ(-1e30,-1e30,-1e30);
+  fMuonTrackPlabAtM1.SetXYZ(-1e30,-1e30,-1e30);
 }
 
 
@@ -49,6 +53,19 @@ void TAnaMuon::dump() {
   if (fPositionAtM2.Perp() > 0) {
     cout << " Position at M2: x2=" << fPositionAtM2.X() << " y2=" << fPositionAtM2.Y() << " z2=" << fPositionAtM2.Z() << endl;
   }
+  
+  if (fMuonTrackPosAtM1.X() > -1e30 && fMuonTrackPosAtM1.Y() > -1e30 && fMuonTrackPosAtM1.Z() > -1e30) {
+	  cout << " Position at M1 of muon track: x=" << fMuonTrackPosAtM1.X() << " y=" << fMuonTrackPosAtM1.Y() << " z=" << fMuonTrackPosAtM1.Z() << endl;
+  }
+  
+  if (fMuonTrackPlabAtM1.X() > -1e30 && fMuonTrackPlabAtM1.Y() > -1e30 && fMuonTrackPlabAtM1.Z() > -1e30) {
+	  cout << " Momentum at M1 of muon track: x=" << fMuonTrackPlabAtM1.X() << " y=" << fMuonTrackPlabAtM1.Y() << " z=" << fMuonTrackPlabAtM1.Z() << endl;
+  }
+  
+  // std::map<int,float> fNstTracks; // usage: (trackIx, doca)
+  cout << " closeby tracks (" << fNstTracks.size() << ") are" << endl;
+  for (std::map<int,float>::const_iterator it = fNstTracks.begin(); it != fNstTracks.end(); ++it)
+	  cout << "   (ix=" << it->first << ", doca=" << it->second << ")" << endl;
   //   if (fMCID != -99999) {
   //     cout << Form(" mcid =%+6d", fMCID);
   //   }
