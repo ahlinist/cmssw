@@ -85,16 +85,16 @@ namespace
     std::vector<reco::PFCandidatePtr> pfJetConstituents = pfJet.getPFConstituents();
     for ( std::vector<reco::PFCandidatePtr>::const_iterator pfJetConstituent = pfJetConstituents.begin();
 	  pfJetConstituent != pfJetConstituents.end(); ++pfJetConstituent ) {
-      int idx = -1;
+      std::vector<int> idxs;
       if ( pfJetConstituent->id() == pfCandidateCollection.id() ) {
-	idx = pfJetConstituent->key();
+	idxs.push_back(pfJetConstituent->key());
       } else {
 	size_t numPFCandidates = pfCandidateCollection.size();
 	for ( size_t iPFCandidate = 0; iPFCandidate < numPFCandidates; ++iPFCandidate ) {
-	  if ( deltaR((*pfJetConstituent)->p4(), pfCandidateCollection.at(iPFCandidate).p4()) < 1.e-2 ) {
-	    edm::Ptr<reco::PFCandidate> pfCandidatePtr = pfCandidateCollection.ptrAt(iPFCandidate);
-	    idx = pfCandidatePtr.key();
-	    break;
+	  edm::Ptr<reco::PFCandidate> pfCandidatePtr = pfCandidateCollection.ptrAt(iPFCandidate);
+	  double dR = deltaR((*pfJetConstituent)->p4(), pfCandidatePtr->p4());
+	  if ( dR < 1.e-3 ) {
+	    idxs.push_back(pfCandidatePtr.key());
 	  }
 	}
 	if ( numWarnings < maxWarnings ) {
@@ -104,15 +104,17 @@ namespace
 	  ++numWarnings;
 	}
       }
-      if ( idx >= 0 ) {
-	if ( idx >= (int)flags.size() ) flags.resize(2*flags.size());
-	flags[idx] |= value;
+      if ( idxs.size() >= 1 ) {
+	for ( std::vector<int>::const_iterator idx = idxs.begin();
+	      idx != idxs.end(); ++idx ) {
+	  if ( (*idx) >= (int)flags.size() ) flags.resize(2*flags.size());
+	  flags[*idx] |= value;
+	  if ( pfCandidateToJetAssociations ) (*pfCandidateToJetAssociations)[*idx] = &pfJet;
+	}
       } else {
 	edm::LogError ("setPFCandidateFlag") 
 	  << " Failed to associated PFJetConstituent with index = " << pfJetConstituent->key() << " to any PFCandidate !!";
       }
-      
-      if ( pfCandidateToJetAssociations && idx >= 0 ) (*pfCandidateToJetAssociations)[idx] = &pfJet;
     }
   }
 
@@ -169,14 +171,21 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
 
   edm::Handle<reco::VertexCollection> hardScatterVertex;
   evt.getByLabel(srcHardScatterVertex_, hardScatterVertex);
+  if ( verbosity_ && hardScatterVertex->size() >= 1 ) {
+    reco::Vertex::Point hardScatterVertexPos = hardScatterVertex->front().position();
+    std::cout << "hard-scatter Vertex: x = " << hardScatterVertexPos.x() << ", y = " << hardScatterVertexPos.y() << ", z = " << hardScatterVertexPos.z() << std::endl;
+  }
 
   std::auto_ptr<reco::MVAMEtJetInfoCollection> jetInfos(new reco::MVAMEtJetInfoCollection());
   std::auto_ptr<reco::MVAMEtPFCandInfoCollection> pfCandInfos(new reco::MVAMEtPFCandInfoCollection());
 
-  const JetCorrector* jetEnOffsetCorrector = JetCorrector::getJetCorrector(jetEnOffsetCorrLabel_, es);
-  if ( !jetEnOffsetCorrector )  
-    throw cms::Exception("NoPileUpPFMEtDataProducer::produce")
-      << "Failed to access Jet corrections for = " << jetEnOffsetCorrLabel_ << " !!\n";
+  const JetCorrector* jetEnOffsetCorrector = 0;
+  if ( jetEnOffsetCorrLabel_ != "" ) {
+    const JetCorrector* jetEnOffsetCorrector = JetCorrector::getJetCorrector(jetEnOffsetCorrLabel_, es);
+    if ( !jetEnOffsetCorrector )  
+      throw cms::Exception("NoPileUpPFMEtDataProducer::produce")
+	<< "Failed to access Jet corrections for = " << jetEnOffsetCorrLabel_ << " !!\n";
+  }
 
   size_t numJets = jets->size();
   for ( size_t iJet = 0; iJet < numJets; ++iJet ) {
@@ -214,13 +223,21 @@ void NoPileUpPFMEtDataProducer::produce(edm::Event& evt, const edm::EventSetup& 
     double jetNeutralEnFrac = ( jetEnergy_uncorrected > 0. ) ?
       (jet->neutralEmEnergy() + jet->neutralHadronEnergy())/jetEnergy_uncorrected : -1.;
     jetInfo.neutralEnFrac_ = jetNeutralEnFrac;
-    jetInfo.offsetEnCorr_ = rawJet.energy()*(1. - jetEnOffsetCorrector->correction(rawJet, evt, es));
+    jetInfo.offsetEnCorr_ = ( jetEnOffsetCorrector ) ?
+      rawJet.energy()*(1. - jetEnOffsetCorrector->correction(rawJet, evt, es)) : 0.;
     jetInfo.pfMEtSignObj_ = pfMEtSignInterface_->compResolution(&(*jet));
     if ( verbosity_ ) {
       std::cout << " jet: Pt = " << jet->pt() << ", eta = " << jet->eta() << ", phi = " << jet->phi() << ":" 
     	        << " sigma(En)/En = " << (jetInfo.pfMEtSignObj_.get_sigma_e()/jet->energy()) << std::endl;
       std::cout << "(offsetEnCorr = " << jetInfo.offsetEnCorr_ << ")" << std::endl;
       std::cout << "  id. flags: PU = " << jetIdSelection_passed << ", anti-noise = " << passesLooseJetId << std::endl;
+      std::vector<reco::PFCandidatePtr> pfJetConstituents = jet->getPFConstituents();
+      size_t numPFJetConstituents = pfJetConstituents.size();
+      std::cout << "numConstituents = " << numPFJetConstituents << std::endl;
+      for ( size_t iPFJetConstituent = 0; iPFJetConstituent < numPFJetConstituents; ++iPFJetConstituent ) {
+	const reco::PFCandidatePtr& pfJetConstituent = pfJetConstituents[iPFJetConstituent];
+	std::cout << " constituent #" << iPFJetConstituent << ": Pt = " << pfJetConstituent->pt() << ", eta = " << pfJetConstituent->eta() << ", phi = " << pfJetConstituent->phi() << std::endl;
+      }
     }
 
     jetInfos->push_back(jetInfo);    
