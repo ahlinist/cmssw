@@ -128,9 +128,10 @@ TMatrixD computePFMEtSignificance(const std::vector<metsig::SigInputObj>& metSig
   return pfMEtCov;
 }
 
-void printP4(const std::string& label_part1, int idx, const std::string& label_part2, const reco::Candidate::LorentzVector& p4)
+void printP4(const std::string& label_part1, int idx, const std::string& label_part2, const reco::Candidate& candidate)
 {
-  std::cout << label_part1 << " #" << idx << label_part2 << ": Pt = " << p4.pt() << ", eta = " << p4.eta() << ", phi = " << p4.phi() << std::endl;
+  std::cout << label_part1 << " #" << idx << label_part2 << ": Pt = " << candidate.pt() << ", eta = " << candidate.eta() << ", phi = " << candidate.phi() 
+	    << " (charge = " << candidate.charge() << ")" << std::endl;
 }
 
 void printCommonMETData(const std::string& label, const CommonMETData& metData)
@@ -191,6 +192,7 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   // get lepton momenta
   std::vector<reco::Candidate::LorentzVector> leptons;
   std::vector<metsig::SigInputObj> metSignObjectsLeptons;
+  reco::Candidate::LorentzVector sumLeptonP4s;
   for ( vInputTag::const_iterator srcLeptons_i = srcLeptons_.begin();
 	srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
     typedef edm::View<reco::Candidate> CandidateView;
@@ -199,11 +201,16 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
     int leptonIdx = 0;
     for ( CandidateView::const_iterator lepton = leptons_i->begin();
 	  lepton != leptons_i->end(); ++lepton ) {
-      if ( verbosity_ ) printP4(srcLeptons_i->label(), leptonIdx, "", lepton->p4());
+      if ( verbosity_ ) printP4(srcLeptons_i->label(), leptonIdx, "", *lepton);
       leptons.push_back(lepton->p4());
       metSignObjectsLeptons.push_back(pfMEtSignInterface_->compResolution(&(*lepton)));
+      sumLeptonP4s += lepton->p4();
       ++leptonIdx;
     }
+  }
+  if ( verbosity_ ) {
+    std::cout << " sum(leptons): Pt = " << sumLeptonP4s.pt() << ", eta = " << sumLeptonP4s.eta() << ", phi = " << sumLeptonP4s.phi() << ","
+	      << " mass = " << sumLeptonP4s.mass() << std::endl;
   }
 
   // get jet and PFCandidate information
@@ -342,7 +349,7 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   noPileUpMEt.setSignificanceMatrix(pfMEtCov_recomputed);
 
   if ( verbosity_ ) {
-    std::cout << "<MVAPFMEtProducer::produce>:" << std::endl;
+    std::cout << "<NoPileUpPFMEtProducer::produce>:" << std::endl;
     std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
     std::cout << " PFMET: Pt = " << pfMEt_original.pt() << ", phi = " << pfMEt_original.phi() << " "
 	      << "(Px = " << pfMEt_original.px() << ", Py = " << pfMEt_original.py() << ")" << std::endl;
