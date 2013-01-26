@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: PFMEtSignInterfaceBase.h,v 1.2 2012/09/18 02:08:49 pharris Exp $
+ * $Id: PFMEtSignInterfaceBase.h,v 1.3 2012/09/27 10:10:30 veelken Exp $
  *
  */
 
@@ -24,6 +24,8 @@
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
@@ -61,6 +63,16 @@ class PFMEtSignInterfaceBase
       double dpt  = pfMEtResolution_->eval(metsig::PFtype2, metsig::ET,  pt, phi, eta);
       double dphi = pfMEtResolution_->eval(metsig::PFtype2, metsig::PHI, pt, phi, eta);
       //std::cout << "electron: pt = " << pt << ", eta = " << eta << ", phi = " << phi 
+      //          << " --> dpt = " << dpt << ", dphi = " << dphi << std::endl;
+      return metsig::SigInputObj(particleType, pt, phi, dpt, dphi);
+    } else if ( dynamic_cast<const reco::Photon*>(particle) != 0 ||
+		dynamic_cast<const pat::Photon*>(particle) != 0 ) {
+      // CV: assume resolutions for photons to be identical to electron resolutions
+      std::string particleType = "electron";
+      // WARNING: SignAlgoResolutions::PFtype2 needs to be kept in sync with reco::PFCandidate::e !!
+      double dpt  = pfMEtResolution_->eval(metsig::PFtype2, metsig::ET,  pt, phi, eta);
+      double dphi = pfMEtResolution_->eval(metsig::PFtype2, metsig::PHI, pt, phi, eta);
+      //std::cout << "photon: pt = " << pt << ", eta = " << eta << ", phi = " << phi 
       //          << " --> dpt = " << dpt << ", dphi = " << dphi << std::endl;
       return metsig::SigInputObj(particleType, pt, phi, dpt, dphi);
     } else if ( dynamic_cast<const reco::Muon*>(particle) != 0 ||
@@ -139,7 +151,7 @@ class PFMEtSignInterfaceBase
       return pfMEtResolution_->evalPF(pfCandidate);
     } else throw cms::Exception("addPFMEtSignObjects")
 	<< "Invalid type of particle:"
-	<< " valid types = { reco::GsfElectron/pat::Electron, reco::Muon/pat::Muon, reco::PFTau/pat::Tau," 
+	<< " valid types = { reco::GsfElectron/pat::Electron, reco::Photon/pat::Photon, reco::Muon/pat::Muon, reco::PFTau/pat::Tau," 
 	<< " reco::PFJet/pat::Jet, reco::PFCandidate } !!\n";
   }
 
