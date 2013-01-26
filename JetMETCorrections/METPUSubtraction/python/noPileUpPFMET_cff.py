@@ -3,28 +3,28 @@ import FWCore.ParameterSet.Config as cms
 noPileUpPFMEtSequence = cms.Sequence()
 
 from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
-calibratedAK5PFJetsForNoPileUpMEt = cms.EDProducer('PFJetCorrectionProducer',
+calibratedAK5PFJetsForNoPileUpPFMEt = cms.EDProducer('PFJetCorrectionProducer',
     src = cms.InputTag('ak5PFJets'),
     correctors = cms.vstring('ak5PFL1FastL2L3Residual') # NOTE: use "ak5PFL1FastL2L3" for MC / "ak5PFL1FastL2L3Residual" for Data
 )
-ak5PFJetSequenceForNoPileUpMEt = cms.Sequence(calibratedAK5PFJetsForNoPileUpMEt)
-noPileUpPFMEtSequence += ak5PFJetSequenceForNoPileUpMEt
+ak5PFJetSequenceForNoPileUpPFMEt = cms.Sequence(calibratedAK5PFJetsForNoPileUpPFMEt)
+noPileUpPFMEtSequence += ak5PFJetSequenceForNoPileUpPFMEt
 
 from RecoJets.JetProducers.PileupJetID_cfi import pileupJetIdProducer
-puJetIdForNoPileUpMEt = pileupJetIdProducer.clone(
+puJetIdForNoPileUpPFMEt = pileupJetIdProducer.clone(
     produceJetIds = cms.bool(True),
     runMvas = cms.bool(True),
-    jets = cms.InputTag("calibratedAK5PFJetsForNoPileUpMEt"),
+    jets = cms.InputTag("calibratedAK5PFJetsForNoPileUpPFMEt"),
     applyJec = cms.bool(False),
     inputIsCorrected = cms.bool(True),                                     
 )
-noPileUpPFMEtSequence += puJetIdForNoPileUpMEt
+noPileUpPFMEtSequence += puJetIdForNoPileUpPFMEt
 
 from JetMETCorrections.Type1MET.pfMETCorrectionType0_cfi import *
 noPileUpPFMEtSequence += type0PFMEtCorrection
 
-jvfJetIdForNoPileUpMEt = cms.EDProducer("JVFJetIdProducer",
-    srcJets = cms.InputTag('calibratedAK5PFJetsForNoPileUpMEt'),
+jvfJetIdForNoPileUpPFMEt = cms.EDProducer("JVFJetIdProducer",
+    srcJets = cms.InputTag('calibratedAK5PFJetsForNoPileUpPFMEt'),
     srcPFCandidates = cms.InputTag('particleFlow'),
     srcPFCandToVertexAssociations = cms.InputTag('pfCandidateToVertexAssociation'),
     srcHardScatterVertex = cms.InputTag('selectedPrimaryVertexHighestPtTrackSumForPFMEtCorrType0'),
@@ -33,13 +33,13 @@ jvfJetIdForNoPileUpMEt = cms.EDProducer("JVFJetIdProducer",
     JVFcut = cms.double(0.75),
     neutralJetOption = cms.string("noPU")
 )
-noPileUpPFMEtSequence += jvfJetIdForNoPileUpMEt
+noPileUpPFMEtSequence += jvfJetIdForNoPileUpPFMEt
 
 import RecoMET.METProducers.METSigParams_cfi as met_config
 noPileUpPFMEtData = cms.EDProducer("NoPileUpPFMEtDataProducer",
-    srcJets = cms.InputTag('calibratedAK5PFJetsForNoPileUpMEt'),
-    srcJetIds = cms.InputTag('puJetIdForNoPileUpMEt', 'fullId'),
-    #srcJetIds = cms.InputTag('jvcJetIdForNoPileUpMEt', 'Id'),                          
+    srcJets = cms.InputTag('calibratedAK5PFJetsForNoPileUpPFMEt'),
+    srcJetIds = cms.InputTag('puJetIdForNoPileUpPFMEt', 'fullId'),
+    #srcJetIds = cms.InputTag('jvcJetIdForNoPileUpPFMEt', 'Id'),                          
     minJetPt = cms.double(30.0), 
     jetIdSelection = cms.string('loose'),
     jetEnOffsetCorrLabel = cms.string("ak5PFL1Fastjet"),                               
@@ -49,7 +49,8 @@ noPileUpPFMEtData = cms.EDProducer("NoPileUpPFMEtDataProducer",
     minJetPtForMEtCov = cms.double(10.), 
     srcHardScatterVertex = cms.InputTag('selectedPrimaryVertexHighestPtTrackSumForPFMEtCorrType0'),
     dZcut = cms.double(0.2), # cm
-    resolution = met_config.METSignificance_params
+    resolution = met_config.METSignificance_params,
+    verbosity = cms.int32(0)     
 )
 noPileUpPFMEtSequence += noPileUpPFMEtData
 
@@ -68,6 +69,7 @@ noPileUpPFMEt = cms.EDProducer("NoPileUpPFMEtProducer",
     sfUnclNeutralCands = cms.double(0.6),
     sfType0Correction = cms.double(1.0),
     resolution = met_config.METSignificance_params,
-    saveInputs = cms.bool(True)                            
+    saveInputs = cms.bool(True),
+    verbosity = cms.int32(0)                               
 )
 noPileUpPFMEtSequence += noPileUpPFMEt
