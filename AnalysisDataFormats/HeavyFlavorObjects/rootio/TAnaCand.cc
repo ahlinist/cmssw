@@ -24,6 +24,7 @@ void TAnaCand::clear() {
   fQ     = -99; 
   fIndex = -99; 
   fPvIdx = -1;
+  fDeltaChi2 = -99;
   fPvLip = fPvLipE = fPvTip = fPvTipE = -99.;
   fPvLip2 = fPvLipE2 = -99.;
   fTauxy = fTauxyE = -99;
