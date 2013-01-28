@@ -45,6 +45,9 @@ public:
   // -- proper lifetime and its error
   double      fTauxy, fTauxyE; // from 2d (r-phi) measurement
   double      fTau3d, fTau3dE; // from 3d measurement
+  
+  // -- Delta chi2 PV fitting
+  double      fDeltaChi2;
 
   // information on tracks near this candidate
   std::vector<std::pair<int,std::pair<float,float> > > fNstTracks; // usage: (trackIx,doca(value,error))
