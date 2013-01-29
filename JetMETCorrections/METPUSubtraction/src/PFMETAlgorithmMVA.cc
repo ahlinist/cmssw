@@ -206,7 +206,7 @@ void PFMETAlgorithmMVA::evaluateMVA()
     //Fix events with unphysical properties
     double sumLeptonPt = TMath::Max(sqrt(sumLeptonPx_*sumLeptonPx_+sumLeptonPy_*sumLeptonPy_),1.);
     if(tkU_/sumLeptonPt < 0.1 || npuU_/sumLeptonPt <  0.1 ) mvaOutputU_      = 1.;
-    if(tkU_/sumLeptonPt < 0.1 || npuU_/sumLeptonPt <  0.1 ) mvaOutputDPhi_   = 1.;
+    if(tkU_/sumLeptonPt < 0.1 || npuU_/sumLeptonPt <  0.1 ) mvaOutputDPhi_   = 0.;
   }
   double U      = pfU_*mvaOutputU_;
   double Phi    = pfPhi_ + mvaOutputDPhi_;
