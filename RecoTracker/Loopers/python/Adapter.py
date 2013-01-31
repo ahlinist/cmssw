@@ -19,29 +19,24 @@ def adapt(process):
     #usually cmsDriver.py looper -s RECO --customise RecoTracker/Loopers/Adapter.<any>
     process.load('RecoTracker/Loopers/LooperClusterRemover_cfi')
 
-    process.reconstruction_step.replace(process.siStripMatchedRecHits,
-                                        process.siStripMatchedRecHits+
-                                        process.offlineBeamSpot+
-                                        process.mix+
-                                        process.loopersMask)
-    
+    process.loopersSeq= cms.Sequence( process.mix+process.loopersMask )
+    process.iterTracking._seq = process.loopersSeq * process.iterTracking._seq
+        
     process.pixellayertriplets.BPix.skipClusters = cms.InputTag('loopersMask')
     process.pixellayertriplets.FPix.skipClusters = cms.InputTag('loopersMask')
     process.lowPtTripletStepClusters.oldClusterRemovalInfo = cms.InputTag('loopersMask')
     process.initialStepTrajectoryBuilder.clustersToSkip = cms.InputTag('loopersMask')
 
-    if True:
-        ##adapt a PV finding to the loopers track only
-        process.loopersVertex = process.offlinePrimaryVertices.clone(TrackLabel='loopersMask')
-        process.reconstruction_step.replace( process.loopersMask,
-                                             process.loopersMask+process.loopersVertex)
+    ##adapt a PV finding to the loopers track only
+    process.loopersVertex = process.offlinePrimaryVertices.clone(TrackLabel='loopersMask')
+    process.loopersSeq+=process.loopersVertex
         
     for o in process.outputModules_():
         om=process.outputModules_()[o]
         om.outputCommands.append('keep *_loopersMask_*_*')
-        om.outputCommands.append('keep *_loopersTracks_*_*')
         om.outputCommands.append('keep *_loopersVertex_*_*')
     return (process)
+
 
 def looperTracks(process):
     ##function from a RAW file
@@ -65,13 +60,19 @@ def looperTracks(process):
     ### analytical propagator ...
     ##process.RungeKuttaTrackerPropagator = process.AnalyticalPropagator.clone( ComponentName = 'RungeKuttaTrackerPropagator',MaxDPhi = 1000.0)
 
-    process.reconstruction_step.replace(process.loopersMask,
-                                        process.loopersMask+process.loopersTracks)
+    process.loopersSeq+=process.loopersTracks
 
     ## now try to put those tracks (or the initial ones inside the generalTrack collection)
-    process.generalTracks.TrackProducers.append( cms.InputTag('loopersMask') )
-    process.generalTracks.hasSelector.append( 0 )
-    process.generalTracks.setsToMerge[0].tLists.append(7)
+    try:
+        process.generalTracks.TrackProducers.append( cms.InputTag('loopersMask') )
+        process.generalTracks.hasSelector.append( 0 )
+        process.generalTracks.setsToMerge[0].tLists.append(7)
+    except:
+        #fall back for 6.2
+        process.earlyGeneralTracks.TrackProducers.append( cms.InputTag('loopersMask') )
+        process.earlyGeneralTracks.selectedTrackQuals.append( cms.InputTag('dummy') )
+        process.earlyGeneralTracks.hasSelector.append( 0 )
+        process.earlyGeneralTracks.setsToMerge[0].tLists.append(7)
 
     for o in process.outputModules_():
         om=process.outputModules_()[o]
