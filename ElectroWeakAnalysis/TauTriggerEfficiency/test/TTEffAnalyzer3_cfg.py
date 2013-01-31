@@ -50,7 +50,7 @@ if dataVersion.isMC():
         fileNames = cms.untracked.vstring(
 #       "file:TTEffSkim.root"
 	"root://madhatter.csc.fi:1094/pnfs/csc.fi/data/cms/store/group/local/HiggsChToTauNuFullyHadronic/TriggerMETLeg/CMSSW_5_3_X/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_analysis_metleg_v53_v1/638a70bdbf1f7414f9f442a75689ed2b/pattuple_486_2_ZHP.root"
-#        "file:/tmp/slehti/TTJets_TuneZ2_7TeV_Fall11_START44_V9B_v1_AODSIM_pattuple_244_1_vQB.root"
+#        "file:/tmp/slehti/TauTriggerEff_DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola_Summer12_PU_S8_START52_V9_v1_AODSIM_TTEffSkim_v525_V00_10_04_v2_TTEffSkim_70_1_hQW.root"
         )
     )
 else:
@@ -216,7 +216,10 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
 #        Jets = cms.InputTag("ak5PFJetsL1L2L3"),
 	Jets = cms.InputTag("selectedPatJets"),
 
-	lheSrc = cms.InputTag("source", "", "LHE"),
+	lheSrc 			= cms.InputTag("source", "", "LHE"),
+	VisibleTauSrc		= cms.InputTag("VisibleTaus","HadronicTauOneAndThreeProng"),
+	GenParticleCollection	= cms.InputTag("genParticles"),
+	MCMatchingCone		= cms.double(0.2),
 
         offlineVertexSrc = cms.InputTag("goodPrimaryVertices"),
 

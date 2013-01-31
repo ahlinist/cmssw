@@ -49,6 +49,9 @@
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/MuonAnalyzer.h"
 
+#include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/LorentzVectorFwd.h"
+
 #include "TH1F.h"
 #include "TTree.h"
 #include "TFile.h"
@@ -66,6 +69,7 @@ private:
   void endJob() ;
 
   void reset();
+  int MCMatch(const edm::Event&,const reco::Candidate&);
 
   // Input stuff
   edm::InputTag hltResultsSrc_;
@@ -76,6 +80,9 @@ private:
   edm::InputTag pfJetSrc_;
 
   edm::InputTag lheSrc;
+  edm::InputTag visibleTauSrc;
+  edm::InputTag genParticleSrc;
+  double MCMatchingCone;
 
   edm::InputTag offlinePrimaryVertexSrc_;
 
@@ -177,6 +184,7 @@ private:
   std::vector<float> PFTauProng_;
   std::vector<Discriminator> PFTauDiscriminators_;
   std::vector<float> PFTauJetMinDR_;
+  std::vector<int> PFTauMCMatch_;
 
   std::vector<float> PFJetPt_;
 
@@ -240,6 +248,9 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   pileupSummaryInfoSrc_(iConfig.getParameter<edm::InputTag>("PileupSummaryInfoSource")),
   pfJetSrc_(iConfig.getParameter<edm::InputTag>("Jets")),
   lheSrc(iConfig.getParameter<edm::InputTag>("lheSrc")),
+  visibleTauSrc(iConfig.getParameter<edm::InputTag>("VisibleTauSrc")),
+  genParticleSrc(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
+  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone")),
   offlinePrimaryVertexSrc_(iConfig.getParameter<edm::InputTag>("offlineVertexSrc")),
   l1TauSrc_(iConfig.getParameter<edm::InputTag>("L1extraTauJetSource")),
   l1CenSrc_(iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource")),
@@ -346,6 +357,8 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
     tree_->Branch(("PFTau_"+PFTauDiscriminators_[i].name).c_str(), &(PFTauDiscriminators_[i].values));
 
   tree_->Branch("PFTauJetMinDR", &PFTauJetMinDR_);
+  tree_->Branch("PFTauMCMatch", &PFTauMCMatch_);
+
   tree_->Branch("PFJetPt", &PFJetPt_);
 
   tree_->Branch("L1JetIsTau", &l1JetIsTau_);
@@ -429,6 +442,7 @@ void TTEffAnalyzer2::reset() {
   for(size_t i=0; i<PFTauDiscriminators_.size(); ++i)
     PFTauDiscriminators_[i].values.clear();
   PFTauJetMinDR_.clear();
+  PFTauMCMatch_.clear();
 
   PFJetPt_.clear();
 
@@ -469,6 +483,58 @@ void TTEffAnalyzer2::reset() {
     l25TauDiscriminators_[i].values.clear();
   for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i)
     l25TauSelectedTaus_[i].values.clear();
+}
+
+int TTEffAnalyzer2::MCMatch(const edm::Event& iEvent,const reco::Candidate& direction){
+
+  std::vector<std::pair<int,double> > foundInCone;
+
+  edm::Handle<std::vector<math::XYZTLorentzVectorD> > mcTaus;
+  if(iEvent.getByLabel(visibleTauSrc,mcTaus)){
+    for(size_t i = 0; i < mcTaus->size(); ++i){
+	double DR = ROOT::Math::VectorUtil::DeltaR(direction.p4(),mcTaus->at(i));
+	if( DR < MCMatchingCone ){
+	    foundInCone.push_back(std::pair<int,double>(15,DR));
+	    break;
+	}
+    }
+  }
+
+  edm::Handle <reco::GenParticleCollection> genParticles;
+  if(iEvent.getByLabel(genParticleSrc, genParticles)){
+    for (size_t i=0; i < genParticles->size(); ++i){
+      const reco::Candidate & p = (*genParticles)[i];
+      int id = p.pdgId();
+      if(abs(id) == 22) continue; // not interested in photons..
+      double DR = ROOT::Math::VectorUtil::DeltaR(direction.p4(),p.p4());
+      if( DR < MCMatchingCone ){
+        foundInCone.push_back(std::pair<int,double>(id,DR));
+      }
+    }
+  }
+  bool tauFound = false;
+  bool eFound   = false;
+  bool muFound  = false;
+  bool bFound   = false;
+  bool cFound   = false;
+  for(size_t i = 0; i < foundInCone.size();++i){
+    if(abs(foundInCone[i].first) == 15) tauFound = true;
+    if(abs(foundInCone[i].first) == 11) eFound   = true;
+    if(abs(foundInCone[i].first) == 13) muFound  = true;
+    if(abs(foundInCone[i].first) == 5)  bFound   = true;
+    if(abs(foundInCone[i].first) == 4)  cFound   = true;
+
+    //std::cout << "check foundInCone " << foundInCone[i].first << " " << foundInCone[i].second << std::endl;
+  }
+  int mcMatch = 0;
+  if(tauFound) mcMatch = 15;
+  if(eFound)   mcMatch = 11;
+  if(muFound)  mcMatch = 13;
+  if(cFound)   mcMatch = 4;
+  if(bFound)   mcMatch = 5;
+
+  //std::cout << "check mcMatch " << mcMatch << std::endl;
+  return mcMatch;
 }
 
 void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -757,6 +823,10 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
     PFTauJetMinDR_.push_back(jetMinDR);
 
+    // Matching to MC truth
+    int mcMatch = MCMatch(iEvent,tau);
+    PFTauMCMatch_.push_back(mcMatch);
+    
     // Matching to HLT objects
     int foundMatch = 0;
     for(size_t i = 0; i < hltObjects.size(); ++i){
