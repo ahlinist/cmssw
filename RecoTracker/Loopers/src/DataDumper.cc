@@ -529,7 +529,7 @@ void DataDumper::makePeaks(){
     }
   else if (baseLineCut_ ==0)
     baseLineCut = 0;
-  else if (baseLineCut_ > (-counts_at.size()) )
+  else if (baseLineCut_ > int(-counts_at.size()) )
     {
       //one can do the extrapolation of the same counts_at to get a baseline
       uint b0=0;
