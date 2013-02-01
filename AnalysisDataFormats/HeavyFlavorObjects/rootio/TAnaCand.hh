@@ -27,6 +27,7 @@ public:
   int         fType, fQ;
   int         fIndex; 
   double      fMass;
+  double      fMassE;
 
   TAnaVertex  fVtx;
 

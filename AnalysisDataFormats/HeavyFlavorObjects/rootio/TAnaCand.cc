@@ -29,6 +29,7 @@ void TAnaCand::clear() {
   fPvLip2 = fPvLipE2 = -99.;
   fTauxy = fTauxyE = -99;
   fTau3d = fTau3dE = -99.;
+  fMassE = -99.;
   fVar1  = fVar2 = fVar3 = -99.;
   fVtx.clear();
   fNstTracks.clear();
