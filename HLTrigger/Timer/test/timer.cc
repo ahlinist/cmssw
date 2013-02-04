@@ -1,6 +1,7 @@
 // standard c++ headers
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -33,7 +34,7 @@
 #include <mach/mach_time.h>
 #endif // defined(__APPLE__) || defined(__MACH__)
 
-// for rdtsc, rdtscp
+// for rdtsc, rdtscp, lfence
 #if defined(__linux__)
 #include <linux/version.h>
 #include <sys/prctl.h>
@@ -42,6 +43,78 @@
 
 
 static constexpr unsigned int SIZE = 1000000;
+
+
+std::string read_clock_source() {
+  try {
+    std::ifstream current_clocksource("/sys/devices/system/clocksource/clocksource0/current_clocksource");
+    std::string value;
+    current_clocksource >> value;
+    return value;
+  } catch (...) {
+    return std::string("unknown");
+  }
+}
+
+// check if the RDTSC and RDTSCP instructions are allowed
+bool is_tsc_allowed() {
+#if defined(__linux__)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+    int tsc_val;
+    prctl(PR_GET_TSC, &tsc_val);
+    if (tsc_val != PR_TSC_ENABLE)
+      prctl(PR_SET_TSC, PR_TSC_ENABLE);
+    prctl(PR_GET_TSC, &tsc_val);
+    if (tsc_val != PR_TSC_ENABLE)
+      return false;
+#endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+#endif // defined(__linux__) 
+    return true;
+}
+
+// calibrate TSC with respect to CLOCK_MONOTONIC_RAW (if available) or CLOCK_MONOTONIC
+double calibrate_tsc() {
+  const int sample_size = 16;               // 16 samples
+  const int sleep_time  = 10000;            // 10 ms
+  unsigned long long ticks[sample_size];
+  double             times[sample_size];
+
+  timespec ts;
+  ticks[0] = __rdtsc();
+#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+  clock_gettime(CLOCK_MONOTONIC_RAW, & ts);
+#else
+  clock_gettime(CLOCK_MONOTONIC, & ts);
+#endif
+  times[0] = ts.tv_sec + (double) ts.tv_nsec / 1.e9; 
+  for (unsigned int i = 1; i < sample_size; ++i) {
+    usleep(sleep_time);
+    ticks[i] = __rdtsc();
+#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+    clock_gettime(CLOCK_MONOTONIC_RAW, & ts);
+#else
+    clock_gettime(CLOCK_MONOTONIC, & ts);
+#endif
+    times[i] = ts.tv_sec + (double) ts.tv_nsec / 1.e9; 
+  }
+
+  double mean_x = 0, mean_y = 0;
+  for (unsigned int i = 0; i < sample_size; ++i) {
+    mean_x += (double) times[i];
+    mean_y += (double) ticks[i];
+  }
+  mean_x /= (double) sample_size;
+  mean_y /= (double) sample_size;
+
+  double sigma_xy = 0, sigma_xx = 0;
+  for (unsigned int i = 0; i < sample_size; ++i) {
+    sigma_xx += (double) (times[i] - mean_x) * (double) (times[i] - mean_x);
+    sigma_xy += (double) (times[i] - mean_x) * (double) (ticks[i] - mean_y);
+  }
+
+  // ticks per second
+  return sigma_xy / sigma_xx;
+}
 
 
 class TimerInterface {
@@ -224,10 +297,11 @@ public:
 };
 
 // clock_gettime(CLOCK_REALTIME)
+// note: on Linux, the behaviour of this timer is affected by the choice of the clock source (/sys/devices/system/clocksource/clocksource0/current_clocksource)
 class TimerClockGettimeRealtime : public TimerBase<timespec> {
 public:
   TimerClockGettimeRealtime() {
-    description = "clock_gettime(CLOCK_REALTIME)";
+    description = str(boost::format("clock_gettime(CLOCK_REALTIME, ...) using %s clock source") % read_clock_source());
 
     timespec value = { 0, 0 };
     clock_getres(CLOCK_REALTIME, & value);
@@ -241,10 +315,11 @@ public:
 };
 
 // clock_gettime(CLOCK_MONOTONIC)
+// note: on Linux, the behaviour of this timer is affected by the choice of the clock source (/sys/devices/system/clocksource/clocksource0/current_clocksource)
 class TimerClockGettimeMonotonic : public TimerBase<timespec> {
 public:
   TimerClockGettimeMonotonic() {
-    description = "clock_gettime(CLOCK_MONOTONIC)";
+    description = str(boost::format("clock_gettime(CLOCK_MONOTONIC, ...) using %s clock source") % read_clock_source());
 
     timespec value = { 0, 0 };
     clock_getres(CLOCK_MONOTONIC, & value);
@@ -256,13 +331,33 @@ public:
       clock_gettime(CLOCK_MONOTONIC, values+i);
   }
 };
+
+#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+// clock_gettime(CLOCK_MONOTONIC_RAW)
+class TimerClockGettimeMonotonicRaw : public TimerBase<timespec> {
+public:
+  TimerClockGettimeMonotonicRaw() {
+    description = str(boost::format("clock_gettime(CLOCK_MONOTONIC_RAW, ...) using %s clock source") % read_clock_source());
+
+    timespec value = { 0, 0 };
+    clock_getres(CLOCK_MONOTONIC_RAW, & value);
+    granularity = value.tv_sec + value.tv_nsec / (double) 1e9;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      clock_gettime(CLOCK_MONOTONIC_RAW, values+i);
+  }
+};
+#endif // defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+
 #endif // defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
 
 #if defined(__APPLE__) || defined (__MACH__)
 // clock_get_time <-- REALTIME_CLOCK
-class TimerClockGetTimrRealtimeClock : public TimerBase<mach_timespec_t> {
+class TimerClockGetTimeRealtimeClock : public TimerBase<mach_timespec_t> {
 public:
-  TimerClockGetTimrRealtimeClock() {
+  TimerClockGetTimeRealtimeClock() {
     description = "clock_get_time() with REALTIME_CLOCK";
 
     host_get_clock_service(mach_host_self(), REALTIME_CLOCK, &clock_port);
@@ -272,7 +367,7 @@ public:
     granularity = value * 1.e-9;
   }
 
-  ~TimerClockGetTimrRealtimeClock() {
+  ~TimerClockGetTimeRealtimeClock() {
     mach_port_deallocate(mach_task_self(), clock_port);
   }
 
@@ -286,9 +381,9 @@ private:
 };
 
 // clock_get_time <-- CALENDAR_CLOCK
-class TimerClockGetTimrCalendarClock : public TimerBase<mach_timespec_t> {
+class TimerClockGetTimeCalendarClock : public TimerBase<mach_timespec_t> {
 public:
-  TimerClockGetTimrCalendarClock() {
+  TimerClockGetTimeCalendarClock() {
     description = "clock_get_time() with CALENDAR_CLOCK";
 
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &clock_port);
@@ -298,7 +393,7 @@ public:
     granularity = value * 1.e-9;
   }
 
-  ~TimerClockGetTimrCalendarClock() {
+  ~TimerClockGetTimeCalendarClock() {
     mach_port_deallocate(mach_task_self(), clock_port);
   }
 
@@ -332,10 +427,11 @@ private:
 #endif // defined(__APPLE__) || defined (__MACH__)
 
 // gettimeofday()
+// note: on Linux, the behaviour of this timer is affected by the choice of the clock source (/sys/devices/system/clocksource/clocksource0/current_clocksource)
 class TimerGettimeofday : public TimerBase<timeval> {
 public:
   TimerGettimeofday() {
-    description = "gettimeofday()";
+    description = str(boost::format("gettimeofday() using %s clock source") % read_clock_source());
     granularity = 1e-6;
   }
 
@@ -365,11 +461,12 @@ public:
 };
 
 
-// getrusage(RUSAGE_SELF)
+// omp_get_wtime()
+// note: on Linux, the behaviour of this timer is affected by the choice of the clock source (/sys/devices/system/clocksource/clocksource0/current_clocksource)
 class TimerOMPGetWtime : public TimerBase<double> {
 public:
   TimerOMPGetWtime() {
-    description = "omp_get_wtime()";
+    description = str(boost::format("omp_get_wtime() using %s clock source") % read_clock_source());
     granularity = omp_get_wtick();
   }
 
@@ -423,23 +520,11 @@ public:
 class TimerRDTSC : public TimerBase<unsigned long long> {
 public:
   TimerRDTSC() {
-#if defined(__linux__)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
-    int tsc_val;
-    prctl(PR_GET_TSC, &tsc_val);
-    if (tsc_val != PR_TSC_ENABLE)
-      prctl(PR_SET_TSC, PR_TSC_ENABLE);
-    prctl(PR_GET_TSC, &tsc_val);
-    if (tsc_val != PR_TSC_ENABLE)
+    if (not is_tsc_allowed())
       throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
-#endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
-#endif // defined(__linux__) 
-
-    unsigned long long ticks = 0;
-    ticks -= __rdtsc();
-    usleep(1000000);    // sleep 1 second
-    ticks += __rdtsc();
-    ticks_per_second = (double) ticks;
+    
+    // ticks_per_second and granularity
+    ticks_per_second  = calibrate_tsc();
     granularity = 1. / ticks_per_second;
     if (granularity < 1.e-9)
       granularity = 1.e-9;
@@ -452,6 +537,34 @@ public:
       values[i] = __rdtsc();
     }
   }
+
+};
+
+
+
+// lfence, rdtsc()
+class TimerFenceRDTSC : public TimerBase<unsigned long long> {
+public:
+  TimerFenceRDTSC() {
+    if (not is_tsc_allowed())
+      throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
+    
+    // ticks_per_second and granularity
+    ticks_per_second  = calibrate_tsc();
+    granularity = 1. / ticks_per_second;
+    if (granularity < 1.e-9)
+      granularity = 1.e-9;
+    
+    description = str(boost::format("lfence(); rdtsc() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+      _mm_lfence();
+      values[i] = __rdtsc();
+    }
+  }
+
 };
 
 
@@ -459,28 +572,15 @@ public:
 class TimerRDTSCP : public TimerBase<unsigned long long> {
 public:
   TimerRDTSCP() {
-#if defined(__linux__)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
-    int tsc_val;
-    prctl(PR_GET_TSC, &tsc_val);
-    if (tsc_val != PR_TSC_ENABLE)
-      prctl(PR_SET_TSC, PR_TSC_ENABLE);
-    prctl(PR_GET_TSC, &tsc_val);
-    if (tsc_val != PR_TSC_ENABLE)
+    if (not is_tsc_allowed())
       throw std::runtime_error("RDTSCP is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
-#endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
-#endif // defined(__linux__) 
-
-    unsigned int       id    = 0;
-    unsigned long long ticks = 0;
-    ticks -= __rdtscp(& id);
-    usleep(1000000);    // sleep 1 second
-    ticks += __rdtscp(& id);
-    ticks_per_second = (double) ticks;
+    
+    // ticks_per_second and granularity
+    ticks_per_second  = calibrate_tsc();
     granularity = 1. / ticks_per_second;
     if (granularity < 1.e-9)
       granularity = 1.e-9;
-
+    
     description = str(boost::format("rdtscp() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
   }
 
@@ -490,6 +590,7 @@ public:
       values[i] = __rdtscp(& id);
     }
   }
+
 };
 
 
@@ -501,10 +602,13 @@ int main(void) {
   timers.push_back(new TimerClockGettimeProcess());
   timers.push_back(new TimerClockGettimeRealtime());
   timers.push_back(new TimerClockGettimeMonotonic());
+#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+  timers.push_back(new TimerClockGettimeMonotonicRaw());
+#endif // defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
 #endif // defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
 #if defined(__APPLE__) || defined (__MACH__)
-  timers.push_back(new TimerClockGetTimrRealtimeClock());
-  timers.push_back(new TimerClockGetTimrCalendarClock());
+  timers.push_back(new TimerClockGetTimeRealtimeClock());
+  timers.push_back(new TimerClockGetTimeCalendarClock());
   timers.push_back(new TimerMachAbsoluteTime());
 #endif // defined(__APPLE__) || defined (__MACH__)
   timers.push_back(new TimerGettimeofday());
@@ -513,15 +617,16 @@ int main(void) {
   timers.push_back(new TimerClock());
   timers.push_back(new TimerTimes());
   timers.push_back(new TimerRDTSC());
+  timers.push_back(new TimerFenceRDTSC());
   timers.push_back(new TimerRDTSCP());
+
+  std::cout << "For each timer the resolution reported is the MEDIAN (MEAN +/- its STDDEV) of the increments measured during the test." << std::endl; 
 
   for (TimerInterface * timer: timers) {
     timer->measure();
     timer->compute();
     timer->report();
   }
-
-  std::cout << "Note: for each timer the resolution reported is the MEDIAN (MEAN +/- its STDDEV) of the increments measured during the test." << std::endl; 
 
   return 0;
 }
