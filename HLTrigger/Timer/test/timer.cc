@@ -1,3 +1,4 @@
+// standard c++ headers
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -5,6 +6,9 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
+
+// boost headers
+#include <boost/format.hpp>
 
 // for timespec and clock_gettime
 #include <time.h>
@@ -29,7 +33,7 @@
 #include <mach/mach_time.h>
 #endif // defined(__APPLE__) || defined(__MACH__)
 
-// for rdtsc
+// for rdtsc, rdtscp
 #if defined(__linux__)
 #include <linux/version.h>
 #include <sys/prctl.h>
@@ -440,15 +444,50 @@ public:
     if (granularity < 1.e-9)
       granularity = 1.e-9;
 
-    char * desc;
-    asprintf(& desc, "rdtsc() [estimated at %#5.4g GHz]", ticks_per_second / 1.e9);
-    description = std::string(desc);
-    free(desc);
+    description = str(boost::format("rdtsc() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
   }
 
   void measure() {
     for (unsigned int i = 0; i <= 2*SIZE; ++i) {
       values[i] = __rdtsc();
+    }
+  }
+};
+
+
+// rdtscp()
+class TimerRDTSCP : public TimerBase<unsigned long long> {
+public:
+  TimerRDTSCP() {
+#if defined(__linux__)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+    int tsc_val;
+    prctl(PR_GET_TSC, &tsc_val);
+    if (tsc_val != PR_TSC_ENABLE)
+      prctl(PR_SET_TSC, PR_TSC_ENABLE);
+    prctl(PR_GET_TSC, &tsc_val);
+    if (tsc_val != PR_TSC_ENABLE)
+      throw std::runtime_error("RDTSCP is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
+#endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
+#endif // defined(__linux__) 
+
+    unsigned int       id    = 0;
+    unsigned long long ticks = 0;
+    ticks -= __rdtscp(& id);
+    usleep(1000000);    // sleep 1 second
+    ticks += __rdtscp(& id);
+    ticks_per_second = (double) ticks;
+    granularity = 1. / ticks_per_second;
+    if (granularity < 1.e-9)
+      granularity = 1.e-9;
+
+    description = str(boost::format("rdtscp() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
+  }
+
+  void measure() {
+    unsigned int id = 0;
+    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+      values[i] = __rdtscp(& id);
     }
   }
 };
@@ -474,6 +513,7 @@ int main(void) {
   timers.push_back(new TimerClock());
   timers.push_back(new TimerTimes());
   timers.push_back(new TimerRDTSC());
+  timers.push_back(new TimerRDTSCP());
 
   for (TimerInterface * timer: timers) {
     timer->measure();
