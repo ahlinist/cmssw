@@ -74,8 +74,8 @@ bool is_tsc_allowed() {
 
 // calibrate TSC with respect to CLOCK_MONOTONIC_RAW (if available) or CLOCK_MONOTONIC
 double calibrate_tsc() {
-  const int sample_size = 16;               // 16 samples
-  const int sleep_time  = 10000;            // 10 ms
+  const unsigned int sample_size = 16;              // 16 samples
+  const unsigned int sleep_time  = 10000;           // 10 ms
   unsigned long long ticks[sample_size];
   double             times[sample_size];
 
