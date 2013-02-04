@@ -8,6 +8,7 @@
 
 Author:  Pratima Jindal, Purdue University Calumet
          July 2009
+	 mod by cc Oct 2012
 
 == Subsystem or component described by the file ==
 
@@ -20,12 +21,16 @@ Pixel Forward Blade
  <Constant name="SensitiveL"         value="64.816*mm"/>
  <Constant name="SideWidth"          value="1.164*mm"/>
  <Constant name="SideGap"            value="0.291*mm"/>
- <Constant name="WedgeAngle"         value="100*mrad"/>
+ <Constant name="WedgeAngle"         value="96*mrad"/>
  <Constant name="WedgeSideL"         value="71.2*mm"/>
- <Constant name="WedgeH"             value="[WedgeSideL]*cos([WedgeAngle])"/>
- <Constant name="WedgeBot"           value="2*(([SensitiveW]+[SideWidth]+[SideGap])*cos([WedgeAngle])-([SensitiveL]+[SideWidth]-[SideGap]*tan([WedgeAngle]))*sin([WedgeAngle]))"/>
- <Constant name="WedgeTop"           value="[WedgeBot]+2*[WedgeSideL]*sin([WedgeAngle])"/>
- <Constant name="WedgeThick"         value="2.8*mm"/>
+
+ <Constant name="DetectorShiftX"     value="0.250*mm"/>
+  
+ <Constant name="DeltaX"             value="0.5*([ModuleW]-[SensitiveW])"/>
+ <Constant name="DeltaY"             value="[SideWidth]"/>
+ 
+  
+ <Constant name="WedgeThick"         value="2*[ModuleT]+[BladeBaseT]"/>
  <Constant name="WaferL"             value="[SensitiveL]+2*[SideWidth]"/>
  <Constant name="WaferW"             value="[SensitiveW]+2*[SideWidth]"/>
  <Constant name="WaferT"             value="0.250*mm"/>
@@ -35,15 +40,19 @@ Pixel Forward Blade
  <Constant name="ROChipL"            value="8.005*mm"/>    <!-- Readout chip length -->
  <Constant name="ROChipW"            value="10.735*mm"/>   <!-- Readout chip width -->
  <Constant name="ROChipT"            value="0.150*mm"/>    <!-- Readout chip thickness -->
- <Constant name="ROChipSpaceL"       value ="0.084*mm"/>   <!-- Distance (along width) between adjacent chips -->
- <Constant name="ROChipSpaceW"       value ="0.095*mm"/>   <!-- Distance (along length) between  adjacent chips -->
- <Constant name="ROChipX"            value ="[ROChipW]/2.+[ROChipSpaceW]/2."/>   <!-- Distance (along width) between center of wafer and ROChips -->
- <Constant name="ROChipZ"            value ="[ROChipT]/2.+[WaferT]/2.+0.011*mm"/>   <!-- Distance (along Z) between center of wafer and ROChips -->
+ <Constant name="ROChipSpaceL"       value="0.084*mm"/>   <!-- Distance (along width) between adjacent chips -->
+ <Constant name="ROChipSpaceW"       value="0.095*mm"/>   <!-- Distance (along length) between  adjacent chips -->
+ <Constant name="ROChipX"            value="[ROChipW]/2.+[ROChipSpaceW]/2."/>   <!-- Distance (along width) between center of wafer and ROChips -->
+ <Constant name="ROChipZ"            value="[ROChipT]/2.+[WaferT]/2.+0.011*mm"/>   <!-- Distance (along Z) between center of wafer and ROChips -->
  <Constant name="ModuleL"            value="[SensitiveL]+2*[SideWidth]"/>
  <Constant name="ModuleW"            value="2*[ROChipW]+[ROChipSpaceW]"/>
  <Constant name="ModuleT"            value="0.730*mm"/>
- <Constant name="ModuleX"            value="0.5*([WedgeBot]+[WaferL]*sin([WedgeAngle])-[WaferW]*cos([WedgeAngle]))-[SideGap]/cos([WedgeAngle])"/>
- <Constant name="ModuleY"            value="0.5*([WaferL]/cos([WedgeAngle])-[WedgeH]+([WaferW]-[WaferL]*tan([WedgeAngle]))*sin([WedgeAngle]))"/>
+ 
+ <Constant name="SensorCentreX"      value="-0.5*([SensitiveL]*sin([WedgeAngle])-[SensitiveW]*cos([WedgeAngle]))"/> 
+ <Constant name="SensorCentreY"      value="-0.5*([SensitiveL]*cos([WedgeAngle])+[SensitiveW]*sin([WedgeAngle]))"/> 
+ <Constant name="ModuleX"            value="[SensorCentreX]-[DetectorShiftX]"/>
+ <Constant name="ModuleY"            value="[SensorCentreY]+0.5*[WedgeH]-[DeltaX]*sin([WedgeAngle])-[DeltaY]*cos([WedgeAngle])"/>
+ 
  <Constant name="GlueL"              value="[SensitiveL]+2*[SideWidth]"/>
  <Constant name="GlueW"              value="2*[ROChipW]+[ROChipSpaceW]"/>
  <Constant name="GlueT"              value="0.050*mm"/>
@@ -53,12 +62,18 @@ Pixel Forward Blade
  <Constant name="BladeBaseT"         value="0.8*mm"/>
  <Constant name="TPGBladeBaseT"      value="0.68*mm"/>
  <Constant name="CarbonFiberSkinT"   value="0.06*mm"/>
- <Constant name="ModuleZ"            value="[BladeBaseT]/2+[ModuleT]"/>
+ <Constant name="ModuleZ"            value="[BladeBaseT]/2+[ModuleT]/2"/>
  <Constant name="BumpROChipZ"        value="-[ModuleT]/2+[GlueT]+[BumpROChipT]/2"/>
  <Constant name="HDIZ"              value="-[ModuleT]/2+2*[GlueT]+[ROChipT]+[BumpBondT]+[WaferT]+[HDIT]/2"/>
  <Constant name="WaferZ"             value="-[ModuleT]/2+[GlueT]+[ROChipT]+[BumpBondT]+[WaferT]/2"/>
-
-
+ 
+ <Constant name="WedgeBot1"           value="-[SensitiveL]*sin([WedgeAngle])+[SensitiveW]*cos([WedgeAngle])"/>
+ <Constant name="WedgeBot2"           value="[DeltaX]*cos([WedgeAngle])-[DeltaY]*sin([WedgeAngle])"/>
+ <Constant name="WedgeBot"           value="2*([WedgeBot1]+[WedgeBot2]-[DetectorShiftX])"/>
+ <Constant name="WedgeH1"           value="2*([DeltaX]*sin([WedgeAngle])+[DeltaY]*cos([WedgeAngle]))"/>
+ <Constant name="WedgeH2"           value="[SensitiveL]*cos([WedgeAngle])+[SensitiveW]*sin([WedgeAngle])"/>
+ <Constant name="WedgeH"             value="[WedgeH1]+[WedgeH2]"/>
+ <Constant name="WedgeTop"           value="[WedgeBot]+2*([WedgeH]*tan([WedgeAngle]))"/>
 
 </ConstantsSection>
 

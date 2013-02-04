@@ -92,17 +92,17 @@
   <String  name="ChildName"        value="pixfwdblade3:PixelForwardBlade"/> 
   <Numeric name="StartCopyNo"      value="0"/>
   <Numeric name="NumberOfBlades"   value="22"/>
-  <Numeric name="BladeAngle"       value="-20*deg"/>
+  <Numeric name="BladeAngle"       value="20*deg"/>
   <Numeric name="BladeTilt"        value="12*deg"/>
-  <Numeric name="BladeCommonZ"     value="-3.25*mm"/>
+  <Numeric name="BladeCommonZ"     value="-18.7*mm"/>
   <Vector name="BladeZShift" type="numeric" nEntries="22">
-    -10.88*mm, -6.38*mm, -1.88*mm,  2.62*mm,  7.12*mm, 
-    -10.88*mm, -6.38*mm, -1.88*mm,  2.62*mm,  7.12*mm,  11.62*mm,
+     7.12*mm,  2.62*mm, -1.88*mm, -6.38*mm, -10.88*mm,      
      11.62*mm,  7.12*mm,  2.62*mm, -1.88*mm, -6.38*mm, -10.88*mm,      
-     7.12*mm,  2.62*mm, -1.88*mm, -6.38*mm, -10.88*mm      
+     7.12*mm,  2.62*mm, -1.88*mm, -6.38*mm, -10.88*mm,      
+     11.62*mm,  7.12*mm,  2.62*mm, -1.88*mm, -6.38*mm, -10.88*mm
   </Vector>
 
-  <Numeric name="AnchorRadius"    value="79.2*mm"/>
+  <Numeric name="AnchorRadius"    value="78.7*mm"/>
   <String  name="RotationName"    value="pixfwdInnerDisk3:PixInner"/>
  <String  name="FlagString"      value="YYYYYYYYYYYYYYYYYYYYYY"/>
 </Algorithm>
