@@ -46,12 +46,12 @@ static constexpr unsigned int SIZE = 1000000;
 
 
 std::string read_clock_source() {
-  try {
-    std::ifstream current_clocksource("/sys/devices/system/clocksource/clocksource0/current_clocksource");
+  std::ifstream current_clocksource("/sys/devices/system/clocksource/clocksource0/current_clocksource");
+  if (current_clocksource.good()) {
     std::string value;
     current_clocksource >> value;
     return value;
-  } catch (...) {
+  } else {
     return std::string("unknown");
   }
 }
