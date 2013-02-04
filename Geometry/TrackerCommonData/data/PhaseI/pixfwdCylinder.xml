@@ -31,16 +31,16 @@ root volume plus an anchor point for positioning.
 -->
 
 <ConstantsSection label="Cylinders" eval="true">
- <Constant name="CylindersOuterRmin" value="160.00*mm"/>
- <Constant name="CylindersOuterRmax" value="168.50*mm"/>
+ <Constant name="CylindersOuterRmin" value="166.00*mm"/><!-- 160.00*mm-->
+ <Constant name="CylindersOuterRmax" value="174.50*mm"/><!-- 168.50*mm-->
  <Constant name="CylindersOuterLength" value="2101.09*mm"/> 
 
  <Constant name="CylindersEndFlangeRmin" value="132.50*mm"/>
- <Constant name="CylindersEndFlangeRmax" value="160.50*mm"/>
+ <Constant name="CylindersEndFlangeRmax" value="166.50*mm"/><!-- 160.50*mm-->
  <Constant name="CylindersEndFlangeLength" value="41.30*mm"/> 
 
  <Constant name="CylindersElectronicsRmin" value="117.20*mm"/>
- <Constant name="CylindersElectronicsRmax" value="160.00*mm"/>
+ <Constant name="CylindersElectronicsRmax" value="166.00*mm"/><!-- 160.00*mm-->
  <Constant name="CylindersElectronicsLength" value="132.08*mm"/>
 
  <Constant name="CylindersCoilFiberWidth" value="98.48*mm"/>
