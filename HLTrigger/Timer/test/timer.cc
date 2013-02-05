@@ -34,12 +34,15 @@
 #include <mach/mach_time.h>
 #endif // defined(__APPLE__) || defined(__MACH__)
 
-// for rdtsc, rdtscp, lfence
+// to check if reading the TSC is allowed
 #if defined(__linux__)
 #include <linux/version.h>
 #include <sys/prctl.h>
 #endif // defined(__linux__)
+
+// for rdtscp, rdtscp, lfence, mfence, cpuid
 #include <x86intrin.h>
+#include <cpuid.h>
 
 
 static constexpr unsigned int SIZE = 1000000;
@@ -56,8 +59,21 @@ std::string read_clock_source() {
   }
 }
 
+// check if the RDTSCP instruction is supported
+#ifndef bit_RDTSCP
+#define bit_RDTSCP      (1 << 27)
+#endif
+
+bool rdtscp_supported() {
+  unsigned int eax, ebx, ecx, edx;
+  if (__get_cpuid(0x80000001, & eax, & ebx, & ecx, & edx))
+    return (edx & bit_RDTSCP) != 0;
+  else
+    return false;
+}
+
 // check if the RDTSC and RDTSCP instructions are allowed
-bool is_tsc_allowed() {
+bool tsc_allowed() {
 #if defined(__linux__)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
     int tsc_val;
@@ -520,7 +536,7 @@ public:
 class TimerRDTSC : public TimerBase<unsigned long long> {
 public:
   TimerRDTSC() {
-    if (not is_tsc_allowed())
+    if (not tsc_allowed())
       throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
     
     // ticks_per_second and granularity
@@ -546,7 +562,7 @@ public:
 class TimerFenceRDTSC : public TimerBase<unsigned long long> {
 public:
   TimerFenceRDTSC() {
-    if (not is_tsc_allowed())
+    if (not tsc_allowed())
       throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
     
     // ticks_per_second and granularity
@@ -572,7 +588,9 @@ public:
 class TimerRDTSCP : public TimerBase<unsigned long long> {
 public:
   TimerRDTSCP() {
-    if (not is_tsc_allowed())
+    if (not rdtscp_supported())
+      throw std::runtime_error("RDTSCP instruction is not supported by this processor");
+    if (not tsc_allowed())
       throw std::runtime_error("RDTSCP is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
     
     // ticks_per_second and granularity
