@@ -122,6 +122,7 @@ static const char* desc =
 #include "TGraphAsymmErrors.h"
 #include "TLine.h"
 
+#include "RooNumIntConfig.h"
 #include "RooPlot.h"
 #include "RooRealVar.h"
 #include "RooProdPdf.h"
@@ -607,6 +608,11 @@ void CL95Calc::Init(UInt_t seed){
   mRandomSeed = 12345;
   mConfidenceLevel = 0.95;
 
+  // set integrator
+  //RooAbsReal::defaultIntegratorConfig()->method1D().setLabel("RooAdaptiveGaussKronrodIntegrator1D");
+  //RooAbsReal::defaultIntegratorConfig()->getConfigSection("RooAdaptiveGaussKronrodIntegrator1D").setCatLabel("method","61Points") ;
+  //RooAbsReal::defaultIntegratorConfig()->getConfigSection("RooAdaptiveGaussKronrodIntegrator1D").setRealValue("maxSeg",1000) ;
+
   return;
 }
 
@@ -1064,7 +1070,12 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
   // crude estimates! Need to know data to do better
   pWs->var("n")        ->setRange( 0.0, bck+(5.0*sbck)+10.0*((double)n+1.0)); // ad-hoc range for obs
   //pWs->var("xsec")     ->setRange( 0.0, 15.0*(1.0+nsig_rel_err)/ilum/eff ); // ad-hoc range for POI
+
+  std::cout << "DEBUG DEBUG DEBUG 1" <<std::endl;
   Double_t xsec_upper_bound = 4.0*(std::max(3.0,n-bck)+sqrt(n)+sbck)/ilum/eff;  // ad-hoc range for POI
+  //Double_t xsec_upper_bound = 0.001;
+
+
   xsec_upper_bound = RoundUpperBound(xsec_upper_bound);
   pWs->var("xsec")     ->setRange( 0.0, xsec_upper_bound );
 
@@ -1610,10 +1621,12 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
     // adaptive range in case the POI range was not guessed properly
     Double_t _poi_max_range = pWs->var("xsec")->getMax();
 
+    std::cout << "DEBUG DEBUG DEBUG 2" <<std::endl;
     if (method.find("cls")!=std::string::npos) break;
     if (method.find("fc") != std::string::npos ) break;
     // range too wide
     else if (upper_limit < _poi_max_range/10.0){
+    //else if (upper_limit < _poi_max_range/200.0){
       std::cout << "[roostats_cl95]: POI range is too wide, will narrow the range and rerun" << std::endl;
       pWs->var("xsec")->setMax(RoundUpperBound(_poi_max_range/2.0));
     }
@@ -1696,6 +1709,7 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
 		 eff, seff,
 		 bck, sbck,
 		 (int)(bck+0.5),
+		 //0,
 		 kFALSE,
 		 nuisanceModel );
   
