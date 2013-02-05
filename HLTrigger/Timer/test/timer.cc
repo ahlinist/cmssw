@@ -634,11 +634,18 @@ int main(void) {
   timers.push_back(new TimerOMPGetWtime());
   timers.push_back(new TimerClock());
   timers.push_back(new TimerTimes());
-  timers.push_back(new TimerRDTSC());
-  timers.push_back(new TimerFenceRDTSC());
-  timers.push_back(new TimerRDTSCP());
+  if (tsc_allowed()) {
+    timers.push_back(new TimerRDTSC());
+    timers.push_back(new TimerFenceRDTSC());
+    if (rdtscp_supported())
+      timers.push_back(new TimerRDTSCP());
+    else
+      std::cout << "RDTSCP instruction not supported by this processor" << std::endl << std::endl;
+  } else {
+      std::cout << "access to the TSC by non-privileged processes has been disabled" << std::endl << std::endl;
+  }
 
-  std::cout << "For each timer the resolution reported is the MEDIAN (MEAN +/- its STDDEV) of the increments measured during the test." << std::endl; 
+  std::cout << "For each timer the resolution reported is the MEDIAN (MEAN +/- its STDDEV) of the increments measured during the test." << std::endl << std::endl; 
 
   for (TimerInterface * timer: timers) {
     timer->measure();
