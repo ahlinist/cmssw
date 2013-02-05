@@ -45,6 +45,40 @@
 #include <cpuid.h>
 
 
+// check available capabilities
+#if (defined(_POSIX_TIMERS) && (_POSIX_TIMERS >= 0))
+
+#define HAVE_POSIX_CLOCK_REALTIME
+
+#if (defined(_POSIX_MONOTONIC_CLOCK) && (_POSIX_MONOTONIC_CLOCK >= 0))
+#define HAVE_POSIX_CLOCK_MONOTONIC           
+#endif // _POSIX_MONOTONIC_CLOCK
+
+#if (defined(_POSIX_CPUTIME) && (_POSIX_CPUTIME >= 0))
+#define HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
+#endif // _POSIX_CPUTIME
+
+#if (defined(_POSIX_THREAD_CPUTIME) && (_POSIX_THREAD_CPUTIME >= 0))
+#define HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
+#endif // _POSIX_THREAD_CPUTIME
+
+#ifdef __linux__
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+#define HAVE_POSIX_CLOCK_MONOTONIC_RAW
+#endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+#endif // __linux__
+
+#endif // _POSIX_TIMERS
+
+#if defined(__APPLE__) || defined(__MACH__)
+
+#define HAVE_MACH_SYSTEM_CLOCK
+#define HAVE_MACH_REALTIME_CLOCK
+#define HAVE_MACH_CALENDAR_CLOCK
+#define HAVE_MACH_ABSOLUTE_TIME
+
+#endif // defined(__APPLE__) || defined(__MACH__)
+
 static constexpr unsigned int SIZE = 1000000;
 
 
@@ -55,7 +89,7 @@ std::string read_clock_source() {
     current_clocksource >> value;
     return value;
   } else {
-    return std::string("unknown");
+    return std::string("default");
   }
 }
 
@@ -84,35 +118,41 @@ bool tsc_allowed() {
     if (tsc_val != PR_TSC_ENABLE)
       return false;
 #endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
-#endif // defined(__linux__) 
+#endif // defined(__linux__)
     return true;
 }
 
 // calibrate TSC with respect to CLOCK_MONOTONIC_RAW (if available) or CLOCK_MONOTONIC
 double calibrate_tsc() {
-  const unsigned int sample_size = 16;              // 16 samples
+  const unsigned int sample_size = 16;              // 16 samplings
   const unsigned int sleep_time  = 10000;           // 10 ms
   unsigned long long ticks[sample_size];
   double             times[sample_size];
 
+#if defined(HAVE_POSIX_CLOCK_MONOTONIC) || defined(HAVE_POSIX_CLOCK_MONOTONIC_RAW)
   timespec ts;
-  ticks[0] = __rdtsc();
-#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
-  clock_gettime(CLOCK_MONOTONIC_RAW, & ts);
-#else
-  clock_gettime(CLOCK_MONOTONIC, & ts);
-#endif
-  times[0] = ts.tv_sec + (double) ts.tv_nsec / 1.e9; 
-  for (unsigned int i = 1; i < sample_size; ++i) {
-    usleep(sleep_time);
+  for (unsigned int i = 0; i < sample_size; ++i) {
+    if (i) usleep(sleep_time);
     ticks[i] = __rdtsc();
-#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+#ifdef HAVE_POSIX_CLOCK_MONOTONIC_RAW
     clock_gettime(CLOCK_MONOTONIC_RAW, & ts);
 #else
     clock_gettime(CLOCK_MONOTONIC, & ts);
 #endif
     times[i] = ts.tv_sec + (double) ts.tv_nsec / 1.e9; 
   }
+#elif defined(HAVE_MACH_ABSOLUTE_TIME)
+  mach_timebase_info_data_t timebase_info;
+  mach_timebase_info(& timebase_info);
+  for (unsigned int i = 0; i < sample_size; ++i) {
+    if (i) usleep(sleep_time);
+    ticks[i] = __rdtsc();
+    times[i] = (double) mach_absolute_time() * timebase_info.numer / timebase_info.denom * 1.e-9;;
+  }
+#else
+  // not supported
+  return 0.;
+#endif
 
   double mean_x = 0, mean_y = 0;
   for (unsigned int i = 0; i < sample_size; ++i) {
@@ -277,7 +317,7 @@ double TimerBase<clock_t>::delta(const clock_t & start, const clock_t & stop) {
   return (double) (stop-start) / (double) ticks_per_second;
 }
 
-#if defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
+#ifdef HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
 // clock_gettime(CLOCK_THREAD_CPUTIME_ID)
 class TimerClockGettimeThread : public TimerBase<timespec> {
 public:
@@ -294,7 +334,9 @@ public:
       clock_gettime(CLOCK_THREAD_CPUTIME_ID, values+i);
   }
 };
+#endif // HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
 
+#ifdef HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
 // clock_gettime(CLOCK_PROCESS_CPUTIME_ID)
 class TimerClockGettimeProcess : public TimerBase<timespec> {
 public:
@@ -311,7 +353,9 @@ public:
       clock_gettime(CLOCK_PROCESS_CPUTIME_ID, values+i);
   }
 };
+#endif // HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
 
+#ifdef HAVE_POSIX_CLOCK_REALTIME
 // clock_gettime(CLOCK_REALTIME)
 // note: on Linux, the behaviour of this timer is affected by the choice of the clock source (/sys/devices/system/clocksource/clocksource0/current_clocksource)
 class TimerClockGettimeRealtime : public TimerBase<timespec> {
@@ -329,7 +373,9 @@ public:
       clock_gettime(CLOCK_REALTIME, values+i);
   }
 };
+#endif // HAVE_POSIX_CLOCK_REALTIME
 
+#ifdef HAVE_POSIX_CLOCK_MONOTONIC
 // clock_gettime(CLOCK_MONOTONIC)
 // note: on Linux, the behaviour of this timer is affected by the choice of the clock source (/sys/devices/system/clocksource/clocksource0/current_clocksource)
 class TimerClockGettimeMonotonic : public TimerBase<timespec> {
@@ -347,8 +393,9 @@ public:
       clock_gettime(CLOCK_MONOTONIC, values+i);
   }
 };
+#endif // HAVE_POSIX_CLOCK_MONOTONIC
 
-#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+#ifdef HAVE_POSIX_CLOCK_MONOTONIC_RAW
 // clock_gettime(CLOCK_MONOTONIC_RAW)
 class TimerClockGettimeMonotonicRaw : public TimerBase<timespec> {
 public:
@@ -365,11 +412,38 @@ public:
       clock_gettime(CLOCK_MONOTONIC_RAW, values+i);
   }
 };
-#endif // defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+#endif // HAVE_POSIX_CLOCK_MONOTONIC_RAW
 
-#endif // defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
 
-#if defined(__APPLE__) || defined (__MACH__)
+#ifdef HAVE_MACH_SYSTEM_CLOCK
+// clock_get_time <-- SYSTEM_CLOCK
+class TimerClockGetTimeSystemClock : public TimerBase<mach_timespec_t> {
+public:
+  TimerClockGetTimeSystemClock() {
+    description = "clock_get_time() with SYSTEM_CLOCK";
+
+    host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &clock_port);
+    int value;
+    unsigned int size = 1;
+    clock_get_attributes( clock_port, CLOCK_GET_TIME_RES, & value, & size);
+    granularity = value * 1.e-9;
+  }
+
+  ~TimerClockGetTimeSystemClock() {
+    mach_port_deallocate(mach_task_self(), clock_port);
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      clock_get_time(clock_port, values+i);
+  }
+
+private:
+  clock_serv_t clock_port;
+};
+#endif // HAVE_MACH_SYSTEM_CLOCK
+
+#ifdef HAVE_MACH_REALTIME_CLOCK
 // clock_get_time <-- REALTIME_CLOCK
 class TimerClockGetTimeRealtimeClock : public TimerBase<mach_timespec_t> {
 public:
@@ -395,7 +469,9 @@ public:
 private:
   clock_serv_t clock_port;
 };
+#endif // HAVE_MACH_REALTIME_CLOCK
 
+#ifdef HAVE_MACH_CALENDAR_CLOCK
 // clock_get_time <-- CALENDAR_CLOCK
 class TimerClockGetTimeCalendarClock : public TimerBase<mach_timespec_t> {
 public:
@@ -421,7 +497,9 @@ public:
 private:
   clock_serv_t clock_port;
 };
+#endif // HAVE_MACH_CALENDAR_CLOCK
 
+#ifdef HAVE_MACH_ABSOLUTE_TIME
 // this function returns a Mach absolute time value for the current wall clock time in units of uint64_t
 class TimerMachAbsoluteTime : public TimerBase<uint64_t> {
 public:
@@ -430,6 +508,7 @@ public:
 
     mach_timebase_info(& timebase_info);
     ticks_per_second = 1.e9 / timebase_info.numer * timebase_info.denom;
+    granularity = 1.e-9 * timebase_info.numer / timebase_info.denom;
   }
 
   void measure() {
@@ -440,7 +519,7 @@ public:
 private:
   mach_timebase_info_data_t timebase_info;
 };
-#endif // defined(__APPLE__) || defined (__MACH__)
+#endif // HAVE_MACH_ABSOLUTE_TIME
 
 // gettimeofday()
 // note: on Linux, the behaviour of this timer is affected by the choice of the clock source (/sys/devices/system/clocksource/clocksource0/current_clocksource)
@@ -615,25 +694,49 @@ public:
 
 int main(void) {
   std::vector<TimerInterface *> timers;
-#if defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
+
+#ifdef HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
   timers.push_back(new TimerClockGettimeThread());
+#endif // HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
+
+#ifdef HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
   timers.push_back(new TimerClockGettimeProcess());
+#endif // HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
+
+#ifdef HAVE_POSIX_CLOCK_REALTIME
   timers.push_back(new TimerClockGettimeRealtime());
+#endif // HAVE_POSIX_CLOCK_REALTIME
+
+#ifdef HAVE_POSIX_CLOCK_MONOTINIC
   timers.push_back(new TimerClockGettimeMonotonic());
-#if defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+#endif // HAVE_POSIX_CLOCK_MONOTINIC
+
+#ifdef HAVE_POSIX_CLOCK_MONOTONIC_RAW
   timers.push_back(new TimerClockGettimeMonotonicRaw());
-#endif // defined(__linux__) && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
-#endif // defined(_POSIX_TIMERS) && _POSIX_TIMERS >= 0
-#if defined(__APPLE__) || defined (__MACH__)
+#endif // HAVE_POSIX_CLOCK_MONOTONIC_RAW
+
+#ifdef HAVE_MACH_SYSTEM_CLOCK
+  timers.push_back(new TimerClockGetTimeSystemClock());
+#endif // HAVE_MACH_SYSTEM_CLOCK
+
+#ifdef HAVE_MACH_REALTIME_CLOCK
   timers.push_back(new TimerClockGetTimeRealtimeClock());
+#endif // HAVE_MACH_REALTIME_CLOCK
+
+#ifdef HAVE_MACH_CALENDAR_CLOCK
   timers.push_back(new TimerClockGetTimeCalendarClock());
+#endif // HAVE_MACH_CALENDAR_CLOCK
+
+#ifdef HAVE_MACH_ABSOLUTE_TIME
   timers.push_back(new TimerMachAbsoluteTime());
-#endif // defined(__APPLE__) || defined (__MACH__)
+#endif // HAVE_MACH_ABSOLUTE_TIME
+
   timers.push_back(new TimerGettimeofday());
   timers.push_back(new TimerGetrusageSelf());
   timers.push_back(new TimerOMPGetWtime());
   timers.push_back(new TimerClock());
   timers.push_back(new TimerTimes());
+
   if (tsc_allowed()) {
     timers.push_back(new TimerRDTSC());
     timers.push_back(new TimerFenceRDTSC());
