@@ -62,6 +62,7 @@ namespace LooperClusterRemoverMethod {
 	aCreator=0;						      
 	maskWithNoTC_=false;
       }
+      mc_=iConfig.getParameter<bool>("mcMatch");
     };
     void run(edm::Event&, const edm::EventSetup&,
 	     LooperClusterRemover::products &);
@@ -73,6 +74,7 @@ namespace LooperClusterRemoverMethod {
     bool makeT_;
     bool maskWithNoTC_;
     double pxlClusterCharge_;
+    bool mc_;
 
     SeedCreator * aCreator;
     ~LooperMethod(){

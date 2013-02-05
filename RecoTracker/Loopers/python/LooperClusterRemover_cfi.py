@@ -22,6 +22,7 @@ loopersMask = cms.EDProducer("LooperClusterRemover",
                              makeTrackCandidates = cms.bool(False),
                              makeTrack = cms.bool(True),
                              maskWithNoTC = cms.bool(False),
+                             mcMatch = cms.bool(False),
                              SeedCreatorPSet = cms.PSet(
                                ComponentName = cms.string('SeedFromConsecutiveHitsCreator'),
                                SeedMomentumForBOFF = cms.double(5.0),

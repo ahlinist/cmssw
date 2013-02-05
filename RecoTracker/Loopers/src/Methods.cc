@@ -345,7 +345,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 
   //cheater
   TrackerHitAssociator * associator=0;
-  if (!iEvent.isRealData())  associator= new TrackerHitAssociator(iEvent);
+  if (!iEvent.isRealData() and mc_)  associator= new TrackerHitAssociator(iEvent);
 
   std::vector<fastRecHit> fastHits;
 
@@ -534,7 +534,7 @@ void LooperClusterRemoverMethod::LooperMethod::run(edm::Event& iEvent, const edm
 			  peak->py_,
 			  peak->pz_ );
       AlgebraicSymMatrix55 errorMatrix= AlgebraicMatrixID();
-      errorMatrix/=100;
+      errorMatrix/=1000;
       CurvilinearTrajectoryError error(errorMatrix); 
       
       prod_.tOut->push_back(reco::Track(0, /*chi2*/
