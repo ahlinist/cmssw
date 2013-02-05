@@ -8,6 +8,9 @@
 #include <cmath>
 #include <stdexcept>
 
+// C++11 headers
+#include <chrono>
+
 // boost headers
 #include <boost/format.hpp>
 
@@ -316,6 +319,28 @@ template <>
 double TimerBase<clock_t>::delta(const clock_t & start, const clock_t & stop) {
   return (double) (stop-start) / (double) ticks_per_second;
 }
+
+// std::chrono::high_resolution_clock::time_point
+template <>
+double TimerBase<std::chrono::high_resolution_clock::time_point>::delta(const std::chrono::high_resolution_clock::time_point & start, const std::chrono::high_resolution_clock::time_point & stop) {
+  return std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count();
+}
+
+
+// C++11 high_resolution_clock
+class TimerCxx11HighResolutionClock : public TimerBase<std::chrono::high_resolution_clock::time_point> {
+public:
+  TimerCxx11HighResolutionClock() {
+    description = "std::chrono::high_resolution_clock";
+    granularity = (double) std::chrono::high_resolution_clock::period::num / (double) std::chrono::high_resolution_clock::period::den;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      values[i] = std::chrono::high_resolution_clock::now();
+  }
+};
+
 
 #ifdef HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
 // clock_gettime(CLOCK_THREAD_CPUTIME_ID)
@@ -694,6 +719,8 @@ public:
 
 int main(void) {
   std::vector<TimerInterface *> timers;
+
+  timers.push_back(new TimerCxx11HighResolutionClock());
 
 #ifdef HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
   timers.push_back(new TimerClockGettimeThread());
