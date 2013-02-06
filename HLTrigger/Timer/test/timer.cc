@@ -96,6 +96,22 @@ std::string read_clock_source() {
   }
 }
 
+#if defined(HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID) || defined(HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID)
+// check if CLOCK_PROCESS_CPUTIME_ID and CLOCK_THREAD_CPUTIME_ID are properly supported 
+bool clock_cputime_supported() {
+  // from the clock_gettime(3) man page:
+  // If the CPUs in an SMP system have different clock sources then there is no way to maintain a 
+  // correlation between the timer registers since each CPU will run at a slightly different frequency.
+  // If that is the case then clock_getcpuclockid(0) will return ENOENT to signify this condition.
+  // The two clocks will then only be useful if it can be ensured that a process stays on a certain CPU.
+  clockid_t clock;
+  if (clock_getcpuclockid(0, & clock) == ENOENT)
+    return false;
+  else
+    return true;
+}
+#endif // HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID || HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
+
 // check if the RDTSCP instruction is supported
 #ifndef bit_RDTSCP
 #define bit_RDTSCP      (1 << 27)
@@ -205,7 +221,8 @@ public:
   TimerBase() :
     values( new time_type[2*SIZE+1] ),
     granularity( 0. ),
-    resolution( 0. ),
+    resolution_min( 0. ),
+    resolution_median( 0. ),
     resolution_mean( 0. ),
     resolution_sigma( 0. ),
     overhead( 0. ),
@@ -236,7 +253,10 @@ public:
     std::sort( steps.begin(), steps.end() );
     if (not steps.empty()) {
       // measure resolution as the median of the steps
-      resolution = steps[steps.size() / 2];
+      resolution_median = steps[steps.size() / 2];
+
+      // measure resolution as the first non-zero step
+      resolution_min = steps.front();
 
       // measure average and sigma of the steps
       double n    = steps.size();
@@ -262,7 +282,7 @@ public:
     std::cout << "Performance of " << description << std::endl;
     std::cout << "\tAverage time per call: " << std::right << std::setw(10) << overhead    * 1e9 << " ns" << std::endl;
     std::cout << "\tReported resolution:   " << std::right << std::setw(10) << granularity * 1e9 << " ns" << std::endl;
-    std::cout << "\tMeasured resolution:   " << std::right << std::setw(10) << resolution  * 1e9 << " ns (" << resolution_mean * 1e9 << " +/- " << resolution_sigma * 1e9 << " ns)" << std::endl;
+    std::cout << "\tMeasured resolution:   " << std::right << std::setw(10) << resolution_min  * 1e9 << " ns (median: " << resolution_median * 1e9 << " ns) (mean: " << resolution_mean * 1e9 << " +/- " << resolution_sigma * 1e9 << " ns)" << std::endl;
     /*
     std::cout << "\tSteps:" << std::endl;
     for (unsigned int i = 0; i < SIZE; ++i) {
@@ -277,7 +297,8 @@ public:
 protected:
   time_type *   values;
   double        granularity;            // the reported resolution, in seconds
-  double        resolution;             // the measured resolution, in seconds (median of the steps)
+  double        resolution_min;         // the measured resolution, in seconds (smallest of the steps)
+  double        resolution_median;      // the measured resolution, in seconds (median of the steps)
   double        resolution_mean;        // the measured resolution, in seconds (mean of the steps)
   double        resolution_sigma;       // the measured resolution, in seconds (sigma of the mean)
   double        overhead;               // the measured per-call overhead, in seconds
@@ -730,11 +751,13 @@ int main(void) {
   timers.push_back(new TimerCxx11HighResolutionClock());
 
 #ifdef HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
-  timers.push_back(new TimerClockGettimeThread());
+  if (clock_cputime_supported())
+    timers.push_back(new TimerClockGettimeThread());
 #endif // HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
 
 #ifdef HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
-  timers.push_back(new TimerClockGettimeProcess());
+  if (clock_cputime_supported())
+    timers.push_back(new TimerClockGettimeProcess());
 #endif // HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
 
 #ifdef HAVE_POSIX_CLOCK_REALTIME
@@ -782,7 +805,7 @@ int main(void) {
       std::cout << "access to the TSC by non-privileged processes has been disabled" << std::endl << std::endl;
   }
 
-  std::cout << "For each timer the resolution reported is the MEDIAN (MEAN +/- its STDDEV) of the increments measured during the test." << std::endl << std::endl; 
+  std::cout << "For each timer the resolution reported is the MINIMUM (MEDIAN) (MEAN +/- its STDDEV) of the increments measured during the test." << std::endl << std::endl; 
 
   for (TimerInterface * timer: timers) {
     timer->measure();
