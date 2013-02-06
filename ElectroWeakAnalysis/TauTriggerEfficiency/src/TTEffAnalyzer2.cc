@@ -604,6 +604,18 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		hltObjects.push_back(TO);
             }
 	}
+  }else{
+    edm::Handle<pat::TriggerEvent> patTrigger;
+    if(iEvent.getByLabel(patTriggerEventSrc, patTrigger)){
+        const pat::TriggerObjectRefVector objects = patTrigger->objectRefs();
+	std::string filterName(hltFilterSrc_.label());
+        for(unsigned int k=0; k < objects.size(); k++){
+          if(patTrigger->objectInFilter(objects[k], filterName)){
+            hltObjects.push_back(*objects[k]);
+          }
+          //std::cout << " hltObjects.size: " << hltObjects.size() << std::endl;
+        }
+    }	
   }
 
   // MET stuff
