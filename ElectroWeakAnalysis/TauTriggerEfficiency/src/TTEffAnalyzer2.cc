@@ -187,6 +187,8 @@ private:
   std::vector<int> PFTauMCMatch_;
 
   std::vector<float> PFJetPt_;
+  std::vector<float> PFJetEta_;
+  std::vector<float> PFJetPhi_;
 
   // L1 per-event
   float L1MET_;
@@ -360,6 +362,8 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   tree_->Branch("PFTauMCMatch", &PFTauMCMatch_);
 
   tree_->Branch("PFJetPt", &PFJetPt_);
+  tree_->Branch("PFJetEta", &PFJetEta_);
+  tree_->Branch("PFJetPhi", &PFJetPhi_);
 
   tree_->Branch("L1JetIsTau", &l1JetIsTau_);
   tree_->Branch("L1JetPt", &l1JetPt_);
@@ -445,6 +449,8 @@ void TTEffAnalyzer2::reset() {
   PFTauMCMatch_.clear();
 
   PFJetPt_.clear();
+  PFJetEta_.clear();
+  PFJetPhi_.clear();
 
   l1JetIsTau_.clear();
   l1JetPt_.clear();
@@ -769,6 +775,9 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
        jet->neutralHadronEnergyFraction() < 0.99 && jet->neutralEmEnergyFraction() < 0.99 &&
        jet->chargedHadronEnergyFraction() > 0 && jet->chargedMultiplicity() > 0) { // loose id
       PFJetPt_.push_back(jet->pt());
+      PFJetEta_.push_back(jet->eta());
+      PFJetPhi_.push_back(jet->phi());
+
       selectedPFJets.push_back(jet);
 
       if(!triggerBitsOnly) {
