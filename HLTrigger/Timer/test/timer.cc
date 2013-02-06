@@ -133,6 +133,7 @@ double calibrate_tsc() {
   double             times[sample_size];
 
 #if defined(HAVE_POSIX_CLOCK_MONOTONIC) || defined(HAVE_POSIX_CLOCK_MONOTONIC_RAW)
+  // use clock_gettime(CLOCK_MONOTONIC), or clock_gettime(CLOCK_MONOTONIC_RAW) if available
   timespec ts;
   for (unsigned int i = 0; i < sample_size; ++i) {
     if (i) usleep(sleep_time);
@@ -145,6 +146,7 @@ double calibrate_tsc() {
     times[i] = ts.tv_sec + (double) ts.tv_nsec / 1.e9; 
   }
 #elif defined(HAVE_MACH_ABSOLUTE_TIME)
+  // on OSX, use mach_absolute_time
   mach_timebase_info_data_t timebase_info;
   mach_timebase_info(& timebase_info);
   for (unsigned int i = 0; i < sample_size; ++i) {
@@ -153,8 +155,13 @@ double calibrate_tsc() {
     times[i] = (double) mach_absolute_time() * timebase_info.numer / timebase_info.denom * 1.e-9;;
   }
 #else
-  // not supported
-  return 0.;
+  // fall back on std::chrono::high_resolution_clock
+  auto start = std::chrono::high_resolution_clock::now();
+  for (unsigned int i = 0; i < sample_size; ++i) {
+    if (i) usleep(sleep_time);
+    ticks[i] = __rdtsc();
+    times[i] = std::chrono::duration_cast<std::chrono::duration<double>>( std::chrono::high_resolution_clock::now() - start ).count();
+  }
 #endif
 
   double mean_x = 0, mean_y = 0;
