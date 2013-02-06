@@ -189,6 +189,7 @@ private:
   std::vector<float> PFJetPt_;
   std::vector<float> PFJetEta_;
   std::vector<float> PFJetPhi_;
+  std::vector<int> PFJetMCMatch_;
 
   // L1 per-event
   float L1MET_;
@@ -364,6 +365,7 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   tree_->Branch("PFJetPt", &PFJetPt_);
   tree_->Branch("PFJetEta", &PFJetEta_);
   tree_->Branch("PFJetPhi", &PFJetPhi_);
+  tree_->Branch("PFJetMCMatch", &PFJetMCMatch_);
 
   tree_->Branch("L1JetIsTau", &l1JetIsTau_);
   tree_->Branch("L1JetPt", &l1JetPt_);
@@ -451,6 +453,7 @@ void TTEffAnalyzer2::reset() {
   PFJetPt_.clear();
   PFJetEta_.clear();
   PFJetPhi_.clear();
+  PFJetMCMatch_.clear();
 
   l1JetIsTau_.clear();
   l1JetPt_.clear();
@@ -777,6 +780,10 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       PFJetPt_.push_back(jet->pt());
       PFJetEta_.push_back(jet->eta());
       PFJetPhi_.push_back(jet->phi());
+
+      // Matching to MC truth
+      int mcMatch = MCMatch(iEvent,*jet);
+      PFJetMCMatch_.push_back(mcMatch);
 
       selectedPFJets.push_back(jet);
 
