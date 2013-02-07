@@ -13,6 +13,7 @@
 
 // boost headers
 #include <boost/format.hpp>
+#include <boost/timer/timer.hpp>
 
 // for timespec and clock_gettime
 #include <time.h>
@@ -366,6 +367,40 @@ public:
   void measure() {
     for (unsigned int i = 0; i <= 2*SIZE; ++i)
       values[i] = std::chrono::high_resolution_clock::now();
+  }
+};
+
+
+// boost cpu_timer, wall_clock
+class TimerBoostCpuTimerWallClock : public TimerBase<double> {
+public:
+  TimerBoostCpuTimerWallClock() {
+    description = "boost::cpu_timer, wall clock";
+    granularity = 1.e-9;
+  }
+
+  void measure() {
+    boost::timer::cpu_timer timer;
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      values[i] = timer.elapsed().wall * 1.e-9;
+  }
+};
+
+
+// boost cpu_timer, user+system
+class TimerBoostCpuTimerWallUserSystem : public TimerBase<double> {
+public:
+  TimerBoostCpuTimerWallUserSystem() {
+    description = "boost::cpu_timer, user+system";
+    granularity = 1.e-9;
+  }
+
+  void measure() {
+    boost::timer::cpu_timer timer;
+    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+      auto elapsed = timer.elapsed();
+      values[i] = (elapsed.user + elapsed.system) * 1.e-9;
+    }
   }
 };
 
@@ -749,6 +784,8 @@ int main(void) {
   std::vector<TimerInterface *> timers;
 
   timers.push_back(new TimerCxx11HighResolutionClock());
+  timers.push_back(new TimerBoostCpuTimerWallClock());
+  timers.push_back(new TimerBoostCpuTimerWallUserSystem());
 
 #ifdef HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
   if (clock_cputime_supported())
