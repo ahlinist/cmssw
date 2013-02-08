@@ -23,7 +23,7 @@
 #include "TauAnalysis/CandidateTools/interface/neuralMtautauAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+#include "DataFormats/METReco/interface/PFMEtSignCovMatrix.h"
 
 #include <TMath.h>
 #include <TString.h>

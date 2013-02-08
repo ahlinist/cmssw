@@ -11,7 +11,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+#include "DataFormats/METReco/interface/PFMEtSignCovMatrix.h"
 
 #include <TMatrixD.h>
 #include <TVectorD.h>

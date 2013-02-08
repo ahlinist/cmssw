@@ -232,32 +232,35 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	double svFitSigmaDown = svFitResonanceHypothesis->massErrDown();
 	double svFitSigma     = TMath::Sqrt(0.5*(svFitSigmaUp*svFitSigmaUp + svFitSigmaDown*svFitSigmaDown));
 
-	if ( dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis) ) {
-	  reco::Candidate::LorentzVector recDiTauP4 = (dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis))->p4_fitted(); 
+	const NSVfitResonanceHypothesis* svFitResonanceHypothesis_nonbase = dynamic_cast<const NSVfitResonanceHypothesis*>(svFitResonanceHypothesis);
+	if ( svFitResonanceHypothesis_nonbase ) {
+	  if ( svFitResonanceHypothesis_nonbase->pt_isValid() && svFitResonanceHypothesis_nonbase->eta_isValid() && svFitResonanceHypothesis_nonbase->phi_isValid() ) {
+	    reco::Candidate::LorentzVector recDiTauP4 = svFitResonanceHypothesis_nonbase->p4_fitted(); 
 
-	  //std::cout << "recDiTau: Pt = " << recDiTauP4.pt() << ", eta = " << recDiTauP4.eta() << ", phi = " << recDiTauP4.phi() << std::endl;
-	  recDiTauPt_->Fill(recDiTauP4.pt(), evtWeight);
-	  recDiTauEta_->Fill(recDiTauP4.eta(), evtWeight);
-	  recDiTauPhi_->Fill(recDiTauP4.phi(), evtWeight);
-	  
-	  deltaDiTauPt_->Fill(recDiTauP4.pt() - genDiTauP4.pt(), evtWeight);
-	  deltaDiTauPx_->Fill(recDiTauP4.px() - genDiTauP4.px(), evtWeight);
-	  deltaDiTauPy_->Fill(recDiTauP4.py() - genDiTauP4.py(), evtWeight);
-	  deltaDiTauEta_->Fill(recDiTauP4.eta() - genDiTauP4.eta(), evtWeight);
-	  deltaDiTauPhi_->Fill(normalizedPhi(recDiTauP4.phi() - genDiTauP4.phi()), evtWeight);
-	  deltaDiTauMass_->Fill(recDiTauP4.mass() - genDiTauP4.mass(), evtWeight);
-	  
-	  if ( TMath::Abs(recDiTauP4.mass() - svFitMass) > (1.e-2*genDiTauP4.mass()) ) {
-	    std::cerr << "Problem with large rounding errors:" << std::endl;
-	    std::cerr << " svFitMass = " << svFitMass << std::endl;
-	    std::cerr << " recDiTauP4: E = " << recDiTauP4.E() << ", eta = " << recDiTauP4.eta() << ", phi = " << recDiTauP4.phi() << ", mass = " << recDiTauP4.mass() << std::endl;
+	    //std::cout << "recDiTau: Pt = " << recDiTauP4.pt() << ", eta = " << recDiTauP4.eta() << ", phi = " << recDiTauP4.phi() << std::endl;
+	    recDiTauPt_->Fill(recDiTauP4.pt(), evtWeight);
+	    recDiTauEta_->Fill(recDiTauP4.eta(), evtWeight);
+	    recDiTauPhi_->Fill(recDiTauP4.phi(), evtWeight);
+	    
+	    deltaDiTauPt_->Fill(recDiTauP4.pt() - genDiTauP4.pt(), evtWeight);
+	    deltaDiTauPx_->Fill(recDiTauP4.px() - genDiTauP4.px(), evtWeight);
+	    deltaDiTauPy_->Fill(recDiTauP4.py() - genDiTauP4.py(), evtWeight);
+	    deltaDiTauEta_->Fill(recDiTauP4.eta() - genDiTauP4.eta(), evtWeight);
+	    deltaDiTauPhi_->Fill(normalizedPhi(recDiTauP4.phi() - genDiTauP4.phi()), evtWeight);
+	    deltaDiTauMass_->Fill(recDiTauP4.mass() - genDiTauP4.mass(), evtWeight);
+	    
+	    if ( TMath::Abs(recDiTauP4.mass() - svFitMass) > (1.e-2*genDiTauP4.mass()) ) {
+	      std::cerr << "Problem with large rounding errors:" << std::endl;
+	      std::cerr << " svFitMass = " << svFitMass << std::endl;
+	      std::cerr << " recDiTauP4: E = " << recDiTauP4.E() << ", eta = " << recDiTauP4.eta() << ", phi = " << recDiTauP4.phi() << ", mass = " << recDiTauP4.mass() << std::endl;
+	    }
+	    
+	    reco::Candidate::LorentzVector recMEtBySVfitP4 = recDiTauP4 - (recLeg1P4 + recLeg2P4);
+	    deltaMEtBySVfitPt_->Fill(recMEtBySVfitP4.pt() - genMEtP4.pt(), evtWeight);
+	    deltaMEtBySVfitPx_->Fill(recMEtBySVfitP4.px() - genMEtP4.px(), evtWeight);
+	    deltaMEtBySVfitPy_->Fill(recMEtBySVfitP4.py() - genMEtP4.py(), evtWeight);
+	    deltaMEtBySVfitPhi_->Fill(normalizedPhi(recMEtBySVfitP4.phi() - genMEtP4.phi()), evtWeight);
 	  }
-
-	  reco::Candidate::LorentzVector recMEtBySVfitP4 = recDiTauP4 - (recLeg1P4 + recLeg2P4);
-	  deltaMEtBySVfitPt_->Fill(recMEtBySVfitP4.pt() - genMEtP4.pt(), evtWeight);
-	  deltaMEtBySVfitPx_->Fill(recMEtBySVfitP4.px() - genMEtP4.px(), evtWeight);
-	  deltaMEtBySVfitPy_->Fill(recMEtBySVfitP4.py() - genMEtP4.py(), evtWeight);
-	  deltaMEtBySVfitPhi_->Fill(normalizedPhi(recMEtBySVfitP4.phi() - genMEtP4.phi()), evtWeight);
 	}
 
 	if ( eventVertexIsValid ) {

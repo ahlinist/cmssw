@@ -5,7 +5,7 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/View.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+#include "DataFormats/METReco/interface/PFMEtSignCovMatrix.h"
 
 #include <list>
 
