@@ -9,10 +9,12 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+#include "DataFormats/METReco/interface/PFMEtSignCovMatrix.h"
 
 #include <TMath.h>
 #include <TVectorD.h>
+#include <TH2.h>
+#include <TFile.h>
 
 using namespace SVfit_namespace;
 
@@ -40,6 +42,13 @@ NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2(const edm::ParameterSet& cf
   if ( cfg.exists("tailProbCorr") ) {
     edm::ParameterSet cfgTailProbCorr = cfg.getParameter<edm::ParameterSet>("tailProbCorr");
     tailProbCorrFunction_ = new tailProbCorrFunctionType(pluginName_, cfgTailProbCorr);
+  }
+
+  monitorMEtUncertainty_ = ( cfg.exists("monitorMEtUncertainty") ) ?
+    cfg.getParameter<bool>("monitorMEtUncertainty") : false;
+  if ( monitorMEtUncertainty_ ) {
+    monitorFilePath_ = cfg.getParameter<std::string>("monitorFilePath");
+    numToys_ = cfg.getParameter<unsigned>("numToys");
   }
 }
 
@@ -89,6 +98,13 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
   } else {
     pfMEtSign_->beginEvent(evt, es);
   }
+
+  if ( monitorMEtUncertainty_ ) {
+    TString monitorFileName_tstring = monitorFilePath_.data();
+    if ( monitorFileName_tstring.Length() > 0 && !monitorFileName_tstring.EndsWith("/") ) monitorFileName_tstring.Append("/");
+    monitorFileName_tstring.Append(Form("metUncertainty_%s_run%i_ls%i_ev%i.root", pluginName_.data(), evt.id().run(), evt.luminosityBlock(), evt.id().event()));
+    monitorFileName_ = monitorFileName_tstring.Data();
+  }
 }
 
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
@@ -135,6 +151,31 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
   pfMEtCovInverse11_ = pfMEtCovInverse_(1, 1);
   
   nllConstTerm_ = TMath::Log(2.*TMath::Pi()) + 0.5*TMath::Log(TMath::Abs(pfMEtCovDet_));
+
+  if ( monitorMEtUncertainty_ ) {
+    std::string histogramName = std::string(pluginName_).append("_likelihood");
+    TH2* histogram = new TH2D(histogramName.data(), histogramName.data(), 1000, -250., +250, 1000, -250., +250);
+    for ( int iBinX = 1; iBinX <= histogram->GetNbinsX(); ++iBinX ) {
+      for ( int iBinY = 1; iBinY <= histogram->GetNbinsY(); ++iBinY ) {
+	double dx = histogram->GetXaxis()->GetBinCenter(iBinX);
+	double dy = histogram->GetYaxis()->GetBinCenter(iBinY);
+	double pull = dx*(pfMEtCovInverse00_*dx + pfMEtCovInverse01_*dy)
+	            + dy*(pfMEtCovInverse10_*dx + pfMEtCovInverse11_*dy);
+	if ( tailProbCorrFunction_ ) {
+	  double tailProbCorr = tailProbCorrFunction_->eval(pull);
+	  if ( tailProbCorr > 0.9 ) pull /= tailProbCorr;
+	}
+	double nll = nllConstTerm_ + 0.5*pull;
+	double prob = TMath::Exp(-nll);
+	double binContent = TMath::Nint(numToys_*prob);
+	histogram->SetBinContent(iBinX, iBinY, binContent);
+      }
+    }
+    TFile* monitorFile = new TFile(monitorFileName_.data(), "RECREATE");
+    histogram->Write();
+    delete monitorFile;
+    delete histogram;
+  }
 }
 
 double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypothesis) const
