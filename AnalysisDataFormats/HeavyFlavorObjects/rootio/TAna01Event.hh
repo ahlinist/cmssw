@@ -8,6 +8,7 @@
 #include "TLorentzVector.h"
 
 #include "TGenCand.hh"
+#include "TSimpleTrack.hh"
 #include "TAnaTrack.hh"
 #include "TAnaMuon.hh"
 #include "TTrgObj.hh"
@@ -36,15 +37,20 @@ public:
   int                 getGenIndex(double px, double py, double pz, int charge, double precision = 0.05);
   int                 getGenIndexWithDeltaR(double pt, double eta, double phi, double charge);
   int                 getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge, double dRthrsh = 99999.9);
-  int                 getGenIndexWithDeltaR(const TLorentzVector &tlv, const TVector3 &vtx, double charge, double dRthrsh = 99999.9, double dVtxRatioThrsh = 1.3);
-  // Check whether a RecTrack/TAnaTrack has mother with ID in the generator block
-  //  int                 isDescendant(TAnaTrack *pTrk, int ID, int matchCharge = 0);
-
+  int                 getGenIndexWithDeltaR(const TLorentzVector &tlv, const TVector3 &vtx, 
+					    double charge, double dRthrsh = 99999.9, double dVtxRatioThrsh = 1.3);
 
   // -- RecTracks
   int                 nRecTracks() {return fnRecTracks;}
   TAnaTrack*          getRecTrack(int n);
   virtual TAnaTrack*  addRecTrack();
+
+  // -- SimpleTracks
+  int                    nSimpleTracks() {return fnSimpleTracks;}
+  TSimpleTrack*          getSimpleTrack(int n);
+  virtual TSimpleTrack*  addSimpleTrack();
+  int                    getSimpleTrackMuonIdx(int n);
+  TAnaMuon*              getSimpleTrackMuon(int n); 
 
   // -- Signal Tracks (e.g. refitted tracks forming cands in the next block)
   int                 nSigTracks() {return fnSigTracks;}
@@ -151,6 +157,9 @@ private:
 
   int               fnGenCands;
   TClonesArray      *fGenCands;
+
+  int               fnSimpleTracks;
+  TClonesArray      *fSimpleTracks;
 
   int               fnRecTracks;
   TClonesArray      *fRecTracks;

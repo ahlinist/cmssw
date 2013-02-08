@@ -10,6 +10,7 @@ TAnaMuon::TAnaMuon(int index) {
   fIndex = index;
 }
 
+// ----------------------------------------------------------------------
 void TAnaMuon::clear() {
   fMuonChi2 = fMuonZ =  fMuonR = fCaloComp = fSegmComp = -999.;
   fTimeInOut = fTimeInOutE = fTimeOutIn = fTimeOutInE = -999.;
@@ -19,9 +20,30 @@ void TAnaMuon::clear() {
   
   fMuonTrackPosAtM1.SetXYZ(-1e30,-1e30,-1e30);
   fMuonTrackPlabAtM1.SetXYZ(-1e30,-1e30,-1e30);
+
+  fInnerPlab.SetXYZ(-1e30,-1e30,-1e30);
+  fOuterPlab.SetXYZ(-1e30,-1e30,-1e30);
+  fGlobalPlab.SetXYZ(-1e30,-1e30,-1e30);
+
+  fPositionAtM1.SetXYZ(-1e30,-1e30,-1e30); 
+  fPositionAtM2.SetXYZ(-1e30,-1e30,-1e30);
+  
+  fItrkValidFraction = fGtrkNormChi2 = fSegmentComp = fChi2LocalPosition = fChi2LocalMomentum = -999.;
+  fNumberOfLostTrkHits = fNumberOfValidTrkHits = -99;
+
+  fGtrkProb = -99.;
+
+  fInt1 = fInt2 = fInt3 -99; 
+  fDouble1 = fDouble2 = fDouble3 = -99.;
+
+  for (unsigned int i = 0; i < NXPTRACKS; ++i) {
+    fXpTracks[i].dist = 99.;
+  }
+
 }
 
 
+// ----------------------------------------------------------------------
 void TAnaMuon::dump() {
   //   cout << " q = " << fQ
   //        << " p = " << fPlab.Mag() 
@@ -66,6 +88,7 @@ void TAnaMuon::dump() {
   cout << " closeby tracks (" << fNstTracks.size() << ") are" << endl;
   for (std::map<int,float>::const_iterator it = fNstTracks.begin(); it != fNstTracks.end(); ++it)
 	  cout << "   (ix=" << it->first << ", doca=" << it->second << ")" << endl;
+
   //   if (fMCID != -99999) {
   //     cout << Form(" mcid =%+6d", fMCID);
   //   }

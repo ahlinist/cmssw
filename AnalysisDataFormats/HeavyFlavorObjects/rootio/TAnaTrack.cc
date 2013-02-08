@@ -34,7 +34,7 @@ void TAnaTrack::clear() {
   fDeDxNmeas = fDeDxNsat = -99; 
 
   fInt1 = fInt2 = fInt3 -99; 
-  fDouble1 = fDouble2 = fDouble3 = -99;
+  fDouble1 = fDouble2 = fDouble3 = -99.;
   
   fPosMuonChamber.SetXYZ(-1e30,-1e30,-1e30);
 }
