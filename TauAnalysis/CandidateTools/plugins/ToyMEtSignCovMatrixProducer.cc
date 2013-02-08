@@ -2,7 +2,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+#include "DataFormats/METReco/interface/PFMEtSignCovMatrix.h"
 
 #include <TMatrixD.h>
 

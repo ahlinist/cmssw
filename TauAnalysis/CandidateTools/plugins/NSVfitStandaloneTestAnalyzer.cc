@@ -14,7 +14,7 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/PFMEtSignInterface.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+#include "DataFormats/METReco/interface/PFMEtSignCovMatrix.h"
 
 typedef edm::View<reco::Candidate> CandidateView;
 typedef edm::View<reco::MET> METView;

@@ -19,7 +19,7 @@
 
 #include "DataFormats/Common/interface/View.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/PFMEtSignCovMatrix.h"
+#include "DataFormats/METReco/interface/PFMEtSignCovMatrix.h"
 
 template<class T>
 class PFMEtSignCovMatrixEmbedder : public edm::EDProducer {
