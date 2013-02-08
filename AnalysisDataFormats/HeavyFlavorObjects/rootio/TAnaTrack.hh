@@ -18,7 +18,7 @@ public:
   // ----------------------------------------------------------------------
 
   // ----------------------------------------------------------------------
-  int            fIndex;    // pointer into track block (for tracks in signal block)
+  int            fIndex;    // pointer into (simple or rec) track block (e.g. for tracks in signal block)
   int            fMCID;     // MC truth ID
   int            fGenIndex; // index in generator block (if matched)
 
@@ -29,11 +29,16 @@ public:
   // -- Tracking parameters
   int            fQ;                            // charge
 
-  int            fDof, fValidHits, fValidHitFraction;
+  int            fDof, fValidHits, fValidHitFraction, fLayersWithHits;
   double         fChi2;
   int            fTrackQuality; 
   int            fAlgorithm;                    // see DataFormats/TrackReco/interface/TrackBase.h
   int            fHitPattern[20];               // see DataFormats/TrackReco/interface/HitPattern.h
+
+  // -- refitted track parameters (for sig tracks)
+  TVector3       fRefPlab; 
+  double         fRefChi2; 
+  int            fRefDof, fRefValidHits; 
 
   // verbatim track parameters
   double         fdz, fdzE, fd0, fd0E, fdsz, fdszE, fdxy, fdxyE;  
@@ -50,7 +55,7 @@ public:
   
   // entrance in muon system
   TVector3       fPosMuonChamber;
-  TVector3		 fPlabMuonChamber;
+  TVector3	 fPlabMuonChamber;
 
   // -- reserve
   int            fInt1,    fInt2,    fInt3; 

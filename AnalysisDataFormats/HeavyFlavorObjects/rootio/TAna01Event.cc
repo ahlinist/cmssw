@@ -8,6 +8,7 @@ using namespace std;
 
 #define NGENCAND 100000
 #define NRECTRACK 50000
+#define NSIMPLETRACK 50000
 #define NMUON 1000
 #define NTRGOBJ 1000
 #define NSIGTRACK 500000
@@ -24,6 +25,9 @@ TAna01Event::TAna01Event(Int_t Option) {
 
   fRecTracks       = new TClonesArray("TAnaTrack", NRECTRACK);
   fnRecTracks      = 0;
+
+  fSimpleTracks    = new TClonesArray("TSimpleTrack", NSIMPLETRACK);
+  fnSimpleTracks   = 0;
 
   fMuons           = new TClonesArray("TAnaMuon", NMUON);
   fnMuons          = 0;
@@ -60,7 +64,7 @@ void TAna01Event::Clear(Option_t *option) {
   fTimeLo = fTimeHi = 0; 
 
   for (int i = 0; i < NL1T; ++i) {
-    fL1TPrescale[NL1T] = 0;
+    fL1TPrescale[i] = 0;
     fL1TResult[i] = fL1TMask[i] = fL1TError[i] = false; 
   }
 
@@ -77,6 +81,15 @@ void TAna01Event::Clear(Option_t *option) {
   }
   fRecTracks->Clear(option);
   fnRecTracks = 0;
+
+
+  TSimpleTrack *sTrack;
+  for (int i = 0; i < fnSimpleTracks; i++) {
+    sTrack = getSimpleTrack(i);
+    sTrack->clear();
+  }
+  fSimpleTracks->Clear(option);
+  fnSimpleTracks = 0;
 
   TAnaMuon *pMuon;
   for (int i = 0; i < fnMuons; i++) {
@@ -329,6 +342,47 @@ TAnaTrack* TAna01Event::addRecTrack() {
   return (TAnaTrack*)d[d.GetLast()];
 }
 
+// ----------------------------------------------------------------------
+TSimpleTrack* TAna01Event::getSimpleTrack(Int_t n) { 
+  return (TSimpleTrack*)fSimpleTracks->UncheckedAt(n); 
+}
+
+// ----------------------------------------------------------------------
+TSimpleTrack* TAna01Event::addSimpleTrack() {
+  TClonesArray& d = *fSimpleTracks; 
+  new(d[d.GetLast()+1]) TSimpleTrack(fnSimpleTracks);
+  ++fnSimpleTracks;
+  TSimpleTrack *st = (TSimpleTrack*)d[d.GetLast()];
+  st->clear(); // to flush the bits and indices
+  return st; 
+}
+
+// ----------------------------------------------------------------------
+int TAna01Event::getSimpleTrackMuonIdx(int n) {
+  TSimpleTrack *st = getSimpleTrack(n); 
+  if (st->getMuonID()) {
+    TAnaMuon *pm; 
+    for (int i = 0; i < fnMuons; ++i) {
+      pm = getMuon(i); 
+      if (n == pm->fIndex) return i;
+    }
+  } 
+  return -1; 
+}
+
+// ----------------------------------------------------------------------
+TAnaMuon* TAna01Event::getSimpleTrackMuon(int n) {
+  TSimpleTrack *st = getSimpleTrack(n); 
+  if (st->getMuonID()) {
+    TAnaMuon *pm; 
+    for (int i = 0; i < fnMuons; ++i) {
+      pm = getMuon(i); 
+      if (n == pm->fIndex) return pm;
+    }
+  } 
+  return 0; 
+}
+
 
 // ----------------------------------------------------------------------
 TAnaMuon* TAna01Event::getMuon(Int_t n) { 
@@ -472,35 +526,42 @@ void TAna01Event::dump() {
     pGenCand->dump();
   }
   
+  TSimpleTrack *sTrk;
+  for (int i = 0; i < fnSimpleTracks; ++i) {
+    sTrk = getSimpleTrack(i);
+    cout << "simpleT: ";
+    sTrk->dump();
+  }
+
   TAnaTrack *pTrk;
   TAnaCand  *pCand;
-  for (int i = 0; i < nRecTracks(); ++i) {
+  for (int i = 0; i < fnRecTracks; ++i) {
     pTrk = getRecTrack(i);
     cout << "recT: ";
     pTrk->dump();
   }
 
   TAnaMuon  *pMuon;
-  for (int i = 0; i < nMuons(); ++i) {
+  for (int i = 0; i < fnMuons; ++i) {
     pMuon = getMuon(i);
     cout << "muon: ";
     pMuon->dump();
   }
   
   TTrgObj  *pTrgObj;
-  for (int i = 0; i < nTrgObj(); ++i) {
+  for (int i = 0; i < fnTrgObj; ++i) {
     pTrgObj = getTrgObj(i);
     cout << "trgObj: ";
     pTrgObj->dump();
   }
   
-  for (int i = 0; i < nSigTracks(); ++i) {
+  for (int i = 0; i < fnSigTracks; ++i) {
     pTrk = getSigTrack(i);
     cout << "sigT: ";
     pTrk->dump();
   }
 
-  for (int i = 0; i < nCands(); ++i) {
+  for (int i = 0; i < fnCandidates; ++i) {
     pCand = getCand(i);
     cout << "cand: ";
     pCand->dump();

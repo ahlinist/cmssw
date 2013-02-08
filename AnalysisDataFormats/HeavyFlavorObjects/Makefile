@@ -42,11 +42,11 @@ GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
 #########
 
 #used by all targets
-ROOTIO_HEADERS = PidData.hh TAna00Event.hh TAnaCand.hh TAnaMuon.hh TAnaVertex.hh TTrgObj.hh hpl.hh PidTable.hh TAna01Event.hh TAnaJet.hh TAnaTrack.hh TGenCand.hh functions.hh util.hh JSON.hh
+ROOTIO_HEADERS = PidData.hh TAna00Event.hh TAnaCand.hh TAnaMuon.hh TAnaVertex.hh TTrgObj.hh hpl.hh PidTable.hh TAna01Event.hh TAnaJet.hh TAnaTrack.hh TSimpleTrack.hh TGenCand.hh functions.hh util.hh JSON.hh 
 TNP_HEADERS = anaTNP2.hh
 
 # Ana00 compilation
-ANA00 = TAna01Event.o TGenCand.o TAnaTrack.o TAnaMuon.o TTrgObj.o TAnaCand.o TAnaVertex.o TAnaJet.o
+ANA00 = TAna01Event.o TGenCand.o TAnaTrack.o TSimpleTrack.o TAnaMuon.o TTrgObj.o TAnaCand.o TAnaVertex.o TAnaJet.o
 ANA00_DICT = ${ANA00:.o=Dict.o}
 
 # util compilation

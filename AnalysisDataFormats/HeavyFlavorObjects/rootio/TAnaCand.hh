@@ -42,6 +42,7 @@ public:
   int         fPvIdx, fPvIdx2; 
   double      fPvLip, fPvLipE, fPvTip, fPvTipE;
   double      fPvLip2, fPvLipE2, fPvTip2, fPvTipE2; // Second best PV for pile-up detection
+  double      fPvIP3d, fPvIP3dE, fPv2IP3d, fPv2IP3dE; // Second best PV for pile-up detection
 
   // -- proper lifetime and its error
   double      fTauxy, fTauxyE; // from 2d (r-phi) measurement
@@ -54,9 +55,8 @@ public:
   std::vector<std::pair<int,std::pair<float,float> > > fNstTracks; // usage: (trackIx,doca(value,error))
 
   // -- reserve
-  double      fVar1;
-  double      fVar2;
-  double      fVar3;
+  int            fInt1,    fInt2,    fInt3; 
+  double         fDouble1, fDouble2, fDouble3;
 
 private:
   ClassDef(TAnaCand,1)
