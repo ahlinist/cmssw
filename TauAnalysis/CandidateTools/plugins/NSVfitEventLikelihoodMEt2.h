@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.8 2012/03/22 11:27:22 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.9 2012/08/28 15:00:22 veelken Exp $
  *
  */
 
@@ -113,6 +113,11 @@ class NSVfitEventLikelihoodMEt2 : public NSVfitEventLikelihood
   };
 
   tailProbCorrFunctionType* tailProbCorrFunction_;
+
+  bool monitorMEtUncertainty_;
+  std::string monitorFilePath_;
+  std::string monitorFileName_;
+  unsigned numToys_;
 };
 
 #endif
