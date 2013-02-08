@@ -229,6 +229,18 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     verbosity = cms.int32(0)
 )
 
+response_Data_2012 = "8.73728e-01*0.5*(1.0 - TMath::Erf(-9.22702e-03*TMath::Power(x, 1.29731e+00)))" # response of MVA MET algorithm (non-unity response training) in 2012 data
+response_MC_2012 = "9.02974e-01*0.5*(1.0 - TMath::Erf(-1.46769e-02*TMath::Power(x, 1.18952e+00)))" # response of MVA MET algorithm (non-unity response training) in Summer'12 MC
+
+nSVfitEventLikelihoodMEt2a = cms.PSet(
+    pluginName = cms.string("nSVfitEventLikelihoodMEt2a"),
+    pluginType = cms.string("NSVfitEventLikelihoodMEt2a"),
+    response = cms.string(response_MC_2012),
+    #tailProbCorr = tailProbCorr_MC_2011,
+    power = cms.double(1.0),
+    verbosity = cms.int32(0)
+)
+
 nSVfitEventLikelihoodMEt3 = cms.PSet(
     pluginName = cms.string("nSVfitEventLikelihoodMEt3"),
     pluginType = cms.string("NSVfitEventLikelihoodMEt3"),
