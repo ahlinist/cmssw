@@ -30,33 +30,36 @@ PFMEtSignInterface::~PFMEtSignInterface()
 // nothing to be done yet...
 }
 
-template <typename T>
-std::list<const T*> makeList(const std::vector<T>& collection)
+namespace
 {
-  std::list<const T*> retVal;
-  
-  for ( typename std::vector<T>::const_iterator object = collection.begin();
-	object != collection.end(); ++object ) {
-    retVal.push_back(&(*object));
+  template <typename T>
+  std::list<const T*> makeList(const std::vector<T>& collection)
+  {
+    std::list<const T*> retVal;
+    
+    for ( typename std::vector<T>::const_iterator object = collection.begin();
+	  object != collection.end(); ++object ) {
+      retVal.push_back(&(*object));
+    }
+    
+    return retVal;
   }
   
-  return retVal;
-}
-
-template <typename T>
-void removePFCandidateOverlaps(std::list<const reco::PFCandidate*>& pfCandidates, 
-			       const std::list<const T*>& objectsNotToBeFiltered, double dRoverlap)
-{
-  std::list<const reco::PFCandidate*>::iterator pfCandidate = pfCandidates.begin();
-  while ( pfCandidate != pfCandidates.end() ) {
-    bool isOverlap = false;
-    for ( typename std::list<const T*>::const_iterator objectNotToBeFiltered = objectsNotToBeFiltered.begin();
-	  objectNotToBeFiltered != objectsNotToBeFiltered.end() && !isOverlap; ++objectNotToBeFiltered ) {
-      if ( deltaR((*pfCandidate)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlap ) isOverlap = true;
+  template <typename T>
+  void removePFCandidateOverlaps(std::list<const reco::PFCandidate*>& pfCandidates, 
+				 const std::list<const T*>& objectsNotToBeFiltered, double dRoverlap)
+  {
+    std::list<const reco::PFCandidate*>::iterator pfCandidate = pfCandidates.begin();
+    while ( pfCandidate != pfCandidates.end() ) {
+      bool isOverlap = false;
+      for ( typename std::list<const T*>::const_iterator objectNotToBeFiltered = objectsNotToBeFiltered.begin();
+	    objectNotToBeFiltered != objectsNotToBeFiltered.end() && !isOverlap; ++objectNotToBeFiltered ) {
+	if ( deltaR((*pfCandidate)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlap ) isOverlap = true;
+      }
+      
+      if ( isOverlap ) pfCandidate = pfCandidates.erase(pfCandidate);
+      else ++pfCandidate;
     }
-
-    if ( isOverlap ) pfCandidate = pfCandidates.erase(pfCandidate);
-    else ++pfCandidate;
   }
 }
 
@@ -83,29 +86,32 @@ void PFMEtSignInterface::beginEvent(const edm::Event& evt, const edm::EventSetup
   removePFCandidateOverlaps(pfCandidateList_, pfJetConstituentList, dRoverlapPFCandidate_);
 }
 
-template <typename T>
-void removePFJetOverlaps(std::list<const reco::PFJet*>& pfJets, 
-			 const std::list<const T*>& objectsNotToBeFiltered, double dRoverlapPFJet, double dRoverlapPFCandidate)
+namespace
 {
-  std::list<const reco::PFJet*>::iterator pfJet = pfJets.begin();
-  while ( pfJet != pfJets.end() ) {
-    bool isOverlap = false;
-    for ( typename std::list<const T*>::const_iterator objectNotToBeFiltered = objectsNotToBeFiltered.begin();
-	  objectNotToBeFiltered != objectsNotToBeFiltered.end() && !isOverlap; ++objectNotToBeFiltered ) {
-      if ( deltaR((*pfJet)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlapPFJet ) isOverlap = true;
-    }
-
-    const reco::Jet::Constituents pfJetConstituents = (*pfJet)->getJetConstituents();
-    for ( reco::Jet::Constituents::const_iterator pfJetConstituent = pfJetConstituents.begin();
-	  pfJetConstituent != pfJetConstituents.end() && !isOverlap; ++pfJetConstituent ) {
+  template <typename T>
+  void removePFJetOverlaps(std::list<const reco::PFJet*>& pfJets, 
+			   const std::list<const T*>& objectsNotToBeFiltered, double dRoverlapPFJet, double dRoverlapPFCandidate)
+  {
+    std::list<const reco::PFJet*>::iterator pfJet = pfJets.begin();
+    while ( pfJet != pfJets.end() ) {
+      bool isOverlap = false;
       for ( typename std::list<const T*>::const_iterator objectNotToBeFiltered = objectsNotToBeFiltered.begin();
-	    objectNotToBeFiltered != objectsNotToBeFiltered.end(); ++objectNotToBeFiltered ) {
-	if ( deltaR((*pfJetConstituent)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlapPFCandidate ) isOverlap = true;
+	    objectNotToBeFiltered != objectsNotToBeFiltered.end() && !isOverlap; ++objectNotToBeFiltered ) {
+	if ( deltaR((*pfJet)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlapPFJet ) isOverlap = true;
       }
+      
+      const reco::Jet::Constituents pfJetConstituents = (*pfJet)->getJetConstituents();
+      for ( reco::Jet::Constituents::const_iterator pfJetConstituent = pfJetConstituents.begin();
+	    pfJetConstituent != pfJetConstituents.end() && !isOverlap; ++pfJetConstituent ) {
+	for ( typename std::list<const T*>::const_iterator objectNotToBeFiltered = objectsNotToBeFiltered.begin();
+	      objectNotToBeFiltered != objectsNotToBeFiltered.end(); ++objectNotToBeFiltered ) {
+	  if ( deltaR((*pfJetConstituent)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlapPFCandidate ) isOverlap = true;
+	}
+      }
+      
+      if ( isOverlap ) pfJet = pfJets.erase(pfJet);
+      else ++pfJet;
     }
-
-    if ( isOverlap ) pfJet = pfJets.erase(pfJet);
-    else ++pfJet;
   }
 }
 
