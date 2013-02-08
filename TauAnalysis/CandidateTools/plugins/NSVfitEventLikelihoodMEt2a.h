@@ -1,7 +1,7 @@
-#ifndef TauAnalysis_CandidateTools_NSVfitEventLikelihoodMEt3_h
-#define TauAnalysis_CandidateTools_NSVfitEventLikelihoodMEt3_h
+#ifndef TauAnalysis_CandidateTools_NSVfitEventLikelihoodMEt2a_h
+#define TauAnalysis_CandidateTools_NSVfitEventLikelihoodMEt2a_h
 
-/** \class NSVfitEventLikelihoodMEt3
+/** \class NSVfitEventLikelihoodMEt2a
  *
  * Plugin for computing likelihood for neutrinos produced in tau lepton decays
  * to match missing transverse momentum reconstructed in the event
@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitEventLikelihoodMEt3.h,v 1.9 2012/08/28 15:00:22 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2a.h,v 1.1 2013/02/08 18:07:03 veelken Exp $
  *
  */
 
@@ -38,11 +38,11 @@
 
 #include <list>
 
-class NSVfitEventLikelihoodMEt3 : public NSVfitEventLikelihood
+class NSVfitEventLikelihoodMEt2a : public NSVfitEventLikelihood
 {
  public:
-  NSVfitEventLikelihoodMEt3(const edm::ParameterSet&);
-  ~NSVfitEventLikelihoodMEt3();
+  NSVfitEventLikelihoodMEt2a(const edm::ParameterSet&);
+  ~NSVfitEventLikelihoodMEt2a();
 
   void beginJob(NSVfitAlgorithmBase*);
   void beginEvent(const edm::Event&, const edm::EventSetup&);

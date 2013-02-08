@@ -1,4 +1,4 @@
-#include "TauAnalysis/CandidateTools/plugins/NSVfitEventLikelihoodMEt3.h"
+#include "TauAnalysis/CandidateTools/plugins/NSVfitEventLikelihoodMEt2a.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
@@ -22,7 +22,7 @@ const double defaultMEtResolutionY = 10.;
 
 const double epsilon = 1.e-4;
 
-NSVfitEventLikelihoodMEt3::NSVfitEventLikelihoodMEt3(const edm::ParameterSet& cfg)
+NSVfitEventLikelihoodMEt2a::NSVfitEventLikelihoodMEt2a(const edm::ParameterSet& cfg)
   : NSVfitEventLikelihood(cfg),
     metCov_(2,2),
     metCovInverse_(2,2),
@@ -42,12 +42,12 @@ NSVfitEventLikelihoodMEt3::NSVfitEventLikelihoodMEt3(const edm::ParameterSet& cf
   }
 }
 
-NSVfitEventLikelihoodMEt3::~NSVfitEventLikelihoodMEt3()
+NSVfitEventLikelihoodMEt2a::~NSVfitEventLikelihoodMEt2a()
 {
   delete tailProbCorrFunction_;
 }
 
-void NSVfitEventLikelihoodMEt3::beginJob(NSVfitAlgorithmBase* algorithm)
+void NSVfitEventLikelihoodMEt2a::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   algorithm->requestFitParameter("allTauDecays", nSVfit_namespace::kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter("allTauDecays", nSVfit_namespace::kTau_phi_lab,    pluginName_);
@@ -56,7 +56,7 @@ void NSVfitEventLikelihoodMEt3::beginJob(NSVfitAlgorithmBase* algorithm)
   algorithm->requestFitParameter("allNeutrinos", nSVfit_namespace::kNu_phi_lab,     pluginName_);
 }
 
-void NSVfitEventLikelihoodMEt3::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
+void NSVfitEventLikelihoodMEt2a::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
   bool isValid = false;
   edm::Handle<PFMEtSignCovMatrix> metCovMatrix;
@@ -85,7 +85,7 @@ void NSVfitEventLikelihoodMEt3::beginEvent(const edm::Event& evt, const edm::Eve
   }
 }
 
-void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
+void NSVfitEventLikelihoodMEt2a::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
   metCovDet_ = metCov_.Determinant();
   metCovInverse_ = metCov_;
@@ -96,7 +96,7 @@ void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypo
     metCovInverse10_ = metCovInverse_(1, 0);
     metCovInverse11_ = metCovInverse_(1, 1);
   } else {
-    edm::LogWarning ("NSVfitEventLikelihoodMEt3::beginCandidate")
+    edm::LogWarning ("NSVfitEventLikelihoodMEt2a::beginCandidate")
       << "Failed to invert MET covariance matrix --> using approximate values for MET resolution instead !!";
     metCovInverse00_ = square(1./defaultMEtResolutionX);
     metCovInverse01_ = 0.;
@@ -110,7 +110,7 @@ void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypo
   hadRecoilPy_measured_ = -(hypothesis->p4MEt().py() + hypothesis->p4().py());
 }
 
-double NSVfitEventLikelihoodMEt3::operator()(const NSVfitEventHypothesis* hypothesis) const
+double NSVfitEventLikelihoodMEt2a::operator()(const NSVfitEventHypothesis* hypothesis) const
 {
 //--- compute negative log-likelihood for neutrinos produced in tau lepton decays
 //    to match missing transverse momentum reconstructed in the event
@@ -138,7 +138,7 @@ double NSVfitEventLikelihoodMEt3::operator()(const NSVfitEventHypothesis* hypoth
   double residual1 = hadRecoilPy_expected - hadRecoilPy_measured_;
 
   if ( this->verbosity_ ) {
-    std::cout << "<NSVfitEventLikelihoodMEt3::operator()>:" << std::endl;
+    std::cout << "<NSVfitEventLikelihoodMEt2a::operator()>:" << std::endl;
     std::cout << " pxResidual = " << residual0 << std::endl;
     std::cout << " pyResidual = " << residual1 << std::endl;
   }
@@ -168,4 +168,4 @@ double NSVfitEventLikelihoodMEt3::operator()(const NSVfitEventHypothesis* hypoth
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_EDM_PLUGIN(NSVfitEventLikelihoodPluginFactory, NSVfitEventLikelihoodMEt3, "NSVfitEventLikelihoodMEt3");
+DEFINE_EDM_PLUGIN(NSVfitEventLikelihoodPluginFactory, NSVfitEventLikelihoodMEt2a, "NSVfitEventLikelihoodMEt2a");
