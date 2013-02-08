@@ -433,7 +433,7 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
 //-------------------------------------------------------------------------------
 //
 
-std::pair<double, double> compMEtProjU(const reco::Candidate::LorentzVector& zP4, double metPx, double metPy, int& errorFlag)
+std::pair<double, double> compMEtProjU(const reco::Candidate::LorentzVector& zP4, double metPx, double metPy, int& errorFlag, bool subtract_qT)
 {
   if ( zP4.pt() == 0. ) {
     edm::LogWarning ("compMEtProjU")
@@ -446,8 +446,12 @@ std::pair<double, double> compMEtProjU(const reco::Candidate::LorentzVector& zP4
   double qY = zP4.py();
   double qT = TMath::Sqrt(qX*qX + qY*qY);
   
-  double uX = -(qX + metPx);
-  double uY = -(qY + metPy);
+  double uX = -metPx;
+  double uY = -metPy;
+  if ( subtract_qT ) {
+    uX -= qX;
+    uY -= qY;
+  }
   
   double u1 = (uX*qX + uY*qY)/qT;
   double u2 = (uX*qY - uY*qX)/qT;
