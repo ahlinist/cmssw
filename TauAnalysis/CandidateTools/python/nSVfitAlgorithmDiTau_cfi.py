@@ -223,6 +223,26 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     dRoverlapPFCandidate = cms.double(0.1),
     #tailProbCorr = tailProbCorr_MC_2011,
     power = cms.double(1.0),
+    monitorMEtUncertainty = cms.bool(False),
+    monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
+    numToys = cms.uint32(10000000),
+    verbosity = cms.int32(0)
+)
+
+nSVfitEventLikelihoodMEt3 = cms.PSet(
+    pluginName = cms.string("nSVfitEventLikelihoodMEt3"),
+    pluginType = cms.string("NSVfitEventLikelihoodMEt3"),
+    srcPFJets = cms.InputTag('ak5PFJets'),
+    srcPFCandidates = cms.InputTag('particleFlow'),
+    resolution = met_config.METSignificance_params,
+    dRoverlapPFJet = cms.double(0.3),
+    dRoverlapPFCandidate = cms.double(0.1),
+    pfJetPtThreshold = cms.double(10.),
+    pfCandPtThreshold = cms.double(5.),    
+    numToys = cms.uint32(10000000),    
+    power = cms.double(1.0),
+    monitorMEtUncertainty = cms.bool(False),
+    monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
     verbosity = cms.int32(0)
 )
 
