@@ -224,7 +224,8 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     #tailProbCorr = tailProbCorr_MC_2011,
     power = cms.double(1.0),
     monitorMEtUncertainty = cms.bool(False),
-    monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
+    ##monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
+    monitorFilePath = cms.string('/tmp/veelken/'),
     numToys = cms.uint32(10000000),
     verbosity = cms.int32(0)
 )
@@ -249,12 +250,13 @@ nSVfitEventLikelihoodMEt3 = cms.PSet(
     resolution = met_config.METSignificance_params,
     dRoverlapPFJet = cms.double(0.3),
     dRoverlapPFCandidate = cms.double(0.1),
-    pfJetPtThreshold = cms.double(10.),
+    pfJetPtThreshold = cms.double(20.),
     pfCandPtThreshold = cms.double(5.),    
     numToys = cms.uint32(10000000),    
     power = cms.double(1.0),
     monitorMEtUncertainty = cms.bool(False),
-    monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
+    ##monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
+    monitorFilePath = cms.string('/tmp/veelken/'),
     verbosity = cms.int32(0)
 )
 
