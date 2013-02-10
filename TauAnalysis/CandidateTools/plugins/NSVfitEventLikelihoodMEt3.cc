@@ -22,6 +22,10 @@ NSVfitEventLikelihoodMEt3::NSVfitEventLikelihoodMEt3(const edm::ParameterSet& cf
     lut_(0),
     pfMEtSign_(0)
 {
+  //std::cout << "<NSVfitEventLikelihoodMEt3::NSVfitEventLikelihoodMEt3>:" << std::endl;
+  //std::cout << "cfg:" << std::endl;
+  //std::cout << cfg << std::endl;
+
   power_ = ( cfg.exists("power") ) ?
     cfg.getParameter<double>("power") : 1.0;
 
@@ -35,7 +39,7 @@ NSVfitEventLikelihoodMEt3::NSVfitEventLikelihoodMEt3(const edm::ParameterSet& cf
   pfJetPtThreshold_ = cfg.getParameter<double>("pfJetPtThreshold");
 
   std::string lutName = std::string(pluginName_).append("_lut");
-  lut_ = new TH2D(lutName.data(), lutName.data(), 1000, -250., +250, 1000, -250., +250);
+  lut_ = new TH2D(lutName.data(), lutName.data(), 500, -250., +250, 500, -250., +250);
 
   numToys_ = cfg.getParameter<unsigned>("numToys");
 
@@ -124,16 +128,20 @@ void NSVfitEventLikelihoodMEt3::beginEvent(const edm::Event& evt, const edm::Eve
 {
   edm::Handle<reco::PFJetCollection> pfJets;
   evt.getByLabel(srcPFJets_, pfJets);
+  pfJetListForCovMatrix_.clear();
+  pfJetListForToys_.clear();
   makeLists<reco::PFJet>(*pfJets, pfJetListForCovMatrix_, pfJetListForToys_, pfJetPtThreshold_);  
 
   edm::Handle<reco::PFCandidateCollection> pfCandidates;
   evt.getByLabel(srcPFCandidates_, pfCandidates);
+  pfCandidateListForCovMatrix_.clear();
+  pfCandidateListForToys_.clear();
   makeLists<reco::PFCandidate>(*pfCandidates, pfCandidateListForCovMatrix_, pfCandidateListForToys_, pfCandPtThreshold_); 
 
   std::list<const reco::PFCandidate*> pfJetConstituentList;
   for ( std::list<const reco::PFJet*>::const_iterator pfJet = pfJetListForCovMatrix_.begin();
 	pfJet != pfJetListForCovMatrix_.end(); ++pfJet ) {
-    const std::vector<reco::PFCandidatePtr> pfJetConstituents = (*pfJet)->getPFConstituents();
+    std::vector<reco::PFCandidatePtr> pfJetConstituents = (*pfJet)->getPFConstituents();
     for ( std::vector<reco::PFCandidatePtr>::const_iterator pfJetConstituent = pfJetConstituents.begin();
 	  pfJetConstituent != pfJetConstituents.end(); ++pfJetConstituent ) {
       pfJetConstituentList.push_back(pfJetConstituent->get());
@@ -175,10 +183,10 @@ namespace
 
 void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
-  //if ( this->verbosity_ ) {
-  //  std::cout << "<NSVfitEventLikelihoodMEt3::beginCandidate>:" << std::endl;
-  //  std::cout << " hypothesis = " << hypothesis << std::endl;
-  //}
+  if ( this->verbosity_ >= 1 ) {
+    std::cout << "<NSVfitEventLikelihoodMEt3::beginCandidate>:" << std::endl;
+    std::cout << " hypothesis = " << hypothesis << std::endl;
+  }
 
   std::list<const reco::Candidate*> daughterHypothesesList;
     
@@ -192,7 +200,7 @@ void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypo
     }
   }
   
-  if ( this->verbosity_ ) {
+  if ( this->verbosity_ >= 1 ) {
     std::cout << " daughterHypothesesList: #entries = " << daughterHypothesesList.size() << std::endl;
     std::cout << " pfJetList: #entries(covMatrix) = " << pfJetListForCovMatrix_.size() << ", #entries(toys) = " << pfJetListForToys_.size() << std::endl;
     std::cout << " pfCandidateList: #entries(covMatrix) = " << pfCandidateListForCovMatrix_.size() << ", #entries(toys) = " << pfCandidateListForToys_.size() << std::endl;
@@ -211,19 +219,22 @@ void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypo
   std::vector<metsig::SigInputObj> signInputObjectsForCovMatrix;
   addPFMEtSignObjects(pfMEtSign_, signInputObjectsForCovMatrix, pfJetListForCovMatrix_hypothesis);
   addPFMEtSignObjects(pfMEtSign_, signInputObjectsForCovMatrix, pfCandidateListForCovMatrix_hypothesis);
+  if ( verbosity_ >= 1 ) std::cout << " signInputObjectsForCovMatrix: #entries = " << signInputObjectsForCovMatrix.size() << std::endl;
+
   TMatrixD pfMEtCov = (*pfMEtSign_)(signInputObjectsForCovMatrix);
   double sigma1 = TMath::Sqrt(pfMEtCov(0,0));
   double sigma2 = TMath::Sqrt(pfMEtCov(1,1));
   double rho = pfMEtCov(0,1)/(sigma1*sigma2);
   double sqrt_1_minus_rho2 = TMath::Sqrt(1. - square(rho));
-  if ( verbosity_ ) {
-    std::cout << "pfMEtCov:" << std::endl;
+  if ( verbosity_ >= 1 ) {
+    std::cout << "pfMEtCov(reduced):" << std::endl;
     pfMEtCov.Print();
   }
 
   std::vector<metsig::SigInputObj> signInputObjectsForToys;
-  addPFMEtSignObjects(pfMEtSign_, signInputObjectsForCovMatrix, pfJetListForToys_hypothesis);
-  addPFMEtSignObjects(pfMEtSign_, signInputObjectsForCovMatrix, pfCandidateListForToys_hypothesis);
+  addPFMEtSignObjects(pfMEtSign_, signInputObjectsForToys, pfJetListForToys_hypothesis);
+  addPFMEtSignObjects(pfMEtSign_, signInputObjectsForToys, pfCandidateListForToys_hypothesis);
+  if ( verbosity_ >= 1 ) std::cout << " signInputObjectsForToys: #entries = " << signInputObjectsForToys.size() << std::endl;
   for ( std::vector<metsig::SigInputObj>::iterator signInputObject = signInputObjectsForToys.begin();
 	signInputObject != signInputObjectsForToys.end(); ++signInputObject ) {
     signInputObject->set(
@@ -233,30 +244,45 @@ void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypo
       signInputObject->get_sigma_e(),	 
       signInputObject->get_sigma_tan()/signInputObject->get_energy());
   }
-  
+
   lut_->Reset();
 
+  double sumPx = 0.;
+  double sumPy = 0.;
+  for ( std::vector<metsig::SigInputObj>::const_iterator signInputObject = signInputObjectsForToys.begin();
+	signInputObject != signInputObjectsForToys.end(); ++signInputObject ) {
+    double objectPt = signInputObject->get_energy();
+    double objectPhi = signInputObject->get_phi();
+    sumPx += objectPt*TMath::Cos(objectPhi);
+    sumPy += objectPt*TMath::Sin(objectPhi);
+  }
+  
   for ( unsigned iToy = 0; iToy < numToys_; ++iToy ) {
-    double sumPx = 0.;
-    double sumPy = 0.;
+    if ( verbosity_ >= 1 && (iToy % 100000) == 1 ) std::cout << "processing toy #" << iToy << std::endl;
+    double sumPx_toy = 0.;
+    double sumPy_toy = 0.;
+    int idx = 0;
     for ( std::vector<metsig::SigInputObj>::const_iterator signInputObject = signInputObjectsForToys.begin();
 	  signInputObject != signInputObjectsForToys.end(); ++signInputObject ) {
       double toyObjectPt = rnd_.Gaus(signInputObject->get_energy(), signInputObject->get_sigma_e());
       double toyObjectPhi = rnd_.Gaus(signInputObject->get_phi(), signInputObject->get_sigma_tan());
       double toyObjectPx = toyObjectPt*TMath::Cos(toyObjectPhi);
       double toyObjectPy = toyObjectPt*TMath::Sin(toyObjectPhi);
-      //std::cout << "toyObject #" << idx << ": Px = " << toyObjectPx << ", Py = " << toyObjectPy 
-      //	  << " (Pt = " << toyObjectPt << ", phi = " <<toyObjectPhi << ")" << std::endl;
-      sumPx += toyObjectPx;
-      sumPy += toyObjectPy;
+      if ( verbosity_ >= 1 && (iToy % 100000) == 1 ) {
+	std::cout << "toyObject #" << idx << ": Px = " << toyObjectPx << ", Py = " << toyObjectPy 
+		  << " (Pt = " << toyObjectPt << ", phi = " <<toyObjectPhi << ")" << std::endl;
+      }
+      sumPx_toy += toyObjectPx;
+      sumPy_toy += toyObjectPy;
+      ++idx;
     }
     double eta1 = rnd_.Gaus(0., 1.);
     double eta2 = rnd_.Gaus(0., 1.);
-    sumPx += (sigma1*eta1);
-    sumPy += (sigma2*(rho*eta1 + sqrt_1_minus_rho2*eta2));
-    double metPx = -sumPx;
-    double metPy = -sumPy;
-    lut_->Fill(metPx, metPy);
+    sumPx_toy += (sigma1*eta1);
+    sumPy_toy += (sigma2*(rho*eta1 + sqrt_1_minus_rho2*eta2));
+    double residualPx_toy = -(sumPx_toy - sumPx);
+    double residualPy_toy = -(sumPy_toy - sumPy);
+    lut_->Fill(residualPx_toy, residualPy_toy);
   }
   lut_->Scale(1./numToys_);
 
@@ -283,7 +309,7 @@ double NSVfitEventLikelihoodMEt3::operator()(const NSVfitEventHypothesis* hypoth
   double residualPx = hypothesis->dp4MEt_fitted().px();
   double residualPy = hypothesis->dp4MEt_fitted().py();
 
-  if ( this->verbosity_ ) {
+  if ( this->verbosity_ >= 2 ) {
     std::cout << "<NSVfitEventLikelihoodMEt3::operator()>:" << std::endl;
     std::cout << " residualPx = " << residualPx << std::endl;
     std::cout << " residualPy = " << residualPy << std::endl;
@@ -300,7 +326,7 @@ double NSVfitEventLikelihoodMEt3::operator()(const NSVfitEventHypothesis* hypoth
     prob = 0.;
   }
 
-  if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
+  if ( this->verbosity_ >= 2 ) std::cout << "--> prob = " << prob << std::endl;
 
   return prob;
 }
