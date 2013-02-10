@@ -224,8 +224,8 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     #tailProbCorr = tailProbCorr_MC_2011,
     power = cms.double(1.0),
     monitorMEtUncertainty = cms.bool(False),
-    ##monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
-    monitorFilePath = cms.string('/tmp/veelken/'),
+    monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
+    ##monitorFilePath = cms.string('/tmp/veelken/'),
     numToys = cms.uint32(10000000),
     verbosity = cms.int32(0)
 )
@@ -255,8 +255,8 @@ nSVfitEventLikelihoodMEt3 = cms.PSet(
     numToys = cms.uint32(10000000),    
     power = cms.double(1.0),
     monitorMEtUncertainty = cms.bool(False),
-    ##monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
-    monitorFilePath = cms.string('/tmp/veelken/'),
+    monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
+    ##monitorFilePath = cms.string('/tmp/veelken/'),
     verbosity = cms.int32(0)
 )
 

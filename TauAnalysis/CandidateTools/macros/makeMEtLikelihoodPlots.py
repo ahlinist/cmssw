@@ -7,7 +7,8 @@ import time
 
 import ROOT
 
-inputFilePath = "/tmp/veelken"
+inputFilePath = "/data1/veelken/tmp/svFitStudies/"
+##inputFilePath = "/tmp/veelken/"
 inputFile_regex = r"[a-zA-Z0-9_/:.]*metUncertainty_nSVfitEventLikelihoodMEt[0-9]+_(?P<run_ls_event>run[0-9]+_ls[0-9]+_ev[0-9]+).root"
 
 histogramName1 = "nSVfitEventLikelihoodMEt2_likelihood"
@@ -41,7 +42,7 @@ def makePlot(canvas,
 
     canvas.Divide(2, 1)
 
-    canvas.cd(0)
+    canvas.cd(1)
     inputFile1 = ROOT.TFile(inputFileName1, "READ")
     histogram1 = inputFile1.Get(histogramName1)
     if ( histogram1.Integral() > 0. ):
@@ -51,7 +52,7 @@ def makePlot(canvas,
     histogram1.SetStats(False)
     histogram1.Draw("COLZ")
 
-    canvas.cd(1)
+    canvas.cd(2)
     inputFile2 = ROOT.TFile(inputFileName2, "READ")
     histogram2 = inputFile2.Get(histogramName2)
     if ( histogram2.Integral() > 0. ):
