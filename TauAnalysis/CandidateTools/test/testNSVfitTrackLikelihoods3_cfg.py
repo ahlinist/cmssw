@@ -8,13 +8,13 @@ import re
 import TauAnalysis.Configuration.tools.castor as castor
 from TauAnalysis.Skimming.EventContent_cff import *
 
-process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
-process.load('Configuration/Geometry/GeometryIdeal_cff')
-process.load('Configuration/StandardSequences/MagneticField_cff')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START53_V15::All')
+process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/afs/cern.ch/user/v/veelken/filtered.root'
+        'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
     ),
     dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
     inputCommands=cms.untracked.vstring(
@@ -88,7 +88,7 @@ for file in files:
         inputFileNames.append(file)
 #print "inputFileNames = %s" % inputFileNames 
 
-##process.source.fileNames = cms.untracked.vstring(inputFileNames)
+process.source.fileNames = cms.untracked.vstring(inputFileNames)
 #--------------------------------------------------------------------------------
 
 process.testSVfitTrackLikelihoodProductionSequence = cms.Sequence()
@@ -550,25 +550,36 @@ process.testSVfitTrackLikelihoodProductionSequence += nSVfitProducerModule
 
 metAlgorithms = {
     'PFMEt' : {
-        'srcMEt'    : 'pfType1CorrectedMet',
-        'srcMEtCov' : 'pfMEtSignCovMatrix'
+        'srcMEt'        : 'pfType1CorrectedMet',
+        'srcMEtCov'     : 'pfMEtSignCovMatrix',
+        'metLikelihood' : "nSVfitEventLikelihoodMEt2"
     },
-##     'MVAMEtUnityResponse' : {
-##         'srcMEt'    : 'pfMEtMVAunityResponse',
-##         'srcMEtCov' : 'pfMEtMVAunityResponse'
+##    'MVAMEtUnityResponse' : {
+##        'srcMEt'        : 'pfMEtMVAunityResponse',
+##        'srcMEtCov'     : 'pfMEtMVAunityResponse',
+##        'metLikelihood' : "nSVfitEventLikelihoodMEt2"
 ##     },
 ##     'MVAMEtUnityResponsePFMEtCov' : {
-##         'srcMEt'    : 'pfMEtMVAunityResponseWithPFMEtCov',
-##         'srcMEtCov' : 'pfMEtMVAunityResponseWithPFMEtCov'
+##         'srcMEt'       : 'pfMEtMVAunityResponseWithPFMEtCov',
+##         'srcMEtCov'    : 'pfMEtMVAunityResponseWithPFMEtCov',
+##        'metLikelihood' : "nSVfitEventLikelihoodMEt2"
 ##     },
-##     'MVAMEtNonUnityResponse' : {
-##         'srcMEt'    : 'pfMEtMVA',
-##         'srcMEtCov' : 'pfMEtMVA'
-##     },
-##     'MVAMEtNonUnityResponsePFMEtCov' : {
-##         'srcMEt'    : 'pfMEtMVAwithPFMEtCov',
-##         'srcMEtCov' : 'pfMEtMVAwithPFMEtCov'
-##     }
+    'MVAMEtNonUnityResponse2' : {
+        'srcMEt'        : 'pfMEtMVA',
+        'srcMEtCov'     : 'pfMEtMVA',
+        'metLikelihood' : "nSVfitEventLikelihoodMEt2"
+        
+    },
+    'MVAMEtNonUnityResponse2pfMEtCov' : {
+        'srcMEt'        : 'pfMEtMVAwithPFMEtCov',
+        'srcMEtCov'     : 'pfMEtMVAwithPFMEtCov',
+        'metLikelihood' : "nSVfitEventLikelihoodMEt2"
+    },
+    'MVAMEtNonUnityResponse3' : {
+        'srcMEt'        : 'pfMEtMVA',
+        'srcMEtCov'     : 'pfMEtMVA',
+        'metLikelihood' : "nSVfitEventLikelihoodMEt3"
+    }
 }
 
 ##for numCalls in [ 10, 20, 50, 100, 250, 500, 1000 ]:
@@ -588,6 +599,7 @@ for numCalls in [ 100 ]:
         nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = nSVfitBuilderLeg2
         nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
         nSVfitProducerModule.config.event.srcMEt = cms.InputTag(metAlgorithms[metAlgorithmName]['srcMEt'])
+        nSVfitProducerModule.config.event.likelihoodFunctions[0] = getattr(process, metAlgorithms[metAlgorithmName]['metLikelihood']).clone()
         nSVfitProducerModule.config.event.likelihoodFunctions[0].srcMEtCovMatrix = cms.InputTag(metAlgorithms[metAlgorithmName]['srcMEtCov'])
         nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
         nSVfitProducerModule.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexByLeptonMatch')
@@ -706,6 +718,20 @@ process.testSVfitTrackLikelihoodSequence += process.neuralMtautauNtupleProducer
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string("/data1/veelken/tmp/svFitStudies/testNSVfitTrackLikelihoods3_ntuple_%s_%s_%s_2012Dec16.root" % (sample_type, channel, massPoint))
 )
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# fill histograms of observables sensitive to tau polarization
+# (to measure Higgs quantum numbers)
+
+process.diTauPolarizationAnalyzer = cms.EDAnalyzer("DiCandidatePairPolarizationAnalyzer",
+    srcGenParticles = cms.InputTag('genParticles'),
+    srcRecLeg1 = cms.InputTag(srcRecLeg1),                                              
+    srcRecLeg2 = cms.InputTag(srcRecLeg2),
+    srcWeights = cms.VInputTag(),                                               
+    dqmDirectory = cms.string("diTauPolarizationAnalyzer")
+)
+process.testSVfitTrackLikelihoodSequence += process.diTauPolarizationAnalyzer
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(process.testSVfitTrackLikelihoodSequence)

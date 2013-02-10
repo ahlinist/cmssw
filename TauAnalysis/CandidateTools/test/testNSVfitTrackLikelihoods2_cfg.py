@@ -6,6 +6,7 @@ import os
 import re
 
 import TauAnalysis.Configuration.tools.castor as castor
+import TauAnalysis.Configuration.tools.eos as eos
 from TauAnalysis.Skimming.EventContent_cff import *
 
 process.load('FWCore/MessageService/MessageLogger_cfi')
@@ -17,12 +18,13 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(100)
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
+        ##'file:/data1/veelken/CMSSW_5_2_x/skims/goldenZmumuEvents_ZplusJets_madgraph2_2012Apr12_AOD_9_1_cSC.root'
+        'file:/tmp/veelken/genTauLeptonsPairAccSkim_ggHiggs125_mutau_2_1_4nD.root'                
     ),
     dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
     inputCommands=cms.untracked.vstring(
@@ -47,6 +49,7 @@ channel = 'mutau'
 #channel = 'emu'
 massPoint = '125'
 #massPoint = '300'
+qTmin = 50.
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -81,6 +84,8 @@ inputFileNames = []
 files = None
 if inputFilePath.startswith('/castor/'):
     files = [ "".join([ "rfio:", file_info['path'] ]) for file_info in castor.nslsl(inputFilePath) ]
+elif inputFilePath.startswith('/store/'):
+    files = [ file_info['path'] for file_info in eos.lsl(inputFilePath) ]
 else:
     files = [ "".join([ "file:", inputFilePath, file ]) for file in os.listdir(inputFilePath) ]
 for file in files:
@@ -295,6 +300,18 @@ if numTauJets > 0:
         maxNumber = cms.uint32(numTauJets)                      
     )
     process.testSVfitTrackLikelihoodProductionSequence += process.tauFilter
+
+process.boostedDiTaus = cms.EDFilter("CandViewSelector",
+    src = cms.InputTag(genTauPairs),
+    cut = cms.string("pt > %f" % qTmin)
+)
+process.testSVfitTrackLikelihoodProductionSequence += process.boostedDiTaus
+process.boostedDiTauFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag('boostedDiTaus'),
+    minNumber = cms.uint32(1),
+    maxNumber = cms.uint32(1000)                      
+)
+process.testSVfitTrackLikelihoodProductionSequence += process.boostedDiTauFilter
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -532,7 +549,8 @@ else:
 nSVfitProducerModuleNames = dict()
 svFitAnalyzerModuleTypes = dict()
 
-for option in [ 1, 2, 3, 4, 5, 6, 7, 8 ]:
+##for option in [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]:
+for option in [ 5, 9 ]:
         
     nSVfitProducerModule = None
     nSVfitProducerModuleName = None
@@ -660,6 +678,11 @@ for option in [ 1, 2, 3, 4, 5, 6, 7, 8 ]:
         nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
         nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = nSVfitBuilderLeg2
         nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
+        nSVfitProducerModule.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt2)
+        nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(True)
+        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(1)
+        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(False)
+        nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
         nSVfitProducerModule.config.event.srcMEt = cms.InputTag('pfType1CorrectedMet')
         nSVfitProducerModule.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexByLeptonMatch')
         nSVfitProducerModule.config.event.builder = process.nSVfitEventBuilder
@@ -792,6 +815,42 @@ for option in [ 1, 2, 3, 4, 5, 6, 7, 8 ]:
         nSVfitProducerModule.algorithm.pluginName = cms.string("nSVfitProducerByIntegration2WtracksFor1prongsAnd3prongsMax")
         nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
         nSVfitProducerModuleName = "nSVfitProducerByIntegration2WtracksFor1prongsAnd3prongsMax"
+        svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"
+    elif option == 9:
+        # option 9: Markov Chain integration of likelihood functions, no tracking information used;
+        #           new NSVfitEventLikelihverbosity_ >= 1 && oodMEt3 used
+        nSVfitProducerModule = process.nSVfitProducerByIntegration2.clone()
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.src = cms.InputTag(srcRecLeg1)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitLikelihoodLeg1_kinematics)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg1.builder = nSVfitBuilderLeg1
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.src = cms.InputTag(srcRecLeg2)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitLikelihoodLeg2_kinematics)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.likelihoodFunctions[0].applySinThetaFactor = cms.bool(False)
+        nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = nSVfitBuilderLeg2
+        nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
+        nSVfitProducerModule.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt3)
+        nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(True)
+        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(1)
+        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(False)
+        nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
+        nSVfitProducerModule.config.event.srcMEt = cms.InputTag('pfType1CorrectedMet')
+        nSVfitProducerModule.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexByLeptonMatch')
+        nSVfitProducerModule.config.event.builder = process.nSVfitEventBuilder
+        nSVfitProducerModule.algorithm.markovChainOptions.initMode = cms.string("none")
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterBurnin = cms.uint32(50000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSampling = cms.uint32(500000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSimAnnealingPhase1 = cms.uint32(10000)
+        nSVfitProducerModule.algorithm.markovChainOptions.numIterSimAnnealingPhase2 = cms.uint32(30000)
+        nSVfitProducerModule.algorithm.markovChainOptions.alpha = cms.double(0.9999)
+        nSVfitProducerModule.algorithm.markovChainOptions.numChains = cms.uint32(1)
+        nSVfitProducerModule.algorithm.markovChainOptions.numBatches = cms.uint32(1)
+        nSVfitProducerModule.algorithm.markovChainOptions.epsilon0 = cms.double(1.e-2)
+        nSVfitProducerModule.algorithm.monitorMarkovChain = cms.bool(False)
+        nSVfitProducerModule.algorithm.max_or_median = cms.string("max")
+        nSVfitProducerModule.algorithm.pluginName = cms.string("nSVfitProducerByIntegration2WOtracksMaxNewMEtUncertainty")
+        nSVfitProducerModule.algorithm.verbosity = cms.int32(1)
+        nSVfitProducerModuleName = "nSVfitProducerByIntegration2WOtracksMaxNewMEtUncertainty"
         svFitAnalyzerModuleType = "NSVfitEventHypothesisAnalyzer"
     else:
         raise ValueError("Option %i undefined !!" % option)
