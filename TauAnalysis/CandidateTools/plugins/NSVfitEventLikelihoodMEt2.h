@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.9 2012/08/28 15:00:22 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.10 2013/02/08 14:43:13 veelken Exp $
  *
  */
 
@@ -34,6 +34,7 @@
 
 #include <TMatrixD.h>
 #include <TVectorD.h>
+#include <TFormula.h>
 
 #include <list>
 
