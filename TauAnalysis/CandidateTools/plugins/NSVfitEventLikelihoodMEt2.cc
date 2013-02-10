@@ -1,5 +1,6 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitEventLikelihoodMEt2.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include "DataFormats/Common/interface/Handle.h"
@@ -18,18 +19,22 @@
 
 using namespace SVfit_namespace;
 
-const double defaultPFMEtResolutionX = 10.;
-const double defaultPFMEtResolutionY = 10.;
+const double defaultPFMEtResolutionX = 15.; // approx. resolution of Type-1 corrected PFMET in 2012
+const double defaultPFMEtResolutionY = 15.;
 
 const double epsilon = 1.e-4;
 
 NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2(const edm::ParameterSet& cfg)
   : NSVfitEventLikelihood(cfg),
     pfMEtSign_(0),
-    pfMEtCov_(2, 2),
-    pfMEtCovInverse_(2, 2),
+    pfMEtCov_(2,2),
+    pfMEtCovInverse_(2,2),
     tailProbCorrFunction_(0)
 {
+  //std::cout << "<NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2>:" << std::endl;
+  //std::cout << "cfg:" << std::endl;
+  //std::cout << cfg << std::endl;
+
   power_ = ( cfg.exists("power") ) ?
     cfg.getParameter<double>("power") : 1.0;
 
@@ -109,10 +114,10 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
 
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
-  //if ( this->verbosity_ ) {
-  //  std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
-  //  std::cout << " hypothesis = " << hypothesis << std::endl;
-  //}
+  if ( this->verbosity_ >= 1 ) {
+    std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
+    std::cout << " hypothesis = " << hypothesis << std::endl;
+  }
   
   if ( srcMEtCovMatrix_.label() == "" ) {
     std::list<const reco::Candidate*> daughterHypothesesList;
@@ -130,31 +135,39 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
     pfMEtCov_ = (*pfMEtSign_)(daughterHypothesesList);
   }
 
-  //if ( this->verbosity_ ) {
-  //  std::cout << "pfMEt:" << std::endl;
-  //  std::cout << " Px = " << hypothesis->met()->px() << ", Py = " << hypothesis->met()->py() << std::endl;
-  //  if ( dynamic_cast<const pat::MET*>(hypothesis->met().get()) != 0 ) {
-  //    const reco::GenMET* genMET = (dynamic_cast<const pat::MET*>(hypothesis->met().get()))->genMET();
-  //    std::cout << "(genMEt: Px = " << genMET->px() << ", Py = " << genMET->py() << ")" << std::endl;
-  //  }
-  //  std::cout << "pfMEtCov:" << std::endl;
-  //  pfMEtCov_.Print();
-  //}
+  if ( this->verbosity_ >= 1 ) {
+    std::cout << "pfMEt:" << std::endl;
+    std::cout << " Px = " << hypothesis->met()->px() << ", Py = " << hypothesis->met()->py() << std::endl;
+    if ( dynamic_cast<const pat::MET*>(hypothesis->met().get()) != 0 ) {
+      const reco::GenMET* genMET = (dynamic_cast<const pat::MET*>(hypothesis->met().get()))->genMET();
+      std::cout << "(genMEt: Px = " << genMET->px() << ", Py = " << genMET->py() << ")" << std::endl;
+    }
+    std::cout << "pfMEtCov:" << std::endl;
+    pfMEtCov_.Print();
+  }
 
   pfMEtCovDet_ = pfMEtCov_.Determinant();
   pfMEtCovInverse_ = pfMEtCov_;
-  if ( pfMEtCovDet_ != 0. ) pfMEtCovInverse_.Invert();
-
-  pfMEtCovInverse00_ = pfMEtCovInverse_(0, 0);
-  pfMEtCovInverse01_ = pfMEtCovInverse_(0, 1);
-  pfMEtCovInverse10_ = pfMEtCovInverse_(1, 0);
-  pfMEtCovInverse11_ = pfMEtCovInverse_(1, 1);
+  if ( pfMEtCovDet_ > epsilon ) {
+    pfMEtCovInverse_.Invert();
+    pfMEtCovInverse00_ = pfMEtCovInverse_(0, 0);
+    pfMEtCovInverse01_ = pfMEtCovInverse_(0, 1);
+    pfMEtCovInverse10_ = pfMEtCovInverse_(1, 0);
+    pfMEtCovInverse11_ = pfMEtCovInverse_(1, 1);
+  } else {
+    edm::LogWarning ("NSVfitEventLikelihoodMEt2::beginCandidate")
+      << "Failed to invert MET covariance matrix --> using approximate values for MET resolution instead !!";
+    pfMEtCovInverse00_ = square(1./defaultPFMEtResolutionX);
+    pfMEtCovInverse01_ = 0.;
+    pfMEtCovInverse10_ = 0.;
+    pfMEtCovInverse11_ = square(1./defaultPFMEtResolutionY);
+  }
   
   nllConstTerm_ = TMath::Log(2.*TMath::Pi()) + 0.5*TMath::Log(TMath::Abs(pfMEtCovDet_));
 
   if ( monitorMEtUncertainty_ ) {
     std::string histogramName = std::string(pluginName_).append("_likelihood");
-    TH2* histogram = new TH2D(histogramName.data(), histogramName.data(), 1000, -250., +250, 1000, -250., +250);
+    TH2* histogram = new TH2D(histogramName.data(), histogramName.data(), 500, -250., +250, 500, -250., +250);
     for ( int iBinX = 1; iBinX <= histogram->GetNbinsX(); ++iBinX ) {
       for ( int iBinY = 1; iBinY <= histogram->GetNbinsY(); ++iBinY ) {
 	double dx = histogram->GetXaxis()->GetBinCenter(iBinX);
@@ -189,7 +202,7 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
   residual_fitted0_ = hypothesis->dp4MEt_fitted().px();
   residual_fitted1_ = hypothesis->dp4MEt_fitted().py();
 
-  if ( this->verbosity_ ) {
+  if ( this->verbosity_ >= 2 ) {
     std::cout << "<NSVfitEventLikelihoodMEt2::operator()>:" << std::endl;
     std::cout << " pxResidual_fitted = " << residual_fitted0_ << std::endl;
     std::cout << " pyResidual_fitted = " << residual_fitted1_ << std::endl;
@@ -213,7 +226,7 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
   }
 
   double prob = TMath::Exp(-power_*nll);
-  if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
+  if ( this->verbosity_ >= 2 ) std::cout << "--> prob = " << prob << std::endl;
 
   return prob;
 }
