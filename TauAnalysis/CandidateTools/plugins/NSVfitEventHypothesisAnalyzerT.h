@@ -108,81 +108,83 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     {
       dqmStore.setCurrentFolder(dqmDirectory_.data());
       
-      leg1Pt_                       = dqmStore.book1D("leg1Pt",                       "leg1Pt",                       numBinsSVfitMass_/2,            0., 0.5*svFitMassMax_);
-      leg2Pt_                       = dqmStore.book1D("leg2Pt",                       "leg2Pt",                       numBinsSVfitMass_/2,            0., 0.5*svFitMassMax_);
-      dPhi12_                       = dqmStore.book1D("dPhi12",                       "dPhi12",                                       180,            0.,              180.);
-      metPt_                        = dqmStore.book1D("metPt",                        "metPt",                        numBinsSVfitMass_/2,            0., 0.5*svFitMassMax_);
-      visMass_                      = dqmStore.book1D("visMass",                      "visMass",                        numBinsSVfitMass_,            0.,     svFitMassMax_);
-      genMass_                      = dqmStore.book1D("genMass",                      "genMass",                        numBinsSVfitMass_,            0.,     svFitMassMax_);
-      genVisMass_                   = dqmStore.book1D("genVisMass",                   "genVisMass",                     numBinsSVfitMass_,            0.,     svFitMassMax_);
+      leg1Pt_                         = dqmStore.book1D("leg1Pt",                         "leg1Pt",                         numBinsSVfitMass_/2,            0., 0.5*svFitMassMax_);
+      leg2Pt_                         = dqmStore.book1D("leg2Pt",                         "leg2Pt",                         numBinsSVfitMass_/2,            0., 0.5*svFitMassMax_);
+      dPhi12_                         = dqmStore.book1D("dPhi12",                         "dPhi12",                                         180,            0.,              180.);
+      metPt_                          = dqmStore.book1D("metPt",                          "metPt",                          numBinsSVfitMass_/2,            0., 0.5*svFitMassMax_);
+      visMass_                        = dqmStore.book1D("visMass",                        "visMass",                          numBinsSVfitMass_,            0.,     svFitMassMax_);
+      genMass_                        = dqmStore.book1D("genMass",                        "genMass",                          numBinsSVfitMass_,            0.,     svFitMassMax_);
+      genVisMass_                     = dqmStore.book1D("genVisMass",                     "genVisMass",                       numBinsSVfitMass_,            0.,     svFitMassMax_);
       
-      genDiTauPt_                   = dqmStore.book1D("genDiTauPt",                   "genDiTauPt",                                   250,            0.,             +250.);
-      genDiTauEta_                  = dqmStore.book1D("genDiTauEta",                  "genDiTauEta",                                  198,          -9.9,              +9.9);
-      genDiTauPhi_                  = dqmStore.book1D("genDiTauPhi",                  "genDiTauPhi",                                  360,  -TMath::Pi(),      +TMath::Pi());
+      genDiTauPt_                     = dqmStore.book1D("genDiTauPt",                     "genDiTauPt",                                     250,            0.,             +250.);
+      genDiTauEta_                    = dqmStore.book1D("genDiTauEta",                    "genDiTauEta",                                    198,          -9.9,              +9.9);
+      genDiTauPhi_                    = dqmStore.book1D("genDiTauPhi",                    "genDiTauPhi",                                    360,  -TMath::Pi(),      +TMath::Pi());
   
-      recDiTauPt_                   = dqmStore.book1D("recDiTauPt",                   "recDiTauPt",                                   250,            0.,             +250.);
-      recDiTauEta_                  = dqmStore.book1D("recDiTauEta",                  "recDiTauEta",                                  198,          -9.9,              +9.9);
-      recDiTauPhi_                  = dqmStore.book1D("recDiTauPhi",                  "recDiTauPhi",                                  360,  -TMath::Pi(),      +TMath::Pi());
-      
-      deltaDiTauPt_                 = dqmStore.book1D("deltaDiTauPt",                 "deltaDiTauPt",                                 350,         -100.,             +250.);
-      deltaDiTauPx_                 = dqmStore.book1D("deltaDiTauPx",                 "deltaDiTauPx",                                 350,         -175.,             +175.);
-      deltaDiTauPy_                 = dqmStore.book1D("deltaDiTauPy",                 "deltaDiTauPy",                                 350,         -175.,             +175.);  
-      deltaDiTauEta_                = dqmStore.book1D("deltaDiTauEta",                "deltaDiTauEta",                                198,          -9.9,              +9.9);
-      deltaDiTauPhi_                = dqmStore.book1D("deltaDiTauPhi",                "deltaDiTauPhi",                                360,  -TMath::Pi(),      +TMath::Pi());
-      deltaDiTauMass_               = dqmStore.book1D("deltaDiTauMass",               "deltaDiTauMass",               2*numBinsSVfitMass_, -svFitMassMax_,   +svFitMassMax_);
+      recDiTauPt_                     = dqmStore.book1D("recDiTauPt",                     "recDiTauPt",                                     250,            0.,             +250.);
+      recDiTauEta_                    = dqmStore.book1D("recDiTauEta",                    "recDiTauEta",                                    198,          -9.9,              +9.9);
+      recDiTauPhi_                    = dqmStore.book1D("recDiTauPhi",                    "recDiTauPhi",                                    360,  -TMath::Pi(),      +TMath::Pi());
+        
+      deltaDiTauPt_                   = dqmStore.book1D("deltaDiTauPt",                   "deltaDiTauPt",                                   350,         -100.,             +250.);
+      deltaDiTauPx_                   = dqmStore.book1D("deltaDiTauPx",                   "deltaDiTauPx",                                   350,         -175.,             +175.);
+      deltaDiTauPy_                   = dqmStore.book1D("deltaDiTauPy",                   "deltaDiTauPy",                                   350,         -175.,             +175.);  
+      deltaDiTauEta_                  = dqmStore.book1D("deltaDiTauEta",                  "deltaDiTauEta",                                  198,          -9.9,              +9.9);
+      deltaDiTauPhi_                  = dqmStore.book1D("deltaDiTauPhi",                  "deltaDiTauPhi",                                  360,  -TMath::Pi(),      +TMath::Pi());
+      deltaDiTauMass_                 = dqmStore.book1D("deltaDiTauMass",                 "deltaDiTauMass",                 2*numBinsSVfitMass_, -svFitMassMax_,   +svFitMassMax_);
              
-      recLeg12MEtPt_                = dqmStore.book1D("recLeg12MEtPt",                "recLeg12MEtPt",                                250,            0.,             +250.);  
-      recLeg12MEtPhi_               = dqmStore.book1D("recLeg12MEtPhi",               "recLeg12MEtPhi",                               360,  -TMath::Pi(),      +TMath::Pi());
+      recLeg12MEtPt_                  = dqmStore.book1D("recLeg12MEtPt",                  "recLeg12MEtPt",                                  250,            0.,             +250.);  
+      recLeg12MEtPhi_                 = dqmStore.book1D("recLeg12MEtPhi",                 "recLeg12MEtPhi",                                 360,  -TMath::Pi(),      +TMath::Pi());
 
-      deltaLeg12MEtPt_              = dqmStore.book1D("deltaLeg12MEtPt",              "deltaLeg12MEtPt",                              350,         -100.,             +250.);
-      deltaLeg12MEtPx_              = dqmStore.book1D("deltaLeg12MEtPx",              "deltaLeg12MEtPx",                              350,         -175.,             +175.);
-      deltaLeg12MEtPy_              = dqmStore.book1D("deltaLeg12MEtPy",              "deltaLeg12MEtPy",                              350,         -175.,             +175.);
-      deltaLeg12MEtPhi_             = dqmStore.book1D("deltaLeg12MEtPhi",             "deltaLeg12MEtPhi",                             360,  -TMath::Pi(),      +TMath::Pi());
+      deltaLeg12MEtPt_                = dqmStore.book1D("deltaLeg12MEtPt",                "deltaLeg12MEtPt",                                350,         -100.,             +250.);
+      deltaLeg12MEtPx_                = dqmStore.book1D("deltaLeg12MEtPx",                "deltaLeg12MEtPx",                                350,         -175.,             +175.);
+      deltaLeg12MEtPy_                = dqmStore.book1D("deltaLeg12MEtPy",                "deltaLeg12MEtPy",                                350,         -175.,             +175.);
+      deltaLeg12MEtPhi_               = dqmStore.book1D("deltaLeg12MEtPhi",               "deltaLeg12MEtPhi",                               360,  -TMath::Pi(),      +TMath::Pi());
       
-      deltaMEtPt_                   = dqmStore.book1D("deltaMEtPt",                   "deltaMEtPt",                                   350,         -100.,             +250.);
-      deltaMEtPx_                   = dqmStore.book1D("deltaMEtPx",                   "deltaMEtPx",                                   350,         -175.,             +175.);
-      deltaMEtPy_                   = dqmStore.book1D("deltaMEtPy",                   "deltaMEtPy",                                   350,         -175.,             +175.);
-      deltaMEtPhi_                  = dqmStore.book1D("deltaMEtPhi",                  "deltaMEtPhi",                                  360,  -TMath::Pi(),      +TMath::Pi());
+      deltaMEtPt_                     = dqmStore.book1D("deltaMEtPt",                     "deltaMEtPt",                                     350,         -100.,             +250.);
+      deltaMEtPx_                     = dqmStore.book1D("deltaMEtPx",                     "deltaMEtPx",                                     350,         -175.,             +175.);
+      deltaMEtPy_                     = dqmStore.book1D("deltaMEtPy",                     "deltaMEtPy",                                     350,         -175.,             +175.);
+      deltaMEtPhi_                    = dqmStore.book1D("deltaMEtPhi",                    "deltaMEtPhi",                                    360,  -TMath::Pi(),      +TMath::Pi());
 
-      deltaMEtBySVfitPt_            = dqmStore.book1D("deltaMEtBySVfitPt",            "deltaMEtBySVfitPt",                            350,         -100.,             +250.);
-      deltaMEtBySVfitPx_            = dqmStore.book1D("deltaMEtBySVfitPx",            "deltaMEtBySVfitPx",                            350,         -175.,             +175.);
-      deltaMEtBySVfitPy_            = dqmStore.book1D("deltaMEtBySVfitPy",            "deltaMEtBySVfitPy",                            350,         -175.,             +175.);
-      deltaMEtBySVfitPhi_           = dqmStore.book1D("deltaMEtBySVfitPhi",           "deltaMEtBySVfitPhi",                           360,  -TMath::Pi(),      +TMath::Pi());
+      deltaMEtBySVfitPt_              = dqmStore.book1D("deltaMEtBySVfitPt",              "deltaMEtBySVfitPt",                              350,         -100.,             +250.);
+      deltaMEtBySVfitPx_              = dqmStore.book1D("deltaMEtBySVfitPx",              "deltaMEtBySVfitPx",                              350,         -175.,             +175.);
+      deltaMEtBySVfitPy_              = dqmStore.book1D("deltaMEtBySVfitPy",              "deltaMEtBySVfitPy",                              350,         -175.,             +175.);
+      deltaMEtBySVfitPhi_             = dqmStore.book1D("deltaMEtBySVfitPhi",             "deltaMEtBySVfitPhi",                             360,  -TMath::Pi(),      +TMath::Pi());
            
-      deltaDecayVertexPhi_1prong_   = dqmStore.book1D("deltaDecayVertexPhi_1prong",   "deltaDecayVertexPhi_1prong",                   360,  -TMath::Pi(),      +TMath::Pi());      
-      deltaDecayVertexPhi_3prong_   = dqmStore.book1D("deltaDecayVertexPhi_3prong",   "deltaDecayVertexPhi_3prong",                   360,  -TMath::Pi(),      +TMath::Pi());
+      deltaLeg1DecayVertexPhi_1prong_ = dqmStore.book1D("deltaLeg1DecayVertexPhi_1prong", "deltaLeg1DecayVertexPhi_1prong",                 360,  -TMath::Pi(),      +TMath::Pi());      
+      deltaLeg1DecayVertexPhi_3prong_ = dqmStore.book1D("deltaLeg1DecayVertexPhi_3prong", "deltaLeg1DecayVertexPhi_3prong",                 360,  -TMath::Pi(),      +TMath::Pi());
+      deltaLeg2DecayVertexPhi_1prong_ = dqmStore.book1D("deltaLeg2DecayVertexPhi_1prong", "deltaLeg2DecayVertexPhi_1prong",                 360,  -TMath::Pi(),      +TMath::Pi());      
+      deltaLeg2DecayVertexPhi_3prong_ = dqmStore.book1D("deltaLeg2DecayVertexPhi_3prong", "deltaLeg2DecayVertexPhi_3prong",                 360,  -TMath::Pi(),      +TMath::Pi());
+
+      deltaLeg1Pt_                    = dqmStore.book1D("deltaLeg1Pt",                    "deltaLeg1Pt",                                    350,         -100.,             +250.);
+      deltaLeg1Eta_                   = dqmStore.book1D("deltaLeg1Eta",                   "deltaLeg1Eta",                                   198,          -9.9,              +9.9);
+      deltaLeg1Phi_                   = dqmStore.book1D("deltaLeg1Phi",                   "deltaLeg1Phi",                                   360,  -TMath::Pi(),      +TMath::Pi());
+      deltaLeg2Pt_                    = dqmStore.book1D("deltaLeg2Pt",                    "deltaLeg2Pt",                                    350,         -100.,             +250.);
+      deltaLeg2Eta_                   = dqmStore.book1D("deltaLeg2Eta",                   "deltaLeg2Eta",                                   198,          -9.9,              +9.9);
+      deltaLeg2Phi_                   = dqmStore.book1D("deltaLeg2Phi",                   "deltaLeg2Phi",                                   360,  -TMath::Pi(),      +TMath::Pi());
+
+      svFitMass_                      = dqmStore.book1D("svFitMass",                      "svFitMass",                        numBinsSVfitMass_,            0.,     svFitMassMax_);
+      svFitSigma_                     = dqmStore.book1D("svFitSigma",                     "svFitSigma",                      numBinsSVfitSigma_,            0.,    svFitSigmaMax_);
+      svFitIsValidSolution_           = dqmStore.book1D("svFitIsValidSolution",           "svFitIsValidSolution",                             2,          -0.5,               1.5);
+
+      svFitMass_mean_                 = dqmStore.book1D("svFitMass_mean",                 "svFitMass_mean",                   numBinsSVfitMass_,            0.,     svFitMassMax_);
+      svFitMass_median_               = dqmStore.book1D("svFitMass_median",               "svFitMass_median",                 numBinsSVfitMass_,            0.,     svFitMassMax_);
+      svFitMass_maximum_              = dqmStore.book1D("svFitMass_maximum",              "svFitMass_maximum",                numBinsSVfitMass_,            0.,     svFitMassMax_);
+      svFitMass_maxInterpol_          = dqmStore.book1D("svFitMass_maxInterpol",          "svFitMass_maxInterpol",            numBinsSVfitMass_,            0.,     svFitMassMax_);
+
+      svFitMassVsSigma_               = dqmStore.book2D("svFitMassVsSigma",               "svFitMassVsSigma",                               100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
+      svFitMassVsSigma_mean_          = dqmStore.book2D("svFitMassVsSigma_mean",          "svFitMassVsSigma_mean",                          100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
+      svFitMassVsSigma_median_        = dqmStore.book2D("svFitMassVsSigma_median",        "svFitMassVsSigma_median",                        100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
+      svFitMassVsSigma_maximum_       = dqmStore.book2D("svFitMassVsSigma_maximum",       "svFitMassVsSigma_maximum",                       100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
+      svFitMassVsSigma_maxInterpol_   = dqmStore.book2D("svFitMassVsSigma_maxInterpol",   "svFitMassVsSigma_maxInterpol",                   100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
+
+      svFitMassVsMEt_                 = dqmStore.book2D("svFitMassVsMEt",                 "svFitMassVsMEt",                                 100, 0., 0.5*svFitMassMax_, 100, 0., svFitMassMax_);
+      svFitSigmaVsMEt_                = dqmStore.book2D("svFitSigmaVsMEt",                "svFitSigmaVsMEt",                                100, 0., 0.5*svFitMassMax_, 100, 0., svFitSigmaMax_);
+
+      svFitMass_oneProng0pi0_         = dqmStore.book1D("svFitMass_oneProng0pi0",         "svFitMass_oneProng0pi0",           numBinsSVfitMass_,            0.,     svFitMassMax_);
+      svFitMass_oneProng1pi0_         = dqmStore.book1D("svFitMass_oneProng1pi0",         "svFitMass_oneProng1pi0",           numBinsSVfitMass_,            0.,     svFitMassMax_);
+      svFitMass_oneProng2pi0_         = dqmStore.book1D("svFitMass_oneProng2pi0",         "svFitMass_oneProng2pi0",           numBinsSVfitMass_,            0.,     svFitMassMax_);
+      svFitMass_threeProng0pi0_       = dqmStore.book1D("svFitMass_threeProng0pi0",       "svFitMass_threeProng0pi0",         numBinsSVfitMass_,            0.,     svFitMassMax_);
        
-      deltaLeg1Pt_                  = dqmStore.book1D("deltaLeg1Pt",                  "deltaLeg1Pt",                                  350,         -100.,             +250.);
-      deltaLeg1Eta_                 = dqmStore.book1D("deltaLeg1Eta",                 "deltaLeg1Eta",                                 198,          -9.9,              +9.9);
-      deltaLeg1Phi_                 = dqmStore.book1D("deltaLeg1Phi",                 "deltaLeg1Phi",                                 360,  -TMath::Pi(),      +TMath::Pi());
-      deltaLeg2Pt_                  = dqmStore.book1D("deltaLeg2Pt",                  "deltaLeg2Pt",                                  350,         -100.,             +250.);
-      deltaLeg2Eta_                 = dqmStore.book1D("deltaLeg2Eta",                 "deltaLeg2Eta",                                 198,          -9.9,              +9.9);
-      deltaLeg2Phi_                 = dqmStore.book1D("deltaLeg2Phi",                 "deltaLeg2Phi",                                 360,  -TMath::Pi(),      +TMath::Pi());
-      
-      svFitMass_                    = dqmStore.book1D("svFitMass",                    "svFitMass",                      numBinsSVfitMass_,            0.,     svFitMassMax_);
-      svFitSigma_                   = dqmStore.book1D("svFitSigma",                   "svFitSigma",                    numBinsSVfitSigma_,            0.,    svFitSigmaMax_);
-      svFitIsValidSolution_         = dqmStore.book1D("svFitIsValidSolution",         "svFitIsValidSolution",                           2,          -0.5,               1.5);
-
-      svFitMass_mean_               = dqmStore.book1D("svFitMass_mean",               "svFitMass_mean",                 numBinsSVfitMass_,            0.,     svFitMassMax_);
-      svFitMass_median_             = dqmStore.book1D("svFitMass_median",             "svFitMass_median",               numBinsSVfitMass_,            0.,     svFitMassMax_);
-      svFitMass_maximum_            = dqmStore.book1D("svFitMass_maximum",            "svFitMass_maximum",              numBinsSVfitMass_,            0.,     svFitMassMax_);
-      svFitMass_maxInterpol_        = dqmStore.book1D("svFitMass_maxInterpol",        "svFitMass_maxInterpol",          numBinsSVfitMass_,            0.,     svFitMassMax_);
-
-      svFitMassVsSigma_             = dqmStore.book2D("svFitMassVsSigma",             "svFitMassVsSigma",                             100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
-      svFitMassVsSigma_mean_        = dqmStore.book2D("svFitMassVsSigma_mean",        "svFitMassVsSigma_mean",                        100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
-      svFitMassVsSigma_median_      = dqmStore.book2D("svFitMassVsSigma_median",      "svFitMassVsSigma_median",                      100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
-      svFitMassVsSigma_maximum_     = dqmStore.book2D("svFitMassVsSigma_maximum",     "svFitMassVsSigma_maximum",                     100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
-      svFitMassVsSigma_maxInterpol_ = dqmStore.book2D("svFitMassVsSigma_maxInterpol", "svFitMassVsSigma_maxInterpol",                 100, 0.,    svFitSigmaMax_, 100, 0., svFitMassMax_);
-
-      svFitMassVsMEt_               = dqmStore.book2D("svFitMassVsMEt",               "svFitMassVsMEt",                               100, 0., 0.5*svFitMassMax_, 100, 0., svFitMassMax_);
-      svFitSigmaVsMEt_              = dqmStore.book2D("svFitSigmaVsMEt",              "svFitSigmaVsMEt",                              100, 0., 0.5*svFitMassMax_, 100, 0., svFitSigmaMax_);
-
-      svFitMass_oneProng0pi0_       = dqmStore.book1D("svFitMass_oneProng0pi0",       "svFitMass_oneProng0pi0",         numBinsSVfitMass_,            0.,     svFitMassMax_);
-      svFitMass_oneProng1pi0_       = dqmStore.book1D("svFitMass_oneProng1pi0",       "svFitMass_oneProng1pi0",         numBinsSVfitMass_,            0.,     svFitMassMax_);
-      svFitMass_oneProng2pi0_       = dqmStore.book1D("svFitMass_oneProng2pi0",       "svFitMass_oneProng2pi0",         numBinsSVfitMass_,            0.,     svFitMassMax_);
-      svFitMass_threeProng0pi0_     = dqmStore.book1D("svFitMass_threeProng0pi0",     "svFitMass_threeProng0pi0",       numBinsSVfitMass_,            0.,     svFitMassMax_);
-
-      svFitMassVsNLL_               = dqmStore.book2D("svFitMassVsNLL",               "svFitMassVsNLL",                               400, 0., 10., TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
+      svFitMassVsNLL_                 = dqmStore.book2D("svFitMassVsNLL",                 "svFitMassVsNLL",                                 400, 0., 10., TMath::Nint(0.5*svFitMassMax_), 0., svFitMassMax_);
 
     }
     void fillHistograms(const reco::Candidate::LorentzVector& genDiTauP4, 
@@ -267,16 +269,16 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
 	  const NSVfitTauDecayHypothesis* daughter1 = dynamic_cast<const NSVfitTauDecayHypothesis*>(svFitResonanceHypothesis->daughter(0));
 	  if ( daughter1 ) {
 	    MonitorElement* deltaDecayVertexPhi = 0;
-	    if ( daughter1->hasDecayVertexFit() ) deltaDecayVertexPhi = deltaDecayVertexPhi_3prong_;
-	    else if ( daughter1->leadTrackExtrapolationIsValid() ) deltaDecayVertexPhi = deltaDecayVertexPhi_1prong_;
-	    if ( deltaDecayVertexPhi ) deltaDecayVertexPhi->Fill(SVfit_namespace::phi(daughter1->reconstructedDecayVertexPos() - eventVertexPos) - genLeg1P4.phi(), evtWeight);
+	    if ( daughter1->hasDecayVertexFit() ) deltaDecayVertexPhi = deltaLeg1DecayVertexPhi_3prong_;
+	    else if ( daughter1->leadTrackExtrapolationIsValid() ) deltaDecayVertexPhi = deltaLeg1DecayVertexPhi_1prong_;
+	    if ( deltaDecayVertexPhi ) deltaDecayVertexPhi->Fill(normalizedPhi(SVfit_namespace::phi(daughter1->reconstructedDecayVertexPos() - eventVertexPos) - genLeg1P4.phi()), evtWeight);
 	  }
 	  const NSVfitTauDecayHypothesis* daughter2 = dynamic_cast<const NSVfitTauDecayHypothesis*>(svFitResonanceHypothesis->daughter(1));
 	  if ( daughter2 ) {
 	    MonitorElement* deltaDecayVertexPhi = 0;
-	    if ( daughter2->hasDecayVertexFit() ) deltaDecayVertexPhi = deltaDecayVertexPhi_3prong_;
-	    else if ( daughter2->leadTrackExtrapolationIsValid() ) deltaDecayVertexPhi = deltaDecayVertexPhi_1prong_;
-	    if ( deltaDecayVertexPhi ) deltaDecayVertexPhi->Fill(SVfit_namespace::phi(daughter2->reconstructedDecayVertexPos() - eventVertexPos) - genLeg2P4.phi(), evtWeight);
+	    if ( daughter2->hasDecayVertexFit() ) deltaDecayVertexPhi = deltaLeg2DecayVertexPhi_3prong_;
+	    else if ( daughter2->leadTrackExtrapolationIsValid() ) deltaDecayVertexPhi = deltaLeg2DecayVertexPhi_1prong_;
+	    if ( deltaDecayVertexPhi ) deltaDecayVertexPhi->Fill(normalizedPhi(SVfit_namespace::phi(daughter2->reconstructedDecayVertexPos() - eventVertexPos) - genLeg2P4.phi()), evtWeight);
 	  }
 	}
 
@@ -395,8 +397,10 @@ class NSVfitEventHypothesisAnalyzerT : public edm::EDAnalyzer
     MonitorElement* deltaMEtBySVfitPy_;
     MonitorElement* deltaMEtBySVfitPhi_;
            
-    MonitorElement* deltaDecayVertexPhi_1prong_;
-    MonitorElement* deltaDecayVertexPhi_3prong_; 
+    MonitorElement* deltaLeg1DecayVertexPhi_1prong_;
+    MonitorElement* deltaLeg1DecayVertexPhi_3prong_; 
+    MonitorElement* deltaLeg2DecayVertexPhi_1prong_;
+    MonitorElement* deltaLeg2DecayVertexPhi_3prong_; 
 
     MonitorElement* deltaLeg1Pt_;
     MonitorElement* deltaLeg1Eta_;
