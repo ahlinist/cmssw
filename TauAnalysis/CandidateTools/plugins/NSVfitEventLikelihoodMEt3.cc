@@ -232,6 +232,7 @@ void NSVfitEventLikelihoodMEt3::beginCandidate(const NSVfitEventHypothesis* hypo
   }
 
   std::vector<metsig::SigInputObj> signInputObjectsForToys;
+  addPFMEtSignObjects(pfMEtSign_, signInputObjectsForToys, daughterHypothesesList);
   addPFMEtSignObjects(pfMEtSign_, signInputObjectsForToys, pfJetListForToys_hypothesis);
   addPFMEtSignObjects(pfMEtSign_, signInputObjectsForToys, pfCandidateListForToys_hypothesis);
   if ( verbosity_ >= 1 ) std::cout << " signInputObjectsForToys: #entries = " << signInputObjectsForToys.size() << std::endl;
