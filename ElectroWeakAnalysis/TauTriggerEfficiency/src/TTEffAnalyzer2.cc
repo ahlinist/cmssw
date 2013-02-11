@@ -144,6 +144,23 @@ private:
     float phi;
   };
 
+  struct Selection {
+    Selection(const std::string& n): name(n) {}
+    void book(TTree *tree) {
+      tree->Branch((name).c_str(), &value);
+    }
+    void fill(const edm::Event& iEvent) {
+      edm::Handle<edm::View<bool> > hsele;                                                                                 
+      if(iEvent.getByLabel(edm::InputTag(name,""), hsele)){
+	value = hsele->front();
+      }
+    }
+    void reset() { value = -1;}
+
+    std::string name;
+    int value;
+  };
+
   struct Discriminator {
     Discriminator(const std::string& n): name(n) {}
     std::string name;
@@ -233,6 +250,7 @@ private:
   std::vector<unsigned> l25TauProng_;
   std::vector<L25Discriminator> l25TauDiscriminators_;
   std::vector<OtherTau> l25TauSelectedTaus_;
+  std::vector<Selection> selections;
 
   bool triggerBitsOnly;
 
@@ -324,6 +342,11 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
   for(size_t i=0; i<l25Names.size(); ++i)
     l25TauSelectedTaus_.push_back(OtherTau(l25Selections.getParameter<edm::InputTag>(l25Names[i]), l25Names[i]));
 
+  std::vector<std::string> seleNames = iConfig.getParameter<std::vector<std::string> >("Selections");
+  selections.reserve(seleNames.size());
+  for(size_t i=0; i<seleNames.size(); ++i)
+    selections.push_back(Selection(seleNames[i]));
+
   // File setup
   file_ = TFile::Open(rootFile_.c_str(), "RECREATE");
   //_TTEffFile = TFile::Open("test.root", "RECREATE");
@@ -406,6 +429,9 @@ TTEffAnalyzer2::TTEffAnalyzer2(const edm::ParameterSet& iConfig):
 
   for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i)
     tree_->Branch(("L25Tau_"+l25TauSelectedTaus_[i].name).c_str(), &l25TauSelectedTaus_[i].values);
+
+  for(size_t i = 0; i < selections.size(); ++i)
+    tree_->Branch((selections[i].name).c_str(), &(selections[i].value));
 
   h_counters_ = new TH1F("Counters","",counters_.size(),0,counters_.size());
   h_counters_->SetDirectory(file_);
@@ -492,6 +518,8 @@ void TTEffAnalyzer2::reset() {
     l25TauDiscriminators_[i].values.clear();
   for(size_t i=0; i<l25TauSelectedTaus_.size(); ++i)
     l25TauSelectedTaus_[i].values.clear();
+  for(size_t i=0; i<selections.size(); ++i)
+    selections[i].reset();
 }
 
 int TTEffAnalyzer2::MCMatch(const edm::Event& iEvent,const reco::Candidate& direction){
@@ -574,6 +602,11 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::Handle<edm::View<reco::Vertex> > hoffvertex;
   if(iEvent.getByLabel(offlinePrimaryVertexSrc_, hoffvertex)){
     nGoodOfflinePV_ = hoffvertex->size();  
+  }
+
+  // Selections
+  for(size_t i=0; i<selections.size(); ++i) {
+    selections[i].fill(iEvent);
   }
 
   // HLT bits
