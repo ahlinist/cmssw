@@ -199,6 +199,10 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         Counters                = cms.VInputTag(cms.InputTag("TTEffSkimCounterAllEvents"),
                                                 cms.InputTag("TTEffSkimCounterSavedEvents")
                                                 ),
+	Selections = cms.vstring(
+	    "hPlusGlobalElectronVetoFilter",
+	    "hPlusGlobalMuonVetoFilter",
+	),
 
         METs = cms.PSet(
 	    PFMET = cms.InputTag("patPFMet"),
