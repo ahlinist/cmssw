@@ -13,7 +13,12 @@
 
 // boost headers
 #include <boost/format.hpp>
+//#include <boost/type_traits.hpp>
+//#include <boost/utility/enable_if.hpp>
 #include <boost/timer/timer.hpp>
+
+// TBB headers
+#include <tbb/tick_count.h>
 
 // for timespec and clock_gettime
 #include <time.h>
@@ -282,7 +287,10 @@ public:
     std::cout << std::setprecision(0) << std::fixed;
     std::cout << "Performance of " << description << std::endl;
     std::cout << "\tAverage time per call: " << std::right << std::setw(10) << overhead    * 1e9 << " ns" << std::endl;
-    std::cout << "\tReported resolution:   " << std::right << std::setw(10) << granularity * 1e9 << " ns" << std::endl;
+    if (granularity)
+      std::cout << "\tReported resolution:   " << std::right << std::setw(10) << granularity * 1e9 << " ns" << std::endl;
+    else
+      std::cout << "\tReported resolution:   " << std::right << std::setw(10) << "n/a" << std::endl;
     std::cout << "\tMeasured resolution:   " << std::right << std::setw(10) << resolution_min  * 1e9 << " ns (median: " << resolution_median * 1e9 << " ns) (mean: " << resolution_mean * 1e9 << " +/- " << resolution_sigma * 1e9 << " ns)" << std::endl;
     /*
     std::cout << "\tSteps:" << std::endl;
@@ -349,11 +357,67 @@ double TimerBase<clock_t>::delta(const clock_t & start, const clock_t & stop) {
   return (double) (stop-start) / (double) ticks_per_second;
 }
 
+// std::chrono::system_clock::time_point
+template <>
+double TimerBase<std::chrono::system_clock::time_point>::delta(const std::chrono::system_clock::time_point & start, const std::chrono::system_clock::time_point & stop) {
+  return std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count();
+}
+
+/*
+// std::chrono::steady_clock::time_point
+template <>
+template <typename boost::disable_if< boost::is_same< std::chrono::system_clock, std::chrono::steady_clock >, int >::type = 0>
+double TimerBase<std::chrono::steady_clock::time_point>::delta(const std::chrono::steady_clock::time_point & start, const std::chrono::steady_clock::time_point & stop) {
+  return std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count();
+}
+
 // std::chrono::high_resolution_clock::time_point
 template <>
+template <typename boost::disable_if< boost::is_same< std::chrono::system_clock, std::chrono::high_resolution_clock >, int >::type = 0>
 double TimerBase<std::chrono::high_resolution_clock::time_point>::delta(const std::chrono::high_resolution_clock::time_point & start, const std::chrono::high_resolution_clock::time_point & stop) {
   return std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count();
 }
+*/
+
+// tbb::tick_count
+template <>
+double TimerBase<tbb::tick_count>::delta(const tbb::tick_count & start, const tbb::tick_count & stop) {
+  return (stop - start).seconds();
+}
+
+
+
+
+
+
+// C++11 steady_clock
+class TimerCxx11SteadyClock : public TimerBase<std::chrono::steady_clock::time_point> {
+public:
+  TimerCxx11SteadyClock() {
+    description = "std::chrono::steady_clock";
+    granularity = (double) std::chrono::steady_clock::period::num / (double) std::chrono::steady_clock::period::den;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      values[i] = std::chrono::steady_clock::now();
+  }
+};
+
+
+// C++11 system_clock
+class TimerCxx11SystemClock : public TimerBase<std::chrono::system_clock::time_point> {
+public:
+  TimerCxx11SystemClock() {
+    description = "std::chrono::system_clock";
+    granularity = (double) std::chrono::system_clock::period::num / (double) std::chrono::system_clock::period::den;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      values[i] = std::chrono::system_clock::now();
+  }
+};
 
 
 // C++11 high_resolution_clock
@@ -367,6 +431,21 @@ public:
   void measure() {
     for (unsigned int i = 0; i <= 2*SIZE; ++i)
       values[i] = std::chrono::high_resolution_clock::now();
+  }
+};
+
+
+// TBB timer
+class TimerTBB : public TimerBase<tbb::tick_count> {
+public:
+  TimerTBB() {
+    description = "tbb::tick_count";
+    granularity = 0.;
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+      values[i] = tbb::tick_count::now();
   }
 };
 
@@ -724,11 +803,10 @@ public:
 };
 
 
-
 // lfence, rdtsc()
-class TimerFenceRDTSC : public TimerBase<unsigned long long> {
+class TimerLfenceRDTSC : public TimerBase<unsigned long long> {
 public:
-  TimerFenceRDTSC() {
+  TimerLfenceRDTSC() {
     if (not tsc_allowed())
       throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
     
@@ -744,6 +822,32 @@ public:
   void measure() {
     for (unsigned int i = 0; i <= 2*SIZE; ++i) {
       _mm_lfence();
+      values[i] = __rdtsc();
+    }
+  }
+
+};
+
+
+// mfence, rdtsc()
+class TimerMfenceRDTSC : public TimerBase<unsigned long long> {
+public:
+  TimerMfenceRDTSC() {
+    if (not tsc_allowed())
+      throw std::runtime_error("RDTSC is disabled for the current proccess, calling it would result in a SIGSEGV (see 'PR_SET_TSC' under 'man prctl')");
+    
+    // ticks_per_second and granularity
+    ticks_per_second  = calibrate_tsc();
+    granularity = 1. / ticks_per_second;
+    if (granularity < 1.e-9)
+      granularity = 1.e-9;
+    
+    description = str(boost::format("mfence(); rdtsc() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
+  }
+
+  void measure() {
+    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+      _mm_mfence();
       values[i] = __rdtsc();
     }
   }
@@ -783,10 +887,19 @@ public:
 int main(void) {
   std::vector<TimerInterface *> timers;
 
+  // C++11 timers
+  timers.push_back(new TimerCxx11SystemClock());
+  timers.push_back(new TimerCxx11SteadyClock());
   timers.push_back(new TimerCxx11HighResolutionClock());
+
+  // boost timers
   timers.push_back(new TimerBoostCpuTimerWallClock());
   timers.push_back(new TimerBoostCpuTimerWallUserSystem());
 
+  // TBB timer
+  timers.push_back(new TimerTBB());
+
+  // POSIX timers
 #ifdef HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
   if (clock_cputime_supported())
     timers.push_back(new TimerClockGettimeThread());
@@ -813,6 +926,7 @@ int main(void) {
   timers.push_back(new TimerClockGetTimeSystemClock());
 #endif // HAVE_MACH_SYSTEM_CLOCK
 
+  // OSX timers
 #ifdef HAVE_MACH_REALTIME_CLOCK
   timers.push_back(new TimerClockGetTimeRealtimeClock());
 #endif // HAVE_MACH_REALTIME_CLOCK
@@ -825,6 +939,7 @@ int main(void) {
   timers.push_back(new TimerMachAbsoluteTime());
 #endif // HAVE_MACH_ABSOLUTE_TIME
 
+  // Unix timers
   timers.push_back(new TimerGettimeofday());
   timers.push_back(new TimerGetrusageSelf());
   timers.push_back(new TimerOMPGetWtime());
@@ -833,7 +948,8 @@ int main(void) {
 
   if (tsc_allowed()) {
     timers.push_back(new TimerRDTSC());
-    timers.push_back(new TimerFenceRDTSC());
+    timers.push_back(new TimerLfenceRDTSC());
+    timers.push_back(new TimerMfenceRDTSC());
     if (rdtscp_supported())
       timers.push_back(new TimerRDTSCP());
     else
