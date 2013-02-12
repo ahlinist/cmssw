@@ -43,7 +43,6 @@ GLIBS         = $(filter-out -lz, $(ROOTGLIBS))
 
 #used by all targets
 ROOTIO_HEADERS = PidData.hh TAna00Event.hh TAnaCand.hh TAnaMuon.hh TAnaVertex.hh TTrgObj.hh hpl.hh PidTable.hh TAna01Event.hh TAnaJet.hh TAnaTrack.hh TSimpleTrack.hh TGenCand.hh functions.hh util.hh JSON.hh 
-TNP_HEADERS = anaTNP2.hh
 
 # Ana00 compilation
 ANA00 = TAna01Event.o TGenCand.o TAnaTrack.o TSimpleTrack.o TAnaMuon.o TTrgObj.o TAnaCand.o TAnaVertex.o TAnaJet.o
@@ -53,9 +52,6 @@ ANA00_DICT = ${ANA00:.o=Dict.o}
 UTIL = PidTable.o PidData.o functions.o util.o hpl.o JSON.o
 UTIL_DICT = ${UTIL:.o=Dict.o}
 
-# Anaclasses compilation
-ANACLASSES = anaTNP2.o
-ANACLASSES_DICT = ${ANACLASSES:.o=Dict.o}
 
 #################
 # PATTERN RULES #
@@ -86,7 +82,7 @@ tnp/%Dict.cc : tnp/%.hh
 # TARGETS #
 ###########
 
-all: ana00 util anaclasses links
+all: ana00 util links
 	@true
 
 #short
@@ -103,12 +99,6 @@ util: lib/libUtil.so
 lib/libUtil.so: $(addprefix obj/,$(UTIL) $(UTIL_DICT))
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(UTIL) $(UTIL_DICT)) $(GLIBS) -o lib/libUtil.so
 
-#short
-anaclasses: lib/libAnaClasses.so
-	@true
-
-lib/libAnaClasses.so: $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT))
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) -o lib/libAnaClasses.so $(GLIBS) lib/libUtil.so -lMinuit
 
 
 # ================================================================================
@@ -123,7 +113,7 @@ copy:
 
 # ================================================================================
 clean:
-	rm -f obj/*.o rootio/*Dict.* test/*Dict.* tnp/*Dict.* lib/libAna00.so
+	rm -f obj/*.o rootio/*Dict.* test/*Dict.* tnp/*Dict.* lib/libAna00.so lib/libUtil.so
 
 # --------------------------------------------------------------------------------
 cleanall:
@@ -132,7 +122,6 @@ cleanall:
 	rm -f lib/lib*.so
 	rm -f ../../../lib/$(SCRAM_ARCH)/libAna00.so
 	rm -f ../../../lib/$(SCRAM_ARCH)/libUtil.so
-	rm -f ../../../lib/$(SCRAM_ARCH)/libAnaClasses.so
 
 
 
@@ -199,8 +188,3 @@ runMyReader: test/myReader.hh test/myReader.cc
 	cd test && $(LD) $(LDFLAGS)  -o ../bin/runMyReader $(GLIBS) ../lib/libAna00.so ../obj/runMyReader.o ../obj/myReader.o ../obj/treeReader.o && cd ..
 
 
-# ======================================================================
-ana: test/ana.cc
-	cd test && $(ROOTCINT)  -f anaDict.cc -c ana.hh && cd ..
-	cd test && $(CXX) $(CXXFLAGS) -c anaDict.cc -o ../obj/anaDict.o  && cd ..
-	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so
