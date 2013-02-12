@@ -197,11 +197,18 @@ class TimerBase : public TimerInterface {
 public:
   typedef T time_type;
 
+  enum clock_type {
+    UNDEFINED = 0,
+    CT_REALTIME_CLOCK,
+    CT_CPU_TIME_CLOCK
+  };
+
   // default ctor, initialize all members
   TimerBase() :
     values(),
     start(),
     stop(),
+    type(UNDEFINED),
     granularity( 0. ),
     resolution_min( 0. ),
     resolution_median( 0. ),
@@ -252,7 +259,7 @@ public:
           sum2 += (steps[i] - resolution_mean) * (steps[i] - resolution_mean);
         resolution_sigma = std::sqrt( sum2 ) / n;
         // take into account limited accuracy
-        if (resolution_sigma > 0 and resolution_sigma < 1.e-9)
+        if (resolution_sigma >= 0 and resolution_sigma < 1.e-9)
           resolution_sigma = 1.e-9;
       }
     }
@@ -261,7 +268,12 @@ public:
   // print a report
   void report() {
     std::cout << std::setprecision(0) << std::fixed;
-    std::cout << "Performance of " << description << std::endl;
+    std::cout << "Performance of " << description;
+    if (type == CT_REALTIME_CLOCK)
+      std::cout << " (real-time)";
+    else if (type == CT_CPU_TIME_CLOCK)
+      std::cout << " (cpu time)";
+    std::cout << std::endl;
     std::cout << "\tAverage time per call: " << std::right << std::setw(10) << overhead    * 1e9 << " ns" << std::endl;
     if (granularity)
       std::cout << "\tReported resolution:   " << std::right << std::setw(10) << granularity * 1e9 << " ns" << std::endl;
@@ -283,6 +295,7 @@ protected:
   time_type                                         values[SIZE];
   std::chrono::high_resolution_clock::time_point    start;
   std::chrono::high_resolution_clock::time_point    stop;
+  clock_type    type;
   double        granularity;            // the reported resolution, in seconds
   double        resolution_min;         // the measured resolution, in seconds (smallest of the steps)
   double        resolution_median;      // the measured resolution, in seconds (median of the steps)
@@ -371,6 +384,7 @@ class TimerCxx11SteadyClock : public TimerBase<std::chrono::steady_clock::time_p
 public:
   TimerCxx11SteadyClock() {
     description = "std::chrono::steady_clock";
+    type        = CT_REALTIME_CLOCK;
     granularity = (double) std::chrono::steady_clock::period::num / (double) std::chrono::steady_clock::period::den;
   }
 
@@ -390,6 +404,7 @@ class TimerCxx11SystemClock : public TimerBase<std::chrono::system_clock::time_p
 public:
   TimerCxx11SystemClock() {
     description = "std::chrono::system_clock";
+    type        = CT_REALTIME_CLOCK;
     granularity = (double) std::chrono::system_clock::period::num / (double) std::chrono::system_clock::period::den;
   }
 
@@ -409,6 +424,7 @@ class TimerCxx11HighResolutionClock : public TimerBase<std::chrono::high_resolut
 public:
   TimerCxx11HighResolutionClock() {
     description = "std::chrono::high_resolution_clock";
+    type        = CT_REALTIME_CLOCK;
     granularity = (double) std::chrono::high_resolution_clock::period::num / (double) std::chrono::high_resolution_clock::period::den;
   }
 
@@ -428,6 +444,7 @@ class TimerTBB : public TimerBase<tbb::tick_count> {
 public:
   TimerTBB() {
     description = "tbb::tick_count";
+    type        = CT_REALTIME_CLOCK;
     granularity = 0.;
   }
 
@@ -446,7 +463,8 @@ public:
 class TimerBoostCpuTimerWallClock : public TimerBase<double> {
 public:
   TimerBoostCpuTimerWallClock() {
-    description = "boost::cpu_timer, wall clock";
+    description = "boost::cpu_timer";
+    type        = CT_REALTIME_CLOCK;
     granularity = 0.;   // n/a
   }
 
@@ -463,10 +481,11 @@ public:
 
 
 // boost cpu_timer, user+system
-class TimerBoostCpuTimerWallUserSystem : public TimerBase<double> {
+class TimerBoostCpuTimerCpuTime : public TimerBase<double> {
 public:
-  TimerBoostCpuTimerWallUserSystem() {
-    description = "boost::cpu_timer, user+system";
+  TimerBoostCpuTimerCpuTime() {
+    description = "boost::cpu_timer";
+    type        = CT_CPU_TIME_CLOCK;
     granularity = 0.;   // n/a
   }
 
@@ -492,6 +511,7 @@ class TimerClockGettimeThread : public TimerBase<timespec> {
 public:
   TimerClockGettimeThread() {
     description = "clock_gettime(CLOCK_THREAD_CPUTIME_ID)";
+    type        = CT_CPU_TIME_CLOCK;
 
     timespec value;
     clock_getres(CLOCK_THREAD_CPUTIME_ID, & value);
@@ -515,6 +535,7 @@ class TimerClockGettimeProcess : public TimerBase<timespec> {
 public:
   TimerClockGettimeProcess() {
     description = "clock_gettime(CLOCK_PROCESS_CPUTIME_ID)";
+    type        = CT_CPU_TIME_CLOCK;
 
     timespec value;
     clock_getres(CLOCK_PROCESS_CPUTIME_ID, & value);
@@ -539,6 +560,7 @@ class TimerClockGettimeRealtime : public TimerBase<timespec> {
 public:
   TimerClockGettimeRealtime() {
     description = str(boost::format("clock_gettime(CLOCK_REALTIME, ...) using %s clock source") % read_clock_source());
+    type        = CT_REALTIME_CLOCK;
 
     timespec value = { 0, 0 };
     clock_getres(CLOCK_REALTIME, & value);
@@ -563,6 +585,7 @@ class TimerClockGettimeMonotonic : public TimerBase<timespec> {
 public:
   TimerClockGettimeMonotonic() {
     description = str(boost::format("clock_gettime(CLOCK_MONOTONIC, ...) using %s clock source") % read_clock_source());
+    type        = CT_REALTIME_CLOCK;
 
     timespec value = { 0, 0 };
     clock_getres(CLOCK_MONOTONIC, & value);
@@ -586,6 +609,7 @@ class TimerClockGettimeMonotonicRaw : public TimerBase<timespec> {
 public:
   TimerClockGettimeMonotonicRaw() {
     description = str(boost::format("clock_gettime(CLOCK_MONOTONIC_RAW, ...) using %s clock source") % read_clock_source());
+    type        = CT_REALTIME_CLOCK;
 
     timespec value = { 0, 0 };
     clock_getres(CLOCK_MONOTONIC_RAW, & value);
@@ -610,6 +634,7 @@ class TimerClockGetTimeSystemClock : public TimerBase<mach_timespec_t> {
 public:
   TimerClockGetTimeSystemClock() {
     description = "clock_get_time() with SYSTEM_CLOCK";
+    type        = CT_REALTIME_CLOCK;
 
     host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &clock_port);
     int value;
@@ -642,6 +667,7 @@ class TimerClockGetTimeRealtimeClock : public TimerBase<mach_timespec_t> {
 public:
   TimerClockGetTimeRealtimeClock() {
     description = "clock_get_time() with REALTIME_CLOCK";
+    type        = CT_REALTIME_CLOCK;
 
     host_get_clock_service(mach_host_self(), REALTIME_CLOCK, &clock_port);
     int value;
@@ -674,6 +700,7 @@ class TimerClockGetTimeCalendarClock : public TimerBase<mach_timespec_t> {
 public:
   TimerClockGetTimeCalendarClock() {
     description = "clock_get_time() with CALENDAR_CLOCK";
+    type        = CT_REALTIME_CLOCK;
 
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &clock_port);
     int value;
@@ -706,6 +733,7 @@ class TimerMachAbsoluteTime : public TimerBase<uint64_t> {
 public:
   TimerMachAbsoluteTime() {
     description = "mach_absolute_time()";
+    type        = CT_REALTIME_CLOCK;
 
     mach_timebase_info(& timebase_info);
     ticks_per_second = 1.e9 / timebase_info.numer * timebase_info.denom;
@@ -732,6 +760,7 @@ class TimerGettimeofday : public TimerBase<timeval> {
 public:
   TimerGettimeofday() {
     description = str(boost::format("gettimeofday() using %s clock source") % read_clock_source());
+    type        = CT_REALTIME_CLOCK;
     granularity = 1e-6;
   }
 
@@ -751,6 +780,7 @@ class TimerGetrusageSelf: public TimerBase<timeval> {
 public:
   TimerGetrusageSelf() {
     description = "getrusage(RUSAGE_SELF)";
+    type        = CT_CPU_TIME_CLOCK;
     granularity = 1e-6;
   }
 
@@ -778,6 +808,7 @@ class TimerOMPGetWtime : public TimerBase<double> {
 public:
   TimerOMPGetWtime() {
     description = str(boost::format("omp_get_wtime() using %s clock source") % read_clock_source());
+    type        = CT_REALTIME_CLOCK;
     granularity = omp_get_wtick();
   }
 
@@ -797,6 +828,7 @@ class TimerClock : public TimerBase<clock_t> {
 public:
   TimerClock() {
     description = "clock()";
+    type        = CT_CPU_TIME_CLOCK;
     ticks_per_second = CLOCKS_PER_SEC;
     granularity = 1. / ticks_per_second;
     if (granularity < 1.e-9)
@@ -814,11 +846,12 @@ public:
 };
 
 
-// times()
-class TimerTimes : public TimerBase<clock_t> {
+// times() - cpu time
+class TimerTimesCpuTime : public TimerBase<clock_t> {
 public:
-  TimerTimes() {
+  TimerTimesCpuTime() {
     description = "times()";
+    type        = CT_CPU_TIME_CLOCK;
     ticks_per_second = sysconf(_SC_CLK_TCK);
     granularity = 1. / ticks_per_second;
     if (granularity < 1.e-9)
@@ -841,6 +874,43 @@ public:
 };
 
 
+// times() - wall-clock time
+class TimerTimesWallClock : public TimerBase<clock_t> {
+public:
+  TimerTimesWallClock() {
+    description = "times()";
+    type        = CT_REALTIME_CLOCK;
+    ticks_per_second = sysconf(_SC_CLK_TCK);
+    granularity = 1. / ticks_per_second;
+    if (granularity < 1.e-9)
+      granularity = 1.e-9;
+  }
+
+  void measure() {
+#ifndef __linux__
+    tms value;
+#endif
+
+    for (unsigned int i = 0; i < SIZE; ++i) {
+#ifdef __linux__
+      values[i] = times(nullptr);
+#else
+      values[i] = times(& value);
+#endif
+    }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = 0; i < SIZE; ++i) {
+#ifdef __linux__
+      values[i] = times(nullptr);
+#else
+      values[i] = times(& value);
+#endif
+    }
+    stop  = std::chrono::high_resolution_clock::now();
+  }
+};
+
+
 // rdtsc()
 class TimerRDTSC : public TimerBase<unsigned long long> {
 public:
@@ -855,6 +925,7 @@ public:
       granularity = 1.e-9;
 
     description = str(boost::format("rdtsc() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
+    type        = CT_REALTIME_CLOCK;
   }
 
   void measure() {
@@ -885,6 +956,7 @@ public:
       granularity = 1.e-9;
     
     description = str(boost::format("lfence(); rdtsc() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
+    type        = CT_REALTIME_CLOCK;
   }
 
   void measure() {
@@ -917,6 +989,7 @@ public:
       granularity = 1.e-9;
     
     description = str(boost::format("mfence(); rdtsc() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
+    type        = CT_REALTIME_CLOCK;
   }
 
   void measure() {
@@ -951,6 +1024,7 @@ public:
       granularity = 1.e-9;
     
     description = str(boost::format("rdtscp() [estimated at %#5.4g GHz]") % (ticks_per_second / 1.e9));
+    type        = CT_REALTIME_CLOCK;
   }
 
   void measure() {
@@ -979,7 +1053,7 @@ int main(void) {
 
   // boost timers
   timers.push_back(new TimerBoostCpuTimerWallClock());
-  timers.push_back(new TimerBoostCpuTimerWallUserSystem());
+  timers.push_back(new TimerBoostCpuTimerCpuTime());
 
   // TBB timer
   timers.push_back(new TimerTBB());
@@ -1029,7 +1103,8 @@ int main(void) {
   timers.push_back(new TimerGetrusageSelf());
   timers.push_back(new TimerOMPGetWtime());
   timers.push_back(new TimerClock());
-  timers.push_back(new TimerTimes());
+  timers.push_back(new TimerTimesCpuTime());
+  timers.push_back(new TimerTimesWallClock());
 
   if (tsc_allowed()) {
     timers.push_back(new TimerRDTSC());
