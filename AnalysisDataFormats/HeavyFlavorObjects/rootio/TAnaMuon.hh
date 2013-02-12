@@ -15,6 +15,7 @@
 class xpTrack {
 public: 
   xpTrack(int i = -1) {idx = i;}
+  virtual ~xpTrack() {}
   void clear() {idx = -1;}
   int idx; 
   float dist; 
