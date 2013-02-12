@@ -43,7 +43,7 @@ void setTitles(TH1 *h, const char *sx, const char *sy, float size,
 
 // ----------------------------------------------------------------------
 void setHist(TH1 *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
-  h->SetLineColor(color);   h->SetLineWidth(width);
+  h->SetLineColor(color);   h->SetLineWidth(static_cast<Width_t>(width));
   h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size); 
   h->SetStats(kFALSE); 
   h->SetFillStyle(0); h->SetFillColor(color);
@@ -51,7 +51,7 @@ void setHist(TH1 *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
 
 // ----------------------------------------------------------------------
 void setGraph(TGraph *h, Int_t color, Int_t symbol, Double_t size, Double_t width) {
-  h->SetLineColor(color);   h->SetLineWidth(width);
+  h->SetLineColor(color);   h->SetLineWidth(static_cast<Width_t>(width));
   h->SetMarkerColor(color); h->SetMarkerStyle(symbol);  h->SetMarkerSize(size); 
 }
 
@@ -335,7 +335,7 @@ double chi2TestErr(TH1 *h1, TH1 *h2, double& chi2, double& ndof, int constrain) 
 // ----------------------------------------------------------------------
 void average(double &av, double &error, int n, double *val, double *verr) {
 
-  double e(0.), w8(0.), ave(0.), err(0.), sumW8(0.), sumAve(0.); 
+  double e(0.), w8(0.), sumW8(0.), sumAve(0.); 
   for (int i = 0; i < n; ++i) {
     //    cout << i << " " << val[i] << " +/- " << verr[i] << endl;
 
