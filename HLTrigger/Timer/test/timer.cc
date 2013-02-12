@@ -13,8 +13,6 @@
 
 // boost headers
 #include <boost/format.hpp>
-//#include <boost/type_traits.hpp>
-//#include <boost/utility/enable_if.hpp>
 #include <boost/timer/timer.hpp>
 
 // TBB headers
@@ -88,7 +86,8 @@
 
 #endif // defined(__APPLE__) || defined(__MACH__)
 
-static constexpr unsigned int SIZE = 1000000;
+
+constexpr unsigned int SIZE = 1000000;
 
 
 std::string read_clock_source() {
@@ -147,44 +146,19 @@ bool tsc_allowed() {
     return true;
 }
 
-// calibrate TSC with respect to CLOCK_MONOTONIC_RAW (if available) or CLOCK_MONOTONIC
+// calibrate TSC with respect to std::chrono::high_resolution_clock
 double calibrate_tsc() {
-  const unsigned int sample_size = 16;              // 16 samplings
-  const unsigned int sleep_time  = 10000;           // 10 ms
+  constexpr unsigned int sample_size = 20;          // 20 samplings
+  constexpr unsigned int sleep_time  = 10000;       // 10 ms
   unsigned long long ticks[sample_size];
   double             times[sample_size];
 
-#if defined(HAVE_POSIX_CLOCK_MONOTONIC) || defined(HAVE_POSIX_CLOCK_MONOTONIC_RAW)
-  // use clock_gettime(CLOCK_MONOTONIC), or clock_gettime(CLOCK_MONOTONIC_RAW) if available
-  timespec ts;
-  for (unsigned int i = 0; i < sample_size; ++i) {
-    if (i) usleep(sleep_time);
-    ticks[i] = __rdtsc();
-#ifdef HAVE_POSIX_CLOCK_MONOTONIC_RAW
-    clock_gettime(CLOCK_MONOTONIC_RAW, & ts);
-#else
-    clock_gettime(CLOCK_MONOTONIC, & ts);
-#endif
-    times[i] = ts.tv_sec + (double) ts.tv_nsec / 1.e9; 
-  }
-#elif defined(HAVE_MACH_ABSOLUTE_TIME)
-  // on OSX, use mach_absolute_time
-  mach_timebase_info_data_t timebase_info;
-  mach_timebase_info(& timebase_info);
-  for (unsigned int i = 0; i < sample_size; ++i) {
-    if (i) usleep(sleep_time);
-    ticks[i] = __rdtsc();
-    times[i] = (double) mach_absolute_time() * timebase_info.numer / timebase_info.denom * 1.e-9;;
-  }
-#else
-  // fall back on std::chrono::high_resolution_clock
   auto start = std::chrono::high_resolution_clock::now();
   for (unsigned int i = 0; i < sample_size; ++i) {
-    if (i) usleep(sleep_time);
+    usleep(sleep_time);
     ticks[i] = __rdtsc();
     times[i] = std::chrono::duration_cast<std::chrono::duration<double>>( std::chrono::high_resolution_clock::now() - start ).count();
   }
-#endif
 
   double mean_x = 0, mean_y = 0;
   for (unsigned int i = 0; i < sample_size; ++i) {
@@ -225,7 +199,9 @@ public:
 
   // default ctor, initialize all members
   TimerBase() :
-    values( new time_type[2*SIZE+1] ),
+    values(),
+    start(),
+    stop(),
     granularity( 0. ),
     resolution_min( 0. ),
     resolution_median( 0. ),
@@ -238,20 +214,20 @@ public:
   }
 
   // return the delta between two time_type, expressed in seconds
-  double delta(const time_type & start, const time_type & stop) {
+  double delta(const time_type & t1, const time_type & t2) {
     // generic implementation, see below for template specializations
-    return (double) (stop - start) / ticks_per_second;
+    return (double) (t2 - t1) / ticks_per_second;
   }
 
   // extract from characteristics of the timer from the measurements
   void compute() {
     // per-call overhead
-    overhead = delta(values[SIZE], values[2*SIZE]) / (double) SIZE;
+    overhead = std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count() / SIZE;
 
     // resolution (median of the increments)
     std::vector<double> steps;
-    steps.reserve(SIZE + 1);
-    for (unsigned int i = 0; i < SIZE; ++i) {
+    steps.reserve(SIZE);
+    for (unsigned int i = 0; i < SIZE-1; ++i) {
       double step = delta(values[SIZE + i], values[SIZE + i + 1]);
       if (step > 0)
         steps.push_back(step);
@@ -294,7 +270,7 @@ public:
     std::cout << "\tMeasured resolution:   " << std::right << std::setw(10) << resolution_min  * 1e9 << " ns (median: " << resolution_median * 1e9 << " ns) (mean: " << resolution_mean * 1e9 << " +/- " << resolution_sigma * 1e9 << " ns)" << std::endl;
     /*
     std::cout << "\tSteps:" << std::endl;
-    for (unsigned int i = 0; i < SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE-1; ++i) {
       double step = delta(values[SIZE + i], values[SIZE + i + 1]);
       if (step > 0)
         std::cout << "\t\t" << std::right << std::setw(10) << delta(values[SIZE + i], values[SIZE + i + 1]) * 1e9 << " ns" << std::endl;
@@ -304,7 +280,9 @@ public:
   }
 
 protected:
-  time_type *   values;
+  time_type                                         values[2*SIZE+1];
+  std::chrono::high_resolution_clock::time_point    start;
+  std::chrono::high_resolution_clock::time_point    stop;
   double        granularity;            // the reported resolution, in seconds
   double        resolution_min;         // the measured resolution, in seconds (smallest of the steps)
   double        resolution_median;      // the measured resolution, in seconds (median of the steps)
@@ -357,27 +335,25 @@ double TimerBase<clock_t>::delta(const clock_t & start, const clock_t & stop) {
   return (double) (stop-start) / (double) ticks_per_second;
 }
 
+/*
 // std::chrono::system_clock::time_point
 template <>
 double TimerBase<std::chrono::system_clock::time_point>::delta(const std::chrono::system_clock::time_point & start, const std::chrono::system_clock::time_point & stop) {
   return std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count();
 }
 
-/*
 // std::chrono::steady_clock::time_point
 template <>
-template <typename boost::disable_if< boost::is_same< std::chrono::system_clock, std::chrono::steady_clock >, int >::type = 0>
 double TimerBase<std::chrono::steady_clock::time_point>::delta(const std::chrono::steady_clock::time_point & start, const std::chrono::steady_clock::time_point & stop) {
   return std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count();
 }
+*/
 
 // std::chrono::high_resolution_clock::time_point
 template <>
-template <typename boost::disable_if< boost::is_same< std::chrono::system_clock, std::chrono::high_resolution_clock >, int >::type = 0>
 double TimerBase<std::chrono::high_resolution_clock::time_point>::delta(const std::chrono::high_resolution_clock::time_point & start, const std::chrono::high_resolution_clock::time_point & stop) {
   return std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count();
 }
-*/
 
 // tbb::tick_count
 template <>
@@ -399,8 +375,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = std::chrono::steady_clock::now();
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = std::chrono::steady_clock::now();
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -414,8 +394,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = std::chrono::system_clock::now();
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = std::chrono::system_clock::now();
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -429,8 +413,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = std::chrono::high_resolution_clock::now();
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = std::chrono::high_resolution_clock::now();
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -444,8 +432,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = tbb::tick_count::now();
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = tbb::tick_count::now();
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -455,13 +447,17 @@ class TimerBoostCpuTimerWallClock : public TimerBase<double> {
 public:
   TimerBoostCpuTimerWallClock() {
     description = "boost::cpu_timer, wall clock";
-    granularity = 1.e-9;
+    granularity = 0.;   // n/a
   }
 
   void measure() {
     boost::timer::cpu_timer timer;
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = timer.elapsed().wall * 1.e-9;
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = timer.elapsed().wall * 1.e-9;
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -471,15 +467,21 @@ class TimerBoostCpuTimerWallUserSystem : public TimerBase<double> {
 public:
   TimerBoostCpuTimerWallUserSystem() {
     description = "boost::cpu_timer, user+system";
-    granularity = 1.e-9;
+    granularity = 0.;   // n/a
   }
 
   void measure() {
     boost::timer::cpu_timer timer;
-    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE; ++i) {
       auto elapsed = timer.elapsed();
       values[i] = (elapsed.user + elapsed.system) * 1.e-9;
     }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i) {
+      auto elapsed = timer.elapsed();
+      values[i] = (elapsed.user + elapsed.system) * 1.e-9;
+    }
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -497,8 +499,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_gettime(CLOCK_THREAD_CPUTIME_ID, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_gettime(CLOCK_THREAD_CPUTIME_ID, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 #endif // HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
@@ -516,8 +522,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_gettime(CLOCK_PROCESS_CPUTIME_ID, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 #endif // HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID
@@ -536,8 +546,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_gettime(CLOCK_REALTIME, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_gettime(CLOCK_REALTIME, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 #endif // HAVE_POSIX_CLOCK_REALTIME
@@ -556,8 +570,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_gettime(CLOCK_MONOTONIC, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_gettime(CLOCK_MONOTONIC, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 #endif // HAVE_POSIX_CLOCK_MONOTONIC
@@ -575,8 +593,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_gettime(CLOCK_MONOTONIC_RAW, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_gettime(CLOCK_MONOTONIC_RAW, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 #endif // HAVE_POSIX_CLOCK_MONOTONIC_RAW
@@ -601,8 +623,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_get_time(clock_port, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_get_time(clock_port, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 private:
@@ -629,8 +655,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_get_time(clock_port, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_get_time(clock_port, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 private:
@@ -657,8 +687,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       clock_get_time(clock_port, values+i);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      clock_get_time(clock_port, values+i);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 private:
@@ -679,8 +713,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = mach_absolute_time();
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = mach_absolute_time();
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 private:
@@ -698,8 +736,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       gettimeofday(values+i, NULL);
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      gettimeofday(values+i, NULL);
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -714,11 +756,18 @@ public:
 
   void measure() {
     rusage usage;
-    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE; ++i) {
       getrusage(RUSAGE_SELF, &usage);
       values[i].tv_sec  = usage.ru_stime.tv_sec  + usage.ru_utime.tv_sec;
       values[i].tv_usec = usage.ru_stime.tv_usec + usage.ru_utime.tv_usec;
     }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i) {
+      getrusage(RUSAGE_SELF, &usage);
+      values[i].tv_sec  = usage.ru_stime.tv_sec  + usage.ru_utime.tv_sec;
+      values[i].tv_usec = usage.ru_stime.tv_usec + usage.ru_utime.tv_usec;
+    }
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -733,8 +782,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = omp_get_wtime();
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = omp_get_wtime();
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -751,8 +804,12 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i)
+    for (unsigned int i = 0; i < SIZE; ++i)
       values[i] = clock();
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i)
+      values[i] = clock();
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -770,10 +827,16 @@ public:
 
   void measure() {
     tms value;
-    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE; ++i) {
       times(& value);
       values[i] = value.tms_stime + value.tms_utime;
     }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i) {
+      times(& value);
+      values[i] = value.tms_stime + value.tms_utime;
+    }
+    stop  = std::chrono::high_resolution_clock::now();
   }
 };
 
@@ -795,9 +858,14 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE; ++i) {
       values[i] = __rdtsc();
     }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i) {
+      values[i] = __rdtsc();
+    }
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 };
@@ -820,10 +888,16 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE; ++i) {
       _mm_lfence();
       values[i] = __rdtsc();
     }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i) {
+      _mm_lfence();
+      values[i] = __rdtsc();
+    }
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 };
@@ -846,10 +920,16 @@ public:
   }
 
   void measure() {
-    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE; ++i) {
       _mm_mfence();
       values[i] = __rdtsc();
     }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i) {
+      _mm_mfence();
+      values[i] = __rdtsc();
+    }
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 };
@@ -875,9 +955,14 @@ public:
 
   void measure() {
     unsigned int id = 0;
-    for (unsigned int i = 0; i <= 2*SIZE; ++i) {
+    for (unsigned int i = 0; i < SIZE; ++i) {
       values[i] = __rdtscp(& id);
     }
+    start = std::chrono::high_resolution_clock::now();
+    for (unsigned int i = SIZE; i < 2*SIZE; ++i) {
+      values[i] = __rdtscp(& id);
+    }
+    stop  = std::chrono::high_resolution_clock::now();
   }
 
 };
