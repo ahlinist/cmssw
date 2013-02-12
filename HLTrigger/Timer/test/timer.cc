@@ -801,9 +801,9 @@ int main(void) {
   timers.push_back(new TimerClockGettimeRealtime());
 #endif // HAVE_POSIX_CLOCK_REALTIME
 
-#ifdef HAVE_POSIX_CLOCK_MONOTINIC
+#ifdef HAVE_POSIX_CLOCK_MONOTONIC
   timers.push_back(new TimerClockGettimeMonotonic());
-#endif // HAVE_POSIX_CLOCK_MONOTINIC
+#endif // HAVE_POSIX_CLOCK_MONOTONIC
 
 #ifdef HAVE_POSIX_CLOCK_MONOTONIC_RAW
   timers.push_back(new TimerClockGettimeMonotonicRaw());
