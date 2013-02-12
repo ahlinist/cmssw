@@ -1,7 +1,0 @@
-<use name=DataFormats/CSCDigi>
-<use name=Utilities/Timing>
-<export>
-  <use name=DataFormats/CSCDigi>
-  <lib name=TBDataFormatsCSCTFTBRawData>
-</export>
-

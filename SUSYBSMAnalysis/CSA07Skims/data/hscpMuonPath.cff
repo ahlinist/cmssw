@@ -1,4 +1,0 @@
-include "SUSYBSMAnalysis/CSA07Skims/data/hscpMuonSkim.cfi"
-
-path hscpMuon = { hscpMuonSeq }
-

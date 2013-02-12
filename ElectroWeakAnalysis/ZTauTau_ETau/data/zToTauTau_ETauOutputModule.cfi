@@ -1,9 +1,0 @@
-#include "ElectroWeakAnalysis/ZTauTau_ETau/data/zToTauTau_ETau_EventContent.cff"
-include "ElectroWeakAnalysis/ZTauTau_ETau/data/zToTauTau_ETau_EventContent_AODSIM.cff"
-
-module zToTauTau_ETauOutputModuleAODSIM = PoolOutputModule {
-  untracked string fileName = "file:/srv/localstage/scratch/kap01/zToTauTauETauAODSIM.root"
-   using AODSIMEventContent
-  #using AODSIMZToTauTauETauEventContent
-  #using zToTauTauETauEventSelection  
-}

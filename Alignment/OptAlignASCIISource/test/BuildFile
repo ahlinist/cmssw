@@ -1,5 +1,0 @@
-<use name=FWCore/Framework>
-<use name=FWCore/ParameterSet>
-<use name=OpticalAlignment/OptAlignASCIISource>
-<use name=boost>
-<bin file=testReader.cpp></bin>

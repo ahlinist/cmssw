@@ -1,8 +1,0 @@
-source = PoolSource { 
-  untracked vstring fileNames = {
-}
-}
-
-replace PoolSource.fileNames = {
-'/store/Generators/2008/4/7/FastSim-QCD_100_250-madgraph-1207598786/0002/000242A4-0F06-DD11-BA21-001A928116FA.root'
-}

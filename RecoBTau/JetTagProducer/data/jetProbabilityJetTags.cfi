@@ -1,7 +1,0 @@
-     
-    module jetProbabilityJetTags =  JetTagProducer 
-    { 
-      InputTag tagInfo = impactParameterTagInfos
-      string jetTagComputer = "jetProbability"
-     }
-  

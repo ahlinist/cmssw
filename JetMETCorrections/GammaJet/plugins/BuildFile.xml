@@ -1,8 +1,0 @@
-<use   name="FWCore/Framework"/>
-<use   name="FWCore/ParameterSet"/>
-<use   name="root"/>
-<use   name="JetMETCorrections/GammaJet"/>
-<use   name="hepmc"/>
-<library   file="*.cc" name="JetMETCorrectionsGammaJetPlugins">
-  <flags   EDM_PLUGIN="1"/>
-</library>

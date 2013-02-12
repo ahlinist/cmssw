@@ -1,6 +1,0 @@
-#!/bin/bash
-
-source /nfshome0/jaj99/.bashrc
-pushd /home/localtest &> /dev/null
-/opt/TriDAS/RecoLuminosity/HLXReadOut/StandAlone/bin/$XDAQ_OS/$XDAQ_PLATFORM/global_run_fake.exe $1
-popd &> /dev/null

@@ -1,8 +1,0 @@
-<lcgdict>
-  <class name="PHcalValidInfoLayer"/>
-  <class name="PHcalValidInfoNxN"/>
-  <class name="PHcalValidInfoJets"/>
-  <class name="edm::Wrapper<PHcalValidInfoLayer>"/>
-  <class name="edm::Wrapper<PHcalValidInfoNxN>"/>
-  <class name="edm::Wrapper<PHcalValidInfoJets>"/>
-</lcgdict>

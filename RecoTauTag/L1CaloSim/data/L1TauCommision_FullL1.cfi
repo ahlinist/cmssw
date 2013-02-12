@@ -1,9 +1,0 @@
-module fullL1TauComm=L1TauCommision {
-untracked int32 VerboseFlag = 0
-untracked string OutputFile = "FullL1TauCommission.root"
-untracked InputTag RctTag =  valRctDigis
-untracked string GctTag =  "valGctDigis"
-untracked int32 MuonRelation = 0
-include "TrackingTools/TrackAssociator/data/default.cfi"
-}
-

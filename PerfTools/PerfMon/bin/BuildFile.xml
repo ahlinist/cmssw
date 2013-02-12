@@ -1,6 +1,0 @@
-<bin   file="create_config_files_from_xml.cpp" name="create_config_files_from_xml">
-  <use   name="xerces-c"/>
-</bin>
-<bin   file="pfm_gen_analysis.cpp" name="pfm_gen_analysis">
-  <use   name="zlib"/>
-</bin>

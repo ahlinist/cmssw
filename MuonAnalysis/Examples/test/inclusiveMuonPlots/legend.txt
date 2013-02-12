@@ -1,6 +1,0 @@
-DATA: Data, 0.47 nb^{-1}
-REF: Simulation
-Heavy: muons from heavy flavours
-Light: muons from light hadrons
-Ghost: duplicates
-Punch: hadron punch-through

@@ -1,4 +1,0 @@
-source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.csh
-cd CMSSW_1_8_0/src
-eval `scramv1 runtime -csh`
-source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.csh

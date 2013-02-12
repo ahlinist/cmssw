@@ -1,3 +1,0 @@
-include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYdiMuonSkim.cfi"
-
-path hadSUSYdiMuon = { hadSUSYdiMuonSeq }

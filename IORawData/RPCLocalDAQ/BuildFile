@@ -1,8 +1,0 @@
-  <use name=DataFormats/RPCDigi>
-  <use name=FWCore/Framework>
-  <use name=Foundation/PluginManager>
-  <use name=FWCore/ParameterSet>
-  <use name=DataFormats/MuonDetId>
-  <use name=Geometry/RPCGeometry>
-  <use name=Geometry/Records>
-  <flags SEAL_PLUGIN_NAME="IORawDataRPCLocalDAQ">

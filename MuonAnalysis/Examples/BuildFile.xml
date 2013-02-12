@@ -1,6 +1,0 @@
-<use   name="DataFormats/MuonReco"/>
-<use   name="DataFormats/TrackReco"/>
-<use   name="DataFormats/MuonDetId"/>
-<export>
-  <lib   name="1"/>
-</export>

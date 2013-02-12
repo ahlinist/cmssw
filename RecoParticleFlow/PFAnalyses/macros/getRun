@@ -1,6 +1,0 @@
-#!/bin/bash
-#Gets a run by number from castor
-#stager_get -M `echo $1 | awk '{print "/castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000"$1".combined.OutServ_0.0-cmsswreco.root"}'`
-
-rfcp /castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_000$1.root /tmp
-

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<table>
-    <header parameter="mA"/>
-    <value mA="1">0.10</value>
-    <value mA="2">0.20</value>
-</table>

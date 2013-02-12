@@ -1,4 +1,0 @@
-include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYQCDSkim.cfi"
-
-path hadSUSYQCD = { hadSUSYQCDSeq }
-

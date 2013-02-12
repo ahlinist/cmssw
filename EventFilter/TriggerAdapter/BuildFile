@@ -1,6 +1,0 @@
-<use name=xdaq>
-<lib name=rubuilderutils>
-<export>
-  <lib name=EventFilterTriggerAdapter>
-  <use name=xdaq>
-</export>

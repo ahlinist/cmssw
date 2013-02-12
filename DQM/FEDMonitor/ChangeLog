@@ -1,6 +1,0 @@
-2007-10-09  Emilio Meschi <emilio.meschi@cern.ch>
-
-	* tag V00-01-03
-	* renamed FEDMonitorModule.h to FEDMonitor.h for correct mapping in ConfDB
-	
-

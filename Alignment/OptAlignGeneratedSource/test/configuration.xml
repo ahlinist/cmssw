@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<Configuration xmlns="." xmlns:xsi="." xsi:schemaLocation= "." name="CMSConfiguration" version="0">
- <Include>
-  <File name="OpticalAlignment/OptAlignGeneratedSource/test/PlatePos_COCOAIN_EDMS694327L0.xml" url="."/>
- </Include>
- <Root fileName="PlatePos_COCOAIN_EDMS694327L0.xml" logicalPartName="s"/>
-</Configuration>
-

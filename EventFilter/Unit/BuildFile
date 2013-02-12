@@ -1,6 +1,0 @@
-<export>
-<lib name=EventFilterUnit>
-<use name=xdaq>
-</export>
-<use name=boost>
-<use name=EventFilter/Utilities>

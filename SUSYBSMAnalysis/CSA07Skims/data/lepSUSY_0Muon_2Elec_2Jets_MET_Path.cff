@@ -1,3 +1,0 @@
-include "SUSYBSMAnalysis/CSA07Skims/data/lepSUSY_0Muon_2Elec_2Jets_MET_Skim.cfi"
-
-path lepSUSY_0Muon_2Elec_2Jets_MET = { lepSUSY_0Muon_2Elec_2Jets_MET_Seq }

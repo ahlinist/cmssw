@@ -1,3 +1,0 @@
-replace siStripClusters.DigiProducersList = { {string DigiProducer = "stripdigi"
-                   string DigiLabel    = "\0"      } }
-replace siPixelClusters.src = pixdigi

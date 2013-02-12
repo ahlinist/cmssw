@@ -1,3 +1,0 @@
-module l1TauCommTrigFilter=L1TauCommision_TrigFilt {
-  untracked string L1GlobalReadoutRecord = "gtDigis"
-}

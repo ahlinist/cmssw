@@ -1,5 +1,0 @@
-replace rpcRecHits.rpcDigiLabel = "muonrpcdigi"
-replace csc2DRecHits.CSCStripDigiProducer = "muoncscdigi"
-replace csc2DRecHits.CSCWireDigiProducer = "muoncscdigi"
-replace dt1DRecHits.dtDigiLabel = "muondtdigi"
-

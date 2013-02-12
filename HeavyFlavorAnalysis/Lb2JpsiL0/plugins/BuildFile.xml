@@ -1,7 +1,0 @@
-<library name="HeavyFlavorAnalysisLb2JpsiL0Plugins" file="*.cc">
-    <use name="FWCore/Framework"/>
-    <use name="FWCore/MessageLogger"/>
-    <use name="FWCore/ParameterSet"/>
-    <use name="FWCore/ServiceRegistry"/>
-    <flags EDM_PLUGIN="1"/>
-</library>

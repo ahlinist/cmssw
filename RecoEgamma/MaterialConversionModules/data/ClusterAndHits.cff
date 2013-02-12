@@ -1,3 +1,0 @@
-include "RecoEgamma/MaterialConversionModules/data/ClusterAndHits.cfi"
-
-sequence clusterAndHitsSequence = {ClusterAndHitsProd, ClusterAndHitsAna}

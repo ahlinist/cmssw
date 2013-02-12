@@ -1,6 +1,0 @@
-block NeuralNet = {
-
-    string NN_set = "ZeeZmumuJets-2500ev" 
-    string weightsDir = ""
-
-}

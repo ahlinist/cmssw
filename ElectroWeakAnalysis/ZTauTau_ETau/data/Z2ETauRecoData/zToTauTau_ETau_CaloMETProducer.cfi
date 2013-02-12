@@ -1,3 +1,0 @@
-module caloMETShallowCloneProducer = CaloMETShallowCloneProducer {
-InputTag src = met
-}

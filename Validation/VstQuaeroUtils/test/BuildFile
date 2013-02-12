@@ -1,4 +1,0 @@
-<use name=FWCore/Utilities>
-<bin name="partitionTest" file="TestDriver.cpp">
-  <flags TEST_RUNNER_ARGS=" /bin/bash Validation/VstQuaeroUtils/test run_tests.sh">
-</bin>

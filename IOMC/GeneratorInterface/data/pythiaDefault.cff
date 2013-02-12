@@ -1,4 +1,0 @@
-vstring pythiaDefault={
-'PMAS(5,1)=4.8 ! b quark mass',
-'PMAS(6,1)=172.3 ! t quark mass'
-}

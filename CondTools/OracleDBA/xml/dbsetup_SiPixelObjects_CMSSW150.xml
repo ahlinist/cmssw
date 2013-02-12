@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding="UTF-8"?>
-<!DOCTYPE Database SYSTEM "InMemory">
-<Database connectionString="notmatter" >
-   <HomogeneousContainer name="SiPixelGainCalibrationRcd">
-      <Class name="SiPixelGainCalibration" mappingVersion="SiPixelObjects_CMSSW150"/>
-   </HomogeneousContainer >
-</Database >

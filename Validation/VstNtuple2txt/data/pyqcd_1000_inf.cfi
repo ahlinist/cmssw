@@ -1,8 +1,0 @@
-source = PoolSource { 
-  untracked vstring fileNames = {
-}
-}
-
-replace PoolSource.fileNames = {
-     'file:pyQCD_1000_inf.root'
-}

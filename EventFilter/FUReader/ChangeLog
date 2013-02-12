@@ -1,7 +1,0 @@
-2006-10-24  Philipp SCHIEFERDECKER  <philipp.schieferdecker@cern.ch>
-
-	* tag V00-11-00
-	* adapt change in DaqBaseReader interface: A pointer *reference*
-	is now pass in fillRawData(), so the fed collection needs to be
-	allocated before being filled
-

@@ -1,5 +1,0 @@
-source = PoolSource { 
-  untracked vstring fileNames = {
-'dcache:/pnfs/cms/WAX/resilient/mrenna/pyWln-1.root'
-}
-}
