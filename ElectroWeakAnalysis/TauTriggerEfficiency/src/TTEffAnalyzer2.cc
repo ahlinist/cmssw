@@ -150,9 +150,9 @@ private:
       tree->Branch((name).c_str(), &value);
     }
     void fill(const edm::Event& iEvent) {
-      edm::Handle<edm::View<bool> > hsele;                                                                                 
+      edm::Handle<bool> hsele;
       if(iEvent.getByLabel(edm::InputTag(name,""), hsele)){
-	value = hsele->front();
+	value = *hsele;
       }
     }
     void reset() { value = -1;}
