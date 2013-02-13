@@ -46,16 +46,12 @@ public:
   double         fLip, fLipE, fTip, fTipE;
   double         fBsLip, fBsLipE, fBsTip, fBsTipE;
 
-  int            fMuID, fMuIndex;
+  int            fMuID, fMuIndex; 
 
   double         fDeDx, fDeDx2; 
   int            fDeDxNmeas, fDeDxNsat; 
 
-  int            fPvIdx;
-  
-  // entrance in muon system
-  TVector3       fPosMuonChamber;
-  TVector3	 fPlabMuonChamber;
+  int            fPvIdx; 
 
   // -- reserve
   int            fInt1,    fInt2,    fInt3; 
