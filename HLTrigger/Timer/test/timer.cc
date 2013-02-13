@@ -1113,6 +1113,9 @@ int main(void) {
   timers.push_back(new TimerBoostCpuTimerWallClock());
   timers.push_back(new TimerBoostCpuTimerCpuTime());
 
+  // OpenMP timer
+  timers.push_back(new TimerOMPGetWtime());
+
   // TBB timer
   timers.push_back(new TimerTBB());
 
@@ -1159,7 +1162,6 @@ int main(void) {
   // Unix timers
   timers.push_back(new TimerGettimeofday());
   timers.push_back(new TimerGetrusageSelf());
-  timers.push_back(new TimerOMPGetWtime());
   timers.push_back(new TimerClock());
   timers.push_back(new TimerTimesCpuTime());
   timers.push_back(new TimerTimesWallClock());
