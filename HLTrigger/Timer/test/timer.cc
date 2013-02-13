@@ -182,13 +182,13 @@ double calibrate_tsc() {
 class TimerInterface {
 public:
   // perform the measurements
-  virtual void measure(void) = 0;
+  virtual void measure() = 0;
 
   // extract from characteristics of the timer from the measurements
-  virtual void compute(void) = 0;
+  virtual void compute() = 0;
 
   // print a report
-  virtual void report(void) = 0;
+  virtual void report() = 0;
 };
 
 
@@ -1085,15 +1085,17 @@ public:
     type        = CT_REALTIME_CLOCK;
   }
 
-  void measure() {
+  void sample() {
     unsigned int id = 0;
     for (unsigned int i = 0; i < SIZE; ++i) {
       values[i] = __rdtscp(& id);
     }
+  }
+
+  void measure() {
+    sample();
     start();
-    for (unsigned int i = 0; i < SIZE; ++i) {
-      values[i] = __rdtscp(& id);
-    }
+    sample();
     stop();
   }
 
