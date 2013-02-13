@@ -49,73 +49,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// The cocktail functions. TuneP is reimplemented below from
-// DataFormats/MuonReco/*/MuonCocktails.* so that we can study changes
-// to it easily. (The "official" version should be made configurable,
-// and TMR and the sigma switch should be put in the official place.)
-
-reco::TrackRef TMRCocktail(const reco::TrackRef& combinedTrack,
-			   const reco::TrackRef& trackerTrack,
-			   const reco::TrackRef& fmsTrack,
-			   const double cut=4.) {
-  double probTK  = 0;
-  double probFMS = 0;
-
-  if (trackerTrack.isNonnull() && trackerTrack->numberOfValidHits())
-    probTK = muon::trackProbability(trackerTrack);
-  if (fmsTrack.isNonnull() && fmsTrack->numberOfValidHits())
-    probFMS = muon::trackProbability(fmsTrack);
-
-  bool TKok  = probTK > 0;
-  bool FMSok = probFMS > 0;
-
-  if (TKok && FMSok) {
-    if (probFMS - probTK > cut)
-      return trackerTrack;
-    else
-      return fmsTrack;
+track_type remapMuonTrackType(reco::Muon::MuonTrackType t) {
+  switch (t) {
+  case reco::Muon::InnerTrack: return tk_tkonly;
+  case reco::Muon::CombinedTrack: return tk_global;
+  case reco::Muon::TPFMS: return tk_tpfms;
+  case reco::Muon::Picky: return tk_picky;
+  default:
+    throw cms::Exception("remapMuonTrackType") << "t value of " << t << " unexpected in cocktail function.";
   }
-  else if (FMSok)
-    return fmsTrack;
-  else if (TKok)
-    return trackerTrack;
-  else
-    return combinedTrack;
-}
-
-reco::TrackRef TunePCocktail(const reco::TrackRef& trackerTrack,
-			     const reco::TrackRef& gmrTrack,
-			     const reco::TrackRef& fmsTrack,
-			     const reco::TrackRef& pmrTrack,
-			     const double tune1=30,
-			     const double tune2=0,
-			     unsigned short* which=0) {
-  const reco::TrackRef refit[4] = {
-    trackerTrack,
-    gmrTrack,
-    fmsTrack,
-    pmrTrack
-  };
-
-  double prob[4] = {0.};
-  int chosen=3;
-
-  for (unsigned int i=0; i<4; i++)
-    if (refit[i].isNonnull() && refit[i]->numberOfValidHits())
-      prob[i] = muon::trackProbability(refit[i]);
-
-  if (prob[3]==0.) {
-    if (prob[2]>0.) chosen=2;
-    else if (prob[1]>0.) chosen=1;
-    else if (prob[0]>0.) chosen=0;
-  }
-
-  if ( prob[0]>0. && prob[3]>0. && ((prob[3]-prob[0]) > tune1) ) chosen=0;
-  if ( prob[2]>0. && ((prob[chosen]-prob[2]) > tune2) ) chosen=2;
-
-  if (which) *which = chosen;
-
-  return refit[chosen];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +180,7 @@ private:
   // The "cut" value in the TMR algorithm.
   double tmr_cut;
   // The tune values for Tune P.
-  double tunep_tune1, tunep_tune2;
+  double tunep_pt_threshold, tunep_tune1, tunep_tune2, tunep_dptcut;
   // Parameters controlling the sigma switch.
   double n_sigma_switch;
   double sigma_switch_pt_threshold;
@@ -301,8 +243,10 @@ CosmicSplittingResolutionFilter::CosmicSplittingResolutionFilter(const edm::Para
     dyt_map_label(cfg.getParameter<edm::InputTag>("dyt_map_label")),
     trackeronly_map_label(cfg.getParameter<edm::InputTag>("trackeronly_map_label")),
     tmr_cut(cfg.getParameter<double>("tmr_cut")),
+    tunep_pt_threshold(cfg.getParameter<double>("tunep_pt_threshold")),
     tunep_tune1(cfg.getParameter<double>("tunep_tune1")),
     tunep_tune2(cfg.getParameter<double>("tunep_tune2")),
+    tunep_dptcut(cfg.getParameter<double>("tunep_dptcut")),
     n_sigma_switch(cfg.getParameter<double>("n_sigma_switch")),
     sigma_switch_pt_threshold(cfg.getParameter<double>("sigma_switch_pt_threshold")),
     max_delta_phi(cfg.getParameter<double>("max_delta_phi")),
@@ -610,24 +554,24 @@ bool CosmicSplittingResolutionFilter::filter(edm::Event& event, const edm::Event
     const reco::TrackRef& tko = tracks[tk_tkonly][j];
     const reco::TrackRef& fms = tracks[tk_tpfms] [j];
     const reco::TrackRef& pmr = tracks[tk_picky] [j];
-    int tmr, sigsw;
 
     // TMR: use tracker-only if the chi^2,dof tail prob difference
     // between TPFMS and tracker-only is bigger than the cut value.
-    nt->choice_tmr[j] = tmr = muon::trackProbability(fms) - muon::trackProbability(tko) > tmr_cut ? tk_tkonly : tk_tpfms;
-    tracks[tk_tmr][j] = tracks[tmr][j];
+    reco::Muon::MuonTrackTypePair tmr = muon::TMR(tko, fms, tmr_cut);
+    tracks[tk_tmr][j] = tmr.first;
+    nt->choice_tmr[j] = remapMuonTrackType(tmr.second);
     
     // N-sigma switch: if both global and tracker-only pT are above
     // threshold, use global if |1/pT global - 1/pT tracker-only| < N
     // * sigma_{1/pT} tracker-only, else use tracker-only.
-    nt->choice_sigsw[j] = sigsw = (glb->pt() > sigma_switch_pt_threshold && tko->pt() > sigma_switch_pt_threshold && fabs(glb->qoverp() - tko->qoverp()) < n_sigma_switch*tko->qoverpError()) ? tk_global : tk_tkonly;
-    tracks[tk_sigsw][j] = tracks[sigsw][j];
+    reco::Muon::MuonTrackTypePair sigsw = muon::sigmaSwitch(glb, tko, n_sigma_switch, sigma_switch_pt_threshold);
+    tracks[tk_sigsw][j] = sigsw.first;
+    nt->choice_sigsw[j] = remapMuonTrackType(sigsw.second);
 
-    // PiotrMuonCocktail, as tuned in 310pWhatever on MC by Piotr.
-    unsigned short tunep = 99;
-    tracks[tk_tunep][j] = TunePCocktail(tko, glb, fms, pmr, tunep_tune1, tunep_tune2, &tunep);
-    static const unsigned short map[] = {tk_tkonly, tk_global, tk_tpfms, tk_picky}; // Need to reorder the values from the function to our scheme.
-    nt->choice_tunep[j] = tunep < 4 ? map[tunep] : 99;
+    // Tune P (see MuonCocktails.h/cc).
+    reco::Muon::MuonTrackTypePair tunep = muon::tevOptimized(glb, tko, fms, pmr, tunep_pt_threshold, tunep_tune1, tunep_tune2, tunep_dptcut);
+    tracks[tk_tunep][j] = tunep.first;
+    nt->choice_tunep[j] = remapMuonTrackType(tunep.second);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
