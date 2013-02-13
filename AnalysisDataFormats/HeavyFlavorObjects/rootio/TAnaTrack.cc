@@ -36,7 +36,6 @@ void TAnaTrack::clear() {
   fInt1 = fInt2 = fInt3 -99; 
   fDouble1 = fDouble2 = fDouble3 = -99.;
   
-  fPosMuonChamber.SetXYZ(-1e30,-1e30,-1e30);
 }
 
 
@@ -68,10 +67,6 @@ void TAnaTrack::dump() {
 
   if (fMuID > -1) {
     cout << Form(" mid=%3x", fMuID);
-  }
-  
-  if (fPosMuonChamber.X() > -1e30 && fPosMuonChamber.Y() > -1e30 && fPosMuonChamber.Z() > -1e30) {
-	  cout << Form(" mupos=(%f,%f,%f)",fPosMuonChamber.X(),fPosMuonChamber.Y(),fPosMuonChamber.Z());
   }
     
   cout << endl;
