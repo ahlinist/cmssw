@@ -34,8 +34,8 @@ group.add_argument('+edm-output', action='store_true',
                    help='Write out (and retrieve in batch mode) the EDM ROOT file (default is to just get the ntuple).')
 group.add_argument('+edm-output-all', action='store_true',
                    help='Ignore the event selection when writing the EDM output file.')
-group.add_argument('+tunep-tune', nargs=2, type=float, default=(30.,0.), metavar=('TUNE1','TUNE2'),
-                   help='Set the Tune P tunes to TUNE1, TUNE2 (default is 30,0).')
+group.add_argument('+tunep-tune', nargs=4, type=float, default=(200, 4, 6, -1), metavar=('PT_THRESHOLD','TUNE1','TUNE2','DPTCUT'),
+                   help='Set the Tune P tunes to TUNE1, TUNE2, with PT_THRESHOLD and DPTCUT (default is %(default)s).')
 
 group = parser.add_argument_group('Interactive-only options (controlling the files/events run over, and debugging output)')
 group.add_argument('+is-mc', action='store_true',
@@ -185,6 +185,9 @@ for i, fn in enumerate(options.files):
 if options.debug_mc_event:
     options.is_mc = True
 
+if options.is_mc or options.submit_mc:
+    raise ValueError('MC broken for now')
+    
 if options.edm_output_all:
     options.edm_output = True
 
@@ -208,7 +211,11 @@ if not options.batch_name:
     if options.edm_output:
         options.batch_name += 'EDMOut'
     if options.tunep_tune != (30.,0.):
-        s = '%.1f%.1f' % tuple(options.tunep_tune)
+        s = '%.1f%.1f%.1f' % tuple(options.tunep_tune[:3])
+        if options.tunep_tune[3] < 0:
+            s += 'NoDPT'
+        else:
+            s += '%.2f' % options.tunep_tune[3]
         options.batch_name += 'TuneP' + s.replace('.','p')
 
 # Figure out the submitter options.
@@ -226,6 +233,8 @@ for connect, rcds in options.extra_alca:
     print '  ', connect
     for rcd in sorted(rcds):
         print '     ', rcd.ljust(30), rcds[rcd]
+else:
+    print '\tnone'
 
 ################################################################################
 
@@ -267,7 +276,7 @@ for x in dir(process):
             ea.timetype = cms.untracked.string('runnumber')
 
 # We're re-reconstructing, so we need these.
-process.load('Configuration.StandardSequences.Geometry_cff')
+process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -558,8 +567,10 @@ for reco_kind in label_names.keys():
                                                dyt_map_label             = kind_tag('refitMapTPFMS'), # Don't use DYT for now. Just copy TPFMS to avoid changing the code.
                                                trackeronly_map_label     = kind_tag('refitMapTkOnly'),
                                                tmr_cut                   = cms.double(4),
-                                               tunep_tune1               = cms.double(options.tunep_tune[0]),
-                                               tunep_tune2               = cms.double(options.tunep_tune[1]),
+                                               tunep_pt_threshold        = cms.double(options.tunep_tune[0]),
+                                               tunep_tune1               = cms.double(options.tunep_tune[1]),
+                                               tunep_tune2               = cms.double(options.tunep_tune[2]),
+                                               tunep_dptcut              = cms.double(options.tunep_tune[3]),
                                                n_sigma_switch            = cms.double(2),
                                                sigma_switch_pt_threshold = cms.double(200),
                                                max_delta_phi             = cms.double(0.1),
