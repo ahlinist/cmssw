@@ -9,6 +9,7 @@
 
 #include "TAnaTrack.hh"
 
+#include <set>
 #include <map>
 #include <vector>
 
@@ -59,6 +60,9 @@ public:
   // information on tracks extrapolated to muon station 1 (position and momentum): tkIdx, dist to muon, tk pos, tk mom
   static const unsigned int NXPTRACKS = 10; 
   xpTrack fXpTracks[NXPTRACKS];
+  // information on best vertex of muon
+  double fVtxProb;
+  std::set<unsigned> fVtxTracks;
 
   // -- reserve
   int            fInt1,    fInt2,    fInt3; 

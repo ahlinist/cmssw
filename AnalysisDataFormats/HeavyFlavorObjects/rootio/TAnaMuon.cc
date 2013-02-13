@@ -39,7 +39,9 @@ void TAnaMuon::clear() {
   for (unsigned int i = 0; i < NXPTRACKS; ++i) {
     fXpTracks[i].dist = 99.;
   }
-
+  
+  fVtxProb = -99.0;
+  fVtxTracks.clear();
 }
 
 
@@ -88,6 +90,10 @@ void TAnaMuon::dump() {
   cout << " closeby tracks (" << fNstTracks.size() << ") are" << endl;
   for (std::map<int,float>::const_iterator it = fNstTracks.begin(); it != fNstTracks.end(); ++it)
 	  cout << "   (ix=" << it->first << ", doca=" << it->second << ")" << endl;
+
+  cout << " vertex probability vtxProb=" << fVtxProb << " with tracks ( ";
+  for (std::set<unsigned>::const_iterator it = fVtxTracks.begin(); it != fVtxTracks.end(); ++it) cout << *it << " ";
+  cout << ")" << endl;
 
   //   if (fMCID != -99999) {
   //     cout << Form(" mcid =%+6d", fMCID);
