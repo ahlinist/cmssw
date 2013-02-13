@@ -358,6 +358,17 @@ TSimpleTrack* TAna01Event::addSimpleTrack() {
 }
 
 // ----------------------------------------------------------------------
+int TAna01Event::getSimpleTrackMCID(int n) {
+  TSimpleTrack *st = getSimpleTrack(n); 
+  int gidx = st->getGenIndex(); 
+  if (gidx > -1 && gidx < nGenCands()) {
+    return getGenCand(gidx)->fID; 
+  } 
+  return -1; 
+}
+
+
+// ----------------------------------------------------------------------
 int TAna01Event::getSimpleTrackMuonIdx(int n) {
   TSimpleTrack *st = getSimpleTrack(n); 
   if (st->getMuonID()) {

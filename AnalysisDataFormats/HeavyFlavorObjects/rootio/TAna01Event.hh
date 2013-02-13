@@ -49,6 +49,8 @@ public:
   int                    nSimpleTracks() {return fnSimpleTracks;}
   TSimpleTrack*          getSimpleTrack(int n);
   virtual TSimpleTrack*  addSimpleTrack();
+  // -- these helper functions need to be here, and not in TSimpleTrack ...
+  int                    getSimpleTrackMCID(int n);
   int                    getSimpleTrackMuonIdx(int n);
   TAnaMuon*              getSimpleTrackMuon(int n); 
 
