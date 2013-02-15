@@ -293,39 +293,39 @@ int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double
   TGenCand *pGenCand;
   int index(-1);
   int tmp_index[30];
-  TLorentzVector track, gencand;
+  TVector3 track, gencand;
   int count(0);
-  track.SetPtEtaPhiM(pt, eta, phi, 0.);
-				       
-  for (int i = 0; i < fnGenCands; i++) {
-	  pGenCand = getGenCand(i);
-	  if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
-		  double dR = track.DeltaR(pGenCand->fP);
-		  double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
-		  if (dR < 0.12 && dpt < 0.3  && count < 30) {
-			  tmp_index[count] = i;
-			  count++;
-		  }
-	  }
-  }
+  track.SetPtEtaPhi(pt, eta, phi);
   
-  double deltaR_min(0.12);
-  int  i_min(-1); 	
-  if (count == 1) index = tmp_index[0];	
-  if (count > 1) { 
-    for (int i = 0; i < count; i++) {
-      pGenCand = getGenCand(tmp_index[i]);;
-      if (track.DeltaR(pGenCand->fP) < deltaR_min) {
-	deltaR_min = track.DeltaR(pGenCand->fP);			
-	i_min = i;
+  for (int i = 0; i < fnGenCands; i++) {
+    pGenCand = getGenCand(i);
+    if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && (charge*pGenCand->fQ > 0)) {
+      double dR = track.DeltaR(pGenCand->fP.Vect());
+      double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
+      if (dR < 0.12 && dpt < 0.3  && count < 30) {
+	tmp_index[count] = i;
+	count++;
       }
     }
-    
-    index = i_min;
-    
   }
   
+  if (0 == count) return index;
+  if (1 == count) return tmp_index[0];	
+
+  double deltaR_min(0.12);
+  int  i_min(-1); 	
+  double dr(1.); 
+  for (int i = 0; i < count; i++) {
+    pGenCand = getGenCand(tmp_index[i]);
+    dr = track.DeltaR(pGenCand->fP.Vect()); 
+    if (dr < deltaR_min) {
+      deltaR_min = dr;
+      i_min = tmp_index[i];
+    }
+  }
+  index = i_min;
   return index;
+
 }
 
 
