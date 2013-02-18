@@ -9,7 +9,6 @@ using namespace std;
 TAnaVertex::TAnaVertex() { 
   //  cout << ".X.X.X.X.X: In the ctor of TAnaVertex" << endl;
   fPoint.SetXYZ(0., 0., 0.);
-  fNtracks = 0; 
 }
 
 
@@ -34,19 +33,6 @@ void TAnaVertex::clear() {
   fCovXX[7] = -99.;
   fCovXX[8] = -99.; 
   //  cout << ".X.X.X.X.X: Clearing TAnaVertex END" << endl;
-}
-
-// ----------------------------------------------------------------------
-void TAnaVertex::addTrack(int index) {
-  if (fNtracks == TANAVERTEX_MAXTRK-1) {
-    cout << "TAnaVertex: Too many tracks in vertex. Not adding track!" << endl;
-    fTracksIndex[fNtracks-1] = 255;
-    return;
-  }
-
-  //  cout << "TAnaVertex: Adding track index " << index << " at array position " << fNtracks << endl;
-  fTracksIndex[fNtracks] = index;
-  ++fNtracks;
 }
 
 // ----------------------------------------------------------------------
@@ -76,9 +62,6 @@ void TAnaVertex::dump() {
   sprintf(line, "chi2/dof=%5.3f/%3.0f prob=%5.3f typ=%2d vtx=(%5.3f,%5.3f,%5.3f)",
 	  fChi2, fNdof, fProb, fType, fPoint.X(), fPoint.Y(), fPoint.Z());
   cout << line;
-
-  cout << " trks: (" << fNtracks << ") ";
-  for (int i = 0; i < fNtracks; ++i) cout << getTrack(i) << ", ";
   cout << endl;
 }
 
