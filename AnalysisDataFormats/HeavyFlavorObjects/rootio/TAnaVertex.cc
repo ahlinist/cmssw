@@ -23,6 +23,7 @@ void TAnaVertex::clear() {
   //  cout << ".X.X.X.X.X: Clearing TAnaVertex" << endl;
   setInfo(-99.,-99,-99.,-99,-99); 
   fPoint.SetXYZ(-99.,-99.,-99.);
+  fDxy = fDxyE = fD3d = fD3dE = -99.;
   fCovXX[0] = -99.;
   fCovXX[1] = -99.;
   fCovXX[2] = -99.;
