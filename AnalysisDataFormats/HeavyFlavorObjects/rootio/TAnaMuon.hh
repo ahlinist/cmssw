@@ -40,20 +40,20 @@ public:
   TVector3  fMuonTrackPosAtM1, fMuonTrackPlabAtM1;
 
   // see AN2008_098 "Muon identification in CMS"
-  double    fMuonChi2, fMuonZ, fMuonR;
-  double    fCaloComp, fSegmComp, fIsolation; 
+  float     fMuonChi2, fMuonZ, fMuonR;
+  float     fCaloComp, fSegmComp, fIsolation; 
   int       fNhitsCSC, fNhitsDT,fNhitsRPC; 
   int       fNmatchedStations;
   float     fTimeInOut, fTimeInOutE, fTimeOutIn, fTimeOutInE; 
   int       fTimeNdof;
 
   // -- new variables for MVA muon id
-  double fItrkValidFraction; 
-  double fGtrkNormChi2;    
-  double fChi2LocalPosition, fChi2LocalMomentum; 
+  float  fItrkValidFraction; 
+  float  fGtrkNormChi2;    
+  float  fChi2LocalPosition, fChi2LocalMomentum; 
   int    fNumberOfLostTrkHits, fNumberOfValidTrkHits; 
-  double fSegmentComp;    
-  double fGtrkProb;           
+  float  fSegmentComp;    
+  float  fGtrkProb;           
  
   // information on tracks near this candidate
   std::map<int,float> fNstTracks; // usage: (trackIx, doca)

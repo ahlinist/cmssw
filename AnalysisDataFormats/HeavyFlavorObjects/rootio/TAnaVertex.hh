@@ -30,11 +30,10 @@ public:
   int    fType;
 
   // -- Distance to primary vertex
-  float fDxy, fDxyE, fCxy;
-  float fD3d, fD3dE, fC3d;
+  float fDxy, fDxyE;
+  float fD3d, fD3dE;
   
   TVector3 fPoint;
-  TVector3 fSimPoint;
 
 private:
   float fCovXX[9];
