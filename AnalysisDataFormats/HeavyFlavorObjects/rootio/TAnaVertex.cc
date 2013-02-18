@@ -45,7 +45,7 @@ void TAnaVertex::addTrack(int index) {
   }
 
   //  cout << "TAnaVertex: Adding track index " << index << " at array position " << fNtracks << endl;
-  fTracksIndex[fNtracks] = static_cast<char>(index);
+  fTracksIndex[fNtracks] = index;
   ++fNtracks;
 }
 

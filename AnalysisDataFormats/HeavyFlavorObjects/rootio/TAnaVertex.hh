@@ -37,25 +37,25 @@ public:
 
 
   // ----------------------------------------------------------------------
-  double fChi2;
-  double fNdof;
-  double fProb;
+  float fChi2;
+  float fNdof;
+  float fProb;
   int    fStatus;
   int    fType;
 
   // -- Distance to primary vertex
-  double fDxy, fDxyE, fCxy;
-  double fD3d, fD3dE, fC3d;
+  float fDxy, fDxyE, fCxy;
+  float fD3d, fD3dE, fC3d;
   
   TVector3 fPoint;
   TVector3 fSimPoint;
 
 
 private:
-  double fCovXX[9];
+  float fCovXX[9];
 
-  int            fNtracks;
-  char           fTracksIndex[TANAVERTEX_MAXTRK];
+  int           fNtracks;
+  int           fTracksIndex[TANAVERTEX_MAXTRK];
 
   ClassDef(TAnaVertex,1)
 
