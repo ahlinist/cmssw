@@ -33,12 +33,20 @@ public:
   TGenCand*           getGenCand(int n);
   virtual TGenCand*   addGenCand();
   void                dumpGenBlock();
+  void                clearGenBlock();
   // For a given 'SimTrack', find the index in the generator block by doing a (p,id) matching
   int                 getGenIndex(double px, double py, double pz, int charge, double precision = 0.05);
   int                 getGenIndexWithDeltaR(double pt, double eta, double phi, double charge);
   int                 getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge, double dRthrsh = 99999.9);
   int                 getGenIndexWithDeltaR(const TLorentzVector &tlv, const TVector3 &vtx, 
 					    double charge, double dRthrsh = 99999.9, double dVtxRatioThrsh = 1.3);
+
+  // -- reduced/truncated generator block
+  int                 nGenT() {return fnGenT;}
+  TGenCand*           getGenTWithIndex(int n); // return TGenCand with fNumber = n
+  TGenCand*           getGenT(int n);          // return TGenCand at position n
+  virtual TGenCand*   addGenT();
+  void                fillGenT(int n); // fill all daugthers and mothers of this genIdx into truncated gen blocj
 
   // -- RecTracks
   int                 nRecTracks() {return fnRecTracks;}
@@ -159,6 +167,9 @@ private:
 
   int               fnGenCands;
   TClonesArray      *fGenCands;
+
+  int               fnGenT;
+  TClonesArray      *fGenT;
 
   int               fnSimpleTracks;
   TClonesArray      *fSimpleTracks;

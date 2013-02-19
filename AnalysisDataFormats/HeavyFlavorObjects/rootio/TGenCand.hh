@@ -1,4 +1,3 @@
-  
 #ifndef TGENCAND
 #define TGENCAND
 
@@ -15,6 +14,7 @@ public:
 
   TGenCand();
   TGenCand(int Option);
+  TGenCand(const TGenCand &); 
   ~TGenCand() { };
   void     clear() {fID = -123;}
 
