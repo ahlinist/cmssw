@@ -6,6 +6,7 @@ ClassImp(TAna01Event)
  
 using namespace std;
 
+#define NGEN 1000
 #define NGENCAND 100000
 #define NRECTRACK 50000
 #define NSIMPLETRACK 50000
@@ -22,6 +23,9 @@ using namespace std;
 TAna01Event::TAna01Event(Int_t Option) {
   fGenCands        = new TClonesArray("TGenCand", NGENCAND);
   fnGenCands       = 0;
+ 
+  fGenT            = new TClonesArray("TGenCand", NGEN);
+  fnGenT           = 0;
 
   fRecTracks       = new TClonesArray("TAnaTrack", NRECTRACK);
   fnRecTracks      = 0;
@@ -163,13 +167,15 @@ void TAna01Event::Clear(Option_t *option) {
   fCandidates->Clear(option);
   fnCandidates = 0;
 
-  TGenCand *pGenCand;
-  for (int i = 0; i < fnGenCands; i++) {
-    pGenCand = getGenCand(i);
-    pGenCand->clear();
+  clearGenBlock();
+
+  TGenCand *pGenT;
+  for (int i = 0; i < fnGenT; i++) {
+    pGenT = getGenT(i);
+    pGenT->clear();
   }
-  fGenCands->Clear(option);
-  fnGenCands = 0;
+  fGenT->Clear(option);
+  fnGenT = 0;
 
   TAnaVertex *pPV;
   for (int i = 0; i < fnPV; i++) {
@@ -178,6 +184,19 @@ void TAna01Event::Clear(Option_t *option) {
   }
   fPV->Clear(option);
   fnPV = 0;
+
+}
+
+
+// ----------------------------------------------------------------------
+void TAna01Event::clearGenBlock() {
+  TGenCand *pGenCand;
+  for (int i = 0; i < fnGenCands; i++) {
+    pGenCand = getGenCand(i);
+    pGenCand->clear();
+  }
+  fGenCands->Clear();
+  fnGenCands = 0;
 
 }
 
@@ -193,6 +212,123 @@ TGenCand* TAna01Event::addGenCand() {
   new(d[d.GetLast()+1]) TGenCand();
   ++fnGenCands;
   return (TGenCand*)d[d.GetLast()];
+}
+
+
+// ----------------------------------------------------------------------
+TGenCand* TAna01Event::getGenT(Int_t n) { 
+  return (TGenCand*)fGenT->UncheckedAt(n); 
+}
+
+// ----------------------------------------------------------------------
+TGenCand *TAna01Event::getGenTWithIndex(Int_t n) {
+  TGenCand *pG; 
+  for (int i = 0; i < fnGenT; ++i) {
+    pG = (TGenCand*)fGenT->UncheckedAt(i); 
+    if (n == pG->fNumber) return pG; 
+  }
+  return 0; 
+}
+
+// ----------------------------------------------------------------------
+TGenCand* TAna01Event::addGenT() {
+  TClonesArray& d = *fGenT; 
+  new(d[d.GetLast()+1]) TGenCand();
+  ++fnGenT;
+  return (TGenCand*)d[d.GetLast()];
+}
+
+
+// ----------------------------------------------------------------------
+void TAna01Event::fillGenT(int theParticleIdx) {
+  
+  const int verbose(0);
+  
+  set<int> daughters, mothers;
+  TGenCand *pDau, *pTmp; 
+  int iMom; 
+  
+  // -- daughters of theParticleIdx
+  for (int id = theParticleIdx+1; id < nGenCands(); ++id) {
+    pDau = getGenCand(id);
+    iMom = pDau->fMom1;
+    while (iMom > theParticleIdx) {
+      pTmp = getGenCand(iMom);
+      iMom = pTmp->fMom1;
+    }
+    if (iMom == theParticleIdx) {
+      daughters.insert(id); 
+    }
+  }
+  
+  mothers.insert(theParticleIdx); 
+  int cnt(0); 
+  while (1) {
+    ++cnt;
+    for (set<int>::iterator i = mothers.begin(); i != mothers.end(); ++i) {
+      pTmp = getGenCand(*i); 
+      for (int id = pTmp->fMom1; id <= pTmp->fMom2; ++id) {
+	mothers.insert(id);
+      }
+    }
+    if (mothers.end() != find(mothers.begin(), mothers.end(), 0)) break;
+    if (mothers.end() != find(mothers.begin(), mothers.end(), 1)) break;
+    if (mothers.end() != find(mothers.begin(), mothers.end(), -1)) break;
+  }
+
+  // -- add documentation block
+  for (int i = 0; i < nGenCands(); ++i) {
+    pTmp = getGenCand(i); 
+    if (pTmp->fStatus == 3) mothers.insert(i); 
+  }
+
+  // -- now combine all sets into one set
+  set<int> allParticles;
+  for (set<int>::iterator i = mothers.begin(); i != mothers.end(); ++i) {
+    allParticles.insert(*i); 
+  }
+
+  for (set<int>::iterator i = daughters.begin(); i != daughters.end(); ++i) {
+    allParticles.insert(*i); 
+  }
+
+  if (verbose) {
+    cout << "all: " << allParticles.size() << endl;
+    for (set<int>::iterator i = allParticles.begin(); i != allParticles.end(); ++i) {
+      cout << "a: "; getGenCand(*i)->dump(); 
+    }
+  }
+
+  // -- fill genT
+  TGenCand *pG, *pOld; 
+  bool alreadyFilled(false); 
+  for (set<int>::iterator i = allParticles.begin(); i != allParticles.end(); ++i) {
+    alreadyFilled = false; 
+    for (int it = 0; it < nGenT(); ++it) {
+      if (*i == getGenT(it)->fNumber) {
+	alreadyFilled = true; 
+	break;
+      }
+    }
+    if (alreadyFilled) continue;
+
+    pOld = getGenCand(*i); 
+    pG = addGenT(); 
+    pG->fID     = pOld->fID; 
+    pG->fNumber = pOld->fNumber;
+    pG->fStatus = pOld->fStatus;
+    pG->fMom1   = pOld->fMom1; 
+    pG->fMom2   = pOld->fMom2;
+    pG->fDau1   = pOld->fDau1; 
+    pG->fDau2   = pOld->fDau2;
+    pG->fTag    = pOld->fTag;
+    pG->fQ      = pOld->fQ;
+    pG->fP      = pOld->fP; 
+    pG->fMass   = pOld->fMass;
+    pG->fV      = pOld->fV;
+    pG->fTime   = pOld->fTime;
+  }
+
 }
 
 // ----------------------------------------------------------------------

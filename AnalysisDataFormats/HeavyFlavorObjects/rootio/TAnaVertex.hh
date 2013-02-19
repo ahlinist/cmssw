@@ -12,22 +12,24 @@ public:
   virtual ~TAnaVertex();
   void clear();
   void dump();
-  void setInfo(double chi2, double ndof, double prob, int isFake, int type) {
+  void setInfo(double chi2, double ndof, double prob, int isFake, int ntracks) {
     fChi2 = chi2;
     fNdof = ndof;
     fProb = prob; 
     fStatus = isFake;
-    fType = type;
+    fNtracks = ntracks;
   }
 
   void setCovXX(Double_t *x);
   void getCovXX(TMatrixD& x);
 
+  int getNtracks() {return fNtracks;}
+
   float fChi2;
   float fNdof;
   float fProb;
-  int    fStatus;
-  int    fType;
+  int   fStatus;
+  int   fNtracks; 
 
   // -- Distance to primary vertex
   float fDxy, fDxyE;

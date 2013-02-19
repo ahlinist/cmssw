@@ -9,6 +9,22 @@ TGenCand::TGenCand() { }
 
 TGenCand::TGenCand(Int_t Option) { }
 
+TGenCand::TGenCand(const  TGenCand &other) { 
+  fID     = other.fID; 
+  fNumber = other.fNumber;
+  fStatus = other.fStatus;
+  fMom1   = other.fMom1; 
+  fMom2   = other.fMom2;
+  fDau1   = other.fDau1; 
+  fDau2   = other.fDau2;
+  fTag    = other.fTag;
+  fQ      = other.fQ;
+  fP      = other.fP; 
+  fMass   = other.fMass;
+  fV      = other.fV;
+  fTime   = other.fTime;
+}
+
 
 void TGenCand::dump(int printPt) {
   char line[200];

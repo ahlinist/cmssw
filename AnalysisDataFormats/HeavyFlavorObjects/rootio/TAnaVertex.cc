@@ -60,8 +60,8 @@ void TAnaVertex::getCovXX(TMatrixD &bla) {
 // ----------------------------------------------------------------------
 void TAnaVertex::dump() {
   char line[200];
-  sprintf(line, "chi2/dof=%5.3f/%3.0f prob=%5.3f typ=%2d vtx=(%5.3f,%5.3f,%5.3f)",
-	  fChi2, fNdof, fProb, fType, fPoint.X(), fPoint.Y(), fPoint.Z());
+  sprintf(line, "chi2/dof=%5.3f/%3.0f prob=%5.3f ntrk=%2d vtx=(%5.3f,%5.3f,%5.3f)",
+	  fChi2, fNdof, fProb, fNtracks, fPoint.X(), fPoint.Y(), fPoint.Z());
   cout << line;
   cout << endl;
 }
