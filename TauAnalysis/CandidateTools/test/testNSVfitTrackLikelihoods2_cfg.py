@@ -18,7 +18,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START52_V11C::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(2500)
 )
 
 process.source = cms.Source("PoolSource",
@@ -47,9 +47,11 @@ sample_type = 'Higgs'
 #channel = 'etau'
 channel = 'mutau'
 #channel = 'emu'
-massPoint = '125'
+#massPoint = '125'
 #massPoint = '300'
-qTmin = 50.
+massPoint = '800'
+#qTmin = 50.
+qTmin = 20.
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -73,7 +75,8 @@ if sample_type == 'Z':
     inputFile_regex = \
       r"[a-zA-Z0-9_/:.]*genTauLeptonsPairAccSkim_ZplusJets_%s_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % channel
 elif sample_type == 'Higgs':
-    inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/user/v/veelken/CMSSW_5_2_x/skims/'
+    ##inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/user/v/veelken/CMSSW_5_2_x/skims/' # for all samples except ggPhi_800 
+    inputFilePath = '/data1/veelken/CMSSW_5_2_x/skims/genHtautauLeptonPairAcc/' # for ggPhi_800 sample
     inputFile_regex = \
       r"[a-zA-Z0-9_/:.]*genTauLeptonsPairAccSkim_(ggHiggs|ggPhi|vbfHiggs)%s_%s_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (massPoint, channel)
 else:
@@ -679,9 +682,9 @@ for option in [ 5, 9 ]:
         nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = nSVfitBuilderLeg2
         nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
         nSVfitProducerModule.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt2)
-        nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(True)
+        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(True)
         ##nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(1)
-        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(False)
+        nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(False)
         nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
         nSVfitProducerModule.config.event.srcMEt = cms.InputTag('pfType1CorrectedMet')
         nSVfitProducerModule.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexByLeptonMatch')
@@ -830,9 +833,9 @@ for option in [ 5, 9 ]:
         nSVfitProducerModule.config.event.resonances.A.daughters.leg2.builder = nSVfitBuilderLeg2
         nSVfitProducerModule.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
         nSVfitProducerModule.config.event.likelihoodFunctions = cms.VPSet(process.nSVfitEventLikelihoodMEt3)
-        nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(True)
+        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(True)
         ##nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(1)
-        ##nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(False)
+        nSVfitProducerModule.config.event.likelihoodFunctions[0].monitorMEtUncertainty = cms.bool(False)
         nSVfitProducerModule.config.event.likelihoodFunctions[0].verbosity = cms.int32(0)
         nSVfitProducerModule.config.event.srcMEt = cms.InputTag('pfType1CorrectedMet')
         nSVfitProducerModule.config.event.srcPrimaryVertex = cms.InputTag('selectedPrimaryVertexByLeptonMatch')
@@ -909,8 +912,8 @@ for option in svFitAnalyzerModuleTypes.keys():
         srcPFMEtCovMatrix = cms.InputTag('pfMEtSignCovMatrix'),
         srcWeights = cms.VInputTag(),
         idxResonance = cms.int32(0),
-        numBinsSVfitMass = cms.int32(500),
-        svFitMassMax = cms.double(500.),
+        numBinsSVfitMass = cms.int32(2500),
+        svFitMassMax = cms.double(2500.),
         numBinsSVfitSigma = cms.int32(250),
         svFitSigmaMax = cms.double(250.),
         dqmDirectory = cms.string(nSVfitProducerModuleName)
