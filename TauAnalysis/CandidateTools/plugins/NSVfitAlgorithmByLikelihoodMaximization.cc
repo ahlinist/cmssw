@@ -236,7 +236,7 @@ void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypo
   resonance.massErrUp_ = massErrUp;
   resonance.massErrDown_ = massErrDown;
 
-  if ( verbosity_ >= 2 ) {
+  if ( verbosity_ >= 1 ) {
     std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::setMassResults>:" << std::endl;
     std::cout << " pluginName = " << pluginName_ << std::endl;
     std::cout << "--> mass = " << resonance.mass_ 
@@ -250,13 +250,20 @@ double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const doubl
   if ( verbosity_ ) {
     std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::nll>:" << std::endl;
     std::cout << " idxObjFunctionCall = " << idxObjFunctionCall_ << std::endl;
+  }
+  
+  for ( std::vector<NSVfitParameter>::iterator fitParameter = fitParameters_.begin();
+	fitParameter != fitParameters_.end(); ++fitParameter ) {
+    fitParameter->setValue(x[fitParameter->index()]);
+  }
+  
+  if ( verbosity_ >= 2 ) {    
     for ( std::vector<NSVfitParameter>::iterator fitParameter = fitParameters_.begin();
 	  fitParameter != fitParameters_.end(); ++fitParameter ) {
-      fitParameter->setValue(x[fitParameter->index()]);
       fitParameter->dump(std::cout);
     }
   }
-
+  
   ++idxObjFunctionCall_;
 
 //--- in order to resolve ambiguities and improve convergence of the fit,
