@@ -378,7 +378,7 @@ double PFMETProducerMVA::chargedFracInCone(const reco::Candidate *iCand,
       if      ( pfCandidate->trackRef().isNonnull()    ) dZ = fabs(pfCandidate->trackRef()->dz(hardScatterVertex->position()));
       else if ( pfCandidate->gsfTrackRef().isNonnull() ) dZ = fabs(pfCandidate->gsfTrackRef()->dz(hardScatterVertex->position()));
     }
-    if(dZ > 0.1) continue; 
+    if(fabs(dZ) > 0.1) continue; 
     lVis += pfCandidate->p4();
   }
   return lVis.pt()/iCand->pt();
