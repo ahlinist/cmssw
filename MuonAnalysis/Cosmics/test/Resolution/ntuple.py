@@ -2,6 +2,8 @@
 
 import argparse, copy, sys, os
 
+tunep = (10., 17., 40., 0.25)
+
 ################################################################################
 
 # Parse options.
@@ -34,7 +36,7 @@ group.add_argument('+edm-output', action='store_true',
                    help='Write out (and retrieve in batch mode) the EDM ROOT file (default is to just get the ntuple).')
 group.add_argument('+edm-output-all', action='store_true',
                    help='Ignore the event selection when writing the EDM output file.')
-group.add_argument('+tunep-tune', nargs=4, type=float, default=(200, 4, 6, -1), metavar=('PT_THRESHOLD','TUNE1','TUNE2','DPTCUT'),
+group.add_argument('+tunep-tune', nargs=4, type=float, default=tunep, metavar=('PT_THRESHOLD','TUNE1','TUNE2','DPTCUT'),
                    help='Set the Tune P tunes to TUNE1, TUNE2, with PT_THRESHOLD and DPTCUT (default is %(default)s).')
 
 group = parser.add_argument_group('Interactive-only options (controlling the files/events run over, and debugging output)')
@@ -210,7 +212,7 @@ if not options.batch_name:
         options.batch_name += 'SegsInFit'
     if options.edm_output:
         options.batch_name += 'EDMOut'
-    if options.tunep_tune != (30.,0.):
+    if options.tunep_tune != tunep:
         s = '%.1f%.1f%.1f' % tuple(options.tunep_tune[:3])
         if options.tunep_tune[3] < 0:
             s += 'NoDPT'
