@@ -124,6 +124,7 @@ datasets_mc = [
     ]
 
 def get_dataset_data(run):
+    raise NotImplementedError('run info not available (need to get DBS not to timeout)')
     run = int(run)
     for name, dataset, run_min, run_max in datasets_data:
         if run_min <= run <= run_max:
@@ -749,7 +750,8 @@ options.run_events = None
             json = ['"%i": [[1,26296]]' % r for r in data_runs]
             open('tmp.json', 'wt').write('{' + ', '.join(json) + '}')
 
-        for sample_name, dataset_path, run_min, run_max in datasets_data:
+        #for sample_name, dataset_path, run_min, run_max in datasets_data:
+        for sample_name, dataset_path in datasets_data:
             if options.submit_mask:
                 sample_name += options.submit_mask.replace('.json','')
             # No data-only lines for now, as the defaults are all set for data.
