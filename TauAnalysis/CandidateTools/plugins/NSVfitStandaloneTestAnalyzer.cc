@@ -226,10 +226,10 @@ NSVfitStandaloneTestAnalyzer::analyze(const edm::Event& evt, const edm::EventSet
     algo.fit();
   } else if ( mode_ == kInt ) {
     algo.addLogM(false);
-    algo.integrate();
+    algo.integrateVEGAS();
   } else if ( mode_ == kInt2 ) {
     algo.addLogM(false);
-    algo.integrate2();
+    algo.integrateMarkovChain();
   } else assert(0);
   timer_->Stop();
   ++numSVfitCalls_;

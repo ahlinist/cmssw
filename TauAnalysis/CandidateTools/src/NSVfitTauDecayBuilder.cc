@@ -71,7 +71,7 @@ void NSVfitTauDecayBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
   idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_phi_lab);
   idxFitParameter_nuInvMass_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass, true);
   idxFitParameter_deltaR_     = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_decayDistance_lab_shift, true);
-
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ ) {
     std::cout << "<NSVfitTauDecayBuilder::beginJob>:" << std::endl;
     std::cout << " pluginName = " << pluginName_ << std::endl;
@@ -80,7 +80,7 @@ void NSVfitTauDecayBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
     std::cout << " idxFitParameter_nuInvMass = " << idxFitParameter_nuInvMass_ << std::endl;
     std::cout << " idxFitParameter_deltaR_ = " << idxFitParameter_deltaR_ << std::endl;
   }
-
+#endif
   if ( fixToGenVisEnFracX_ && idxFitParameter_visEnFracX_  != -1 ) algorithm->fixFitParameter(idxFitParameter_visEnFracX_);
   if ( fixToGenPhiLab_     && idxFitParameter_phi_lab_     != -1 ) algorithm->fixFitParameter(idxFitParameter_phi_lab_);
   if ( fixToGenNuInvMass_  && idxFitParameter_nuInvMass_   != -1 ) algorithm->fixFitParameter(idxFitParameter_nuInvMass_);
@@ -148,17 +148,23 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
   unsigned idx = 0;
   for ( std::vector<const reco::Track*>::const_iterator track = hypothesis->tracks_.begin();
 	track != hypothesis->tracks_.end(); ++track ) {
+#ifdef SVFIT_DEBUG 
     if ( this->verbosity_ ) std::cout << "Track #" << idx << ": Pt = " << (*track)->pt() << ", eta = " << (*track)->eta() << ", phi = " << (*track)->phi() << std::endl;
+#endif
     const reco::HitPattern& trackHitPattern = (*track)->hitPattern();
     if ( trackHitPattern.numberOfValidTrackerHits() >= (int)trackMinNumHits_ &&
 	 trackHitPattern.numberOfValidPixelHits() >= (int)trackMinNumPixelHits_ &&
 	 (*track)->normalizedChi2() < trackMaxChi2DoF_ &&
 	 ((*track)->ptError()/(*track)->pt()) < trackMaxDeltaPoverP_ &&
 	 (*track)->pt() > trackMinPt_ ) {
+#ifdef SVFIT_DEBUG 
       if ( this->verbosity_ ) std::cout << " passes quality cuts." << std::endl;
+#endif
       hypothesis->selTracks_.push_back(*track);
     } else {
+#ifdef SVFIT_DEBUG 
       if ( this->verbosity_ ) std::cout << " FAILS quality cuts." << std::endl;
+#endif
     }
     ++idx;
   }
@@ -180,26 +186,34 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
     int idx = 0;
     for ( GenParticleView::const_iterator genParticle = genParticles_->begin();
 	  genParticle != genParticles_->end() && !isMatched; ++genParticle ) {
+#ifdef SVFIT_DEBUG 
       if ( verbosity_ ) {
 	std::cout << "genParticle #" << idx << " (pdgId = " << genParticle->pdgId() << "):" 
 		  << " Pt = " << genParticle->pt() << ", eta = " << genParticle->eta() << ", phi = " << genParticle->phi() 
 		  << " (status = " << genParticle->status() << ")" << std::endl;
       }
+#endif
       if ( TMath::Abs(genParticle->pdgId()) == 15 ) {
 	const reco::GenParticle* genTau = &(*genParticle);
 	std::vector<const reco::GenParticle*> genTauDecayProducts;
 	findDaughters(genTau, genTauDecayProducts, -1);
 	reco::Candidate::LorentzVector genVisP4 = getVisMomentum(genTauDecayProducts);
 	double dR = deltaR(genParticle->p4(), visCandidate->p4());
+#ifdef SVFIT_DEBUG 
 	if ( verbosity_ ) std::cout << "dR = " << dR << std::endl;
+#endif
 	if ( dR < dRmatch_ ) {
 	  std::string genTauDecayMode = getGenTauDecayMode(genTau);
+#ifdef SVFIT_DEBUG 
 	  if ( verbosity_ ) std::cout << "genTauDecayMode = " << genTauDecayMode << std::endl;
+#endif
 	  std::string recTauDecayMode;
 	  if      ( getDecayMode(visCandidate) == reco::PFTauDecayMode::tauDecaysElectron ) recTauDecayMode = "electron";
 	  else if ( getDecayMode(visCandidate) == reco::PFTauDecayMode::tauDecayMuon      ) recTauDecayMode = "muon";
 	  else                                                                              recTauDecayMode = "hadronic";
+#ifdef SVFIT_DEBUG 
 	  if ( verbosity_ ) std::cout << "recTauDecayMode = " << recTauDecayMode << std::endl;
+#endif
 	  // CV: check if reconstructed and generated decay modes match
 	  //    (either electron, muon or hadronic)
     	  if ( (genTauDecayMode == "electron" && 
@@ -219,6 +233,7 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
 	    reco::Candidate::Point genTauDecayVertex = getDecayVertex(genTau);
 	    genDeltaR_ = TMath::Sqrt((genTauDecayVertex - genTauProdVertex).mag2());
 	    genVisP4_ = genVisP4;
+#ifdef SVFIT_DEBUG 
 	    if ( verbosity_ ) {
 	      std::cout << " found match." << std::endl;
 	      std::cout << "initializing:" << std::endl;
@@ -228,6 +243,7 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
 	      std::cout << " genDeltaR = " << genDeltaR_ << std::endl;
 	      std::cout << " genVisP4: Pt = " << genVisP4_.pt() << ", eta = " << genVisP4_.eta() << ", phi = " << genVisP4_.phi() << std::endl;
 	    }
+#endif
 	    isMatched = true;	    
 	  } 
 	}
@@ -267,11 +283,12 @@ NSVfitTauDecayBuilder::finalize(NSVfitSingleParticleHypothesis* hypothesis) cons
 
   AlgebraicVector3 eventVertexPos = event->eventVertexPos();
   const AlgebraicMatrix33& eventVertexCov = event->eventVertexCov();
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) {
     printVector("eventVertexPos", eventVertexPos);
     printMatrix("eventVertexCov", eventVertexCov);
   }
-
+#endif
   hypothesis_T->expectedDecayDistance_  = 0.;
   hypothesis_T->expectedDecayVertexPos_ = eventVertexPos;
   hypothesis_T->expectedDecayVertexCov_ = eventVertexCov;
@@ -298,13 +315,13 @@ NSVfitTauDecayBuilder::finalize(NSVfitSingleParticleHypothesis* hypothesis) cons
 	if ( EigenValue1 < 1.e-4 ) EigenValue1 = 1.e-4; // CV: assume resolution of tau decay vertex reconstruction 
 	                                                //     to be never better than 100 microns in tau direction
 	double sigma = TMath::Sqrt(EigenValue1);
-      
+#ifdef SVFIT_DEBUG 
 	if ( verbosity_ >= 2 ) {
 	  printVector("decayVertexPos", hypothesis_T->reconstructedDecayVertexPos_);
 	  printMatrix("decayVertexCov", hypothesis_T->reconstructedDecayVertexCov_);
 	  std::cout << "restricting fitParameter #" << idxFitParameter_deltaR_ << " to range " << (-5.*sigma) << ".." << (+5.*sigma) << std::endl;
 	}
-
+#endif
 	double fitParameterLowerLimit = -5.*sigma;
 	double fitParameterUpperLimit = +5.*sigma;
 	if ( initializeToGen_ ) {
@@ -335,7 +352,9 @@ NSVfitTauDecayBuilder::finalize(NSVfitSingleParticleHypothesis* hypothesis) cons
 	double enTau_lab  = genVisP4_.energy()/genVisEnFracX_;
 	double pTau_lab = TMath::Sqrt(square(enTau_lab) - tauLeptonMass2);
 	double a = (pTau_lab/tauLeptonMass)*cTauLifetime;
+#ifdef SVFIT_DEBUG 
 	if ( verbosity_ >= 2 ) std::cout << "a(gen) = " << a << " --> setting fitParameter #" << idxFitParameter_deltaR_ << " to " << (genDeltaR_/a) << std::endl;
+#endif
 	algorithm_->setFitParameterInitialValue(idxFitParameter_deltaR_, genDeltaR_/a);
 	fitParameterUpperLimit = TMath::Max(fitParameterUpperLimit, 5. + (genDeltaR_/a));
       } else {
@@ -379,7 +398,7 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
 
 //--- compute relativistic beta and gamma factors
   double beta2 = 1. - square(visEnFracX*tauLeptonMass/enVis_lab);
-  if ( beta2 < 0. ) {
+  if ( !(beta2 >= 0.) ) {
     std::cout << "<NSVfitTauDecayBuilder::applyFitParameter>:" << std::endl;
     std::cout << " leg: Pt = " << hypothesis_T->particle()->pt() << "," 
 	      << " eta = " << hypothesis_T->particle()->eta() << "," 
@@ -401,11 +420,15 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
 //   (angle of visible decay products wrt. tau lepton flight direction)
   double cosGjAngle_rf = (visEnFracX*tauLeptonMass - enVis_rf)/(beta*pVis_rf);  
   if        ( cosGjAngle_rf < -1. ) {
+#ifdef SVFIT_DEBUG 
     if ( verbosity_ >= 2 ) std::cout << "cosGjAngle_rf = " << cosGjAngle_rf << " --> setting isValidSolution = false." << std::endl;
+#endif
     cosGjAngle_rf = -1.;
     isValidSolution = false;
   } else if ( cosGjAngle_rf > +1. ) {
+#ifdef SVFIT_DEBUG 
     if ( verbosity_ >= 2 ) std::cout << "cosGjAngle_rf = " << cosGjAngle_rf << " --> setting isValidSolution = false." << std::endl;
+#endif
     cosGjAngle_rf = +1.;
     isValidSolution = false;
   }
@@ -441,8 +464,9 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
   if ( idxFitParameter_deltaR_ != -1 ) {
     const NSVfitEventHypothesis* event = hypothesis_T->mother()->eventHypothesis();
     AlgebraicVector3 eventVertexPos = event->eventVertexPos();
-    if ( verbosity_ >= 2  ) printVector(" eventVertexPos", eventVertexPos);
-    
+#ifdef SVFIT_DEBUG 
+    if ( verbosity_ >= 2 ) printVector(" eventVertexPos", eventVertexPos);
+#endif    
     hypothesis_T->expectedFlightPath_unit_ = AlgebraicVector3(p3Tau_unit.x(), p3Tau_unit.y(), p3Tau_unit.z());
     hypothesis_T->expectedDecayDistanceJacobiFactor_ = 1.;
     if ( hypothesis_T->hasDecayVertexFit_ ) {      
@@ -459,7 +483,9 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
       }
     }
     if ( hypothesis_T->expectedDecayDistance_ < 0. || hypothesis_T->expectedDecayDistance_ > 25. ) {
+#ifdef SVFIT_DEBUG 
       if ( verbosity_ >= 2 ) std::cout << "expectedDecayDistance = " << hypothesis_T->expectedDecayDistance_ << " --> setting isValidSolution = false." << std::endl;
+#endif    
       hypothesis_T->expectedDecayDistance_ = 0.;
       isValidSolution = false;
     }
@@ -473,15 +499,17 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
 	hypothesis_T->reconstructedDecayVertexPos_ = leadTrack_extrapolation.point_of_closest_approach();
 	hypothesis_T->reconstructedDecayVertexCov_ = leadTrack_extrapolation.covariance();
 	hypothesis_T->leadTrackExtrapolationError_ = leadTrack_extrapolation.errorFlag();
+#ifdef SVFIT_DEBUG 
 	if ( verbosity_ >= 2  ) {
 	  std::cout << "SVfitTrackExtrapolation:" << std::endl;
 	  printVector("reconstructedDecayVertexPos", hypothesis_T->reconstructedDecayVertexPos_);
 	  printMatrix("reconstructedDecayVertexCov", hypothesis_T->reconstructedDecayVertexCov_);
 	}
+#endif    
       }
     }
   }
-
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ ) {
     std::cout << "<NSVfitTauDecayBuilder::applyFitParameter>:" << std::endl;
     std::cout << " hypothesis " << hypothesis->name() << " #" << hypothesis->barcode() << ": " << hypothesis << std::endl;
@@ -507,7 +535,7 @@ bool NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hy
 	      << " pz = " << hypothesis_T->p4invis_rf_.pz() << std::endl;
     std::cout << "isValidSolution = " << isValidSolution << std::endl;
   }
-
+#endif    
   hypothesis_T->isValidSolution_ = isValidSolution;
 
   return isValidSolution;

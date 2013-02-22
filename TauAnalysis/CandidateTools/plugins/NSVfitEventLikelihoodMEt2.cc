@@ -43,6 +43,7 @@ NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2(const edm::ParameterSet& cf
   } else {
     pfMEtSign_ = new PFMEtSignInterface(cfg);
   }
+  sfMEtCov_ = cfg.getParameter<double>("sfMEtCov");
 
   if ( cfg.exists("tailProbCorr") ) {
     edm::ParameterSet cfgTailProbCorr = cfg.getParameter<edm::ParameterSet>("tailProbCorr");
@@ -79,7 +80,7 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
     edm::Handle<PFMEtSignCovMatrix> metCovMatrix;
     evt.getByLabel(srcMEtCovMatrix_, metCovMatrix);
     if ( metCovMatrix.isValid() ) {
-      pfMEtCov_ = (*metCovMatrix);
+      pfMEtCov_ = (*metCovMatrix);      
       isValid = true;
     } 
     if ( !isValid ) {
@@ -100,6 +101,10 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
       throw cms::Exception("InvalidData") 
 	<< "Configuration parameter 'srcMEtCovMatrix' does not refer to valid collection of PFMEtSignCovMatrix or reco::MET objects !!\n";
     }
+    pfMEtCov_(0, 0) *= sfMEtCov_;
+    pfMEtCov_(0, 1) *= sfMEtCov_;
+    pfMEtCov_(1, 0) *= sfMEtCov_;
+    pfMEtCov_(1, 1) *= sfMEtCov_;
   } else {
     pfMEtSign_->beginEvent(evt, es);
   }
@@ -114,11 +119,12 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
 
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
+#ifdef SVFIT_DEBUG     
   if ( this->verbosity_ >= 1 ) {
     std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
     std::cout << " hypothesis = " << hypothesis << std::endl;
   }
-  
+#endif  
   if ( srcMEtCovMatrix_.label() == "" ) {
     std::list<const reco::Candidate*> daughterHypothesesList;
     
@@ -133,8 +139,14 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
     }
     
     pfMEtCov_ = (*pfMEtSign_)(daughterHypothesesList);
+
+    pfMEtCov_(0, 0) *= sfMEtCov_;
+    pfMEtCov_(0, 1) *= sfMEtCov_;
+    pfMEtCov_(1, 0) *= sfMEtCov_;
+    pfMEtCov_(1, 1) *= sfMEtCov_;
   }
 
+#ifdef SVFIT_DEBUG     
   if ( this->verbosity_ >= 1 ) {
     std::cout << "pfMEt:" << std::endl;
     std::cout << " Px = " << hypothesis->met()->px() << ", Py = " << hypothesis->met()->py() << std::endl;
@@ -145,7 +157,7 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
     std::cout << "pfMEtCov:" << std::endl;
     pfMEtCov_.Print();
   }
-
+#endif
   pfMEtCovDet_ = pfMEtCov_.Determinant();
   pfMEtCovInverse_ = pfMEtCov_;
   if ( pfMEtCovDet_ > epsilon ) {
@@ -201,13 +213,13 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
   
   residual_fitted0_ = hypothesis->dp4MEt_fitted().px();
   residual_fitted1_ = hypothesis->dp4MEt_fitted().py();
-
+#ifdef SVFIT_DEBUG     
   if ( this->verbosity_ >= 2 ) {
     std::cout << "<NSVfitEventLikelihoodMEt2::operator()>:" << std::endl;
     std::cout << " pxResidual_fitted = " << residual_fitted0_ << std::endl;
     std::cout << " pyResidual_fitted = " << residual_fitted1_ << std::endl;
   }
-
+#endif
   double nll = 0.;
   if ( pfMEtCovDet_ != 0. ) {
     // CV: avoid usage of TVectorD*(TMatrixD*TVectorD) notation
@@ -226,8 +238,9 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
   }
 
   double prob = TMath::Exp(-power_*nll);
+#ifdef SVFIT_DEBUG     
   if ( this->verbosity_ >= 2 ) std::cout << "--> prob = " << prob << std::endl;
-
+#endif
   return prob;
 }
 

@@ -489,8 +489,9 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     intBoundaryUpper_[iDimension] = fitParameter_ref->UpperLimit(); 
     intBoundaryLower_[iDimension] = fitParameter_ref->LowerLimit();
   }
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) std::cout << "startPosition = " << format_vdouble(startPosition_) << std::endl;
-
+#endif
   // CV: transform startPosition into interval ]0..1[
   //     expected by MarkovChainIntegrator class
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
@@ -500,7 +501,9 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
     assert(xMax > xMin);
     startPosition_[iDimension] = (x_i - xMin)/(xMax - xMin);
   }
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) std::cout << "startPosition (mapped into interval ]-1..+1[) = " << format_vdouble(startPosition_) << std::endl;
+#endif
   integrator_->initializeStartPosition_and_Momentum(startPosition_);
 
   double integral, integralErr;
@@ -626,7 +629,7 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
       }
     }
   }
-  
+#ifdef SVFIT_DEBUG   
   if ( verbosity_ >= 2 ) {
     currentEventHypothesis_->print(std::cout);
     std::vector<double> quantiles;
@@ -640,7 +643,7 @@ void NSVfitAlgorithmByIntegration2::fitImp() const
       std::cout << "probListEventMass[" << idx << "] (" << (*quantile)*100. << "% quantile) = " << probListEventMass_[idx] << std::endl;
     }
   }
-
+#endif
   fittedEventHypothesis_ = currentEventHypothesis_;  
   if ( errorFlag == 0 ) {
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
@@ -708,13 +711,14 @@ void NSVfitAlgorithmByIntegration2::setMassResults(NSVfitResonanceHypothesisBase
     NSVfitAlgorithmBase::setMassResults(resonance, mass, massErrUp, massErrDown);
      
     resonance->isValidSolution_ = true;
-    
+#ifdef SVFIT_DEBUG     
     if ( verbosity_ >= 1 ) {
       std::cout << "<NSVfitAlgorithmByIntegration2::setMassResults>:" << std::endl;
       std::cout << " pluginName = " << pluginName_ << std::endl;
       std::cout << "--> mass = " << resonance->mass_ << " + " << resonance->massErrUp_ << " - " << resonance->massErrDown_ << std::endl;
       std::cout << " (mean = " << massMean << ", median = " << massQuantile050 << ", max = " << massMaximum << ")" << std::endl;
     }
+#endif
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration2::setMassResults")
       << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";
@@ -888,10 +892,12 @@ bool NSVfitAlgorithmByIntegration2::update(const double* x, const double* param)
 //--- build event, resonance and particle hypotheses
 //    and check if hypothesis corresponds to a "valid" (physically allowed) solution
   currentEventHypothesis_isValidSolution_ = eventModel_->builder_->applyFitParameter(currentEventHypothesis_, fitParameterValues_);
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) {
     currentEventHypothesis_->print(std::cout);
     std::cout << "isValidSolution = " << currentEventHypothesis_isValidSolution_ << std::endl;
   }
+#endif
   return currentEventHypothesis_isValidSolution_;
 }
 

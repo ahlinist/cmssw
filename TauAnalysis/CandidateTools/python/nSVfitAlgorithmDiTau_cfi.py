@@ -222,11 +222,8 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     dRoverlapPFJet = cms.double(0.3),
     dRoverlapPFCandidate = cms.double(0.1),
     #tailProbCorr = tailProbCorr_MC_2011,
+    sfMEtCov = cms.double(1.0), # CV: use 1.0 for Type-1 corrected PFMET, 0.70 for No-PU MET
     power = cms.double(1.0),
-    monitorMEtUncertainty = cms.bool(False),
-    monitorFilePath = cms.string('/data1/veelken/tmp/svFitStudies/'),
-    ##monitorFilePath = cms.string('/tmp/veelken/'),
-    numToys = cms.uint32(10000000),
     verbosity = cms.int32(0)
 )
 

@@ -55,14 +55,14 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
   if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
   double nuMass2 = square(nuMass);
   double visEnFracX = hypothesis_T->visEnFracX();
-
+#ifdef SVFIT_DEBUG 
   if ( this->verbosity_ ) {
     std::cout << "<NSVfitTauToLepLikelihoodMatrixElement::operator()>:" << std::endl;
     std::cout << " decayAngle = " << decayAngle << std::endl;
     std::cout << " nuMass = " << nuMass << std::endl;
     std::cout << " visEnFracX = " << visEnFracX << std::endl;
   }
-
+#endif
   // LB: normalize likelihood function such that 
   //               1
   //       integral  prob dX dMnunu = 1.
@@ -112,9 +112,9 @@ double NSVfitTauToLepLikelihoodMatrixElement<T>::operator()(const NSVfitSinglePa
     }
   }
   if ( applySinThetaFactor_ ) prob *= (0.5*TMath::Sin(decayAngle));
-    
+#ifdef SVFIT_DEBUG     
   if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
-
+#endif
   return prob;
 }
 
