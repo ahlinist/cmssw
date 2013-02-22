@@ -88,20 +88,31 @@ namespace
       std::vector<int> idxs;
       if ( pfJetConstituent->id() == pfCandidateCollection.id() ) {
 	idxs.push_back(pfJetConstituent->key());
-      } else {
-	size_t numPFCandidates = pfCandidateCollection.size();
-	for ( size_t iPFCandidate = 0; iPFCandidate < numPFCandidates; ++iPFCandidate ) {
-	  edm::Ptr<reco::PFCandidate> pfCandidatePtr = pfCandidateCollection.ptrAt(iPFCandidate);
+      } else {	
+	bool isMatched_fast = false;
+	if ( pfJetConstituent->key() < pfCandidateCollection.size() ) {
+	  edm::Ptr<reco::PFCandidate> pfCandidatePtr = pfCandidateCollection.ptrAt(pfJetConstituent->key());
 	  double dR = deltaR((*pfJetConstituent)->p4(), pfCandidatePtr->p4());
-	  if ( dR < 1.e-3 ) {
+	  if ( dR < 1.e-5 ) {
 	    idxs.push_back(pfCandidatePtr.key());
+	    isMatched_fast = true;
 	  }
 	}
-	if ( numWarnings < maxWarnings ) {
-	  edm::LogWarning ("setPFCandidateFlag") 
-	    << " The productIDs of PFJetConstituent and PFCandidateCollection passed as function arguments don't match.\n" 
-	    << "NOTE: The return value will be unaffected, but the code will run MUCH slower !!";
-	  ++numWarnings;
+	if ( !isMatched_fast ) {
+	  size_t numPFCandidates = pfCandidateCollection.size();
+	  for ( size_t iPFCandidate = 0; iPFCandidate < numPFCandidates; ++iPFCandidate ) {
+	    edm::Ptr<reco::PFCandidate> pfCandidatePtr = pfCandidateCollection.ptrAt(iPFCandidate);
+	    double dR = deltaR((*pfJetConstituent)->p4(), pfCandidatePtr->p4());
+	    if ( dR < 1.e-3 ) {
+	      idxs.push_back(pfCandidatePtr.key());
+	    }
+	  }
+	  if ( numWarnings < maxWarnings ) {
+	    edm::LogWarning ("setPFCandidateFlag") 
+	      << " The productIDs of PFJetConstituent and PFCandidateCollection passed as function arguments don't match.\n" 
+	      << "NOTE: The return value will be unaffected, but the code will run MUCH slower !!";
+	    ++numWarnings;
+	  }
 	}
       }
       if ( idxs.size() >= 1 ) {
