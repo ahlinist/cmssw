@@ -10,6 +10,9 @@ TAnaMuon::TAnaMuon(int index) {
   fIndex = index;
 }
 
+TAnaMuon::~TAnaMuon() {  
+}
+
 // ----------------------------------------------------------------------
 void TAnaMuon::clear() {
   fMuonChi2 = fMuonZ =  fMuonR = fCaloComp = fSegmComp = -999.;
@@ -86,7 +89,6 @@ void TAnaMuon::dump() {
 	  cout << " Momentum at M1 of muon track: x=" << fMuonTrackPlabAtM1.X() << " y=" << fMuonTrackPlabAtM1.Y() << " z=" << fMuonTrackPlabAtM1.Z() << endl;
   }
   
-  // std::map<int,float> fNstTracks; // usage: (trackIx, doca)
   cout << " closeby tracks (" << fNstTracks.size() << ") are" << endl;
   for (std::map<int,float>::const_iterator it = fNstTracks.begin(); it != fNstTracks.end(); ++it)
 	  cout << "   (ix=" << it->first << ", doca=" << it->second << ")" << endl;
@@ -94,20 +96,6 @@ void TAnaMuon::dump() {
   cout << " vertex probability vtxProb=" << fVtxProb << " with tracks ( ";
   for (std::set<unsigned>::const_iterator it = fVtxTracks.begin(); it != fVtxTracks.end(); ++it) cout << *it << " ";
   cout << ")" << endl;
-
-  //   if (fMCID != -99999) {
-  //     cout << Form(" mcid =%+6d", fMCID);
-  //   }
-  
-  //   if (fGenIndex > -1) {
-  //     cout << " mcidx = " << fGenIndex;
-  //   }
-  
-  //   if (fMuID > -1) {
-  //     cout << Form(" mid=%3x", fMuID);
-  //   }
-  
-  //   cout << endl;
 
 }
   
