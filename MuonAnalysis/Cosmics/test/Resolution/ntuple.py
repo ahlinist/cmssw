@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(prefix_chars='+', description='CosmicSplittingR
 parser.add_argument('cmsrunargs', nargs='*')
 
 group = parser.add_argument_group('Interactive+batch options (controlling the reconstruction and event selection)')
-group.add_argument('+alca-set', default='GTMay10',
+group.add_argument('+alca-set', default='GlobalTag',
                    help='The alignment/calibration configuration. This should be the name of a set of records found in alcas.py, used to set up the global tag and extra alignment/calibration records. Default is %(default)s.')
 group.add_argument('+pp-reco-mode', action='store_true',
                    help='Instead of cosmic reconstruction (default), use collisions reconstruction.')
