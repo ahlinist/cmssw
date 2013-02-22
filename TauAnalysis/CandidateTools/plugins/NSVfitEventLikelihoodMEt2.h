@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.11 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.10 2013/02/08 14:43:13 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.11 2013/02/10 10:55:16 veelken Exp $
  *
  */
 
@@ -55,6 +55,7 @@ class NSVfitEventLikelihoodMEt2 : public NSVfitEventLikelihood
   double power_;
 
   edm::InputTag srcMEtCovMatrix_;
+  double sfMEtCov_;
 
   PFMEtSignInterface* pfMEtSign_;
 

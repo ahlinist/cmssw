@@ -49,14 +49,14 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   if ( visMass > tauLeptonMass   ) visMass = tauLeptonMass;
   double visMass2 = square(visMass);
   double Pvis_rf = hypothesis_T->p4vis_rf().P();
-
+#ifdef SVFIT_DEBUG     
   if ( this->verbosity_ ) {
     std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
     std::cout << " decayAngle = " << decayAngle << std::endl;
     std::cout << " visEnFracX = " << visEnFracX << std::endl;
     std::cout << " visMass = " << visMass << std::endl;
   }
-
+#endif
   // CV: normalize likelihood function such that 
   //               1
   //       integral  prob dX = 1.
@@ -81,9 +81,9 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
     //if ( this->verbosity_ ) std::cout << "probCorr (had) = " << probCorr << std::endl;
     prob *= probCorr;
   }
-  
+#ifdef SVFIT_DEBUG       
   if ( this->verbosity_ ) std::cout << "--> prob = " << prob << std::endl;
-
+#endif
   return prob;
 }
 

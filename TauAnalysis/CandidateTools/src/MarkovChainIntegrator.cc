@@ -114,6 +114,7 @@ MarkovChainIntegrator::MarkovChainIntegrator(const edm::ParameterSet& cfg)
 
 MarkovChainIntegrator::~MarkovChainIntegrator()
 {
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 0 ) {
     std::cout << "<MarkovChainIntegrator::~MarkovChainIntegrator>:" << std::endl;
     std::cout << " name = " << name_ << std::endl;
@@ -122,7 +123,7 @@ MarkovChainIntegrator::~MarkovChainIntegrator()
 	      << " (fraction = " << (double)numMovesTotal_accepted_/(numMovesTotal_accepted_ + numMovesTotal_rejected_)*100. 
 	      << "%)" << std::endl;
   }
-
+#endif
   delete [] x_;
 
   delete monitorTree_;
@@ -193,14 +194,16 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 				      double& integral, double& integralErr, int& errorFlag,
 				      const std::string& monitorFileName)
 {
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) {
     std::cout << "<MarkovChainIntegrator::integrate>:" << std::endl;
     std::cout << " name = " << name_ << std::endl;
     std::cout << " numDimensions = " << numDimensions_ << std::endl;
   }
-
+#endif
+#ifdef SVFIT_DEBUG 
   if ( monitorFileName != "" ) openMonitorFile(monitorFileName);
-
+#endif
   if ( !integrand_ )
     throw cms::Exception("MarkovChainIntegrator::integrate")
       << "No integrand function has been set yet !!\n";
@@ -212,9 +215,11 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     xMin_[iDimension] = xMin[iDimension];
     xMax_[iDimension] = xMax[iDimension];
+#ifdef SVFIT_DEBUG 
     if ( verbosity_ >= 2 ) {
       std::cout << "dimension #" << iDimension << ": min = " << xMin_[iDimension] << ", max = " << xMax_[iDimension] << std::endl;
     }
+#endif
   }
   
 //--- CV: set random number generator used to initialize starting-position
@@ -277,7 +282,9 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 
     for ( unsigned iMove = 0; iMove < numIterBurnin_; ++iMove ) {
 //--- propose Markov Chain transition to new, randomly chosen, point
+#ifdef SVFIT_DEBUG 
       if ( verbosity_ >= 2 ) std::cout << "burn-in move #" << iMove << ":" << std::endl;
+#endif
       bool isAccepted = false;
       bool isValid = true;
       do {
@@ -290,7 +297,9 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
     for ( unsigned iMove = 0; iMove < numIterSampling_; ++iMove ) {
 //--- propose Markov Chain transition to new, randomly chosen, point;
 //    evaluate "call-back" functions at this point
+#ifdef SVFIT_DEBUG 
       if ( verbosity_ >= 2 ) std::cout << "sampling move #" << iMove << ":" << std::endl;
+#endif
       bool isAccepted = false;
       bool isValid = true;
       do {
@@ -310,8 +319,9 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
 
       if ( iMove > 0 && (iMove % m) == 0 ) ++idxBatch;
       probSum_[idxBatch] += prob_;
-
+#ifdef SVFIT_DEBUG 
       if ( monitorFile_ ) updateMonitorFile();
+#endif
     }
 
     ++numChainsRun_;
@@ -347,8 +357,9 @@ void MarkovChainIntegrator::integrate(const std::vector<double>& xMin, const std
   ++numIntegrationCalls_;
   numMovesTotal_accepted_ += numMoves_accepted_;
   numMovesTotal_rejected_ += numMoves_rejected_;
-
+#ifdef SVFIT_DEBUG 
   if ( monitorFile_ ) closeMonitorFile();
+#endif
 }
 
 void MarkovChainIntegrator::print(std::ostream& stream) const
@@ -418,11 +429,12 @@ void MarkovChainIntegrator::initializeStartPosition_and_Momentum()
       }
     }
   }
-
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 1 ) {
     std::cout << "<MarkovChainIntegrator::initializeStartPosition_and_Momentum>:" << std::endl;
     std::cout << " q = " << format_vdouble(q_) << std::endl;
   }
+#endif
 }
 
 void MarkovChainIntegrator::sampleSphericallyRandom()
@@ -450,6 +462,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
 {
 //--- perform "stochastic" move
 //   (eq. 24 in [2])
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) {
     std::cout << "<MarkovChainIntegrator::makeStochasticMove>:" << std::endl;
     std::cout << " idx = " << idxMove << std::endl;
@@ -458,7 +471,7 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
     //std::cout << " Ks = " << evalK(p_, 0, numDimensions_) << std::endl;
   }
   //if ( (idxMove % 1000) == 0 ) std::cout << "computing move #" << idxMove << "..." << std::endl;
-
+#endif
 //--- perform random updates of momentum components
   if ( idxMove < numIterSimAnnealingPhase1_ ) {
     //std::cout << "case 1" << std::endl;
@@ -483,13 +496,13 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
       p_[iDimension] = rnd_.Gaus(0., 1.);
     }
   }
-
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) {
     std::cout << "p(updated) = " << format_vdouble(p_) << std::endl;
     //std::cout << " Ks = " << evalK(p_, 0, numDimensions_) << std::endl;
     //std::cout << " Kd = " << evalK(p_, numDimensions_, 2*numDimensions_) << std::endl;
   }
-
+#endif
 //--- choose random step size 
   double exp_nu_times_C = 0.;
   do {
@@ -500,8 +513,9 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     epsilon[iDimension] = epsilon0s_[iDimension]*exp_nu_times_C;
   }
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) std::cout << "epsilon = " << format_vdouble(epsilon) << std::endl;
-
+#endif
   if        ( moveMode_ == kMetropolis ) { // Metropolis algorithm: move according to eq. (27) in [2]
 //--- update position components
 //    by single step of chosen size in direction of the momentum components
@@ -520,9 +534,9 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
     }
     makeDynamicMoves(epsilon);
   } else assert(0);
-
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) std::cout << "q(proposed) = " << format_vdouble(qProposal_) << std::endl;
-
+#endif
 //--- ensure that proposed new point is within integration region
 //   (take integration region to be "cyclic")
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {         
@@ -536,8 +550,9 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
 //    compute change in phase-space volume for "dummy" momentum components
 //   (eqs. 25 in [2])
   double probProposal = evalProb(qProposal_);
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) std::cout << "prob(proposed) = " << probProposal << std::endl;
-
+#endif
   double deltaE = 0.;
   if      ( probProposal > 0. && prob_ > 0. ) deltaE = -TMath::Log(probProposal/prob_);
   else if ( probProposal > 0.               ) deltaE = -std::numeric_limits<double>::max();
@@ -558,12 +573,17 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
   double base = 1. - deltaE_or_H/Kd;
   double rho = ( base > 0. ) ? 
     TMath::Power(base, 0.5*numDimensions_ - 1.) : 0.;
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) std::cout << " rho = " << rho << std::endl;
-  
+#endif  
   double u = rnd_.Uniform(0., 1.);
+#ifdef SVFIT_DEBUG 
   if ( verbosity_ >= 2 ) std::cout << "u = " << u << std::endl;
+#endif  
   if ( u < rho ) {
+#ifdef SVFIT_DEBUG 
     if ( verbosity_ >= 2 ) std::cout << "move accepted." << std::endl;
+#endif  
     for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {    
       q_[iDimension] = qProposal_[iDimension];
     }
@@ -575,7 +595,9 @@ void MarkovChainIntegrator::makeStochasticMove(unsigned idxMove, bool& isAccepte
     prob_ = evalProb(q_);
     isAccepted = true;
   } else {
+#ifdef SVFIT_DEBUG 
     if ( verbosity_ >= 2 ) std::cout << "move rejected." << std::endl;
+#endif  
     isAccepted = false;
   }
 }
