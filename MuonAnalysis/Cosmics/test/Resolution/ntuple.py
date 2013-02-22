@@ -110,15 +110,11 @@ if options.foo:
     options.debug = True
 
 datasets_data = [
-    ('SPCommissioning10v3', '/Cosmics/Commissioning10-399_fromv3_CosmicSP-v1/RAW-RECO', 126948, 131510),
-    ('SPCommissioning10v4', '/Cosmics/Commissioning10-399_fromv4_CosmicSP-v1/RAW-RECO', 131511, 135802),
-    ('SPRun2010A',          '/Cosmics/Run2010A-399_CosmicSP-v1/RAW-RECO',               135808, 144431),
-    ('SPRun2010B',          '/Cosmics/Run2010B-399_CosmicSP-v2/RAW-RECO',               144461, 149927),
-    ('SPRun2011AMay10',     '/Cosmics/Run2011A-CosmicSP-May10ReReco-v2/RAW-RECO',       160329, 164428),
-    ('SPRun2011APrompt4',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v4/RAW-RECO',        165358, 169715),
-    ('SPRun2011APrompt5',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v5/RAW-RECO',        169717, 172789),
-    ('SPRun2011APrompt6',   '/Cosmics/Run2011A-CosmicSP-PromptSkim-v6/RAW-RECO',        172791, 175784),
-    ('SPRun2011BPrompt1',   '/Cosmics/Run2011B-CosmicSP-PromptSkim-v1/RAW-RECO',        175788, 180827),
+    ('SPRun2012A',  '/Cosmics/Run2012A-CosmicSP-13Jul2012-v2/RAW-RECO'),
+    ('SPRun2012B',  '/Cosmics/Run2012B-CosmicSP-13Jul2012-v2/RAW-RECO'),
+    ('SPRun2012C1', '/Cosmics/Run2012C-CosmicSP-24Aug2012-v1/RAW-RECO'),
+    ('SPRun2012C2', '/Cosmics/Run2012C-CosmicSP-PromptSkim-v3/RAW-RECO'),
+    ('SPRun2012D',  '/Cosmics/Run2012D-CosmicSP-PromptSkim-v1/RAW-RECO'),
     ]
 
 datasets_mc = [
