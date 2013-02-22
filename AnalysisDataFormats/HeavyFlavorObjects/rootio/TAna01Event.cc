@@ -99,6 +99,7 @@ void TAna01Event::Clear(Option_t *option) {
   for (int i = 0; i < fnMuons; i++) {
     pMuon = getMuon(i);
     pMuon->clear();
+    pMuon->~TAnaMuon();
   }
   fMuons->Clear(option);
   fnMuons = 0;

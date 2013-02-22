@@ -30,7 +30,7 @@ class TAnaMuon : public TAnaTrack {
 public:
 
   TAnaMuon(int index = -1);
-  ~TAnaMuon() { };
+  ~TAnaMuon();
   void clear(); 
   void dump();
 
