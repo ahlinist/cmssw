@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: NoPileUpMETProducerMVA.h,v 1.1 2012/05/24 07:58:01 veelken Exp $
+ * $Id: NoPileUpPFMEtProducer.h,v 1.1 2012/08/31 08:45:32 veelken Exp $
  *
  */
 
@@ -40,6 +40,7 @@ class NoPileUpPFMEtProducer : public edm::EDProducer
   edm::InputTag srcMEtCov_;
   edm::InputTag srcJetInfo_;
   edm::InputTag srcPFCandInfo_;
+  edm::InputTag srcPFCandInfoLeptonMatch_;
   typedef std::vector<edm::InputTag> vInputTag;
   vInputTag srcLeptons_;
   edm::InputTag srcType0Correction_;

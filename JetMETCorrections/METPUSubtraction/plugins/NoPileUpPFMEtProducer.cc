@@ -30,6 +30,7 @@ NoPileUpPFMEtProducer::NoPileUpPFMEtProducer(const edm::ParameterSet& cfg)
     cfg.getParameter<edm::InputTag>("srcMEtCov") : edm::InputTag();
   srcJetInfo_ = cfg.getParameter<edm::InputTag>("srcMVAMEtData");
   srcPFCandInfo_ = cfg.getParameter<edm::InputTag>("srcMVAMEtData");
+  srcPFCandInfoLeptonMatch_ = cfg.getParameter<edm::InputTag>("srcPFCandInfoLeptonMatch");
   srcLeptons_ = cfg.getParameter<vInputTag>("srcLeptons");
   srcType0Correction_ = cfg.getParameter<edm::InputTag>("srcType0Correction");
 
@@ -60,6 +61,7 @@ NoPileUpPFMEtProducer::NoPileUpPFMEtProducer(const edm::ParameterSet& cfg)
     produces<CommonMETData>("sumUnclNeutralCands");
     produces<CommonMETData>("type0Correction");
   }
+  produces<double>("sfNoPU");
 }
 
 NoPileUpPFMEtProducer::~NoPileUpPFMEtProducer() 
@@ -218,8 +220,10 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   evt.getByLabel(srcJetInfo_, jets);
   edm::Handle<reco::MVAMEtPFCandInfoCollection> pfCandidates;
   evt.getByLabel(srcPFCandInfo_, pfCandidates);
+  edm::Handle<reco::MVAMEtPFCandInfoCollection> pfCandidatesLeptonMatch;
+  evt.getByLabel(srcPFCandInfoLeptonMatch_, pfCandidatesLeptonMatch);
 
-  reco::MVAMEtPFCandInfoCollection pfCandidates_leptons = cleanPFCandidates(*pfCandidates, leptons, 0.3, true);
+  reco::MVAMEtPFCandInfoCollection pfCandidates_leptons = cleanPFCandidates(*pfCandidatesLeptonMatch, leptons, 0.3, true);
   std::auto_ptr<CommonMETData> sumLeptons(new CommonMETData(computePFCandidateSum(pfCandidates_leptons)));
 
   reco::MVAMEtJetInfoCollection jets_cleaned = cleanJets(*jets, leptons, 0.5, false);
@@ -377,6 +381,9 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
     evt.put(sumUnclNeutralCands, "sumUnclNeutralCands");
     evt.put(type0Correction_output, "type0Correction");
   }
+
+  std::auto_ptr<double> sfNoPU(new double(noPileUpScaleFactor));
+  evt.put(sfNoPU, "sfNoPU");
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

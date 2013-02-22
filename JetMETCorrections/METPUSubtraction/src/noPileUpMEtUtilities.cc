@@ -53,35 +53,47 @@ namespace noPileUpMEtUtilities
     return retVal;
   }
 
-  CommonMETData computeJetSum(const reco::MVAMEtJetInfoCollection& jets)
+  CommonMETData computeJetSum(const reco::MVAMEtJetInfoCollection& jets, double* sumAbsPx, double* sumAbsPy)
   {
     CommonMETData retVal;
     retVal.mex   = 0.;
     retVal.mey   = 0.;
     retVal.sumet = 0.;
+    double retVal_sumAbsPx = 0.;
+    double retVal_sumAbsPy = 0.;
     for ( reco::MVAMEtJetInfoCollection::const_iterator jet = jets.begin();
 	  jet != jets.end(); ++jet ) {
       retVal.mex   += jet->p4_.px();
       retVal.mey   += jet->p4_.py();
       retVal.sumet += jet->p4_.pt();
+      retVal_sumAbsPx += fabs(jet->p4_.px());
+      retVal_sumAbsPy += fabs(jet->p4_.py());
     }
     finalizeMEtData(retVal);
+    if ( sumAbsPx ) (*sumAbsPx) = retVal_sumAbsPx;
+    if ( sumAbsPy ) (*sumAbsPy) = retVal_sumAbsPy;
     return retVal;
   }
 
-  CommonMETData computeJetSum_neutral(const reco::MVAMEtJetInfoCollection& jets)
+  CommonMETData computeJetSum_neutral(const reco::MVAMEtJetInfoCollection& jets, double* sumAbsPx, double* sumAbsPy)
   {
     CommonMETData retVal;
     retVal.mex   = 0.;
     retVal.mey   = 0.;
     retVal.sumet = 0.;
+    double retVal_sumAbsPx = 0.;
+    double retVal_sumAbsPy = 0.;
     for ( reco::MVAMEtJetInfoCollection::const_iterator jet = jets.begin();
 	  jet != jets.end(); ++jet ) {
       retVal.mex   += (jet->p4_.px()*jet->neutralEnFrac_);
       retVal.mey   += (jet->p4_.py()*jet->neutralEnFrac_);
       retVal.sumet += (jet->p4_.pt()*jet->neutralEnFrac_);
+      retVal_sumAbsPx += fabs(jet->p4_.px());
+      retVal_sumAbsPy += fabs(jet->p4_.py());
     }
     finalizeMEtData(retVal);
+    if ( sumAbsPx ) (*sumAbsPx) = retVal_sumAbsPx;
+    if ( sumAbsPy ) (*sumAbsPy) = retVal_sumAbsPy;
     return retVal;
   }
 
@@ -150,19 +162,25 @@ namespace noPileUpMEtUtilities
     return retVal;
   }
 
-  CommonMETData computePFCandidateSum(const reco::MVAMEtPFCandInfoCollection& pfCandidates)
+  CommonMETData computePFCandidateSum(const reco::MVAMEtPFCandInfoCollection& pfCandidates, double* sumAbsPx, double* sumAbsPy)
   {
     CommonMETData retVal;
     retVal.mex   = 0.;
     retVal.mey   = 0.;
     retVal.sumet = 0.;
+    double retVal_sumAbsPx = 0.;
+    double retVal_sumAbsPy = 0.;
     for ( reco::MVAMEtPFCandInfoCollection::const_iterator pfCandidate = pfCandidates.begin();
 	  pfCandidate != pfCandidates.end(); ++pfCandidate ) {
       retVal.mex   += pfCandidate->p4_.px();
       retVal.mey   += pfCandidate->p4_.py();
       retVal.sumet += pfCandidate->p4_.pt();
+      retVal_sumAbsPx += fabs(pfCandidate->p4_.px());
+      retVal_sumAbsPy += fabs(pfCandidate->p4_.py());
     }
     finalizeMEtData(retVal);
+    if ( sumAbsPx ) (*sumAbsPx) = retVal_sumAbsPx;
+    if ( sumAbsPy ) (*sumAbsPy) = retVal_sumAbsPy;
     return retVal;
   }
   //-------------------------------------------------------------------------------
@@ -173,65 +191,81 @@ namespace noPileUpMEtUtilities
   // NOTE: all pfCandidates and jets passed as function arguments
   //       need to be cleaned wrt. leptons
   //
-  CommonMETData computeTrackRecoil(const reco::MVAMEtPFCandInfoCollection& pfCandidates)
+  CommonMETData computeTrackRecoil(const reco::MVAMEtPFCandInfoCollection& pfCandidates, double* sumAbsPx, double* sumAbsPy)
   {
     reco::MVAMEtPFCandInfoCollection chargedPFCandidates = selectPFCandidates(
       pfCandidates, 0.5, 1.e+3, reco::MVAMEtPFCandInfo::kUndefined, -1);
-    CommonMETData trackSum = computePFCandidateSum(chargedPFCandidates);
+    double trackSumAbsPx = 0.;
+    double trackSumAbsPy = 0.;
+    CommonMETData trackSum = computePFCandidateSum(chargedPFCandidates, &trackSumAbsPx, &trackSumAbsPy);
     CommonMETData retVal;
     retVal.mex   = -trackSum.mex;
     retVal.mey   = -trackSum.mey;
     retVal.sumet =  trackSum.sumet;
     finalizeMEtData(retVal);
+    if ( sumAbsPx ) (*sumAbsPx) = trackSumAbsPx;
+    if ( sumAbsPy ) (*sumAbsPy) = trackSumAbsPy;
     return retVal;
   }
 
-  CommonMETData computeTrackRecoilNoPU(const reco::MVAMEtPFCandInfoCollection& pfCandidates)
+  CommonMETData computeTrackRecoilNoPU(const reco::MVAMEtPFCandInfoCollection& pfCandidates, double* sumAbsPx, double* sumAbsPy)
   {
     reco::MVAMEtPFCandInfoCollection chargedPFCandidatesNoPU = selectPFCandidates(
       pfCandidates, 0.5, 1.e+3, reco::MVAMEtPFCandInfo::kNoPileUpCharged, -1);
-    return computePFCandidateSum(chargedPFCandidatesNoPU);
+    return computePFCandidateSum(chargedPFCandidatesNoPU, sumAbsPx, sumAbsPy);
   }
 
-  CommonMETData computeTrackRecoilPU(const reco::MVAMEtPFCandInfoCollection& pfCandidates)
+  CommonMETData computeTrackRecoilPU(const reco::MVAMEtPFCandInfoCollection& pfCandidates, double* sumAbsPx, double* sumAbsPy)
   {
     reco::MVAMEtPFCandInfoCollection chargedPFCandidatesPU = selectPFCandidates(
       pfCandidates, 0.5, 1.e+3, reco::MVAMEtPFCandInfo::kPileUpCharged, -1);
-    return computePFCandidateSum(chargedPFCandidatesPU);
+    return computePFCandidateSum(chargedPFCandidatesPU, sumAbsPx, sumAbsPy);
   }
 
-  CommonMETData computeNeutralRecoil_unclustered(const reco::MVAMEtPFCandInfoCollection& pfCandidates)
+  CommonMETData computeNeutralRecoil_unclustered(const reco::MVAMEtPFCandInfoCollection& pfCandidates, double* sumAbsPx, double* sumAbsPy)
   {
     reco::MVAMEtPFCandInfoCollection neutralPFCandidates_unclustered = selectPFCandidates(
       pfCandidates, -0.5, +0.5, reco::MVAMEtPFCandInfo::kNeutral, 0);
-    return computePFCandidateSum(neutralPFCandidates_unclustered);
+    return computePFCandidateSum(neutralPFCandidates_unclustered, sumAbsPx, sumAbsPy);
   }
 
   CommonMETData computeHadRecoilNoPU(const reco::MVAMEtJetInfoCollection& jets,
-				     const reco::MVAMEtPFCandInfoCollection& pfCandidates)
+				     const reco::MVAMEtPFCandInfoCollection& pfCandidates, double* sumAbsPx, double* sumAbsPy)
   {
-    CommonMETData trackSumNoPU = computeTrackRecoilNoPU(pfCandidates);
+    double trackSumAbsPx = 0.;
+    double trackSumAbsPy = 0.;
+    CommonMETData trackSumNoPU = computeTrackRecoilNoPU(pfCandidates, &trackSumAbsPx, &trackSumAbsPy);
     reco::MVAMEtJetInfoCollection jetsNoPU = selectJets(jets, 10.0, 1.e+6, reco::MVAMEtJetInfo::kNoPileUp);
-    CommonMETData jetSumNoPU_neutral = computeJetSum_neutral(jetsNoPU);
+    double jetSumNoPUabsPx_neutral = 0.;
+    double jetSumNoPUabsPy_neutral = 0.;
+    CommonMETData jetSumNoPU_neutral = computeJetSum_neutral(jetsNoPU, &jetSumNoPUabsPx_neutral, &jetSumNoPUabsPy_neutral);
     CommonMETData retVal;
     retVal.mex   = trackSumNoPU.mex   + jetSumNoPU_neutral.mex;
     retVal.mey   = trackSumNoPU.mey   + jetSumNoPU_neutral.mey;
     retVal.sumet = trackSumNoPU.sumet + jetSumNoPU_neutral.sumet;
     finalizeMEtData(retVal);
+    if ( sumAbsPx ) (*sumAbsPx) = trackSumAbsPx + jetSumNoPUabsPx_neutral;
+    if ( sumAbsPy ) (*sumAbsPy) = trackSumAbsPy + jetSumNoPUabsPy_neutral;
     return retVal;
   }
 
   CommonMETData computeHadRecoilPU(const reco::MVAMEtJetInfoCollection& jets,
-				   const reco::MVAMEtPFCandInfoCollection& pfCandidates)
+				   const reco::MVAMEtPFCandInfoCollection& pfCandidates, double* sumAbsPx, double* sumAbsPy)
   {
-    CommonMETData trackSumPU = computeTrackRecoilPU(pfCandidates);
+    double trackSumPUabsPx = 0.;
+    double trackSumPUabsPy = 0.;
+    CommonMETData trackSumPU = computeTrackRecoilPU(pfCandidates, &trackSumPUabsPx, &trackSumPUabsPy);
     reco::MVAMEtJetInfoCollection jetsPU = selectJets(jets, 10.0, 1.e+6, reco::MVAMEtJetInfo::kPileUp);
-    CommonMETData jetSumPU_neutral = computeJetSum_neutral(jetsPU);
+    double jetSumPUabsPx_neutral = 0.;
+    double jetSumPUabsPy_neutral = 0.;
+    CommonMETData jetSumPU_neutral = computeJetSum_neutral(jetsPU, &jetSumPUabsPx_neutral, &jetSumPUabsPy_neutral);
     CommonMETData retVal;
     retVal.mex   = trackSumPU.mex   + jetSumPU_neutral.mex;
     retVal.mey   = trackSumPU.mey   + jetSumPU_neutral.mey;
     retVal.sumet = trackSumPU.sumet + jetSumPU_neutral.sumet;
     finalizeMEtData(retVal);
+    if ( sumAbsPx ) (*sumAbsPx) = trackSumPUabsPx + jetSumPUabsPx_neutral;
+    if ( sumAbsPy ) (*sumAbsPy) = trackSumPUabsPy + jetSumPUabsPy_neutral;
     return retVal;
   }
   //-------------------------------------------------------------------------------
