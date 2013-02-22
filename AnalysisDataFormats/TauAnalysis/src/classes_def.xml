@@ -70,6 +70,7 @@
   <class name="NSVfitTauToHadHypothesis"/>
   <class name="NSVfitStableSingleParticleHypothesisBase"/>
   <class name="NSVfitSingleNeutrinoHypothesisBase"/>
+  <class name="NSVfitSingleParticleHypothesisSummary"/>
   <class name="std::vector<NSVfitEventHypothesisBase>"/>
   <class name="std::vector<NSVfitEventHypothesis>"/>
   <class name="std::vector<NSVfitEventHypothesisByIntegration>"/>
@@ -84,6 +85,8 @@
   <class name="std::auto_ptr<TH1>"/>
   <class name="std::vector<NSVfitSingleParticleHypothesisBase*>"/>
   <class name="edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >"/>
+  <class name="std::vector<NSVfitSingleParticleHypothesisSummary*>"/>
+  <class name="edm::OwnVector<NSVfitSingleParticleHypothesisSummary, edm::ClonePolicy<NSVfitSingleParticleHypothesisSummary> >"/>
 
   <!-- create dictionaries for PATElecPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>

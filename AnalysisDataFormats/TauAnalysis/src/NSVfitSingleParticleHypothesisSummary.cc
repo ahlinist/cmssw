@@ -55,3 +55,10 @@ NSVfitSingleParticleHypothesisSummary& NSVfitSingleParticleHypothesisSummary::op
   return (*this);
 }
 
+bool operator<(const NSVfitSingleParticleHypothesisSummary& hypothesis1, const NSVfitSingleParticleHypothesisSummary& hypothesis2)
+{
+  return (hypothesis1.name() < hypothesis2.name());
+}
+
+
+

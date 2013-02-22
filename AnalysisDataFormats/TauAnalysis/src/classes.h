@@ -17,6 +17,7 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitStableSingleParticleHypothesisBaseT.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleNeutrinoHypothesisBaseT.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisSummary.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
@@ -109,6 +110,7 @@ namespace {
     NSVfitTauToHadHypothesis dummyNSVfitTauToHadHypothesis;
     NSVfitStableSingleParticleHypothesisBase dummyNSVfitStableSingleParticleHypothesisBase;
     NSVfitSingleNeutrinoHypothesisBase dummyNSVfitSingleNeutrinoHypothesisBase;
+    NSVfitSingleParticleHypothesisSummary dummyNSVfitSingleParticleHypothesisSummary;
     std::vector<NSVfitEventHypothesisBase> dummyNSVfitEventHypothesisBaseCollection;
     std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
     std::vector<NSVfitEventHypothesisByIntegration> dummyNSVfitEventHypothesisByIntegrationCollection;
@@ -122,7 +124,9 @@ namespace {
     std::vector<NSVfitResonanceHypothesisSummary> dummyNSVfitResonanceHypothesisSummaryCollection;
     std::auto_ptr<TH1> dummyTH1Ptr;
     std::vector<NSVfitSingleParticleHypothesisBase*> dummyNSVfitSingleParticleHypothesisBasePtrCollection;
-    edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >  dummyNSVfitSingleParticleHypothesisBaseOwnVector;
+    edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> > dummyNSVfitSingleParticleHypothesisBaseOwnVector;
+    std::vector<NSVfitSingleParticleHypothesisSummary*> dummyNSVfitSingleParticleHypothesisSummaryPtrCollection;
+    edm::OwnVector<NSVfitSingleParticleHypothesisSummary, edm::ClonePolicy<NSVfitSingleParticleHypothesisSummary> > dummyNSVfitSingleParticleHypothesisSummaryOwnVector;
     
     /// create dictionaries for PATDiElecPair objects
     PATDiElecPair dummyPATDiElecPair;
