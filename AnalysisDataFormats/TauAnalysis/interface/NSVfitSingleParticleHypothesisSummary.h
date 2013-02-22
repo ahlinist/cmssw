@@ -80,4 +80,7 @@ class NSVfitSingleParticleHypothesisSummary
   bool phi_isValid_;
 };
 
+// CV: implementation of operator< needed to store NSVfitSingleParticleHypothesisSummary objects in edm::OwnVector
+bool operator<(const NSVfitSingleParticleHypothesisSummary&, const NSVfitSingleParticleHypothesisSummary&);
+
 #endif
