@@ -29,8 +29,9 @@ NoPileUpPFMEtProducer::NoPileUpPFMEtProducer(const edm::ParameterSet& cfg)
   srcMEtCov_ = ( cfg.exists("srcMEtCov") ) ?
     cfg.getParameter<edm::InputTag>("srcMEtCov") : edm::InputTag();
   srcJetInfo_ = cfg.getParameter<edm::InputTag>("srcMVAMEtData");
+  srcJetInfoLeptonMatch_ = cfg.getParameter<edm::InputTag>("srcMVAMEtDataLeptonMatch");
   srcPFCandInfo_ = cfg.getParameter<edm::InputTag>("srcMVAMEtData");
-  srcPFCandInfoLeptonMatch_ = cfg.getParameter<edm::InputTag>("srcPFCandInfoLeptonMatch");
+  srcPFCandInfoLeptonMatch_ = cfg.getParameter<edm::InputTag>("srcMVAMEtDataLeptonMatch");
   srcLeptons_ = cfg.getParameter<vInputTag>("srcLeptons");
   srcType0Correction_ = cfg.getParameter<edm::InputTag>("srcType0Correction");
 
@@ -108,6 +109,16 @@ void scaleAndAddPFMEtSignObjects(std::vector<metsig::SigInputObj>& metSignObject
   }
 }
 
+namespace
+{
+  double determinant(const TMatrixD& pfMEtCov)
+  {
+    assert(pfMEtCov.GetNrows() == 2);
+    assert(pfMEtCov.GetNcols() == 2);
+    return (pfMEtCov(0,0)*pfMEtCov(1,1) - pfMEtCov(0,1)*pfMEtCov(1,0));
+  }
+}
+
 TMatrixD computePFMEtSignificance(const std::vector<metsig::SigInputObj>& metSignObjects)
 {
   TMatrixD pfMEtCov(2,2);
@@ -117,10 +128,10 @@ TMatrixD computePFMEtSignificance(const std::vector<metsig::SigInputObj>& metSig
     pfMEtCov = pfMEtSignAlgorithm.getSignifMatrix();
   } 
   
-  if ( TMath::Abs(pfMEtCov.Determinant()) < epsilon ) {
+  if ( TMath::Abs(determinant(pfMEtCov)) < epsilon ) {
     edm::LogWarning("computePFMEtSignificance") 
-      << "Inversion of PFMEt covariance matrix failed, det = " << pfMEtCov.Determinant()
-      << " --> replacing covariance matrix by resolution defaults !!";
+      << "Inversion of PFMEt covariance matrix failed, det = " << determinant(pfMEtCov)
+      << " --> replacing covariance matrix by resolution defaults !!";    
     pfMEtCov(0,0) = defaultPFMEtResolutionX*defaultPFMEtResolutionX;
     pfMEtCov(0,1) = 0.;
     pfMEtCov(1,0) = 0.;
@@ -218,14 +229,40 @@ void NoPileUpPFMEtProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   // get jet and PFCandidate information
   edm::Handle<reco::MVAMEtJetInfoCollection> jets;
   evt.getByLabel(srcJetInfo_, jets);
+  edm::Handle<reco::MVAMEtJetInfoCollection> jetsLeptonMatch;
+  evt.getByLabel(srcJetInfoLeptonMatch_, jetsLeptonMatch);
   edm::Handle<reco::MVAMEtPFCandInfoCollection> pfCandidates;
   evt.getByLabel(srcPFCandInfo_, pfCandidates);
   edm::Handle<reco::MVAMEtPFCandInfoCollection> pfCandidatesLeptonMatch;
   evt.getByLabel(srcPFCandInfoLeptonMatch_, pfCandidatesLeptonMatch);
 
+  reco::MVAMEtJetInfoCollection jets_leptons = cleanJets(*jetsLeptonMatch, leptons, 0.5, true);
   reco::MVAMEtPFCandInfoCollection pfCandidates_leptons = cleanPFCandidates(*pfCandidatesLeptonMatch, leptons, 0.3, true);
-  std::auto_ptr<CommonMETData> sumLeptons(new CommonMETData(computePFCandidateSum(pfCandidates_leptons)));
-
+  std::auto_ptr<CommonMETData> sumLeptons(new CommonMETData());
+  initializeCommonMETData(*sumLeptons);
+  for ( reco::MVAMEtJetInfoCollection::const_iterator jet = jets_leptons.begin();
+	jet != jets_leptons.end(); ++jet ) {
+    sumLeptons->mex   += jet->p4_.px();
+    sumLeptons->mey   += jet->p4_.py();
+    sumLeptons->sumet += jet->p4_.pt();
+  }
+  for ( reco::MVAMEtPFCandInfoCollection::const_iterator pfCandidate = pfCandidates_leptons.begin();
+	pfCandidate != pfCandidates_leptons.end(); ++pfCandidate ) {
+    bool isWithinJet_lepton = true; 
+    if ( pfCandidate->isWithinJet_ ) {
+      for ( reco::MVAMEtJetInfoCollection::const_iterator jet = jets_leptons.begin();
+	    jet != jets_leptons.end(); ++jet ) {
+	double dR = deltaR(pfCandidate->p4_, jet->p4_);
+	if ( dR < 0.5 ) isWithinJet_lepton = true; 
+      }
+    }
+    if ( !isWithinJet_lepton ) {
+      sumLeptons->mex   += pfCandidate->p4_.px();
+      sumLeptons->mey   += pfCandidate->p4_.py();
+      sumLeptons->sumet += pfCandidate->p4_.pt();
+    }
+  }
+  
   reco::MVAMEtJetInfoCollection jets_cleaned = cleanJets(*jets, leptons, 0.5, false);
   reco::MVAMEtPFCandInfoCollection pfCandidates_cleaned = cleanPFCandidates(*pfCandidates, leptons, 0.3, false);
 

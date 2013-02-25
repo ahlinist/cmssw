@@ -72,7 +72,7 @@ noPileUpPFchsMEt = cms.EDProducer("NoPileUpPFMEtProducer",
     srcMVAMEtData = cms.InputTag('noPileUpPFchsMEtData'),
     srcLeptons = cms.VInputTag(), # NOTE: you need to set this to collections of electrons, muons and tau-jets
                                   #       passing the lepton reconstruction & identification criteria applied in your analysis
-    srcPFCandInfoLeptonMatch = cms.InputTag('noPileUpPFchsMEtData'),                              
+    srcMVAMEtDataLeptonMatch = cms.InputTag('noPileUpPFchsMEtData'),
     srcType0Correction = cms.InputTag('pfMETcorrType0'),                    
     sfNoPUjets = cms.double(1.0),
     sfNoPUjetOffsetEnCorr = cms.double(0.0),                    

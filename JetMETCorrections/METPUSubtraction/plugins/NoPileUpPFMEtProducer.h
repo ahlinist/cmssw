@@ -8,9 +8,9 @@
  *
  * \authors Christian Veelken, LLR
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NoPileUpPFMEtProducer.h,v 1.1 2012/08/31 08:45:32 veelken Exp $
+ * $Id: NoPileUpPFMEtProducer.h,v 1.2 2013/02/22 15:47:16 veelken Exp $
  *
  */
 
@@ -39,6 +39,7 @@ class NoPileUpPFMEtProducer : public edm::EDProducer
   edm::InputTag srcMEt_;
   edm::InputTag srcMEtCov_;
   edm::InputTag srcJetInfo_;
+  edm::InputTag srcJetInfoLeptonMatch_;
   edm::InputTag srcPFCandInfo_;
   edm::InputTag srcPFCandInfoLeptonMatch_;
   typedef std::vector<edm::InputTag> vInputTag;
