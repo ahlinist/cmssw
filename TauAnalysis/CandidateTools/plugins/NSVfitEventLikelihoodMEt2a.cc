@@ -85,9 +85,19 @@ void NSVfitEventLikelihoodMEt2a::beginEvent(const edm::Event& evt, const edm::Ev
   }
 }
 
+namespace
+{
+  double determinant(const TMatrixD& metCov)
+  {
+    assert(metCov.GetNrows() == 2);
+    assert(metCov.GetNcols() == 2);
+    return (metCov(0,0)*metCov(1,1) - metCov(0,1)*metCov(1,0));
+  }
+}
+
 void NSVfitEventLikelihoodMEt2a::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
-  metCovDet_ = metCov_.Determinant();
+  metCovDet_ = determinant(metCov_);
   metCovInverse_ = metCov_;
   if ( metCovDet_ > epsilon ) {
     metCovInverse_.Invert();

@@ -117,6 +117,16 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
   }
 }
 
+namespace
+{
+  double determinant(const TMatrixD& pfMEtCov)
+  {
+    assert(pfMEtCov.GetNrows() == 2);
+    assert(pfMEtCov.GetNcols() == 2);
+    return (pfMEtCov(0,0)*pfMEtCov(1,1) - pfMEtCov(0,1)*pfMEtCov(1,0));
+  }
+}
+
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
 #ifdef SVFIT_DEBUG     
@@ -158,7 +168,7 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
     pfMEtCov_.Print();
   }
 #endif
-  pfMEtCovDet_ = pfMEtCov_.Determinant();
+  pfMEtCovDet_ = determinant(pfMEtCov_);
   pfMEtCovInverse_ = pfMEtCov_;
   if ( pfMEtCovDet_ > epsilon ) {
     pfMEtCovInverse_.Invert();
