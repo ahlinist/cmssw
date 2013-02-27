@@ -26,13 +26,15 @@ parser.add_argument('+output-fn',
                     help='Override the output filename. (Default is to write to the current directory a file with basename the same as the input, but ending in .histos.root.)')
 parser.add_argument('+output-fn-tag',
                     help='A tag for the output filename.')
+parser.add_argument('+no-use-run-list', action='store_false', dest='use_run_list',
+                    help='For data, ignore any run selection criteria and use all runs in the input file.')
 parser.add_argument('+run-type', action='append', dest='run_types', choices='cosmics collisions commissioning'.split(),
                     help='For data, include runs of type TYPE. (May be specified more than once; default is %(default)s.)')
 parser.add_argument('+require-rpc-good', action='store_true',
                     help='In the run selection, require RPC subdetector marked as good in DQM.')
 parser.add_argument('+min-run', type=int, default=0,
                     help='For data, drop all runs below MIN_RUN.')
-parser.add_argument('+max-run', type=int, default=999999,
+parser.add_argument('+max-run', type=int, default=9999999,
                     help='For data, drop all runs below MIN_RUN.')
 parser.add_argument('+is-mc', action='store_true',
                     help='Specified input file is MC. (Data assumed by default.)')
@@ -94,7 +96,7 @@ if options.require_tt25 and not options.require_rpc_good:
 ################################################################################
 
 run_list = []
-if not options.is_mc:
+if options.use_run_list and not options.is_mc:
     run_list = [r for r in get_run_list(options.run_types, options.muon_subdet, options.require_pixels, options.require_rpc_good) if options.min_run <= r <= options.max_run]
 
 cfg = cms.PSet(
@@ -123,6 +125,8 @@ cfg = cms.PSet(
     )
 
 if options.bin_by_run:
+    if not run_list:
+        raise ValueError('bin_by_run specified but run_list is empty')
     bins = make_bins('run', run_list)
 elif options.bin_by_phi:
     bins = make_bins('phi', [x/100. for x in range(-320, 321, 32)])
