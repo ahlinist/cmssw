@@ -558,9 +558,13 @@ bool CosmicSplittingResolutionFilter::filter(edm::Event& event, const edm::Event
     // TMR: use tracker-only if the chi^2,dof tail prob difference
     // between TPFMS and tracker-only is bigger than the cut value.
     reco::Muon::MuonTrackTypePair tmr = muon::TMR(tko, fms, tmr_cut);
+    if (tmr.second == reco::Muon::None) { // JMTBAD this should be in the function itself...
+      tmr.first = glb;
+      tmr.second = reco::Muon::CombinedTrack;
+    }
     tracks[tk_tmr][j] = tmr.first;
     nt->choice_tmr[j] = remapMuonTrackType(tmr.second);
-    
+
     // N-sigma switch: if both global and tracker-only pT are above
     // threshold, use global if |1/pT global - 1/pT tracker-only| < N
     // * sigma_{1/pT} tracker-only, else use tracker-only.
