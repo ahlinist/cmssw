@@ -1,7 +1,0 @@
-<use name=FWCore/Framework>
-<use name=FWCore/ParameterSet>
-<use name=PhysicsTools/UtilAlgos>
-
-<library file=EtMinSuperClusterCountFilterHeepSkim.cc>
-  <use name=DataFormats/EgammaCandidates>
-</library>

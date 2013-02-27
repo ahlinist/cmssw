@@ -1,6 +1,0 @@
-<use name=FWCore/Framework>
-<use name=FWCore/ParameterSet>
-<use name=RecoBTag/CombinedSV>
-<library file="*.cc" name=RecoBTagCombinedSVPlugins>
-      <flags EDM_PLUGIN=1>
-</library>                                                                                                                                         

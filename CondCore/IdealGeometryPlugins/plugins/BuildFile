@@ -1,4 +1,0 @@
-<use name=CondCore/IdealGeometryPlugins>
-<library file=plugin.cc name=CondCoreIdealGeometryPluginsPlugins>
-<flags EDM_PLUGIN=1>
-</library>

@@ -1,8 +1,0 @@
-SAMPLE TWOJET DATA SMALL PT=MB
-14000,999999,1,1/
-TWOJET
-PT
- 5,100, 5,100 /
-END
-STOP
-                                                                                                                               

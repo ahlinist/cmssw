@@ -1,8 +1,0 @@
-<export>
- <lib name=SimG4CorePackaging>
- <use name=geant4>
-</export>
-
-<use name=clhep>
-<use name=geant4>
-<Flags CPPDEFINES="G4VERBOSE">

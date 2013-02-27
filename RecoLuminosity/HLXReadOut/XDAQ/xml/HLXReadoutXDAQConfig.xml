@@ -1,8 +1,0 @@
-<?xml version='1.0'?>
-<xc:Partition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xc="http://xdaq.web.cern.ch/xdaq/xsd/2004/XMLConfiguration-30">
-	<xc:Context url="http://vmepcs2f17-18:54125">
-	  <xc:Application class="lumiHCALLUMIDAQ" id="50" instance="0" network="local">
-	  </xc:Application>
-	  <xc:Module>/opt/TriDAS/RecoLuminosity/HLXReadOut/XDAQ/lib/${XDAQ_OS}/${XDAQ_PLATFORM}/libHLXReadoutSupervisor.so</xc:Module>
-	</xc:Context>
-</xc:Partition>

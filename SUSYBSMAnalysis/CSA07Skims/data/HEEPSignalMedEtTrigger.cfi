@@ -1,6 +1,0 @@
-#
-#HEEP skim, med and high Et signal 
-#trigger selection
-#
-  module hEEPSignalMedEtTrigger =  hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
-replace hEEPSignalMedEtTrigger.HLTPaths = {"HLT_IsoEle18_L1R"}

@@ -1,3 +1,0 @@
-include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYTopSkim.cfi"
-
-path hadSUSYTopElec = { hadSUSYTopElecSeq }

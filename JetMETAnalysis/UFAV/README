@@ -1,7 +1,0 @@
-Instructions for running tool:
-
-$ make clean
-(If you are on lxplus, you will probably have to do cmsenv within a CMSSW area to set the proper environment variables and link to the necessary libraries for the next compilation step)
-$ mkdir bin obj
-$ make
-$ ./bin/ExecuteDQM NewFileName.root ReferenceFileName.root  NewRunNumber RefRunNumber ProjectName

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-export ORACLE_ROOT=/nfshome0/cmssw/slc3_ia32_gcc323/external/oracle/10.2.0.2
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_ROOT}/lib
-export PATH=$PATH:${ORACLE_ROOT}/bin
-export TNS_ADMIN=/nfshome0/lmsts/omds_tns
-export ORACLE_HOME=$ORACLE_ROOT

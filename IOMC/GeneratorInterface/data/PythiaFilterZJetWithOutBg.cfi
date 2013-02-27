@@ -1,8 +1,0 @@
-   module zj_filter = PythiaFilterZJet{
-       untracked string moduleLabel = 'source'    
-       untracked double MinZPt = 18.
-       untracked double MaxZPt = 22.
-       untracked double MaxMuonEta= 2.5
-       untracked double MinMuonPt = 3.5
-       untracked int32 MaxEvents = 10
-  }

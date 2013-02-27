@@ -1,5 +1,0 @@
-<xmas:flash xmlns:xmas="http://xdaq.web.cern.ch/xdaq/xsd/2006/xmas-10" id="urn:xdaq-flashlist:RB-rate">
-	<xmas:item name="context"            function="context()"                                    type="string"	    />
-	<xmas:item name="runNumber"          infospace="urn:xdaq-monitorable-evf::FUResourceBroker-" type="unsigned int 32" />
-	<xmas:item name="inputRate"          infospace="urn:xdaq-monitorable-evf::FUResourceBroker-" type="double"          />
-</xmas:flash>

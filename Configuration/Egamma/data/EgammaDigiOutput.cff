@@ -1,6 +1,0 @@
-block EgammaDigiOutput = {
-  untracked vstring outputCommands = {
-    "keep *_ecalDigis_*_*",
-    "keep *_ecalPreshowerDigis_*_*"
-  }
-}

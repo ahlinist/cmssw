@@ -1,8 +1,0 @@
-<use name=FWCore/Framework>
-<use name=FWCore/ParameterSet>
-<use name=RecoBTau/JetTagComputer>
-<export>
-  <use name=FWCore/Framework>
-  <use name=FWCore/ParameterSet>
-  <use name=RecoBTau/JetTagComputer>
-</export>

@@ -1,8 +1,0 @@
-module ZETauRecoMedMassProducer = ZETauRecoMassInfo
-{
-  InputTag TauTag = ZETauRecoMedSignalProngFilter:TauTag #ZRecoMedTauTagCollinearityFilter:TauTag
-  InputTag LeptonTag = ZETauRecoMedCollinearityFilter:Electron
-  InputTag CaloMETTag = caloMETShallowCloneProducer
-  InputTag CaloJetTag = caloJetShallowCloneProducer
-
-}

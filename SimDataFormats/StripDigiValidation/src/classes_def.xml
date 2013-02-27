@@ -1,5 +1,0 @@
-<lcgdict>
-  <class name="StripDigiValidInfo"/>
-  <class name="std::vector<StripDigiValidInfo>"/>
-  <class name="edm::Wrapper<std::vector<StripDigiValidInfo>>"/> 
-</lcgdict>

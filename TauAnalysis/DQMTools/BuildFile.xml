@@ -1,9 +1,0 @@
-<use   name="FWCore/Framework"/>
-<use   name="FWCore/MessageLogger"/>
-<use   name="FWCore/ParameterSet"/>
-<use   name="DQMServices/Core"/>
-<use   name="TauAnalysis/CandidateTools"/>
-<use   name="classlib"/>
-<export>
-  <lib   name="1"/>
-</export>

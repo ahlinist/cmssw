@@ -1,8 +1,0 @@
-SAMPLE TWOJET DATA
-15400,999999,0,0/
-TWOJET
-PT
-  50,1000,  50,1000/
-END
-STOP
-                                                                            

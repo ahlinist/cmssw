@@ -1,8 +1,0 @@
-<use name=boost>
-<use name=root>
-<use name=GeneratorInterface/CharybdisInterface>
-<use name=SimDataFormats/GeneratorProducts>
-<use name=PhysicsTools/UtilAlgos>
-<use name=FWCore/ServiceRegistry>
-<flags EDM_PLUGIN=1>
-<library file=CharybdisAnalyzer.cc name=CharybdisAnalyzer></library>

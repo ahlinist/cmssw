@@ -1,6 +1,0 @@
-#!/bin/bash
-
-source /nfshome0/jaj99/.bashrc
-pushd /home/localtest &> /dev/null
-$HOME/TriDAS/RecoLuminosity/HLXReadOut/StandAlone/bin/$XDAQ_OS/$XDAQ_PLATFORM/test_distribution.exe
-popd &> /dev/null

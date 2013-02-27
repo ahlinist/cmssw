@@ -1,6 +1,0 @@
-module emusel = EMU_Filter{
-   untracked string muonLabel = "muons"
-   untracked string electronLabel = "pixelMatchGsfElectrons"
-   untracked bool Verbosity  = true
-
-     }

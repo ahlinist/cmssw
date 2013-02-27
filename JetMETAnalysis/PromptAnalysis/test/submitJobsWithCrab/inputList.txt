@@ -1,3 +1,0 @@
-/ExpressPhysics/BeamCommissioning09-Express-v2/FEVT 100 2
-/MinimumBias/BeamCommissioning09-PromptReco-v2/RECO 100 2
-/MinimumBias/BeamCommissioning09-rereco_FIRSTCOLL_v1/RECO 100 2

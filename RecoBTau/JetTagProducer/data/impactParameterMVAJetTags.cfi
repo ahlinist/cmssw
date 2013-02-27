@@ -1,4 +1,0 @@
-module impactParameterMVAJetTags = JetTagProducer { 
-	InputTag tagInfo	= impactParameterTagInfos
-	string jetTagComputer   = "impactParameterMVAComputer"
-}

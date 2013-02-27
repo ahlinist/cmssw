@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding="UTF-8"?>
-<!DOCTYPE Mapping SYSTEM "InMemory">
-<Mapping version="AlignmentObjects_1.0" >
-<Class name="Alignments" >
-</Class >
-<Class name="AlignmentErrors" >
-</Class >
-</Mapping >

@@ -1,8 +1,0 @@
-include "MagneticField/Engine/data/volumeBasedMagneticField.cfi"
-include "Geometry/CMSCommonData/data/cmsIdealGeometryXML.cfi"
-include "Geometry/CommonDetUnit/data/bareGlobalTrackingGeometry.cfi"
-include "Geometry/TrackerNumberingBuilder/data/trackerNumberingGeometry.cfi"
-include "Geometry/TrackerGeometryBuilder/data/trackerGeometry.cfi"
-include "TrackingTools/MaterialEffects/data/MaterialPropagator.cfi"
-
-include "RecoBTau/JTPropagationAssociator/data/jtPropagationAssociator.cfi"

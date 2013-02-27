@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# CMSSW copy of client is old, and designed for gcc323 libs
-# Use locally installed copy instead (11g+)
-export ORACLE_ROOT=/opt/oracle/current
-
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_ROOT}
-export TNS_ADMIN=/etc
-export ORACLE_HOME=$ORACLE_ROOT

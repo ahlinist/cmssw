@@ -1,4 +1,0 @@
-include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYQCDControlMETSkim.cfi"
-
-path hadSUSYQCDControlMET = { hadSUSYQCDControlMETSeq }
-

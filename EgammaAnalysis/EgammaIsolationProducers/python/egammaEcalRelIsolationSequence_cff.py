@@ -1,7 +1,0 @@
-import FWCore.ParameterSet.Config as cms
-
-from EgammaAnalysis.EgammaIsolationProducers.egammaSuperClusterMerger_cfi import *
-from EgammaAnalysis.EgammaIsolationProducers.egammaBasicClusterMerger_cfi import *
-from EgammaAnalysis.EgammaIsolationProducers.egammaEcalRelIsolation_cfi import *
-egammaEcalRelIsolationSequence = cms.Sequence(egammaSuperClusterMerger*egammaBasicClusterMerger*egammaEcalRelIsolation)
-
