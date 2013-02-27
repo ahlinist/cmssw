@@ -604,9 +604,26 @@ if hasattr(process, 'out') and options.edm_output and not options.edm_output_all
     # were written into the ntuple.
     process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(*output_paths))
 
+# Pay no attention to that man behind the curtain.
 if options.dumps and options.foo:
-    from Test.Tests.tools import vinputtagize
-    process.EventDump = cms.EDAnalyzer('EventDump', use_cout = cms.untracked.bool(True))
+    def vinputtagize(l, untracked_tags=False, untracked_vector=True):
+        if type(l) != type([]):
+            l = [l]
+        tags = []
+        if untracked_tags:
+            it = cms.untracked.InputTag
+        else:
+            it = cms.InputTag
+        for t in l:
+            if type(t) != type(()):
+                t = (t,)
+            tags.append(it(*t))
+        tags = cms.VInputTag(*tags)
+        if untracked_vector:
+            tags = cms.untracked(tags)
+        return tags
+
+    process.EventDump = cms.EDAnalyzer('JMTEventDump', use_cout = cms.untracked.bool(True))
     process.EventDump.muon_labels = vinputtagize(['muons'])
     if not options.pp_reco_mode:
         process.EventDump.track_labels = vinputtagize([
@@ -626,9 +643,9 @@ if options.dumps and options.foo:
             'PPstmTPFMS1',
             'PPstmPicky1',
             ])
-    process.ped = cms.Path(process.EventDump)
+    process.UTrecoonlypath.replace(process.UTpickedTracks, process.EventDump * process.UTpickedTracks)
     #process.Tracer = cms.Service('Tracer')
-                        
+
 # Done configuring the process.
     
 ################################################################################
