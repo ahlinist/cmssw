@@ -1,1 +1,0 @@
-double gimme1();

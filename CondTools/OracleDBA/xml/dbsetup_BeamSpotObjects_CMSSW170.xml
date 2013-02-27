@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding="UTF-8"?>
-<!DOCTYPE Database SYSTEM "InMemory">
-<Database connectionString="notmatter" >
-   <HomogeneousContainer name="BeamSpotObjectsRcd">
-      <Class name="BeamSpotObjects" mappingVersion="BeamSpotObjects_CMSSW170"/>
-   </HomogeneousContainer >
-</Database >

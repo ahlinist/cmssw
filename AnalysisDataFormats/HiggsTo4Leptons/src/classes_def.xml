@@ -1,7 +1,0 @@
-<lcgdict>
-  <class name="HiggsTo4LeptonsMCObjects"/>
-  <class name="std::vector<HiggsTo4LeptonsMCObjects>"/>
-  <class name="edm::Wrapper<std::vector<HiggsTo4LeptonsMCObjects> >"/>
-  <class name="HiggsTo4LeptonsMCObjectsCollection"/>
-  <class name="edm::Wrapper<HiggsTo4LeptonsMCObjectsCollection>"/>
-</lcgdict>

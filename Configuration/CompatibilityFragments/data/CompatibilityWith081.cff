@@ -1,5 +1,0 @@
-include "Configuration/CompatibilityFragments/data/RecoLocalTracker.cff"
-include "Configuration/CompatibilityFragments/data/RecoLocalMuon.cff"
-include "Configuration/CompatibilityFragments/data/RecoLocalEcal.cff"
-include "Configuration/CompatibilityFragments/data/RecoLocalHcal.cff"
-#

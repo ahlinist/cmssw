@@ -1,9 +1,0 @@
-Run install.sh from:
-
-   <release_area>/src/CalibTracker/SiStripRunSummary/test
-
-with argument ../ :
-
-  ./install.sh ../
-
-script will create several soft links to handy shell scripts 

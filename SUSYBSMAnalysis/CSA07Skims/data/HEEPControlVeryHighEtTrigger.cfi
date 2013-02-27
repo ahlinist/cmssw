@@ -1,7 +1,0 @@
-#
-#HEEP skim, very  high Et control sample
-#trigger selection
-#
-  module HEEPSignalHighEtTrigger =   hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
-  replace HEEPSignalHighEtTrigger.HLTPaths =
-               {"HLT_EM200"}

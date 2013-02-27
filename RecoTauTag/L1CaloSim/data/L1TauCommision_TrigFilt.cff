@@ -1,8 +1,0 @@
-include "RecoTauTag/L1CaloSim/data/L1TauCommision_TrigFilt.cfi"
-include "L1TriggerConfig/L1ScalesProducers/data/L1MuTriggerScalesConfig.cff"
-
-#include "Configuration/StandardSequences/data/FrontierConditions_GlobalTag.cff"
-#replace GlobalTag.globaltag = "CRUZET_V3::All"
-
-#module gtDigis = l1GtUnpack from "EventFilter/L1GlobalTriggerRawToDigi/data/l1GtUnpack.cfi"
-#replace gtDigis.DaqGtInputTag = source

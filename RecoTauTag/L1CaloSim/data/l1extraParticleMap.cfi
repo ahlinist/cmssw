@@ -1,8 +1,0 @@
-module simL1extraParticleMap = l1extraParticleMap from "L1Trigger/L1ExtraFromDigis/data/l1extraParticleMap.cfi" 
-replace simL1extraParticleMap.isolatedEmSource = l1CaloSim:Isolated
-replace simL1extraParticleMap.nonIsolatedEmSource = l1CaloSim:NonIsolated
-replace simL1extraParticleMap.centralJetSource = l1CaloSim:Central
-replace simL1extraParticleMap.forwardJetSource = l1CaloSim:Forward
-replace simL1extraParticleMap.tauJetSource = l1CaloSim:Tau
-replace simL1extraParticleMap.muonSource = l1CaloSim
-replace simL1extraParticleMap.etMissSource = l1CaloSim

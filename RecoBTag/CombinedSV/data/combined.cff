@@ -1,3 +1,0 @@
-include "RecoBTag/CombinedSV/data/combined.cfi"
-include "RecoBTag/CombinedSV/data/combinedSVMVAES.cfi"
-include "RecoBTag/CombinedSV/data/combinedSVMVABJetTags.cfi"

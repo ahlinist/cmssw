@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding="UTF-8"?>
-<!DOCTYPE Database SYSTEM "InMemory">
-<Database connectionString="notmatter" >
-   <HomogeneousContainer name="RPCReadOutMappingRcd">
-      <Class name="RPCReadOutMapping" mappingVersion="RPCObjects_CMSSW160"/>
-   </HomogeneousContainer > 
-</Database >

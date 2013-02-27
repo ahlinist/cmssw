@@ -1,7 +1,0 @@
-1. To build RPCReadOutMapping in PoolDB (currently sqlite_file) from 
-   OMDS execute:
-$ cmsRun -p write.cfg
-
-2. To test PoolDB execute:
-$ cmsRun -p read.cfg
-

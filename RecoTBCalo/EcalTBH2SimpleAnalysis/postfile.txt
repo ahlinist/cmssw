@@ -1,4 +1,0 @@
-  }
-	 
-  path p = { getCond, tbunpacker, ecalTBunpack, ecal2006TBH2TDCReconstructor, ecal2006TBH2WeightUncalibRecHit, hcalReco, ecal2006TBRecHit, simpleTBanalysis  }
-}

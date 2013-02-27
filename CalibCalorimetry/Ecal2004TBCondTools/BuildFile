@@ -1,8 +1,0 @@
-<flags CXXFLAGS=-DHAVE_CONFIG_H>
-<use name=root>
-<lib name=SQL>
-<export>
- <lib name=CalibCalorimetryEcal2004TBCondTools>
- <use name=root>
- <lib name=SQL> 
-</export>

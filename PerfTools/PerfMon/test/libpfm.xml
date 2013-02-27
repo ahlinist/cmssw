@@ -1,7 +1,0 @@
-<Tool name="libpfm" version="3.9">
-<lib name="pfm"/>
-<Client>
- <Environment name="LIBPFM_BASE" default="/usr"></Environment>
- <Environment name="INCLUDE" default="$LIBPFM_BASE/include/perfmon"></Environment>
-</Client>
-</Tool>

@@ -1,4 +1,0 @@
-<use name=FWCore/Utilities>
-<bin name="randomPoissonTest" file="TestDriver.cpp">
-  <flags TEST_RUNNER_ARGS=" /bin/bash VistaTools/Math_utils/test run_tests.sh">
-</bin>

@@ -1,6 +1,0 @@
-<export>
- <lib name=SimG4CoreG4gflash>
-</export>
- 
-<use name=clhep>
-<use name=geant4>

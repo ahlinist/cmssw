@@ -1,7 +1,0 @@
-include "RecoJets/JetProducers/data/IconeJetParameters.cfi"
-include "RecoJets/JetProducers/data/CaloJetParameters.cfi" 
-module iterativeConeJetProducer = IterativeConeJetProducer {
-   using IconeJetParameters
-   using CaloJetParameters
-   double coneRadius = 0.6 
-}

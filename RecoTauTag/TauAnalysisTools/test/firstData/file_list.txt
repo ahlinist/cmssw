@@ -1,1 +1,0 @@
-file:/home/friis/Code/cms/NewPackageLocal/src/RecoTauTag/TauAnalysisTools/test/taste.root

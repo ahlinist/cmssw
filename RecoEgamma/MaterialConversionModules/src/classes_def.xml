@@ -1,5 +1,0 @@
-<lcgdict>
-  <class pattern="edm::Wrapper<*>"/>
-  <class name="std::vector<Pi0MaterialConversion>"/>
-  <class name="Pi0MaterialConversion"/>
-</lcgdict>

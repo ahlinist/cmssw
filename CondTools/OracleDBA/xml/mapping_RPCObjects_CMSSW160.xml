@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding="UTF-8"?>
-<!DOCTYPE Mapping SYSTEM "InMemory">
-<Mapping version="RPCObjects_CMSSW160" >
- <Class name="RPCReadOutMapping" >
- </Class >
-</Mapping >
-

@@ -1,7 +1,0 @@
-<library   file="*.cc" name="L1DTTriggerPlugins">
-  <use   name="SLHCUpgradeSimulations/L1DTTrigger"/>
-  <use   name="SLHCUpgradeSimulations/Utilities"/>
-  <use   name="SimDataFormats/SLHC"/>
-  <use   name="root"/>
-  <flags   EDM_PLUGIN="1"/>
-</library>

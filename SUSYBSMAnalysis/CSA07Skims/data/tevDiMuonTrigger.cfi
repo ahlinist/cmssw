@@ -1,7 +1,0 @@
-#
-#TDM skim, single and double muon HLT streams,
-#no isolation
-#
-
-module tevDiMuonTrigger = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
-replace tevDiMuonTrigger.HLTPaths = {"HLT_Mu15_L1Mu7","HLT_DoubleMu3"}

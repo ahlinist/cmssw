@@ -1,5 +1,0 @@
-<bin   name="TestSVFit" file="svfit_t.cppunit.cc">
-  <use   name="root"/>
-  <use   name="TauAnalysis/CandidateTools"/>
-  <use   name="cppunit"/>
-</bin>

@@ -1,9 +1,0 @@
-include "Configuration/EventContent/data/EventContent.cff"
-include "ElectroWeakAnalysis/ZTauTau_ETau/data/zToTauTau_ETau_EventContent.cff"
-
-block AODSIMZToTauTauETauEventContent = {
-  untracked vstring outputCommands = {}
-}
-
-replace AODSIMZToTauTauETauEventContent.outputCommands += AODSIMEventContent.outputCommands
-replace AODSIMZToTauTauETauEventContent.outputCommands += zToTauTauETauEventContent_1.outputCommands

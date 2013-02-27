@@ -1,7 +1,0 @@
-<project name="runregistry_root" default="dist" basedir=".">
-
-  <import file="ant/build.xml"/>
-  <import file="ant/writer.xml"/>
-  <import file="ant/cmswbm.xml"/>
-
-</project>

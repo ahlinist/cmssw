@@ -1,9 +1,0 @@
-<use name=DQM/EcalCommon>
-<use name=DQMServices/Core>
-<use name=VisMonitoring/VisDQMBase>
-<use name=rootcore>
-<export>
-  <use name=VisMonitoring/VisDQMBase>
-  <use name=rootcore>
-  <lib name=DQMEcalBarrelMonitorDisplayPlugins>
-</export>

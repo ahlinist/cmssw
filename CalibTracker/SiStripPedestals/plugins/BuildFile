@@ -1,4 +1,0 @@
-<use name=CalibTracker/SiStripPedestals>
-<library file=*.cc name=CalibTrackerSiStripPedestalsPlugins>
-  <flags EDM_PLUGIN=1>
-</library>

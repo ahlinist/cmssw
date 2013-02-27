@@ -1,8 +1,0 @@
-<export></export>
-<library name=SusyAnalysisAnalysisSkeletonPlugins file=*.cc>
-  <use name=FWCore/Framework>
-  <use name=FWCore/PluginManager>
-  <use name=FWCore/ParameterSet>
-  <use name=SusyAnalysis/EventSelector>
-  <flags EDM_PLUGIN=1>
-</library>

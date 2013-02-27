@@ -1,9 +1,0 @@
-<use name=FWCore/ParameterSet>
-<use name=FWCore/PluginManager>
-<use name=SimG4Core/Physics>
-<use name=geant4>
-<flags EDM_PLUGIN=1>
-<export>
-  <lib name=SimG4CoreQGSP_BERT_HP>
-</export>
-
