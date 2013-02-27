@@ -9,6 +9,7 @@
 
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
+#include "FWCore/Utilities/interface/ProductKindOfType.h"
 #include "FWCore/Utilities/interface/TypeID.h"
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "DataFormats/Common/interface/BasicHandle.h"
@@ -31,9 +32,7 @@ using namespace edm;
 SecondaryProducer::SecondaryProducer(const edm::ParameterSet& ps) :
   moduleLabel_("rawDataCollector"),
   instance_(""),
-  process_(""),
-  cachedOffset_(0),
-  fillCount_(-1)
+  process_("")
 {
   // make secondary input source
   secInput_=makeSecInput(ps);
@@ -67,12 +66,11 @@ void SecondaryProducer::processOneEvent(edm::EventPrincipal const& eventPrincipa
   //          << " event "<< p->id().event()<<std::endl;
   eID = eventPrincipal.id();
 
-  BasicHandle bh = eventPrincipal.getByLabel(TypeID(typeid(TC)),
+  BasicHandle bh = eventPrincipal.getByLabel(edm::PRODUCT_TYPE,
+                                             TypeID(typeid(TC)),
                                              moduleLabel_,
                                              instance_,
-                                             process_,
-                                             cachedOffset_,
-                                             fillCount_);
+                                             process_);
   assert(bh.isValid());
   if(!(bh.interface()->dynamicTypeInfo() == typeid(TC))) {
     handleimpl::throwConvertTypeError(typeid(TC), bh.interface()->dynamicTypeInfo());

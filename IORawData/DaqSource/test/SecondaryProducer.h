@@ -56,8 +56,6 @@ namespace evf {
     std::string moduleLabel_;
     std::string instance_;
     std::string process_;
-    size_t cachedOffset_;
-    int fillCount_;
   };
 
 } // evf
