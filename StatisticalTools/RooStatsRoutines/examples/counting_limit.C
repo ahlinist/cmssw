@@ -41,20 +41,22 @@ void limit( std::string method = "bayesian" ){
   int    data = 6;
 
   // optional: set some parameters
-  SetParameter("Optimize", false);
+  SetParameter("Optimize",           false);
   SetParameter("CorrelatedLumiSyst", false);
-  SetParameter("MakePlot", true);
+  SetParameter("MakePlot",            true);
   SetParameter("GaussianStatistics", false);
 
-  SetParameter("NClsSteps", 10);
-  SetParameter("NToys", 1000);
+  SetParameter("NClsSteps",     10);
+  SetParameter("NToys",       1000);
   SetParameter("CalculatorType", 0); // 0 for frequentist
-  SetParameter("TestStatType", 3); // LHC-style 1-sided profile likelihood
-  SetParameter("Verbosity", 3);
-  SetParameter("RandomSeed", 0);
+  SetParameter("TestStatType",   3); // LHC-style 1-sided profile likelihood
+  SetParameter("Verbosity",      3);
+  SetParameter("RandomSeed",     0);
 
   SetParameter("ConfidenceLevel", 0.95);
-  SetParameter("NToysRatio", 2.0);
+  SetParameter("NToysRatio",      2.0);
+  SetParameter("MaxPoi",         -1.0); // negative value - will guess automatically
+  SetParameter("MaxYield",       -1.0); // negative value - will guess automatically
 
   // bayesian limit
   if (method.find("bayesian")!=std::string::npos){

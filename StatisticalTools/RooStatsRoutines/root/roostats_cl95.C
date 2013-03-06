@@ -445,6 +445,8 @@ private:
   int mRandomSeed;
   double mNToysRatio;
   double mConfidenceLevel;
+  double mMaxPoi;
+  double mMaxYield;
 
   // for Bayesian MCMC calculation
   MCMCInterval * mcInt;
@@ -520,9 +522,11 @@ void CL95Calc::Init(UInt_t seed){
   mNToysRatio = 2.0;
   mCalculatorType = 0;
   mTestStatType = 3;
-  mVerbosity = 3;
+  mVerbosity = 1;
   mRandomSeed = 12345;
   mConfidenceLevel = 0.95;
+  mMaxPoi = -1.0; // negative will cause automatic guess
+  mMaxYield = -1.0; // negative will cause automatic guess
 
   // set integrator
   //RooAbsReal::defaultIntegratorConfig()->method1D().setLabel("RooAdaptiveGaussKronrodIntegrator1D");
@@ -626,14 +630,24 @@ CL95Calc::SetParameter(const char * name, int value){
 
 void
 CL95Calc::SetParameter(const char * name, double value){
-   //
-   // set double precision parameters
-   //
+  //
+  // set double precision parameters
+  //
+  // NToysRatio: CLs parameter, ratio of number of S+B toys to 
+  //             number of B toys
+  //
+  // ConfidenceLevel: desired confidence level of produced limits
+  //
+  // PoiMax:          maximum value that POI (xsec) can take
+  //                  if negative (default), will try to guess
+  //
 
    std::string s_name(name);
 
    if (s_name.find("NToysRatio") != std::string::npos) mNToysRatio = value;
    else if (s_name.find("ConfidenceLevel") != std::string::npos) mConfidenceLevel = value;
+   else if (s_name.find("MaxPoi") != std::string::npos) mMaxPoi = value;
+   else if (s_name.find("MaxYield") != std::string::npos) mMaxYield = value;
    else{
      Info("SetParameter","Unknown parameter %s, ignored", name);
    }
@@ -982,20 +996,49 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
   // flat prior for the parameter of interest
   pWs->factory( "Uniform::prior(xsec)" );  
 
-  // floating parameters ranges
-  // crude estimates!
-  //double _obs_upper = bck+(5.0*sbck)+10.0*((double)n+1.0);
-  double _obs_upper = 4.0*(3.0+sqrt(bck)+sbck);
-  if ( (double)n > _obs_upper ) _obs_upper = (double)n;
-  pWs->var("n")        ->setRange( 0.0, _obs_upper); // ad-hoc range for obs
-  //pWs->var("xsec")     ->setRange( 0.0, 15.0*(1.0+nsig_rel_err)/ilum/eff ); // ad-hoc range for POI
 
-  // FIXME: better estimate of upper bound
-  //Double_t xsec_upper_bound = 4.0*(std::max(3.0,(double)n-bck)+sqrt((double)n)+sbck)/ilum/eff;  // ad-hoc range for POI
-  Double_t xsec_upper_bound = 4.0*(3.0+sqrt(bck)+sbck)/ilum/eff;  // ad-hoc range for POI
+  // Estimate range of observed yields
+  // if not specified explicitly
+  double _obs_upper;
+  if (mMaxYield<0.0){
+    _obs_upper = bck + 4.0*(1.29+sqrt(bck)+sbck);
+    if ( (double)n > _obs_upper ) _obs_upper = (double)n * 2.0;
+    pWs->var("n") -> setRange( 0.0, _obs_upper); // ad-hoc range for obs
+    std::cout << _legend << "Yield range guessed to be [0, " 
+	      << _obs_upper 
+	      << "]." << std::endl;
+    std::cout << _legend 
+	      << "Override with SetParameter(\"MaxYield\",value) if needed." 
+	      << std::endl;
+  }
+  else{
+    pWs->var("n") -> setRange( 0.0, mMaxYield);
+    std::cout << _legend << "User-specified yield range [0, " 
+	      << mMaxYield << "]. I won't try to adjust the range." << std::endl;
+  }
 
-  xsec_upper_bound = RoundUpperBound(xsec_upper_bound);
-  pWs->var("xsec")     ->setRange( 0.0, xsec_upper_bound );
+
+  // Estimate of upper bound on POI
+  Double_t xsec_upper_bound;
+  // Only estimate range if not specified explicitely
+  if (mMaxPoi<0.0){
+    xsec_upper_bound = 4.0*(3.0+sqrt(bck)+sbck)/ilum/eff;  // ad-hoc range for POI
+    xsec_upper_bound = RoundUpperBound(xsec_upper_bound);
+    pWs->var("xsec") -> setRange( 0.0, xsec_upper_bound );
+    std::cout << _legend << "POI range guessed to be [0, " 
+	      << xsec_upper_bound 
+	      << "]. I will try to adjust if necessary."
+	      << std::endl;
+    std::cout << _legend 
+	      << "Override with SetParameter(\"MaxPoi\",value) if needed." 
+	      << std::endl;
+  }
+  else{
+    pWs->var("xsec") -> setRange( 0.0, mMaxPoi );
+    std::cout << _legend << "User-specified POI range [0, " 
+	      << mMaxPoi << "]. I won't try to adjust the range." << std::endl;
+  }
+
 
   // observables
   RooArgSet obs(*pWs->var("n"), "obs");
@@ -1065,8 +1108,10 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
   if(SbModel.GetNuisanceParameters())
     pPoiAndNuisance->add(*SbModel.GetNuisanceParameters());
   pPoiAndNuisance->add(*SbModel.GetParametersOfInterest());
-  std::cout << "\nWill save these parameter points that correspond to the fit to data" << std::endl;
-  pPoiAndNuisance->Print("v");
+  if (mVerbosity >= mINFO){
+    std::cout << "\nWill save these parameter points that correspond to the fit to data" << std::endl;
+    pPoiAndNuisance->Print("v");
+  }
   SbModel.SetSnapshot(*pPoiAndNuisance);
   delete pProfile;
   delete pNll;
@@ -1091,8 +1136,10 @@ CL95Calc::MakeWorkspace(Double_t ilum, Double_t slum,
   if(BModel.GetNuisanceParameters())
     pPoiAndNuisance->add(*BModel.GetNuisanceParameters());
   pPoiAndNuisance->add(*BModel.GetParametersOfInterest());
-  std::cout << "\nShould use these parameter points to generate pseudo data for bkg only" << std::endl;
-  pPoiAndNuisance->Print("v");
+  if (mVerbosity >= mINFO){
+    std::cout << "\nShould use these parameter points to generate pseudo data for bkg only" << std::endl;
+    pPoiAndNuisance->Print("v");
+  }
   BModel.SetSnapshot(*pPoiAndNuisance);
   delete pProfile;
   delete pNll;
@@ -1454,7 +1501,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       // testing CLs
       //
       
-      std::cout << "[roostats_cl95]: CLs calculation is still experimental in this context!!!" << std::endl;
+      //std::cout << "[roostats_cl95]: CLs calculation is still experimental in this context!!!" << std::endl;
       
       std::cout << "[roostats_cl95]: Range of allowed cross section values: [" 
 		<< pWs->var("xsec")->getMin() << ", " 
@@ -1543,13 +1590,13 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
     if (method.find("cls")!=std::string::npos) break;
     if (method.find("fc") != std::string::npos ) break;
     // range too wide
-    else if (upper_limit < _poi_max_range/10.0){
+    else if (mMaxPoi<0.0 && upper_limit < _poi_max_range/10.0){
     //else if (upper_limit < _poi_max_range/200.0){
       std::cout << "[roostats_cl95]: POI range is too wide, will narrow the range and rerun" << std::endl;
       pWs->var("xsec")->setMax(RoundUpperBound(_poi_max_range/2.0));
     }
     // range too narrow
-    else if (upper_limit > _poi_max_range/3.0){
+    else if (mMaxPoi<0.0 && upper_limit > _poi_max_range/3.0){
       std::cout << "[roostats_cl95]: upper limit is too narrow, will widen the range and rerun" << std::endl;
       pWs->var("xsec")->setMax(RoundUpperBound(2.0*_poi_max_range));
     }
@@ -1773,7 +1820,7 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
   _result._cover68 = _cover68;
   _result._cover95 = _cover95;
 
-  pWs->Print();
+  if (mVerbosity >= mINFO) pWs->Print();
 
   return _result;
 }
@@ -2156,7 +2203,7 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
   //data->SetName("observed_data");
   //pWs->import(*data);
 
-  pWs->Print();
+  if ( GetParameter("Verbosity", int()) >= 3 ) pWs->Print();
 
   pWs->SaveAs("ws.root");
 
@@ -2882,7 +2929,9 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
 
    std::cout << "Running HypoTestInverter on the workspace " << w->GetName() << std::endl;
   
-   w->Print();
+   if (GetParameter("Verbosity",int()) >= 3){
+     w->Print();
+   }
   
   
    RooAbsData * data = w->data(dataName); 

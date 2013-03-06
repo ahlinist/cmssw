@@ -1,0 +1,6 @@
+March 5, 2013
+Gena Kukartsev
+- fixed bug in guessing the range for POI and observable
+- added option to set MaxPoi and MaxYield manually
+- reduced default verbosity setting
+
