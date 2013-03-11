@@ -1,0 +1,22 @@
+==============
+files:
+=======
+VeRawAnalyzer.cc
+remoteMonitoring_LED_cfg.py
+remoteMonitoring_NZS_cfg.py
+
+scripts (to be added):
+=======
+zratio34.C    - analysis of "bad" channels for which maximum of LED signal is away from TS3+4 and
+zRunRatio34.C - rates of these "bad" channels as function of iRun 
+zrms.C        - analysis of "bad" channels for which width of LED signal is away from mean RMS
+zcalib.C      - analysis of "bad" calibration channels with maximum of LED signal outside normal position
+zgain.C       - relative difference of channel response, collected over all TS, in 2 LED runs. 
+                Aim: to see > 5(2?)% change to start PMT/HPD gain tuning (for HB, HE, HO, HF )
+zdifampl.C    - relative difference of channel response with pedestal subtraction, collected in TS34, 
+                in 2 LED runs. 
+                Aim: to see > 5(2?)% change to start PMT/HPD gain tuning(for HB depth1,2 & HE depth1,2,3)
+
+zerrors.C     - analysis of CapIdErrors using global NZS runs
+
+============
