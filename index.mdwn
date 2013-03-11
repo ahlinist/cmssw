@@ -1,0 +1,22 @@
+---
+title: CMS Offline Software
+layout: default
+related:
+ - { name: Top, link: . }
+---
+This is a test repository to study the feasibility of maintaing CMSSW on github.
+
+# Migration strategy
+
+Migration from CVS repository uses [cvs2git][] via a custom script which
+enforces some of the migration choices detailed below. The script itself at the
+moment needs to have access to the CVSROOT of CMSSW repository.
+The following choices where done when migrating.
+
+* Migrate the full per file-history.
+* Migrate tags only for an handful of releases, in particular `CMSSW_5_3_9`,
+  `CMSSW_6_1_1` and `CMSSW_6_2_0_pre3`.
+* `data` directories are not migrated.
+* `docs` directories are not migrated.
+* Old subsystems like `Iguana`, `IgProf` (which is now maintained in a separate repository [igprof][])
+  and `ISpy` are not migrated.
