@@ -9,16 +9,17 @@ process.maxEvents = cms.untracked.PSet(
 #process.source = cms.Source("PoolSource",
 process.source = cms.Source("HcalTBSource",
     fileNames = cms.untracked.vstring(
-#	'file:USC_211154.root'
-#     'file:/tmp/zhokin/HcalNZSRAW-193-116.root'
-     'file:rfiles/USC_185396.root',
+##	'file:USC_211154.root'
+##     'file:/tmp/zhokin/HcalNZSRAW-193-116.root'
+#
+##     'file:rfiles/USC_185396.root',
      'file:rfiles/USC_187927.root',
      'file:rfiles/USC_191392.root',
      'file:rfiles/USC_194334.root',
-     'file:rfiles/USC_196597.root',
+##     'file:rfiles/USC_196597.root',
      'file:rfiles/USC_203056.root',
-     'file:rfiles/USC_210378.root',
-     'file:rfiles/USC_212179.root'
+     'file:rfiles/USC_210378.root'
+##     'file:rfiles/USC_212179.root'
    ), 
     streams = cms.untracked.vstring(
 		  "HCAL_Trigger",
@@ -32,45 +33,55 @@ process.source = cms.Source("HcalTBSource",
 )
 
 process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
-##                                  Threshold = cms.untracked.int32(5),
-##                                 DigiCollectionLabel = cms.untracked.InputTag("hcalDigis"),
-#                                  Verbosity = cms.untracked.int32(-54),
-#                                  Verbosity = cms.untracked.int32(-22),
-#                                  Verbosity = cms.untracked.int32(-11),
-#                                  Verbosity = cms.untracked.int32(-13),
+                                  #
+                                  recordNtuples = cms.untracked.bool(False),
+                                  #recordNtuples = cms.untracked.bool(True),
+                                  #recordHistoes = cms.untracked.bool(False),
+                                  recordHistoes = cms.untracked.bool(True),
+                                  #
+                                  ##DigiCollectionLabel = cms.untracked.InputTag("hcalDigis"),
+                                  #Verbosity = cms.untracked.int32(-54),
+                                  #Verbosity = cms.untracked.int32(-22),
+                                  #Verbosity = cms.untracked.int32(-11),
+                                  #Verbosity = cms.untracked.int32(-13),
+                                  #Verbosity = cms.untracked.int32(-51),
                                   Verbosity = cms.untracked.int32(0),
-#
-#                         -53 for  BAD HBHE channels from study on shape Ratio
-#                                  Verbosity = cms.untracked.int32(-53),
-                                  ratioHBMin = cms.double(0.4),
-                                  ratioHBMax = cms.double(0.7),
-                                  ratioHEMin = cms.double(0.3),
-                                  ratioHEMax = cms.double(0.8),
-#                         -54 for  BAD HBHE channels from study on RMS of shapes
-#                                  Verbosity = cms.untracked.int32(-54),
+                                  #
+                                  # -53 for  BAD HBHE channels from study on shape Ratio34
+                                  #Verbosity = cms.untracked.int32(-53),
+                                  ratioHBMin = cms.double(0.30),
+                                  ratioHBMax = cms.double(1.00),
+                                  ratioHEMin = cms.double(0.30),
+                                  ratioHEMax = cms.double(1.00),
+                                  # to see run dependence of rate of events with Nbadchannels > :
+                                  nbadchannels1 = cms.int32(5),
+                                  nbadchannels2 = cms.int32(10),
+                                  nbadchannels3 = cms.int32(20),
+                                  # -54 for  BAD HBHE channels from study on RMS of shapes
+                                  #Verbosity = cms.untracked.int32(-54),
                                   rmsHBMin = cms.double(-1.),
                                   rmsHBMax = cms.double(2.025),
                                   rmsHEMin = cms.double(-1.),
                                   rmsHEMax = cms.double(2.225),
-#                            for  BAD HBHEHOHF CALIBRATION channels from study on shape Ratio
+                                  # for  BAD HBHEHOHF CALIBRATION channels from study on shape Ratio
                                   calibratioHBMin = cms.double(0.45),
                                   calibratioHEMin = cms.double(0.7),
                                   calibratioHOMin = cms.double(0.5),
                                   calibratioHFMin = cms.double(0.2),
-#
-#
+                                  #
+                                  #
                                   HistOutFile = cms.untracked.string('test.root')
-#                                  HistOutFile = cms.untracked.string('BadRBXrun211146.root')
-#                                  HistOutFile = cms.untracked.string('BadRBXrun211154.root')
-#                                  HistOutFile = cms.untracked.string('PFGNZSRAW-run193116.root')
+                                  #HistOutFile = cms.untracked.string('BadRBXrun211146.root')
+                                  #HistOutFile = cms.untracked.string('BadRBXrun211154.root')
+                                  #HistOutFile = cms.untracked.string('PFGNZSRAW-run193116.root')
                                   #HistOutFile = cms.untracked.string('/tmp/zhokin/BadRBXrun211146.root')
                                   #HistOutFile = cms.untracked.string('/tmp/zhokin/analysisUSC211154.root')	
                                   #HistOutFile = cms.untracked.string('/tmp/zhokin/rawTest.root')
-#
-##                                  OutputFilePath = cms.string('/tmp/zhokin/'),        
-##                                  OutputFileExt = cms.string(''),
-#
-)		
+                                  #
+                                  ##OutputFilePath = cms.string('/tmp/zhokin/'),        
+                                  ##OutputFileExt = cms.string(''),
+                                  #
+                                  )		
 
 process.hcal_db_producer = cms.ESProducer("HcalDbProducer",
     dump = cms.untracked.vstring(''),
