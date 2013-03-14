@@ -17,7 +17,7 @@ process.source = cms.Source("HcalTBSource",
      'file:rfiles/USC_191392.root',
      'file:rfiles/USC_194334.root',
 ##     'file:rfiles/USC_196597.root',
-     'file:rfiles/USC_203056.root',
+#     'file:rfiles/USC_203056.root',
      'file:rfiles/USC_210378.root'
 ##     'file:rfiles/USC_212179.root'
    ), 
@@ -36,8 +36,12 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #
                                   recordNtuples = cms.untracked.bool(False),
                                   #recordNtuples = cms.untracked.bool(True),
+                                  #
                                   #recordHistoes = cms.untracked.bool(False),
                                   recordHistoes = cms.untracked.bool(True),
+                                  #
+                                  #studyRunDependenceHist = cms.untracked.bool(True),
+                                  studyRunDependenceHist = cms.untracked.bool(False),
                                   #
                                   ##DigiCollectionLabel = cms.untracked.InputTag("hcalDigis"),
                                   #Verbosity = cms.untracked.int32(-54),
