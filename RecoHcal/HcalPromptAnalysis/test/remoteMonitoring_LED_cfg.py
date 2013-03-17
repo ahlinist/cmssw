@@ -9,16 +9,24 @@ process.maxEvents = cms.untracked.PSet(
 #process.source = cms.Source("PoolSource",
 process.source = cms.Source("HcalTBSource",
     fileNames = cms.untracked.vstring(
+#      'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_212179.root',
+      'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_210378.root',
+#     'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_203056.root',
+#      'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_196597.root',
+      'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_194334.root',
+      'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_191392.root',
+      'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_187927.root',
+#      'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/USC_185396.root'
 ##	'file:USC_211154.root'
 ##     'file:/tmp/zhokin/HcalNZSRAW-193-116.root'
 #
 ##     'file:rfiles/USC_185396.root',
-     'file:rfiles/USC_187927.root',
-     'file:rfiles/USC_191392.root',
-     'file:rfiles/USC_194334.root',
+#     'file:rfiles/USC_187927.root',
+#     'file:rfiles/USC_191392.root',
+#     'file:rfiles/USC_194334.root',
 ##     'file:rfiles/USC_196597.root',
 #     'file:rfiles/USC_203056.root',
-     'file:rfiles/USC_210378.root'
+#     'file:rfiles/USC_210378.root'
 ##     'file:rfiles/USC_212179.root'
    ), 
     streams = cms.untracked.vstring(
@@ -50,6 +58,7 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #Verbosity = cms.untracked.int32(-13),
                                   #Verbosity = cms.untracked.int32(-51),
                                   Verbosity = cms.untracked.int32(0),
+				  MapCreation = cms.untracked.int32(1),
                                   #
                                   # -53 for  BAD HBHE channels from study on shape Ratio34
                                   #Verbosity = cms.untracked.int32(-53),
@@ -74,7 +83,8 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   calibratioHFMin = cms.double(0.2),
                                   #
                                   #
-                                  HistOutFile = cms.untracked.string('test.root')
+                                  HistOutFile = cms.untracked.string('test.root'),
+				  MAPOutFile = cms.untracked.string('LogEleMapdb.h')
                                   #HistOutFile = cms.untracked.string('BadRBXrun211146.root')
                                   #HistOutFile = cms.untracked.string('BadRBXrun211154.root')
                                   #HistOutFile = cms.untracked.string('PFGNZSRAW-run193116.root')
@@ -85,8 +95,7 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   ##OutputFilePath = cms.string('/tmp/zhokin/'),        
                                   ##OutputFileExt = cms.string(''),
                                   #
-                                  )		
-
+)
 process.hcal_db_producer = cms.ESProducer("HcalDbProducer",
     dump = cms.untracked.vstring(''),
     file = cms.untracked.string('')
@@ -96,7 +105,6 @@ process.hcalDigis.FilterDataQuality = cms.bool(False)
 process.hcalDigis.InputLabel = cms.InputTag("source")
 				
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = 'GR_P_V28::All'
 process.GlobalTag.globaltag = 'GR_P_V41::All'
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
@@ -110,7 +118,7 @@ process.MessageLogger = cms.Service("MessageLogger",
          threshold = cms.untracked.string('WARNING'),
 	 WARNING = cms.untracked.PSet(limit = cms.untracked.int32(0))
      )
- )
+)
 
 
 
