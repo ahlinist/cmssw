@@ -9,20 +9,10 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
 #process.source = cms.Source("HcalTBSource",
     fileNames = cms.untracked.vstring(
-#	'file:USC_211154.root'
-#     'file:/tmp/zhokin/HcalNZSRAW-193-116.root'
-     'file:/tmp/zhokin/HcalNZSRAW-199-751.root'
-   )
-#                            , 
-#    streams = cms.untracked.vstring(
-#		  "HCAL_Trigger",
-#		  "HCAL_DCC700","HCAL_DCC701","HCAL_DCC702","HCAL_DCC703","HCAL_DCC704","HCAL_DCC705",
-#		  "HCAL_DCC706","HCAL_DCC707","HCAL_DCC708","HCAL_DCC709","HCAL_DCC710","HCAL_DCC711",
-#		  "HCAL_DCC712","HCAL_DCC713","HCAL_DCC714","HCAL_DCC715","HCAL_DCC716","HCAL_DCC717",
-#		  "HCAL_DCC718","HCAL_DCC719","HCAL_DCC720","HCAL_DCC721","HCAL_DCC722","HCAL_DCC723",
-#		  "HCAL_DCC724","HCAL_DCC725","HCAL_DCC726","HCAL_DCC727","HCAL_DCC728","HCAL_DCC729",
-#		  "HCAL_DCC730","HCAL_DCC731"
-#		 )	
+     'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/HcalNZSRAW-193-116.root'
+     #     'file:/tmp/zhokin/HcalNZSRAW-193-116.root'
+     #     'file:/tmp/zhokin/HcalNZSRAW-199-751.root'
+   )	
 )
 
 process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
@@ -43,6 +33,7 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #Verbosity = cms.untracked.int32(-13),
                                   #Verbosity = cms.untracked.int32(-51),
                                   Verbosity = cms.untracked.int32(0),
+				  MapCreation = cms.untracked.int32(1),
                                   #
                                   # -53 for  BAD HBHE channels from study on shape Ratio34
                                   #Verbosity = cms.untracked.int32(-53),
@@ -67,7 +58,8 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   calibratioHFMin = cms.double(0.2),
                                   #
                                   #
-                                  HistOutFile = cms.untracked.string('testNZS.root')
+                                  HistOutFile = cms.untracked.string('testNZS.root'),
+				  MAPOutFile = cms.untracked.string('LogEleMapdb.h')
                                   #HistOutFile = cms.untracked.string('BadRBXrun211146.root')
                                   #HistOutFile = cms.untracked.string('BadRBXrun211154.root')
                                   #HistOutFile = cms.untracked.string('PFGNZSRAW-run193116.root')
@@ -86,10 +78,8 @@ process.hcal_db_producer = cms.ESProducer("HcalDbProducer",
 )
 process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
 process.hcalDigis.FilterDataQuality = cms.bool(False)
-#process.hcalDigis.InputLabel = cms.InputTag("source")
 				
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = 'GR_P_V28::All'
 process.GlobalTag.globaltag = 'GR_P_V41::All'
 process.es_prefer_GlobalTag = cms.ESPrefer('PoolDBESSource','GlobalTag')
 
