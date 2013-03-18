@@ -1,7 +1,26 @@
 from HiggsAnalysis.HeavyChHiggsToTauNu.tools.multicrabWorkflowsTools import TaskDef
-from HiggsAnalysis.HeavyChHiggsToTauNu.tools.multicrabWorkflowsTriggerEff import addMetLegSkim_53X,addQuadJetLegSkim_53X
+from HiggsAnalysis.HeavyChHiggsToTauNu.tools.multicrabWorkflowsTriggerEff import addTauLegSkim_53X,addMetLegSkim_53X,addQuadJetSkim_53X
 
-skimVersion = "V00_12_03_CMSSW537_v1"
+#skimVersion = "V00_12_03_CMSSW537_v1"
+skimVersion = "V00_12_05_CMSSW539_v1"
+
+def addTauLegSkim(datasets):
+    definitions = {
+	"TauPlusX_190456-190738_2012A_Jul13": 				TaskDef("/TauPlusX/local-Run2012A_13Jul2012_v1_AOD_190456_190738_triggerTauLeg_skim_v53_v2-3ca67b5668ffc41c3fc637191cd01817/USER"),
+        "TauPlusX_190782-190949_2012A_Aug06": 				TaskDef("/TauPlusX/local-Run2012A_recover_06Aug2012_v1_AOD_190782_190949_triggerTauLeg_skim_v53_v2-4a0e265274a3a3c62fcbddf6d3f521be/USER"),
+        "TauPlusX_191043-193621_2012A_Jul13": 				TaskDef("/TauPlusX/local-Run2012A_13Jul2012_v1_AOD_191043_193621_triggerTauLeg_skim_v53_v2-4a0e265274a3a3c62fcbddf6d3f521be/USER"),
+        "TauPlusX_193834-196531_2012B_Jul13": 				TaskDef("/TauPlusX/local-Run2012B_13Jul2012_v1_AOD_193834_196531_triggerTauLeg_skim_v53_v2-663eba0a1a1c787b38ec317ab3b7fbc4/USER"),
+        "TauPlusX_198022-198523_2012C_Aug24": 				TaskDef("/TauPlusX/local-Run2012C_24Aug2012_v1_AOD_198022_198523_triggerTauLeg_skim_v53_v2-744e53f03db2187c746febe32d910383/USER"),
+        "TauPlusX_198941-199608_2012C_Prompt": 				TaskDef("/TauPlusX/local-Run2012C_PromptReco_v2_AOD_198941_199608_triggerTauLeg_skim_v53_v2-0201062118f04784a4143f7133fbc494/USER"),
+        "TauPlusX_199698-203742_2012C_Prompt": 				TaskDef("/TauPlusX/local-Run2012C_PromptReco_v2_AOD_199698_203742_triggerTauLeg_skim_v53_v2-9d3ec449a3910d6ec6611ff095d9eeb8/USER"),
+        "TauPlusX_203777-208686_2012D_Prompt": 				TaskDef("/TauPlusX/local-Run2012D_PromptReco_v1_AOD_203777_208686_triggerTauLeg_skim_v53_v2-9d3ec449a3910d6ec6611ff095d9eeb8/USER"),
+
+        "DYToTauTau_M_20_CT10_TuneZ2star_powheg_tauola_Summer12": 	TaskDef("/DYToTauTau_M-20_CT10_TuneZ2star_8TeV-powheg-tauola-pythia6/local-Summer12_DR53X_PU_S8_START53_V7A_v1_AODSIM_triggerTauLeg_skim_v53_v2-8728052812930676480ae2a242229ec9/USER"),
+        "DYToTauTau_M_20_CT10_TuneZ2star_v2_powheg_tauola_Summer12": 	TaskDef("/DYToTauTau_M-20_CT10_TuneZ2star_v2_8TeV-powheg-tauola-pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_triggerTauLeg_skim_v53_v2-8728052812930676480ae2a242229ec9/USER"),
+    }
+
+    addTauLegSkim_53X(skimVersion, datasets, definitions)
+
 
 def addMetLegSkim(datasets):
     definitions = {

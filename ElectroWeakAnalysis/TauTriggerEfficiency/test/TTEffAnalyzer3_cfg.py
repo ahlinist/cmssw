@@ -13,6 +13,10 @@ hltType = "HLT"
 from HiggsAnalysis.HeavyChHiggsToTauNu.HChOptions import getOptionsDataVersion
 options, dataVersion = getOptionsDataVersion(dataVersion)
 
+if options.trgAnalysis == "TauLeg":
+    metLeg = False
+if options.trgAnalysis == "MetLeg":
+    metLeg = True
 
 process = cms.Process("TTEff")
 
@@ -173,7 +177,8 @@ process.commonSequence *= process.goodPrimaryVertices
 
 # Analyzer definition
 process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
-        LoopingOver	        = cms.InputTag("selectedPatTausHpsPFTau"),
+####        LoopingOver	        = cms.InputTag("selectedPatTausHpsPFTau"),
+	LoopingOver		= cms.InputTag("selectedPatTaus"),
 	PFTauDiscriminators     = cms.vstring(
             "decayModeFinding",
             "againstMuonLoose",
@@ -413,7 +418,7 @@ if not metLeg:
     process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
     #process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
     process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
-    process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
+#    process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
 else:
 #    process.runTTEffAna += process.kt6PFJets
 #    process.runTTEffAna += process.producePFMETCorrections

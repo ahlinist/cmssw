@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+analysis = "TauLeg2012"
+#analysis = "MetLeg2012"
+#analysis = "QuadJet2012"
+
 from HiggsAnalysis.HeavyChHiggsToTauNu.tools.multicrab import *
 #import ElectroWeakAnalysis.TauTriggerEfficiency.tools.multicrabDatasets as tteffDatasets
 #multicrabDatasets.datasets = tteffDatasets.datasets
@@ -12,9 +16,23 @@ import ElectroWeakAnalysis.TauTriggerEfficiency.tools.multicrabDatasets2012 as m
 
 #multicrabDatasets2011.addMetLegSkim_V00_10_11_CMSSW445_v4(multicrabWorkflows.datasets)
 #multicrabWorkflows.printAllDatasets()
-multicrabDatasetsTTEff.addMetLegSkim(multicrabWorkflows.datasets)
+if analysis[:-4] == "TauLeg":
+    multicrabDatasetsTTEff.addTauLegSkim(multicrabWorkflows.datasets)
+if analysis[:-4] == "MetLeg":
+    multicrabDatasetsTTEff.addMetLegSkim(multicrabWorkflows.datasets)
+if analysis[:-4] == "QuadJet":
+    multicrabDatasetsTTEff.addQuadJetSkim(multicrabWorkflows.datasets)
 #multicrabWorkflows.printAllDatasets()
-multicrab = Multicrab("crab.cfg_TTEffAnalyzer", "TTEffAnalyzer3_cfg.py", lumiMaskDir="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing")
+
+lumiMaskDir="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing"
+year = analysis[-4:]
+if year == "2012":
+#    lumiMaskDir="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt"
+    lumiMaskDir="../../../HiggsAnalysis/HeavyChHiggsToTauNu/test"
+
+multicrab = Multicrab("crab.cfg_TTEffAnalyzer", 
+                      "TTEffAnalyzer3_cfg.py", 
+                      lumiMaskDir=lumiMaskDir)
 
 
 # Uncomment below the datasets you want to process
@@ -51,19 +69,47 @@ datasetsMC2011 = [
         "WZ_TuneZ2_Fall11",   
         "ZZ_TuneZ2_Fall11",   
         ]
-datasetsData2012 = [
+datasetsData2012TauLeg = [
+        "TauPlusX_190456-190738_2012A_Jul13",
+#        "TauPlusX_190782-190949_2012A_Aug06",
+#        "TauPlusX_191043-193621_2012A_Jul13",
+#        "TauPlusX_193834-196531_2012B_Jul13",
+#        "TauPlusX_198022-198523_2012C_Aug24",
+#        "TauPlusX_198941-199608_2012C_Prompt",
+#        "TauPlusX_199698-203742_2012C_Prompt",
+#        "TauPlusX_203777-208686_2012D_Prompt"
+]
+datasetsMC2012TauLeg = [
+        "DYToTauTau_M_20_CT10_TuneZ2star_powheg_tauola_Summer12",
+#        "DYToTauTau_M_20_CT10_TuneZ2star_v2_powheg_tauola_Summer12"
+]
+datasetsData2012MetLeg = [
 	"Tau_190456-190738_2012A_Jul13",	# 2012A HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v2
 ]
-datasetsMC2012 = [
+datasetsMC2012MetLeg = [
 	"TTJets_TuneZ2star_Summer12",
 ]
 datasets = []
 #datasets.extend(datasetsData2011)
 #datasets.extend(datasetsMC2011)
-datasets.extend(datasetsData2012)
-datasets.extend(datasetsMC2012)
+#datasets.extend(datasetsData2012)
+#datasets.extend(datasetsMC2012)
 
-multicrab.extendDatasets("triggerMetLeg_analysis_"+multicrabDatasetsTTEff.skimVersion, datasets)
+print "Analysis",analysis
+
+if analysis == "TauLeg2012":
+    datasets.extend(datasetsData2012TauLeg)
+    datasets.extend(datasetsMC2012TauLeg)
+
+if analysis == "MetLeg2012":
+    datasets.extend(datasetsData2012MetLeg)
+    datasets.extend(datasetsMC2012MetLeg)
+
+if analysis == "QuadJet2012":
+    datasets.extend(datasetsData2012QuadJet)
+    datasets.extend(datasetsMC2012QuadJet)
+
+multicrab.extendDatasets("trigger"+analysis[:-4]+"_analysis_"+multicrabDatasetsTTEff.skimVersion, datasets)
 #multicrab.extendDatasets("triggerMetLeg_analysis_vXXX", datasets)
 multicrab.appendLineAll("GRID.maxtarballsize = 20") 
 
@@ -75,6 +121,6 @@ multicrab.appendLineAll("GRID.maxtarballsize = 20")
 
 
 # Genenerate configuration and create the crab tasks
-prefix = "multicrab_metleg"
+prefix = "multicrab_"+analysis
 configOnly=False
 multicrab.createTasks(prefix=prefix, configOnly=configOnly, codeRepo="cvs")
