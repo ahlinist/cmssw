@@ -6,6 +6,44 @@ related:
 ---
 # FAQ
 
+## Where can I learn about git, github in general?
+
+- Generic git help can be found at <http://git-scm.com/book/>.
+- github.com specific help can be found at <https://help.github.com>.
+
+## How do I clone the full CMSSW repository locally?
+
+To clone the full CMSSW repository locally you can do:
+
+    git clone git@github.com:cms-sw/cmssw.git
+
+Notice you will need a github account. Alternatively you can do:
+    
+    git clone git://github.com/cms-sw/cmssw.git
+
+for read only access. See [here][git-clone-repo] for more detailed information
+on `git clone` command.
+
+## How do I clone one single package?
+
+Git sees repository status globally, so the concept of cloning a single 
+package does not really exists. What one can do is to mask the results of
+a cloning so that only selected packages will be available. However they
+will not be independent and they will belong to the same tag / point in history.
+Let's say for example that you want only the packages in `FWCore`
+
+    mkdir cmssw
+    cd cmssw
+    git init
+    git remote add origin git://github.com/cms-sw/cmssw.git
+    git config core.sparsecheckout true
+    echo FWCore/ > .git/info/sparse-checkout
+    git pull origin master:master
+
+This will eventually be hidden behing an addpkg like helper.
+
+[git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
+
 ## How do I tell who is responsible for a given change?
 
 Let's say you want to find out who is responsible for a given
