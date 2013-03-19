@@ -200,6 +200,15 @@ TH2D* h2_n_vs_eta;
       // for different stores, as a function of instantaneous lumi (pile-up),
       // bunch-crossing (out-of-time pile-up), orbit number (beam heating) etc.
       Bool_t isMC;
+
+      Bool_t passEcalLaserFilter;
+      Bool_t passHBHENoiseFilter;
+      Bool_t passCSCTightHaloFilter;
+      Bool_t passhcalLaserEventFilter;
+      Bool_t passEcalDeadCellTriggerPrimitiveFilter;
+      Bool_t passtrackingFailureFilter;
+      Bool_t passeeBadScFilter; 
+      
       Int_t store;
       Int_t lbn;
       Int_t bx;
@@ -564,6 +573,7 @@ TH2D* h2_n_vs_eta;
       Int_t nPhotons_uncl;
       Int_t nElectrons_uncl;
       Int_t nMuons_uncl;
+      Int_t nMuonsReco;
       Int_t nNeutralHadrons_uncl;
       Int_t nHFHadrons_uncl;
       Int_t nHFEM_uncl;

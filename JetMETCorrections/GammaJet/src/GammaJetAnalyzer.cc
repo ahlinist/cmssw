@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.68 2012/09/23 23:27:31 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.69 2012/10/01 13:29:35 meridian Exp $
 //
 //
 
@@ -1189,6 +1189,47 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
     } // HLT isValid
 
+
+    if (!isMC)
+      {
+
+
+	edm::Handle<bool> ecalLaserFilter;
+	iEvent.getByLabel("ecalLaserCorrFilter",ecalLaserFilter);
+// 	if (ecalLaserFilter.isValid())
+ 	passEcalLaserFilter =  (*ecalLaserFilter);
+	
+	edm::Handle<bool> HBHENoiseFilter;
+	iEvent.getByLabel("HBHENoiseFilterResultProducer","HBHENoiseFilterResult",HBHENoiseFilter);
+	// 	if (HBHENoiseFilter.isValid())
+	passHBHENoiseFilter =  (*HBHENoiseFilter);
+	
+// 	edm::Handle<bool> CSCTightHaloFilter;
+// 	iEvent.getByLabel("CSCTightHaloFilter",CSCTightHaloFilter);
+// // 	if (CSCTightHaloFilter.isValid())
+// 	  passCSCTightHaloFilter =  (*CSCTightHaloFilter);
+	
+	edm::Handle<bool> hcalLaserEventFilter;
+	iEvent.getByLabel("hcalLaserEventFilter",hcalLaserEventFilter);
+// 	if (hcalLaserEventFilter.isValid())
+	  passhcalLaserEventFilter =  (*hcalLaserEventFilter);
+
+	edm::Handle<bool> EcalDeadCellTriggerPrimitiveFilter;
+	iEvent.getByLabel("EcalDeadCellTriggerPrimitiveFilter",EcalDeadCellTriggerPrimitiveFilter);
+// 	if (EcalDeadCellTriggerPrimitiveFilter.isValid())
+	  passEcalDeadCellTriggerPrimitiveFilter =  (*EcalDeadCellTriggerPrimitiveFilter);
+
+// 	edm::Handle<bool> trackingFailureFilter;
+// 	iEvent.getByLabel("trackingFailureFilter",trackingFailureFilter);
+// // 	if (trackingFailureFilter.isValid())
+// 	  passtrackingFailureFilter =  (*trackingFailureFilter);
+
+	edm::Handle<bool> eeBadScFilter;
+	iEvent.getByLabel("eeBadScFilter",eeBadScFilter);
+// 	if (eeBadScFilter.isValid())
+	  passeeBadScFilter =  (*eeBadScFilter);
+
+      }
 
 //--------------------------------------------------------------------------------------------------------------------------------------
 
@@ -4008,70 +4049,15 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
    } //if is MC
 
-   if (dumpBeamHaloInformations_)
-     {
-       edm::Handle<BeamHaloSummary> TheBeamHaloSummary ;
-       iEvent.getByLabel("BeamHaloSummary", TheBeamHaloSummary) ;
-
-
-       isBeamHaloIDTightPass    = false;
-       isBeamHaloIDLoosePass    = false;
-
-       isBeamHaloEcalLoosePass   = false;
-       isBeamHaloHcalLoosePass   = false;
-       isBeamHaloCSCLoosePass    = false;
-       isBeamHaloGlobalLoosePass = false;
-
-       isBeamHaloEcalTightPass   = false;
-       isBeamHaloHcalTightPass   = false;
-       isBeamHaloCSCTightPass    = false;
-       isBeamHaloGlobalTightPass = false;
-
-
-       isSmellsLikeHalo_Tag  = false;
-       isLooseHalo_Tag       = false;
-       isTightHalo_Tag       = false;
-       isExtremeTightHalo_Tag = false;
-
-
-       if(TheBeamHaloSummary.isValid()) {
-	 const BeamHaloSummary TheSummary = (*TheBeamHaloSummary.product() );
-
-	 if(TheSummary.EcalLooseHaloId())isBeamHaloEcalLoosePass   = true;
-	 if(TheSummary.HcalLooseHaloId())isBeamHaloHcalLoosePass   = true;
-
-	 if(TheSummary.EcalTightHaloId())isBeamHaloEcalTightPass   = true;
-	 if(TheSummary.HcalTightHaloId())isBeamHaloHcalTightPass   = true;
-
-	 if(TheSummary.CSCLooseHaloId())isBeamHaloCSCLoosePass    = true;
-	 if(TheSummary.CSCTightHaloId())isBeamHaloCSCTightPass    = true;
-
-	 if(TheSummary.GlobalLooseHaloId())isBeamHaloGlobalLoosePass = true;
-	 if(TheSummary.GlobalTightHaloId())isBeamHaloGlobalTightPass = true;
-
-	 if(TheSummary.EventSmellsLikeHalo())isSmellsLikeHalo_Tag = true;
-	 if(TheSummary.LooseId())isLooseHalo_Tag = true;
-	 if(TheSummary.TightId())isTightHalo_Tag = true;
-	 if(TheSummary.ExtremeTightId())isExtremeTightHalo_Tag = true;
-
-
-	 if( TheSummary.EcalLooseHaloId()  && TheSummary.HcalLooseHaloId() &&
-	     TheSummary.CSCLooseHaloId()   && TheSummary.GlobalLooseHaloId() )
-	   isBeamHaloIDLoosePass = true;
-
-	 if( TheSummary.EcalTightHaloId()  && TheSummary.HcalTightHaloId() &&
-	     TheSummary.CSCTightHaloId()   && TheSummary.GlobalTightHaloId() )
-	   isBeamHaloIDTightPass = true;
-
-       }//not empty
-
-
        edm::Handle<reco::MuonCollection> muonHandle;
        iEvent.getByLabel("muons",muonHandle);
 
-       nMuons = 0;
+       nMuonsReco = 0;
+       //       std::cout <<  muonHandle->size() << std::endl;
        for(int x=0;x < min((int) muonHandle->size(),200); x++)
 	 {
+	   //	   std::cout << "+++" << x << std::endl;
+	   ++nMuonsReco;
 	   muon_pt[x]  = (*muonHandle)[x].pt();
 	   muon_energy[x]  = (*muonHandle)[x].energy();
 	   muon_px[x]  = (*muonHandle)[x].px();
@@ -4171,8 +4157,68 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	     muon_trkLayerWithMeas[x] = (*muonHandle)[x].track()->hitPattern().trackerLayersWithMeasurement();  // chiara
 	   }
 	   
-	   nMuons++;
+
 	 }
+
+   if (dumpBeamHaloInformations_)
+     {
+       edm::Handle<BeamHaloSummary> TheBeamHaloSummary ;
+       iEvent.getByLabel("BeamHaloSummary", TheBeamHaloSummary) ;
+
+
+       isBeamHaloIDTightPass    = false;
+       isBeamHaloIDLoosePass    = false;
+
+       isBeamHaloEcalLoosePass   = false;
+       isBeamHaloHcalLoosePass   = false;
+       isBeamHaloCSCLoosePass    = false;
+       isBeamHaloGlobalLoosePass = false;
+
+       isBeamHaloEcalTightPass   = false;
+       isBeamHaloHcalTightPass   = false;
+       isBeamHaloCSCTightPass    = false;
+       isBeamHaloGlobalTightPass = false;
+
+
+       isSmellsLikeHalo_Tag  = false;
+       isLooseHalo_Tag       = false;
+       isTightHalo_Tag       = false;
+       isExtremeTightHalo_Tag = false;
+
+
+       if(TheBeamHaloSummary.isValid()) {
+	 const BeamHaloSummary TheSummary = (*TheBeamHaloSummary.product() );
+
+	 if(TheSummary.EcalLooseHaloId())isBeamHaloEcalLoosePass   = true;
+	 if(TheSummary.HcalLooseHaloId())isBeamHaloHcalLoosePass   = true;
+
+	 if(TheSummary.EcalTightHaloId())isBeamHaloEcalTightPass   = true;
+	 if(TheSummary.HcalTightHaloId())isBeamHaloHcalTightPass   = true;
+
+	 if(TheSummary.CSCLooseHaloId())isBeamHaloCSCLoosePass    = true;
+	 if(TheSummary.CSCTightHaloId())isBeamHaloCSCTightPass    = true;
+
+	 if(TheSummary.GlobalLooseHaloId())isBeamHaloGlobalLoosePass = true;
+	 if(TheSummary.GlobalTightHaloId())isBeamHaloGlobalTightPass = true;
+
+	 if(TheSummary.EventSmellsLikeHalo())isSmellsLikeHalo_Tag = true;
+	 if(TheSummary.LooseId())isLooseHalo_Tag = true;
+	 if(TheSummary.TightId())isTightHalo_Tag = true;
+	 if(TheSummary.ExtremeTightId())isExtremeTightHalo_Tag = true;
+
+
+	 if( TheSummary.EcalLooseHaloId()  && TheSummary.HcalLooseHaloId() &&
+	     TheSummary.CSCLooseHaloId()   && TheSummary.GlobalLooseHaloId() )
+	   isBeamHaloIDLoosePass = true;
+
+	 if( TheSummary.EcalTightHaloId()  && TheSummary.HcalTightHaloId() &&
+	     TheSummary.CSCTightHaloId()   && TheSummary.GlobalTightHaloId() )
+	   isBeamHaloIDTightPass = true;
+
+       }//not empty
+
+
+
 
        //cosmic muon
        edm::Handle<reco::MuonCollection>cosmicMuonHandle;
@@ -4215,6 +4261,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        }//end of for loop
 
      }
+   //   std::cout << "===" << nMuonsReco << std::endl;
    //event++;  
    m_tree->Fill();
 }
@@ -4236,6 +4283,16 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("genQScale",&genQScale,"genQScale/F");
 
   m_tree->Branch("isMC",&isMC,"isMC/O");
+
+  //MET Filters
+  m_tree->Branch("passEcalLaserFilter",&passEcalLaserFilter,"passEcalLaserFilter/O");
+  m_tree->Branch("passHBHENoiseFilter",&passHBHENoiseFilter,"passHBHENoiseFilter/O");
+  m_tree->Branch("passCSCTightHaloFilter",&passCSCTightHaloFilter,"passCSCTightHaloFilter/O");
+  m_tree->Branch("passhcalLaserEventFilter",&passhcalLaserEventFilter,"passhcalLaserEventFilter/O");
+  m_tree->Branch("passEcalDeadCellTriggerPrimitiveFilter",&passEcalDeadCellTriggerPrimitiveFilter,"passEcalDeadCellTriggerPrimitiveFilter/O");
+  m_tree->Branch("passtrackingFailureFilter",&passtrackingFailureFilter,"passtrackingFailureFilter/O");
+  m_tree->Branch("passeeBadScFilter",&passeeBadScFilter,"passeeBadScFilter/O");
+
   m_tree->Branch("store",&store,"store/I");
   m_tree->Branch("lbn",&lbn,"lbn/I");
   m_tree->Branch("bx",&bx,"bx/I");
@@ -4967,7 +5024,7 @@ GammaJetAnalyzer::beginJob()
       m_tree->Branch("isTightHalo_Tag",&isTightHalo_Tag, "isTightHalo_Tag/O");
       m_tree->Branch("isExtremeTightHalo_Tag",&isExtremeTightHalo_Tag, "isExtremeTightHalo_Tag/O");
 
-      m_tree->Branch("nMuons",&nMuons,"nMuons/I");
+      m_tree->Branch("nMuons",&nMuonsReco,"nMuons/I");
       m_tree->Branch("Muon_px",muon_px,"muon_px[nMuons]/F");
       m_tree->Branch("Muon_py",muon_py,"muon_py[nMuons]/F");
       m_tree->Branch("Muon_pz",muon_pz,"muon_pz[nMuons]/F");
