@@ -2,7 +2,8 @@
 title: CMS Offline Software
 layout: default
 related:
- - { name: Top, link: . }
+ - { name: Home, link: index.html }
+ - { name: Project, link: https://github.com/cms-sw/cmssw }
 ---
 This is a test repository to study the feasibility of maintaing CMSSW on github.
 
