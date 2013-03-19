@@ -145,6 +145,19 @@ e.g.:
 
     git grep Plugin.*
 
+which will give you:
+
+    Alignment/CSA06AlignmentAlgorithm/BuildFile:<use name=FWCore/PluginManager>
+    Alignment/CommonAlignmentAlgorithm/BuildFile.xml:<use   name="FWCore/PluginManager"/>
+    Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
+    Alignment/CommonAlignmentAlgorithm/interface/IntegratedCalibrationPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
+    Alignment/CommonAlignmentMonitor/BuildFile.xml:<use   name="FWCore/PluginManager"/>
+    Alignment/CommonAlignmentMonitor/interface/AlignmentMonitorPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
+    Alignment/CommonAlignmentMonitor/plugins/AlignmentMonitorTemplate.cc:// #include "PluginManager/ModuleDef.h"
+    Alignment/CommonAlignmentMonitor/plugins/AlignmentStats.cc:#include "FWCore/PluginManager/interface/ModuleDef.h"
+    Alignment/CommonAlignmentMonitor/plugins/BuildFile.xml:<use   name="FWCore/PluginManager"/>
+    ...
+
 for more information about `git grep` click [here](http://git-scm.com/docs/git-grep).
 
 ## How do I ask a question?
