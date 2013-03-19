@@ -667,10 +667,10 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 
   // L1 event level stuff
-  edm::Handle<l1extra::L1EtMissParticleCollection> hl1met;
-  if(iEvent.getByLabel(l1MetSrc_, hl1met)) {
-    L1MET_ = hl1met->front().et();
-  }else{
+//  edm::Handle<l1extra::L1EtMissParticleCollection> hl1met;
+//  if(iEvent.getByLabel(l1MetSrc_, hl1met)) {
+//    L1MET_ = hl1met->front().et();
+//  }else{
     edm::Handle<pat::TriggerEvent> htrigger;
     iEvent.getByLabel(patTriggerEventSrc, htrigger);
     pat::TriggerObjectRefVector l1mets = htrigger->objects(trigger::TriggerL1ETM);
@@ -697,8 +697,27 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
             }
         }
     }
-  }
-  if(iEvent.getByLabel(l1MhtSrc_, hl1met)) L1MHT_ = hl1met->front().et();
+    pat::TriggerObjectRefVector l1taus = htrigger->objects(trigger::TriggerL1TauJet);
+    for(size_t i=0; i<l1taus.size(); ++i) {
+	if(!l1taus[i]->coll("l1extraParticles:Tau")) continue;
+	l1JetIsTau_.push_back(true);
+	l1JetPt_.push_back(l1taus[i]->pt());
+	l1JetEt_.push_back(l1taus[i]->et());
+	l1JetEta_.push_back(l1taus[i]->eta());
+	l1JetPhi_.push_back(l1taus[i]->phi());
+    }
+    pat::TriggerObjectRefVector l1cenjets = htrigger->objects(trigger::TriggerL1CenJet);
+    for(size_t i=0; i<l1cenjets.size(); ++i) {
+        if(!l1cenjets[i]->coll("l1extraParticles:Central")) continue;
+        l1JetIsTau_.push_back(false);
+        l1JetPt_.push_back(l1cenjets[i]->pt());
+        l1JetEt_.push_back(l1cenjets[i]->et());
+        l1JetEta_.push_back(l1cenjets[i]->eta());
+        l1JetPhi_.push_back(l1cenjets[i]->phi());
+    }
+//  }
+
+//  if(iEvent.getByLabel(l1MhtSrc_, hl1met)) L1MHT_ = hl1met->front().et();
 
   if(!triggerBitsOnly) {
 
@@ -719,6 +738,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
 */
+/*
   // In the new format the names are not in the event data,
   // They are in the ParameterSet registry                 
   edm::Handle<L1GlobalTriggerObjectMaps> gtObjectMaps;
@@ -742,40 +762,45 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
-
+*/
   }
-
+/*
   edm::Handle<l1extra::L1JetParticleCollection> hl1taus;
   edm::Handle<l1extra::L1JetParticleCollection> hl1cenjets;
 
   if(!triggerBitsOnly) {
-
-  iEvent.getByLabel(l1TauSrc_, hl1taus);
-  iEvent.getByLabel(l1CenSrc_, hl1cenjets);
+//  iEvent.getByLabel(l1TauSrc_, hl1taus);
+//  iEvent.getByLabel(l1CenSrc_, hl1cenjets);
   edm::Handle<L1GctJetCandCollection> l1digis;
   iEvent.getByLabel("cenJets",l1digis);
 
-  l1extra::L1JetParticleCollection::const_iterator iJet;
-  for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet) {
-    l1JetIsTau_.push_back(true);
-    l1JetPt_.push_back(iJet->pt());
-    l1JetEt_.push_back(iJet->et());
-    if(l1digis.isValid())
-    l1JetRank_.push_back(iJet->gctJetCand()->rank());
-    l1JetEta_.push_back(iJet->eta());
-    l1JetPhi_.push_back(iJet->phi());
+  if(iEvent.getByLabel(l1TauSrc_, hl1taus)){
+    l1extra::L1JetParticleCollection::const_iterator iJet;
+    for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet) {
+      l1JetIsTau_.push_back(true);
+      l1JetPt_.push_back(iJet->pt());
+      l1JetEt_.push_back(iJet->et());
+      if(l1digis.isValid())
+        l1JetRank_.push_back(iJet->gctJetCand()->rank());
+      l1JetEta_.push_back(iJet->eta());
+      l1JetPhi_.push_back(iJet->phi());
+    }
   }
 
-  for(iJet = hl1cenjets->begin(); iJet != hl1cenjets->end(); ++iJet) {
-    l1JetIsTau_.push_back(false);
-    l1JetPt_.push_back(iJet->pt());
-    l1JetEt_.push_back(iJet->et());
-    if(l1digis.isValid())
-    l1JetRank_.push_back(iJet->gctJetCand()->rank());
-    l1JetEta_.push_back(iJet->eta());
-    l1JetPhi_.push_back(iJet->phi());
+  if(iEvent.getByLabel(l1CenSrc_, hl1cenjets)){
+    l1extra::L1JetParticleCollection::const_iterator iJet;
+    for(iJet = hl1cenjets->begin(); iJet != hl1cenjets->end(); ++iJet) {
+      l1JetIsTau_.push_back(false);
+      l1JetPt_.push_back(iJet->pt());
+      l1JetEt_.push_back(iJet->et());
+      if(l1digis.isValid())
+        l1JetRank_.push_back(iJet->gctJetCand()->rank());
+      l1JetEta_.push_back(iJet->eta());
+      l1JetPhi_.push_back(iJet->phi());
+    }
   }
   }
+*/
 
   // L2 stuff
   edm::Handle<reco::L2TauInfoAssociation> hl2TauAssoc; // association from L2 calo jets to tau info
@@ -827,6 +852,32 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       float jetMinDR = 99999999.;
       double jetMaxEt = 0;
       unsigned jetsInMatchingCone = 0;
+
+      for(size_t i=0; i<l1taus.size(); ++i) {
+	double DR = deltaR(*l1taus[i], *jet);
+        if(DR < l1JetMatchingCone_) {
+          ++jetsInMatchingCone;
+          if((l1SelectNearest_ && DR < jetMinDR) ||
+             (!l1SelectNearest_ && l1taus[i]->et() > jetMaxEt)) {
+            foundL1 = l1JetIndex;
+            jetMinDR = DR;
+            jetMaxEt = l1taus[i]->et();
+          }
+        }
+      }
+      for(size_t i=0; i<l1cenjets.size(); ++i) {
+        double DR = deltaR(*l1cenjets[i], *jet);
+        if(DR < l1JetMatchingCone_) {
+          ++jetsInMatchingCone;
+          if((l1SelectNearest_ && DR < jetMinDR) ||
+             (!l1SelectNearest_ && l1cenjets[i]->et() > jetMaxEt)) {
+            foundL1 = l1JetIndex;
+            jetMinDR = DR;
+            jetMaxEt = l1cenjets[i]->et();
+          }
+        }
+      }
+/*
       l1extra::L1JetParticleCollection::const_iterator iJet;
       for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet, ++l1JetIndex) {
         double DR = deltaR(*iJet, *jet);
@@ -852,6 +903,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
           }
         }
       }
+*/
       PFJet_matchedL1_.push_back(foundL1);
       PFJet_l1JetsInMatchingCone_.push_back(jetsInMatchingCone);
       PFJet_l1JetMatchDR_.push_back(jetMinDR);
@@ -906,6 +958,31 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     jetMinDR = 99999999.;
     double jetMaxEt = 0;
     unsigned jetsInMatchingCone = 0;
+    for(size_t i=0; i<l1taus.size(); ++i) {
+      double DR = deltaR(*l1taus[i], tau);
+      if(DR < l1JetMatchingCone_) {
+	++jetsInMatchingCone;
+	if((l1SelectNearest_ && DR < jetMinDR) ||
+	   (!l1SelectNearest_ && l1taus[i]->et() > jetMaxEt)) {
+	  foundL1 = l1JetIndex;
+	  jetMinDR = DR;
+	  jetMaxEt = l1taus[i]->et();
+	}
+      }
+    }
+    for(size_t i=0; i<l1cenjets.size(); ++i) {
+      double DR = deltaR(*l1cenjets[i], tau);
+      if(DR < l1JetMatchingCone_) {
+	++jetsInMatchingCone;
+	if((l1SelectNearest_ && DR < jetMinDR) ||
+	   (!l1SelectNearest_ && l1cenjets[i]->et() > jetMaxEt)) {
+	  foundL1 = l1JetIndex;
+	  jetMinDR = DR;
+	  jetMaxEt = l1cenjets[i]->et();
+	}
+      }
+    }
+    /*
     l1extra::L1JetParticleCollection::const_iterator iJet;
     for(iJet = hl1taus->begin(); iJet != hl1taus->end(); ++iJet, ++l1JetIndex) {
       double DR = deltaR(*iJet, tau);
@@ -931,6 +1008,7 @@ void TTEffAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
         }
       }
     }
+    */
     PFTau_matchedL1_.push_back(foundL1);
     PFTau_l1JetsInMatchingCone_.push_back(jetsInMatchingCone);
     PFTau_l1JetMatchDR_.push_back(jetMinDR);
