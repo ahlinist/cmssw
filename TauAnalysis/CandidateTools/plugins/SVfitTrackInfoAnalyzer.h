@@ -183,7 +183,7 @@ class SVfitTrackInfoAnalyzer : public edm::EDAnalyzer
       residualU2_                    = dqmStore.book1D("residualU2",                    "residualU2",                    2000,          -0.1,        +0.1);
       sigmaU2_                       = dqmStore.book1D("sigmaU2",                       "sigmaU2",                       1000,           0.,          0.1);
       pullU2_                        = dqmStore.book1D("pullU2",                        "pullU2",                         500,         -25.,         +25.);
-      residualU3_                    = dqmStore.book1D("residualU3",                    "residualU3",                    2000,          -0.1,        +0.1);
+      residualU3_                    = dqmStore.book1D("residualU3",                    "residualU3",                    2000,          -1.0,        +1.0);
       sigmaU3_                       = dqmStore.book1D("sigmaU3",                       "sigmaU3",                       1000,           0.,          0.1);
       pullU3_                        = dqmStore.book1D("pullU3",                        "pullU3",                         500,         -25.,         +25.);
 
