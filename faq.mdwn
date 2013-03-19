@@ -135,6 +135,17 @@ which returns:
         boost::shared_ptr<ParameterSet> parameterSet = processDesc->getProcessPSet();
         //std::cerr << parameterSet->dump() << std::endl;
 
+## How can I find something in the repository?
+
+From a CMSSW.git cloned area you can simply do:
+
+    git grep <reg-expr>
+
+e.g.:
+
+    git grep Plugin.*
+
+for more information about `git grep` click [here](http://git-scm.com/docs/git-grep).
 
 ## How do I ask a question?
 
