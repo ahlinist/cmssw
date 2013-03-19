@@ -14,7 +14,7 @@ selectedPatMuonsHighPurityFilter = cms.EDFilter("PATCandViewCountFilter",
 )
 
 vetoPatMuonsHighPurity = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("patMuons"),
+    src = cms.InputTag("selectedPatMuons"),
     cut = cms.string("pt() > 15 && abs(eta()) < 2.4 && isGlobalMuon() && "+pfRelIso+" < 0.15")
 )                     
 vetoPatMuonsHighPurityFilter = cms.EDFilter(
@@ -25,10 +25,11 @@ vetoPatMuonsHighPurityFilter = cms.EDFilter(
 )
 
 selectedPatTausHpsPFTauHighPurity = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag("selectedPatTausHpsPFTau"),
+    src = cms.InputTag("selectedPatTaus"),
     cut = cms.string("leadPFChargedHadrCand().isNonnull() && leadPFChargedHadrCand().pt() > 20"
-                     " && tauID('againstElectronMedium') && tauID('againstMuonTight')"
-                     " && tauID('decayModeFinding') && tauID('byTightIsolation')"
+##                     " && tauID('againstElectronMedium') && tauID('againstMuonTight')"
+                     " && tauID('decayModeFinding')"
+##                   " && tauID('byTightCombinedIsolationDeltaBetaCorr')"
                      " && signalPFChargedHadrCands().size() == 1"
                      )
 )
