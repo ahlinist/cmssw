@@ -6,7 +6,7 @@ dataVersion="53XmcS10"
 #isData = False
 runL1Emulator = False
 runOpenHLT = False
-metLeg = True
+metLeg = False
 hltType = "HLT"
 #hltType = "TEST"
 
@@ -53,7 +53,8 @@ if dataVersion.isMC():
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
 #       "file:TTEffSkim.root"
-	"root://madhatter.csc.fi:1094/pnfs/csc.fi/data/cms/store/group/local/HiggsChToTauNuFullyHadronic/TriggerMETLeg/CMSSW_5_3_X/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_analysis_metleg_v53_v1/638a70bdbf1f7414f9f442a75689ed2b/pattuple_486_2_ZHP.root"
+#	"root://madhatter.csc.fi:1094/pnfs/csc.fi/data/cms/store/group/local/HiggsChToTauNuFullyHadronic/TriggerMETLeg/CMSSW_5_3_X/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_analysis_metleg_v53_v1/638a70bdbf1f7414f9f442a75689ed2b/pattuple_486_2_ZHP.root"
+	"root://madhatter.csc.fi:1094/pnfs/csc.fi/data/cms/store/group/local/HiggsChToTauNuFullyHadronic/TriggerTauLeg/CMSSW_5_3_X/DYToTauTau_M-20_CT10_TuneZ2star_8TeV-powheg-tauola-pythia6/Summer12_DR53X_PU_S8_START53_V7A_v1_AODSIM_triggerTauLeg_skim_v53_v2/8728052812930676480ae2a242229ec9/pattuple_32_1_0N1.root"
 #        "file:/tmp/slehti/TauTriggerEff_DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola_Summer12_PU_S8_START52_V9_v1_AODSIM_TTEffSkim_v525_V00_10_04_v2_TTEffSkim_70_1_hQW.root"
         )
     )
@@ -138,9 +139,19 @@ if dataVersion.isMC():
 	process.TauMCProducer
     )
 
+from HiggsAnalysis.HeavyChHiggsToTauNu.HChPrimaryVertex import *
+addPrimaryVertexSelection(process,process.commonSequence)
+process.selectedPrimaryVertexFilter = cms.EDFilter("VertexCountFilter",
+                                                    src = cms.InputTag("selectedPrimaryVertex"),
+                                                    minNumber = cms.uint32(1),
+                                                    maxNumber = cms.uint32(999)
+                                                    )
+process.commonSequence *= process.selectedPrimaryVertexFilter
+
 # Reproduce the mu-tau pair objects, as they are not kept in the skim at the moment
 import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
 process.muTauPairs = zmutau.muTauPairs.clone()
+process.muTauPairs.decay = cms.string('selectedPatMuons@+ selectedPatTaus@-')
 process.commonSequence *= process.muTauPairs
 
 # Correction of reco::PFJets (from 5xy configuration due to JetMETCorrections/Modules ...
@@ -162,7 +173,7 @@ process.ak5PFL1L2L3 = cms.ESProducer('JetCorrectionESChain',
     correctors = cms.vstring('ak5PFL1Offset','ak5PFL2Relative','ak5PFL3Absolute')
 )
 process.ak5PFJetsL1L2L3   = cms.EDProducer('PFJetCorrectionProducer',
-     src         = cms.InputTag('ak5PFJets'),
+    src         = cms.InputTag('ak5PFJets'),
     correctors  = cms.vstring('ak5PFL1L2L3')
 )
 ####process.commonSequence *= process.ak5PFJetsL1L2L3
@@ -195,14 +206,14 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
             "againstElectronMediumMVA3",
             "againstElectronTightMVA3",
             "againstElectronVTightMVA3",
-            "byVLooseIsolation",
-            "byLooseIsolation",
-            "byMediumIsolation",
-            "byTightIsolation",
-            "byVLooseIsolationDeltaBetaCorr",
-            "byLooseIsolationDeltaBetaCorr",
-            "byMediumIsolationDeltaBetaCorr",
-            "byTightIsolationDeltaBetaCorr",
+#            "byVLooseIsolation",
+#            "byLooseIsolation",
+#            "byMediumIsolation",
+#            "byTightIsolation",
+#            "byVLooseIsolationDeltaBetaCorr",
+#            "byLooseIsolationDeltaBetaCorr",
+#            "byMediumIsolationDeltaBetaCorr",
+#            "byTightIsolationDeltaBetaCorr",
             "byVLooseCombinedIsolationDeltaBetaCorr",
             "byLooseCombinedIsolationDeltaBetaCorr",
             "byMediumCombinedIsolationDeltaBetaCorr",
@@ -275,8 +286,8 @@ process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer2",
         HltResults      = cms.InputTag("TriggerResults","",hltType),
 	TriggerEvent    = cms.InputTag("hltTriggerSummaryAOD","",hltType),
 	PatTriggerEvent = cms.InputTag("patTriggerEvent"),
-#        HltObjectFilter = cms.InputTag("hltPFTau35TrackPt20LooseIsoProng2","",hltType),   
-        HltObjectFilter = cms.InputTag("hltQuadJet80L1FastJet","",hltType),
+        HltObjectFilter = cms.InputTag("hltPFTau35TrackPt20LooseIsoProng2","",hltType),   
+#        HltObjectFilter = cms.InputTag("hltQuadJet80L1FastJet","",hltType),
         HltPaths = cms.vstring(
             "HLT_IsoMu17_v5", "HLT_IsoMu17_v6", "HLT_IsoMu17_v8", "HLT_IsoMu17_v9", "HLT_IsoMu17_v10", "HLT_IsoMu17_v11", "HLT_IsoMu17_v13", "HLT_IsoMu17_v14",
             "HLT_IsoMu17_eta2p1_v1",
@@ -413,7 +424,17 @@ process.TTEffAnalysisMETLeg = process.TTEffAnalysisHLTPFTauHPS.clone(
     triggerBitsOnly = cms.bool(True)
 )
 
+process.load("HiggsAnalysis.HeavyChHiggsToTauNu.HChGlobalElectronVetoFilter_cfi")
+process.load("HiggsAnalysis.HeavyChHiggsToTauNu.HChGlobalMuonVetoFilter_cfi")   
+process.hPlusGlobalElectronVetoFilter.filter = False
+process.hPlusGlobalMuonVetoFilter.filter     = False
+process.TFileService = cms.Service("TFileService",fileName = cms.string('tfileservice.root'))
+#from HiggsAnalysis.HeavyChHiggsToTauNu.HChPrimaryVertex import *
+#addPrimaryVertexSelection(process,process.commonSequence)
+
 process.runTTEffAna = cms.Path(process.commonSequence)
+process.runTTEffAna += process.hPlusGlobalElectronVetoFilter
+process.runTTEffAna += process.hPlusGlobalMuonVetoFilter
 if not metLeg:
     process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
     #process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
