@@ -134,3 +134,9 @@ which returns:
         //std::cerr << parameterSet->dump() << std::endl;
 
 
+## How do I ask a question?
+
+If you have more questions about git and CMSSW on git, please use [this
+form][new-faq-form].
+
+[new-faq-form]: https://github.com/cms-sw/cmssw/issues/new
