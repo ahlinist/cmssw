@@ -52,13 +52,13 @@ This will eventually be hidden behing an `addpkg` like helper.
 Let's say you want to find out who is responsible for a given
 change in `FWCore/Framework/BuildFile.xml`. If you are happy with using
 the web based GUI you can simply browse to the given file ([click
-here](https://github.com/ktf/cmssw/blob/master/FWCore/Framework/BuildFile.xml)
+here](https://github.com/cms-sw/cmssw/blob/master/FWCore/Framework/BuildFile.xml)
 for this particular example). Then click on the "Blame" button (again [click
-here](https://github.com/ktf/cmssw/blame/master/FWCore/Framework/BuildFile.xml)
+here](https://github.com/cms-sw/cmssw/blame/master/FWCore/Framework/BuildFile.xml)
 for the particular example). You can get the full information about a given change
 (including which files changed in the same commit) by clicking on the 
 specific commit-id (the hash in the left column, [for example
-bd2fd326](https://github.com/ktf/cmssw/commit/bd2fd32657121cda0cc132a98b3b0d68773788b8)).
+bd2fd326](https://github.com/cms-sw/cmssw/commit/bd2fd32657121cda0cc132a98b3b0d68773788b8)).
 
 Alternatively if you prefer doing it from the command line, you can use the
 `git blame` command to find out for each line which `commit-id` is responsible
