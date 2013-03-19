@@ -6,17 +6,15 @@ dataVersion="53XmcS10"
 #isData = False
 runL1Emulator = False
 runOpenHLT = False
-metLeg = False
+analysis = "TauLeg"
 hltType = "HLT"
 #hltType = "TEST"
 
 from HiggsAnalysis.HeavyChHiggsToTauNu.HChOptions import getOptionsDataVersion
 options, dataVersion = getOptionsDataVersion(dataVersion)
 
-if options.trgAnalysis == "TauLeg":
-    metLeg = False
-if options.trgAnalysis == "MetLeg":
-    metLeg = True
+if not options.trgAnalysis == "":
+    analysis = options.trgAnalysis
 
 process = cms.Process("TTEff")
 
@@ -424,6 +422,11 @@ process.TTEffAnalysisMETLeg = process.TTEffAnalysisHLTPFTauHPS.clone(
     triggerBitsOnly = cms.bool(True)
 )
 
+process.TTEffAnalysisQuadJet = process.TTEffAnalysisHLTPFTauHPS.clone(
+    outputFileName  = "tteffAnalysis-quadjet.root",
+    triggerBitsOnly = cms.bool(True)
+)
+
 process.load("HiggsAnalysis.HeavyChHiggsToTauNu.HChGlobalElectronVetoFilter_cfi")
 process.load("HiggsAnalysis.HeavyChHiggsToTauNu.HChGlobalMuonVetoFilter_cfi")   
 process.hPlusGlobalElectronVetoFilter.filter = False
@@ -435,17 +438,19 @@ process.TFileService = cms.Service("TFileService",fileName = cms.string('tfilese
 process.runTTEffAna = cms.Path(process.commonSequence)
 process.runTTEffAna += process.hPlusGlobalElectronVetoFilter
 process.runTTEffAna += process.hPlusGlobalMuonVetoFilter
-if not metLeg:
+if analysis == "TauLeg":
     process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
     #process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
     process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPS
 #    process.runTTEffAna += process.TTEffAnalysisHLTPFTauMediumHPSL2Global
-else:
+if analysis == "MetLeg":
 #    process.runTTEffAna += process.kt6PFJets
 #    process.runTTEffAna += process.producePFMETCorrections
     process.runTTEffAna += process.TTEffAnalysisMETLeg
 ####    if isData:
 ####	process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
+if analysis == "QuadJet":
+    process.runTTEffAna += process.TTEffAnalysisQuadJet
 
 # The high purity selection (mainly for H+)
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
@@ -530,9 +535,8 @@ process.schedule = cms.Schedule(
     process.runTTEffAnaHighPurity
 #    ,process.outpath
 )
-if metLeg:
+if analysis == "MetLeg" or analysis == "QuadJet":
     process.schedule = cms.Schedule(
-#        process.runMETCleaning,
         process.runTTEffAna
 #	,process.outpath
     )
