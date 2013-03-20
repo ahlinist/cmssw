@@ -185,11 +185,11 @@ void RemoteMonitoringMAP(const char* fname = "test.root")
 // TEST    
       Map->SetBinContent(1,4,0.7);
       NWarn += 1;
-      Eta[1][NWarn]=1-41; Phi[1][NWarn]=4-1;  Depth[1][NWarn]=1;
+      Eta[1][NWarn]=1-41; Phi[1][NWarn]=7-1;  Depth[1][NWarn]=1;
       Comment[1][NWarn]="TEST";
       Map->SetBinContent(80,56,0.7);
       NWarn += 1;
-      Eta[1][NWarn]=80-41; Phi[1][NWarn]=56-1; Depth[1][NWarn]=2;
+      Eta[1][NWarn]=80-41; Phi[1][NWarn]=57-1; Depth[1][NWarn]=2;
       Comment[1][NWarn]="TEST";
        
       Map->SetBinContent(15,10,1.);
