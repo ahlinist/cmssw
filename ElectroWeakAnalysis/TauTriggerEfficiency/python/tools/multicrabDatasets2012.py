@@ -2,7 +2,7 @@ from HiggsAnalysis.HeavyChHiggsToTauNu.tools.multicrabWorkflowsTools import Task
 from HiggsAnalysis.HeavyChHiggsToTauNu.tools.multicrabWorkflowsTriggerEff import addTauLegSkim_53X,addMetLegSkim_53X,addQuadJetSkim_53X
 
 #skimVersion = "V00_12_03_CMSSW537_v1"
-skimVersion = "V00_12_05_CMSSW539_v1"
+skimVersion = "V00_12_05_CMSSW537p6_v1"
 
 def addTauLegSkim(datasets):
     definitions = {
@@ -23,6 +23,50 @@ def addTauLegSkim(datasets):
 
 
 def addMetLegSkim(datasets):
+    definitions = {
+        "Tau_190456-190738_2012A_Jul13":                TaskDef("/Tau/local-Run2012A_13Jul2012_v1_AOD_190456_190738_triggerMetLeg_skim_v53_v2-213f3f77afa722905dc0ce5ce7597bca/USER"),
+        "Tau_190782-190949_2012A_Aug06":                TaskDef("/Tau/local-Run2012A_recover_06Aug2012_v1_AOD_190782_190949_triggerMetLeg_skim_v53_v2-0e21f8367f184cd38d906ca6ced7b830/USER"),
+        "Tau_191043-193621_2012A_Jul13":                TaskDef("/Tau/local-Run2012A_13Jul2012_v1_AOD_191043_193621_triggerMetLeg_skim_v53_v2-62478b3be0d9ff7809b16dff1575cafa/USER"),
+        "Tau_193834-196531_2012B_Jul13":                TaskDef("/Tau/local-Run2012B_13Jul2012_v1_AOD_193834_196531_triggerMetLeg_skim_v53_v2-1e56d0198e950718da01ef6c534d1a08/USER"),
+        "Tau_198022-198523_2012C_Aug24":                TaskDef("/Tau/local-Run2012C_24Aug2012_v1_AOD_198022_198523_triggerMetLeg_skim_v53_v2-e60f6c72afa479d1fe2c6961810cbbfe/USER"),
+        "Tau_198941-200601_2012C_Prompt":               TaskDef("/Tau/local-Run2012C_PromptReco_v2_AOD_198941_200601_triggerMetLeg_skim_v53_v2-7eacfb6ed5a0df48331061e03d5fe86e/USER"),
+        "Tau_200961-202504_2012C_Prompt":               TaskDef("/Tau/local-Run2012C_PromptReco_v2_AOD_200961_202504_triggerMetLeg_skim_v53_v2-095e5d8c31759686e6fb7203de4796b0/USER"),
+        "Tau_202792-203742_2012C_Prompt":               TaskDef("/Tau/local-Run2012C_PromptReco_v2_AOD_202792_203742_triggerMetLeg_skim_v53_v2-a6d3d28828969820827adc8b02337486/USER"),
+        "Tau_203777-208686_2012D_Prompt":               TaskDef("/Tau/local-Run2012D_PromptReco_v1_AOD_203777_208686_triggerMetLeg_skim_v53_v2-a6d3d28828969820827adc8b02337486/USER"),
+        
+        "QCD_Pt30to50_TuneZ2star_Summer12":             TaskDef("/QCD_Pt-30to50_TuneZ2star_8TeV_pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt50to80_TuneZ2star_Summer12":             TaskDef("/QCD_Pt-50to80_TuneZ2star_8TeV_pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt80to120_TuneZ2star_Summer12":            TaskDef("/QCD_Pt-80to120_TuneZ2star_8TeV_pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v3_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt120to170_TuneZ2star_Summer12":           TaskDef("/QCD_Pt-120to170_TuneZ2star_8TeV_pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v3_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt170to300_TuneZ2star_Summer12":           TaskDef("/QCD_Pt-170to300_TuneZ2star_8TeV_pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt170to300_TuneZ2star_v2_Summer12":        TaskDef("/QCD_Pt-170to300_TuneZ2star_8TeV_pythia6_v2/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt300to470_TuneZ2star_Summer12":           TaskDef("/QCD_Pt-300to470_TuneZ2star_8TeV_pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt300to470_TuneZ2star_v2_Summer12":        TaskDef("/QCD_Pt-300to470_TuneZ2star_8TeV_pythia6_v2/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "QCD_Pt300to470_TuneZ2star_v3_Summer12":        TaskDef("/QCD_Pt-300to470_TuneZ2star_8TeV_pythia6_v3/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        
+        "WW_TuneZ2star_Summer12":                       TaskDef("/WW_TuneZ2star_8TeV_pythia6_tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "WZ_TuneZ2star_Summer12":                       TaskDef("/WZ_TuneZ2star_8TeV_pythia6_tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "ZZ_TuneZ2star_Summer12":                       TaskDef("/ZZ_TuneZ2star_8TeV_pythia6_tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "TTJets_TuneZ2star_Summer12":                   TaskDef("/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "WJets_TuneZ2star_v1_Summer12":                 TaskDef("/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "WJets_TuneZ2star_v2_Summer12":                 TaskDef("/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "W1Jets_TuneZ2star_Summer12":                   TaskDef("/W1JetsToLNu_TuneZ2Star_8TeV-madgraph/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "W2Jets_TuneZ2star_Summer12":                   TaskDef("/W2JetsToLNu_TuneZ2Star_8TeV-madgraph/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "W3Jets_TuneZ2star_Summer12":                   TaskDef("/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "W4Jets_TuneZ2star_Summer12":                   TaskDef("/W4JetsToLNu_TuneZ2Star_8TeV-madgraph/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "DYJetsToLL_M50_TuneZ2star_Summer12":           TaskDef("/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "DYJetsToLL_M10to50_TuneZ2star_Summer12":       TaskDef("/DYJetsToLL_M-10To50_TuneZ2Star_8TeV-madgraph/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "T_t-channel_TuneZ2star_Summer12":              TaskDef("/T_t-channel_TuneZ2star_8TeV-powheg-tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "Tbar_t-channel_TuneZ2star_Summer12":           TaskDef("/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "T_tW-channel_TuneZ2star_Summer12":             TaskDef("/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "Tbar_tW-channel_TuneZ2star_Summer12":          TaskDef("/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "T_s-channel_TuneZ2star_Summer12":              TaskDef("/T_s-channel_TuneZ2star_8TeV-powheg-tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+        "Tbar_s-channel_TuneZ2star_Summer12":           TaskDef("/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/local-Summer12_DR53X_PU_S10_START53_V7A_v1_AODSIM_triggerMetLeg_skim_v53_v2-81c88d482dfcc6722e719d6aad502c85/USER"),
+    }
+        
+    addMetLegSkim_53X(skimVersion, datasets, definitions)
+
+def addMetLegSkim_V00_12_03_CMSSW537_v1(datasets):
     definitions = {
 	"Tau_190456-190738_2012A_Jul13":		TaskDef("/Tau/local-Run2012A_13Jul2012_v1_AOD_190456_190738_analysis_metleg_v53_v1-165ff7ea0b6b7dc6426443c42f2a9122/USER"),
 	"Tau_190782-190949_2012A_Aug06":             	TaskDef("/Tau/local-Run2012A_recover_06Aug2012_v1_AOD_190782_190949_analysis_metleg_v53_v1-de59482928f61dc06955dcb204f66afe/USER"),
@@ -67,7 +111,7 @@ def addMetLegSkim(datasets):
     addMetLegSkim_53X(skimVersion, datasets, definitions)
 
 
-def addQuadJetLegSkim(datasets):
+def addQuadJetSkim(datasets):
     definitions = {
 
         "QCD_Pt30to50_TuneZ2star_Summer12":             TaskDef("/QCD_Pt-30to50_TuneZ2star_8TeV_pythia6/local-Summer12_DR53X_PU_S10_START53_V7A_v2_AODSIM_analysis_quadjetleg_v53_v1-62bd3915f912e9f9a79b2505deb22977/USER"),
@@ -110,4 +154,4 @@ def addQuadJetLegSkim(datasets):
         "SingleMu_203777-208686_2012D_Prompt":          TaskDef(""),
     }
 
-    addQuadJetLegSkim_53X(skimVersion, datasets, definitions)
+    addQuadJetSkim_53X(skimVersion, datasets, definitions)
