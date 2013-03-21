@@ -21,7 +21,7 @@
 
 using namespace std;
 
-void RemoteMonitoringMAP(const char* fname = "test.root")
+void RemoteMonitoringMAP(const char* fname = "test7runs.root")
 {
     gROOT->Reset();
     gROOT->SetStyle("Plain");
@@ -42,22 +42,30 @@ void RemoteMonitoringMAP(const char* fname = "test.root")
 //======================================================================
 // Prepare histograms and plot them to .png files
 
-  TH2F *Map2maxTStoAllTSRatioHB[4];
-  TH2F *Map2maxTStoAllTSRatioHE[4];
+ 
   TCanvas *cHB = new TCanvas("cHB","cHB",1000,400);
   TCanvas *cHE = new TCanvas("cHE","cHE",1500,400);
+  TCanvas *cONE = new TCanvas("cONE","cONE",500,500);
   
   char *str = (char*)alloca(10000);
+
+
+//+++++++++++++++++++  
+//Test 1. Amplitude
+//+++++++++++++++++++
+  
+
+  TH2F *Map2maxTStoAllTSRatioHB[4];
+  TH2F *Map2maxTStoAllTSRatioHE[4];
       
   Map2maxTStoAllTSRatioHB[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl_HB");
   Map2maxTStoAllTSRatioHB[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl_HB"); 
-  Map2maxTStoAllTSRatioHB[3] = (TH2F*)hfile->Get("h_mapDepth3Ampl_HB"); 
   
   Map2maxTStoAllTSRatioHE[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl_HE");
   Map2maxTStoAllTSRatioHE[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl_HE"); 
   Map2maxTStoAllTSRatioHE[3] = (TH2F*)hfile->Get("h_mapDepth3Ampl_HE");   
 
-//HB
+//1 HB
   cHB->Divide(2,1);
   for (int i=1;i<=2;i++) {
      cHB->cd(i);  
@@ -79,7 +87,7 @@ void RemoteMonitoringMAP(const char* fname = "test.root")
   cHB->Print("Map2maxTStoAllTSRatioHB.png"); 
   cHB->Clear();
 
-//HE
+//1 HE
   cHE->Divide(3,1);
   for (int i=1;i<=3;i++) {
      cHE->cd(i);  
@@ -101,6 +109,221 @@ void RemoteMonitoringMAP(const char* fname = "test.root")
   cHE->Print("Map2maxTStoAllTSRatioHE.png"); 
   cHE->Clear();
 
+//+++++++++++++++++++++++++++++  
+//Test 2 Rate of 34 TS/ All TS   
+//+++++++++++++++++++++++++++++
+
+  TH2F *MapAmpl047_HB[4];
+  TH2F *MapAmpl047_HE[4];
+  
+  TH2F *Map_HB[4];
+  TH2F *Map_HE[4];
+  
+  TH1F *HistAmplHB;
+  TH1F *HistAmplHE;
+  
+  MapAmpl047_HB[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl047_HB");
+  MapAmpl047_HB[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl047_HB");   
+  MapAmpl047_HE[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl047_HE");
+  MapAmpl047_HE[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl047_HE"); 
+  MapAmpl047_HE[3] = (TH2F*)hfile->Get("h_mapDepth3Ampl047_HE"); 
+  
+  Map_HB[1] = (TH2F*)hfile->Get("h_mapDepth1_HB");
+  Map_HB[2] = (TH2F*)hfile->Get("h_mapDepth2_HB");   
+  Map_HE[1] = (TH2F*)hfile->Get("h_mapDepth1_HE");
+  Map_HE[2] = (TH2F*)hfile->Get("h_mapDepth2_HE"); 
+  Map_HE[3] = (TH2F*)hfile->Get("h_mapDepth3_HE");   
+  
+  HistAmplHB = (TH1F*)hfile->Get("h_Ampl_HB");
+  HistAmplHE = (TH1F*)hfile->Get("h_Ampl_HE");
+  
+  TH2F* DevHB[4];
+  TH2F* DevHE[4];
+
+//2 HB
+  cHB->Divide(2,1);
+  for (int i=1;i<=2;i++) {
+     cHB->cd(i); 
+     DevHB[i]=(TH2F*)Map_HB[i]->Clone();
+     DevHB[i]->Divide(Map_HB[i],MapAmpl047_HB[i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     gStyle->SetTitleOffset(0.5, "Y");  
+     sprintf(str,"HB, Depth%d \b", i); 
+     DevHB[i]->SetTitle(str);
+     DevHB[i]->SetXTitle("#eta \b");
+     DevHB[i]->SetYTitle("#phi \b");
+     DevHB[i]->SetZTitle("Rate \b");
+     DevHB[i]->Draw("COLZ");
+     DevHB[i]->GetYaxis()->SetRangeUser(0, 72.);
+     DevHB[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHB->Modified(); 
+     cHB->Update();
+  }    
+  cHB->Print("MapRate43TStoAllTSHB.png"); 
+  cHB->Clear();
+  
+  cONE->Divide(1,1);
+  cONE->cd(1);
+  gPad->SetGridy();
+  gPad->SetGridx(); 
+  gPad->SetLogy(); 
+  HistAmplHB->SetTitleOffset(1.3,"Y");
+  HistAmplHB->SetTitle("HB, All Depth");
+  HistAmplHB->SetXTitle("Ratio in each event & cell \b");
+  HistAmplHB->SetYTitle("Number of cell-events \b");
+  HistAmplHB->Draw("");
+//  HistAmplHB->GetYaxis()->SetRangeUser(1., 10000000.);
+  HistAmplHB->GetXaxis()->SetRangeUser(0.0, 1.);
+  cONE->Modified(); 
+  cONE->Update();      
+  cONE->Print("Hist43TStoAllTSHB.png"); 
+  cONE->Clear();     
+     
+//2 HE
+  cHE->Divide(3,1);
+  for (int i=1;i<=3;i++) {
+     cHE->cd(i); 
+     DevHE[i]=(TH2F*)Map_HE[i]->Clone();
+     DevHE[i]->Divide(Map_HE[i],MapAmpl047_HE[i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     sprintf(str,"HE, Depth%d \b", i); 
+     DevHE[i]->SetTitle(str);
+     DevHE[i]->SetXTitle("#eta \b");
+     DevHE[i]->SetYTitle("#phi \b");
+     DevHE[i]->SetZTitle("Rate \b");
+     DevHE[i]->Draw("COLZ");
+     DevHE[i]->GetYaxis()->SetRangeUser(0, 72.);
+     DevHE[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHE->Modified(); 
+     cHE->Update(); 
+     
+  }    
+  cHE->Print("MapRate43TStoAllTSHE.png");
+  cHE->Clear();
+  
+  cONE->Divide(1,1);
+  cONE->cd(1);
+  gPad->SetGridy();
+  gPad->SetGridx();
+  gPad->SetLogy(); 
+  HistAmplHE->SetTitleOffset(1.3,"Y");
+  HistAmplHE->SetTitle("HE, All Depth");
+  HistAmplHE->SetXTitle("Ratio in each event & cell \b");
+  HistAmplHE->SetYTitle("Number of cell-events \b");
+  HistAmplHE->Draw("");
+//  HistAmplHE->GetYaxis()->SetRangeUser(1., 10000000.);
+  HistAmplHE->GetXaxis()->SetRangeUser(0., 1.);
+  cONE->Modified(); 
+  cONE->Update();      
+  cONE->Print("Hist43TStoAllTSHE.png"); 
+  cONE->Clear();   
+  
+
+//+++++++++++++++++++++++++++++  
+//Test 3 Rate of RMS   
+//+++++++++++++++++++++++++++++ 
+
+  TH2F *MapDepth1Amplitude225_HB[4];
+  TH2F *MapDepth1Amplitude225_HE[4];
+  
+  TH1F *HistAmplitudeHB;
+  TH1F *HistAmplitudeHE;
+  
+  MapDepth1Amplitude225_HB[1] = (TH2F*)hfile->Get("h_mapDepth1Amplitude225_HB");
+  MapDepth1Amplitude225_HB[2] = (TH2F*)hfile->Get("h_mapDepth2Amplitude225_HB");   
+  MapDepth1Amplitude225_HE[1] = (TH2F*)hfile->Get("h_mapDepth1Amplitude225_HE");
+  MapDepth1Amplitude225_HE[2] = (TH2F*)hfile->Get("h_mapDepth2Amplitude225_HE"); 
+  MapDepth1Amplitude225_HE[3] = (TH2F*)hfile->Get("h_mapDepth3Amplitude225_HE");    
+  
+  HistAmplitudeHB = (TH1F*)hfile->Get("h_Amplitude_HB");
+  HistAmplitudeHE = (TH1F*)hfile->Get("h_Amplitude_HE");
+
+//3 HB
+  cHB->Divide(2,1);
+  for (int i=1;i<=2;i++) {
+     cHB->cd(i); 
+     DevHB[i]=(TH2F*)Map_HB[i]->Clone();
+     DevHB[i]->Divide(Map_HB[i],MapDepth1Amplitude225_HB[i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     sprintf(str,"HB, Depth%d \b", i); 
+     DevHB[i]->SetTitle(str);
+     DevHB[i]->SetXTitle("#eta \b");
+     DevHB[i]->SetYTitle("#phi \b");
+     DevHB[i]->SetZTitle("Rate \b");
+     DevHB[i]->Draw("COLZ");
+     DevHB[i]->GetYaxis()->SetRangeUser(0, 72.);
+     DevHB[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHB->Modified(); 
+     cHB->Update();
+  }    
+  cHB->Print("MapRMSHB.png"); 
+  cHB->Clear();
+  
+  cONE->Divide(1,1);
+  cONE->cd(1);
+  gPad->SetGridy();
+  gPad->SetGridx(); 
+  gPad->SetLogy();
+  HistAmplitudeHB->SetTitleOffset(1.3,"Y"); 
+  HistAmplitudeHB->SetTitle("HB, All Depth");
+  HistAmplitudeHB->SetXTitle("TS RMS in each event & cell \b");
+  HistAmplitudeHB->SetYTitle("Number of cell-events \b");
+  HistAmplitudeHB->Draw("");
+//  HistAmplitudeHB->GetYaxis()->SetRangeUser(1., 100.);
+  HistAmplitudeHB->GetXaxis()->SetRangeUser(0.0, 1.);
+  cONE->Modified(); 
+  cONE->Update();      
+  cONE->Print("HistRMSHB.png"); 
+  cONE->Clear();     
+     
+//3 HE
+  cHE->Divide(3,1);
+  for (int i=1;i<=3;i++) {
+     cHE->cd(i); 
+     DevHE[i]=(TH2F*)Map_HE[i]->Clone();
+     DevHE[i]->Divide(Map_HE[i],MapDepth1Amplitude225_HE[i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     sprintf(str,"HE, Depth%d \b", i); 
+     DevHE[i]->SetTitle(str);
+     DevHE[i]->SetXTitle("#eta \b");
+     DevHE[i]->SetYTitle("#phi \b");
+     DevHE[i]->SetZTitle("Rate \b");
+     DevHE[i]->Draw("COLZ");
+     DevHE[i]->GetYaxis()->SetRangeUser(0, 72.);
+     DevHE[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHE->Modified(); 
+     cHE->Update(); 
+     
+  }    
+  cHE->Print("MapRMSHE.png");
+  cHE->Clear();
+  
+  cONE->Divide(1,1);
+  cONE->cd(1);
+  gPad->SetGridy();
+  gPad->SetGridx();
+  gPad->SetLogy(); 
+  HistAmplitudeHE->SetTitleOffset(1.3,"Y");
+  HistAmplitudeHE->SetTitle("HE, All Depth");
+  HistAmplitudeHE->SetXTitle("TS RMS in each event & cell \b");
+  HistAmplitudeHE->SetYTitle("Number of cell-events \b");
+  HistAmplitudeHE->Draw("");
+//  HistAmplitudeHE->GetYaxis()->SetRangeUser(1., 100.);
+  HistAmplitudeHE->GetXaxis()->SetRangeUser(0., 1.);
+  cONE->Modified(); 
+  cONE->Update();      
+  cONE->Print("HistRMSHE.png"); 
+  cONE->Clear();  
+  
+
 //======================================================================
 
 
@@ -121,12 +344,16 @@ void RemoteMonitoringMAP(const char* fname = "test.root")
     int Depth[3][10000]={0};
     string Comment[3][10000]={""};
   
-    for (int k=1;k<=3;k++) { 
+    for (int k=1;k<=2;k++) { 
        sprintf(str,"MapHBDepth%d \b", k);
        MapHB[k]=(TH2F*) Map2maxTStoAllTSRatioHB[k]->Clone(str) ;
        sprintf(str,"MapHEDepth%d \b", k);
        MapHE[k]=(TH2F*) Map2maxTStoAllTSRatioHE[k]->Clone(str) ;
     }
+    
+       sprintf(str,"MapHEDepth%d \b", 3);
+       MapHE[3]=(TH2F*) Map2maxTStoAllTSRatioHE[3]->Clone(str) ;
+       
     for (int i=1;i<=nx;i++) {
       for (int j=1;j<=ny;j++) {	  
 //HB
@@ -630,8 +857,8 @@ void RemoteMonitoringMAP(const char* fname = "test.root")
      htmlFile << "<tr>"<< std::endl;
      htmlFile << "  <td><a href=\"file:///afs/cern.ch/work/d/dtlisov/private/Monitoring/CMSSW_5_3_8/src/RecoHcal/HcalPromptAnalysis/test/HB.html\">HB</a></td>"<< std::endl;
      htmlFile << "  <td><a href=\"file:///afs/cern.ch/work/d/dtlisov/private/Monitoring/CMSSW_5_3_8/src/RecoHcal/HcalPromptAnalysis/test/HE.html\">HE</a></td>"<< std::endl;
-     htmlFile << "  <td><a href=\"http://HF.html\">HF</a></td>"<< std::endl;
-     htmlFile << "  <td><a href=\"https://HO.html\">HO</a></td>"<< std::endl;
+     htmlFile << "  <td><a href=\"file:///afs/cern.ch/work/d/dtlisov/private/Monitoring/CMSSW_5_3_8/src/RecoHcal/HcalPromptAnalysis/test/HF.html\">HF</a></td>"<< std::endl;
+     htmlFile << "  <td><a href=\"file:///afs/cern.ch/work/d/dtlisov/private/Monitoring/CMSSW_5_3_8/src/RecoHcal/HcalPromptAnalysis/test/HO.html\">HO</a></td>"<< std::endl;
      htmlFile << "</tr>"<< std::endl;
      htmlFile << "</table>"<< std::endl;
      htmlFile << "<br>"<< std::endl;    
