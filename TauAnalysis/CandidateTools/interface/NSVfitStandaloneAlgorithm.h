@@ -90,9 +90,13 @@ namespace NSVfitStandalone{
     ~MCPtEtaPhiMassAdapter()
     {
       delete histogramPt_;
+      delete histogramPt_density_;
       delete histogramEta_;
+      delete histogramEta_density_;
       delete histogramPhi_;
+      delete histogramPhi_density_;
       delete histogramMass_;
+      delete histogramMass_density_;
     }
     void SetNDim(int nDim) { nDim_ = nDim; }
     unsigned int NDim() const { return nDim_; }
