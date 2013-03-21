@@ -11,7 +11,7 @@ Implementation:
 <Notes on implementation>
 */
 //
-// $Id: VeRawAnalyzer.cc,v 1.1 2013/03/17 15:38:22 dtlisov Exp $
+// $Id$
 //
 
 // system include files
@@ -58,6 +58,10 @@ using namespace edm;
 
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h" 
 
+//to gnerate logical and electrical mapping
+#include "CalibCalorimetry/HcalAlgos/interface/HcalLogicalMapGenerator.h"
+#include "CondFormats/HcalObjects/interface/HcalLogicalMap.h"
+#include "CondFormats/HcalObjects/interface/HcalElectronicsMap.h"
 
 #include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
 #include "CalibFormats/HcalObjects/interface/HcalCalibrations.h"
@@ -76,11 +80,6 @@ using namespace edm;
 #include "DataFormats/FEDRawData/interface/FEDTrailer.h"
 #include "DataFormats/FEDRawData/interface/FEDNumbering.h"
 
-//to gnerate logical and electrical mapping
-#include "CalibCalorimetry/HcalAlgos/interface/HcalLogicalMapGenerator.h"
-#include "CondFormats/HcalObjects/interface/HcalLogicalMap.h"
-#include "CondFormats/HcalObjects/interface/HcalElectronicsMap.h"
-
 //#include "Geometry/Records/interface/CaloGeometryRecord.h"
 //#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 //#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
@@ -92,6 +91,8 @@ using namespace edm;
 #include "TH1.h"
 #include "TH2.h"
 
+// Private include files from Eric
+//#include "FedGet.hh" 
 
 static const float adc2fC[128]={-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5, 10.5,11.5,12.5,
 				13.5,15.,17.,19.,21.,23.,25.,27.,29.5,32.5,35.5,38.5,42.,46.,50.,54.5,59.5,
@@ -208,26 +209,35 @@ private:
   TH1F* h_fiber2_HE;
   TH1F* h_repetedcapid_HE;
 
+  TH1F* h_TSmaxA_HB;
+  TH2F* h_mapDepth1TSmaxA_HB;
+  TH2F* h_mapDepth2TSmaxA_HB;
+  TH2F* h_mapDepth1TSmaxA225_HB;
+  TH2F* h_mapDepth2TSmaxA225_HB;
+
   TH1F* h_Amplitude_HB;
   TH2F* h_mapDepth1Amplitude_HB;
   TH2F* h_mapDepth2Amplitude_HB;
-  TH2F* h_mapDepth3Amplitude_HB;
   TH2F* h_mapDepth1Amplitude225_HB;
   TH2F* h_mapDepth2Amplitude225_HB;
-  TH2F* h_mapDepth3Amplitude225_HB;
+
   TH1F* h_Ampl_HB;
   TH2F* h_mapDepth1Ampl047_HB;
   TH2F* h_mapDepth2Ampl047_HB;
-  TH2F* h_mapDepth3Ampl047_HB;
   TH2F* h_mapDepth1Ampl_HB;
   TH2F* h_mapDepth2Ampl_HB;
-  TH2F* h_mapDepth3Ampl_HB;
   TH2F* h_mapDepth1AmplE34_HB;
   TH2F* h_mapDepth2AmplE34_HB;
-  TH2F* h_mapDepth3AmplE34_HB;
   TH2F* h_mapDepth1_HB;
   TH2F* h_mapDepth2_HB;
-  TH2F* h_mapDepth3_HB;
+
+  TH2F* h_mapDepth1AmplE34_HF;
+  TH2F* h_mapDepth2AmplE34_HF;
+  TH2F* h_mapDepth1_HF;
+  TH2F* h_mapDepth2_HF;
+
+  TH2F* h_mapDepth4AmplE34_HO;
+  TH2F* h_mapDepth4_HO;
 
   TH1F* h_nbadchannels_depth1_HB;
   TH1F* h_runnbadchannels_depth1_HB;
@@ -269,6 +279,14 @@ private:
   TH1F* h_runbadrate3_depth3_HE;
   TH1F* h_runbadrate0_depth3_HE;
 
+  TH1F* h_TSmaxA_HE;
+  TH2F* h_mapDepth1TSmaxA_HE;
+  TH2F* h_mapDepth2TSmaxA_HE;
+  TH2F* h_mapDepth3TSmaxA_HE;
+  TH2F* h_mapDepth1TSmaxA225_HE;
+  TH2F* h_mapDepth2TSmaxA225_HE;
+  TH2F* h_mapDepth3TSmaxA225_HE;
+
   TH1F* h_Amplitude_HE;
   TH2F* h_mapDepth1Amplitude_HE;
   TH2F* h_mapDepth2Amplitude_HE;
@@ -276,6 +294,7 @@ private:
   TH2F* h_mapDepth1Amplitude225_HE;
   TH2F* h_mapDepth2Amplitude225_HE;
   TH2F* h_mapDepth3Amplitude225_HE;
+
   TH1F* h_Ampl_HE;
   TH2F* h_mapDepth1Ampl047_HE;
   TH2F* h_mapDepth2Ampl047_HE;
@@ -289,24 +308,25 @@ private:
   TH2F* h_mapDepth1_HE;
   TH2F* h_mapDepth2_HE;
   TH2F* h_mapDepth3_HE;
-
+  /*
   TH1F* h_GetRMSOverNormalizedSignal_HB;
   TH1F* h_GetRMSOverNormalizedSignal_HE;
   TH1F* h_GetRMSOverNormalizedSignal_HO;
   TH1F* h_GetRMSOverNormalizedSignal_HF;
-  TH2F* h_NormalizedSignal3D_HB;
-  TH2F* h_NormalizedSignal3D0_HB;
-  TH2F* h_NormalizedSignal3D_HE;
-  TH2F* h_NormalizedSignal3D0_HE;
-  TH2F* h_NormalizedSignal3D_HO;
-  TH2F* h_NormalizedSignal3D0_HO;
-  TH2F* h_NormalizedSignal3D_HF;
-  TH2F* h_NormalizedSignal3D0_HF;
-
   TH1F* h_GetRMSOverNormalizedSignal3_HB;
   TH1F* h_GetRMSOverNormalizedSignal3_HE;
   TH1F* h_GetRMSOverNormalizedSignal3_HO;
   TH1F* h_GetRMSOverNormalizedSignal3_HF;
+*/
+  TH2F* h_FullSignal3D_HB;
+  TH2F* h_FullSignal3D0_HB;
+  TH2F* h_FullSignal3D_HE;
+  TH2F* h_FullSignal3D0_HE;
+  TH2F* h_FullSignal3D_HO;
+  TH2F* h_FullSignal3D0_HO;
+  TH2F* h_FullSignal3D_HF;
+  TH2F* h_FullSignal3D0_HF;
+
 
   TH1F* h_RatioCalib_HB;
   TH2F* h_mapRatioCalib047_HB;
@@ -350,8 +370,8 @@ private:
   
   double calib0[4][82][72];
   double signal[4][82][72];
-  double calib3[4][82][72];
-  double signal3[4][82][72];
+  //  double calib3[4][82][72];
+//  double signal3[4][82][72];
   double calib2[4][82][72];
   int badchannels[4][4][82][72];
 
@@ -366,7 +386,6 @@ private:
   TTree*    myTree;
   TFile*    hOutputFile;
   ofstream MAPfile;
-  
   ///////////////////////////////////////// 
   // Get RBX number from 1-35 for Calibration box
   int getRBX(int& i, int& j, int& k);
@@ -386,7 +405,7 @@ private:
 
 VeRawAnalyzer::VeRawAnalyzer(const edm::ParameterSet& iConfig)
 {
-  verbosity   =  iConfig.getUntrackedParameter<int>("Verbosity");
+  verbosity     =  iConfig.getUntrackedParameter<int>("Verbosity");
   MAPcreation   =  iConfig.getUntrackedParameter<int>("MapCreation");
   //
   recordNtuples_=iConfig.getUntrackedParameter<bool>("recordNtuples");
@@ -411,7 +430,7 @@ VeRawAnalyzer::VeRawAnalyzer(const edm::ParameterSet& iConfig)
   calibratioHOMin_ = iConfig.getParameter<double>("calibratioHOMin");//
   calibratioHFMin_ = iConfig.getParameter<double>("calibratioHFMin");//
   //
-  fOutputFileName = iConfig.getUntrackedParameter<std::string>("HistOutFile"); 
+  fOutputFileName   = iConfig.getUntrackedParameter<std::string>("HistOutFile"); 
   MAPOutputFileName = iConfig.getUntrackedParameter<std::string>("MAPOutFile");
   // inputTag_ = iConfig.getUntrackedParameter<edm::InputTag>("DigiCollectionLabel");
   
@@ -540,8 +559,8 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       for(int k3 = 0; k3<72; k3++) {
 	signal[k1][k2][k3] = 0.;
 	calib0[k1][k2][k3] = 0.;
-	signal3[k1][k2][k3] = 0.;
-	calib3[k1][k2][k3] = 0.;
+//	signal3[k1][k2][k3] = 0.;
+	//	calib3[k1][k2][k3] = 0.;
 	calib2[k1][k2][k3] = 0.;
 
 	if(studyRunDependenceHist_) {
@@ -563,14 +582,16 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     for(HFDigiCollection::const_iterator digi=hf->begin();digi!=hf->end();digi++){
       eta=digi->id().ieta(); phi=digi->id().iphi(); depth=digi->id().depth(); nTS=digi->size();
       counter++;
-      int iphi  = phi;
+      int iphi  = phi-1;
       int ieta  = eta;
       if(ieta > 0) ieta -= 1;
-      if (verbosity == -13) std::cout<<"******************   HFDigiCollection nTS= "<<nTS<<std::endl; 
+      if (verbosity == -13) std::cout<<"******************   HFDigiCollection nTS= "<<nTS<<std::endl;
+      double amplitude = 0.; 
       if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
 	TS_data[i]=adc2fC[digi->sample(i).adc()];
+	amplitude += TS_data[i];
 	signal[3][ieta+41][iphi] += TS_data[i];
-	if(i>1&&i<6) signal3[3][ieta+41][iphi] += TS_data[i];
+//	if(i>1&&i<6) signal3[3][ieta+41][iphi] += TS_data[i];
 	if (verbosity == -13) {
 	  cout<< "HF phi= " << phi << " eta= " << eta << endl;
 	  cout<< "HF iphi= " << iphi << " ieta= " << ieta << endl;
@@ -580,8 +601,14 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	      << " TS3= " << adc2fC[digi->sample(3).adc()] 
 	      << " TS4= " << adc2fC[digi->sample(4).adc()] 
 	      << " TS5= " << adc2fC[digi->sample(5).adc()] << endl;
-	}
-      }
+	}// for
+      }//if(hf.isValid
+
+      if(depth==1) h_mapDepth1AmplE34_HF->Fill(double(ieta), double(iphi), amplitude);    
+      if(depth==2) h_mapDepth2AmplE34_HF->Fill(double(ieta), double(iphi), amplitude);    
+      if(depth==1) h_mapDepth1_HF->Fill(double(ieta), double(iphi), 1.);    
+      if(depth==2) h_mapDepth2_HF->Fill(double(ieta), double(iphi), 1.);    
+
       if(eta == 29&&phi==1 && verbosity > 0) std::cout<<" 29 eta HF "<<depth<<std::endl;    
       /*
 	for(int i=0; i<10; i++) TS_data[i]=0;
@@ -693,21 +720,38 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  }//k0
 	  ////////////
 	  
-	  ////////////////////////////////////////////////////////////////
-	}//if(recordHistoes_) 
-
-////////////////////////////////////////////////////////////////  for Olga's script:
-	if(recordNtuples_) {
-	  int iphi  = phi;
+	  int iphi  = phi-1;
 	  int ieta  = eta;
 	  if(ieta > 0) ieta -= 1;
-	  
 	  if(digi->id().subdet()==HcalBarrel) 
 	    {                 
 	      if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
 		TS_data[i]=adc2fC[digi->sample(i).adc()];
 		signal[0][ieta+41][iphi] += TS_data[i];
-		if(i>1&&i<6) signal3[0][ieta+41][iphi] += TS_data[i];
+//		if(i>1&&i<6) signal3[0][ieta+41][iphi] += TS_data[i];
+	      } 
+	    } 
+	  
+	  if(digi->id().subdet()==HcalEndcap)
+	    {  
+	      if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
+		TS_data[i]=adc2fC[digi->sample(i).adc()];
+		signal[1][ieta+41][iphi] += TS_data[i];
+//		if(i>1&&i<6) signal3[1][ieta+41][iphi] += TS_data[i];
+	      } 
+	    } 
+
+
+	  ////////////////////////////////////////////////////////////////
+	}//if(recordHistoes_) 
+	
+	////////////////////////////////////////////////////////////////  for Olga's script:
+	if(recordNtuples_) {
+	  
+	  if(digi->id().subdet()==HcalBarrel) 
+	    {                 
+	      if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
+		TS_data[i]=adc2fC[digi->sample(i).adc()];
 		if(abs(eta) == 15 || abs(eta) == 16) {
 		  if(eta == 15) hb15[1][depth-1][phi-1][i] = TS_data[i];
 		  if(eta == 16) hb16[1][depth-1][phi-1][i] = TS_data[i];
@@ -726,8 +770,6 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	    {  
 	      if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
 		TS_data[i]=adc2fC[digi->sample(i).adc()];
-		signal[1][ieta+41][iphi] += TS_data[i];
-		if(i>1&&i<6) signal3[1][ieta+41][iphi] += TS_data[i];
 		if( abs(eta) == 16 ) {
 		  if(eta == 16) he16[1][0][phi-1][i] = TS_data[i];
 		  if(eta == -16) he16[0][0][phi-1][i] = TS_data[i];
@@ -758,18 +800,21 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   } else {
     
     for(HODigiCollection::const_iterator digi=ho->begin();digi!=ho->end();digi++){
-      eta=digi->id().ieta(); phi=digi->id().iphi(); depth=digi->id().depth(); nTS=digi->size();{  
-	int iphi  = phi;
-	int ieta  = eta;
-	if(ieta > 0) ieta -= 1;
-	if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
-	  TS_data[i]=adc2fC[digi->sample(i).adc()];
-	  signal[2][ieta+41][iphi] += TS_data[i];
-	  if(i>1&&i<6) signal3[2][ieta+41][iphi] += TS_data[i];
-	}
-      }                
-    }   
-  }        
+      eta=digi->id().ieta(); phi=digi->id().iphi(); depth=digi->id().depth(); nTS=digi->size();
+      int iphi  = phi-1;
+      int ieta  = eta;
+      if(ieta > 0) ieta -= 1;
+      double amplitude = 0;
+      if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
+	TS_data[i]=adc2fC[digi->sample(i).adc()];
+	amplitude += TS_data[i];
+	signal[2][ieta+41][iphi] += TS_data[i];
+//	if(i>1&&i<6) signal3[2][ieta+41][iphi] += TS_data[i];
+      }//if for
+      if(depth==4) h_mapDepth4AmplE34_HO->Fill(double(ieta), double(iphi), amplitude);    
+      if(depth==4) h_mapDepth4_HO->Fill(double(ieta), double(iphi), 1.);    
+    }//for HODigiCollection
+  }//ho.isValid(
   
   
   /////////////////////////////////////////////////// HcalCalibDigiCollection
@@ -812,26 +857,22 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	int ieta  = cal_eta;
 	if(ieta > 0) ieta -= 1;
 	nTS=digi->size();
+	double max_signal = 0.;
+	int ts_with_max_signal = -100;
 	if(nTS<=numOfTS) for(int i=0;i<nTS;i++) {
-	  calib0[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
-	  // TS:3-6
-//	  if(i>1&&i<6) calib3[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
-	  // TS:2-6
-	  if(i>0&&i<6) calib3[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
-//
-	  // TS:3-4   ,   cal_det 1-HB,2-HE
-//	  if(i>1&&i<4 && cal_det<3) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
-	  // TS:2-6   ,   cal_det 1-HB,2-HE
-	  if(i>0&&i<6 && cal_det<3) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
-//
-	  // TS:3-6   ,   cal_det 3-HO,4-HF
-//	  if(i>1&&i<6 && cal_det>2) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
-	  // TS:2-6   ,   cal_det 3-HO
-	  if(i>0&&i<6 && cal_det==3) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
-	  // TS:1-6   ,   cal_det 4-HF
-	  if(i> -1 &&i<6 && cal_det==4) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(i).adc()&0xff];
+	  double ampldefault = adc2fC[digi->sample(i).adc()&0xff];
+	  if(max_signal < ampldefault ) {
+	    max_signal = ampldefault;
+	    ts_with_max_signal = i;
+	  }
+	  calib0[cal_det-1][ieta+41][iphi] += ampldefault;
 	}
-//
+	if(ts_with_max_signal > -1 && ts_with_max_signal < nTS) calib2[cal_det-1][ieta+41][iphi] = adc2fC[digi->sample(ts_with_max_signal).adc()&0xff];
+	if(ts_with_max_signal+1 > -1 && ts_with_max_signal+1 < nTS) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(ts_with_max_signal+1).adc()&0xff];
+	if(ts_with_max_signal+2 > -1 && ts_with_max_signal+2 < nTS) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(ts_with_max_signal+2).adc()&0xff];
+	if(ts_with_max_signal-1 > -1 && ts_with_max_signal-1 < nTS) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(ts_with_max_signal-1).adc()&0xff];
+	if(ts_with_max_signal-2 > -1 && ts_with_max_signal-2 < nTS) calib2[cal_det-1][ieta+41][iphi] += adc2fC[digi->sample(ts_with_max_signal-2).adc()&0xff];
+	//
 	if (verbosity == -11) {
 	  cout<<"*******  det= " << cal_det << " cbox = " << cal_cbox << endl;
 	  cout<< " phi= " << cal_phi << " eta= " << cal_eta << endl;
@@ -884,13 +925,33 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }//if(calib.isValid(
 
   if(recordHistoes_) {
-    ////////////////////////////////////////////////////////////////  for zcalib.C and zgain.C scripts:
+    ////////////////////////////////////for loop for zcalib.C and zgain.C scripts:
     for(int k1 = 0; k1<4; k1++) {
       for(int k2 = 0; k2<82; k2++) {
 	for(int k3 = 0; k3<72; k3++) {
-	  
-	  //if(k1==3) cout<<"signal[k1][k2][k3]= "<<signal[k1][k2][k3]<<" calib0[k1][k2][k3]= "<<calib0[k1][k2][k3]<<endl;
-	  
+	  ////////////////////////////////////////////////////////////////  for zgain.C script:
+	  int k2plot = k2-41;
+	  if(signal[k1][k2][k3]>0.) {
+	    if(k1==0) {
+	      h_FullSignal3D_HB->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
+	      h_FullSignal3D0_HB->Fill(double(k2plot), double(k3), 1.);    
+	    }
+	    if(k1==1) {
+	      h_FullSignal3D_HE->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
+	      h_FullSignal3D0_HE->Fill(double(k2plot), double(k3), 1.);    
+	    }
+	    if(k1==2) {
+	      h_FullSignal3D_HO->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
+	      h_FullSignal3D0_HO->Fill(double(k2plot), double(k3), 1.);    
+	    }
+	    if(k1==3) {
+	      h_FullSignal3D_HF->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
+	      h_FullSignal3D0_HF->Fill(double(k2plot), double(k3), 1.);    
+	    }
+	  }
+	  ////////////////////////////////////////////////////////////////
+
+	  ////////////////////////////////////////////////////////////////  for zcalib.C script:
 	  // return to real indexes in eta and phi ( k20 and k30)
 	  int k20=k2-41;
 	  if(k2>0 || k2==0) k20=k2+1;
@@ -926,34 +987,24 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  if(kk2 > 0) kkk2 -= 1;  
 	  int kkk3  = kk3;
 	  kkk3 -=1;
-	  
-	  ////////////////////////////////////////////////////////////////  for zgain.C script:
-	  int k2plot = k2-41;
+	  /*	  
 	  double GetRMSOverNormalizedSignal =-1.;
 	  if(signal[k1][k2][k3]>0.&& calib0[k1][kkk2][kkk3]>0.) {
-	    /////////// GetRMSOverNormalizedSignal 
 	    GetRMSOverNormalizedSignal = signal[k1][k2][k3]/calib0[k1][kkk2][kkk3];
 	    if(k1==0) {
 	      h_GetRMSOverNormalizedSignal_HB->Fill(GetRMSOverNormalizedSignal,1.);
-	      h_NormalizedSignal3D_HB->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
-	      h_NormalizedSignal3D0_HB->Fill(double(k2plot), double(k3), 1.);    
 	    }
 	    if(k1==1) {
 	      h_GetRMSOverNormalizedSignal_HE->Fill(GetRMSOverNormalizedSignal,1.);
-	      h_NormalizedSignal3D_HE->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
-	      h_NormalizedSignal3D0_HE->Fill(double(k2plot), double(k3), 1.);    
 	    }
 	    if(k1==2) {
 	      h_GetRMSOverNormalizedSignal_HO->Fill(GetRMSOverNormalizedSignal,1.);
-	      h_NormalizedSignal3D_HO->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
-	      h_NormalizedSignal3D0_HO->Fill(double(k2plot), double(k3), 1.);    
 	    }
 	    if(k1==3) {
 	      h_GetRMSOverNormalizedSignal_HF->Fill(GetRMSOverNormalizedSignal,1.);
-	      h_NormalizedSignal3D_HF->Fill(double(k2plot), double(k3), signal[k1][k2][k3]);
-	      h_NormalizedSignal3D0_HF->Fill(double(k2plot), double(k3), 1.);    
 	    }
-	  } 
+	  }
+	  // 
 	  GetRMSOverNormalizedSignal =-1.;
 	  if(signal3[k1][k2][k3]>0.&& calib3[k1][kkk2][kkk3]>0.) {
 	    GetRMSOverNormalizedSignal = signal3[k1][k2][k3]/calib3[k1][kkk2][kkk3];
@@ -962,11 +1013,11 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	    if(k1==2) h_GetRMSOverNormalizedSignal3_HO->Fill(GetRMSOverNormalizedSignal,1.);    
 	    if(k1==3) h_GetRMSOverNormalizedSignal3_HF->Fill(GetRMSOverNormalizedSignal,1.);  
 	  }
-	  ////////// 
+*/
 	  ////////////////////////////////////////////////////////////////  for zcalib.C script:
 	  
-	  double ratio =0.;
-	  if(calib0[k1][kkk2][kkk3]>0.) ratio = calib2[k1][kkk2][kkk3]/calib0[k1][kkk2][kkk3];
+	  double ratio =2.;
+	  if(calib0[k1][kkk2][kkk3]>0. && signal[k1][k2][k3]>0.) ratio = calib2[k1][kkk2][kkk3]/calib0[k1][kkk2][kkk3];
 	  if(k1==0) {
 	    h_RatioCalib_HB->Fill(ratio,1.);
 	    if(ratio < calibratioHBMin_ ) h_mapRatioCalib047_HB->Fill(double(k2plot), double(k3), 1.);
@@ -1009,10 +1060,10 @@ void VeRawAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   /////////////////////////////////////////////////// 
   // to get eventcounter - N events in Run
   if(run1 != Run) {
-    run1 = Run;
     if( runcounter != 1) {
-      cout<<" for Run = "<<Run<<" with runcounter = "<<runcounter<<" #ev in this Run = "<<eventcounter<<endl;
+      cout<<" for Run = "<<run1<<" with runcounter = "<< runcounter-1 <<" #ev = "<<eventcounter<<endl;
     }
+    run1 = Run;
     eventcounter = 0;
   }
   ++eventcounter;
@@ -1083,34 +1134,44 @@ void VeRawAnalyzer::beginJob()
     h_repetedcapid_HE = new TH1F("h_repetedcapid_HE"," ", 5, 0., 5.);
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    h_Amplitude_HB = new TH1F("h_Amplitude_HB"," ", 100, 1.,4.);
+    h_TSmaxA_HB = new TH1F("h_TSmaxA_HB"," ", 100, -1.,11.);
+    h_mapDepth1TSmaxA225_HB = new TH2F("h_mapDepth1TSmaxA225_HB"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmaxA225_HB = new TH2F("h_mapDepth2TSmaxA225_HB"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth1TSmaxA_HB = new TH2F("h_mapDepth1TSmaxA_HB"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmaxA_HB = new TH2F("h_mapDepth2TSmaxA_HB"," ", 82, -41., 41., 72, 0., 72.);
+
+    h_Amplitude_HB = new TH1F("h_Amplitude_HB"," ", 100, 0.,5.);
     h_mapDepth1Amplitude225_HB = new TH2F("h_mapDepth1Amplitude225_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2Amplitude225_HB = new TH2F("h_mapDepth2Amplitude225_HB"," ", 82, -41., 41., 72, 0., 72.);
-    h_mapDepth3Amplitude225_HB = new TH2F("h_mapDepth3Amplitude225_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth1Amplitude_HB = new TH2F("h_mapDepth1Amplitude_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2Amplitude_HB = new TH2F("h_mapDepth2Amplitude_HB"," ", 82, -41., 41., 72, 0., 72.);
-    h_mapDepth3Amplitude_HB = new TH2F("h_mapDepth3Amplitude_HB"," ", 82, -41., 41., 72, 0., 72.);
+
     h_Ampl_HB = new TH1F("h_Ampl_HB"," ", 100, 0.,1.);
     h_mapDepth1Ampl047_HB = new TH2F("h_mapDepth1Ampl047_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2Ampl047_HB = new TH2F("h_mapDepth2Ampl047_HB"," ", 82, -41., 41., 72, 0., 72.);
-    h_mapDepth3Ampl047_HB = new TH2F("h_mapDepth3Ampl047_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth1Ampl_HB = new TH2F("h_mapDepth1Ampl_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2Ampl_HB = new TH2F("h_mapDepth2Ampl_HB"," ", 82, -41., 41., 72, 0., 72.);
-    h_mapDepth3Ampl_HB = new TH2F("h_mapDepth3Ampl_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth1AmplE34_HB = new TH2F("h_mapDepth1AmplE34_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2AmplE34_HB = new TH2F("h_mapDepth2AmplE34_HB"," ", 82, -41., 41., 72, 0., 72.);
-    h_mapDepth3AmplE34_HB = new TH2F("h_mapDepth3AmplE34_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth1_HB = new TH2F("h_mapDepth1_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2_HB = new TH2F("h_mapDepth2_HB"," ", 82, -41., 41., 72, 0., 72.);
-    h_mapDepth3_HB = new TH2F("h_mapDepth3_HB"," ", 82, -41., 41., 72, 0., 72.);
     
-    h_Amplitude_HE = new TH1F("h_Amplitude_HE"," ", 100, 1.,4.);
+    h_TSmaxA_HE = new TH1F("h_TSmaxA_HE"," ", 100, -1.,11.);
+    h_mapDepth1TSmaxA225_HE = new TH2F("h_mapDepth1TSmaxA225_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmaxA225_HE = new TH2F("h_mapDepth2TSmaxA225_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth3TSmaxA225_HE = new TH2F("h_mapDepth3TSmaxA225_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth1TSmaxA_HE = new TH2F("h_mapDepth1TSmaxA_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmaxA_HE = new TH2F("h_mapDepth2TSmaxA_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth3TSmaxA_HE = new TH2F("h_mapDepth3TSmaxA_HE"," ", 82, -41., 41., 72, 0., 72.);
+
+    h_Amplitude_HE = new TH1F("h_Amplitude_HE"," ", 100, 0.,5.);
     h_mapDepth1Amplitude225_HE = new TH2F("h_mapDepth1Amplitude225_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2Amplitude225_HE = new TH2F("h_mapDepth2Amplitude225_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth3Amplitude225_HE = new TH2F("h_mapDepth3Amplitude225_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth1Amplitude_HE = new TH2F("h_mapDepth1Amplitude_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2Amplitude_HE = new TH2F("h_mapDepth2Amplitude_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth3Amplitude_HE = new TH2F("h_mapDepth3Amplitude_HE"," ", 82, -41., 41., 72, 0., 72.);
+
     h_Ampl_HE = new TH1F("h_Ampl_HE"," ", 100, 0.,1.);
     h_mapDepth1Ampl047_HE = new TH2F("h_mapDepth1Ampl047_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2Ampl047_HE = new TH2F("h_mapDepth2Ampl047_HE"," ", 82, -41., 41., 72, 0., 72.);
@@ -1124,6 +1185,14 @@ void VeRawAnalyzer::beginJob()
     h_mapDepth1_HE = new TH2F("h_mapDepth1_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2_HE = new TH2F("h_mapDepth2_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth3_HE = new TH2F("h_mapDepth3_HE"," ", 82, -41., 41., 72, 0., 72.);
+
+    h_mapDepth1AmplE34_HF = new TH2F("h_mapDepth1AmplE34_HF"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2AmplE34_HF = new TH2F("h_mapDepth2AmplE34_HF"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth1_HF = new TH2F("h_mapDepth1_HF"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2_HF = new TH2F("h_mapDepth2_HF"," ", 82, -41., 41., 72, 0., 72.);
+
+    h_mapDepth4AmplE34_HO = new TH2F("h_mapDepth4AmplE34_HO"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth4_HO = new TH2F("h_mapDepth4_HO"," ", 82, -41., 41., 72, 0., 72.);
 
     int bac= 10;
     float bac2=11.;
@@ -1167,6 +1236,7 @@ void VeRawAnalyzer::beginJob()
     h_runbadrate3_depth3_HE = new TH1F("h_runbadrate3_depth3_HE"," ",             bac, 1.,bac2);
     h_runbadrate0_depth3_HE = new TH1F("h_runbadrate0_depth3_HE"," ",           bac, 1.,bac2);
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
     float m7=2;
     float m8=3;
     float m9=5;
@@ -1174,19 +1244,19 @@ void VeRawAnalyzer::beginJob()
     h_GetRMSOverNormalizedSignal_HE = new TH1F("h_GetRMSOverNormalizedSignal_HE"," ",   100, 0.,m7);
     h_GetRMSOverNormalizedSignal_HO = new TH1F("h_GetRMSOverNormalizedSignal_HO"," ",   100, 0.,m8);
     h_GetRMSOverNormalizedSignal_HF = new TH1F("h_GetRMSOverNormalizedSignal_HF"," ",   100, 0.,m9);
-    h_NormalizedSignal3D_HB = new TH2F("h_NormalizedSignal3D_HB"," ",   82, -41., 41., 72, 0., 72.);
-    h_NormalizedSignal3D0_HB = new TH2F("h_NormalizedSignal3D0_HB"," ", 82, -41., 41., 72, 0., 72.);
-    h_NormalizedSignal3D_HE = new TH2F("h_NormalizedSignal3D_HE"," ",   82, -41., 41., 72, 0., 72.);
-    h_NormalizedSignal3D0_HE = new TH2F("h_NormalizedSignal3D0_HE"," ", 82, -41., 41., 72, 0., 72.);
-    h_NormalizedSignal3D_HO = new TH2F("h_NormalizedSignal3D_HO"," ",   82, -41., 41., 72, 0., 72.);
-    h_NormalizedSignal3D0_HO = new TH2F("h_NormalizedSignal3D0_HO"," ", 82, -41., 41., 72, 0., 72.);
-    h_NormalizedSignal3D_HF = new TH2F("h_NormalizedSignal3D_HF"," ",   82, -41., 41., 72, 0., 72.);
-    h_NormalizedSignal3D0_HF = new TH2F("h_NormalizedSignal3D0_HF"," ", 82, -41., 41., 72, 0., 72.);
     h_GetRMSOverNormalizedSignal3_HB = new TH1F("h_GetRMSOverNormalizedSignal3_HB"," ", 100, 0.,m7);
     h_GetRMSOverNormalizedSignal3_HE = new TH1F("h_GetRMSOverNormalizedSignal3_HE"," ", 100, 0.,m7);
     h_GetRMSOverNormalizedSignal3_HO = new TH1F("h_GetRMSOverNormalizedSignal3_HO"," ", 100, 0.,m8);
     h_GetRMSOverNormalizedSignal3_HF = new TH1F("h_GetRMSOverNormalizedSignal3_HF"," ", 100, 0.,m9);
-
+*/
+    h_FullSignal3D_HB = new TH2F("h_FullSignal3D_HB"," ",   82, -41., 41., 72, 0., 72.);
+    h_FullSignal3D0_HB = new TH2F("h_FullSignal3D0_HB"," ", 82, -41., 41., 72, 0., 72.);
+    h_FullSignal3D_HE = new TH2F("h_FullSignal3D_HE"," ",   82, -41., 41., 72, 0., 72.);
+    h_FullSignal3D0_HE = new TH2F("h_FullSignal3D0_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_FullSignal3D_HO = new TH2F("h_FullSignal3D_HO"," ",   82, -41., 41., 72, 0., 72.);
+    h_FullSignal3D0_HO = new TH2F("h_FullSignal3D0_HO"," ", 82, -41., 41., 72, 0., 72.);
+    h_FullSignal3D_HF = new TH2F("h_FullSignal3D_HF"," ",   82, -41., 41., 72, 0., 72.);
+    h_FullSignal3D0_HF = new TH2F("h_FullSignal3D0_HF"," ", 82, -41., 41., 72, 0., 72.);
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     h_RatioCalib_HB       = new TH1F("h_RatioCalib_HB"," ",      100, 0.,1.);
     h_mapRatioCalib047_HB = new TH2F("h_mapRatioCalib047_HB"," ", 82, -41., 41., 72, 0., 72.);
@@ -1450,105 +1520,159 @@ void VeRawAnalyzer::fillDigiAmplitude(HBHEDigiCollection::const_iterator& digiIt
 
     ///////////////////////////////////////Energy
     // Energy:    
-    int firstSample  = 2;  // RECO window parameters
-    int samplesToAdd = 2;
-    HcalCalibrations calib = conditions->getHcalCalibrations(cell);
+//    int firstSample  = 2;  // RECO window parameters
+//    int samplesToAdd = 2;
+//    HcalCalibrations calib = conditions->getHcalCalibrations(cell);
     const HcalQIECoder* channelCoder = conditions->getHcalCoder(cell);
     HcalCoderDb coder (*channelCoder, *shape);
     coder.adc2fC(*digiItr,tool);
     if (verbosity == -22) std::cout << "fillDigiAmplitude    coder done..." << std::endl;
     double amplitude = 0.;
-    double amplallTS = 0.;
+//    double amplallTS = 0.;
     double ampl = 0.;
     double timew = 0.;
-
+    double max_signal = 0.;
+    int ts_with_max_signal = -100;
     for (int ii=0; ii<tool.size(); ii++) {  
       //      double ampldefault = adc2fC[digiItr->sample(ii).adc()];
       double ampldefault = tool[ii];
-      double ampltool = tool[ii];
-//      if (verbosity == -22) std::cout << "fillDigiAmplitude    ampldefault = " << ampldefault << " ampltool = " << ampltool << std::endl;
-      int capid = ((*digiItr)[ii]).capid();
-      double pedestal = calib.pedestal(capid);
-      double ta = (ampltool-pedestal); // pedestal subtraction
-      double calibrespcorrgain = calib.respcorrgain(capid) ;   // fC --> GeV
-      if (verbosity == -22) std::cout << "fillDigiAmplitude    pedestal = " << pedestal << " calibrespcorrgain = " << calibrespcorrgain << std::endl;
-      ta*= calibrespcorrgain;
-
+      //      double ampltool = tool[ii];
+      ////      if (verbosity == -22) std::cout << "fillDigiAmplitude    ampldefault = " << ampldefault << " ampltool = " << ampltool << std::endl;
+      //      int capid = ((*digiItr)[ii]).capid();
+      //      double pedestal = calib.pedestal(capid);
+      //      double ta = (ampltool-pedestal); // pedestal subtraction
+      //      double calibrespcorrgain = calib.respcorrgain(capid) ;   // fC --> GeV
+      //      if (verbosity == -22) std::cout << "fillDigiAmplitude    pedestal = " << pedestal << " calibrespcorrgain = " << calibrespcorrgain << std::endl;
+      //      ta*= calibrespcorrgain;
+      //      if(ts_with_max_signal < calibrespcorrgain ) ts_with_max_signal = calibrespcorrgain;
+      if(max_signal < ampldefault ) {
+	max_signal = ampldefault;
+	ts_with_max_signal = ii;
+      }
       amplitude+=ampldefault;// fC
-      amplallTS+=ta;// GeV
-      if (ii >= firstSample && ii < firstSample+samplesToAdd )  ampl+=ta; // GeV 
-
-      if (verbosity == -22) std::cout << "fillDigiAmplitude    amplitude = " << amplitude << " ampl = " << ampl << std::endl;
+      //      amplallTS+=ta;// GeV
+      //      if (ii >= firstSample && ii < firstSample+samplesToAdd )  ampl+=ta; // GeV 
+      if (verbosity == -22) std::cout << "fillDigiAmplitude    amplitude = " << amplitude << std::endl;
       timew += (ii+1)*ampldefault;
-    }//for
-    if (verbosity == -22) std::cout << std::endl << "*** E = " << ampl << "   ACD -> fC -> (gain ="<< calib.respcorrgain(0) << ") GeV (ped.subtracted)" << std::endl;
+    }//for 1
+//    if (verbosity == -22) std::cout << std::endl << "*** E = " << ampl << "   ACD -> fC -> (gain ="<< calib.respcorrgain(0) << ") GeV (ped.subtracted)" << std::endl;
+    // ------------ to get signal in TS: -2 max +1  ------------
 
+    if(ts_with_max_signal > -1 && ts_with_max_signal < tool.size()) ampl = tool[ts_with_max_signal];
+    if(ts_with_max_signal+1 > -1 && ts_with_max_signal+1 < tool.size()) ampl += tool[ts_with_max_signal+1];
+    if(ts_with_max_signal-1 > -1 && ts_with_max_signal-1 < tool.size()) ampl += tool[ts_with_max_signal-1];
+    if(ts_with_max_signal-2 > -1 && ts_with_max_signal-2 < tool.size()) ampl += tool[ts_with_max_signal-2];
     double ratio = 0.;
-    if(amplallTS != 0.) ratio = ampl/amplallTS;
-    if (verbosity == -22) std::cout << std::endl << "*** ratio = " << ratio << "   ampl ="<< ampl << "   amplallTS ="<< amplallTS << std::endl;
+    //    if(amplallTS != 0.) ratio = ampl/amplallTS;
+    if(amplitude != 0. ) ratio = ampl/amplitude;
+    if (verbosity == -22 && (ratio<0. || ratio>1.)) {
+      
+      std::cout << " ratio = " <<ratio<< " ampl ="<<ampl<<" amplitude ="<<amplitude<< " ts_with_max_signal ="<<ts_with_max_signal<< " tool.size() ="<<tool.size()<< " max_signal ="<<max_signal<< std::endl;
+      
+      std::cout << " tool[ts_with_max_signal] = " << tool[ts_with_max_signal]  << "  tool[ts_with_max_signal+1]= " << tool[ts_with_max_signal+1]  << "  tool[ts_with_max_signal-1]= " << tool[ts_with_max_signal-1]  << "  tool[ts_with_max_signal-2]= " << tool[ts_with_max_signal-2]  << std::endl;
+      
+      std::cout << " tool[0] = " << tool[0]  << "  tool[1]= " << tool[1]  << "  tool[2]= " << tool[2]  << "  tool[3]= " << tool[3]  << "  tool[4]= " << tool[4]  << "  tool[5]= " << tool[5]  << "  tool[6]= " << tool[6]  << "  tool[7]= " << tool[7]  << "  tool[8]= " << tool[8]  << "  tool[9]= " << tool[9]  << std::endl;
+    }
+    if (ratio<0. || ratio>1.) ratio = 0.;
+    
+    if (verbosity == -22) std::cout << "* ratio = " <<ratio<< " ampl ="<<ampl<< std::endl;
 
+    
     double aveamplitude = 0.;
-    if(amplitude !=0)  aveamplitude = timew/amplitude;
+    if(amplitude !=0)  aveamplitude = timew/amplitude;// average_TS +1
     double rmsamp = 0.;
     for (int ii=0; ii<tool.size(); ii++) {  
       double ampldefault = tool[ii];
       double aaaaaa = (ii+1)-aveamplitude;
       double aaaaaa2 = aaaaaa*aaaaaa;
-      rmsamp+=aaaaaa2*ampldefault;// fC
-    }//for
+      rmsamp+=(aaaaaa2*ampldefault);// fC
+    }//for 2
     double rmsamplitude = 0.;
     if(amplitude !=0)  rmsamplitude = sqrt( rmsamp/amplitude );
 
+
+    double aveamplitude1 = aveamplitude-1;// means iTS=0-9, so bad is iTS=0 and 9
     ///////////////////////////////////////Digis
     // HB
     if ( sub == 1 ) {
       
+      //   //   //   //   //   //   //   //   //  HB       TSmax:
+      h_TSmaxA_HB->Fill(aveamplitude1,1.);
+      if(aveamplitude1 < 1 || aveamplitude1 > 8 ) {
+	if (verbosity == -55) std::cout << "***BAD HB channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
+	if(mdepth==1) h_mapDepth1TSmaxA225_HB->Fill(double(ieta), double(iphi), 1.);
+	if(mdepth==2) h_mapDepth2TSmaxA225_HB->Fill(double(ieta), double(iphi), 1.);
+      }// if
+      if(mdepth==1) h_mapDepth1TSmaxA_HB->Fill(double(ieta), double(iphi), aveamplitude1);
+      if(mdepth==2) h_mapDepth2TSmaxA_HB->Fill(double(ieta), double(iphi), aveamplitude1);
+
+      ///////////////////////////////
+
+      
+      //   //   //   //   //   //   //   //   //  HB       RMS:
       h_Amplitude_HB->Fill(rmsamplitude,1.);
       //	if(rmsamplitude > 2.25 ) {
       //	if(rmsamplitude < -1. || rmsamplitude > 2.025 ) {
       if(rmsamplitude < rmsHBMin_ || rmsamplitude > rmsHBMax_ ) {
-	if (verbosity == -54) std::cout << std::endl << "***BAD HB channels from shape RMS:  "  <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
+	if (verbosity == -54) std::cout << "***BAD HB channels from shape RMS:  "  <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
 	if(mdepth==1) h_mapDepth1Amplitude225_HB->Fill(double(ieta), double(iphi), 1.);
 	if(mdepth==2) h_mapDepth2Amplitude225_HB->Fill(double(ieta), double(iphi), 1.);
-	if(mdepth==3) h_mapDepth3Amplitude225_HB->Fill(double(ieta), double(iphi), 1.);
-      } 
+      }// if
       if(mdepth==1) h_mapDepth1Amplitude_HB->Fill(double(ieta), double(iphi), rmsamplitude);    
       if(mdepth==2) h_mapDepth2Amplitude_HB->Fill(double(ieta), double(iphi), rmsamplitude);    
-      if(mdepth==3) h_mapDepth3Amplitude_HB->Fill(double(ieta), double(iphi), rmsamplitude);  
-      
+
+      ///////////////////////////////
+
+
+      //   //   //   //   //   //   //   //   //  HB       Ratio:
       h_Ampl_HB->Fill(ratio,1.);
       //	if(ratio < 0.4 || ratio > 0.7  ) {
       if(ratio < ratioHBMin_ || ratio > ratioHBMax_  ) {
-	if (verbosity == -53) std::cout << std::endl << "***BAD HB channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
+	if (verbosity == -53) std::cout << "***BAD HB channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
 	if(mdepth==1) h_mapDepth1Ampl047_HB->Fill(double(ieta), double(iphi), 1.);
 	if(mdepth==2) h_mapDepth2Ampl047_HB->Fill(double(ieta), double(iphi), 1.);
-	if(mdepth==3) h_mapDepth3Ampl047_HB->Fill(double(ieta), double(iphi), 1.);
 	// //
 	if(studyRunDependenceHist_) ++badchannels[sub-1][mdepth-1][ieta+41][iphi];// 0-82 ; 0-71
-	if (verbosity == -51) std::cout << std::endl << "***BAD HB channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi <<" sub= " << sub <<" mdepth= " << mdepth <<" badchannels= " << badchannels[sub-1][mdepth-1][ieta+41][iphi] << std::endl;
+	if (verbosity == -51) std::cout << "***BAD HB channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi <<" sub= " << sub <<" mdepth= " << mdepth <<" badchannels= " << badchannels[sub-1][mdepth-1][ieta+41][iphi] << std::endl;
 	// //
       }
       
       if(mdepth==1) h_mapDepth1Ampl_HB->Fill(double(ieta), double(iphi), ratio);    
       if(mdepth==2) h_mapDepth2Ampl_HB->Fill(double(ieta), double(iphi), ratio);    
-      if(mdepth==3) h_mapDepth3Ampl_HB->Fill(double(ieta), double(iphi), ratio);  
-      
-      if(mdepth==1) h_mapDepth1AmplE34_HB->Fill(double(ieta), double(iphi), ampl);    
-      if(mdepth==2) h_mapDepth2AmplE34_HB->Fill(double(ieta), double(iphi), ampl);    
-      if(mdepth==3) h_mapDepth3AmplE34_HB->Fill(double(ieta), double(iphi), ampl);  
+
+      ///////////////////////////////
+
+      if(mdepth==1) h_mapDepth1AmplE34_HB->Fill(double(ieta), double(iphi), amplitude);    
+      if(mdepth==2) h_mapDepth2AmplE34_HB->Fill(double(ieta), double(iphi), amplitude);    
       
       if(mdepth==1) h_mapDepth1_HB->Fill(double(ieta), double(iphi), 1.);    
       if(mdepth==2) h_mapDepth2_HB->Fill(double(ieta), double(iphi), 1.);    
-      if(mdepth==3) h_mapDepth3_HB->Fill(double(ieta), double(iphi), 1.);    
     }//if ( sub == 1 )
+
     // HE
     if ( sub == 2 ) {
       
+      //   //   //   //   //   //   //   //   //  HB       TSmax:
+      h_TSmaxA_HE->Fill(aveamplitude1,1.);
+      if(aveamplitude1 < 1 || aveamplitude1 > 8 ) {
+	if (verbosity == -55) std::cout << "***BAD HE channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
+	if(mdepth==1) h_mapDepth1TSmaxA225_HE->Fill(double(ieta), double(iphi), 1.);
+	if(mdepth==2) h_mapDepth2TSmaxA225_HE->Fill(double(ieta), double(iphi), 1.);
+	if(mdepth==3) h_mapDepth3TSmaxA225_HE->Fill(double(ieta), double(iphi), 1.);
+      }// if
+      if(mdepth==1) h_mapDepth1TSmaxA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
+      if(mdepth==2) h_mapDepth2TSmaxA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
+      if(mdepth==3) h_mapDepth3TSmaxA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
+
+      ///////////////////////////////
+
+
+      //   //   //   //   //   //   //   //   //  HE       RMS:
       h_Amplitude_HE->Fill(rmsamplitude,1.);
       //	if(rmsamplitude > 2.25 ) {
       //	if(rmsamplitude < -1. || rmsamplitude > 2.225 ) {
       if(rmsamplitude < rmsHEMin_ || rmsamplitude > rmsHEMax_ ) {
-	if (verbosity == -54) std::cout << std::endl << "***BAD HE channels from shape RMS:  " <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
+	if (verbosity == -54) std::cout << "***BAD HE channels from shape RMS:  " <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
 	if(mdepth==1) h_mapDepth1Amplitude225_HE->Fill(double(ieta), double(iphi), 1.);
 	if(mdepth==2) h_mapDepth2Amplitude225_HE->Fill(double(ieta), double(iphi), 1.);
 	if(mdepth==3) h_mapDepth3Amplitude225_HE->Fill(double(ieta), double(iphi), 1.);
@@ -1556,26 +1680,33 @@ void VeRawAnalyzer::fillDigiAmplitude(HBHEDigiCollection::const_iterator& digiIt
       if(mdepth==1) h_mapDepth1Amplitude_HE->Fill(double(ieta), double(iphi), rmsamplitude);    
       if(mdepth==2) h_mapDepth2Amplitude_HE->Fill(double(ieta), double(iphi), rmsamplitude);    
       if(mdepth==3) h_mapDepth3Amplitude_HE->Fill(double(ieta), double(iphi), rmsamplitude);  
+
+      ///////////////////////////////
+
       
+      //   //   //   //   //   //   //   //   //  HE       Ratio:
       h_Ampl_HE->Fill(ratio,1.);
       //	if(ratio < 0.3 || ratio > 0.8  ) {
       if(ratio < ratioHEMin_ || ratio > ratioHEMax_  ) {
-	if (verbosity == -53) std::cout << std::endl << "***BAD HE channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
+	if (verbosity == -53) std::cout << "***BAD HE channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi << std::endl;
 	if(mdepth==1) h_mapDepth1Ampl047_HE->Fill(double(ieta), double(iphi), 1.);
 	if(mdepth==2) h_mapDepth2Ampl047_HE->Fill(double(ieta), double(iphi), 1.);
 	if(mdepth==3) h_mapDepth3Ampl047_HE->Fill(double(ieta), double(iphi), 1.);
 	// //
 	if(studyRunDependenceHist_) ++badchannels[sub-1][mdepth-1][ieta+41][iphi];// 0-82 ; 0-71
-	if (verbosity == -51) std::cout << std::endl << "***BAD HE channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi <<" sub= " << sub <<" mdepth= " << mdepth <<" badchannels= " << badchannels[sub-1][mdepth-1][ieta+41][iphi] << std::endl;
+	if (verbosity == -51) std::cout << "***BAD HE channels from shape Ratio:  " <<" ieta= " << ieta <<" iphi= " << iphi <<" sub= " << sub <<" mdepth= " << mdepth <<" badchannels= " << badchannels[sub-1][mdepth-1][ieta+41][iphi] << std::endl;
 	// //
       }
       if(mdepth==1) h_mapDepth1Ampl_HE->Fill(double(ieta), double(iphi), ratio);    
       if(mdepth==2) h_mapDepth2Ampl_HE->Fill(double(ieta), double(iphi), ratio);    
       if(mdepth==3) h_mapDepth3Ampl_HE->Fill(double(ieta), double(iphi), ratio);  
+
+      ///////////////////////////////
+
       
-      if(mdepth==1) h_mapDepth1AmplE34_HE->Fill(double(ieta), double(iphi), ampl);    
-      if(mdepth==2) h_mapDepth2AmplE34_HE->Fill(double(ieta), double(iphi), ampl);    
-      if(mdepth==3) h_mapDepth3AmplE34_HE->Fill(double(ieta), double(iphi), ampl);  
+      if(mdepth==1) h_mapDepth1AmplE34_HE->Fill(double(ieta), double(iphi), amplitude);    
+      if(mdepth==2) h_mapDepth2AmplE34_HE->Fill(double(ieta), double(iphi), amplitude);    
+      if(mdepth==3) h_mapDepth3AmplE34_HE->Fill(double(ieta), double(iphi), amplitude);  
       
       if(mdepth==1) h_mapDepth1_HE->Fill(double(ieta), double(iphi), 1.);    
       if(mdepth==2) h_mapDepth2_HE->Fill(double(ieta), double(iphi), 1.);    
@@ -1719,27 +1850,45 @@ void VeRawAnalyzer::endJob(){
     h_repetedcapid_HE->Write();
     
     ///////////////////////
+
+    h_TSmaxA_HB->Write();
+    h_mapDepth1TSmaxA225_HB->Write();
+    h_mapDepth2TSmaxA225_HB->Write();
+    h_mapDepth1TSmaxA_HB->Write();
+    h_mapDepth2TSmaxA_HB->Write();
+
     h_Amplitude_HB->Write();
     h_mapDepth1Amplitude225_HB->Write();
     h_mapDepth2Amplitude225_HB->Write();
-    h_mapDepth3Amplitude225_HB->Write();
     h_mapDepth1Amplitude_HB->Write();
     h_mapDepth2Amplitude_HB->Write();
-    h_mapDepth3Amplitude_HB->Write();
+
     h_Ampl_HB->Write();
     h_mapDepth1Ampl047_HB->Write();
     h_mapDepth2Ampl047_HB->Write();
-    h_mapDepth3Ampl047_HB->Write();
     h_mapDepth1Ampl_HB->Write();
     h_mapDepth2Ampl_HB->Write();
-    h_mapDepth3Ampl_HB->Write();
     h_mapDepth1AmplE34_HB->Write();
     h_mapDepth2AmplE34_HB->Write();
-    h_mapDepth3AmplE34_HB->Write();
     h_mapDepth1_HB->Write();
     h_mapDepth2_HB->Write();
-    h_mapDepth3_HB->Write();
     
+    h_mapDepth1AmplE34_HF->Write();
+    h_mapDepth2AmplE34_HF->Write();
+    h_mapDepth1_HF->Write();
+    h_mapDepth2_HF->Write();
+    
+    h_mapDepth4AmplE34_HO->Write();
+    h_mapDepth4_HO->Write();
+
+    h_TSmaxA_HE->Write();
+    h_mapDepth1TSmaxA225_HE->Write();
+    h_mapDepth2TSmaxA225_HE->Write();
+    h_mapDepth3TSmaxA225_HE->Write();
+    h_mapDepth1TSmaxA_HE->Write();
+    h_mapDepth2TSmaxA_HE->Write();
+    h_mapDepth3TSmaxA_HE->Write();
+
     h_Amplitude_HE->Write();
     h_mapDepth1Amplitude225_HE->Write();
     h_mapDepth2Amplitude225_HE->Write();
@@ -1747,6 +1896,7 @@ void VeRawAnalyzer::endJob(){
     h_mapDepth1Amplitude_HE->Write();
     h_mapDepth2Amplitude_HE->Write();
     h_mapDepth3Amplitude_HE->Write();
+
     h_Ampl_HE->Write();
     h_mapDepth1Ampl047_HE->Write();
     h_mapDepth2Ampl047_HE->Write();
@@ -1762,23 +1912,25 @@ void VeRawAnalyzer::endJob(){
     h_mapDepth3_HE->Write();
     
     ///////////////////////
+    /*
     h_GetRMSOverNormalizedSignal_HB->Write();
     h_GetRMSOverNormalizedSignal_HE->Write();
     h_GetRMSOverNormalizedSignal_HO->Write();
     h_GetRMSOverNormalizedSignal_HF->Write();
-    h_NormalizedSignal3D_HB->Write();
-    h_NormalizedSignal3D0_HB->Write();
-    h_NormalizedSignal3D_HE->Write();
-    h_NormalizedSignal3D0_HE->Write();
-    h_NormalizedSignal3D_HO->Write();
-    h_NormalizedSignal3D0_HO->Write();
-    h_NormalizedSignal3D_HF->Write();
-    h_NormalizedSignal3D0_HF->Write();
-
     h_GetRMSOverNormalizedSignal3_HB->Write();
     h_GetRMSOverNormalizedSignal3_HE->Write();
     h_GetRMSOverNormalizedSignal3_HO->Write();
     h_GetRMSOverNormalizedSignal3_HF->Write();
+*/
+    h_FullSignal3D_HB->Write();
+    h_FullSignal3D0_HB->Write();
+    h_FullSignal3D_HE->Write();
+    h_FullSignal3D0_HE->Write();
+    h_FullSignal3D_HO->Write();
+    h_FullSignal3D0_HO->Write();
+    h_FullSignal3D_HF->Write();
+    h_FullSignal3D0_HF->Write();
+
 
     h_nbadchannels_depth1_HB->Write();
     h_runnbadchannels_depth1_HB->Write();
@@ -1843,6 +1995,7 @@ void VeRawAnalyzer::endJob(){
   hOutputFile->Close() ;
   std::cout << "===== Finish writing user histograms and ntuple =====" << std::endl;
   ///////////////////////
+  
 
 
   if (MAPcreation>0) {
@@ -2106,6 +2259,8 @@ void VeRawAnalyzer::endJob(){
     MAPfile.close(); 
     std::cout << "===== Finish writing Channel MAP =====" << std::endl;  
   }
+
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
