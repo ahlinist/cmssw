@@ -74,7 +74,9 @@
 //  TBrowser *b = new TBrowser
 
 //	TFile *hfile1= new TFile("BadRBXrun211154.root", "READ");        
-	TFile *hfile1= new TFile("test.root", "READ");        
+//	TFile *hfile1= new TFile("test.root", "READ");        
+//	TFile *hfile1= new TFile("test8runs.root", "READ");        
+	TFile *hfile1= new TFile("test203056.root", "READ");        
 
 	//    getchar();
 	//
@@ -131,7 +133,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("TS RMS in each event & cell \b");
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HB \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -145,7 +147,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth1_HB->SetBinContent(i,j,0.);
-	  if(ccc1 > 2.0 )  Diffe_Depth1_HB->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 1.0 || ccc1 > 2.3 )  Diffe_Depth1_HB->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -157,14 +159,14 @@
       //    Diffe_Depth1_HB->SetTitle("any Error, HB Depth1 \n");
       Diffe_Depth1_HB->SetXTitle("#eta \b");
       Diffe_Depth1_HB->SetYTitle("#phi \b");
-      Diffe_Depth1_HB->SetZTitle("<TS RMS> bigger 2.0 - HB Depth1 \b");
+      Diffe_Depth1_HB->SetZTitle("<TS RMS> out 1.0-2.3 - HB Depth1 \b");
       Diffe_Depth1_HB->SetMarkerColor(2);
       Diffe_Depth1_HB->SetLineColor(2);
       Diffe_Depth1_HB->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth1_HB = new TH1F("diffAmplitude_Depth1_HB","", 100, 1., 3.);
+      TH1F* diffAmplitude_Depth1_HB = new TH1F("diffAmplitude_Depth1_HB","", 100, 0., 5.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
@@ -234,7 +236,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("TS RMS in each event & cell \b");
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HB \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -248,7 +250,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth2_HB->SetBinContent(i,j,0.);
-	  if(ccc1 > 2.0 )  Diffe_Depth2_HB->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 1.0 || ccc1 > 2.3 )  Diffe_Depth2_HB->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -260,14 +262,14 @@
       //    Diffe_Depth2_HB->SetTitle("any Error, HB Depth2 \n");
       Diffe_Depth2_HB->SetXTitle("#eta \b");
       Diffe_Depth2_HB->SetYTitle("#phi \b");
-      Diffe_Depth2_HB->SetZTitle("<TS RMS> bigger 2.0 - HB Depth2 \b");
+      Diffe_Depth2_HB->SetZTitle("<TS RMS> out 1.0-2.3 - HB Depth2 \b");
       Diffe_Depth2_HB->SetMarkerColor(2);
       Diffe_Depth2_HB->SetLineColor(2);
       Diffe_Depth2_HB->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth2_HB = new TH1F("diffAmplitude_Depth2_HB","", 100, 1., 3.);
+      TH1F* diffAmplitude_Depth2_HB = new TH1F("diffAmplitude_Depth2_HB","", 100, 0., 5.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
@@ -337,7 +339,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("TS RMS in each event & cell \b");
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HE \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -351,7 +353,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth1_HE->SetBinContent(i,j,0.);
-	  if(ccc1 > 2.0 )  Diffe_Depth1_HE->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 1.0 || ccc1 > 2.3 )  Diffe_Depth1_HE->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -363,14 +365,14 @@
       //    Diffe_Depth1_HE->SetTitle("any Error, HE Depth1 \n");
       Diffe_Depth1_HE->SetXTitle("#eta \b");
       Diffe_Depth1_HE->SetYTitle("#phi \b");
-      Diffe_Depth1_HE->SetZTitle("<TS RMS> bigger 2.0 - HE Depth1 \b");
+      Diffe_Depth1_HE->SetZTitle("<TS RMS> out 1.0-2.3 - HE Depth1 \b");
       Diffe_Depth1_HE->SetMarkerColor(2);
       Diffe_Depth1_HE->SetLineColor(2);
       Diffe_Depth1_HE->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth1_HE = new TH1F("diffAmplitude_Depth1_HE","", 100, 1., 3.);
+      TH1F* diffAmplitude_Depth1_HE = new TH1F("diffAmplitude_Depth1_HE","", 100, 0., 5.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
@@ -440,7 +442,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("TS RMS in each event & cell \b");
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HE \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -454,7 +456,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth2_HE->SetBinContent(i,j,0.);
-	  if(ccc1 > 2.0 )  Diffe_Depth2_HE->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 1.0 || ccc1 > 2.3 )  Diffe_Depth2_HE->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -466,14 +468,14 @@
       //    Diffe_Depth2_HE->SetTitle("any Error, HE Depth2 \n");
       Diffe_Depth2_HE->SetXTitle("#eta \b");
       Diffe_Depth2_HE->SetYTitle("#phi \b");
-      Diffe_Depth2_HE->SetZTitle("<TS RMS> bigger 2.0 - HE Depth2 \b");
+      Diffe_Depth2_HE->SetZTitle("<TS RMS> out 1.0-2.3 - HE Depth2 \b");
       Diffe_Depth2_HE->SetMarkerColor(2);
       Diffe_Depth2_HE->SetLineColor(2);
       Diffe_Depth2_HE->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth2_HE = new TH1F("diffAmplitude_Depth2_HE","", 100, 1., 3.);
+      TH1F* diffAmplitude_Depth2_HE = new TH1F("diffAmplitude_Depth2_HE","", 100, 0., 5.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
@@ -543,7 +545,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("TS RMS in each event & cell \b");
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HE \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -557,7 +559,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth3_HE->SetBinContent(i,j,0.);
-	  if(ccc1 > 2.0 )  Diffe_Depth3_HE->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 1.0 || ccc1 > 2.3 )  Diffe_Depth3_HE->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -569,14 +571,14 @@
       //    Diffe_Depth3_HE->SetTitle("any Error, HE Depth3 \n");
       Diffe_Depth3_HE->SetXTitle("#eta \b");
       Diffe_Depth3_HE->SetYTitle("#phi \b");
-      Diffe_Depth3_HE->SetZTitle("<TS RMS> bigger 2.0 - HE Depth3 \b");
+      Diffe_Depth3_HE->SetZTitle("<TS RMS> out 1.0-2.3 - HE Depth3 \b");
       Diffe_Depth3_HE->SetMarkerColor(2);
       Diffe_Depth3_HE->SetLineColor(2);
       Diffe_Depth3_HE->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth3_HE = new TH1F("diffAmplitude_Depth3_HE","", 100, 1., 3.);
+      TH1F* diffAmplitude_Depth3_HE = new TH1F("diffAmplitude_Depth3_HE","", 100, 0., 5.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {

@@ -74,8 +74,11 @@
 //  TBrowser *b = new TBrowser
 
 //	TFile *hfile1= new TFile("BadRBXrun211146.root", "READ");        
-	TFile *hfile1= new TFile("test.root", "READ");        
-//	TFile *hfile1= new TFile("test_allruns.root", "READ");        
+//	TFile *hfile1= new TFile("test.root", "READ");        
+//	TFile *hfile1= new TFile("test8runs.root", "READ");        
+//	TFile *hfile1= new TFile("test7runs.root", "READ");        
+	TFile *hfile1= new TFile("test203056.root", "READ");        
+//	TFile *hfile1= new TFile("test_allruns.root", "READ");     
 
 	//    getchar();
 	//
@@ -93,15 +96,6 @@
       c1->Clear();
       c1->Divide(2,2);
       
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl_HB");
-      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
-      twod1->Sumw2();
-      twod0->Sumw2();
-      if(twod0->IsA()->InheritsFrom("TH2F")){
-	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
-	Ceff->Divide(twod1,twod0, 1, 1, "B");
-	Ceff->Sumw2();
-      }
       c1->cd(1);
       TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl047_HB");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
@@ -137,6 +131,16 @@
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
        
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl_HB");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
+	Ceff->Divide(twod1,twod0, 1, 1, "B");
+	Ceff->Sumw2();
+      }
+
       c1->cd(3);
     ///////////////////////////////////////
     TH2F* Diffe_Depth1_HB = (TH2F*)Ceff->Clone("Diffe_Depth1_HB");
@@ -144,7 +148,7 @@
     int ny = Ceff->GetYaxis()->GetNbins();
     for (int i=1;i<=nx;i++) {
       for (int j=1;j<=ny;j++) {
-	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
+	  double ccc1 =  Ceff->GetBinContent(i,j);
 	  Diffe_Depth1_HB->SetBinContent(i,j,0.);
 	  if(ccc1 < 0.25 || ccc1 > 1.00)  Diffe_Depth1_HB->SetBinContent(i,j,ccc1);
       }
@@ -459,7 +463,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth2_HE->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.34 || ccc1 > 0.75 )  Diffe_Depth2_HE->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 0.25 || ccc1 > 1.00 )  Diffe_Depth2_HE->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -471,7 +475,7 @@
       //    Diffe_Depth2_HE->SetTitle("any Error, HE Depth2 \n");
       Diffe_Depth2_HE->SetXTitle("#eta \b");
       Diffe_Depth2_HE->SetYTitle("#phi \b");
-      Diffe_Depth2_HE->SetZTitle("<Ratio34> out 0.34-0.75 - HE Depth2 \b");
+      Diffe_Depth2_HE->SetZTitle("<Ratio34> smaller 0.25 - HE Depth2 \b");
       Diffe_Depth2_HE->SetMarkerColor(2);
       Diffe_Depth2_HE->SetLineColor(2);
       Diffe_Depth2_HE->Draw("COLZ");

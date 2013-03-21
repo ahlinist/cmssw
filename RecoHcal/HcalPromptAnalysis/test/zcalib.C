@@ -74,7 +74,8 @@
 //  TBrowser *b = new TBrowser
 
 //	TFile *hfile1= new TFile("BadRBXrun211146.root", "READ");        
-	TFile *hfile1= new TFile("test.root", "READ");        
+//	TFile *hfile1= new TFile("test.root", "READ");        
+	TFile *hfile1= new TFile("test8runs.root", "READ");        
 
 	//    getchar();
 	//
@@ -119,7 +120,6 @@
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      //    Cefz225->SetZTitle("Rate for Ratio34Calib smaller 04 HB \b");
           Cefz225->SetZTitle("Rate  HB \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
@@ -131,7 +131,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34Calib in each event & cell HB\b");
+      aaaaaa1->SetXTitle("RatioCalib in each event & cell HB\b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->SetMinimum(0.8);
@@ -146,7 +146,6 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_HB->SetBinContent(i,j,0.);
-	  //	  if(ccc1 < 0.43 )  Diffe_HB->SetBinContent(i,j,ccc1);
 	  if(ccc1 < 0.7 )  Diffe_HB->SetBinContent(i,j,ccc1);
       }
     }
@@ -158,7 +157,7 @@
       Diffe_HB->GetZaxis()->SetLabelSize(0.08);
       Diffe_HB->SetXTitle("#eta \b");
       Diffe_HB->SetYTitle("#phi \b");
-      Diffe_HB->SetZTitle("<Ratio34Calib> less 0.7 HB \b");
+      Diffe_HB->SetZTitle("<RatioCalib> smaller 0.7 HB \b");
       Diffe_HB->SetMarkerColor(2);
       Diffe_HB->SetLineColor(2);
       Diffe_HB->Draw("COLZ");
@@ -180,7 +179,7 @@
       diffAmplitude_HB->SetMarkerStyle(20);
       diffAmplitude_HB->SetMarkerSize(0.4);
       diffAmplitude_HB->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_HB->SetXTitle("<Ratio34Calib> in each cell HB\b");
+      diffAmplitude_HB->SetXTitle("<RatioCalib> in each cell HB\b");
       diffAmplitude_HB->SetMarkerColor(2);
       diffAmplitude_HB->SetLineColor(2);
       diffAmplitude_HB->SetMinimum(0.8);
@@ -225,7 +224,6 @@
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      //    Cefz225->SetZTitle("Rate for Ratio34Calib smaller 04 HE \b");
       Cefz225->SetZTitle("Rate HE \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
@@ -237,7 +235,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34Calib in each event & cell HE\b");
+      aaaaaa1->SetXTitle("RatioCalib in each event & cell HE\b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->SetMinimum(0.8);
@@ -252,7 +250,6 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_HE->SetBinContent(i,j,0.);
-	  //	  if(ccc1 < 0.43 )  Diffe_HE->SetBinContent(i,j,ccc1);
 	  if(ccc1 < 0.7 )  Diffe_HE->SetBinContent(i,j,ccc1);
       }
     }
@@ -264,7 +261,7 @@
       Diffe_HE->GetZaxis()->SetLabelSize(0.08);
       Diffe_HE->SetXTitle("#eta \b");
       Diffe_HE->SetYTitle("#phi \b");
-      Diffe_HE->SetZTitle("<Ratio34Calib> less 0.43 HE \b");
+      Diffe_HE->SetZTitle("<RatioCalib> smaller 0.7 HE \b");
       Diffe_HE->SetMarkerColor(2);
       Diffe_HE->SetLineColor(2);
       Diffe_HE->Draw("COLZ");
@@ -286,7 +283,7 @@
       diffAmplitude_HE->SetMarkerStyle(20);
       diffAmplitude_HE->SetMarkerSize(0.4);
       diffAmplitude_HE->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_HE->SetXTitle("<Ratio34Calib> in each cell HE\b");
+      diffAmplitude_HE->SetXTitle("<RatioCalib> in each cell HE\b");
       diffAmplitude_HE->SetMarkerColor(2);
       diffAmplitude_HE->SetLineColor(2);
       diffAmplitude_HE->SetMinimum(0.8);
@@ -331,7 +328,6 @@
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      //    Cefz225->SetZTitle("Rate for Ratio3456Calib smaller 04 HO \b");
       Cefz225->SetZTitle("Rate HO \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
@@ -343,7 +339,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio3456Calib in each event & cell HO\b");
+      aaaaaa1->SetXTitle("RatioCalib in each event & cell HO\b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->SetMinimum(0.8);
@@ -358,7 +354,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_HO->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.7)  Diffe_HO->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 0.25)  Diffe_HO->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -369,7 +365,7 @@
       Diffe_HO->GetZaxis()->SetLabelSize(0.08);
       Diffe_HO->SetXTitle("#eta \b");
       Diffe_HO->SetYTitle("#phi \b");
-      Diffe_HO->SetZTitle("<Ratio3456Calib> less 0.7 HO \b");
+      Diffe_HO->SetZTitle("<RatioCalib> smaller 0.25 HO \b");
       Diffe_HO->SetMarkerColor(2);
       Diffe_HO->SetLineColor(2);
       Diffe_HO->Draw("COLZ");
@@ -391,7 +387,7 @@
       diffAmplitude_HO->SetMarkerStyle(20);
       diffAmplitude_HO->SetMarkerSize(0.4);
       diffAmplitude_HO->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_HO->SetXTitle("<Ratio3456Calib> in each cell \b");
+      diffAmplitude_HO->SetXTitle("<RatioCalib> in each cell \b");
       diffAmplitude_HO->SetMarkerColor(2);
       diffAmplitude_HO->SetLineColor(2);
       diffAmplitude_HO->SetMinimum(0.8);
@@ -436,7 +432,6 @@
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      //    Cefz225->SetZTitle("Rate for Ratio3456Calib smaller 04 HF \b");
       Cefz225->SetZTitle("Rate HF \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
@@ -448,7 +443,7 @@
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio3456Calib in each event & cell HF\b");
+      aaaaaa1->SetXTitle("RatioCalib in each event & cell HF\b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->SetMinimum(0.8);
@@ -463,7 +458,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_HF->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.7 )  Diffe_HF->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 0.40)  Diffe_HF->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -474,7 +469,7 @@
       Diffe_HF->GetZaxis()->SetLabelSize(0.08);
       Diffe_HF->SetXTitle("#eta \b");
       Diffe_HF->SetYTitle("#phi \b");
-      Diffe_HF->SetZTitle("<Ratio3456Calib> less 0.7 HF \b");
+      Diffe_HF->SetZTitle("<RatioCalib> smaller 0.40 HF \b");
       Diffe_HF->SetMarkerColor(2);
       Diffe_HF->SetLineColor(2);
       Diffe_HF->Draw("COLZ");
@@ -496,7 +491,7 @@
       diffAmplitude_HF->SetMarkerStyle(20);
       diffAmplitude_HF->SetMarkerSize(0.4);
       diffAmplitude_HF->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_HF->SetXTitle("<Ratio3456Calib> in each cell \b");
+      diffAmplitude_HF->SetXTitle("<RatioCalib> in each cell \b");
       diffAmplitude_HF->SetMarkerColor(2);
       diffAmplitude_HF->SetLineColor(2);
       diffAmplitude_HF->SetMinimum(0.8);

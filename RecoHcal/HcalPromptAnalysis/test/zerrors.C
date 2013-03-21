@@ -76,7 +76,13 @@
 //	TFile *hfile1= new TFile("PFGNZSRAW-run193116.root", "READ");        
 //	TFile *hfile1= new TFile("PFGNZSRAW-run194151.root", "READ");        
 //	TFile *hfile1= new TFile("PFGNZSRAW-run199751.root", "READ");        
-	TFile *hfile1= new TFile("testNZS.root", "READ");        
+//	TFile *hfile1= new TFile("testNZS.root", "READ");        
+
+//	TFile *hfile1= new TFile("test.root", "READ");        
+//	TFile *hfile1= new TFile("test_allruns.root", "READ");        
+//	TFile *hfile1= new TFile("test8runs.root", "READ");        
+//	TFile *hfile1= new TFile("test7runs.root", "READ");        
+	TFile *hfile1= new TFile("test203056.root", "READ");        
 
 	//    getchar();
 	//
@@ -255,10 +261,19 @@
     //================
     //======================================================================
       c1->Clear();
-      c1->Divide(1,2);
+      c1->Divide(2,2);
       
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HB");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HB");
+      //    TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HB");
        gPad->SetGridy();
        gPad->SetGridx();
       gPad->SetLogz();
@@ -268,13 +283,22 @@
 //      twod1->SetTitle("any Error, HB Depth1 \n");
       twod1->SetXTitle("#eta");
       twod1->SetYTitle("#phi");
-      twod1->SetZTitle("HB Depth1");
+      twod1->SetZTitle("Rate of CapId failure for HB Depth1");
       twod1->SetMarkerColor(2);
       twod1->SetLineColor(2);
       twod1->Draw("COLZ");
       
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HB");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth2_HB");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
       c1->cd(2);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HB");
+      //      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HB");
        gPad->SetGridy();
        gPad->SetGridx();
       gPad->SetLogz();
@@ -284,7 +308,7 @@
 //      twod1->SetTitle("any Error, HB Depth2 \n");
       twod1->SetXTitle("#eta");
       twod1->SetYTitle("#phi");
-      twod1->SetZTitle("HB Depth2");
+      twod1->SetZTitle("Rate of CapId failure for HB Depth2");
       twod1->SetMarkerColor(2);
       twod1->SetLineColor(2);
       twod1->Draw("COLZ");
@@ -302,8 +326,17 @@
       c1->Clear();
       c1->Divide(2,2);
       
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HE");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth1_HE");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HE");
+      //    TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HE");
        gPad->SetGridy();
        gPad->SetGridx();
       gPad->SetLogz();
@@ -313,13 +346,22 @@
 //      twod1->SetTitle("any Error, HE Depth1 \n");
       twod1->SetXTitle("#eta");
       twod1->SetYTitle("#phi");
-      twod1->SetZTitle("HE Depth1");
+      twod1->SetZTitle("Rate of CapId failure for HE Depth1");
       twod1->SetMarkerColor(2);
       twod1->SetLineColor(2);
       twod1->Draw("COLZ");
       
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HE");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth2_HE");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
       c1->cd(2);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HE");
+      //    TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HE");
        gPad->SetGridy();
        gPad->SetGridx();
       gPad->SetLogz();
@@ -329,13 +371,22 @@
 //      twod1->SetTitle("any Error, HE Depth2 \n");
       twod1->SetXTitle("#eta");
       twod1->SetYTitle("#phi");
-      twod1->SetZTitle("HE Depth2");
+      twod1->SetZTitle("Rate of CapId failure for HE Depth2");
       twod1->SetMarkerColor(2);
       twod1->SetLineColor(2);
       twod1->Draw("COLZ");
       
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth3Error_HE");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth3_HE");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
       c1->cd(3);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth3Error_HE");
+      //    TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth3Error_HE");
        gPad->SetGridy();
        gPad->SetGridx();
       gPad->SetLogz();
@@ -345,7 +396,7 @@
 //      twod1->SetTitle("any Error, HE Depth3 \n");
       twod1->SetXTitle("#eta");
       twod1->SetYTitle("#phi");
-      twod1->SetZTitle("HE Depth3");
+      twod1->SetZTitle("Rate of CapId failure for HE Depth3");
       twod1->SetMarkerColor(2);
       twod1->SetLineColor(2);
       twod1->Draw("COLZ");

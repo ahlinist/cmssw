@@ -3,7 +3,7 @@
       printf("reco: gROOT Reset \n");
         gROOT->Reset();
         gROOT->SetStyle("Plain");
-				gStyle->SetOptStat(0);   //  no statistics _or_
+					gStyle->SetOptStat(0);   //  no statistics _or_
 	//	        	  gStyle->SetOptStat(11111111);
 	//gStyle->SetOptStat(1101);// mame mean and rms 
 	//	gStyle->SetOptStat(0101);// name and entries
@@ -77,9 +77,12 @@
 //	TFile *hfile1= new TFile("analysisUSC211154.root", "READ");        
 //	TFile *hfile2= new TFile("analysisUSC211146.root", "READ");        
 	
-	TFile *hfile1= new TFile("BadRBXrun211146.root", "READ");        
-	TFile *hfile2= new TFile("BadRBXrun211154.root", "READ");        
+//	TFile *hfile1= new TFile("BadRBXrun211146.root", "READ");        
+//	TFile *hfile2= new TFile("BadRBXrun211154.root", "READ");        
 
+//	TFile *hfile1= new TFile("BadRBXrun187927.root", "READ");        
+	TFile *hfile1= new TFile("BadRBXrun207167.root", "READ");        
+	TFile *hfile2= new TFile("BadRBXrun211146.root", "READ");        
 	
 	//    getchar();
 	//
@@ -98,8 +101,8 @@
 	c1->Divide(2,2);
 	
 	c1->cd(1);
-	TH2F *twod1= (TH2F*)hfile1->Get("h_NormalizedSignal3D_HB");
-	TH2F *twod0= (TH2F*)hfile1->Get("h_NormalizedSignal3D0_HB");
+	TH2F *twod1= (TH2F*)hfile1->Get("h_FullSignal3D_HB");
+	TH2F *twod0= (TH2F*)hfile1->Get("h_FullSignal3D0_HB");
 	twod1->Sumw2();
 	twod0->Sumw2();
 	if(twod0->IsA()->InheritsFrom("TH2F")){
@@ -122,8 +125,8 @@
 	Ceff->Draw("COLZ");
 	
       c1->cd(2);
-      TH2F *tqod1= (TH2F*)hfile2->Get("h_NormalizedSignal3D_HB");
-      TH2F *tqod0= (TH2F*)hfile2->Get("h_NormalizedSignal3D0_HB");
+      TH2F *tqod1= (TH2F*)hfile2->Get("h_FullSignal3D_HB");
+      TH2F *tqod0= (TH2F*)hfile2->Get("h_FullSignal3D0_HB");
       tqod1->Sumw2();
       tqod0->Sumw2();
       if(tqod0->IsA()->InheritsFrom("TH2F")){
@@ -156,7 +159,7 @@
 	if(Ceff->GetBinContent(i,j) !=0 && Czeff->GetBinContent(i,j) !=0 ) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   -   Czeff->GetBinContent(i,j)  ;
 	  ccc1 = 100.*ccc1/Ceff->GetBinContent(i,j);
-	  if(fabs(ccc1) > 0.5 )  Diffe_Depth1_HB->SetBinContent(i,j,fabs(ccc1));
+	  if(fabs(ccc1) > 2. )  Diffe_Depth1_HB->SetBinContent(i,j,fabs(ccc1));
 	}
       }
     }
@@ -176,7 +179,7 @@
     
     
       c1->cd(4);
-      TH1F* diffAmpl_Depth1_HB = new TH1F("diffAmpl_Depth1_HB","", 100, -7., 7.);
+      TH1F* diffAmpl_Depth1_HB = new TH1F("diffAmpl_Depth1_HB","", 100, -10., 10.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
@@ -211,8 +214,8 @@
 	c1->Divide(2,2);
 	
 	c1->cd(1);
-	TH2F *twod1= (TH2F*)hfile1->Get("h_NormalizedSignal3D_HE");
-	TH2F *twod0= (TH2F*)hfile1->Get("h_NormalizedSignal3D0_HE");
+	TH2F *twod1= (TH2F*)hfile1->Get("h_FullSignal3D_HE");
+	TH2F *twod0= (TH2F*)hfile1->Get("h_FullSignal3D0_HE");
 	twod1->Sumw2();
 	twod0->Sumw2();
 	if(twod0->IsA()->InheritsFrom("TH2F")){
@@ -235,8 +238,8 @@
 	Ceff->Draw("COLZ");
 	
       c1->cd(2);
-      TH2F *tqod1= (TH2F*)hfile2->Get("h_NormalizedSignal3D_HE");
-      TH2F *tqod0= (TH2F*)hfile2->Get("h_NormalizedSignal3D0_HE");
+      TH2F *tqod1= (TH2F*)hfile2->Get("h_FullSignal3D_HE");
+      TH2F *tqod0= (TH2F*)hfile2->Get("h_FullSignal3D0_HE");
       tqod1->Sumw2();
       tqod0->Sumw2();
       if(tqod0->IsA()->InheritsFrom("TH2F")){
@@ -269,7 +272,7 @@
 	if(Ceff->GetBinContent(i,j) !=0 && Czeff->GetBinContent(i,j) !=0 ) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   -   Czeff->GetBinContent(i,j)  ;
 	  ccc1 = 100.*ccc1/Ceff->GetBinContent(i,j);
-	  if(fabs(ccc1) > 0.5 )  Diffe_Depth1_HE->SetBinContent(i,j,fabs(ccc1));
+	  if(fabs(ccc1) > 2. )  Diffe_Depth1_HE->SetBinContent(i,j,fabs(ccc1));
 	}
       }
     }
@@ -289,7 +292,7 @@
     
     
       c1->cd(4);
-      TH1F* diffAmpl_Depth1_HE = new TH1F("diffAmpl_Depth1_HE","", 100, -7., 7.);
+      TH1F* diffAmpl_Depth1_HE = new TH1F("diffAmpl_Depth1_HE","", 100, -10., 10.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
@@ -324,8 +327,8 @@
 	c1->Divide(2,2);
 	
 	c1->cd(1);
-	TH2F *twod1= (TH2F*)hfile1->Get("h_NormalizedSignal3D_HO");
-	TH2F *twod0= (TH2F*)hfile1->Get("h_NormalizedSignal3D0_HO");
+	TH2F *twod1= (TH2F*)hfile1->Get("h_FullSignal3D_HO");
+	TH2F *twod0= (TH2F*)hfile1->Get("h_FullSignal3D0_HO");
 	twod1->Sumw2();
 	twod0->Sumw2();
 	if(twod0->IsA()->InheritsFrom("TH2F")){
@@ -348,8 +351,8 @@
 	Ceff->Draw("COLZ");
 	
       c1->cd(2);
-      TH2F *tqod1= (TH2F*)hfile2->Get("h_NormalizedSignal3D_HO");
-      TH2F *tqod0= (TH2F*)hfile2->Get("h_NormalizedSignal3D0_HO");
+      TH2F *tqod1= (TH2F*)hfile2->Get("h_FullSignal3D_HO");
+      TH2F *tqod0= (TH2F*)hfile2->Get("h_FullSignal3D0_HO");
       tqod1->Sumw2();
       tqod0->Sumw2();
       if(tqod0->IsA()->InheritsFrom("TH2F")){
@@ -382,7 +385,7 @@
 	if(Ceff->GetBinContent(i,j) !=0 && Czeff->GetBinContent(i,j) !=0 ) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   -   Czeff->GetBinContent(i,j)  ;
 	  ccc1 = 100.*ccc1/Ceff->GetBinContent(i,j);
-	  if(fabs(ccc1) > 5.0 )  Diffe_Depth1_HO->SetBinContent(i,j,fabs(ccc1));
+	  if(fabs(ccc1) > 2.0 )  Diffe_Depth1_HO->SetBinContent(i,j,fabs(ccc1));
 	}
       }
     }
@@ -402,7 +405,7 @@
     
     
       c1->cd(4);
-      TH1F* diffAmpl_Depth1_HO = new TH1F("diffAmpl_Depth1_HO","", 100, -7., 7.);
+      TH1F* diffAmpl_Depth1_HO = new TH1F("diffAmpl_Depth1_HO","", 100, -10., 10.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
@@ -437,8 +440,8 @@
 	c1->Divide(2,2);
 	
 	c1->cd(1);
-	TH2F *twod1= (TH2F*)hfile1->Get("h_NormalizedSignal3D_HF");
-	TH2F *twod0= (TH2F*)hfile1->Get("h_NormalizedSignal3D0_HF");
+	TH2F *twod1= (TH2F*)hfile1->Get("h_FullSignal3D_HF");
+	TH2F *twod0= (TH2F*)hfile1->Get("h_FullSignal3D0_HF");
 	twod1->Sumw2();
 	twod0->Sumw2();
 	if(twod0->IsA()->InheritsFrom("TH2F")){
@@ -461,8 +464,8 @@
 	Ceff->Draw("COLZ");
 	
       c1->cd(2);
-      TH2F *tqod1= (TH2F*)hfile2->Get("h_NormalizedSignal3D_HF");
-      TH2F *tqod0= (TH2F*)hfile2->Get("h_NormalizedSignal3D0_HF");
+      TH2F *tqod1= (TH2F*)hfile2->Get("h_FullSignal3D_HF");
+      TH2F *tqod0= (TH2F*)hfile2->Get("h_FullSignal3D0_HF");
       tqod1->Sumw2();
       tqod0->Sumw2();
       if(tqod0->IsA()->InheritsFrom("TH2F")){
@@ -495,7 +498,7 @@
 	if(Ceff->GetBinContent(i,j) !=0 && Czeff->GetBinContent(i,j) !=0 ) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   -   Czeff->GetBinContent(i,j)  ;
 	  ccc1 = 100.*ccc1/Ceff->GetBinContent(i,j);
-	  if(fabs(ccc1) > 1.5 )  Diffe_Depth1_HF->SetBinContent(i,j,fabs(ccc1));
+	  if(fabs(ccc1) > 2.0 )  Diffe_Depth1_HF->SetBinContent(i,j,fabs(ccc1));
 	}
       }
     }
@@ -515,7 +518,7 @@
     
     
       c1->cd(4);
-      TH1F* diffAmpl_Depth1_HF = new TH1F("diffAmpl_Depth1_HF","", 100, -7., 7.);
+      TH1F* diffAmpl_Depth1_HF = new TH1F("diffAmpl_Depth1_HF","", 100, -10., 10.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {

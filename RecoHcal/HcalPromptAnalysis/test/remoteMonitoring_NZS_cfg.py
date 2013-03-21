@@ -7,12 +7,9 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-#process.source = cms.Source("HcalTBSource",
     fileNames = cms.untracked.vstring(
-     'file:/afs/cern.ch/work/d/dtlisov/private/Monitoring/data/HcalNZSRAW-193-116.root'
-     #     'file:/tmp/zhokin/HcalNZSRAW-193-116.root'
-     #     'file:/tmp/zhokin/HcalNZSRAW-199-751.root'
-   )	
+     'file:/tmp/zhokin/HcalNZSRAW-199-751.root'
+   )
 )
 
 process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
@@ -23,8 +20,8 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #recordHistoes = cms.untracked.bool(False),
                                   recordHistoes = cms.untracked.bool(True),
                                   #
-                                  #studyRunDependenceHist = cms.untracked.bool(True),
-                                  studyRunDependenceHist = cms.untracked.bool(False),
+                                  studyRunDependenceHist = cms.untracked.bool(True),
+                                  #studyRunDependenceHist = cms.untracked.bool(False),
                                   #
                                   ##DigiCollectionLabel = cms.untracked.InputTag("hcalDigis"),
                                   #Verbosity = cms.untracked.int32(-54),
@@ -33,39 +30,33 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #Verbosity = cms.untracked.int32(-13),
                                   #Verbosity = cms.untracked.int32(-51),
                                   Verbosity = cms.untracked.int32(0),
-				  MapCreation = cms.untracked.int32(1),
+                                  MapCreation = cms.untracked.int32(1),
                                   #
                                   # -53 for  BAD HBHE channels from study on shape Ratio34
                                   #Verbosity = cms.untracked.int32(-53),
-                                  ratioHBMin = cms.double(0.30),
-                                  ratioHBMax = cms.double(1.00),
-                                  ratioHEMin = cms.double(0.30),
-                                  ratioHEMax = cms.double(1.00),
+                                  ratioHBMin = cms.double(0.50),
+                                  ratioHBMax = cms.double(0.92),
+                                  ratioHEMin = cms.double(0.50),
+                                  ratioHEMax = cms.double(0.92),
                                   # to see run dependence of rate of events with Nbadchannels > :
-                                  nbadchannels1 = cms.int32(5),
-                                  nbadchannels2 = cms.int32(10),
-                                  nbadchannels3 = cms.int32(20),
+                                  nbadchannels1 = cms.int32(10),
+                                  nbadchannels2 = cms.int32(30),
+                                  nbadchannels3 = cms.int32(60),
                                   # -54 for  BAD HBHE channels from study on RMS of shapes
                                   #Verbosity = cms.untracked.int32(-54),
-                                  rmsHBMin = cms.double(-1.),
-                                  rmsHBMax = cms.double(2.025),
-                                  rmsHEMin = cms.double(-1.),
-                                  rmsHEMax = cms.double(2.225),
+                                  rmsHBMin = cms.double(1.0),
+                                  rmsHBMax = cms.double(2.3),
+                                  rmsHEMin = cms.double(1.0),
+                                  rmsHEMax = cms.double(2.3),
                                   # for  BAD HBHEHOHF CALIBRATION channels from study on shape Ratio
-                                  calibratioHBMin = cms.double(0.45),
-                                  calibratioHEMin = cms.double(0.7),
-                                  calibratioHOMin = cms.double(0.5),
-                                  calibratioHFMin = cms.double(0.2),
+                                  calibratioHBMin = cms.double(0.65),
+                                  calibratioHEMin = cms.double(0.65),
+                                  calibratioHOMin = cms.double(0.25),
+                                  calibratioHFMin = cms.double(0.25),
                                   #
                                   #
                                   HistOutFile = cms.untracked.string('testNZS.root'),
-				  MAPOutFile = cms.untracked.string('LogEleMapdb.h')
-                                  #HistOutFile = cms.untracked.string('BadRBXrun211146.root')
-                                  #HistOutFile = cms.untracked.string('BadRBXrun211154.root')
-                                  #HistOutFile = cms.untracked.string('PFGNZSRAW-run193116.root')
-                                  #HistOutFile = cms.untracked.string('/tmp/zhokin/BadRBXrun211146.root')
-                                  #HistOutFile = cms.untracked.string('/tmp/zhokin/analysisUSC211154.root')	
-                                  #HistOutFile = cms.untracked.string('/tmp/zhokin/rawTest.root')
+                                  MAPOutFile = cms.untracked.string('LogEleMapdb.h')
                                   #
                                   ##OutputFilePath = cms.string('/tmp/zhokin/'),        
                                   ##OutputFileExt = cms.string(''),
