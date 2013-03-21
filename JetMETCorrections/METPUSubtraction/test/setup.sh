@@ -15,8 +15,8 @@ rm -rf pharrisTmp
 cvs co -r $tag RecoJets/JetProducers
 #cvs up -r CMSSW_5_3_3 RecoJets/JetProducers/src/JetSpecific.cc
 
-cvs co -r V03-04-03            DataFormats/METReco
-cvs co -r V05-00-16            DataFormats/JetReco
-cvs co -r V01-05-06            RecoTauTag/RecoTau 
-cvs co -r V03-04-07            RecoMET/METAlgorithms
+cvs co -r b5_3_X_cvMEtCorr_2013Feb22            DataFormats/METReco
+cvs co -r V05-00-16                             DataFormats/JetReco
+cvs co -r V01-05-07                             RecoTauTag/RecoTau 
+cvs co -r V03-04-07                             RecoMET/METAlgorithms
 cd -
