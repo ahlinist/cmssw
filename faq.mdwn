@@ -8,12 +8,21 @@ related:
 ---
 # FAQ
 
-## Where can I learn about git, github in general?
+## General questions
+
+### Where can I learn about git, github in general?
 
 - Generic git help can be found at <http://git-scm.com/book/>.
 - github.com specific help can be found at <https://help.github.com>.
 
-## How do I clone the full CMSSW repository locally?
+### How do I subscribe to github?
+
+Please go to the <https://github.com/signup/free> page and follow the
+instructions there.
+
+## Working with CMSSW on github
+
+### How do I clone the full CMSSW repository locally?
 
 To clone the full CMSSW repository locally you can do:
 
@@ -27,7 +36,7 @@ you can do:
 for read only access. See [here][git-clone-repo] for more detailed information
 on `git clone` command.
 
-## How do I clone one single package?
+### How do I clone one single package?
 
 Git sees repository status globally, so the concept of cloning a single 
 package does not really exists. What one can do is to mask the results of
@@ -47,7 +56,9 @@ This will eventually be hidden behing an `addpkg` like helper.
 
 [git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
 
-## How do I tell who is responsible for a given change?
+## Advanced usage
+
+### How do I tell who is responsible for a given change?
 
 Let's say you want to find out who is responsible for a given
 change in `FWCore/Framework/BuildFile.xml`. If you are happy with using
@@ -135,7 +146,7 @@ which returns:
         boost::shared_ptr<ParameterSet> parameterSet = processDesc->getProcessPSet();
         //std::cerr << parameterSet->dump() << std::endl;
 
-## How can I find something in the repository?
+### How can I find something in the repository?
 
 From a CMSSW.git cloned area you can simply do:
 
