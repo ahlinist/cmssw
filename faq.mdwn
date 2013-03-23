@@ -8,6 +8,9 @@ related:
 ---
 # FAQ
 
+* auto-gen TOC:
+{:toc}
+
 ## General questions
 
 ### Where can I learn about git, github in general?
