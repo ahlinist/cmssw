@@ -28,6 +28,7 @@ to remember names for some CMS specific things:
 
     git config --global remote.cmssw-main git@github.com:cms-sw/cmssw.git 
     git config --global remote.cmssw-main-ro git://github.com/cms-sw/cmssw.git
+    git config --global core.sparsecheckout true
 
 *NOTE:* Should we add this to the default CMS environment?
 
@@ -52,7 +53,7 @@ specify it via the `-b` flag, e.g.:
 See [here][git-clone-repo] for more detailed information on `git clone`
 command.
 
-### How do I clone one single package?
+### How do I checkout a single package?
 
 Git sees repository status globally, so the concept of cloning a single 
 package does not really exists. What one can do is to mask the results of
@@ -63,10 +64,8 @@ are in a project area.
 
     cd src 
     git init
-    git remote add origin git://github.com/cms-sw/cmssw.git
-    git config core.sparsecheckout true
     echo FWCore/ > .git/info/sparse-checkout
-    git pull origin master:master
+    git pull cmssw-main master:master
 
 This will eventually be hidden behing an `addpkg` like helper.
 
