@@ -33,19 +33,24 @@ to remember names for some CMS specific things:
 
 ## Working with CMSSW on github
 
-### How do I clone the full CMSSW repository locally?
+### How do I checkout the full CMSSW repository locally?
 
-To clone the full CMSSW repository locally you can do:
+To checkout the full CMSSW repository locally you can do:
 
-    git clone git@github.com:cms-sw/cmssw.git src
+    git clone cmssw-main src
 
-In your scram work area. Notice you will need a github account. Alternatively
-you can do:
+in your scram work area.  Notice this will require a github account (see
+[here]() for the relevant FAQ). Alternatively you can do:
     
-    git clone git://github.com/cms-sw/cmssw.git src
+    git clone cmssw-main-ro src
 
-for read only access. See [here][git-clone-repo] for more detailed information
-on `git clone` command.
+for read only access. If you want to checkout a given tag, you need to 
+specify it via the `-b` flag, e.g.:
+
+    git clone cmssw-main src -b CMSSW_6_1_0
+
+See [here][git-clone-repo] for more detailed information on `git clone`
+command.
 
 ### How do I clone one single package?
 
