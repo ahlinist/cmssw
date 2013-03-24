@@ -23,6 +23,14 @@ related:
 Please go to the <https://github.com/signup/free> page and follow the
 instructions there.
 
+Once you are done, you might want to execute the following commands to add easy
+to remember names for some CMS specific things:
+
+    git config remote.cmssw-main git@github.com:cms-sw/cmssw.git 
+    git config remote.cmssw-main-ro git://github.com/cms-sw/cmssw.git
+
+*NOTE:* Should we add this to the default CMS environment?
+
 ## Working with CMSSW on github
 
 ### How do I clone the full CMSSW repository locally?
