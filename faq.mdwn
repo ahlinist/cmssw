@@ -61,6 +61,45 @@ This will eventually be hidden behing an `addpkg` like helper.
 
 ## Advanced usage
 
+### How do I browse / search the code?
+
+The source code for the official CMSSW repository can be found in the main
+github page for CMSSW: <https://github.com/cms-sw/cmssw>.
+
+Branches and tags are available by clicking on the "branches" combo box in the
+top left part of the page:
+
+![branches-dialog](images/branches-dialog.png)
+
+The source-code of the official CMSSW can be searched by using
+<https://github.com/search?l=&q=repo%3Acms-sw%2Fcmssw&ref=advsearch&type=Code>.
+
+If you prefer using the command line interface, you can do the same by using
+`git grep` command inside `CMSSW/src` area:
+
+    git grep <reg-expr>
+
+e.g.:
+
+    git grep Plugin.*
+
+which will give you:
+
+    Alignment/CSA06AlignmentAlgorithm/BuildFile:<use name=FWCore/PluginManager>
+    Alignment/CommonAlignmentAlgorithm/BuildFile.xml:<use   name="FWCore/PluginManager"/>
+    Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
+    Alignment/CommonAlignmentAlgorithm/interface/IntegratedCalibrationPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
+    Alignment/CommonAlignmentMonitor/BuildFile.xml:<use   name="FWCore/PluginManager"/>
+    Alignment/CommonAlignmentMonitor/interface/AlignmentMonitorPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
+    Alignment/CommonAlignmentMonitor/plugins/AlignmentMonitorTemplate.cc:// #include "PluginManager/ModuleDef.h"
+    Alignment/CommonAlignmentMonitor/plugins/AlignmentStats.cc:#include "FWCore/PluginManager/interface/ModuleDef.h"
+    Alignment/CommonAlignmentMonitor/plugins/BuildFile.xml:<use   name="FWCore/PluginManager"/>
+    ...
+
+for more information about `git grep` click [here](http://git-scm.com/docs/git-grep).
+
+*NOTES*: Clearly we need to find a way to shorten this url.
+
 ### How do I tell who is responsible for a given change?
 
 Let's say you want to find out who is responsible for a given
@@ -151,28 +190,6 @@ which returns:
 
 ### How can I find something in the repository?
 
-From a CMSSW.git cloned area you can simply do:
-
-    git grep <reg-expr>
-
-e.g.:
-
-    git grep Plugin.*
-
-which will give you:
-
-    Alignment/CSA06AlignmentAlgorithm/BuildFile:<use name=FWCore/PluginManager>
-    Alignment/CommonAlignmentAlgorithm/BuildFile.xml:<use   name="FWCore/PluginManager"/>
-    Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
-    Alignment/CommonAlignmentAlgorithm/interface/IntegratedCalibrationPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
-    Alignment/CommonAlignmentMonitor/BuildFile.xml:<use   name="FWCore/PluginManager"/>
-    Alignment/CommonAlignmentMonitor/interface/AlignmentMonitorPluginFactory.h:#include "FWCore/PluginManager/interface/PluginFactory.h"
-    Alignment/CommonAlignmentMonitor/plugins/AlignmentMonitorTemplate.cc:// #include "PluginManager/ModuleDef.h"
-    Alignment/CommonAlignmentMonitor/plugins/AlignmentStats.cc:#include "FWCore/PluginManager/interface/ModuleDef.h"
-    Alignment/CommonAlignmentMonitor/plugins/BuildFile.xml:<use   name="FWCore/PluginManager"/>
-    ...
-
-for more information about `git grep` click [here](http://git-scm.com/docs/git-grep).
 
 ## How do I ask a question?
 
