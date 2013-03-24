@@ -26,8 +26,8 @@ instructions there.
 Once you are done, you might want to execute the following commands to add easy
 to remember names for some CMS specific things:
 
-    git config remote.cmssw-main git@github.com:cms-sw/cmssw.git 
-    git config remote.cmssw-main-ro git://github.com/cms-sw/cmssw.git
+    git config --global remote.cmssw-main git@github.com:cms-sw/cmssw.git 
+    git config --global remote.cmssw-main-ro git://github.com/cms-sw/cmssw.git
 
 *NOTE:* Should we add this to the default CMS environment?
 
