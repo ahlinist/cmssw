@@ -1,6 +1,6 @@
 // How to run:
 //root -b -q -l RemoteMonitoringMAP.C+
-//root -b -q -l 'RemoteMonitoringMAP.C+("test.root")'
+//root -b -q -l 'RemoteMonitoringMAP.C+("test7runs.root")'
 
 #include "LogEleMapdb.h"
 
@@ -50,114 +50,194 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
   char *str = (char*)alloca(10000);
 
 
-//+++++++++++++++++++  
-//Test 1. Amplitude
-//+++++++++++++++++++
-  
+  TH2F *Map_Ampl[10][5][5]; // 2D histogramm for test,subdet,depth
+  TH2F *Map_SUB[5][5];      // 2d histogramm for subdet, depth
+  TH1F *HistAmpl[10][5];    // 1d histogramm for test,subdet
 
-  TH2F *Map2maxTStoAllTSRatioHB[4];
-  TH2F *Map2maxTStoAllTSRatioHE[4];
-      
-  Map2maxTStoAllTSRatioHB[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl_HB");
-  Map2maxTStoAllTSRatioHB[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl_HB"); 
-  
-  Map2maxTStoAllTSRatioHE[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl_HE");
-  Map2maxTStoAllTSRatioHE[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl_HE"); 
-  Map2maxTStoAllTSRatioHE[3] = (TH2F*)hfile->Get("h_mapDepth3Ampl_HE");   
-
-//1 HB
-  cHB->Divide(2,1);
-  for (int i=1;i<=2;i++) {
-     cHB->cd(i);  
-     gPad->SetGridy();
-     gPad->SetGridx();
-//     gPad->SetLogz();
-     sprintf(str,"HB, Depth%d \b", i); 
-     Map2maxTStoAllTSRatioHB[i]->SetTitle(str);
-     Map2maxTStoAllTSRatioHB[i]->SetXTitle("#eta \b");
-     Map2maxTStoAllTSRatioHB[i]->SetYTitle("#phi \b");
-     Map2maxTStoAllTSRatioHB[i]->SetZTitle("Ratio \b");
-     Map2maxTStoAllTSRatioHB[i]->Draw("COLZ");
-     Map2maxTStoAllTSRatioHB[i]->GetYaxis()->SetRangeUser(0, 72.);
-     Map2maxTStoAllTSRatioHB[i]->GetZaxis()->SetRangeUser(0., 1.);
-     cHB->Modified(); 
-     cHB->Update(); 
-     
-  }    
-  cHB->Print("Map2maxTStoAllTSRatioHB.png"); 
-  cHB->Clear();
-
-//1 HE
-  cHE->Divide(3,1);
-  for (int i=1;i<=3;i++) {
-     cHE->cd(i);  
-     gPad->SetGridy();
-     gPad->SetGridx();
-//     gPad->SetLogz();
-     sprintf(str,"HE, Depth%d \b", i); 
-     Map2maxTStoAllTSRatioHE[i]->SetTitle(str);
-     Map2maxTStoAllTSRatioHE[i]->SetXTitle("#eta \b");
-     Map2maxTStoAllTSRatioHE[i]->SetYTitle("#phi \b");
-     Map2maxTStoAllTSRatioHE[i]->SetZTitle("Ratio \b");
-     Map2maxTStoAllTSRatioHE[i]->Draw("COLZ");
-     Map2maxTStoAllTSRatioHE[i]->GetYaxis()->SetRangeUser(0, 72.);
-     Map2maxTStoAllTSRatioHE[i]->GetZaxis()->SetRangeUser(0., 1.);
-     cHE->Modified(); 
-     cHE->Update(); 
-     
-  }    
-  cHE->Print("Map2maxTStoAllTSRatioHE.png"); 
-  cHE->Clear();
+  Map_SUB[1][1] = (TH2F*)hfile->Get("h_mapDepth1_HB");
+  Map_SUB[1][2] = (TH2F*)hfile->Get("h_mapDepth2_HB");   
+  Map_SUB[2][1] = (TH2F*)hfile->Get("h_mapDepth1_HE");
+  Map_SUB[2][2] = (TH2F*)hfile->Get("h_mapDepth2_HE"); 
+  Map_SUB[2][3] = (TH2F*)hfile->Get("h_mapDepth3_HE"); 
 
 //+++++++++++++++++++++++++++++  
-//Test 2 Rate of 34 TS/ All TS   
-//+++++++++++++++++++++++++++++
-
-  TH2F *MapAmpl047_HB[4];
-  TH2F *MapAmpl047_HE[4];
-  
-  TH2F *Map_HB[4];
-  TH2F *Map_HE[4];
-  
-  TH1F *HistAmplHB;
-  TH1F *HistAmplHE;
-  
-  MapAmpl047_HB[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl047_HB");
-  MapAmpl047_HB[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl047_HB");   
-  MapAmpl047_HE[1] = (TH2F*)hfile->Get("h_mapDepth1Ampl047_HE");
-  MapAmpl047_HE[2] = (TH2F*)hfile->Get("h_mapDepth2Ampl047_HE"); 
-  MapAmpl047_HE[3] = (TH2F*)hfile->Get("h_mapDepth3Ampl047_HE"); 
-  
-  Map_HB[1] = (TH2F*)hfile->Get("h_mapDepth1_HB");
-  Map_HB[2] = (TH2F*)hfile->Get("h_mapDepth2_HB");   
-  Map_HE[1] = (TH2F*)hfile->Get("h_mapDepth1_HE");
-  Map_HE[2] = (TH2F*)hfile->Get("h_mapDepth2_HE"); 
-  Map_HE[3] = (TH2F*)hfile->Get("h_mapDepth3_HE");   
-  
-  HistAmplHB = (TH1F*)hfile->Get("h_Ampl_HB");
-  HistAmplHE = (TH1F*)hfile->Get("h_Ampl_HE");
-  
-  TH2F* DevHB[4];
-  TH2F* DevHE[4];
+//Test 1 (2.A) Rate of Cap ID errors   
+//+++++++++++++++++++++++++++++ 
+ 
+  Map_Ampl[1][1][1] = (TH2F*)hfile->Get("h_mapDepth1Error_HB");
+  Map_Ampl[1][1][2] = (TH2F*)hfile->Get("h_mapDepth2Error_HB");   
+  Map_Ampl[1][2][1] = (TH2F*)hfile->Get("h_mapDepth1Error_HE");
+  Map_Ampl[1][2][2] = (TH2F*)hfile->Get("h_mapDepth2Error_HE"); 
+  Map_Ampl[1][2][3] = (TH2F*)hfile->Get("h_mapDepth3Error_HE");    
 
 //2 HB
   cHB->Divide(2,1);
   for (int i=1;i<=2;i++) {
      cHB->cd(i); 
-     DevHB[i]=(TH2F*)Map_HB[i]->Clone();
-     DevHB[i]->Divide(Map_HB[i],MapAmpl047_HB[i], 1, 1, "B"); 
+     Map_Ampl[1][1][i]->Divide(Map_Ampl[1][1][i],Map_SUB[1][i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     sprintf(str,"HB, Depth%d \b", i); 
+     Map_Ampl[1][1][i]->SetTitle(str);
+     Map_Ampl[1][1][i]->SetXTitle("#eta \b");
+     Map_Ampl[1][1][i]->SetYTitle("#phi \b");
+     Map_Ampl[1][1][i]->SetZTitle("Rate \b");
+     Map_Ampl[1][1][i]->Draw("COLZ");
+     Map_Ampl[1][1][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_Ampl[1][1][i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHB->Modified(); 
+     cHB->Update();
+  }    
+  cHB->Print("MapRateCapIDHB.png"); 
+  cHB->Clear();    
+     
+//3 HE
+  cHE->Divide(3,1);
+  for (int i=1;i<=3;i++) {
+     cHE->cd(i); 
+     Map_Ampl[1][2][i]->Divide(Map_Ampl[1][2][i],Map_SUB[2][i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     sprintf(str,"HE, Depth%d \b", i); 
+     Map_Ampl[1][2][i]->SetTitle(str);
+     Map_Ampl[1][2][i]->SetXTitle("#eta \b");
+     Map_Ampl[1][2][i]->SetYTitle("#phi \b");
+     Map_Ampl[1][2][i]->SetZTitle("Rate \b");
+     Map_Ampl[1][2][i]->Draw("COLZ");
+     Map_Ampl[1][2][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_Ampl[1][2][i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHE->Modified(); 
+     cHE->Update(); 
+     
+  }    
+  cHE->Print("MapRateCapIDHE.png");
+  cHE->Clear();
+
+//+++++++++++++++++++++++++++++  
+//Test 2 (2.B) Rate of RMS   
+//+++++++++++++++++++++++++++++ 
+ 
+  Map_Ampl[2][1][1] = (TH2F*)hfile->Get("h_mapDepth1Amplitude225_HB");
+  Map_Ampl[2][1][2] = (TH2F*)hfile->Get("h_mapDepth2Amplitude225_HB");   
+  Map_Ampl[2][2][1] = (TH2F*)hfile->Get("h_mapDepth1Amplitude225_HE");
+  Map_Ampl[2][2][2] = (TH2F*)hfile->Get("h_mapDepth2Amplitude225_HE"); 
+  Map_Ampl[2][2][3] = (TH2F*)hfile->Get("h_mapDepth3Amplitude225_HE");    
+  
+  HistAmpl[2][1] = (TH1F*)hfile->Get("h_Amplitude_HB");
+  HistAmpl[2][2] = (TH1F*)hfile->Get("h_Amplitude_HE");
+
+//2 HB
+  cHB->Divide(2,1);
+  for (int i=1;i<=2;i++) {
+     cHB->cd(i); 
+     Map_Ampl[2][1][i]->Divide(Map_Ampl[2][1][i],Map_SUB[1][i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     sprintf(str,"HB, Depth%d \b", i); 
+     Map_Ampl[2][1][i]->SetTitle(str);
+     Map_Ampl[2][1][i]->SetXTitle("#eta \b");
+     Map_Ampl[2][1][i]->SetYTitle("#phi \b");
+     Map_Ampl[2][1][i]->SetZTitle("Rate \b");
+     Map_Ampl[2][1][i]->Draw("COLZ");
+     Map_Ampl[2][1][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_Ampl[2][1][i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHB->Modified(); 
+     cHB->Update();
+  }    
+  cHB->Print("MapRateRMSHB.png"); 
+  cHB->Clear();
+  
+  cONE->Divide(1,1);
+  cONE->cd(1);
+  gPad->SetGridy();
+  gPad->SetGridx(); 
+  gPad->SetLogy();
+  HistAmpl[2][1]->SetTitleOffset(1.3,"Y"); 
+  HistAmpl[2][1]->SetTitle("HB, All Depth");
+  HistAmpl[2][1]->SetXTitle("TS RMS in each event & cell \b");
+  HistAmpl[2][1]->SetYTitle("Number of cell-events \b");
+  HistAmpl[2][1]->Draw("");
+//  HistAmplitudeHB->GetYaxis()->SetRangeUser(1., 100.);
+  HistAmpl[2][1]->GetXaxis()->SetRangeUser(0.0, 5.);
+  cONE->Modified(); 
+  cONE->Update();      
+  cONE->Print("HistRMSHB.png"); 
+  cONE->Clear();     
+     
+//3 HE
+  cHE->Divide(3,1);
+  for (int i=1;i<=3;i++) {
+     cHE->cd(i); 
+     Map_Ampl[2][2][i]->Divide(Map_Ampl[2][2][i],Map_SUB[2][i], 1, 1, "B"); 
+     gPad->SetGridy();
+     gPad->SetGridx();
+     gPad->SetLogz();
+     sprintf(str,"HE, Depth%d \b", i); 
+     Map_Ampl[2][2][i]->SetTitle(str);
+     Map_Ampl[2][2][i]->SetXTitle("#eta \b");
+     Map_Ampl[2][2][i]->SetYTitle("#phi \b");
+     Map_Ampl[2][2][i]->SetZTitle("Rate \b");
+     Map_Ampl[2][2][i]->Draw("COLZ");
+     Map_Ampl[2][2][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_Ampl[2][2][i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     cHE->Modified(); 
+     cHE->Update(); 
+     
+  }    
+  cHE->Print("MapRateRMSHE.png");
+  cHE->Clear();
+  
+  cONE->Divide(1,1);
+  cONE->cd(1);
+  gPad->SetGridy();
+  gPad->SetGridx();
+  gPad->SetLogy(); 
+  HistAmpl[2][2]->SetTitleOffset(1.3,"Y");
+  HistAmpl[2][2]->SetTitle("HE, All Depth");
+  HistAmpl[2][2]->SetXTitle("TS RMS in each event & cell \b");
+  HistAmpl[2][2]->SetYTitle("Number of cell-events \b");
+  HistAmpl[2][2]->Draw("");
+//  HistAmpl[2][2]->GetYaxis()->SetRangeUser(1., 100.);
+  HistAmpl[2][2]->GetXaxis()->SetRangeUser(0., 5.);
+  cONE->Modified(); 
+  cONE->Update();      
+  cONE->Print("HistRMSHE.png"); 
+  cONE->Clear();  
+
+//+++++++++++++++++++++++++++++  
+//Test 3 (2.C) Rate of 34 TS/ All TS   
+//+++++++++++++++++++++++++++++
+ 
+  Map_Ampl[3][1][1] = (TH2F*)hfile->Get("h_mapDepth1Ampl047_HB");
+  Map_Ampl[3][1][2] = (TH2F*)hfile->Get("h_mapDepth2Ampl047_HB");   
+  Map_Ampl[3][2][1] = (TH2F*)hfile->Get("h_mapDepth1Ampl047_HE");
+  Map_Ampl[3][2][2] = (TH2F*)hfile->Get("h_mapDepth2Ampl047_HE"); 
+  Map_Ampl[3][2][3] = (TH2F*)hfile->Get("h_mapDepth3Ampl047_HE"); 
+  
+  
+  HistAmpl[3][1] = (TH1F*)hfile->Get("h_Ampl_HB");
+  HistAmpl[3][2] = (TH1F*)hfile->Get("h_Ampl_HE");
+
+//3 HB
+  cHB->Divide(2,1);
+  for (int i=1;i<=2;i++) {
+     cHB->cd(i); 
+     Map_Ampl[3][1][i]->Divide(Map_Ampl[3][1][i], Map_SUB[1][i], 1, 1, "B"); 
      gPad->SetGridy();
      gPad->SetGridx();
      gPad->SetLogz();
      gStyle->SetTitleOffset(0.5, "Y");  
      sprintf(str,"HB, Depth%d \b", i); 
-     DevHB[i]->SetTitle(str);
-     DevHB[i]->SetXTitle("#eta \b");
-     DevHB[i]->SetYTitle("#phi \b");
-     DevHB[i]->SetZTitle("Rate \b");
-     DevHB[i]->Draw("COLZ");
-     DevHB[i]->GetYaxis()->SetRangeUser(0, 72.);
-     DevHB[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     Map_Ampl[3][1][i]->SetTitle(str);
+     Map_Ampl[3][1][i]->SetXTitle("#eta \b");
+     Map_Ampl[3][1][i]->SetYTitle("#phi \b");
+     Map_Ampl[3][1][i]->SetZTitle("Rate \b");
+     Map_Ampl[3][1][i]->Draw("COLZ");
+     Map_Ampl[3][1][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_Ampl[3][1][i]->GetZaxis()->SetRangeUser(0.0001, 1.);
      cHB->Modified(); 
      cHB->Update();
   }    
@@ -169,13 +249,13 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
   gPad->SetGridy();
   gPad->SetGridx(); 
   gPad->SetLogy(); 
-  HistAmplHB->SetTitleOffset(1.3,"Y");
-  HistAmplHB->SetTitle("HB, All Depth");
-  HistAmplHB->SetXTitle("Ratio in each event & cell \b");
-  HistAmplHB->SetYTitle("Number of cell-events \b");
-  HistAmplHB->Draw("");
-//  HistAmplHB->GetYaxis()->SetRangeUser(1., 10000000.);
-  HistAmplHB->GetXaxis()->SetRangeUser(0.0, 1.);
+  HistAmpl[3][1]->SetTitleOffset(1.3,"Y");
+  HistAmpl[3][1]->SetTitle("HB, All Depth");
+  HistAmpl[3][1]->SetXTitle("Ratio in each event & cell \b");
+  HistAmpl[3][1]->SetYTitle("Number of cell-events \b");
+  HistAmpl[3][1]->Draw("");
+//  HistAmpl[3][1]->GetYaxis()->SetRangeUser(1., 10000000.);
+  HistAmpl[3][1]->GetXaxis()->SetRangeUser(0.0, 1.);
   cONE->Modified(); 
   cONE->Update();      
   cONE->Print("Hist43TStoAllTSHB.png"); 
@@ -185,19 +265,18 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
   cHE->Divide(3,1);
   for (int i=1;i<=3;i++) {
      cHE->cd(i); 
-     DevHE[i]=(TH2F*)Map_HE[i]->Clone();
-     DevHE[i]->Divide(Map_HE[i],MapAmpl047_HE[i], 1, 1, "B"); 
+     Map_Ampl[3][2][i]->Divide(Map_Ampl[3][2][i],Map_SUB[2][i], 1, 1, "B"); 
      gPad->SetGridy();
      gPad->SetGridx();
      gPad->SetLogz();
      sprintf(str,"HE, Depth%d \b", i); 
-     DevHE[i]->SetTitle(str);
-     DevHE[i]->SetXTitle("#eta \b");
-     DevHE[i]->SetYTitle("#phi \b");
-     DevHE[i]->SetZTitle("Rate \b");
-     DevHE[i]->Draw("COLZ");
-     DevHE[i]->GetYaxis()->SetRangeUser(0, 72.);
-     DevHE[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
+     Map_Ampl[3][2][i]->SetTitle(str);
+     Map_Ampl[3][2][i]->SetXTitle("#eta \b");
+     Map_Ampl[3][2][i]->SetYTitle("#phi \b");
+     Map_Ampl[3][2][i]->SetZTitle("Rate \b");
+     Map_Ampl[3][2][i]->Draw("COLZ");
+     Map_Ampl[3][2][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_Ampl[3][2][i]->GetZaxis()->SetRangeUser(0.0001, 1.);
      cHE->Modified(); 
      cHE->Update(); 
      
@@ -210,119 +289,19 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
   gPad->SetGridy();
   gPad->SetGridx();
   gPad->SetLogy(); 
-  HistAmplHE->SetTitleOffset(1.3,"Y");
-  HistAmplHE->SetTitle("HE, All Depth");
-  HistAmplHE->SetXTitle("Ratio in each event & cell \b");
-  HistAmplHE->SetYTitle("Number of cell-events \b");
-  HistAmplHE->Draw("");
-//  HistAmplHE->GetYaxis()->SetRangeUser(1., 10000000.);
-  HistAmplHE->GetXaxis()->SetRangeUser(0., 1.);
+  HistAmpl[3][2]->SetTitleOffset(1.3,"Y");
+  HistAmpl[3][2]->SetTitle("HE, All Depth");
+  HistAmpl[3][2]->SetXTitle("Ratio in each event & cell \b");
+  HistAmpl[3][2]->SetYTitle("Number of cell-events \b");
+  HistAmpl[3][2]->Draw("");
+//  HistAmpl[3][2]->GetYaxis()->SetRangeUser(1., 10000000.);
+  HistAmpl[3][2]->GetXaxis()->SetRangeUser(0., 1.);
   cONE->Modified(); 
   cONE->Update();      
   cONE->Print("Hist43TStoAllTSHE.png"); 
   cONE->Clear();   
   
 
-//+++++++++++++++++++++++++++++  
-//Test 3 Rate of RMS   
-//+++++++++++++++++++++++++++++ 
-
-  TH2F *MapDepth1Amplitude225_HB[4];
-  TH2F *MapDepth1Amplitude225_HE[4];
-  
-  TH1F *HistAmplitudeHB;
-  TH1F *HistAmplitudeHE;
-  
-  MapDepth1Amplitude225_HB[1] = (TH2F*)hfile->Get("h_mapDepth1Amplitude225_HB");
-  MapDepth1Amplitude225_HB[2] = (TH2F*)hfile->Get("h_mapDepth2Amplitude225_HB");   
-  MapDepth1Amplitude225_HE[1] = (TH2F*)hfile->Get("h_mapDepth1Amplitude225_HE");
-  MapDepth1Amplitude225_HE[2] = (TH2F*)hfile->Get("h_mapDepth2Amplitude225_HE"); 
-  MapDepth1Amplitude225_HE[3] = (TH2F*)hfile->Get("h_mapDepth3Amplitude225_HE");    
-  
-  HistAmplitudeHB = (TH1F*)hfile->Get("h_Amplitude_HB");
-  HistAmplitudeHE = (TH1F*)hfile->Get("h_Amplitude_HE");
-
-//3 HB
-  cHB->Divide(2,1);
-  for (int i=1;i<=2;i++) {
-     cHB->cd(i); 
-     DevHB[i]=(TH2F*)Map_HB[i]->Clone();
-     DevHB[i]->Divide(Map_HB[i],MapDepth1Amplitude225_HB[i], 1, 1, "B"); 
-     gPad->SetGridy();
-     gPad->SetGridx();
-     gPad->SetLogz();
-     sprintf(str,"HB, Depth%d \b", i); 
-     DevHB[i]->SetTitle(str);
-     DevHB[i]->SetXTitle("#eta \b");
-     DevHB[i]->SetYTitle("#phi \b");
-     DevHB[i]->SetZTitle("Rate \b");
-     DevHB[i]->Draw("COLZ");
-     DevHB[i]->GetYaxis()->SetRangeUser(0, 72.);
-     DevHB[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
-     cHB->Modified(); 
-     cHB->Update();
-  }    
-  cHB->Print("MapRMSHB.png"); 
-  cHB->Clear();
-  
-  cONE->Divide(1,1);
-  cONE->cd(1);
-  gPad->SetGridy();
-  gPad->SetGridx(); 
-  gPad->SetLogy();
-  HistAmplitudeHB->SetTitleOffset(1.3,"Y"); 
-  HistAmplitudeHB->SetTitle("HB, All Depth");
-  HistAmplitudeHB->SetXTitle("TS RMS in each event & cell \b");
-  HistAmplitudeHB->SetYTitle("Number of cell-events \b");
-  HistAmplitudeHB->Draw("");
-//  HistAmplitudeHB->GetYaxis()->SetRangeUser(1., 100.);
-  HistAmplitudeHB->GetXaxis()->SetRangeUser(0.0, 1.);
-  cONE->Modified(); 
-  cONE->Update();      
-  cONE->Print("HistRMSHB.png"); 
-  cONE->Clear();     
-     
-//3 HE
-  cHE->Divide(3,1);
-  for (int i=1;i<=3;i++) {
-     cHE->cd(i); 
-     DevHE[i]=(TH2F*)Map_HE[i]->Clone();
-     DevHE[i]->Divide(Map_HE[i],MapDepth1Amplitude225_HE[i], 1, 1, "B"); 
-     gPad->SetGridy();
-     gPad->SetGridx();
-     gPad->SetLogz();
-     sprintf(str,"HE, Depth%d \b", i); 
-     DevHE[i]->SetTitle(str);
-     DevHE[i]->SetXTitle("#eta \b");
-     DevHE[i]->SetYTitle("#phi \b");
-     DevHE[i]->SetZTitle("Rate \b");
-     DevHE[i]->Draw("COLZ");
-     DevHE[i]->GetYaxis()->SetRangeUser(0, 72.);
-     DevHE[i]->GetZaxis()->SetRangeUser(0.0001, 1.);
-     cHE->Modified(); 
-     cHE->Update(); 
-     
-  }    
-  cHE->Print("MapRMSHE.png");
-  cHE->Clear();
-  
-  cONE->Divide(1,1);
-  cONE->cd(1);
-  gPad->SetGridy();
-  gPad->SetGridx();
-  gPad->SetLogy(); 
-  HistAmplitudeHE->SetTitleOffset(1.3,"Y");
-  HistAmplitudeHE->SetTitle("HE, All Depth");
-  HistAmplitudeHE->SetXTitle("TS RMS in each event & cell \b");
-  HistAmplitudeHE->SetYTitle("Number of cell-events \b");
-  HistAmplitudeHE->Draw("");
-//  HistAmplitudeHE->GetYaxis()->SetRangeUser(1., 100.);
-  HistAmplitudeHE->GetXaxis()->SetRangeUser(0., 1.);
-  cONE->Modified(); 
-  cONE->Update();      
-  cONE->Print("HistRMSHE.png"); 
-  cONE->Clear();  
-  
 
 //======================================================================
 
@@ -332,108 +311,77 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
 //======================================================================
 /// Prepare maps of good/bad channels:
 
-    TH2F *Map = new TH2F("Map","Map", 82, -41, 41, 72, 0, 72);    
-    TH2F *MapHB[4];
-    TH2F *MapHE[4];         
-    int nx = Map->GetXaxis()->GetNbins();
-    int ny = Map->GetYaxis()->GetNbins();
+    TH2F *Map_ALL = new TH2F("Map","Map", 82, -41, 41, 72, 0, 72);             
+    int nx = Map_ALL->GetXaxis()->GetNbins();
+    int ny = Map_ALL->GetYaxis()->GetNbins();
     int NBad = 0;
     int NWarn = 0;
     int Eta[3][10000]={0};
     int Phi[3][10000]={0};
+    int Sub[3][10000]={0};
     int Depth[3][10000]={0};
     string Comment[3][10000]={""};
-  
-    for (int k=1;k<=2;k++) { 
-       sprintf(str,"MapHBDepth%d \b", k);
-       MapHB[k]=(TH2F*) Map2maxTStoAllTSRatioHB[k]->Clone(str) ;
-       sprintf(str,"MapHEDepth%d \b", k);
-       MapHE[k]=(TH2F*) Map2maxTStoAllTSRatioHE[k]->Clone(str) ;
-    }
+    string Text[6]={"","2.A","2.B","2.C","2.D","2.E"};
+    int flag_W = 0;
+    int flag_B = 0;
     
-       sprintf(str,"MapHEDepth%d \b", 3);
-       MapHE[3]=(TH2F*) Map2maxTStoAllTSRatioHE[3]->Clone(str) ;
-       
-    for (int i=1;i<=nx;i++) {
-      for (int j=1;j<=ny;j++) {	  
-//HB
-	  for (int k=1;k<=2;k++) {
-	     if (MapHB[k]->GetBinContent(i,j)!=0) {MapHB[k]->SetBinContent(i,j,0.5);Map->SetBinContent(i,j,0.5);}
-	     if((Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j) > 0.2 )&&(Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j) < 0.3) )  {
-	         Map->SetBinContent(i,j,0.8);
-		 MapHB[k]->SetBinContent(i,j,0.8);
-		 NWarn +=1; 
-		 Eta[1][NWarn]=i-41;
-		 Phi[1][NWarn]=j-1;
-		 Depth[1][NWarn]=k;
-		 Comment[1][NWarn]="Test 2.A.: Ratio less 0.3";		 
-             }	     
-//	     cout<<"Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j) "<<Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j)<<endl;
-             if((Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j) != 0. )&& (Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j) < 0.2 ))  {
-	        Map->SetBinContent(i,j,1.0);
-		MapHB[k]->SetBinContent(i,j,1.0);
-	        NBad +=1; 
-		Eta[2][NBad]=i-41;
-		Phi[2][NBad]=j-1;
-		Depth[2][NBad]=k;
-		Comment[2][NBad]="Test 2.A.: Ratio less 0.2";
-		cout<<"Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j) "<<Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j)<<endl;		
-	     }	     	  
+    for (int i=1;i<=nx;i++) {  //Eta
+       for (int j=1;j<=ny;j++) {	// Phi  
+          for (int sub=1;sub<=2;sub++) {  //Subdetector: 1-HB, 2-HE, 3-HF, 4-HO
+	     int k_min[5]={0,1,1,1,4}; // minimum depth for each subdet
+	     int k_max[5]={0,2,3,3,4}; // maximum depth for each subdet	
+	     for (int k=k_min[sub];k<=k_max[sub];k++) {  //Depth 
+	        if (Map_SUB[sub][k]->GetBinContent(i,j)!=0) {Map_SUB[sub][k]->SetBinContent(i,j,0.5);Map_ALL->SetBinContent(i,j,0.5);}
+	     }	
           }
-//HE
-	  for (int k=1;k<=3;k++) {
-	     if (MapHE[k]->GetBinContent(i,j)!=0) {MapHE[k]->SetBinContent(i,j,0.5);Map->SetBinContent(i,j,0.5);}
-	     if((Map2maxTStoAllTSRatioHE[k]->GetBinContent(i,j) > 0.2 )&&(Map2maxTStoAllTSRatioHE[k]->GetBinContent(i,j) < 0.3) )  {
-	         Map->SetBinContent(i,j,0.8);
-		 MapHE[k]->SetBinContent(i,j,0.8);
-		 NWarn +=1; 
-		 Eta[1][NWarn]=i-41;
-		 Phi[1][NWarn]=j-1;
-		 Depth[1][NWarn]=k;
-		 Comment[1][NWarn]="Test 2.A.: Ratio less 0.3";		 
-             }	     
-//	     cout<<"Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j) "<<Map2maxTStoAllTSRatioHB[k]->GetBinContent(i,j)<<endl;
-             if((Map2maxTStoAllTSRatioHE[k]->GetBinContent(i,j) != 0. )&& (Map2maxTStoAllTSRatioHE[k]->GetBinContent(i,j) < 0.2 ))  {
-	        Map->SetBinContent(i,j,1.0);
-		MapHE[k]->SetBinContent(i,j,1.0);
-	        NBad +=1; 
-		Eta[2][NBad]=i-41;
-		Phi[2][NBad]=j-1;
-		Depth[2][NBad]=k;
-		Comment[2][NBad]="Test 2.A.: Ratio less 0.2";
-		cout<<"Map2maxTStoAllTSRatioHE[k]->GetBinContent(i,j) "<<Map2maxTStoAllTSRatioHE[k]->GetBinContent(i,j)<<endl;		
-	     }	     	  
-          }
-//HF
-//HO	  	  
-      }
-    }
-//++++++++++++++++++++++++++++++++++++    
-// TEST    
-      Map->SetBinContent(1,4,0.7);
-      NWarn += 1;
-      Eta[1][NWarn]=1-41; Phi[1][NWarn]=7-1;  Depth[1][NWarn]=1;
-      Comment[1][NWarn]="TEST";
-      Map->SetBinContent(80,56,0.7);
-      NWarn += 1;
-      Eta[1][NWarn]=80-41; Phi[1][NWarn]=57-1; Depth[1][NWarn]=2;
-      Comment[1][NWarn]="TEST";
-       
-      Map->SetBinContent(15,10,1.);
-      NBad += 1;
-      Eta[2][NBad]=15-41; Phi[2][NBad]=10-1; Depth[2][NBad]=2;
-      Comment[2][NBad]="TEST";
-      Map->SetBinContent(56,67,1.);
-      NBad += 1;
-      Eta[2][NBad]=56-41; Phi[2][NBad]=67-1; Depth[2][NBad]=4;
-      Comment[2][NBad]="TEST";
-      Map->SetBinContent(30,30,1.);
-      NBad += 1;
-      Eta[2][NBad]=30-41; Phi[2][NBad]=30-1; Depth[2][NBad]=1;
-      Comment[2][NBad]="TEST";
-      
-//+++++++++++++++++++++++++++++++++++      
-            
+       }
+    }   	  
+    for (int i=1;i<=nx;i++) {  //Eta
+       for (int j=1;j<=ny;j++) {	// Phi  
+          for (int sub=1;sub<=2;sub++) {  //Subdetector: 1-HB, 2-HE, 3-HF, 4-HO
+	     int k_min[5]={0,1,1,1,4}; // minimum depth for each subdet
+	     int k_max[5]={0,2,3,3,4}; // maximum depth for each subdet	
+	     for (int k=k_min[sub];k<=k_max[sub];k++) {  //Depth 
+	        flag_W = 0;
+	        flag_B = 0;		
+	        for (int test=1;test<=3;test++) { //Test: 1-2.A, 2-2.B, etc
+//Warning		
+                   if ((Map_Ampl[test][sub][k]->GetBinContent(i,j) != 0. )&&(Map_Ampl[test][sub][k]->GetBinContent(i,j) < 0.5) )  {
+	              Map_ALL->SetBinContent(i,j,0.8);
+		      Map_SUB[sub][k]->SetBinContent(i,j,0.8);
+		      if (flag_W == 0) {
+		         NWarn +=1; 
+		         Eta[1][NWarn]=i-41;
+		         Phi[1][NWarn]=j-1;
+			 Sub[1][NWarn]=sub;
+		         Depth[1][NWarn]=k;
+		         Comment[1][NWarn]=Text[test]; 
+		      } 
+		      else Comment[1][NWarn]+=", "+Text[test];
+		      flag_W = 1;		      		 
+		      cout<<"Map_Ampl["<<test<<"]["<<sub<<"]["<<k<<"]->GetBinContent("<<i<<","<<j<<")= "<<Map_Ampl[test][sub][k]->GetBinContent(i,j)<<endl;
+                   }
+//Bad			     	                 
+                   if (Map_Ampl[test][sub][k]->GetBinContent(i,j) >= 0.5 )  {
+	              Map_ALL->SetBinContent(i,j,1.);
+		      Map_SUB[sub][k]->SetBinContent(i,j,1.);
+		      if (flag_B == 0) {
+		         NBad +=1; 
+		         Eta[2][NBad]=i-41;
+		         Phi[2][NBad]=j-1;
+			 Sub[2][NBad]=sub;
+		         Depth[2][NBad]=k;
+		         Comment[2][NBad]=Text[test];
+		      } 
+		      else Comment[2][NBad]+=", "+Text[test];
+		      flag_B = 1;		 
+		      cout<<"Map_Ampl["<<test<<"]["<<sub<<"]["<<k<<"]->GetBinContent("<<i<<","<<j<<")= "<<Map_Ampl[test][sub][k]->GetBinContent(i,j)<<endl;
+                   }
+		} //end test
+             }//end Depth
+	  }//end Sub	  	  
+       }//end Phi
+    }//end Eta            
 //HB
   cHB->Divide(2,1);
   for (int i=1;i<=2;i++) {
@@ -442,12 +390,12 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      gPad->SetGridx();
 //     gPad->SetLogz();
      sprintf(str,"HB, Depth%d \b", i); 
-     MapHB[i]->SetTitle(str);
-     MapHB[i]->SetXTitle("#eta \b");
-     MapHB[i]->SetYTitle("#phi \b");
-     MapHB[i]->Draw("COL");
-     MapHB[i]->GetYaxis()->SetRangeUser(0, 72.);
-     MapHB[i]->GetZaxis()->SetRangeUser(0., 1.);
+     Map_SUB[1][i]->SetTitle(str);
+     Map_SUB[1][i]->SetXTitle("#eta \b");
+     Map_SUB[1][i]->SetYTitle("#phi \b");
+     Map_SUB[1][i]->Draw("COL");
+     Map_SUB[1][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_SUB[1][i]->GetZaxis()->SetRangeUser(0., 1.);
      cHB->Modified(); 
      cHB->Update();      
   }    
@@ -462,12 +410,12 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      gPad->SetGridx();
 //     gPad->SetLogz();
      sprintf(str,"HE, Depth%d \b", i); 
-     MapHE[i]->SetTitle(str);
-     MapHE[i]->SetXTitle("#eta \b");
-     MapHE[i]->SetYTitle("#phi \b");
-     MapHE[i]->Draw("COL");
-     MapHE[i]->GetYaxis()->SetRangeUser(0, 72.);
-     MapHE[i]->GetZaxis()->SetRangeUser(0., 1.);
+     Map_SUB[2][i]->SetTitle(str);
+     Map_SUB[2][i]->SetXTitle("#eta \b");
+     Map_SUB[2][i]->SetYTitle("#phi \b");
+     Map_SUB[2][i]->Draw("COL");
+     Map_SUB[2][i]->GetYaxis()->SetRangeUser(0, 72.);
+     Map_SUB[2][i]->GetZaxis()->SetRangeUser(0., 1.);
      cHE->Modified(); 
      cHE->Update();      
   }    
@@ -481,11 +429,12 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
   gPad->SetGridy();
   gPad->SetGridx();
 //   gPad->SetLogz();
-  Map->SetXTitle("#eta \b");
-  Map->SetYTitle("#phi \b");
-  Map->Draw("COL");
-  Map->GetYaxis()->SetRangeUser(0, 72.);
-  Map->GetZaxis()->SetRangeUser(0, 1.);
+  Map_ALL->SetTitleOffset(1.3,"Y");
+  Map_ALL->SetXTitle("#eta \b");
+  Map_ALL->SetYTitle("#phi \b");
+  Map_ALL->Draw("COL");
+  Map_ALL->GetYaxis()->SetRangeUser(0, 72.);
+  Map_ALL->GetZaxis()->SetRangeUser(0, 1.);
   cmain->Modified(); 
   cmain->Update();   
   cmain->Print("MAP.png"); 
@@ -544,7 +493,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      htmlFileHB << "<td class=\"s1\" align=\"center\">HTR_FIBER</td>"   << std::endl;
      htmlFileHB << "<td class=\"s1\" align=\"center\">HTR_SLOT</td>"   << std::endl;
      htmlFileHB << "<td class=\"s1\" align=\"center\">HTR_FPGA</td>"   << std::endl;
-     htmlFileHB << "<td class=\"s1\" align=\"center\">Comment</td>"   << std::endl;
+     htmlFileHB << "<td class=\"s1\" align=\"center\">2.A</td>"   << std::endl;
+     htmlFileHB << "<td class=\"s1\" align=\"center\">2.B</td>"   << std::endl;
+     htmlFileHB << "<td class=\"s1\" align=\"center\">2.C</td>"   << std::endl;
      htmlFileHB << "</tr>"   << std::endl;     
    
      for (int i=1;i<=NBad;i++) {
@@ -558,7 +509,7 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
 		    if (ce.size()==0) {cout<<"Error: No such Eta="<< Eta[2][i] <<", Phi="<< Phi[2][i] <<", Depth="<< Depth[2][i] <<" in database"<<endl;}
 	else if (ce.size()>1) { cout<<"Warning: More than one line correspond to such Eta="<< Eta[2][i] <<", Phi="<< Phi[2][i] <<", Depth="<< Depth[2][i] <<" in database"<<endl;}
 	
-	if ((ce.size()>=1)&&(abs(Eta[2][i])<=16)) {
+	if ((ce.size()>=1)&&(Sub[2][i]==1)) {
 	   htmlFileHB << "<tr>"<< std::endl;
            htmlFileHB << "<td class=\"s4\" align=\"center\">" << ind+1 <<"</td>"<< std::endl;
            htmlFileHB << raw_class<< Eta[2][i]<<"</td>"<< std::endl;
@@ -577,7 +528,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
            htmlFileHB << raw_class<< ce[0].FiberIndex <<"</td>"<< std::endl;
            htmlFileHB << raw_class<< ce[0].HtrSlot <<"</td>"<< std::endl;
            htmlFileHB << raw_class<< ce[0].HtrTB <<"</td>"<< std::endl;
-           htmlFileHB << raw_class<< Comment[2][i]<<"</td>"<< std::endl;
+	   htmlFileHB << raw_class<< Map_Ampl[1][Sub[2][i]][Depth[2][i]]->GetBinContent(Eta[2][i]+41,Phi[2][i]+1)<<"</td>"<< std::endl;
+           htmlFileHB << raw_class<< Map_Ampl[2][Sub[2][i]][Depth[2][i]]->GetBinContent(Eta[2][i]+41,Phi[2][i]+1)<<"</td>"<< std::endl;
+	   htmlFileHB << raw_class<< Map_Ampl[3][Sub[2][i]][Depth[2][i]]->GetBinContent(Eta[2][i]+41,Phi[2][i]+1)<<"</td>"<< std::endl;
 	   htmlFileHB << "</tr>" << std::endl;
 
         ind+=1;
@@ -607,7 +560,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      htmlFileHB << "<td class=\"s1\" align=\"center\">HTR_FIBER</td>"   << std::endl;
      htmlFileHB << "<td class=\"s1\" align=\"center\">HTR_SLOT</td>"   << std::endl;
      htmlFileHB << "<td class=\"s1\" align=\"center\">HTR_FPGA</td>"   << std::endl;
-     htmlFileHB << "<td class=\"s1\" align=\"center\">Comment</td>"   << std::endl;
+     htmlFileHB << "<td class=\"s1\" align=\"center\">2.A</td>"   << std::endl;
+     htmlFileHB << "<td class=\"s1\" align=\"center\">2.B</td>"   << std::endl;
+     htmlFileHB << "<td class=\"s1\" align=\"center\">2.C</td>"   << std::endl;
      htmlFileHB << "</tr>"   << std::endl;     
    
      for (int i=1;i<=NWarn;i++) {
@@ -621,7 +576,7 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
 	    if (ce.size()==0) {cout<<"Error: No such Eta="<< Eta[1][i] <<", Phi="<< Phi[1][i] <<", Depth="<< Depth[1][i] <<" in database"<<endl;}
 	else if (ce.size()>1) {cout<<"Warning: More than one line correspond to such Eta="<< Eta[1][i] <<", Phi="<< Phi[1][i] <<", Depth="<< Depth[1][i] <<" in database"<<endl;}
 	
-	if ((ce.size()>=1&&(abs(Eta[1][i])<=16))) {
+	if ((ce.size()>=1)&&(Sub[1][i]==1)) {
 	   htmlFileHB << "<tr>"<< std::endl;
            htmlFileHB << "<td class=\"s4\" align=\"center\">" << ind+1 <<"</td>"<< std::endl;
            htmlFileHB << raw_class<< Eta[1][i]<<"</td>"<< std::endl;
@@ -640,7 +595,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
            htmlFileHB << raw_class<< ce[0].FiberIndex <<"</td>"<< std::endl;
            htmlFileHB << raw_class<< ce[0].HtrSlot <<"</td>"<< std::endl;
            htmlFileHB << raw_class<< ce[0].HtrTB <<"</td>"<< std::endl;
-           htmlFileHB << raw_class<< Comment[1][i]<<"</td>"<< std::endl;
+	   htmlFileHB << raw_class<< Map_Ampl[1][Sub[1][i]][Depth[1][i]]->GetBinContent(Eta[1][i]+41,Phi[1][i]+1)<<"</td>"<< std::endl;
+           htmlFileHB << raw_class<< Map_Ampl[2][Sub[1][i]][Depth[1][i]]->GetBinContent(Eta[1][i]+41,Phi[1][i]+1)<<"</td>"<< std::endl;
+	   htmlFileHB << raw_class<< Map_Ampl[3][Sub[1][i]][Depth[1][i]]->GetBinContent(Eta[1][i]+41,Phi[1][i]+1)<<"</td>"<< std::endl;
 	   htmlFileHB << "</tr>" << std::endl;
 
            ind+=1;
@@ -648,14 +605,38 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      } 
      htmlFileHB << "</table>" << std::endl;
      htmlFileHB << "<br>"<< std::endl;
+   
+     htmlFileHB << "<h2> 2.Tests of HB </h2>"<< std::endl;
 
 //HB Test 2A 
          
-     htmlFileHB << "<h2> 2.Tests</h2>"<< std::endl;
-     htmlFileHB << "<h3> 2.A. Test: ADC value sum over Two maximum Timeslises (TS) devide to ADC value sum over All maximum Timeslises (TS) > 0.3  for each channel </h3>"<< std::endl;
-     htmlFileHB << " <img src=\"Map2maxTStoAllTSRatioHB.png\" />" << std::endl; 
+     htmlFileHB << "<h3> 2.B. CapID errors </h3>"<< std::endl;
+     htmlFileHB << "<h4> Rate of CapId failure in each channel for each depth.Channel legend: wthite - good, other colour - bad. </h4>"<< std::endl;
+     htmlFileHB << " <img src=\"MapRateCapIDHB.png\" />" << std::endl; 
      htmlFileHB << "<br>"<< std::endl;
-     
+
+//HB Test 2B 
+         
+     htmlFileHB << "<h3> 2.B. Maximum timeslice position RMS </h3>"<< std::endl;
+     htmlFileHB << "<h4> Combined RMS distribution over all events, channel and depth. Legend: Bins more 2.25 correpond to bad RMS </h4>"<< std::endl;
+     htmlFileHB << " <img src=\"HistRMSHB.png\" />" << std::endl; 
+     htmlFileHB << "<br>"<< std::endl; 
+     htmlFileHB << "<h4> Rate of bad RMS (>2.25) in each channel for each depth.Channel legend: wthite - good, other colour - bad. </h4>"<< std::endl;
+     htmlFileHB << " <img src=\"MapRateRMSHB.png\" />" << std::endl; 
+     htmlFileHB << "<br>"<< std::endl;
+
+
+//HB Test 2C 
+         
+     htmlFileHB << "<h3> 2.C. Ratio ADC value sum over Two third and fourth Timeslises (TS) to ADC value sum over All TS for each channel. </h3>"<< std::endl;
+     htmlFileHB << "<h4> Combined ratio distribution over all events, channel and depth. Legend: Bins less 0.5 correpond to bad ratio </h4>"<< std::endl;
+     htmlFileHB << " <img src=\"Hist43TStoAllTSHB.png\" />" << std::endl; 
+     htmlFileHB << "<br>"<< std::endl; 
+     htmlFileHB << "<h4> Rate of bad ratio (<0.5) in each channel for each depth.Channel legend: wthite - good, other colour - bad. </h4>"<< std::endl;
+     htmlFileHB << " <img src=\"MapRate43TStoAllTSHB.png\" />" << std::endl; 
+     htmlFileHB << "<br>"<< std::endl;
+    
+
      htmlFileHB << "</body> " << std::endl;
      htmlFileHB << "</html> " << std::endl;
      htmlFileHB.close();
@@ -706,7 +687,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      htmlFileHE << "<td class=\"s1\" align=\"center\">HTR_FIBER</td>"   << std::endl;
      htmlFileHE << "<td class=\"s1\" align=\"center\">HTR_SLOT</td>"   << std::endl;
      htmlFileHE << "<td class=\"s1\" align=\"center\">HTR_FPGA</td>"   << std::endl;
-     htmlFileHE << "<td class=\"s1\" align=\"center\">Comment</td>"   << std::endl;
+     htmlFileHE << "<td class=\"s1\" align=\"center\">2.A</td>"   << std::endl;
+     htmlFileHE << "<td class=\"s1\" align=\"center\">2.B</td>"   << std::endl;
+     htmlFileHE << "<td class=\"s1\" align=\"center\">2.C</td>"   << std::endl;
      htmlFileHE << "</tr>"   << std::endl;     
      
      ind = 0;
@@ -722,7 +705,7 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
 		    if (ce.size()==0) {cout<<"Error: No such Eta="<< Eta[2][i] <<", Phi="<< Phi[2][i] <<", Depth="<< Depth[2][i] <<" in database"<<endl;}
 	else if (ce.size()>1) { cout<<"Warning: More than one line correspond to such Eta="<< Eta[2][i] <<", Phi="<< Phi[2][i] <<", Depth="<< Depth[2][i] <<" in database"<<endl;}
 	
-	if ((ce.size()>=1)&&(abs(Eta[2][i])<=29)&&(abs(Eta[2][i])>=17)) {
+	if ((ce.size()>=1)&&(Sub[2][i]==2)) {
 	   htmlFileHE << "<tr>"<< std::endl;
            htmlFileHE << "<td class=\"s4\" align=\"center\">" << ind+1 <<"</td>"<< std::endl;
            htmlFileHE << raw_class<< Eta[2][i]<<"</td>"<< std::endl;
@@ -741,7 +724,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
            htmlFileHE << raw_class<< ce[0].FiberIndex <<"</td>"<< std::endl;
            htmlFileHE << raw_class<< ce[0].HtrSlot <<"</td>"<< std::endl;
            htmlFileHE << raw_class<< ce[0].HtrTB <<"</td>"<< std::endl;
-           htmlFileHE << raw_class<< Comment[2][i]<<"</td>"<< std::endl;
+	   htmlFileHE << raw_class<< Map_Ampl[1][Sub[2][i]][Depth[2][i]]->GetBinContent(Eta[2][i]+41,Phi[2][i]+1)<<"</td>"<< std::endl;
+           htmlFileHE << raw_class<< Map_Ampl[2][Sub[2][i]][Depth[2][i]]->GetBinContent(Eta[2][i]+41,Phi[2][i]+1)<<"</td>"<< std::endl;
+	   htmlFileHE << raw_class<< Map_Ampl[3][Sub[2][i]][Depth[2][i]]->GetBinContent(Eta[2][i]+41,Phi[2][i]+1)<<"</td>"<< std::endl;
 	   htmlFileHE << "</tr>" << std::endl;
 
         ind+=1;
@@ -771,7 +756,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      htmlFileHE << "<td class=\"s1\" align=\"center\">HTR_FIBER</td>"   << std::endl;
      htmlFileHE << "<td class=\"s1\" align=\"center\">HTR_SLOT</td>"   << std::endl;
      htmlFileHE << "<td class=\"s1\" align=\"center\">HTR_FPGA</td>"   << std::endl;
-     htmlFileHE << "<td class=\"s1\" align=\"center\">Comment</td>"   << std::endl;
+     htmlFileHE << "<td class=\"s1\" align=\"center\">2.A</td>"   << std::endl;
+     htmlFileHE << "<td class=\"s1\" align=\"center\">2.B</td>"   << std::endl;
+     htmlFileHE << "<td class=\"s1\" align=\"center\">2.C</td>"   << std::endl;
      htmlFileHE << "</tr>"   << std::endl;     
    
      for (int i=1;i<=NWarn;i++) {
@@ -785,7 +772,7 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
 	    if (ce.size()==0) {cout<<"Error: No such Eta="<< Eta[1][i] <<", Phi="<< Phi[1][i] <<", Depth="<< Depth[1][i] <<" in database"<<endl;}
 	else if (ce.size()>1) { cout<<"Warning: More than one line correspond to such Eta="<< Eta[1][i] <<", Phi="<< Phi[1][i] <<", Depth="<< Depth[1][i] <<" in database"<<endl;}
 	
-	if ((ce.size()>=1)&&(abs(Eta[2][i])<=29)&&(abs(Eta[1][i])>=17)) {
+	if ((ce.size()>=1)&&(Sub[1][i]==2)) {
 	   htmlFileHE << "<tr>"<< std::endl;
            htmlFileHE << "<td class=\"s4\" align=\"center\">" << ind+1 <<"</td>"<< std::endl;
            htmlFileHE << raw_class<< Eta[1][i]<<"</td>"<< std::endl;
@@ -804,7 +791,9 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
            htmlFileHE << raw_class<< ce[0].FiberIndex <<"</td>"<< std::endl;
            htmlFileHE << raw_class<< ce[0].HtrSlot <<"</td>"<< std::endl;
            htmlFileHE << raw_class<< ce[0].HtrTB <<"</td>"<< std::endl;
-           htmlFileHE << raw_class<< Comment[1][i]<<"</td>"<< std::endl;
+	   htmlFileHE << raw_class<< Map_Ampl[1][Sub[1][i]][Depth[1][i]]->GetBinContent(Eta[1][i]+41,Phi[1][i]+1)<<"</td>"<< std::endl;
+           htmlFileHE << raw_class<< Map_Ampl[2][Sub[1][i]][Depth[1][i]]->GetBinContent(Eta[1][i]+41,Phi[1][i]+1)<<"</td>"<< std::endl;
+	   htmlFileHE << raw_class<< Map_Ampl[3][Sub[1][i]][Depth[1][i]]->GetBinContent(Eta[1][i]+41,Phi[1][i]+1)<<"</td>"<< std::endl;
 	   htmlFileHE << "</tr>" << std::endl;
 
            ind+=1;
@@ -812,13 +801,35 @@ void RemoteMonitoringMAP(const char* fname = "test7runs.root")
      } 
      htmlFileHE << "</table>" << std::endl;
      htmlFileHE << "<br>"<< std::endl;
-//HE Test 2A      
 
-     htmlFileHE << "<h2> 2.Tests</h2>"<< std::endl;;
-     htmlFileHE << "<h3> 2.A. Test: ADC value sum over Two maximum Timeslises (TS) devide to ADC value sum over All maximum Timeslises (TS) > 0.3 for each channel</h3>"<< std::endl;
-     htmlFileHE << " <img src=\"Map2maxTStoAllTSRatioHE.png\" />" << std::endl; 
+//HE Test 2A 
+         
+     htmlFileHE << "<h3> 2.B. CapID errors </h3>"<< std::endl;
+     htmlFileHE << "<h4> Rate of CapId failure in each channel for each depth.Channel legend: wthite - good, other colour - bad. </h4>"<< std::endl;
+     htmlFileHE << " <img src=\"MapRateCapIDHE.png\" />" << std::endl; 
      htmlFileHE << "<br>"<< std::endl;
 
+//HE Test 2B 
+         
+     htmlFileHE << "<h3> 2.B. Maximum timeslice position RMS </h3>"<< std::endl;
+     htmlFileHE << "<h4> Combined RMS distribution aver all events, channel and depth. Legend: Bins more 2.25 correpond to bad RMS </h4>"<< std::endl;
+     htmlFileHE << " <img src=\"HistRMSHE.png\" />" << std::endl; 
+     htmlFileHE << "<br>"<< std::endl; 
+     htmlFileHE << "<h4> Rate of bad RMS (>2.25) in each channel for each depth.Channel legend: wthite - good, other colour - bad. </h4>"<< std::endl;
+     htmlFileHE << " <img src=\"MapRateRMSHE.png\" />" << std::endl; 
+     htmlFileHE << "<br>"<< std::endl;
+
+//HE Test 2A 
+         
+     htmlFileHE << "<h3> 2.A. Ratio ADC value sum over Two third and fourth Timeslises (TS) to ADC value sum over All TS for each channel. </h3>"<< std::endl;
+     htmlFileHE << "<h4> Combined ratio distribution aver all events, channel and depth. Legend: Bins less 0.5 correpond to bad ratio </h4>"<< std::endl;
+     htmlFileHE << " <img src=\"Hist43TStoAllTSHE.png\" />" << std::endl; 
+     htmlFileHE << "<br>"<< std::endl; 
+     htmlFileHE << "<h4> Rate of bad ratio (<0.5) in each channel for each depth.Channel legend: wthite - good, other colour - bad. </h4>"<< std::endl;
+     htmlFileHE << " <img src=\"MapRate43TStoAllTSHE.png\" />" << std::endl; 
+     htmlFileHE << "<br>"<< std::endl;
+    
+    
      htmlFileHE << "</body> " << std::endl;
      htmlFileHE << "</html> " << std::endl; 
      htmlFileHE.close();
