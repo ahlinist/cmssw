@@ -147,10 +147,11 @@ process.selectedPrimaryVertexFilter = cms.EDFilter("VertexCountFilter",
 process.commonSequence *= process.selectedPrimaryVertexFilter
 
 # Reproduce the mu-tau pair objects, as they are not kept in the skim at the moment
-import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
-process.muTauPairs = zmutau.muTauPairs.clone()
-process.muTauPairs.decay = cms.string('selectedPatMuons@+ selectedPatTaus@-')
-process.commonSequence *= process.muTauPairs
+if analysis == "TauLeg":
+    import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
+    process.muTauPairs = zmutau.muTauPairs.clone()
+    process.muTauPairs.decay = cms.string('selectedPatMuons@+ selectedPatTaus@-')
+    process.commonSequence *= process.muTauPairs
 
 # Correction of reco::PFJets (from 5xy configuration due to JetMETCorrections/Modules ...
 process.ak5PFL1Offset = cms.ESProducer('L1OffsetCorrectionESProducer',
@@ -423,6 +424,7 @@ process.TTEffAnalysisMETLeg = process.TTEffAnalysisHLTPFTauHPS.clone(
 )
 
 process.TTEffAnalysisQuadJet = process.TTEffAnalysisHLTPFTauHPS.clone(
+    LoopingOver = cms.InputTag("selectedPatTausHpsPFTau"), # FIXME: 53_v1 pattuples, remove this line for 53_v2 pattuples
     outputFileName  = "tteffAnalysis-quadjet.root",
     triggerBitsOnly = cms.bool(True)
 )

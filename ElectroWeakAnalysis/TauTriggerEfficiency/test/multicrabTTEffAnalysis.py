@@ -71,23 +71,64 @@ datasetsMC2011 = [
         ]
 datasetsData2012TauLeg = [
         "TauPlusX_190456-190738_2012A_Jul13",
-#        "TauPlusX_190782-190949_2012A_Aug06",
-#        "TauPlusX_191043-193621_2012A_Jul13",
-#        "TauPlusX_193834-196531_2012B_Jul13",
-#        "TauPlusX_198022-198523_2012C_Aug24",
-#        "TauPlusX_198941-199608_2012C_Prompt",
-#        "TauPlusX_199698-203742_2012C_Prompt",
-#        "TauPlusX_203777-208686_2012D_Prompt"
+        "TauPlusX_190782-190949_2012A_Aug06",
+        "TauPlusX_191043-193621_2012A_Jul13",
+        "TauPlusX_193834-196531_2012B_Jul13",
+        "TauPlusX_198022-198523_2012C_Aug24",
+        "TauPlusX_198941-199608_2012C_Prompt",
+        "TauPlusX_199698-203742_2012C_Prompt",
+        "TauPlusX_203777-208686_2012D_Prompt"
 ]
 datasetsMC2012TauLeg = [
         "DYToTauTau_M_20_CT10_TuneZ2star_powheg_tauola_Summer12",
-#        "DYToTauTau_M_20_CT10_TuneZ2star_v2_powheg_tauola_Summer12"
+        "DYToTauTau_M_20_CT10_TuneZ2star_v2_powheg_tauola_Summer12"
 ]
 datasetsData2012MetLeg = [
 	"Tau_190456-190738_2012A_Jul13",	# 2012A HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v2
+        "Tau_190782-190949_2012A_Aug06",
+        "Tau_191043-193621_2012A_Jul13",
+        "Tau_193834-196531_2012B_Jul13",
+        "Tau_198022-198523_2012C_Aug24",
+        "Tau_198941-200601_2012C_Prompt",
+        "Tau_200961-202504_2012C_Prompt",
+        "Tau_202792-203742_2012C_Prompt",
+        "Tau_203777-208686_2012D_Prompt"
 ]
 datasetsMC2012MetLeg = [
-	"TTJets_TuneZ2star_Summer12",
+        "QCD_Pt30to50_TuneZ2star_Summer12",
+        "QCD_Pt50to80_TuneZ2star_Summer12",
+        "QCD_Pt80to120_TuneZ2star_Summer12",
+        "QCD_Pt120to170_TuneZ2star_Summer12",
+        "QCD_Pt170to300_TuneZ2star_Summer12",
+        "QCD_Pt170to300_TuneZ2star_v2_Summer12",
+        "QCD_Pt300to470_TuneZ2star_Summer12",
+        "QCD_Pt300to470_TuneZ2star_v2_Summer12",
+        "QCD_Pt300to470_TuneZ2star_v3_Summer12",
+        
+        "WW_TuneZ2star_Summer12",
+        "WZ_TuneZ2star_Summer12",
+        "ZZ_TuneZ2star_Summer12",
+        "TTJets_TuneZ2star_Summer12",
+        "WJets_TuneZ2star_v1_Summer12",
+        "WJets_TuneZ2star_v2_Summer12",
+        "W1Jets_TuneZ2star_Summer12",
+        "W2Jets_TuneZ2star_Summer12",
+        "W3Jets_TuneZ2star_Summer12",
+        "W4Jets_TuneZ2star_Summer12",
+        "DYJetsToLL_M50_TuneZ2star_Summer12",
+        "DYJetsToLL_M10to50_TuneZ2star_Summer12",
+        "T_t-channel_TuneZ2star_Summer12",
+        "Tbar_t-channel_TuneZ2star_Summer12",
+        "T_tW-channel_TuneZ2star_Summer12",
+        "Tbar_tW-channel_TuneZ2star_Summer12",
+        "T_s-channel_TuneZ2star_Summer12",
+        "Tbar_s-channel_TuneZ2star_Summer12"
+]
+datasetsData2012QuadJet = [
+        "SingleMu_190456-190738_2012A_Jul13",
+]
+datasetsMC2012QuadJet = [
+        "TTJets_TuneZ2star_Summer12",
 ]
 datasets = []
 #datasets.extend(datasetsData2011)
@@ -95,23 +136,32 @@ datasets = []
 #datasets.extend(datasetsData2012)
 #datasets.extend(datasetsMC2012)
 
+print
 print "Analysis",analysis
+print
 
+outputfiles = ""
 if analysis == "TauLeg2012":
     datasets.extend(datasetsData2012TauLeg)
     datasets.extend(datasetsMC2012TauLeg)
+#    outputfiles = "tteffAnalysis-hltpftau-hpspftau.root, tteffAnalysis-hltpftaumedium-hpspftau.root, tteffAnalysis-hltpftau-hpspftau-highpurity.root"                                                                                  
+    outputfiles = "tteffAnalysis-hltpftau-hpspftau.root, tteffAnalysis-hltpftau-hpspftau-highpurity.root"
 
 if analysis == "MetLeg2012":
     datasets.extend(datasetsData2012MetLeg)
     datasets.extend(datasetsMC2012MetLeg)
+    outputfiles = "tteffAnalysis-metleg.root"
 
 if analysis == "QuadJet2012":
     datasets.extend(datasetsData2012QuadJet)
     datasets.extend(datasetsMC2012QuadJet)
+    outputfiles = "tteffAnalysis-quadjet.root"
 
 multicrab.extendDatasets("trigger"+analysis[:-4]+"_analysis_"+multicrabDatasetsTTEff.skimVersion, datasets)
 #multicrab.extendDatasets("triggerMetLeg_analysis_vXXX", datasets)
-multicrab.appendLineAll("GRID.maxtarballsize = 20") 
+#multicrab.appendLineAll("GRID.maxtarballsize = 20") 
+multicrab.appendLineAll("CMSSW.output_file = "+outputfiles)
+multicrab.appendLineAll("CMSSW.skip_TFileService_output = 1")
 
 # Force all jobs go to jade, in some situations this might speed up
 # the analysis (e.g. when there are O(1000) Alice jobs queueing, all
