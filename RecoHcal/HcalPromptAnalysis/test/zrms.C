@@ -74,9 +74,9 @@
 //  TBrowser *b = new TBrowser
 
 //	TFile *hfile1= new TFile("BadRBXrun211154.root", "READ");        
-//	TFile *hfile1= new TFile("test.root", "READ");        
+	TFile *hfile1= new TFile("test.root", "READ");        
 //	TFile *hfile1= new TFile("test8runs.root", "READ");        
-	TFile *hfile1= new TFile("test203056.root", "READ");        
+//	TFile *hfile1= new TFile("test203056.root", "READ");        
 
 	//    getchar();
 	//
@@ -602,10 +602,319 @@
       
       
             
+    //=============================================================================================== 6
+    //======================================================================
+    //======================================================================
+    //================
+    //======================================================================
+      c1->Clear();
+      c1->Divide(2,2);
+      
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Amplitude_HF");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HF");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
+	Ceff->Divide(twod1,twod0, 1, 1, "B");
+	Ceff->Sumw2();
+      }
+      c1->cd(1);
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Amplitude225_HF");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HF");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Cefz225= (TH2F*)twod1->Clone("Cefz225");
+	Cefz225->Divide(twod1,twod0, 1, 1, "B");
+	Cefz225->Sumw2();
+      }
+      gPad->SetGridy();
+      gPad->SetGridx();
+      gPad->SetLogz();
+      Cefz225->SetMarkerStyle(20);
+      Cefz225->SetMarkerSize(0.4);
+      //    Cefz225->GetYaxis()->SetLabelSize(0.04);
+      Cefz225->GetZaxis()->SetLabelSize(0.08);
+      Cefz225->SetXTitle("#eta \b");
+      Cefz225->SetYTitle("#phi \b");
+      Cefz225->SetZTitle("Rate for TS RMS in each event & cell > 2.25 - HF Depth1 \b");
+      Cefz225->SetMarkerColor(2);
+      Cefz225->SetLineColor(2);
+      Cefz225->Draw("COLZ");
+      
+      c1->cd(2);
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Amplitude_HF");
+      gPad->SetLogy();
+      aaaaaa1->SetMarkerStyle(20);
+      aaaaaa1->SetMarkerSize(0.8);
+      aaaaaa1->GetYaxis()->SetLabelSize(0.04);
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HF \b");
+      aaaaaa1->SetMarkerColor(2);
+      aaaaaa1->SetLineColor(2);
+      aaaaaa1->Draw("");
+       
+      c1->cd(3);
+    ///////////////////////////////////////
+    TH2F* Diffe_Depth1_HF = (TH2F*)Ceff->Clone("Diffe_Depth1_HF");
+    int nx = Ceff->GetXaxis()->GetNbins();
+    int ny = Ceff->GetYaxis()->GetNbins();
+    for (int i=1;i<=nx;i++) {
+      for (int j=1;j<=ny;j++) {
+	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
+	  Diffe_Depth1_HF->SetBinContent(i,j,0.);
+	  if(ccc1 < 0.5 || ccc1 > 2.0 )  Diffe_Depth1_HF->SetBinContent(i,j,ccc1);
+      }
+    }
+      gPad->SetGridy();
+      gPad->SetGridx();
+      gPad->SetLogz();
+      Diffe_Depth1_HF->SetMarkerStyle(20);
+      Diffe_Depth1_HF->SetMarkerSize(0.4);
+      Diffe_Depth1_HF->GetZaxis()->SetLabelSize(0.08);
+      //    Diffe_Depth1_HF->SetTitle("any Error, HF Depth1 \n");
+      Diffe_Depth1_HF->SetXTitle("#eta \b");
+      Diffe_Depth1_HF->SetYTitle("#phi \b");
+      Diffe_Depth1_HF->SetZTitle("<TS RMS> out 0.5-2.0 - HF Depth1 \b");
+      Diffe_Depth1_HF->SetMarkerColor(2);
+      Diffe_Depth1_HF->SetLineColor(2);
+      Diffe_Depth1_HF->Draw("COLZ");
+      
+
+      c1->cd(4);
+      TH1F* diffAmplitude_Depth1_HF = new TH1F("diffAmplitude_Depth1_HF","", 100, 0., 5.);
+      int nx = Ceff->GetXaxis()->GetNbins();
+      int ny = Ceff->GetYaxis()->GetNbins();
+      for (int i=1;i<=nx;i++) {
+	for (int j=1;j<=ny;j++) {
+	  if(Ceff->GetBinContent(i,j) !=0 ) {
+	    double ccc1 =  Ceff->GetBinContent(i,j) ;
+	    diffAmplitude_Depth1_HF->Fill(ccc1);
+	  }
+	}
+      }
+      gPad->SetLogy();
+      diffAmplitude_Depth1_HF->SetMarkerStyle(20);
+      diffAmplitude_Depth1_HF->SetMarkerSize(0.4);
+      diffAmplitude_Depth1_HF->GetYaxis()->SetLabelSize(0.04);
+      diffAmplitude_Depth1_HF->SetXTitle("<TS RMS> in each cell \b");
+      diffAmplitude_Depth1_HF->SetMarkerColor(2);
+      diffAmplitude_Depth1_HF->SetLineColor(2);
+      diffAmplitude_Depth1_HF->Draw("");
+      
+      c1->Update();
+      
+      
+            
+    //=============================================================================================== 7
+    //======================================================================
+    //======================================================================
+    //================
+    //======================================================================
+      c1->Clear();
+      c1->Divide(2,2);
+      
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Amplitude_HF");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HF");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
+	Ceff->Divide(twod1,twod0, 1, 1, "B");
+	Ceff->Sumw2();
+      }
+      c1->cd(1);
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Amplitude225_HF");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HF");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Cefz225= (TH2F*)twod1->Clone("Cefz225");
+	Cefz225->Divide(twod1,twod0, 1, 1, "B");
+	Cefz225->Sumw2();
+      }
+      gPad->SetGridy();
+      gPad->SetGridx();
+      gPad->SetLogz();
+      Cefz225->SetMarkerStyle(20);
+      Cefz225->SetMarkerSize(0.4);
+      Cefz225->GetZaxis()->SetLabelSize(0.08);
+      Cefz225->SetXTitle("#eta \b");
+      Cefz225->SetYTitle("#phi \b");
+      Cefz225->SetZTitle("Rate for TS RMS in each event & cell > 2.25 - HF Depth2 \b");
+      Cefz225->SetMarkerColor(2);
+      Cefz225->SetLineColor(2);
+      Cefz225->Draw("COLZ");
+      
+      c1->cd(2);
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Amplitude_HF");
+      gPad->SetLogy();
+      aaaaaa1->SetMarkerStyle(20);
+      aaaaaa1->SetMarkerSize(0.8);
+      aaaaaa1->GetYaxis()->SetLabelSize(0.04);
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HF \b");
+      aaaaaa1->SetMarkerColor(2);
+      aaaaaa1->SetLineColor(2);
+      aaaaaa1->Draw("");
+       
+      c1->cd(3);
+    ///////////////////////////////////////
+    TH2F* Diffe_Depth2_HF = (TH2F*)Ceff->Clone("Diffe_Depth2_HF");
+    int nx = Ceff->GetXaxis()->GetNbins();
+    int ny = Ceff->GetYaxis()->GetNbins();
+    for (int i=1;i<=nx;i++) {
+      for (int j=1;j<=ny;j++) {
+	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
+	  Diffe_Depth2_HF->SetBinContent(i,j,0.);
+	  if(ccc1 < 0.5 || ccc1 > 2.0 )  Diffe_Depth2_HF->SetBinContent(i,j,ccc1);
+      }
+    }
+      gPad->SetGridy();
+      gPad->SetGridx();
+      gPad->SetLogz();
+      Diffe_Depth2_HF->SetMarkerStyle(20);
+      Diffe_Depth2_HF->SetMarkerSize(0.4);
+      Diffe_Depth2_HF->GetZaxis()->SetLabelSize(0.08);
+      //    Diffe_Depth2_HF->SetTitle("any Error, HF Depth2 \n");
+      Diffe_Depth2_HF->SetXTitle("#eta \b");
+      Diffe_Depth2_HF->SetYTitle("#phi \b");
+      Diffe_Depth2_HF->SetZTitle("<TS RMS> out 0.5-2.0 - HF Depth2 \b");
+      Diffe_Depth2_HF->SetMarkerColor(2);
+      Diffe_Depth2_HF->SetLineColor(2);
+      Diffe_Depth2_HF->Draw("COLZ");
+      
+
+      c1->cd(4);
+      TH1F* diffAmplitude_Depth2_HF = new TH1F("diffAmplitude_Depth2_HF","", 100, 0., 5.);
+      int nx = Ceff->GetXaxis()->GetNbins();
+      int ny = Ceff->GetYaxis()->GetNbins();
+      for (int i=1;i<=nx;i++) {
+	for (int j=1;j<=ny;j++) {
+	  if(Ceff->GetBinContent(i,j) !=0 ) {
+	    double ccc1 =  Ceff->GetBinContent(i,j) ;
+	    diffAmplitude_Depth2_HF->Fill(ccc1);
+	  }
+	}
+      }
+      gPad->SetLogy();
+      diffAmplitude_Depth2_HF->SetMarkerStyle(20);
+      diffAmplitude_Depth2_HF->SetMarkerSize(0.4);
+      diffAmplitude_Depth2_HF->GetYaxis()->SetLabelSize(0.04);
+      diffAmplitude_Depth2_HF->SetXTitle("<TS RMS> in each cell \b");
+      diffAmplitude_Depth2_HF->SetMarkerColor(2);
+      diffAmplitude_Depth2_HF->SetLineColor(2);
+      diffAmplitude_Depth2_HF->Draw("");
+      
+      c1->Update();
+      
+      
+    //=============================================================================================== 8
+    //======================================================================
+    //======================================================================
+    //================
+    //======================================================================
+      c1->Clear();
+      c1->Divide(2,2);
+      
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth4Amplitude_HO");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth4_HO");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
+	Ceff->Divide(twod1,twod0, 1, 1, "B");
+	Ceff->Sumw2();
+      }
+      c1->cd(1);
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth4Amplitude225_HO");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth4_HO");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Cefz225= (TH2F*)twod1->Clone("Cefz225");
+	Cefz225->Divide(twod1,twod0, 1, 1, "B");
+	Cefz225->Sumw2();
+      }
+      gPad->SetGridy();
+      gPad->SetGridx();
+      gPad->SetLogz();
+      Cefz225->SetMarkerStyle(20);
+      Cefz225->SetMarkerSize(0.4);
+      Cefz225->GetZaxis()->SetLabelSize(0.08);
+      Cefz225->SetXTitle("#eta \b");
+      Cefz225->SetYTitle("#phi \b");
+      Cefz225->SetZTitle("Rate for TS RMS in each event & cell > 2.25 - HO Depth4 \b");
+      Cefz225->SetMarkerColor(2);
+      Cefz225->SetLineColor(2);
+      Cefz225->Draw("COLZ");
+      
+      c1->cd(2);
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Amplitude_HO");
+      gPad->SetLogy();
+      aaaaaa1->SetMarkerStyle(20);
+      aaaaaa1->SetMarkerSize(0.8);
+      aaaaaa1->GetYaxis()->SetLabelSize(0.04);
+      aaaaaa1->SetXTitle("TS RMS in each event & cell HO \b");
+      aaaaaa1->SetMarkerColor(2);
+      aaaaaa1->SetLineColor(2);
+      aaaaaa1->Draw("");
+       
+      c1->cd(3);
+    ///////////////////////////////////////
+    TH2F* Diffe_Depth4_HO = (TH2F*)Ceff->Clone("Diffe_Depth4_HO");
+    int nx = Ceff->GetXaxis()->GetNbins();
+    int ny = Ceff->GetYaxis()->GetNbins();
+    for (int i=1;i<=nx;i++) {
+      for (int j=1;j<=ny;j++) {
+	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
+	  Diffe_Depth4_HO->SetBinContent(i,j,0.);
+	  if(ccc1 < 1.0 || ccc1 > 2.5 )  Diffe_Depth4_HO->SetBinContent(i,j,ccc1);
+      }
+    }
+      gPad->SetGridy();
+      gPad->SetGridx();
+      gPad->SetLogz();
+      Diffe_Depth4_HO->SetMarkerStyle(20);
+      Diffe_Depth4_HO->SetMarkerSize(0.4);
+      Diffe_Depth4_HO->GetZaxis()->SetLabelSize(0.08);
+      //    Diffe_Depth4_HO->SetTitle("any Error, HO Depth4 \n");
+      Diffe_Depth4_HO->SetXTitle("#eta \b");
+      Diffe_Depth4_HO->SetYTitle("#phi \b");
+      Diffe_Depth4_HO->SetZTitle("<TS RMS> out 1.0-2.5 - HO Depth4 \b");
+      Diffe_Depth4_HO->SetMarkerColor(2);
+      Diffe_Depth4_HO->SetLineColor(2);
+      Diffe_Depth4_HO->Draw("COLZ");
+      
+
+      c1->cd(4);
+      TH1F* diffAmplitude_Depth4_HO = new TH1F("diffAmplitude_Depth4_HO","", 100, 0., 5.);
+      int nx = Ceff->GetXaxis()->GetNbins();
+      int ny = Ceff->GetYaxis()->GetNbins();
+      for (int i=1;i<=nx;i++) {
+	for (int j=1;j<=ny;j++) {
+	  if(Ceff->GetBinContent(i,j) !=0 ) {
+	    double ccc1 =  Ceff->GetBinContent(i,j) ;
+	    diffAmplitude_Depth4_HO->Fill(ccc1);
+	  }
+	}
+      }
+      gPad->SetLogy();
+      diffAmplitude_Depth4_HO->SetMarkerStyle(20);
+      diffAmplitude_Depth4_HO->SetMarkerSize(0.4);
+      diffAmplitude_Depth4_HO->GetYaxis()->SetLabelSize(0.04);
+      diffAmplitude_Depth4_HO->SetXTitle("<TS RMS> in each cell \b");
+      diffAmplitude_Depth4_HO->SetMarkerColor(2);
+      diffAmplitude_Depth4_HO->SetLineColor(2);
+      diffAmplitude_Depth4_HO->Draw("");
+      
+      c1->Update();
+      
+      
+            
       
             
     //======================================================================
-    //==================================================================================================== end
+    //============================================================================================ end
     //======================================================================
     //======================================================================
     // close and delete all possible things:

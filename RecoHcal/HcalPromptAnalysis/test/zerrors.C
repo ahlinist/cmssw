@@ -78,18 +78,19 @@
 //	TFile *hfile1= new TFile("PFGNZSRAW-run199751.root", "READ");        
 //	TFile *hfile1= new TFile("testNZS.root", "READ");        
 
-//	TFile *hfile1= new TFile("test.root", "READ");        
+	TFile *hfile1= new TFile("test.root", "READ");        
 //	TFile *hfile1= new TFile("test_allruns.root", "READ");        
 //	TFile *hfile1= new TFile("test8runs.root", "READ");        
 //	TFile *hfile1= new TFile("test7runs.root", "READ");        
-	TFile *hfile1= new TFile("test203056.root", "READ");        
+//	TFile *hfile1= new TFile("test203056.root", "READ");        
 
 	//    getchar();
 	//
 //          TPostScript psfile ("zerrors193116.ps", 111);
 //          TPostScript psfile ("zerrors194151.ps", 111);
 //          TPostScript psfile ("zerrors199751.ps", 111);
-          TPostScript psfile ("testNZS.ps", 111);
+//          TPostScript psfile ("testNZS.ps", 111);
+          TPostScript psfile ("zerrors.ps", 111);
 
     //======================================================================
 
@@ -101,14 +102,14 @@
    c1 = new TCanvas("c1","Hcal4test",200,10,700,900);
 
 
-    //==================================================================================================== 1
+    //=========================================================================================== 1
     //======================================================================
     //======================================================================
     //================
     //======================================================================
             
       c1->Clear();
-      c1->Divide(1,2);
+      c1->Divide(2,2);
       
       c1->cd(1);
 	TH1F *mp3d= (TH1F*)hfile1->Get("h_amplFine_HB");
@@ -121,7 +122,7 @@
 	mp3d->SetMarkerColor(2);
 	mp3d->SetLineColor(2);
 	//       mp3d->SetFillColor(5);
-	//   mp3d->SetMinimum(0.8);
+	   mp3d->SetMinimum(0.8);
 	mp3d->Draw("Error");
 	TH1F *mp3d= (TH1F*)hfile1->Get("h_amplError_HB");
 	gPad->SetLogy();
@@ -133,7 +134,7 @@
 	mp3d->SetMarkerColor(1);
 	mp3d->SetLineColor(1);
 	//       mp3d->SetFillColor(5);
-	//   mp3d->SetMinimum(0.8);
+	   mp3d->SetMinimum(0.8);
 	mp3d->Draw("ErrorSame");
 	
       c1->cd(2);
@@ -147,7 +148,7 @@
 	mp3d->SetMarkerColor(2);
 	mp3d->SetLineColor(2);
 	//       mp3d->SetFillColor(5);
-	//   mp3d->SetMinimum(0.8);
+	   mp3d->SetMinimum(0.8);
 	mp3d->Draw("Error");
 	TH1F *mp3d= (TH1F*)hfile1->Get("h_amplError_HE");
 	gPad->SetLogy();
@@ -159,7 +160,59 @@
 	mp3d->SetMarkerColor(1);
 	mp3d->SetLineColor(1);
 	//       mp3d->SetFillColor(5);
-	//   mp3d->SetMinimum(0.8);
+	   mp3d->SetMinimum(0.8);
+	mp3d->Draw("ErrorSame");
+	
+	
+      c1->cd(3);
+	TH1F *mp3d= (TH1F*)hfile1->Get("h_amplFine_HF");
+	gPad->SetLogy();
+	//	mp3d->Scale(mscale);
+	mp3d->SetMarkerStyle(21);
+	mp3d->SetMarkerSize(0.4);
+	mp3d->GetXaxis()->SetTitle("Energy (noError&Error) HF");
+	mp3d->GetYaxis()->SetLabelSize(0.04);
+	mp3d->SetMarkerColor(2);
+	mp3d->SetLineColor(2);
+	//       mp3d->SetFillColor(5);
+	   mp3d->SetMinimum(0.8);
+	mp3d->Draw("Error");
+	TH1F *mp3d= (TH1F*)hfile1->Get("h_amplError_HF");
+	gPad->SetLogy();
+	//	mp3d->Scale(mscale);
+	mp3d->SetMarkerStyle(21);
+	mp3d->SetMarkerSize(0.4);
+	mp3d->GetYaxis()->SetLabelSize(0.04);
+	mp3d->SetMarkerColor(1);
+	mp3d->SetLineColor(1);
+	//       mp3d->SetFillColor(5);
+	   mp3d->SetMinimum(0.8);
+	mp3d->Draw("ErrorSame");
+	
+	
+      c1->cd(4);
+	TH1F *mp3d= (TH1F*)hfile1->Get("h_amplFine_HO");
+	gPad->SetLogy();
+	//	mp3d->Scale(mscale);
+	mp3d->SetMarkerStyle(21);
+	mp3d->SetMarkerSize(0.4);
+	mp3d->GetXaxis()->SetTitle("Energy (noError&Error) HO");
+	mp3d->GetYaxis()->SetLabelSize(0.04);
+	mp3d->SetMarkerColor(2);
+	mp3d->SetLineColor(2);
+	//       mp3d->SetFillColor(5);
+	   mp3d->SetMinimum(0.8);
+	mp3d->Draw("Error");
+	TH1F *mp3d= (TH1F*)hfile1->Get("h_amplError_HO");
+	gPad->SetLogy();
+	//	mp3d->Scale(mscale);
+	mp3d->SetMarkerStyle(21);
+	mp3d->SetMarkerSize(0.4);
+	mp3d->GetYaxis()->SetLabelSize(0.04);
+	mp3d->SetMarkerColor(1);
+	mp3d->SetLineColor(1);
+	//       mp3d->SetFillColor(5);
+	   mp3d->SetMinimum(0.8);
 	mp3d->Draw("ErrorSame");
 	
 	
@@ -167,7 +220,7 @@
 	c1->Update();
 	
 	
-    //==================================================================================================== 2
+    //============================================================================================ 2
     //======================================================================
     //======================================================================
     //================
@@ -211,7 +264,7 @@
 	c1->Update();
 	
 	
-    //==================================================================================================== 3
+    //============================================================================================= 3
     //======================================================================
     //======================================================================
     //================
@@ -255,7 +308,95 @@
 	c1->Update();
 	
             
-    //==================================================================================================== 4
+    //============================================================================================= 4
+    //======================================================================
+    //======================================================================
+    //================
+    //======================================================================
+	double neventsHF = 0.;
+            
+      c1->Clear();
+      c1->Divide(1,1);
+      
+      c1->cd(1);
+	TH1F *mp3d= (TH1F*)hfile1->Get("h_errorGeneral_HF");
+      int nx = mp3d->GetXaxis()->GetNbins();
+      cout << "********* h_errorGeneral_HF   nx= "  << nx <<   endl;
+      double ccc1 =mp3d->GetBinContent(1);
+      double ccc2 =mp3d->GetBinContent(2);
+      double ccc3 =mp3d->GetBinContent(3);
+      double ccc4 =mp3d->GetBinContent(4);
+      double ccc5 =mp3d->GetBinContent(5);
+      double ccc6 = ccc2/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      neventsHF = ccc1+ccc2+ccc3+ccc4+ccc5;
+      cout << "********* h_errorGeneral_HF   #Ev =  "  << ccc1+ccc2+ccc3+ccc4+ccc5 <<   endl;
+      cout << "********* h_errorGeneral_HF   ccc2 = "  << ccc6  <<   endl;
+      ccc6 = ccc3/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      cout << "********* h_errorGeneral_HF   ccc3 = "  << ccc6  <<   endl;
+      ccc6 = ccc4/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      cout << "********* h_errorGeneral_HF   ccc4 = "  << ccc6  <<   endl;
+      ccc6 = ccc5/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      cout << "********* h_errorGeneral_HF   ccc5 = "  << ccc6  <<   endl;
+      //  Purity->Sumw2();
+	gPad->SetLogy();
+	mp3d->SetMarkerStyle(21);
+	mp3d->SetMarkerSize(0.4);
+	mp3d->GetXaxis()->SetTitle("capid 1 2 3 4_HF");
+	mp3d->GetYaxis()->SetLabelSize(0.04);
+	mp3d->SetMarkerColor(1);
+	mp3d->SetLineColor(1);
+	//       mp3d->SetFillColor(5);
+	//   mp3d->SetMinimum(0.8);
+	mp3d->Draw("Error");
+
+	c1->Update();
+	
+            
+    //============================================================================================= 5
+    //======================================================================
+    //======================================================================
+    //================
+    //======================================================================
+	double neventsHO = 0.;
+            
+      c1->Clear();
+      c1->Divide(1,1);
+      
+      c1->cd(1);
+	TH1F *mp3d= (TH1F*)hfile1->Get("h_errorGeneral_HO");
+      int nx = mp3d->GetXaxis()->GetNbins();
+      cout << "********* h_errorGeneral_HO   nx= "  << nx <<   endl;
+      double ccc1 =mp3d->GetBinContent(1);
+      double ccc2 =mp3d->GetBinContent(2);
+      double ccc3 =mp3d->GetBinContent(3);
+      double ccc4 =mp3d->GetBinContent(4);
+      double ccc5 =mp3d->GetBinContent(5);
+      double ccc6 = ccc2/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      neventsHO = ccc1+ccc2+ccc3+ccc4+ccc5;
+      cout << "********* h_errorGeneral_HO   #Ev =  "  << ccc1+ccc2+ccc3+ccc4+ccc5 <<   endl;
+      cout << "********* h_errorGeneral_HO   ccc2 = "  << ccc6  <<   endl;
+      ccc6 = ccc3/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      cout << "********* h_errorGeneral_HO   ccc3 = "  << ccc6  <<   endl;
+      ccc6 = ccc4/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      cout << "********* h_errorGeneral_HO   ccc4 = "  << ccc6  <<   endl;
+      ccc6 = ccc5/(ccc1+ccc2+ccc3+ccc4+ccc5);
+      cout << "********* h_errorGeneral_HO   ccc5 = "  << ccc6  <<   endl;
+      //  Purity->Sumw2();
+	gPad->SetLogy();
+	mp3d->SetMarkerStyle(21);
+	mp3d->SetMarkerSize(0.4);
+	mp3d->GetXaxis()->SetTitle("capid 1 2 3 4_HO");
+	mp3d->GetYaxis()->SetLabelSize(0.04);
+	mp3d->SetMarkerColor(1);
+	mp3d->SetLineColor(1);
+	//       mp3d->SetFillColor(5);
+	//   mp3d->SetMinimum(0.8);
+	mp3d->Draw("Error");
+
+	c1->Update();
+	
+            
+    //============================================================================================= 6
     //======================================================================
     //======================================================================
     //================
@@ -318,7 +459,7 @@
 	
 	
             
-    //==================================================================================================== 5
+    //============================================================================================= 7
     //======================================================================
     //======================================================================
     //================
@@ -404,9 +545,112 @@
       c1->Update();
 	
 	
+    //============================================================================================= 8
+    //======================================================================
+    //======================================================================
+    //================
+    //======================================================================
+      c1->Clear();
+      c1->Divide(2,2);
+      
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HF");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth1_HF");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
+      c1->cd(1);
+      //    TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HF");
+       gPad->SetGridy();
+       gPad->SetGridx();
+      gPad->SetLogz();
+      twod1->SetMarkerStyle(20);
+      twod1->SetMarkerSize(0.4);
+      twod1->GetYaxis()->SetLabelSize(0.04);
+//      twod1->SetTitle("any Error, HF Depth1 \n");
+      twod1->SetXTitle("#eta");
+      twod1->SetYTitle("#phi");
+      twod1->SetZTitle("Rate of CapId failure for HF Depth1");
+      twod1->SetMarkerColor(2);
+      twod1->SetLineColor(2);
+      twod1->Draw("COLZ");
+      
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HF");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth2_HF");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
+      c1->cd(2);
+      //      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Error_HF");
+       gPad->SetGridy();
+       gPad->SetGridx();
+      gPad->SetLogz();
+      twod1->SetMarkerStyle(20);
+      twod1->SetMarkerSize(0.4);
+      twod1->GetYaxis()->SetLabelSize(0.04);
+//      twod1->SetTitle("any Error, HF Depth2 \n");
+      twod1->SetXTitle("#eta");
+      twod1->SetYTitle("#phi");
+      twod1->SetZTitle("Rate of CapId failure for HF Depth2");
+      twod1->SetMarkerColor(2);
+      twod1->SetLineColor(2);
+      twod1->Draw("COLZ");
+      
+      
+      c1->Update();
+	
+	
+            
+            
+    //============================================================================================= 9
+    //======================================================================
+    //======================================================================
+    //================
+    //======================================================================
+      c1->Clear();
+      c1->Divide(2,2);
+      
+      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth4Error_HO");
+      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth4_HO");
+      tvod1->Sumw2();
+      tvod0->Sumw2();
+      if(tvod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* twod1 = (TH2F*)tvod1->Clone("Ceff");
+	twod1->Divide(tvod1,tvod0, 1, 1, "B");
+	twod1->Sumw2();
+      }
+      c1->cd(1);
+      //    TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth4Error_HO");
+       gPad->SetGridy();
+       gPad->SetGridx();
+      gPad->SetLogz();
+      twod1->SetMarkerStyle(20);
+      twod1->SetMarkerSize(0.4);
+      twod1->GetYaxis()->SetLabelSize(0.04);
+//      twod1->SetTitle("any Error, HO Depth4 \n");
+      twod1->SetXTitle("#eta");
+      twod1->SetYTitle("#phi");
+      twod1->SetZTitle("Rate of CapId failure for HO Depth4");
+      twod1->SetMarkerColor(2);
+      twod1->SetLineColor(2);
+      twod1->Draw("COLZ");
+      
+      
+      
+      c1->Update();
+	
+	
+            
             
     //======================================================================
-    //==================================================================================================== end
+    //========================================================================================= end
     //======================================================================
     //======================================================================
     // close and delete all possible things:

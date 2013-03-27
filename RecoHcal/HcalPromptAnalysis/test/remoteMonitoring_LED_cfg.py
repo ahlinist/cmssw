@@ -10,14 +10,25 @@ process.maxEvents = cms.untracked.PSet(
 #process.source = cms.Source("PoolSource",
 process.source = cms.Source("HcalTBSource",
     fileNames = cms.untracked.vstring(
-#     'file:rfiles/USC_187927.root',
+##
+     'file:rfiles/USC_195682.root',
+     'file:rfiles/USC_196870.root',
+     'file:rfiles/USC_201305.root',
+     'file:rfiles/USC_202341.root',
+     'file:rfiles/USC_203339.root',
+     'file:rfiles/USC_204172.root',
+     'file:rfiles/USC_205355.root',
+     'file:rfiles/USC_206456.root'
+##
+#     'file:rfiles/USC_188148.root',
 #     'file:rfiles/USC_191392.root',
-#     'file:rfiles/USC_194334.root',
-     'file:rfiles/USC_203056.root'
-#     'file:rfiles/USC_207167.root'
-#     'file:rfiles/USC_210378.root',
-#     'file:rfiles/USC_211146.root'
-#     'file:rfiles/USC_211154.root'
+#     'file:rfiles/USC_193001.root'
+##
+##     'file:rfiles/USC_190161.root'
+##     'file:rfiles/USC_194167.root'    
+##     'file:rfiles/USC_195406.root'
+##     'file:rfiles/USC_206974.root'
+##     'file:rfiles/USC_207846.root'
    ), 
     streams = cms.untracked.vstring(
 		  "HCAL_Trigger",
@@ -29,8 +40,9 @@ process.source = cms.Source("HcalTBSource",
 		  "HCAL_DCC730","HCAL_DCC731"
 		 )	
 )
-
 process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
+                                  #
+                                  MapCreation = cms.untracked.int32(1),
                                   #
                                   recordNtuples = cms.untracked.bool(False),
                                   #recordNtuples = cms.untracked.bool(True),
@@ -38,8 +50,33 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #recordHistoes = cms.untracked.bool(False),
                                   recordHistoes = cms.untracked.bool(True),
                                   #
+                                  ##scripts: zRunRatio34.C, zRunNbadchan.C
                                   studyRunDependenceHist = cms.untracked.bool(True),
                                   #studyRunDependenceHist = cms.untracked.bool(False),
+                                  #
+                                  ##scripts: zerrors.C
+                                  studyCapIDErrorsHist = cms.untracked.bool(True),
+                                  #studyCapIDErrorsHist = cms.untracked.bool(False),
+                                  #
+                                  ##scripts: zrms.C
+                                  studyRMSshapeHist = cms.untracked.bool(True),
+                                  #studyRMSshapeHist = cms.untracked.bool(False),
+                                  #
+                                  ##scripts: zratio34.C
+                                  studyRatioShapeHist = cms.untracked.bool(True),
+                                  #studyRatioShapeHist = cms.untracked.bool(False),
+                                  #
+                                  ##scripts: ztsmaxa.C
+                                  studyTSmaxShapeHist = cms.untracked.bool(True),
+                                  #studyTSmaxShapeHist = cms.untracked.bool(False),
+                                  #
+                                  ##scripts: zdifampl.C
+                                  studyDiffAmplHist = cms.untracked.bool(True),
+                                  #studyDiffAmplHist = cms.untracked.bool(False),
+                                  #
+                                  ##scripts: zcalib.C
+                                  studyCalibCellsHist = cms.untracked.bool(True),
+                                  #studyCalibCellsHist = cms.untracked.bool(False),
                                   #
                                   ##DigiCollectionLabel = cms.untracked.InputTag("hcalDigis"),
                                   #Verbosity = cms.untracked.int32(-54),
@@ -47,30 +84,49 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #Verbosity = cms.untracked.int32(-11),
                                   #Verbosity = cms.untracked.int32(-13),
                                   #Verbosity = cms.untracked.int32(-51),
+                                  #Verbosity = cms.untracked.int32(-24),
+                                  #Verbosity = cms.untracked.int32(-244),
                                   Verbosity = cms.untracked.int32(0),
-                                  MapCreation = cms.untracked.int32(1),
                                   #
-                                  # -53 for  BAD HBHE channels from study on shape Ratio34
+                                  # -53 for  BAD HBHEHF channels from study on shape Ratio
                                   #Verbosity = cms.untracked.int32(-53),
                                   ratioHBMin = cms.double(0.50),
-                                  ratioHBMax = cms.double(0.92),
+                                  ratioHBMax = cms.double(0.88),
                                   ratioHEMin = cms.double(0.50),
-                                  ratioHEMax = cms.double(0.92),
-                                  # to see run dependence of rate of events with Nbadchannels > :
-                                  nbadchannels1 = cms.int32(10),
-                                  nbadchannels2 = cms.int32(30),
-                                  nbadchannels3 = cms.int32(60),
-                                  # -54 for  BAD HBHE channels from study on RMS of shapes
+                                  ratioHEMax = cms.double(0.93),
+                                  ratioHFMin = cms.double(0.30),
+                                  ratioHFMax = cms.double(1.02),
+                                  ratioHOMin = cms.double(0.54),
+                                  ratioHOMax = cms.double(1.04),
+                                  # -54 for  BAD HBHEHF channels from study on RMS of shapes
                                   #Verbosity = cms.untracked.int32(-54),
                                   rmsHBMin = cms.double(1.0),
                                   rmsHBMax = cms.double(2.3),
                                   rmsHEMin = cms.double(1.0),
                                   rmsHEMax = cms.double(2.3),
+                                  rmsHFMin = cms.double(0.2),
+                                  rmsHFMax = cms.double(2.8),
+                                  rmsHOMin = cms.double(0.2),
+                                  rmsHOMax = cms.double(2.4),
+                                  # -55 for  BAD HBHEHF channels from study on TSmax of shapes
+                                  #Verbosity = cms.untracked.int32(-55),
+                                  TSpeakHBMin = cms.double(2.0),
+                                  TSpeakHBMax = cms.double(5.5),
+                                  TSpeakHEMin = cms.double(2.0),
+                                  TSpeakHEMax = cms.double(5.5),
+                                  TSpeakHFMin = cms.double(2.0),
+                                  TSpeakHFMax = cms.double(5.5),
+                                  TSpeakHOMin = cms.double(2.0),
+                                  TSpeakHOMax = cms.double(5.5),
                                   # for  BAD HBHEHOHF CALIBRATION channels from study on shape Ratio
                                   calibratioHBMin = cms.double(0.65),
                                   calibratioHEMin = cms.double(0.65),
                                   calibratioHOMin = cms.double(0.25),
                                   calibratioHFMin = cms.double(0.25),
+                                  # to see run dependence of rate of events with Nbadchannels > :
+                                  nbadchannels1 = cms.int32(10),
+                                  nbadchannels2 = cms.int32(30),
+                                  nbadchannels3 = cms.int32(60),
                                   #
                                   #
                                   HistOutFile = cms.untracked.string('test.root'),

@@ -84,8 +84,37 @@
 //	TFile *hfile1= new TFile("BadRBXrun207167.root", "READ");        
 //	TFile *hfile2= new TFile("BadRBXrun211146.root", "READ");        
 //
-	TFile *hfile1= new TFile("test207167.root", "READ");        
-	TFile *hfile2= new TFile("test211146.root", "READ");        
+//	TFile *hfile1= new TFile("test191392.root", "READ");        
+//	TFile *hfile2= new TFile("test193001.root", "READ");        
+
+// short runs:
+////	TFile *hfile1= new TFile("test191392.root", "READ");        
+////	TFile *hfile2= new TFile("test193001.root", "READ");        
+
+// long runs:
+// pair 1
+//	TFile *hfile1= new TFile("test195682.root", "READ");        
+//	TFile *hfile2= new TFile("test196870.root", "READ");        
+
+// pair 2
+	TFile *hfile1= new TFile("test201305.root", "READ");        
+	TFile *hfile2= new TFile("test202341.root", "READ");
+
+// pair 3
+//	TFile *hfile1= new TFile("test202341.root", "READ");        
+//	TFile *hfile2= new TFile("test203339.root", "READ");
+
+// pair 4
+//	TFile *hfile1= new TFile("test203339.root", "READ");        
+//	TFile *hfile2= new TFile("test204172.root", "READ");
+
+// pair 5
+//	TFile *hfile1= new TFile("test204172.root", "READ");        
+//	TFile *hfile2= new TFile("test205355.root", "READ");
+
+// pair 6
+//	TFile *hfile1= new TFile("test205355.root", "READ");        
+//	TFile *hfile2= new TFile("test206456.root", "READ");
 
 
 
@@ -97,7 +126,7 @@
    c1 = new TCanvas("c1","Hcal4test",200,10,700,900);
 
 
-    //=============================================================================================== 1
+    //============================================================================================= 1
     //======================================================================
     //======================================================================
     //================

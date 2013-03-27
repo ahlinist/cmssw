@@ -1,59 +1,85 @@
-==============
-files:
-=======
-VeRawAnalyzer.cc
-remoteMonitoring_LED_cfg.py
-remoteMonitoring_NZS_cfg.py
+===============================================================================
+files in RecoHcal/HcalPromptAnalysis:
+===================================
+src/VeRawAnalyzer.cc
+test/remoteMonitoring_LED_cfg.py
+test/remoteMonitoring_NZS_cfg.py
 
-scripts
-=======
+====================================
+scripts in dir. /test:
+======================
 
-zrms.C         - analysis of "bad" channels for which width of LED signal is irregular
-h_Amplitude_HB
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Amplitude225_HB");
-      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+             (for HBdepth1,2 & HEdepth1,2,3 & HFdepth1,2 & HOdepth4)
+1. zerrors.C      - analysis of CapIdErrors using global and local runs
+                    Example of histo names used for automatic running at Dima site:
+                     TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HB");
+                     TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+
+2. zrms.C         - analysis of "bad" channels for which width of adc signal is irregular
+                                                     "h_Amplitude_HB"
+                     TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Amplitude225_HB");
+                     TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
  
-zdifampl.C     - relative difference of channel response, collected over all TS, in 2 LED runs
-                with aim to see > 2% change to start PMT/HPD gain tuning (for HB depth1,2 & 
-                     HE depth1,2,3 & HF depth1,2 & HO depth4 )
-
-zerrors.C      - analysis of CapIdErrors using global NZS runs
-      TH2F *tvod1= (TH2F*)hfile1->Get("h_mapDepth1Error_HB");
-      TH2F *tvod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+3. zratio34.C     - analysis of "bad" channels for which maximum of adc signal is too poor:
+                                                     "h_Ampl_HB"
+                     TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl047_HB");
+                     TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
 
 
-
-zratio34.C     - analysis of "bad" channels for which maximum of LED signal is too poor
-h_Ampl_HB
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl047_HB");
-      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
-      twod1->Sumw2();
-      twod0->Sumw2();
-      if(twod0->IsA()->InheritsFrom("TH2F")){
-	TH2F* Cefz225= (TH2F*)twod1->Clone("Cefz225");
-	Cefz225->Divide(twod1,twod0, 1, 1, "B");
-	Cefz225->Sumw2();
-      }
+4. ztsmaxa.C      - analysis of "bad" channels with max signal at edges of TS range(0-9)
+                                                     "h_TSmaxA_HB"
+                     TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA225_HB");
+                     TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
 
 
-ztsmaxa.C      - analysis of "bad" channels with max signal in TS 0 and 9
-h_TSmaxA_HB
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA225_HB");
-      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+5. zcalib.C       - analysis of "bad" calibration channels if maximum of adc 
+                     signal outside normal position (for HB, HE, HO, HF):
+                                                     "h_RatioCalib_HB"
+                     TH2F *twod1= (TH2F*)hfile1->Get("h_mapRatioCalib047_HB");
+                     TH2F *twod0= (TH2F*)hfile1->Get("h_map_HB");
+
+6. zdifampl.C     - relative difference of channel response, collected over all TS, in 2 LED runs
+                                with aim to see > 2% change to start PMT/HPD gain tuning 
+                     TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1AmplE34_HB");
+                     TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+
+7a. zRunRatio34.C  - rates of "bad" channels as function of iRun(LS)
+                                    (for HBdepth1,2;HEdepth1,2,3)
+      TH1F *twod1= (TH1F*)hfile1->Get("h_runbadrate_depth1_HB");
+      TH1F *twod1= (TH1F*)hfile1->Get("h_runbadrate1_depth1_HB");
+      TH1F *twod1= (TH1F*)hfile1->Get("h_runbadrate2_depth1_HB");
+      TH1F *twod1= (TH1F*)hfile1->Get("h_runbadrate3_depth1_HB");
+      TH1F *twod0= (TH1F*)hfile1->Get("h_runbadrate0_depth1_HB");
+
+7b. zRunNbadchan.C - average number of "bad" channels as function of iRun(LS)
+                                    (for HBdepth1,2;HEdepth1,2,3)
+                                      "h_nbadchannels_depth1_HB"
+      TH1F *twod1= (TH1F*)hfile1->Get("h_runnbadchannels_depth1_HB");
+      TH1F *twod0= (TH1F*)hfile1->Get("h_runbadrate0_depth1_HB");
 
 
-zRunRatio34.C  - rates of these "bad" channels as function of iRun(LS) and
-zRunNbadchan.C - average number of these "bad" channels as function of iRun
-
-zcalib.C       - analysis of "bad" calibration channels w/ maximum of LED 
-signal outside normal position (HB, HE, HO, HF)
-
-h_RatioCalib_HB
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapRatioCalib047_HB");
-      TH2F *twod0= (TH2F*)hfile1->Get("h_map_HB");
-
-
+========================================
 obsolete scripts:
 ================
 zgain.C        - relative difference of channel response, collected over all TS, in 2 LED runs. 
                  with aim to see > 2% change to start PMT/HPD gain tuning (for HB, HE, HO, HF )
+========================================
+
+to run job&scripts:
+==================
+
+cmsrel CMSSW_5_3_9
+cd CMSSW_5_3_9/src/
+cmsenv 
+eval `scram runtime -csh` 
+cvs co RecoHcal/HcalPromptAnalysis
+cd RecoHcal/HcalPromptAnalysis
+scram b
+
+cd test
+
+cmsRun remoteMonitoring_LED_cfg.py  (to produce test.root file)
+
+root -b zrms.C    ( to produce zrms.ps file)
+
+================================================================

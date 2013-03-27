@@ -73,16 +73,14 @@
     //======================================================================
 //  TBrowser *b = new TBrowser
 
-//	TFile *hfile1= new TFile("BadRBXrun211146.root", "READ");        
+//	TFile *hfile1= new TFile("BadRBXrun211154.root", "READ");        
 	TFile *hfile1= new TFile("test.root", "READ");        
 //	TFile *hfile1= new TFile("test8runs.root", "READ");        
-//	TFile *hfile1= new TFile("test7runs.root", "READ");        
 //	TFile *hfile1= new TFile("test203056.root", "READ");        
-//	TFile *hfile1= new TFile("test_allruns.root", "READ");     
 
 	//    getchar();
 	//
-          TPostScript psfile ("zratio34.ps", 111);
+          TPostScript psfile ("ztsmaxa.ps", 111);
 //
 
    c1 = new TCanvas("c1","Hcal4test",200,10,700,900);
@@ -96,8 +94,17 @@
       c1->Clear();
       c1->Divide(2,2);
       
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA_HB");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
+	Ceff->Divide(twod1,twod0, 1, 1, "B");
+	Ceff->Sumw2();
+      }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl047_HB");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA225_HB");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -115,32 +122,22 @@
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHBMin in each event & cell - HB Depth1 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5 - HB Depth1 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HB");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HB");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HB depth1 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HB \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
        
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl_HB");
-      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
-      twod1->Sumw2();
-      twod0->Sumw2();
-      if(twod0->IsA()->InheritsFrom("TH2F")){
-	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
-	Ceff->Divide(twod1,twod0, 1, 1, "B");
-	Ceff->Sumw2();
-      }
-
       c1->cd(3);
     ///////////////////////////////////////
     TH2F* Diffe_Depth1_HB = (TH2F*)Ceff->Clone("Diffe_Depth1_HB");
@@ -148,9 +145,9 @@
     int ny = Ceff->GetYaxis()->GetNbins();
     for (int i=1;i<=nx;i++) {
       for (int j=1;j<=ny;j++) {
-	  double ccc1 =  Ceff->GetBinContent(i,j);
+	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth1_HB->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.65 || ccc1 > 1.00)  Diffe_Depth1_HB->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5. )  Diffe_Depth1_HB->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -162,32 +159,32 @@
       //    Diffe_Depth1_HB->SetTitle("any Error, HB Depth1 \n");
       Diffe_Depth1_HB->SetXTitle("#eta \b");
       Diffe_Depth1_HB->SetYTitle("#phi \b");
-      Diffe_Depth1_HB->SetZTitle("<Ratio34> smaller 0.65- HB Depth1 \b");
+      Diffe_Depth1_HB->SetZTitle("<TSmaxA> out 2.3-5 - HB Depth1 \b");
       Diffe_Depth1_HB->SetMarkerColor(2);
       Diffe_Depth1_HB->SetLineColor(2);
       Diffe_Depth1_HB->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth1_HB = new TH1F("diffAmplitude_Depth1_HB","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth1_HB = new TH1F("diffTSmaxA_Depth1_HB","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth1_HB->Fill(ccc1);
+	    diffTSmaxA_Depth1_HB->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth1_HB->SetMarkerStyle(20);
-      diffAmplitude_Depth1_HB->SetMarkerSize(0.4);
-      diffAmplitude_Depth1_HB->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth1_HB->SetXTitle("<Ratio34> in each cell HB depth1 \b");
-      diffAmplitude_Depth1_HB->SetMarkerColor(2);
-      diffAmplitude_Depth1_HB->SetLineColor(2);
-      diffAmplitude_Depth1_HB->Draw("");
+      diffTSmaxA_Depth1_HB->SetMarkerStyle(20);
+      diffTSmaxA_Depth1_HB->SetMarkerSize(0.4);
+      diffTSmaxA_Depth1_HB->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth1_HB->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth1_HB->SetMarkerColor(2);
+      diffTSmaxA_Depth1_HB->SetLineColor(2);
+      diffTSmaxA_Depth1_HB->Draw("");
       
       c1->Update();
       
@@ -201,7 +198,7 @@
       c1->Clear();
       c1->Divide(2,2);
       
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Ampl_HB");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2TSmaxA_HB");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HB");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -211,7 +208,7 @@
 	Ceff->Sumw2();
       }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Ampl047_HB");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2TSmaxA225_HB");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HB");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -225,22 +222,21 @@
       gPad->SetLogz();
       Cefz225->SetMarkerStyle(20);
       Cefz225->SetMarkerSize(0.4);
-      //    Cefz225->GetYaxis()->SetLabelSize(0.04);
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHBMin in each event & cell - HB Depth2 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5 - HB Depth2 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HB");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HB");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HB depth2 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HB \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -254,7 +250,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth2_HB->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.65 || ccc1 > 1.00 )  Diffe_Depth2_HB->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5.)  Diffe_Depth2_HB->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -266,37 +262,36 @@
       //    Diffe_Depth2_HB->SetTitle("any Error, HB Depth2 \n");
       Diffe_Depth2_HB->SetXTitle("#eta \b");
       Diffe_Depth2_HB->SetYTitle("#phi \b");
-      Diffe_Depth2_HB->SetZTitle("<Ratio34> smaller 0.65 - HB Depth2 \b");
+      Diffe_Depth2_HB->SetZTitle("<TSmaxA> out 2.3-5 - HB Depth2 \b");
       Diffe_Depth2_HB->SetMarkerColor(2);
       Diffe_Depth2_HB->SetLineColor(2);
       Diffe_Depth2_HB->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth2_HB = new TH1F("diffAmplitude_Depth2_HB","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth2_HB = new TH1F("diffTSmaxA_Depth2_HB","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth2_HB->Fill(ccc1);
+	    diffTSmaxA_Depth2_HB->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth2_HB->SetMarkerStyle(20);
-      diffAmplitude_Depth2_HB->SetMarkerSize(0.4);
-      diffAmplitude_Depth2_HB->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth2_HB->SetXTitle("<Ratio34> in each cell HB depth2 \b");
-      diffAmplitude_Depth2_HB->SetMarkerColor(2);
-      diffAmplitude_Depth2_HB->SetLineColor(2);
-      diffAmplitude_Depth2_HB->Draw("");
+      diffTSmaxA_Depth2_HB->SetMarkerStyle(20);
+      diffTSmaxA_Depth2_HB->SetMarkerSize(0.4);
+      diffTSmaxA_Depth2_HB->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth2_HB->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth2_HB->SetMarkerColor(2);
+      diffTSmaxA_Depth2_HB->SetLineColor(2);
+      diffTSmaxA_Depth2_HB->Draw("");
       
       c1->Update();
       
       
-            
             
     //=============================================================================================== 3
     //======================================================================
@@ -306,7 +301,7 @@
       c1->Clear();
       c1->Divide(2,2);
       
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl_HE");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA_HE");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HE");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -316,7 +311,7 @@
 	Ceff->Sumw2();
       }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl047_HE");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA225_HE");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HE");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -330,22 +325,21 @@
       gPad->SetLogz();
       Cefz225->SetMarkerStyle(20);
       Cefz225->SetMarkerSize(0.4);
-      //    Cefz225->GetYaxis()->SetLabelSize(0.04);
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHEMin in each event & cell - HE Depth1 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5 - HE Depth1 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HE");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HE");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HE depth1 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HE \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -359,7 +353,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth1_HE->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.55 || ccc1 > 1.00 )  Diffe_Depth1_HE->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5.)  Diffe_Depth1_HE->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -371,32 +365,32 @@
       //    Diffe_Depth1_HE->SetTitle("any Error, HE Depth1 \n");
       Diffe_Depth1_HE->SetXTitle("#eta \b");
       Diffe_Depth1_HE->SetYTitle("#phi \b");
-      Diffe_Depth1_HE->SetZTitle("<Ratio34> smaller 0.55 - HE Depth1 \b");
+      Diffe_Depth1_HE->SetZTitle("<TSmaxA> out 2.3-5 - HE Depth1 \b");
       Diffe_Depth1_HE->SetMarkerColor(2);
       Diffe_Depth1_HE->SetLineColor(2);
       Diffe_Depth1_HE->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth1_HE = new TH1F("diffAmplitude_Depth1_HE","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth1_HE = new TH1F("diffTSmaxA_Depth1_HE","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth1_HE->Fill(ccc1);
+	    diffTSmaxA_Depth1_HE->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth1_HE->SetMarkerStyle(20);
-      diffAmplitude_Depth1_HE->SetMarkerSize(0.4);
-      diffAmplitude_Depth1_HE->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth1_HE->SetXTitle("<Ratio34> in each cell HE depth1 \b");
-      diffAmplitude_Depth1_HE->SetMarkerColor(2);
-      diffAmplitude_Depth1_HE->SetLineColor(2);
-      diffAmplitude_Depth1_HE->Draw("");
+      diffTSmaxA_Depth1_HE->SetMarkerStyle(20);
+      diffTSmaxA_Depth1_HE->SetMarkerSize(0.4);
+      diffTSmaxA_Depth1_HE->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth1_HE->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth1_HE->SetMarkerColor(2);
+      diffTSmaxA_Depth1_HE->SetLineColor(2);
+      diffTSmaxA_Depth1_HE->Draw("");
       
       c1->Update();
       
@@ -410,7 +404,7 @@
       c1->Clear();
       c1->Divide(2,2);
       
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Ampl_HE");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2TSmaxA_HE");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HE");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -420,7 +414,7 @@
 	Ceff->Sumw2();
       }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Ampl047_HE");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2TSmaxA225_HE");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HE");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -434,22 +428,21 @@
       gPad->SetLogz();
       Cefz225->SetMarkerStyle(20);
       Cefz225->SetMarkerSize(0.4);
-      //    Cefz225->GetYaxis()->SetLabelSize(0.04);
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHEMin in each event & cell - HE Depth2 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5 - HE Depth2 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HE");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HE");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HE depth2 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HE \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -463,7 +456,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth2_HE->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.55 || ccc1 > 1.00 )  Diffe_Depth2_HE->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5.)  Diffe_Depth2_HE->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -475,32 +468,32 @@
       //    Diffe_Depth2_HE->SetTitle("any Error, HE Depth2 \n");
       Diffe_Depth2_HE->SetXTitle("#eta \b");
       Diffe_Depth2_HE->SetYTitle("#phi \b");
-      Diffe_Depth2_HE->SetZTitle("<Ratio34> smaller 0.55 - HE Depth2 \b");
+      Diffe_Depth2_HE->SetZTitle("<TSmaxA> out 2.3-5 - HE Depth2 \b");
       Diffe_Depth2_HE->SetMarkerColor(2);
       Diffe_Depth2_HE->SetLineColor(2);
       Diffe_Depth2_HE->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth2_HE = new TH1F("diffAmplitude_Depth2_HE","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth2_HE = new TH1F("diffTSmaxA_Depth2_HE","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth2_HE->Fill(ccc1);
+	    diffTSmaxA_Depth2_HE->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth2_HE->SetMarkerStyle(20);
-      diffAmplitude_Depth2_HE->SetMarkerSize(0.4);
-      diffAmplitude_Depth2_HE->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth2_HE->SetXTitle("<Ratio34> in each cell HE depth2 \b");
-      diffAmplitude_Depth2_HE->SetMarkerColor(2);
-      diffAmplitude_Depth2_HE->SetLineColor(2);
-      diffAmplitude_Depth2_HE->Draw("");
+      diffTSmaxA_Depth2_HE->SetMarkerStyle(20);
+      diffTSmaxA_Depth2_HE->SetMarkerSize(0.4);
+      diffTSmaxA_Depth2_HE->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth2_HE->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth2_HE->SetMarkerColor(2);
+      diffTSmaxA_Depth2_HE->SetLineColor(2);
+      diffTSmaxA_Depth2_HE->Draw("");
       
       c1->Update();
       
@@ -514,7 +507,7 @@
       c1->Clear();
       c1->Divide(2,2);
       
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth3Ampl_HE");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth3TSmaxA_HE");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth3_HE");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -524,7 +517,7 @@
 	Ceff->Sumw2();
       }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth3Ampl047_HE");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth3TSmaxA225_HE");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth3_HE");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -538,22 +531,21 @@
       gPad->SetLogz();
       Cefz225->SetMarkerStyle(20);
       Cefz225->SetMarkerSize(0.4);
-      //    Cefz225->GetYaxis()->SetLabelSize(0.04);
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHEMin in each event & cell - HE Depth3 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5 - HE Depth3 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HE");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HE");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HE depth3 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HE \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -567,7 +559,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth3_HE->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.55 || ccc1 > 1.00 )  Diffe_Depth3_HE->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5.)  Diffe_Depth3_HE->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -579,32 +571,32 @@
       //    Diffe_Depth3_HE->SetTitle("any Error, HE Depth3 \n");
       Diffe_Depth3_HE->SetXTitle("#eta \b");
       Diffe_Depth3_HE->SetYTitle("#phi \b");
-      Diffe_Depth3_HE->SetZTitle("<Ratio34> smaller 0.55 - HE Depth3 \b");
+      Diffe_Depth3_HE->SetZTitle("<TSmaxA> out 2.3-5 - HE Depth3 \b");
       Diffe_Depth3_HE->SetMarkerColor(2);
       Diffe_Depth3_HE->SetLineColor(2);
       Diffe_Depth3_HE->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth3_HE = new TH1F("diffAmplitude_Depth3_HE","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth3_HE = new TH1F("diffTSmaxA_Depth3_HE","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth3_HE->Fill(ccc1);
+	    diffTSmaxA_Depth3_HE->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth3_HE->SetMarkerStyle(20);
-      diffAmplitude_Depth3_HE->SetMarkerSize(0.4);
-      diffAmplitude_Depth3_HE->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth3_HE->SetXTitle("<Ratio34> in each cell HE Depth3 \b");
-      diffAmplitude_Depth3_HE->SetMarkerColor(2);
-      diffAmplitude_Depth3_HE->SetLineColor(2);
-      diffAmplitude_Depth3_HE->Draw("");
+      diffTSmaxA_Depth3_HE->SetMarkerStyle(20);
+      diffTSmaxA_Depth3_HE->SetMarkerSize(0.4);
+      diffTSmaxA_Depth3_HE->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth3_HE->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth3_HE->SetMarkerColor(2);
+      diffTSmaxA_Depth3_HE->SetLineColor(2);
+      diffTSmaxA_Depth3_HE->Draw("");
       
       c1->Update();
       
@@ -618,8 +610,17 @@
       c1->Clear();
       c1->Divide(2,2);
       
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA_HF");
+      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HF");
+      twod1->Sumw2();
+      twod0->Sumw2();
+      if(twod0->IsA()->InheritsFrom("TH2F")){
+	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
+	Ceff->Divide(twod1,twod0, 1, 1, "B");
+	Ceff->Sumw2();
+      }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl047_HF");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA225_HF");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HF");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -637,32 +638,22 @@
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHFMin in each event & cell - HF Depth1 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5 - HF Depth1 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HF");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HF");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HF depth1 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HF \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
        
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1Ampl_HF");
-      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HF");
-      twod1->Sumw2();
-      twod0->Sumw2();
-      if(twod0->IsA()->InheritsFrom("TH2F")){
-	TH2F* Ceff = (TH2F*)twod1->Clone("Ceff");
-	Ceff->Divide(twod1,twod0, 1, 1, "B");
-	Ceff->Sumw2();
-      }
-
       c1->cd(3);
     ///////////////////////////////////////
     TH2F* Diffe_Depth1_HF = (TH2F*)Ceff->Clone("Diffe_Depth1_HF");
@@ -670,9 +661,9 @@
     int ny = Ceff->GetYaxis()->GetNbins();
     for (int i=1;i<=nx;i++) {
       for (int j=1;j<=ny;j++) {
-	  double ccc1 =  Ceff->GetBinContent(i,j);
+	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth1_HF->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.75 || ccc1 > 1.00)  Diffe_Depth1_HF->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5. )  Diffe_Depth1_HF->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -684,32 +675,32 @@
       //    Diffe_Depth1_HF->SetTitle("any Error, HF Depth1 \n");
       Diffe_Depth1_HF->SetXTitle("#eta \b");
       Diffe_Depth1_HF->SetYTitle("#phi \b");
-      Diffe_Depth1_HF->SetZTitle("<Ratio34> smaller 0.75- HF Depth1 \b");
+      Diffe_Depth1_HF->SetZTitle("<TSmaxA> out 2.3-5 - HF Depth1 \b");
       Diffe_Depth1_HF->SetMarkerColor(2);
       Diffe_Depth1_HF->SetLineColor(2);
       Diffe_Depth1_HF->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth1_HF = new TH1F("diffAmplitude_Depth1_HF","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth1_HF = new TH1F("diffTSmaxA_Depth1_HF","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth1_HF->Fill(ccc1);
+	    diffTSmaxA_Depth1_HF->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth1_HF->SetMarkerStyle(20);
-      diffAmplitude_Depth1_HF->SetMarkerSize(0.4);
-      diffAmplitude_Depth1_HF->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth1_HF->SetXTitle("<Ratio34> in each cell HF depth1 \b");
-      diffAmplitude_Depth1_HF->SetMarkerColor(2);
-      diffAmplitude_Depth1_HF->SetLineColor(2);
-      diffAmplitude_Depth1_HF->Draw("");
+      diffTSmaxA_Depth1_HF->SetMarkerStyle(20);
+      diffTSmaxA_Depth1_HF->SetMarkerSize(0.4);
+      diffTSmaxA_Depth1_HF->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth1_HF->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth1_HF->SetMarkerColor(2);
+      diffTSmaxA_Depth1_HF->SetLineColor(2);
+      diffTSmaxA_Depth1_HF->Draw("");
       
       c1->Update();
       
@@ -723,7 +714,7 @@
       c1->Clear();
       c1->Divide(2,2);
       
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Ampl_HF");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2TSmaxA_HF");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HF");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -733,7 +724,7 @@
 	Ceff->Sumw2();
       }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2Ampl047_HF");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth2TSmaxA225_HF");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth2_HF");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -747,22 +738,21 @@
       gPad->SetLogz();
       Cefz225->SetMarkerStyle(20);
       Cefz225->SetMarkerSize(0.4);
-      //    Cefz225->GetYaxis()->SetLabelSize(0.04);
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHFMin in each event & cell - HF Depth2 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5 - HF Depth2 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HF");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HF");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HF depth2 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HF \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -776,7 +766,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth2_HF->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.75 || ccc1 > 1.00 )  Diffe_Depth2_HF->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5.)  Diffe_Depth2_HF->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -788,32 +778,32 @@
       //    Diffe_Depth2_HF->SetTitle("any Error, HF Depth2 \n");
       Diffe_Depth2_HF->SetXTitle("#eta \b");
       Diffe_Depth2_HF->SetYTitle("#phi \b");
-      Diffe_Depth2_HF->SetZTitle("<Ratio34> smaller 0.75 - HF Depth2 \b");
+      Diffe_Depth2_HF->SetZTitle("<TSmaxA> out 2.3-5 - HF Depth2 \b");
       Diffe_Depth2_HF->SetMarkerColor(2);
       Diffe_Depth2_HF->SetLineColor(2);
       Diffe_Depth2_HF->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth2_HF = new TH1F("diffAmplitude_Depth2_HF","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth2_HF = new TH1F("diffTSmaxA_Depth2_HF","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth2_HF->Fill(ccc1);
+	    diffTSmaxA_Depth2_HF->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth2_HF->SetMarkerStyle(20);
-      diffAmplitude_Depth2_HF->SetMarkerSize(0.4);
-      diffAmplitude_Depth2_HF->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth2_HF->SetXTitle("<Ratio34> in each cell HF depth2 \b");
-      diffAmplitude_Depth2_HF->SetMarkerColor(2);
-      diffAmplitude_Depth2_HF->SetLineColor(2);
-      diffAmplitude_Depth2_HF->Draw("");
+      diffTSmaxA_Depth2_HF->SetMarkerStyle(20);
+      diffTSmaxA_Depth2_HF->SetMarkerSize(0.4);
+      diffTSmaxA_Depth2_HF->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth2_HF->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth2_HF->SetMarkerColor(2);
+      diffTSmaxA_Depth2_HF->SetLineColor(2);
+      diffTSmaxA_Depth2_HF->Draw("");
       
       c1->Update();
       
@@ -827,7 +817,7 @@
       c1->Clear();
       c1->Divide(2,2);
       
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth4Ampl_HO");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth4TSmaxA_HO");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth4_HO");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -837,7 +827,7 @@
 	Ceff->Sumw2();
       }
       c1->cd(1);
-      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth4Ampl047_HO");
+      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth4TSmaxA225_HO");
       TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth4_HO");
       twod1->Sumw2();
       twod0->Sumw2();
@@ -851,22 +841,21 @@
       gPad->SetLogz();
       Cefz225->SetMarkerStyle(20);
       Cefz225->SetMarkerSize(0.4);
-      //    Cefz225->GetYaxis()->SetLabelSize(0.04);
       Cefz225->GetZaxis()->SetLabelSize(0.08);
       Cefz225->SetXTitle("#eta \b");
       Cefz225->SetYTitle("#phi \b");
-      Cefz225->SetZTitle("Rate for Ratio34<ratioHOMin in each event & cell - HO Depth4 \b");
+      Cefz225->SetZTitle("Rate for TSmaxA in each event & cell out 2.3-5.5 - HO Depth4 \b");
       Cefz225->SetMarkerColor(2);
       Cefz225->SetLineColor(2);
       Cefz225->Draw("COLZ");
       
       c1->cd(2);
-      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_Ampl_HO");
+      TH1F *aaaaaa1= (TH1F*)hfile1->Get("h_TSmaxA_HO");
       gPad->SetLogy();
       aaaaaa1->SetMarkerStyle(20);
       aaaaaa1->SetMarkerSize(0.8);
       aaaaaa1->GetYaxis()->SetLabelSize(0.04);
-      aaaaaa1->SetXTitle("Ratio34 in each event & cell HO depth4 \b");
+      aaaaaa1->SetXTitle("TSmaxA in each event & cell HO \b");
       aaaaaa1->SetMarkerColor(2);
       aaaaaa1->SetLineColor(2);
       aaaaaa1->Draw("");
@@ -880,7 +869,7 @@
       for (int j=1;j<=ny;j++) {
 	  double ccc1 =  Ceff->GetBinContent(i,j)   ;
 	  Diffe_Depth4_HO->SetBinContent(i,j,0.);
-	  if(ccc1 < 0.55 || ccc1 > 1.00 )  Diffe_Depth4_HO->SetBinContent(i,j,ccc1);
+	  if(ccc1 < 2.3 || ccc1>5.)  Diffe_Depth4_HO->SetBinContent(i,j,ccc1);
       }
     }
       gPad->SetGridy();
@@ -892,39 +881,38 @@
       //    Diffe_Depth4_HO->SetTitle("any Error, HO Depth4 \n");
       Diffe_Depth4_HO->SetXTitle("#eta \b");
       Diffe_Depth4_HO->SetYTitle("#phi \b");
-      Diffe_Depth4_HO->SetZTitle("<Ratio34> smaller 0.55 - HO Depth4 \b");
+      Diffe_Depth4_HO->SetZTitle("<TSmaxA> out 2.3-5 - HO Depth4 \b");
       Diffe_Depth4_HO->SetMarkerColor(2);
       Diffe_Depth4_HO->SetLineColor(2);
       Diffe_Depth4_HO->Draw("COLZ");
       
 
       c1->cd(4);
-      TH1F* diffAmplitude_Depth4_HO = new TH1F("diffAmplitude_Depth4_HO","", 100, 0., 1.);
+      TH1F* diffTSmaxA_Depth4_HO = new TH1F("diffTSmaxA_Depth4_HO","", 100, -1.,11.);
       int nx = Ceff->GetXaxis()->GetNbins();
       int ny = Ceff->GetYaxis()->GetNbins();
       for (int i=1;i<=nx;i++) {
 	for (int j=1;j<=ny;j++) {
 	  if(Ceff->GetBinContent(i,j) !=0 ) {
 	    double ccc1 =  Ceff->GetBinContent(i,j) ;
-	    diffAmplitude_Depth4_HO->Fill(ccc1);
+	    diffTSmaxA_Depth4_HO->Fill(ccc1);
 	  }
 	}
       }
       gPad->SetLogy();
-      diffAmplitude_Depth4_HO->SetMarkerStyle(20);
-      diffAmplitude_Depth4_HO->SetMarkerSize(0.4);
-      diffAmplitude_Depth4_HO->GetYaxis()->SetLabelSize(0.04);
-      diffAmplitude_Depth4_HO->SetXTitle("<Ratio34> in each cell HO depth4 \b");
-      diffAmplitude_Depth4_HO->SetMarkerColor(2);
-      diffAmplitude_Depth4_HO->SetLineColor(2);
-      diffAmplitude_Depth4_HO->Draw("");
+      diffTSmaxA_Depth4_HO->SetMarkerStyle(20);
+      diffTSmaxA_Depth4_HO->SetMarkerSize(0.4);
+      diffTSmaxA_Depth4_HO->GetYaxis()->SetLabelSize(0.04);
+      diffTSmaxA_Depth4_HO->SetXTitle("<TSmaxA> in each cell \b");
+      diffTSmaxA_Depth4_HO->SetMarkerColor(2);
+      diffTSmaxA_Depth4_HO->SetLineColor(2);
+      diffTSmaxA_Depth4_HO->Draw("");
       
       c1->Update();
       
       
             
-            
-            
+      
             
     //======================================================================
     //==================================================================================================== end
