@@ -51,8 +51,8 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   recordHistoes = cms.untracked.bool(True),
                                   #
                                   ##scripts: zRunRatio34.C, zRunNbadchan.C
-                                  studyRunDependenceHist = cms.untracked.bool(True),
-                                  #studyRunDependenceHist = cms.untracked.bool(False),
+                                  #studyRunDependenceHist = cms.untracked.bool(True),
+                                  studyRunDependenceHist = cms.untracked.bool(False),
                                   #
                                   ##scripts: zerrors.C
                                   studyCapIDErrorsHist = cms.untracked.bool(True),
