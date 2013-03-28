@@ -48,9 +48,10 @@
 #endif // defined(__linux__)
 
 // for rdtscp, rdtscp, lfence, mfence, cpuid
+#if defined(__x86_64__) || defined(__i386__)
 #include <x86intrin.h>
 #include <cpuid.h>
-
+#endif // defined(__x86_64__) || defined(__i386__)
 
 // check available capabilities
 #if (defined(_POSIX_TIMERS) && (_POSIX_TIMERS >= 0))
@@ -118,9 +119,10 @@ bool clock_cputime_supported() {
 #endif // HAVE_POSIX_CLOCK_PROCESS_CPUTIME_ID || HAVE_POSIX_CLOCK_THREAD_CPUTIME_ID
 
 // check if the RDTSCP instruction is supported
+#if defined(__x86_64__) || defined(__i386__)
 #ifndef bit_RDTSCP
 #define bit_RDTSCP      (1 << 27)
-#endif
+#endif // bit_RDTSCP
 
 bool rdtscp_supported() {
   unsigned int eax, ebx, ecx, edx;
@@ -129,9 +131,15 @@ bool rdtscp_supported() {
   else
     return false;
 }
+#else // defined(__x86_64__) || defined(__i386__)
+bool rdtscp_supported() {
+  return false;
+}
+#endif // defined(__x86_64__) || defined(__i386__)
 
 // check if the RDTSC and RDTSCP instructions are allowed
 bool tsc_allowed() {
+#if defined(__x86_64__) || defined(__i386__)
 #if defined(__linux__)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
     int tsc_val;
@@ -144,9 +152,13 @@ bool tsc_allowed() {
 #endif // LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
 #endif // defined(__linux__)
     return true;
+#else // defined(__x86_64__) || defined(__i386__)
+    return false;
+#endif // defined(__x86_64__) || defined(__i386__)
 }
 
 // calibrate TSC with respect to std::chrono::high_resolution_clock
+#if defined(__x86_64__) || defined(__i386__)
 double calibrate_tsc() {
   constexpr unsigned int sample_size = 20;          // 20 samplings
   constexpr unsigned int sleep_time  = 10000;       // 10 ms
@@ -177,7 +189,7 @@ double calibrate_tsc() {
   // ticks per second
   return sigma_xy / sigma_xx;
 }
-
+#endif // defined(__x86_64__) || defined(__i386__)
 
 class TimerInterface {
 public:
@@ -966,6 +978,7 @@ public:
 
 
 // rdtsc()
+#if defined(__x86_64__) || defined(__i386__)
 class TimerRDTSC : public TimerBase<unsigned long long> {
 public:
   TimerRDTSC() {
@@ -1100,8 +1113,7 @@ public:
   }
 
 };
-
-
+#endif // defined(__x86_64__) || defined(__i386__)
 
 int main(void) {
   std::vector<TimerInterface *> timers;
@@ -1168,6 +1180,7 @@ int main(void) {
   timers.push_back(new TimerTimesCpuTime());
   timers.push_back(new TimerTimesWallClock());
 
+#if defined(__x86_64__) || defined(__i386__)
   if (tsc_allowed()) {
     timers.push_back(new TimerRDTSC());
     timers.push_back(new TimerLfenceRDTSC());
@@ -1179,6 +1192,7 @@ int main(void) {
   } else {
       std::cout << "access to the TSC by non-privileged processes has been disabled" << std::endl << std::endl;
   }
+#endif // defined(__x86_64__) || defined(__i386__)
 
   std::cout << "For each timer the resolution reported is the MINIMUM (MEDIAN) (AVERAGE +/- its STDDEV) of the increments measured during the test." << std::endl << std::endl; 
 
