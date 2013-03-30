@@ -1518,6 +1518,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       upper_limit = pPlrInt->UpperLimit( *pWs->var("xsec") );
       //Double_t upper_range = ((double)(int)(4.0 * upper_limit*100.0))/100.0; // round to ~1% precision
       Double_t upper_range = 2.0 * upper_limit;
+      //Double_t upper_range = upper_limit;
 
       // debug output
       std::cout << legend
@@ -3044,6 +3045,9 @@ RooStats::HypoTestInvTool::RunInverter(RooWorkspace * w,
    RooRealVar *poi = (RooRealVar*)poiSet->first();
   
    std::cout << "RunHypoTestInverter : POI initial value:   " << poi->GetName() << " = " << poi->getVal()   << std::endl;  
+
+   // load snapshot
+   sbModel->LoadSnapshot();
   
    // fit the data first (need to use constraint )
    Info( "RunHypoTestInverter"," Doing a first fit to the observed data ");
