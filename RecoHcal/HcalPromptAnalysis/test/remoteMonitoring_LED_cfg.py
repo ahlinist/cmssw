@@ -10,25 +10,34 @@ process.maxEvents = cms.untracked.PSet(
 #process.source = cms.Source("PoolSource",
 process.source = cms.Source("HcalTBSource",
     fileNames = cms.untracked.vstring(
-##
+#
+## Laser:
+#     'file:rfiles/USC_133070.root' ## only HF digis 10K
+#     'file:rfiles/USC_141849.root' ## only HF digis 5K
+#     'file:rfiles/USC_178165.root' ## only HF digis 10K
+#     'file:rfiles/USC_178455.root' ## only HF digis 10K
+#     'file:rfiles/USC_211875.root' ## only HBHE digis 10K problems
+#
+##LED:
      'file:rfiles/USC_195682.root',
-     'file:rfiles/USC_196870.root',
-     'file:rfiles/USC_201305.root',
-     'file:rfiles/USC_202341.root',
-     'file:rfiles/USC_203339.root',
-     'file:rfiles/USC_204172.root',
-     'file:rfiles/USC_205355.root',
-     'file:rfiles/USC_206456.root'
-##
+#     'file:rfiles/USC_196870.root',
+#     'file:rfiles/USC_201305.root',
+#     'file:rfiles/USC_202341.root',
+#     'file:rfiles/USC_203339.root',
+#     'file:rfiles/USC_204172.root',
+#     'file:rfiles/USC_205355.root',
+#     'file:rfiles/USC_206456.root'
+## short:
 #     'file:rfiles/USC_188148.root',
 #     'file:rfiles/USC_191392.root',
 #     'file:rfiles/USC_193001.root'
-##
+## problematic:
 ##     'file:rfiles/USC_190161.root'
 ##     'file:rfiles/USC_194167.root'    
 ##     'file:rfiles/USC_195406.root'
 ##     'file:rfiles/USC_206974.root'
 ##     'file:rfiles/USC_207846.root'
+#
    ), 
     streams = cms.untracked.vstring(
 		  "HCAL_Trigger",
@@ -65,6 +74,10 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   ##scripts: zratio34.C
                                   studyRatioShapeHist = cms.untracked.bool(True),
                                   #studyRatioShapeHist = cms.untracked.bool(False),
+                                  #
+                                  ##scripts: ztsmean.C
+                                  studyTSmeanShapeHist = cms.untracked.bool(True),
+                                  #studyTSmeanShapeHist = cms.untracked.bool(False),
                                   #
                                   ##scripts: ztsmaxa.C
                                   studyTSmaxShapeHist = cms.untracked.bool(True),
@@ -108,15 +121,25 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   rmsHFMax = cms.double(2.8),
                                   rmsHOMin = cms.double(0.2),
                                   rmsHOMax = cms.double(2.4),
+                                  # -55 for  BAD HBHEHF channels from study on TSmean of shapes
+                                  #Verbosity = cms.untracked.int32(-55),
+                                  TSmeanHBMin = cms.double(1.0),
+                                  TSmeanHBMax = cms.double(5.2),
+                                  TSmeanHEMin = cms.double(1.0),
+                                  TSmeanHEMax = cms.double(5.2),
+                                  TSmeanHFMin = cms.double(1.5),
+                                  TSmeanHFMax = cms.double(4.5),
+                                  TSmeanHOMin = cms.double(2.5),
+                                  TSmeanHOMax = cms.double(4.5),
                                   # -55 for  BAD HBHEHF channels from study on TSmax of shapes
                                   #Verbosity = cms.untracked.int32(-55),
-                                  TSpeakHBMin = cms.double(2.0),
-                                  TSpeakHBMax = cms.double(5.5),
-                                  TSpeakHEMin = cms.double(2.0),
-                                  TSpeakHEMax = cms.double(5.5),
-                                  TSpeakHFMin = cms.double(2.0),
+                                  TSpeakHBMin = cms.double(1.5),
+                                  TSpeakHBMax = cms.double(6.5),
+                                  TSpeakHEMin = cms.double(1.5),
+                                  TSpeakHEMax = cms.double(6.5),
+                                  TSpeakHFMin = cms.double(0.5),
                                   TSpeakHFMax = cms.double(5.5),
-                                  TSpeakHOMin = cms.double(2.0),
+                                  TSpeakHOMin = cms.double(0.5),
                                   TSpeakHOMax = cms.double(5.5),
                                   # for  BAD HBHEHOHF CALIBRATION channels from study on shape Ratio
                                   calibratioHBMin = cms.double(0.65),
@@ -130,6 +153,10 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #
                                   #
                                   HistOutFile = cms.untracked.string('test.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser178165.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser141849.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser133070.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser211875.root'),
                                   MAPOutFile = cms.untracked.string('LogEleMapdb.h')
                                   #
                                   ##OutputFilePath = cms.string('/tmp/zhokin/'),        

@@ -26,9 +26,14 @@ scripts in dir. /test:
                      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
 
 
-4. ztsmaxa.C      - analysis of "bad" channels with max signal at edges of TS range(0-9)
+4. ztsmaxa.C      - analysis of "bad" channels with max signal at tails of TS range
                                                      "h_TSmaxA_HB"
                      TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmaxA225_HB");
+                     TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
+
+   ztsmean.C      - analysis of "bad" channels with mean signal position at tails of TS range
+                                                     "h_TSmeanA_HB"
+                     TH2F *twod1= (TH2F*)hfile1->Get("h_mapDepth1TSmeanA225_HB");
                      TH2F *twod0= (TH2F*)hfile1->Get("h_mapDepth1_HB");
 
 
