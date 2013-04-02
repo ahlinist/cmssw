@@ -13,7 +13,7 @@
   <Constant name="dzS7"  value="7.630*cm"/>
   <Constant name="dzS8"  value="7.630*cm"/>
   <Constant name="dzGap" value="0.2500*cm"/>
-  <Constant name="dzIn"  value="([dzS1]+[dzS2]+[dzS3]+[dzS4]+[dzS5]+[dzS6]+[dzs7]+[dzs8]+7*[dzGap])"/>
+  <Constant name="dzIn"  value="([dzS1]+[dzS2]+[dzS3]+[dzS4]+[dzS5]+[dzS6]+[dzS7]+[dzS8]+7*[dzGap])"/>
   <Constant name="z10"   value="([dzIn]-[dzS1])"/> 
   <Constant name="z20"   value="([z10]-[dzS1]-2*[dzGap]-[dzS2])"/> 
   <Constant name="z30"   value="([z20]-[dzS2]-2*[dzGap]-[dzS3])"/> 
