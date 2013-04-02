@@ -11,7 +11,7 @@ Implementation:
 <Notes on implementation>
 */
 //
-// $Id: VeRawAnalyzer.cc,v 1.3 2013/03/21 10:12:12 zhokin Exp $
+// $Id: VeRawAnalyzer.cc,v 1.4 2013/03/27 13:22:15 zhokin Exp $
 //
 
 // system include files
@@ -139,6 +139,7 @@ private:
   bool studyRMSshapeHist_;
   bool studyRatioShapeHist_;
   bool studyTSmaxShapeHist_;
+  bool studyTSmeanShapeHist_;
   bool studyDiffAmplHist_;
   bool studyCalibCellsHist_;
 
@@ -171,6 +172,15 @@ private:
   double TSpeakHFMax_;
   double TSpeakHOMin_;
   double TSpeakHOMax_;
+
+  double TSmeanHBMin_;
+  double TSmeanHBMax_;
+  double TSmeanHEMin_;
+  double TSmeanHEMax_;
+  double TSmeanHFMin_;
+  double TSmeanHFMax_;
+  double TSmeanHOMin_;
+  double TSmeanHOMax_;
 
   double calibratioHBMin_;
   double calibratioHEMin_;
@@ -268,6 +278,11 @@ private:
   TH1F* h_repetedcapid_HO;
 
   /////////////////////////////////////////////
+  TH1F* h_TSmeanA_HB;
+  TH2F* h_mapDepth1TSmeanA_HB;
+  TH2F* h_mapDepth2TSmeanA_HB;
+  TH2F* h_mapDepth1TSmeanA225_HB;
+  TH2F* h_mapDepth2TSmeanA225_HB;
   TH1F* h_TSmaxA_HB;
   TH2F* h_mapDepth1TSmaxA_HB;
   TH2F* h_mapDepth2TSmaxA_HB;
@@ -288,6 +303,11 @@ private:
   TH2F* h_mapDepth1_HB;
   TH2F* h_mapDepth2_HB;
   /////////////////////////////////////////////
+  TH1F* h_TSmeanA_HF;
+  TH2F* h_mapDepth1TSmeanA_HF;
+  TH2F* h_mapDepth2TSmeanA_HF;
+  TH2F* h_mapDepth1TSmeanA225_HF;
+  TH2F* h_mapDepth2TSmeanA225_HF;
   TH1F* h_TSmaxA_HF;
   TH2F* h_mapDepth1TSmaxA_HF;
   TH2F* h_mapDepth2TSmaxA_HF;
@@ -308,6 +328,9 @@ private:
   TH2F* h_mapDepth1_HF;
   TH2F* h_mapDepth2_HF;
   /////////////////////////////////////////////
+  TH1F* h_TSmeanA_HO;
+  TH2F* h_mapDepth4TSmeanA_HO;
+  TH2F* h_mapDepth4TSmeanA225_HO;
   TH1F* h_TSmaxA_HO;
   TH2F* h_mapDepth4TSmaxA_HO;
   TH2F* h_mapDepth4TSmaxA225_HO;
@@ -360,6 +383,13 @@ private:
   TH1F* h_runbadrate3_depth3_HE;
   TH1F* h_runbadrate0_depth3_HE;
 
+  TH1F* h_TSmeanA_HE;
+  TH2F* h_mapDepth1TSmeanA_HE;
+  TH2F* h_mapDepth2TSmeanA_HE;
+  TH2F* h_mapDepth3TSmeanA_HE;
+  TH2F* h_mapDepth1TSmeanA225_HE;
+  TH2F* h_mapDepth2TSmeanA225_HE;
+  TH2F* h_mapDepth3TSmeanA225_HE;
   TH1F* h_TSmaxA_HE;
   TH2F* h_mapDepth1TSmaxA_HE;
   TH2F* h_mapDepth2TSmaxA_HE;
@@ -502,6 +532,7 @@ VeRawAnalyzer::VeRawAnalyzer(const edm::ParameterSet& iConfig)
   studyRMSshapeHist_=iConfig.getUntrackedParameter<bool>("studyRMSshapeHist"); 
   studyRatioShapeHist_=iConfig.getUntrackedParameter<bool>("studyRatioShapeHist"); 
   studyTSmaxShapeHist_=iConfig.getUntrackedParameter<bool>("studyTSmaxShapeHist"); 
+  studyTSmeanShapeHist_=iConfig.getUntrackedParameter<bool>("studyTSmeanShapeHist"); 
   studyDiffAmplHist_=iConfig.getUntrackedParameter<bool>("studyDiffAmplHist"); 
   studyCalibCellsHist_=iConfig.getUntrackedParameter<bool>("studyCalibCellsHist"); 
 
@@ -546,6 +577,15 @@ VeRawAnalyzer::VeRawAnalyzer(const edm::ParameterSet& iConfig)
   TSpeakHOMin_      = iConfig.getParameter<double>("TSpeakHOMin");//
   TSpeakHOMax_      = iConfig.getParameter<double>("TSpeakHOMax");//
   
+  TSmeanHBMin_      = iConfig.getParameter<double>("TSmeanHBMin");//
+  TSmeanHBMax_      = iConfig.getParameter<double>("TSmeanHBMax");//
+  TSmeanHEMin_      = iConfig.getParameter<double>("TSmeanHEMin");//
+  TSmeanHEMax_      = iConfig.getParameter<double>("TSmeanHEMax");//
+  TSmeanHFMin_      = iConfig.getParameter<double>("TSmeanHFMin");//
+  TSmeanHFMax_      = iConfig.getParameter<double>("TSmeanHFMax");//
+  TSmeanHOMin_      = iConfig.getParameter<double>("TSmeanHOMin");//
+  TSmeanHOMax_      = iConfig.getParameter<double>("TSmeanHOMax");//
+  
   std::cout<<" Look on parameters you booked:" << std::endl;   
   std::cout<<" recordNtuples_ = " <<recordNtuples_ << std::endl;   
   std::cout<<" recordHistoes_ = " <<recordHistoes_ << std::endl; 
@@ -554,6 +594,7 @@ VeRawAnalyzer::VeRawAnalyzer(const edm::ParameterSet& iConfig)
   std::cout<<" studyRMSshapeHist_ = " <<studyRMSshapeHist_ << std::endl; 
   std::cout<<" studyRatioShapeHist_ = " <<studyRatioShapeHist_ << std::endl; 
   std::cout<<" studyTSmaxShapeHist_ = " <<studyTSmaxShapeHist_ << std::endl; 
+  std::cout<<" studyTSmeanShapeHist_ = " <<studyTSmeanShapeHist_ << std::endl; 
   std::cout<<" studyDiffAmplHist_ = " <<studyDiffAmplHist_ << std::endl; 
   std::cout<<" studyCalibCellsHist_ = " <<studyCalibCellsHist_ << std::endl; 
   std::cout<<" ratioHBMin_ = " <<ratioHBMin_ << std::endl;   
@@ -587,6 +628,15 @@ VeRawAnalyzer::VeRawAnalyzer(const edm::ParameterSet& iConfig)
   std::cout<<" TSpeakHFMax_ = " <<TSpeakHFMax_ << std::endl;   
   std::cout<<" TSpeakHOMin_ = " <<TSpeakHOMin_ << std::endl;   
   std::cout<<" TSpeakHOMax_ = " <<TSpeakHOMax_ << std::endl;   
+  
+  std::cout<<" TSmeanHBMin_ = " <<TSmeanHBMin_ << std::endl;   
+  std::cout<<" TSmeanHBMax_ = " <<TSmeanHBMax_ << std::endl;   
+  std::cout<<" TSmeanHEMin_ = " <<TSmeanHEMin_ << std::endl;   
+  std::cout<<" TSmeanHEMax_ = " <<TSmeanHEMax_ << std::endl;   
+  std::cout<<" TSmeanHFMin_ = " <<TSmeanHFMin_ << std::endl;   
+  std::cout<<" TSmeanHFMax_ = " <<TSmeanHFMax_ << std::endl;   
+  std::cout<<" TSmeanHOMin_ = " <<TSmeanHOMin_ << std::endl;   
+  std::cout<<" TSmeanHOMax_ = " <<TSmeanHOMax_ << std::endl;   
   
   //
   lumi=0;
@@ -1342,6 +1392,11 @@ void VeRawAnalyzer::beginJob()
     h_repetedcapid_HO = new TH1F("h_repetedcapid_HO"," ", 5, 0., 5.);
     
     /////////////////////////////////////////////////////////////////////////////////////////////////
+    h_TSmeanA_HB = new TH1F("h_TSmeanA_HB"," ", 100, -1.,11.);
+    h_mapDepth1TSmeanA225_HB = new TH2F("h_mapDepth1TSmeanA225_HB"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmeanA225_HB = new TH2F("h_mapDepth2TSmeanA225_HB"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth1TSmeanA_HB = new TH2F("h_mapDepth1TSmeanA_HB"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmeanA_HB = new TH2F("h_mapDepth2TSmeanA_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_TSmaxA_HB = new TH1F("h_TSmaxA_HB"," ", 100, -1.,11.);
     h_mapDepth1TSmaxA225_HB = new TH2F("h_mapDepth1TSmaxA225_HB"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2TSmaxA225_HB = new TH2F("h_mapDepth2TSmaxA225_HB"," ", 82, -41., 41., 72, 0., 72.);
@@ -1363,6 +1418,13 @@ void VeRawAnalyzer::beginJob()
     h_mapDepth2_HB = new TH2F("h_mapDepth2_HB"," ", 82, -41., 41., 72, 0., 72.);
     
     /////////////////////////////////////////////////////////////////////////////////////////////////
+    h_TSmeanA_HE = new TH1F("h_TSmeanA_HE"," ", 100, -1.,11.);
+    h_mapDepth1TSmeanA225_HE = new TH2F("h_mapDepth1TSmeanA225_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmeanA225_HE = new TH2F("h_mapDepth2TSmeanA225_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth3TSmeanA225_HE = new TH2F("h_mapDepth3TSmeanA225_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth1TSmeanA_HE = new TH2F("h_mapDepth1TSmeanA_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmeanA_HE = new TH2F("h_mapDepth2TSmeanA_HE"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth3TSmeanA_HE = new TH2F("h_mapDepth3TSmeanA_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_TSmaxA_HE = new TH1F("h_TSmaxA_HE"," ", 100, -1.,11.);
     h_mapDepth1TSmaxA225_HE = new TH2F("h_mapDepth1TSmaxA225_HE"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2TSmaxA225_HE = new TH2F("h_mapDepth2TSmaxA225_HE"," ", 82, -41., 41., 72, 0., 72.);
@@ -1394,6 +1456,12 @@ void VeRawAnalyzer::beginJob()
     h_mapDepth3_HE = new TH2F("h_mapDepth3_HE"," ", 82, -41., 41., 72, 0., 72.);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
+    h_TSmeanA_HF = new TH1F("h_TSmeanA_HF"," ", 100, -1.,11.);
+    h_mapDepth1TSmeanA225_HF = new TH2F("h_mapDepth1TSmeanA225_HF"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmeanA225_HF = new TH2F("h_mapDepth2TSmeanA225_HF"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth1TSmeanA_HF = new TH2F("h_mapDepth1TSmeanA_HF"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth2TSmeanA_HF = new TH2F("h_mapDepth2TSmeanA_HF"," ", 82, -41., 41., 72, 0., 72.);
+    h_Amplitude_HF = new TH1F("h_Amplitude_HF"," ", 100, 0.,5.);
     h_TSmaxA_HF = new TH1F("h_TSmaxA_HF"," ", 100, -1.,11.);
     h_mapDepth1TSmaxA225_HF = new TH2F("h_mapDepth1TSmaxA225_HF"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth2TSmaxA225_HF = new TH2F("h_mapDepth2TSmaxA225_HF"," ", 82, -41., 41., 72, 0., 72.);
@@ -1415,6 +1483,9 @@ void VeRawAnalyzer::beginJob()
     h_mapDepth2_HF = new TH2F("h_mapDepth2_HF"," ", 82, -41., 41., 72, 0., 72.);
     
     /////////////////////////////////////////////////////////////////////////////////////////////////
+    h_TSmeanA_HO = new TH1F("h_TSmeanA_HO"," ", 100, -1.,11.);
+    h_mapDepth4TSmeanA225_HO = new TH2F("h_mapDepth4TSmeanA225_HO"," ", 82, -41., 41., 72, 0., 72.);
+    h_mapDepth4TSmeanA_HO = new TH2F("h_mapDepth4TSmeanA_HO"," ", 82, -41., 41., 72, 0., 72.);
     h_TSmaxA_HO = new TH1F("h_TSmaxA_HO"," ", 100, -1.,11.);
     h_mapDepth4TSmaxA225_HO = new TH2F("h_mapDepth4TSmaxA225_HO"," ", 82, -41., 41., 72, 0., 72.);
     h_mapDepth4TSmaxA_HO = new TH2F("h_mapDepth4TSmaxA_HO"," ", 82, -41., 41., 72, 0., 72.);
@@ -2133,22 +2204,35 @@ void VeRawAnalyzer::fillDigiAmplitude(HBHEDigiCollection::const_iterator& digiIt
     if(amplitude !=0)  rmsamplitude = sqrt( rmsamp/amplitude );
 
 
-    double aveamplitude1 = aveamplitude-1;// means iTS=0-9, so bad is iTS=0 and 9
+    double aveamplitude1 = aveamplitude-1;// means iTS=0-9
     ///////////////////////////////////////Digis
     // HB
     if ( sub == 1 ) {
       
-      //   //   //   //   //   //   //   //   //  HB       TSmax:
-      if(studyTSmaxShapeHist_) {
-	h_TSmaxA_HB->Fill(aveamplitude1,1.);
-	if(aveamplitude1 < TSpeakHBMin_ || aveamplitude1 > TSpeakHBMax_ ) {
-	  if(mdepth==1) h_mapDepth1TSmaxA225_HB->Fill(double(ieta), double(iphi), 1.);
-	  if(mdepth==2) h_mapDepth2TSmaxA225_HB->Fill(double(ieta), double(iphi), 1.);
+      //   //   //   //   //   //   //   //   //  HB       TSmean:
+      if(studyTSmeanShapeHist_) {
+	h_TSmeanA_HB->Fill(aveamplitude1,1.);
+	if(aveamplitude1 < TSmeanHBMin_ || aveamplitude1 > TSmeanHBMax_ ) {
+	  if(mdepth==1) h_mapDepth1TSmeanA225_HB->Fill(double(ieta), double(iphi), 1.);
+	  if(mdepth==2) h_mapDepth2TSmeanA225_HB->Fill(double(ieta), double(iphi), 1.);
 	  if (verbosity == -55) std::cout << "***BAD HB channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
 	}// if
 	// for averaged values:
-	if(mdepth==1) h_mapDepth1TSmaxA_HB->Fill(double(ieta), double(iphi), aveamplitude1);
-	if(mdepth==2) h_mapDepth2TSmaxA_HB->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==1) h_mapDepth1TSmeanA_HB->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==2) h_mapDepth2TSmeanA_HB->Fill(double(ieta), double(iphi), aveamplitude1);
+      }//if(studyTSmeanShapeHist_
+      ///////////////////////////////
+      //   //   //   //   //   //   //   //   //  HB       TSmax:
+      if(studyTSmaxShapeHist_) {
+	h_TSmaxA_HB->Fill(float(ts_with_max_signal),1.);
+	if(ts_with_max_signal < TSpeakHBMin_ || ts_with_max_signal > TSpeakHBMax_ ) {
+	  if(mdepth==1) h_mapDepth1TSmaxA225_HB->Fill(double(ieta), double(iphi), 1.);
+	  if(mdepth==2) h_mapDepth2TSmaxA225_HB->Fill(double(ieta), double(iphi), 1.);
+	  if (verbosity == -55) std::cout << "***BAD HB channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" ts_with_max_signal= " << ts_with_max_signal << std::endl;
+	}// if
+	// for averaged values:
+	if(mdepth==1) h_mapDepth1TSmaxA_HB->Fill(double(ieta),double(iphi),float(ts_with_max_signal));
+	if(mdepth==2) h_mapDepth2TSmaxA_HB->Fill(double(ieta),double(iphi),float(ts_with_max_signal));
       }//if(studyTSmaxShapeHist_
       ///////////////////////////////
       
@@ -2205,19 +2289,34 @@ void VeRawAnalyzer::fillDigiAmplitude(HBHEDigiCollection::const_iterator& digiIt
     // HE
     if ( sub == 2 ) {
       
+      //   //   //   //   //   //   //   //   //  HE       TSmean:
+      if(studyTSmeanShapeHist_) {
+	h_TSmeanA_HE->Fill(aveamplitude1,1.);
+	if(aveamplitude1 < TSmeanHEMin_ || aveamplitude1 > TSmeanHEMax_ ) {
+	  if(mdepth==1) h_mapDepth1TSmeanA225_HE->Fill(double(ieta), double(iphi), 1.);
+	  if(mdepth==2) h_mapDepth2TSmeanA225_HE->Fill(double(ieta), double(iphi), 1.);
+	  if(mdepth==3) h_mapDepth3TSmeanA225_HE->Fill(double(ieta), double(iphi), 1.);
+	  if (verbosity == -55) std::cout << "***BAD HE channels from TSmeanA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
+	}// if
+	// for averaged values:
+	if(mdepth==1) h_mapDepth1TSmeanA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==2) h_mapDepth2TSmeanA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==3) h_mapDepth3TSmeanA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
+      }//if(studyTSmeanShapeHist_) {
+      ///////////////////////////////
       //   //   //   //   //   //   //   //   //  HE       TSmax:
       if(studyTSmaxShapeHist_) {
-	h_TSmaxA_HE->Fill(aveamplitude1,1.);
-	if(aveamplitude1 < TSpeakHEMin_ || aveamplitude1 > TSpeakHEMax_ ) {
+	h_TSmaxA_HE->Fill(float(ts_with_max_signal),1.);
+	if(ts_with_max_signal < TSpeakHEMin_ || ts_with_max_signal > TSpeakHEMax_ ) {
 	  if(mdepth==1) h_mapDepth1TSmaxA225_HE->Fill(double(ieta), double(iphi), 1.);
 	  if(mdepth==2) h_mapDepth2TSmaxA225_HE->Fill(double(ieta), double(iphi), 1.);
 	  if(mdepth==3) h_mapDepth3TSmaxA225_HE->Fill(double(ieta), double(iphi), 1.);
-	  if (verbosity == -55) std::cout << "***BAD HE channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
+	  if (verbosity == -55) std::cout << "***BAD HE channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" ts_with_max_signal= " << ts_with_max_signal << std::endl;
 	}// if
 	// for averaged values:
-	if(mdepth==1) h_mapDepth1TSmaxA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
-	if(mdepth==2) h_mapDepth2TSmaxA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
-	if(mdepth==3) h_mapDepth3TSmaxA_HE->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==1) h_mapDepth1TSmaxA_HE->Fill(double(ieta),double(iphi),float(ts_with_max_signal));
+	if(mdepth==2) h_mapDepth2TSmaxA_HE->Fill(double(ieta),double(iphi),float(ts_with_max_signal));
+	if(mdepth==3) h_mapDepth3TSmaxA_HE->Fill(double(ieta),double(iphi),float(ts_with_max_signal));
       }//if(studyTSmaxShapeHist_) {
       ///////////////////////////////
       
@@ -2377,17 +2476,30 @@ void VeRawAnalyzer::fillDigiAmplitudeHF(HFDigiCollection::const_iterator& digiIt
     // HF
     if ( sub == 4 ) {
       
-      //   //   //   //   //   //   //   //   //  HF       TSmax:
-      if(studyTSmaxShapeHist_) {
-	h_TSmaxA_HF->Fill(aveamplitude1,1.);
-	if(aveamplitude1 < TSpeakHFMin_ || aveamplitude1 > TSpeakHFMax_ ) {
-	  if(mdepth==1) h_mapDepth1TSmaxA225_HF->Fill(double(ieta), double(iphi), 1.);
-	  if(mdepth==2) h_mapDepth2TSmaxA225_HF->Fill(double(ieta), double(iphi), 1.);
-	  if (verbosity == -55) std::cout << "***BAD HF channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
+      //   //   //   //   //   //   //   //   //  HF       TSmean:
+      if(studyTSmeanShapeHist_) {
+	h_TSmeanA_HF->Fill(aveamplitude1,1.);
+	if(aveamplitude1 < TSmeanHFMin_ || aveamplitude1 > TSmeanHFMax_ ) {
+	  if(mdepth==1) h_mapDepth1TSmeanA225_HF->Fill(double(ieta), double(iphi), 1.);
+	  if(mdepth==2) h_mapDepth2TSmeanA225_HF->Fill(double(ieta), double(iphi), 1.);
+	  if (verbosity == -55) std::cout << "***BAD HF channels from TSmeanA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
 	}// if
 	// for averaged values:
-	if(mdepth==1) h_mapDepth1TSmaxA_HF->Fill(double(ieta), double(iphi), aveamplitude1);
-	if(mdepth==2) h_mapDepth2TSmaxA_HF->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==1) h_mapDepth1TSmeanA_HF->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==2) h_mapDepth2TSmeanA_HF->Fill(double(ieta), double(iphi), aveamplitude1);
+      }//if(studyTSmeanShapeHist_
+      ///////////////////////////////
+      //   //   //   //   //   //   //   //   //  HF       TSmax:
+      if(studyTSmaxShapeHist_) {
+	h_TSmaxA_HF->Fill(float(ts_with_max_signal),1.);
+	if(ts_with_max_signal < TSpeakHFMin_ || ts_with_max_signal > TSpeakHFMax_ ) {
+	  if(mdepth==1) h_mapDepth1TSmaxA225_HF->Fill(double(ieta), double(iphi), 1.);
+	  if(mdepth==2) h_mapDepth2TSmaxA225_HF->Fill(double(ieta), double(iphi), 1.);
+	  if (verbosity == -55) std::cout << "***BAD HF channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" ts_with_max_signal= " << ts_with_max_signal << std::endl;
+	}// if
+	// for averaged values:
+	if(mdepth==1) h_mapDepth1TSmaxA_HF->Fill(double(ieta),double(iphi), float(ts_with_max_signal));
+	if(mdepth==2) h_mapDepth2TSmaxA_HF->Fill(double(ieta),double(iphi), float(ts_with_max_signal));
       }//if(studyTSmaxShapeHist_
       ///////////////////////////////
       
@@ -2545,15 +2657,26 @@ void VeRawAnalyzer::fillDigiAmplitudeHO(HODigiCollection::const_iterator& digiIt
     // HO
     if ( sub == 3 ) {
       
-      //   //   //   //   //   //   //   //   //  HO       TSmax:
-      if(studyTSmaxShapeHist_) {
-	h_TSmaxA_HO->Fill(aveamplitude1,1.);
-	if(aveamplitude1 < TSpeakHOMin_ || aveamplitude1 > TSpeakHOMax_ ) {
-	  if(mdepth==4) h_mapDepth4TSmaxA225_HO->Fill(double(ieta), double(iphi), 1.);
-	  if (verbosity == -55) std::cout << "***BAD HO channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
+      //   //   //   //   //   //   //   //   //  HO       TSmean:
+      if(studyTSmeanShapeHist_) {
+	h_TSmeanA_HO->Fill(aveamplitude1,1.);
+	if(aveamplitude1 < TSmeanHOMin_ || aveamplitude1 > TSmeanHOMax_ ) {
+	  if(mdepth==4) h_mapDepth4TSmeanA225_HO->Fill(double(ieta), double(iphi), 1.);
+	  if (verbosity == -55) std::cout << "***BAD HO channels from TSmeanA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" aveamplitude1= " << aveamplitude1 << std::endl;
 	}// if
 	// for averaged values:
-	if(mdepth==4) h_mapDepth4TSmaxA_HO->Fill(double(ieta), double(iphi), aveamplitude1);
+	if(mdepth==4) h_mapDepth4TSmeanA_HO->Fill(double(ieta), double(iphi), aveamplitude1);
+      }//if(studyTSmeanShapeHist_
+      ///////////////////////////////
+      //   //   //   //   //   //   //   //   //  HO       TSmax:
+      if(studyTSmaxShapeHist_) {
+	h_TSmaxA_HO->Fill(float(ts_with_max_signal),1.);
+	if(ts_with_max_signal < TSpeakHOMin_ || ts_with_max_signal > TSpeakHOMax_ ) {
+	  if(mdepth==4) h_mapDepth4TSmaxA225_HO->Fill(double(ieta), double(iphi), 1.);
+	  if (verbosity == -55) std::cout << "***BAD HO channels from TSmaxA: "  <<" ieta= " << ieta <<" iphi= " << iphi <<" ts_with_max_signal= " << ts_with_max_signal << std::endl;
+	}// if
+	// for averaged values:
+	if(mdepth==4) h_mapDepth4TSmaxA_HO->Fill(double(ieta),double(iphi),float(ts_with_max_signal));
       }//if(studyTSmaxShapeHist_
       ///////////////////////////////
       
@@ -2774,6 +2897,11 @@ void VeRawAnalyzer::endJob(){
     h_repetedcapid_HO->Write();
     
     ///////////////////////
+    h_TSmeanA_HB->Write();
+    h_mapDepth1TSmeanA225_HB->Write();
+    h_mapDepth2TSmeanA225_HB->Write();
+    h_mapDepth1TSmeanA_HB->Write();
+    h_mapDepth2TSmeanA_HB->Write();
     h_TSmaxA_HB->Write();
     h_mapDepth1TSmaxA225_HB->Write();
     h_mapDepth2TSmaxA225_HB->Write();
@@ -2797,6 +2925,11 @@ void VeRawAnalyzer::endJob(){
     h_mapDepth2_HB->Write();
 
     ///////////////////////
+    h_TSmeanA_HF->Write();
+    h_mapDepth1TSmeanA225_HF->Write();
+    h_mapDepth2TSmeanA225_HF->Write();
+    h_mapDepth1TSmeanA_HF->Write();
+    h_mapDepth2TSmeanA_HF->Write();
     h_TSmaxA_HF->Write();
     h_mapDepth1TSmaxA225_HF->Write();
     h_mapDepth2TSmaxA225_HF->Write();
@@ -2820,9 +2953,13 @@ void VeRawAnalyzer::endJob(){
     h_mapDepth2_HF->Write();
 
     ///////////////////////
+    h_TSmeanA_HO->Write();
+    h_mapDepth4TSmeanA225_HO->Write();
+    h_mapDepth4TSmeanA_HO->Write();
     h_TSmaxA_HO->Write();
     h_mapDepth4TSmaxA225_HO->Write();
     h_mapDepth4TSmaxA_HO->Write();
+
     h_Amplitude_HO->Write();
     h_mapDepth4Amplitude225_HO->Write();
     h_mapDepth4Amplitude_HO->Write();
@@ -2833,6 +2970,13 @@ void VeRawAnalyzer::endJob(){
     h_mapDepth4_HO->Write();
 
     //////////////////////////////////////////    
+    h_TSmeanA_HE->Write();
+    h_mapDepth1TSmeanA225_HE->Write();
+    h_mapDepth2TSmeanA225_HE->Write();
+    h_mapDepth3TSmeanA225_HE->Write();
+    h_mapDepth1TSmeanA_HE->Write();
+    h_mapDepth2TSmeanA_HE->Write();
+    h_mapDepth3TSmeanA_HE->Write();
     h_TSmaxA_HE->Write();
     h_mapDepth1TSmaxA225_HE->Write();
     h_mapDepth2TSmaxA225_HE->Write();
