@@ -71,6 +71,54 @@ This will eventually be hidden behing an `addpkg` like helper.
 
 [git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
 
+### How do I develop a new feature using git?
+
+First of all you need to fork cmssw to your own personal repository. This
+repository will be used to held all your incomplete developments. 
+
+*NOTE*: all this can be automathed the first time people connect to a yet to be
+  introduced "Topic Collector".
+
+Once you have done that, add a shortcut to it.
+
+    GITHUB_USER=<your github username>
+    git config --global remote.cmssw-me.url git@github.com:$GITHUB_USER/cmssw.git 
+
+In your working area checkout a few packages you want to modify via
+`git-addpkg`. When you are ready to start developing create a new topic branch
+to hold your developments, e.g.:
+
+    git branch for/CMSSW_6_2_X/my-topic-branch
+
+Notice you'll be able to add more packages afterward, so do not worry if you don't
+have all of them right ahead.
+
+Once you are happy with your changes, push them to your private repository on
+github, e.g.:
+
+    git push cmssw-me for/CMSSW_6_2_X/my-topic-branch
+
+You can do the above multiple times, whenever you have updated your development. 
+Whenever you are happy, open a pull request to merge your topic branch into the
+official repository.
+
+This can be done by going to:
+
+    https://github.com/<your-user-name>/cmssw/pull/new/master
+
+There you can select your destination branch (make the destination repository
+is cms-sw/cmssw) and your source branch.
+
+*NOTE*: Again, people could do this directly from the yet to be introduced "Topic Collector" pages.
+
+### How do I check the status of my pull request(s).
+
+Pull requests to the official CMSSW repository can be looked at in:
+
+https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit/
+
+here you'll find all the open requests and their approval status.
+
 ## Advanced usage
 
 ### How do I browse / search the code?
