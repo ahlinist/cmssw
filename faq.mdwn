@@ -53,23 +53,67 @@ specify it via the `-b` flag, e.g.:
 See [here][git-clone-repo] for more detailed information on `git clone`
 command.
 
-### How do I checkout a single package?
+### How do I checkout one or more packages?
 
-Git sees repository status globally, so the concept of cloning a single 
-package does not really exists. What one can do is to mask the results of
-a cloning so that only selected packages will be available. However they
-will not be independent and they will belong to the same tag / point in history.
-Let's say for example that you want only the packages in `FWCore` and you 
-are in a project area.
+**Short answer**, use:
+  
+    git addpkg <package-name> [<tag> / <feature branch>]
 
-    cd src 
-    git init
-    echo FWCore/ > .git/info/sparse-checkout
-    git pull cmssw-main master:master
+**Longer answer**: Git sees repository status globally, so the concept of checking
+out a single package, or a single file, does not really exists. 
 
-This will eventually be hidden behing an `addpkg` like helper.
+However a workaround to this is to use the so called ["sparse
+checkout"](https://www.kernel.org/pub/software/scm/git/docs/git-read-tree.html#_sparse_checkout)
+feature of git. This is controlled by the `.git/info/sparse-checkout` which
+allows the user to specify which packages will have to be visible to the user
+and which ones will not.
+
+As a caveat, one must keep in mind that git still sees changes globally, so
+packages being checked out will have to belong to the same tag. While this
+might sound scary, it is not such a big issues given that git allows us to have
+one tag per integration build. In the end, one could argue that per packages
+tags were a workaround to the limitation imposed by cost of tags in CVS.
+
+A typical development workflow in with CVS:
+
+    addpkg FWCore/Framework
+    addpkg FWCore/Utilities
+    <develop>
+    checkdeps -a
+    
+simply becomes:
+
+    git addpkg FWCore/Framework
+    git addpkg FWCore/Utilities
+    <develop>
+    git checkdeps -a
+
+For the above example the `git addpkg` helper will simply create for you a
+`.git/info/sparse-checkout` folder which contains:
+
+    FWCore/Framework
+    FWCore/Utilities     
+
+merges the release tag into the current work area (notice the current
+repository only contains a limited set of tags) and then invoke the command to
+update the checkout area to match the contents of `.git/info/sparse-checkout`:
+
+    git read-tree -mu HEAD
+
+A final caveat is that it will not be possible to remove a package by hand via
+`rm -fr <package-name>`, `git` will notice and will consider that as an actual
+change. To hide a package, you will need to remove it from
+`.git/info/sparse-checkout` and run `git read-tree -mu HEAD` again.
+
+Note: do we need to provide a `git rmpkg` helper?
 
 [git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
+
+### I've modified some code, how do I run checkdeps?
+
+Use:
+
+    git checkdeps [-a]
 
 ### How do I develop a new feature using git?
 
@@ -118,6 +162,7 @@ Pull requests to the official CMSSW repository can be looked at in:
 https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit/
 
 here you'll find all the open requests and their approval status.
+
 
 ## Advanced usage
 
