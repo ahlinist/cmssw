@@ -38,6 +38,10 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   studyRatioShapeHist = cms.untracked.bool(True),
                                   #studyRatioShapeHist = cms.untracked.bool(False),
                                   #
+                                  ##scripts: ztsmean.C
+                                  studyTSmeanShapeHist = cms.untracked.bool(True),
+                                  #studyTSmeanShapeHist = cms.untracked.bool(False),
+                                  #
                                   ##scripts: ztsmaxa.C
                                   studyTSmaxShapeHist = cms.untracked.bool(True),
                                   #studyTSmaxShapeHist = cms.untracked.bool(False),
@@ -80,15 +84,25 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   rmsHFMax = cms.double(2.8),
                                   rmsHOMin = cms.double(0.2),
                                   rmsHOMax = cms.double(2.4),
+                                  # -55 for  BAD HBHEHF channels from study on TSmean of shapes
+                                  #Verbosity = cms.untracked.int32(-55),
+                                  TSmeanHBMin = cms.double(1.0),
+                                  TSmeanHBMax = cms.double(5.2),
+                                  TSmeanHEMin = cms.double(1.0),
+                                  TSmeanHEMax = cms.double(5.2),
+                                  TSmeanHFMin = cms.double(1.5),
+                                  TSmeanHFMax = cms.double(4.5),
+                                  TSmeanHOMin = cms.double(2.5),
+                                  TSmeanHOMax = cms.double(4.5),
                                   # -55 for  BAD HBHEHF channels from study on TSmax of shapes
                                   #Verbosity = cms.untracked.int32(-55),
-                                  TSpeakHBMin = cms.double(2.0),
-                                  TSpeakHBMax = cms.double(5.5),
-                                  TSpeakHEMin = cms.double(2.0),
-                                  TSpeakHEMax = cms.double(5.5),
-                                  TSpeakHFMin = cms.double(2.0),
+                                  TSpeakHBMin = cms.double(1.5),
+                                  TSpeakHBMax = cms.double(6.5),
+                                  TSpeakHEMin = cms.double(1.5),
+                                  TSpeakHEMax = cms.double(6.5),
+                                  TSpeakHFMin = cms.double(0.5),
                                   TSpeakHFMax = cms.double(5.5),
-                                  TSpeakHOMin = cms.double(2.0),
+                                  TSpeakHOMin = cms.double(0.5),
                                   TSpeakHOMax = cms.double(5.5),
                                   # for  BAD HBHEHOHF CALIBRATION channels from study on shape Ratio
                                   calibratioHBMin = cms.double(0.65),
@@ -102,6 +116,10 @@ process.Analyzer = cms.EDAnalyzer("VeRawAnalyzer",
                                   #
                                   #
                                   HistOutFile = cms.untracked.string('testNZS.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser178165.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser141849.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser133070.root'),
+#                                  HistOutFile = cms.untracked.string('testLaser211875.root'),
                                   MAPOutFile = cms.untracked.string('LogEleMapdb.h')
                                   #
                                   ##OutputFilePath = cms.string('/tmp/zhokin/'),        
