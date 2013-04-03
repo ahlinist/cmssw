@@ -34,7 +34,9 @@ In case you don't, simply click on the "Sign up for free" button
 ![signup button](images/github-signup.png)
 
 Once you are done, you'll be prompted to grant CMS Topic Collector the rights to
-connect to your github account, simply click on "Accept".
+connect to your github account, simply click on "Authorize app".
+
+![signup button](images/github-authorize.png)
 
 Once you are done, you might want to execute the following commands to add easy
 to remember names for some CMS specific things:
