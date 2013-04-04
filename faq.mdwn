@@ -121,14 +121,14 @@ here you'll find all the open requests and their approval status.
 
 ### CVS-speak to git speak
 
-| CMS CVS                       | CMS GIT                                      |
-| -                             | -                                            |
-| tagset                        | topic branch                                 |
-| publish a tagset              | create a pull request                        |
-| Tag Collector                 | Topic Collector                              |
-| addpkg                        | git addpkg                                   |
-| checkdeps                     | git checkdeps                                |
-| cmstc tagset `<tagset-id>` -a | git pull cmssw-main --track `<topic-branch>` |
+| CMS CVS                        | CMS GIT                                      |
+| -                              | -                                            |
+| tagset                         | topic branch                                 |
+| publish a tagset               | create a pull request                        |
+| Tag Collector                  | Topic Collector                              |
+| `addpkg`                       | `git addpkg`                                 |
+| `checkdeps`                    | `git checkdeps`                              |
+| `cmstc tagset `<tagset-id> -a` | `git pull cmssw-main --track <topic-branch>` |
 
 ## Advanced usage
 
