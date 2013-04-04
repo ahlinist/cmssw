@@ -104,15 +104,12 @@ clicking on the "Create new pull request for ...".
 
 ![Create pull request](images/create-pull-request.png) 
 
-This will redirect you to the github equivalent of the "tagset publishing" page
-in the old tag collector:
+This will redirect you to the github equivalent of the "tagset publishing"  page in the old tag collector
+("pull request creation" in git jargon):
 
-![Publish pull request](images/create--request.png) 
+![Publish pull request](images/publish-branch.png) 
 
-There you can select your destination branch (make the destination repository
-is cms-sw/cmssw) and your source branch.
-
-*NOTE*: Again, people could do this directly from the yet to be introduced "Topic Collector" pages.
+there you can select your release queue (or "release branch") and your source branch.
 
 ### How do I check the status of my pull request(s).
 
@@ -278,7 +275,6 @@ which returns:
         boost::shared_ptr<ParameterSet> parameterSet = processDesc->getProcessPSet();
         //std::cerr << parameterSet->dump() << std::endl;
 
-### How can I find something in the repository?
 
 
 ## How do I ask a question?
