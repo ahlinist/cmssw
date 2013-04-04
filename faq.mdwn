@@ -33,6 +33,7 @@ put your username and password.
 
   ![signup button](images/github-signup.png)
 
+  an follow the instructions to create a new account. 
   Go back to the [CMS Topic Collector][cms-topic-collector] pages afterwards.
 
 Once you are done, you'll be prompted to grant CMS Topic Collector the rights to
@@ -59,7 +60,7 @@ To checkout the full CMSSW repository locally you can do:
 
     git clone cmssw-main src
 
-in your scram work area.  Notice this will require a github account (see
+in your SCRAM work area.  Notice this will require a github account (see
 [here]() for the relevant FAQ). Alternatively you can do:
     
     git clone cmssw-main-ro src
@@ -72,61 +73,16 @@ specify it via the `-b` flag, e.g.:
 See [here][git-clone-repo] for more detailed information on `git clone`
 command.
 
+[git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
+
 ### How do I checkout one or more packages?
 
-**Short answer**, use:
+Simply use:
   
-    git addpkg <package-name> [<tag> / <feature branch>]
+    git addpkg <package-name>
 
-**Longer answer**: Git sees repository status globally, so the concept of checking
-out a single package, or a single file, does not really exists. 
+[Read more](git-addpkg)
 
-However a workaround to this is to use the so called ["sparse
-checkout"](https://www.kernel.org/pub/software/scm/git/docs/git-read-tree.html#_sparse_checkout)
-feature of git. This is controlled by the `.git/info/sparse-checkout` which
-allows the user to specify which packages will have to be visible to the user
-and which ones will not.
-
-As a caveat, one must keep in mind that git still sees changes globally, so
-packages being checked out will have to belong to the same tag. While this
-might sound scary, it is not such a big issues given that git allows us to have
-one tag per integration build. In the end, one could argue that per packages
-tags were a workaround to the limitation imposed by cost of tags in CVS.
-
-A typical development workflow in with CVS:
-
-    addpkg FWCore/Framework
-    addpkg FWCore/Utilities
-    <develop>
-    checkdeps -a
-    
-simply becomes:
-
-    git addpkg FWCore/Framework
-    git addpkg FWCore/Utilities
-    <develop>
-    git checkdeps -a
-
-For the above example the `git addpkg` helper will simply create for you a
-`.git/info/sparse-checkout` folder which contains:
-
-    FWCore/Framework
-    FWCore/Utilities     
-
-merges the release tag into the current work area (notice the current
-repository only contains a limited set of tags) and then invoke the command to
-update the checkout area to match the contents of `.git/info/sparse-checkout`:
-
-    git read-tree -mu HEAD
-
-A final caveat is that it will not be possible to remove a package by hand via
-`rm -fr <package-name>`, `git` will notice and will consider that as an actual
-change. To hide a package, you will need to remove it from
-`.git/info/sparse-checkout` and run `git read-tree -mu HEAD` again.
-
-Note: do we need to provide a `git rmpkg` helper?
-
-[git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
 
 ### I've modified some code, how do I run checkdeps?
 
