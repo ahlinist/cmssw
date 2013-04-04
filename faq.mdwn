@@ -54,27 +54,6 @@ to remember names for some CMS specific things:
 
 ## Working with CMSSW on github
 
-### How do I checkout the full CMSSW repository locally?
-
-To checkout the full CMSSW repository locally you can do:
-
-    git clone cmssw-main src
-
-in your SCRAM work area.  Notice this will require a github account (see
-[here]() for the relevant FAQ). Alternatively you can do:
-    
-    git clone cmssw-main-ro src
-
-for read only access. If you want to checkout a given tag, you need to 
-specify it via the `-b` flag, e.g.:
-
-    git clone cmssw-main src -b CMSSW_6_1_0
-
-See [here][git-clone-repo] for more detailed information on `git clone`
-command.
-
-[git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
-
 ### How do I checkout one or more packages?
 
 Simply use:
@@ -92,7 +71,7 @@ once you have developments you can checkout dependent packages by doing.
 First of all you need to fork cmssw to your own personal repository. This
 repository will be used to held all your incomplete developments. 
 
-*NOTE*: all this can be automathed the first time people connect to a yet to be
+**NOTE**: all this can be automated the first time people connect to a yet to be
   introduced "Topic Collector".
 
 Once you have done that, add a shortcut to it.
@@ -114,13 +93,15 @@ github, e.g.:
 
     git push cmssw-me for/CMSSW_6_2_X/my-topic-branch
 
-You can do the above multiple times, whenever you have updated your development. 
+You can do the above multiple times, whenever you have updated your development.
 Whenever you are happy, open a pull request to merge your topic branch into the
 official repository.
 
-This can be done by going to:
+This can be done by going to [CMS Topic Collector](cms-topic-collector) and by
+clicking on the "Create new pull request for <branch>".
 
-    https://github.com/<your-user-name>/cmssw/pull/new/master
+![Create pull request](images/create-pull-request.png) 
+
 
 There you can select your destination branch (make the destination repository
 is cms-sw/cmssw) and your source branch.
@@ -135,8 +116,28 @@ https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit/
 
 here you'll find all the open requests and their approval status.
 
-
 ## Advanced usage
+
+### How do I checkout the full CMSSW repository locally?
+
+To checkout the full CMSSW repository locally you can do:
+
+    git clone cmssw-main src
+
+in your SCRAM work area.  Notice this will require a github account (see
+[here]() for the relevant FAQ). Alternatively you can do:
+    
+    git clone cmssw-main-ro src
+
+for read only access. If you want to checkout a given tag, you need to 
+specify it via the `-b` flag, e.g.:
+
+    git clone cmssw-main src -b CMSSW_6_1_0
+
+See [here][git-clone-repo] for more detailed information on `git clone`
+command.
+
+[git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
 
 ### How do I browse / search the code?
 
