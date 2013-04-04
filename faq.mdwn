@@ -85,9 +85,9 @@ In your working area checkout a few packages you want to modify via
 `git-addpkg`. When you are ready to start developing create a new topic branch
 to hold your developments, e.g.:
 
-    git branch for/CMSSW_6_2_X/my-topic-branch
+    git checkout -b for/CMSSW_6_2_X/my-topic-branch
 
-Notice you'll be able to add more packages afterward, so do not worry if you don't
+Notice you'll be able to add more packages afterwards, so do not worry if you don't
 have all of them right ahead.
 
 Once you are happy with your changes, push them to your private repository on
