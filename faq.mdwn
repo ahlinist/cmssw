@@ -99,10 +99,13 @@ You can do the above multiple times, whenever you have updated your development.
 Whenever you are happy, open a pull request to merge your topic branch into the
 official repository.
 
-This can be done by going to [CMS Topic Collector](cms-topic-collector) and by
-clicking on the "Create new pull request for ...;".
+This can be done by going to [CMS Topic Collector][cms-topic-collector] and by
+clicking on the "Create new pull request for ...".
 
 ![Create pull request](images/create-pull-request.png) 
+
+This will redirect you to the github equivalent of "publishing a tagset":
+
 
 There you can select your destination branch (make the destination repository
 is cms-sw/cmssw) and your source branch.
