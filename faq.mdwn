@@ -58,7 +58,7 @@ to remember names for some CMS specific things:
 
 ### How do I checkout one or more packages?
 
-Simply use:
+If you are in a CMSSW area (remember to do `cmsenv`) you can simply use:
   
     git addpkg <package-name>
 
@@ -71,7 +71,7 @@ once you have developments you can checkout dependent packages by doing.
 ### How do I develop a new feature using git?
 
 First of all you need to fork cmssw to your own personal repository. This
-repository will be used to held all your incomplete developments. 
+repository will be used to hold all your incomplete developments. 
 
 **NOTE**: all this can be automated the first time people connect to a yet to be
   introduced "Topic Collector".
@@ -104,8 +104,10 @@ clicking on the "Create new pull request for ...".
 
 ![Create pull request](images/create-pull-request.png) 
 
-This will redirect you to the github equivalent of "publishing a tagset":
+This will redirect you to the github equivalent of the "tagset publishing" page
+in the old tag collector:
 
+![Publish pull request](images/create--request.png) 
 
 There you can select your destination branch (make the destination repository
 is cms-sw/cmssw) and your source branch.
