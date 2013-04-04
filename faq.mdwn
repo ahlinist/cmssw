@@ -111,13 +111,27 @@ This will redirect you to the github equivalent of the "tagset publishing"  page
 
 there you can select your release queue (or "release branch") and your source branch.
 
-### How do I check the status of my pull request(s).
+## How do I check the status of my pull request(s).
 
-Pull requests to the official CMSSW repository can be looked at in:
+Go to the [CMS Topic Collector][cms-topic-collector]. There you'll find all the
+open requests and their approval status.
 
-https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit/
+## How do I make sure my topic branch is updated with the latest developments?
 
-here you'll find all the open requests and their approval status.
+Simply merge the release branch into your topic branch:
+
+    git checkout topic
+    git fetch cmssw-main CMSSW_6_2_X
+    git merge cmssw-main/CMSSW_6_2_X
+
+or in one command:
+
+    git pull cmssw-main CMSSW_6_2_X
+
+assuming you are on the `topic` branch already. 
+
+For more information about merging branching read
+[here](http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging).
 
 ## CVS-speak to git speak
 
