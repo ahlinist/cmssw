@@ -7,19 +7,19 @@ related:
  - { name: Topic Collector, link: https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit}
  - { name: Feedback, link: https://github.com/cms-sw/cmssw/issues/new }
 ---
-# FAQ
+# FAQs
 
 * auto-gen TOC:
 {:toc}
 
-## General questions
+# General questions
 
-### Where can I learn about git, github in general?
+## Where can I learn about git, github in general?
 
 - Generic git help can be found at <http://git-scm.com/book/>.
 - github.com specific help can be found at <https://help.github.com>.
 
-### How do I subscribe to github?
+## How do I subscribe to github?
 
 In order to develop CMSSW you will need a github account and to link it to your
 CERN account. This is easily done by going to [CMS Topic
@@ -54,9 +54,9 @@ to remember names for some CMS specific things:
 
 [cms-topic-collector]: https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit
 
-## Working with CMSSW on github
+# Working with CMSSW on github
 
-### How do I checkout one or more packages?
+## How do I checkout one or more packages?
 
 If you are in a CMSSW area (remember to do `cmsenv`) you can simply use:
   
@@ -68,7 +68,7 @@ once you have developments you can checkout dependent packages by doing.
 
 [Read more.](git-addpkg)
 
-### How do I develop a new feature using git?
+## How do I develop a new feature using git?
 
 First of all you need to fork cmssw to your own personal repository. This
 repository will be used to hold all your incomplete developments. 
@@ -119,7 +119,7 @@ https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit/
 
 here you'll find all the open requests and their approval status.
 
-### CVS-speak to git speak
+## CVS-speak to git speak
 
 | CMS CVS                        | CMS GIT                                      |
 | -                              | -                                            |
@@ -131,9 +131,9 @@ here you'll find all the open requests and their approval status.
 | `cmstc tagset <tagset-id> -a` | `git pull cmssw-main --track <topic-branch>` |
 | `cvs log`                      | `git log`                                    |
 
-## Advanced usage
+# Advanced usage
 
-### How do I checkout the full CMSSW repository locally?
+## How do I checkout the full CMSSW repository locally?
 
 To checkout the full CMSSW repository locally you can do:
 
@@ -154,7 +154,7 @@ command.
 
 [git-clone-repo]: http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository
 
-### How do I browse / search the code?
+## How do I browse / search the code?
 
 The source code for the official CMSSW repository can be found in the main
 github page for CMSSW: <https://github.com/cms-sw/cmssw>.
@@ -193,7 +193,7 @@ for more information about `git grep` click [here](http://git-scm.com/docs/git-g
 
 *NOTES*: Clearly we need to find a way to shorten this url.
 
-### How do I tell who is responsible for a given change?
+## How do I tell who is responsible for a given change?
 
 Let's say you want to find out who is responsible for a given
 change in `FWCore/Framework/BuildFile.xml`. If you are happy with using
