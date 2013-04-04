@@ -81,14 +81,11 @@ Simply use:
   
     git addpkg <package-name>
 
-[Read more](git-addpkg)
+once you have developments you can checkout dependent packages by doing.
 
+    git checkdeps
 
-### I've modified some code, how do I run checkdeps?
-
-Use:
-
-    git checkdeps [-a]
+[Read more.](git-addpkg)
 
 ### How do I develop a new feature using git?
 
