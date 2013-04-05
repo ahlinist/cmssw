@@ -166,7 +166,27 @@ which returns:
         boost::shared_ptr<ParameterSet> parameterSet = processDesc->getProcessPSet();
         //std::cerr << parameterSet->dump() << std::endl;
 
+## Downloading from github is painfully slow, how can I improve the situation?
 
+If you have a local mirror of CMSSW repository at your site / university you
+can use it by setting the `CMSSW_MIRROR` environment variable. E.g.:
+
+  export CMSSW_MIRROR=https://:@git.cern.ch/kerberos/CMSSW.git
+  # setenv CMSSW_MIRROR https://:@git.cern.ch/kerberos/CMSSW.git
+
+for CERN. `git addpkg` will use it to fetch 
+
+## How do I setup a local mirror?
+
+Git allows you to mirror a repository by doing:
+
+    CMSSW_MIRROR_PATH=<some-path>
+    git clone --mirror --bare https://github.com/cms-sw/cmssw.git $CMSSW_MIRROR_PATH
+
+Done that you can update the mirror via:
+    
+    cd $CMSSW_MIRROR_PATH
+    git remote update
 
 ## How do I ask a question?
 
