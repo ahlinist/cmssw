@@ -171,8 +171,8 @@ which returns:
 If you have a local mirror of CMSSW repository at your site / university you
 can use it by setting the `CMSSW_MIRROR` environment variable. E.g.:
 
-  export CMSSW_MIRROR=https://:@git.cern.ch/kerberos/CMSSW.git
-  # setenv CMSSW_MIRROR https://:@git.cern.ch/kerberos/CMSSW.git
+    export CMSSW_MIRROR=https://:@git.cern.ch/kerberos/CMSSW.git
+    # setenv CMSSW_MIRROR https://:@git.cern.ch/kerberos/CMSSW.git
 
 for CERN. `git addpkg` will use it to fetch 
 
