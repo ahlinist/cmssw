@@ -18,6 +18,7 @@ related:
 
 - Generic git help can be found at <http://git-scm.com/book/>.
 - github.com specific help can be found at <https://help.github.com>.
+- A 15 minutes, interactive, git tutorial <http://try.github.com/levels/1/challenges/1>
 
 ## How do I subscribe to github?
 
@@ -151,8 +152,9 @@ you would like
 | Tag Collector                  | Topic Collector                              |
 | `addpkg`                       | `git addpkg`                                 |
 | `checkdeps`                    | `git checkdeps`                              |
-| `cmstc tagset <tagset-id> -a` | `git pull cmssw-main --track <topic-branch>` |
+| `cmstc tagset <tagset-id> -a`  | `git pull cmssw-main --track <topic-branch>` |
 | `cvs log`                      | `git log`                                    |
+| `cvs diff -r some tag`         | `git diff -r <some-tag>                      |
 
 ## Do you have any more in-depth FAQs?
 
