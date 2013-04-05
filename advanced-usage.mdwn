@@ -174,7 +174,10 @@ can use it by setting the `CMSSW_MIRROR` environment variable. E.g.:
     export CMSSW_MIRROR=https://:@git.cern.ch/kerberos/CMSSW.git
     # setenv CMSSW_MIRROR https://:@git.cern.ch/kerberos/CMSSW.git
 
-for CERN. `git addpkg` will use it to fetch 
+for CERN. 
+
+`git addpkg` will then use it to fetch most of the data, and then switch to the
+official repository for fetching the missing parts.
 
 ## How do I setup a local mirror?
 
