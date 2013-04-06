@@ -191,6 +191,50 @@ Done that you can update the mirror via:
     cd $CMSSW_MIRROR_PATH
     git remote update
 
+## How do I collapse multiple commits into one?
+
+A very common pattern when developing a feature with git is to commit very
+often, to keep track of even small set of changes and once one is happy with
+the feature branch to go back, collapse all the minor changes and write a nice
+commit message.
+
+
+Let's assume for example you have a very long commit history for a topic branch
+`my-topic`.
+
+    * 00b32e7 - Sat, 6 Apr 2013 11:07:19 +0200 (10 minutes ago) (HEAD, my-topic)
+    |           A typo.  Giulio Eulisse
+    * 6ed6e45 - Sat, 6 Apr 2013 11:06:49 +0200 (11 minutes ago)
+    |           Some documentation added.  Giulio Eulisse
+    * 74f8fd0 - Sat, 6 Apr 2013 11:06:34 +0200 (11 minutes ago)
+    |           Some more bug fixes.  Giulio Eulisse
+    * 39165d9 - Sat, 6 Apr 2013 11:06:00 +0200 (12 minutes ago)
+    |           Some bugfix.  Giulio Eulisse
+    * 3a775f1 - Sat, 6 Apr 2013 11:05:21 +0200 (12 minutes ago)
+                Initial commit for topic.  Giulio Eulisse
+
+once you are completely happy with your topic branch, you might not
+particularly care about all the intermediate steps, and you might want to
+squash all of them into one. This is done by using the `git reset` command: it
+will rever you back to a given commit, but it will keep your changes in the
+working tree, ready to be committed. E.g.:
+
+    git reset --soft 3a775f1
+
+will reset the commit index to the "Initial commit for topic." but it will
+leave all code changes ready to be committed. You can then amend the initial commit
+with all the changes you previously did by simply doing:
+
+    git commit --amend
+
+which will prompt for an updated message and will results in one single commit:
+
+    * f7400d3 - Sat, 6 Apr 2013 11:05:21 +0200 (19 minutes ago) (HEAD, master)
+                Some Feature added and tested.  Giulio Eulisse
+
+For more information about how to rewrite history, you can have a look at the
+[git guide](http://git-scm.com/book/en/Git-Tools-Rewriting-History).
+
 ## How do I ask a question?
 
 If you have more questions about git and CMSSW on git, please use [this
