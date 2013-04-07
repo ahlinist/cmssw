@@ -134,14 +134,49 @@ assuming you are on the `topic` branch already.
 For more information about merging branching read
 [here](http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging).
 
-# How do I work with other people's changes?
+## How do I migrate my UserCode area to github?
 
-A common use case is that some development which you are doing depends on yet
-to be released developments of someone else. Again this can be done by merging 
-the branch of someone else into your topic branch. Let's say for example that
-you would like 
- 
+UserCode areas will not be centrally migrated, however we provide scripts and
+assistance to migrate them to github, or the git / svn service of your
+preference.
 
+Assuming you already have your own account on github (if not follow the
+instructions
+[above](http://cms-sw.github.io/cmssw/faq.html#how_do_i_subscribe_to_github)),
+the first step is to create a new repository to hold your usercode. 
+This can be done by simply going to [https://github.com/new]().
+
+![https://github.com/new](images/create-new-repository.png)
+
+Click on "Create Repository" and note down the URL of your newly created
+repository.
+
+Now you want to migrate your old `UserCode` area to git. This can be done
+from inside a CMSSW release by doing:
+
+    MYUSERCODE=Eulisse
+    cvs2git --blobfile=git-blob.dat --dumpfile=git-dump.dat \
+            /afs/cern.ch/project/cvs/reps/CMSSW/UserCode/$MYUSERCODE \
+            --symbol-transform="(.*)/:\1-" \
+            --fallback-encoding "UTF8" \
+            --username $USER 
+
+This step could take a few seconds or hours, depending on how much stuff you
+have in your user area. If you have large datafiles we reccomend split the
+repository into two parts, one for the datafiles, one for the actual code.
+
+You can now import your old CVS repository into a new git one you created
+on git hub:
+
+    git init usercode
+    cd usercode
+    git remote add origin <your-usercode-repository-on-github>
+    cat ../git-blob.dat ../git-dump.dat | git fast-import
+    git push -u origin master
+
+Further information about cvs2git can be found at <http://cvs2svn.tigris.org/cvs2git.html>.
+
+*NOTES*: Provide a single script?
 
 ## CVS-speak to git speak
 
