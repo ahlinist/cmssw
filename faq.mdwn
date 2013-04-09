@@ -173,7 +173,7 @@ on git hub:
     cd usercode
     git remote add origin <your-usercode-repository-on-github>
     cat ../git-blob.dat ../git-dump.dat | git fast-import
-    git push -u origin master
+    git push --mirror -u origin
 
 Further information about cvs2git can be found at <http://cvs2svn.tigris.org/cvs2git.html>.
 
