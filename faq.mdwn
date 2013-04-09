@@ -158,6 +158,7 @@ from inside a CMSSW (`CMSSW_6_2_X or later`) release on `lxplus` by doing:
     cvs2git --blobfile=git-blob.dat --dumpfile=git-dump.dat \
             /afs/cern.ch/project/cvs/reps/CMSSW/UserCode/$MYUSERCODE \
             --symbol-transform="(.*)/:\1-" \
+            --use-external-blob-generator \
             --fallback-encoding "UTF8" \
             --username $USER 
 
