@@ -51,6 +51,11 @@ to remember names for some CMS specific things:
     git config --global remote.cmssw-main-ro.url git://github.com/cms-sw/cmssw.git
     git config --global core.sparsecheckout true
 
+You should also setup your personal information, so that when you commit your real name,
+and not your username will be used:
+
+    git config --global user.name Enrico Fermi
+
 *NOTE:* Should we add this to the default CMS environment?
 
 [cms-topic-collector]: https://eulisse.web.cern.ch/eulisse/cgi-bin/git-collector/cmsgit
